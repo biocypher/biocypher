@@ -18,16 +18,20 @@ The common language should provide the following features:
 	- translation of any biological input to the consensus format
 - Grammar:
 	- consensus grammar for biological queries of any complexity
+		- ligand-receptor-secondMessenger-transcriptionFactor ("what is downstream of acetylcholine?")
+	- standard situations in biomed questions, including biological prior knowledge
+		- "which cell line is most similar to my patient's biopsy?"
+		- "what are the known driver mutations in ovarian cancer?"
 - Convenience:
-	- automated web scraping of resources for periodic updating workflows via one-command interface
-	- translation facilities to interface with **natural language queries** from non-bioinformatian researchers and clinicians
+	- automated web scraping of resources for periodic updating workflows via one-command interface (via pypath)
+	- translation facilities to interface with **natural language queries** from non-bioinformatian researchers and clinicians (see CLARE)
 
 ## Node types
 - DNA: genes, variants, methylation
 - RNA: coding transcripts, small and large non-coding RNA
 - Protein: proteins, phosphoproteins, transcription factors, enzymes, protein complexes
 - Small molecule: drugs, non-drug chemical compounds, substances, oligonucleotides
-- Annotation: resource, ontological
+- Annotation: resource, ontological, other prior knowledge (eg, driver mutations in cancer)
 - Super-cellular: cell lines, tissues, in vivo, clinical
 
 ## Interaction types
