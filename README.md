@@ -3,4 +3,4 @@ This is the development repository for BioCypher, our proposal for a [unified la
 
 Ideally, BioCypher would enable "plug-and-play" functionality between participating database systems, ie, arbitrary transfer of input or output from one database to the other, and hybrid property graphs made up of subsets of different databases for specific purposes. We strive for being compliant with the [openCypher](https://opencypher.org/) project.
 
-![BioCypher](https://user-images.githubusercontent.com/13223629/133308774-72f49028-4d50-4941-9131-bea1e35987e6.png)
+![BioCypher](BioCypher.png)
