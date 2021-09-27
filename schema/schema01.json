@@ -1,13 +1,12 @@
 {
   "nodes": [
     {
-      "id": "n0",
+      "id": "n1",
       "position": {
-        "x": -1976.5,
-        "y": -1260.5
+        "x": 505.70608710507895,
+        "y": 250.47755469146227
       },
       "caption": "",
-      "style": {},
       "labels": [
         "Molecule"
       ],
@@ -16,32 +15,42 @@
         "identifier": "P00533",
         "label": "EGFR",
         "organism": "9606"
+      },
+      "style": {
+        "node-color": "#b3b3b3",
+        "border-color": "#000000",
+        "label-border-color": "#000000",
+        "label-background-color": "#000000"
       }
     },
     {
-      "id": "n1",
+      "id": "n2",
       "position": {
-        "x": -1805.5,
-        "y": -1017.0005133475637
+        "x": 717.882320821355,
+        "y": 403.10064098161433
       },
       "caption": "",
-      "style": {},
       "labels": [
         "Interaction"
       ],
       "properties": {
         "type": "post_translational",
         "effect": "stimulation"
+      },
+      "style": {
+        "node-color": "#a6dd8b",
+        "border-color": "#4cbd38",
+        "label-background-color": "#4cbd38",
+        "label-border-color": "#4cbd38"
       }
     },
     {
-      "id": "n2",
+      "id": "n3",
       "position": {
-        "x": -1624.5,
-        "y": -1260.5
+        "x": 864.3855792036718,
+        "y": 168.90662549041406
       },
       "caption": "",
-      "style": {},
       "labels": [
         "Molecule"
       ],
@@ -50,16 +59,21 @@
         "identifier": "P42224",
         "label": "STAT1",
         "organism": "9606"
+      },
+      "style": {
+        "node-color": "#b3b3b3",
+        "border-color": "#000000",
+        "label-border-color": "#000000",
+        "label-background-color": "#000000"
       }
     },
     {
-      "id": "n3",
+      "id": "n4",
       "position": {
-        "x": -1471.5,
-        "y": -998.5
+        "x": 866.4939529398264,
+        "y": 300.97367387111194
       },
       "caption": "",
-      "style": {},
       "labels": [
         "PTM"
       ],
@@ -67,95 +81,125 @@
         "residue": "Y",
         "offset": "701",
         "type": "phosphorylation"
+      },
+      "style": {
+        "node-color": "#80d4ce",
+        "border-color": "#00aab0",
+        "label-background-color": "#00aab0",
+        "label-border-color": "#00aab0"
       }
     },
     {
-      "id": "n4",
+      "id": "n5",
       "position": {
-        "x": -1805.5,
-        "y": -719.455558760866
+        "x": 586.0045936990227,
+        "y": 534.9783681039467
       },
       "caption": "",
-      "style": {},
       "labels": [
         "Evidence"
       ],
       "properties": {
         "resource": "SIGNOR",
         "type": "literature_curated"
+      },
+      "style": {
+        "node-color": "#a6dd8b",
+        "border-color": "#4cbd38",
+        "label-background-color": "#4cbd38",
+        "label-border-color": "#4cbd38"
       }
     },
     {
-      "id": "n5",
+      "id": "n6",
       "position": {
-        "x": -1597.9033122616938,
-        "y": -795.7390950205445
+        "x": 840.8933170865577,
+        "y": 584.1868086016052
       },
       "caption": "",
-      "style": {},
       "labels": [
         "Evidence"
       ],
       "properties": {
         "resource": "ProtMapper",
         "type": "predicted"
+      },
+      "style": {
+        "node-color": "#a6dd8b",
+        "border-color": "#4cbd38",
+        "label-background-color": "#4cbd38",
+        "label-border-color": "#4cbd38"
       }
     },
     {
-      "id": "n6",
+      "id": "n7",
       "position": {
-        "x": -1805.5,
-        "y": -1462.3699253953341
+        "x": 681.7060871050791,
+        "y": 168.90662549041403
       },
       "caption": "",
-      "style": {},
       "labels": [
         "Interaction"
       ],
       "properties": {
         "type": "post_translational",
         "effect": "unknown"
+      },
+      "style": {
+        "node-color": "#a6dd8b",
+        "border-color": "#4cbd38",
+        "label-background-color": "#4cbd38",
+        "label-border-color": "#4cbd38"
       }
     },
     {
-      "id": "n7",
+      "id": "n8",
       "position": {
-        "x": -1540.939105725888,
-        "y": -1462.3699253953341
+        "x": 757.1329027580895,
+        "y": 38.26354852626841
       },
       "caption": "",
-      "style": {},
       "labels": [
         "Evidence"
       ],
       "properties": {
         "resource": "IntAct",
         "type": "high_throughput"
-      }
-    },
-    {
-      "id": "n8",
-      "position": {
-        "x": -2070.060894274112,
-        "y": -719.455558760866
       },
-      "caption": "",
-      "style": {},
-      "labels": [
-        "Literature"
-      ],
-      "properties": {
-        "pubmed": "32876011"
+      "style": {
+        "node-color": "#a6dd8b",
+        "border-color": "#4cbd38",
+        "label-background-color": "#4cbd38",
+        "label-border-color": "#4cbd38"
       }
     },
     {
       "id": "n9",
       "position": {
-        "x": -2353.206087105079,
-        "y": -1283.2442683398378
+        "x": 426.14519283096706,
+        "y": 534.9783681039467
       },
       "caption": "",
-      "style": {},
+      "labels": [
+        "Literature"
+      ],
+      "properties": {
+        "pubmed": "32876011"
+      },
+      "style": {
+        "node-color": "#a6dd8b",
+        "border-color": "#4cbd38",
+        "label-background-color": "#4cbd38",
+        "label-border-color": "#4cbd38"
+      }
+    },
+    {
+      "id": "n10",
+      "position": {
+        "x": 129,
+        "y": 247.58492727126287
+      },
+      "caption": "",
       "labels": [
         "Molecule"
       ],
@@ -164,16 +208,21 @@
         "identifier": "P05106",
         "label": "ITGB3",
         "organism": "9606"
+      },
+      "style": {
+        "node-color": "#b3b3b3",
+        "border-color": "#000000",
+        "label-border-color": "#000000",
+        "label-background-color": "#000000"
       }
     },
     {
-      "id": "n10",
+      "id": "n11",
       "position": {
-        "x": -2353.206087105079,
-        "y": -1160.7115440709981
+        "x": 129,
+        "y": 370.76395366431586
       },
       "caption": "",
-      "style": {},
       "labels": [
         "Molecule"
       ],
@@ -182,75 +231,100 @@
         "identifier": "P06756",
         "label": "ITGAV",
         "organism": "9606"
-      }
-    },
-    {
-      "id": "n11",
-      "position": {
-        "x": -2165.1663679970125,
-        "y": -1283.2442683398378
       },
-      "caption": "",
-      "style": {},
-      "labels": [
-        "Complex"
-      ],
-      "properties": {
-        "label": "ITGAV-ITGB3-EGFR complex"
+      "style": {
+        "node-color": "#b3b3b3",
+        "border-color": "#000000",
+        "label-border-color": "#000000",
+        "label-background-color": "#000000"
       }
     },
     {
       "id": "n12",
       "position": {
-        "x": -2134.5,
-        "y": -1064.9106041741684
+        "x": 303.72534872794836,
+        "y": 248.92659748057218
       },
       "caption": "",
-      "style": {},
+      "labels": [
+        "Complex"
+      ],
+      "properties": {
+        "label": "ITGAV-ITGB3-EGFR complex"
+      },
+      "style": {
+        "border-color": "#5b205f",
+        "node-color": "#9d729c",
+        "label-background-color": "#5b205f",
+        "label-border-color": "#5b205f"
+      }
+    },
+    {
+      "id": "n13",
+      "position": {
+        "x": 303.72534872794836,
+        "y": 403.10064098161433
+      },
+      "caption": "",
       "labels": [
         "Evidence"
       ],
       "properties": {
         "resource": "CORUM",
         "type": "literature_curated"
-      }
-    },
-    {
-      "id": "n13",
-      "position": {
-        "x": -2316.333877919454,
-        "y": -1017.0005133475637
       },
-      "caption": "",
-      "style": {},
-      "labels": [
-        "Literature"
-      ],
-      "properties": {
-        "pubmed": "15834425"
+      "style": {
+        "node-color": "#9d729c",
+        "border-color": "#5b205f",
+        "label-background-color": "#5b205f",
+        "label-border-color": "#5b205f"
       }
     },
     {
       "id": "n14",
       "position": {
-        "x": -1597.9033122616938,
-        "y": -931.69623608629
+        "x": 129,
+        "y": 534.9783681039467
       },
       "caption": "",
-      "style": {},
       "labels": [
-        "Mechanism"
+        "Literature"
       ],
-      "properties": {}
+      "properties": {
+        "pubmed": "15834425"
+      },
+      "style": {
+        "node-color": "#9d729c",
+        "border-color": "#5b205f",
+        "label-background-color": "#5b205f",
+        "label-border-color": "#5b205f"
+      }
     },
     {
       "id": "n15",
       "position": {
-        "x": -2070.060894274112,
-        "y": -1514.9775546914623
+        "x": 868.6023266759811,
+        "y": 433.04072225181574
       },
       "caption": "",
-      "style": {},
+      "labels": [
+        "Mechanism"
+      ],
+      "properties": {},
+      "style": {
+        "node-color": "#80d4ce",
+        "border-color": "#00aab0",
+        "label-background-color": "#00aab0",
+        "label-border-color": "#00aab0"
+      }
+    },
+    {
+      "id": "n16",
+      "position": {
+        "x": 308.0013158348993,
+        "y": 124.40590087820986
+      },
+      "caption": "",
       "labels": [
         "Role"
       ],
@@ -259,229 +333,458 @@
         "scope": "generic",
         "transmitter": "true",
         "receiver": "false"
+      },
+      "style": {
+        "node-color": "#c7747c",
+        "border-color": "#9e1639",
+        "label-border-color": "#9e1639",
+        "label-background-color": "#9e1639"
       }
     },
     {
-      "id": "n16",
+      "id": "n17",
       "position": {
-        "x": -2260.0932603476276,
-        "y": -1514.9775546914623
+        "x": 129,
+        "y": 124.40590087820986
       },
       "caption": "",
-      "style": {},
       "labels": [
         "Evidence"
       ],
       "properties": {
         "resource": "HPMR",
         "type": "literature_curated"
-      }
-    },
-    {
-      "id": "n17",
-      "position": {
-        "x": -1321.0976269044686,
-        "y": -1260.5
       },
-      "caption": "",
-      "style": {},
-      "labels": [],
-      "properties": {}
+      "style": {
+        "node-color": "#c7747c",
+        "border-color": "#9e1639",
+        "label-border-color": "#9e1639",
+        "label-background-color": "#9e1639"
+      }
     },
     {
       "id": "n18",
       "position": {
-        "x": -1256.4742679712951,
-        "y": -1380.1167450107437
+        "x": 1015.8324657163976,
+        "y": 168.90662549041403
       },
       "caption": "",
-      "style": {},
-      "labels": [],
-      "properties": {}
+      "labels": [
+        "Annotation"
+      ],
+      "properties": {
+        "resource": "HPA_tissue",
+        "organ": "tonsil",
+        "tissue": "squamous epithelial cells",
+        "level": "low",
+        "status": "approved",
+        "prognostic": "false",
+        "favourable": "false",
+        "pathology": "false"
+      },
+      "style": {
+        "node-color": "#b3a6da",
+        "border-color": "#7264b9",
+        "label-background-color": "#7264b9",
+        "label-border-color": "#7264b9",
+        "label-position": "outside"
+      }
+    },
+    {
+      "id": "n19",
+      "position": {
+        "x": 129,
+        "y": 10.260997965298202
+      },
+      "caption": "",
+      "labels": [
+        "Evidence"
+      ],
+      "properties": {
+        "resource": "iTALK",
+        "type": "literature_curated"
+      },
+      "style": {
+        "node-color": "#c7747c",
+        "border-color": "#9e1639",
+        "label-border-color": "#9e1639",
+        "label-background-color": "#9e1639"
+      }
+    },
+    {
+      "id": "n20",
+      "position": {
+        "x": 505.70608710507895,
+        "y": 10.260997965298202
+      },
+      "caption": "",
+      "labels": [
+        "Role"
+      ],
+      "properties": {
+        "label": "growth_factor_receptor",
+        "scope": "specific",
+        "transmitter": "true",
+        "receiver": "false"
+      },
+      "style": {
+        "node-color": "#c7747c",
+        "border-color": "#9e1639",
+        "label-border-color": "#9e1639",
+        "label-background-color": "#9e1639",
+        "label-position": "outside"
+      }
+    },
+    {
+      "id": "n21",
+      "position": {
+        "x": 1193.1084602006104,
+        "y": 469.85609522627885
+      },
+      "caption": "",
+      "labels": [
+        "Annotation"
+      ],
+      "properties": {},
+      "style": {
+        "node-color": "#b3a6da",
+        "border-color": "#7264b9",
+        "label-background-color": "#7264b9",
+        "label-border-color": "#7264b9",
+        "label-font-size": 18
+      }
+    },
+    {
+      "id": "n22",
+      "position": {
+        "x": 1193.1084602006104,
+        "y": 398.9783681039466
+      },
+      "caption": "",
+      "labels": [
+        "Enzyme-substrate"
+      ],
+      "properties": {},
+      "style": {
+        "node-color": "#80d4ce",
+        "border-color": "#00aab0",
+        "label-background-color": "#00aab0",
+        "label-border-color": "#00aab0",
+        "label-font-size": 18
+      }
+    },
+    {
+      "id": "n23",
+      "position": {
+        "x": 1193.1084602006104,
+        "y": 328.10064098161433
+      },
+      "caption": "",
+      "labels": [
+        "Network"
+      ],
+      "properties": {},
+      "style": {
+        "node-color": "#a6dd8b",
+        "border-color": "#4cbd38",
+        "label-background-color": "#4cbd38",
+        "label-border-color": "#4cbd38",
+        "label-font-size": 18
+      }
+    },
+    {
+      "id": "n24",
+      "position": {
+        "x": 1193.1084602006104,
+        "y": 540.733822348611
+      },
+      "caption": "",
+      "labels": [
+        "Complexes"
+      ],
+      "properties": {},
+      "style": {
+        "node-color": "#9d729c",
+        "border-color": "#5b205f",
+        "label-background-color": "#5b205f",
+        "label-border-color": "#5b205f",
+        "label-font-size": 18
+      }
+    },
+    {
+      "id": "n25",
+      "position": {
+        "x": 1193.1084602006104,
+        "y": 611.6115494709433
+      },
+      "caption": "",
+      "labels": [
+        "Intercell"
+      ],
+      "properties": {},
+      "style": {
+        "node-color": "#c7747c",
+        "border-color": "#9e1639",
+        "label-border-color": "#9e1639",
+        "label-background-color": "#9e1639",
+        "label-font-size": 18
+      }
     }
   ],
   "relationships": [
     {
       "id": "n0",
-      "type": "PARTICIPANT",
-      "style": {},
+      "fromId": "n1",
+      "toId": "n2",
+      "type": "PARTICIPATES_IN",
       "properties": {
         "direction": "source"
       },
-      "fromId": "n1",
-      "toId": "n0"
+      "style": {
+        "arrow-color": "#4cbd38"
+      }
     },
     {
       "id": "n1",
-      "type": "PARTICIPANT",
-      "style": {},
+      "fromId": "n3",
+      "toId": "n2",
+      "type": "PARTICIPATES_IN",
       "properties": {
         "direction": "target"
       },
-      "fromId": "n1",
-      "toId": "n2"
+      "style": {
+        "arrow-color": "#4cbd38"
+      }
     },
     {
       "id": "n2",
-      "type": "",
-      "style": {},
+      "fromId": "n4",
+      "toId": "n3",
+      "type": "OF",
       "properties": {},
-      "fromId": "n3",
-      "toId": "n2"
+      "style": {
+        "arrow-color": "#00aab0"
+      }
+    },
+    {
+      "id": "n3",
+      "fromId": "n5",
+      "toId": "n2",
+      "type": "SUPPORTS",
+      "properties": {},
+      "style": {
+        "arrow-color": "#4cbd38"
+      }
     },
     {
       "id": "n4",
+      "fromId": "n6",
+      "toId": "n2",
       "type": "SUPPORTS",
-      "style": {},
       "properties": {},
-      "fromId": "n4",
-      "toId": "n1"
+      "style": {
+        "arrow-color": "#4cbd38"
+      }
     },
     {
       "id": "n5",
-      "type": "SUPPORTS",
-      "style": {},
-      "properties": {},
-      "fromId": "n5",
-      "toId": "n1"
+      "fromId": "n1",
+      "toId": "n7",
+      "type": "PARTICIPATES_IN",
+      "properties": {
+        "direction": "unknown"
+      },
+      "style": {
+        "arrow-color": "#4cbd38"
+      }
     },
     {
       "id": "n6",
-      "type": "PARTICIPANT",
-      "style": {},
+      "fromId": "n3",
+      "toId": "n7",
+      "type": "PARTICIPATES_IN",
       "properties": {
         "direction": "unknown"
       },
-      "fromId": "n6",
-      "toId": "n0"
+      "style": {
+        "arrow-color": "#4cbd38"
+      }
     },
     {
       "id": "n7",
-      "type": "PARTICIPANT",
-      "style": {},
-      "properties": {
-        "direction": "unknown"
-      },
-      "fromId": "n6",
-      "toId": "n2"
+      "fromId": "n8",
+      "toId": "n7",
+      "type": "SUPPORTS",
+      "properties": {},
+      "style": {
+        "arrow-color": "#4cbd38"
+      }
     },
     {
       "id": "n8",
-      "type": "SUPPORTS",
-      "style": {},
+      "fromId": "n5",
+      "toId": "n9",
+      "type": "REFERENCES",
       "properties": {},
-      "fromId": "n7",
-      "toId": "n6"
+      "style": {
+        "arrow-color": "#4cbd38"
+      }
     },
     {
       "id": "n9",
-      "type": "REFERENCES",
-      "style": {},
-      "properties": {},
-      "fromId": "n4",
-      "toId": "n8"
+      "fromId": "n10",
+      "toId": "n12",
+      "type": "IS_COMPONENT_OF",
+      "properties": {
+        "stoichiometry": "1"
+      },
+      "style": {
+        "arrow-color": "#5b205f"
+      }
+    },
+    {
+      "id": "n10",
+      "fromId": "n1",
+      "toId": "n12",
+      "type": "IS_COMPONENT_OF",
+      "properties": {
+        "stoichiometry": "1"
+      },
+      "style": {
+        "arrow-color": "#5b205f"
+      }
     },
     {
       "id": "n11",
-      "type": "COMPONENT",
-      "style": {},
+      "fromId": "n11",
+      "toId": "n12",
+      "type": "IS_COMPONENT_OF",
       "properties": {
         "stoichiometry": "1"
       },
-      "fromId": "n11",
-      "toId": "n9"
+      "style": {
+        "arrow-color": "#5b205f"
+      }
     },
     {
       "id": "n12",
-      "type": "COMPONENT",
-      "style": {},
-      "properties": {
-        "stoichiometry": "1"
-      },
-      "fromId": "n11",
-      "toId": "n0"
+      "fromId": "n13",
+      "toId": "n12",
+      "type": "SUPPORTS",
+      "properties": {},
+      "style": {
+        "arrow-color": "#5b205f"
+      }
     },
     {
       "id": "n13",
-      "type": "COMPONENT",
-      "style": {},
-      "properties": {
-        "stoichiometry": "1"
-      },
-      "fromId": "n11",
-      "toId": "n10"
+      "fromId": "n13",
+      "toId": "n14",
+      "type": "REFERENCES",
+      "properties": {},
+      "style": {
+        "arrow-color": "#5b205f"
+      }
     },
     {
       "id": "n14",
-      "type": "SUPPORTS",
-      "style": {},
+      "fromId": "n2",
+      "toId": "n15",
+      "type": "BY",
       "properties": {},
-      "fromId": "n12",
-      "toId": "n11"
+      "style": {
+        "arrow-color": "#00aab0"
+      }
     },
     {
       "id": "n15",
-      "type": "REFERENCES",
-      "style": {},
+      "fromId": "n15",
+      "toId": "n4",
+      "type": "INVOLVES",
       "properties": {},
-      "fromId": "n12",
-      "toId": "n13"
+      "style": {
+        "arrow-color": "#00aab0"
+      }
     },
     {
       "id": "n16",
-      "type": "BY",
-      "style": {},
+      "fromId": "n6",
+      "toId": "n15",
+      "type": "IMPLIES",
       "properties": {},
-      "fromId": "n1",
-      "toId": "n14"
+      "style": {
+        "arrow-color": "#00aab0"
+      }
     },
     {
       "id": "n17",
-      "type": "INVOLVES",
-      "style": {},
+      "fromId": "n1",
+      "toId": "n16",
+      "type": "ACTS_AS",
       "properties": {},
-      "fromId": "n14",
-      "toId": "n3"
+      "style": {
+        "arrow-color": "#9e1639"
+      }
     },
     {
       "id": "n18",
-      "type": "IMPLIES",
-      "style": {},
+      "fromId": "n17",
+      "toId": "n16",
+      "type": "SUPPORTS",
       "properties": {},
-      "fromId": "n5",
-      "toId": "n14"
+      "style": {
+        "arrow-color": "#9e1639"
+      }
     },
     {
       "id": "n19",
-      "type": "ACTS_AS",
-      "style": {},
+      "fromId": "n18",
+      "toId": "n3",
+      "type": "Annotates",
       "properties": {},
-      "fromId": "n0",
-      "toId": "n15"
+      "style": {
+        "arrow-color": "#7264b9"
+      }
     },
     {
       "id": "n20",
+      "fromId": "n19",
+      "toId": "n16",
       "type": "SUPPORTS",
-      "style": {},
       "properties": {},
-      "fromId": "n16",
-      "toId": "n15"
+      "style": {
+        "arrow-color": "#9e1639"
+      }
     },
     {
       "id": "n21",
-      "type": "",
-      "style": {},
+      "fromId": "n16",
+      "toId": "n20",
+      "type": "PARENT_OF",
       "properties": {},
-      "fromId": "n2",
-      "toId": "n17"
+      "style": {
+        "arrow-color": "#9e1639"
+      }
     },
     {
       "id": "n22",
-      "type": "",
-      "style": {},
+      "fromId": "n1",
+      "toId": "n20",
+      "type": "ACTS_AS",
       "properties": {},
-      "fromId": "n17",
-      "toId": "n18"
+      "style": {
+        "arrow-color": "#9e1639"
+      }
+    },
+    {
+      "id": "n23",
+      "fromId": "n19",
+      "toId": "n20",
+      "type": "SUPPORTS",
+      "properties": {},
+      "style": {
+        "arrow-color": "#9e1639"
+      }
     }
   ],
   "style": {
@@ -490,6 +793,7 @@
     "border-color": "#2870c2",
     "radius": 25,
     "node-padding": 5,
+    "node-margin": 2,
     "outside-position": "auto",
     "caption-position": "inside",
     "caption-max-width": 200,
@@ -497,6 +801,7 @@
     "caption-font-size": 10,
     "caption-font-weight": "normal",
     "label-position": "outside",
+    "label-display": "pill",
     "label-color": "#ffffff",
     "label-background-color": "#4C8EDA",
     "label-border-color": "#4C8EDA",
@@ -521,6 +826,7 @@
     "type-font-size": 10,
     "type-padding": 2,
     "property-position": "outside",
+    "property-alignment": "colon",
     "property-color": "#000000",
     "property-font-size": 10,
     "property-font-weight": "normal"
