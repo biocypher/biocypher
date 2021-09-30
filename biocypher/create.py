@@ -12,18 +12,29 @@ BioCypher python package, homepage: TODO.
 Copyright 2021, Heidelberg University Clinic
 
 File author(s): Sebastian Lobentanzer
+                ...
 
 Distributed under GPLv3 license, see LICENSE.txt.
 
 Todo:
     - ensure that all relationship source and target IDs are in the node list?
         Or in the graph? Would require direct connection...
-        Calls to the classes are independent, so there is no way to check 
+        - Calls to the classes are independent, so there is no way to check 
         directly; nodes can be created at any point in time previous to edge
         creation. We could require a pass of all the nodes in the graph when 
         creating edges. Pro: this would also allow a check whether the existing
         graph adheres to BioCypher, at least in the node domain. If it doesn't, 
         the call does not make much sense.
+        - We could pass in the driver/session object into the BioCypher class.
+    - establish a dictionary lookup with the id types to be used / basic type 
+        checking of the input
+    - translation of id types using pypath translation facilities (to be later 
+        externalised)
+    - provide options to the user:
+        - primary id type(s) of their liking (critical, does not guarantee 
+            interoperability: do we want this?)
+        - granularity: the ability to opt out (!) of the more detailed structural
+            components (opt in would again not guarantee interoperability)
 """
 
 # Futures
