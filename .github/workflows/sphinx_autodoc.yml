@@ -17,8 +17,9 @@ jobs:
         git config --local user.name "GitHub Action"
         git commit -m "Update autodoc" -a
         
+    # using https://github.com/jbrooksuk/github-subtree-push-action
     - name: Push changes
-      uses: ad-m/github-push-action@master
+      uses: ad-m/github-push-action@main
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: 'gh-pages'
