@@ -1,3 +1,5 @@
 *~
 *__pycache__
 build/
+docs/_*
+docs/pypath_log/
