@@ -57,10 +57,7 @@ import sys
 import pandas
 
 
-# Workaround for importing the local pypath package; assumes that the pypath
-# repo is in the same parent directory as the biocypher repo
-# should be done with regular packages when deploying
-sys.path.append(os.path.dirname(os.getcwd()) + "/pypath")
+#pypath needs to be installed locally from current GitHub version
 import pypath.utils.mapping as mapping
 
 
