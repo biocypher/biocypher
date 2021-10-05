@@ -3,23 +3,22 @@ on:
 - push
 
 jobs:
-  docs:
+  build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@main
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
-        
-    - name: Commit documentation changes
+            
+    - name: Commit files
       run: |
-        git clone https://github.com/ammaraskar/sphinx-action-test.git
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git subtree push --prefix docs/_build/html origin gh-pages
+        git commit -m "Update autodoc" -a
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
-        branch: gh-pages
-        directory: gh-pages
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: 'gh-pages'
+        directory: 'docs/_build/html'
