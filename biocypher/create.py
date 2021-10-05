@@ -54,11 +54,11 @@ import sys
 
 
 # Libs
-import pandas
+# import pandas
 
 
-#pypath needs to be installed locally from current GitHub version
-import pypath.utils.mapping as mapping
+# pypath needs to be installed locally from current GitHub version
+# import pypath.utils.mapping as mapping
 
 
 class BioCypherNode():
