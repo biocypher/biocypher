@@ -11,12 +11,6 @@ jobs:
       with:
         docs-folder: "docs/"
         
-    - name: Delete old pages
-      uses: dawidd6/action-delete-branch@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branches: gh-pages
-        
     - name: Commit files
       run: |
         git config --local user.email "action@github.com"
@@ -29,3 +23,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: 'gh-pages'
         directory: 'docs/_build/html/.'
+        force: true
