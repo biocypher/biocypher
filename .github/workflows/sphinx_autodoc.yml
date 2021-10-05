@@ -17,11 +17,11 @@ jobs:
         git config --local user.name "GitHub Action"
         git commit -m "Update autodoc" -a
         
-    # using https://github.com/jbrooksuk/github-subtree-push-action
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: 'gh-pages'
-        directory: 'docs/_build/html/.'
-        force: true
+    # using https://github.com/marketplace/actions/push-git-subdirectory-as-branch
+    - name: Deploy
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: gh-pages
+        FOLDER: docs/_build/html
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
