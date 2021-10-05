@@ -10,12 +10,19 @@ jobs:
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
-            
+        
+    - name: Delete old pages
+      uses: dawidd6/action-delete-branch@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branches: gh-pages
+        
     - name: Commit files
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git commit -m "Update autodoc" -a
+        
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
