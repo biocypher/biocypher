@@ -2,3 +2,4 @@
 *__pycache__
 build/
 docs/pypath_log/
+.DS_Store
