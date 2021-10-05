@@ -22,5 +22,5 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: 'gh-pages'
-        directory: '/docs/_build/html/.'
+        directory: 'docs/_build/html/.'
         force: true
