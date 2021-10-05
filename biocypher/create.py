@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-TEST AUTODOC 
+TEST AUTODOC
 
 This module is used for the creating a generic property graph database for use
 in biomedical research applications. It takes as inputs ordered collections of
