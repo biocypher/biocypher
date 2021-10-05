@@ -19,7 +19,7 @@ jobs:
         
     # using https://github.com/jbrooksuk/github-subtree-push-action
     - name: Push changes
-      uses: ad-m/github-push-action@main
+      uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: 'gh-pages'
