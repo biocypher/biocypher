@@ -17,9 +17,9 @@ biological questions and facilitate interfacing with cutting edge developments
 in the areas of causal reasoning, representation learning, and natural language 
 processing, all of which depend on having a consistent descriptive vocabulary.
 
-Pass a Neo4j driver instance (Version B)
-========================================
-.. automodule:: biocypher.driver_b
+Pass a Neo4j driver instance
+============================
+.. automodule:: biocypher.driver
    :members: 
 
 Check the active database for consistency with the BioCypher format and return chosen primary identifiers
