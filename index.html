@@ -78,31 +78,27 @@ written in UPPERCASE, as per Neo4j consensus.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>source_id</strong><strong>, </strong><strong>target_id</strong> (<em>-</em>) – consensus “best” id for biological entity
+<li><p><strong>target_id</strong> (<em>source_id</em><em>,</em>) – consensus “best” id for biological entity
 (string)</p></li>
-<li><p><strong>relationship_label</strong> (<em>-</em>) – type of interaction, UPPERCASE (string)</p></li>
-<li><p><strong>**properties</strong> (<em>-</em>) – <p>collection of all other properties to be
-passed to Neo4j for the respective edge (dict)</p>
-</p></li>
+<li><p><strong>relationship_label</strong> – type of interaction, UPPERCASE (string)</p></li>
+<li><p><strong>**properties</strong> (<em>kwargs</em>) – collection of all other properties to be
+passed to Neo4j for the respective edge (dict)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>source node id (string)
-- get_target_id: target node id (string)
-- get_label: relationship label, ie, the type of interaction (string)
-- get_properties: relationship properties (dict)
-- get_dict: dict of all the above for entry into Neo4j via APOC
-- pypath2neo4j_relationship: translation function for pypath relationships</p>
+get_target_id: target node id (string)
+get_label: relationship label, ie, the type of interaction (string)
+get_properties: relationship properties (dict)
+get_dict: dict of all the above for entry into Neo4j via APOC
+pypath2neo4j_relationship: translation function for pypath relationships</p>
 <blockquote>
 <div><p>into EdgeFromPypath class for handover</p>
 </div></blockquote>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p>get_source_id</p></li>
-</ul>
-</p>
+<dd class="field-odd"><p>get_source_id</p>
 </dd>
 </dl>
 <dl class="method">
@@ -131,29 +127,25 @@ consensus.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>node_id</strong> (<em>-</em>) – consensus “best” id for biological entity (string)</p></li>
-<li><p><strong>node_label</strong> (<em>-</em>) – type of biological entity, capitalised (string)</p></li>
-<li><p><strong>**properties</strong> (<em>-</em>) – <p>collection of all other properties to be
-passed to neo4j for the respective node (dict)</p>
-</p></li>
+<li><p><strong>node_id</strong> – consensus “best” id for biological entity (string)</p></li>
+<li><p><strong>node_label</strong> – type of biological entity, capitalised (string)</p></li>
+<li><p><strong>**properties</strong> (<em>kwargs</em>) – collection of all other properties to be
+passed to neo4j for the respective node (dict)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>node id (string)
-- get_label: node label (string)
-- get_properties: node properties (dict)
-- get_dict: dict of all the above for entry into Neo4j via APOC
-- create_node_list: translation function for biomedical entities into</p>
+get_label: node label (string)
+get_properties: node properties (dict)
+get_dict: dict of all the above for entry into Neo4j via APOC
+create_node_list: translation function for biomedical entities into</p>
 <blockquote>
 <div><p>BioCypherNode class for handover</p>
 </div></blockquote>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p>get_id</p></li>
-</ul>
-</p>
+<dd class="field-odd"><p>get_id</p>
 </dd>
 </dl>
 <dl class="method">
