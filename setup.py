@@ -22,5 +22,10 @@ from distutils.core import setup
 setup(
     name='biocypher',
     version=__version__,
-    py_modules=['biocypher.check', 'biocypher.create'],
+    py_modules=[
+	'biocypher.check', 
+	'biocypher.create',
+	'biocypher.driver',
+	'biocypher.translate'
+	],
     )

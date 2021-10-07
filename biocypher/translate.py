@@ -14,8 +14,17 @@ File author(s): Sebastian Lobentanzer
 Distributed under GPLv3 license, see LICENSE.txt.
 
 Todo: 
-    - implement
+    - genericise
+    - type checking
     - which system for storage? json dump/load? has the advantage of being human-
         redable
     - import ID types from pypath dictionary (later, externalised dictionary)?
 """
+
+from .create import BioCypherEdge, BioCypherNode
+
+def nodes_from_pypath(values):
+    return(BioCypherNode.create_node_list(values))
+
+def edges_from_pypath(records):
+    return(BioCypherEdge.create_relationship_list(records))

@@ -78,12 +78,12 @@ class BioCypherNode():
             passed to neo4j for the respective node (dict)
 
     Returns: 
-    - get_id: node id (string) 
-    - get_label: node label (string) 
-    - get_properties: node properties (dict) 
-    - get_dict: dict of all the above for entry into Neo4j via APOC 
-    - create_node_list: translation function for biomedical entities into 
-        BioCypherNode class for handover
+        - get_id: node id (string) 
+        - get_label: node label (string) 
+        - get_properties: node properties (dict) 
+        - get_dict: dict of all the above for entry into Neo4j via APOC 
+        - create_node_list: translation function for biomedical entities into 
+            BioCypherNode class for handover
 
     Todo: 
         - "allowed list" of property names
