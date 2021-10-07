@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'BioCypher'
-copyright = '2021, Sebastian Lobentanzer'
+copyright = '2021, Heidelberg University Clinic'
 author = 'Sebastian Lobentanzer'
 
 
