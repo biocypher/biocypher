@@ -72,17 +72,17 @@ class BioCypherNode():
     consensus.
 
     Args: 
-        - node_id: consensus "best" id for biological entity (string) 
-        - node_label: type of biological entity, capitalised (string) 
-        - **properties (kwargs): collection of all other properties to be 
+        node_id: consensus "best" id for biological entity (string) 
+        node_label: type of biological entity, capitalised (string) 
+        **properties (kwargs): collection of all other properties to be 
             passed to neo4j for the respective node (dict)
 
     Returns: 
-        - get_id: node id (string) 
-        - get_label: node label (string) 
-        - get_properties: node properties (dict) 
-        - get_dict: dict of all the above for entry into Neo4j via APOC 
-        - create_node_list: translation function for biomedical entities into 
+        get_id: node id (string) 
+        get_label: node label (string) 
+        get_properties: node properties (dict) 
+        get_dict: dict of all the above for entry into Neo4j via APOC 
+        create_node_list: translation function for biomedical entities into 
             BioCypherNode class for handover
 
     Todo: 
@@ -169,19 +169,19 @@ class BioCypherEdge():
     written in UPPERCASE, as per Neo4j consensus.
 
     Args:
-        - source_id, target_id: consensus "best" id for biological entity 
+        source_id, target_id: consensus "best" id for biological entity 
             (string)
-        - relationship_label: type of interaction, UPPERCASE (string)
-        - **properties (kwargs): collection of all other properties to be 
+        relationship_label: type of interaction, UPPERCASE (string)
+        **properties (kwargs): collection of all other properties to be 
             passed to Neo4j for the respective edge (dict)
 
     Returns:
-        - get_source_id: source node id (string)
-        - get_target_id: target node id (string)
-        - get_label: relationship label, ie, the type of interaction (string)
-        - get_properties: relationship properties (dict)
-        - get_dict: dict of all the above for entry into Neo4j via APOC
-        - pypath2neo4j_relationship: translation function for pypath relationships 
+        get_source_id: source node id (string)
+        get_target_id: target node id (string)
+        get_label: relationship label, ie, the type of interaction (string)
+        get_properties: relationship properties (dict)
+        get_dict: dict of all the above for entry into Neo4j via APOC
+        pypath2neo4j_relationship: translation function for pypath relationships 
             into EdgeFromPypath class for handover
 
     Todo:

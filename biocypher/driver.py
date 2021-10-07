@@ -26,18 +26,31 @@ from . import translate
 
 class DatabaseToNeo4j():
     """
+    This class accepts a Neo4jDriver object to interact with a running instance 
+    of Neo4j, specified by the driver object. This way, connection and authen-
+    tification can be handled by the user in a safe and personalised manner.
     """
 
-    def __init__(self, driver, network = None):
+    def __init__(self, driver):
         
         if isinstance(driver, neo4j.Neo4jDriver):
             self.driver = driver
 
-        if network:
-            self.network = network
-
     
     def query(self, query, **kwargs):
+        """
+        Creates a session with the driver passed into the class at instantiation,
+        runs a CYPHER query and returns the response.
+
+        Args:
+            query: a valid CYPHER query, can include APOC if the APOC plugin is
+                installed in the accessed database
+            **kwargs: optional objects used in CYPHER interactive mode, for 
+                instance for passing a parameter dictionary
+        
+        Returns:
+            response: the Neo4j response to the query
+        """
 
         session = self.driver.session()
         response = session.run(query, **kwargs)
@@ -47,6 +60,18 @@ class DatabaseToNeo4j():
 
 
     def init_db(self):
+        """
+        Used to initialise a property graph database by deleting contents and 
+        constraints and setting up new contraints.
+
+        Args: None
+
+        Returns: None
+
+        Todo:
+            - set up constraint creation interactively depending on the need
+                of the database
+        """
 
         self.wipe_db()
         self._create_constraints()
@@ -54,6 +79,14 @@ class DatabaseToNeo4j():
 
 
     def wipe_db(self):
+        """
+        Used in initialisation, deletes all nodes and edges and drops all 
+        constraints.
+
+        Args: None
+
+        Returns: None
+        """
 
         self.query('MATCH (n) DETACH DELETE n;')
 
@@ -61,6 +94,14 @@ class DatabaseToNeo4j():
 
 
     def _drop_constraints(self):
+        """
+        Used in initialisation, drops all constraints in the database. Requires
+        graph database to be empty.
+
+        Args: None
+
+        Returns: None
+        """
 
         s = self.driver.session()
         for constraint in s.run("CALL db.constraints"):
@@ -69,6 +110,17 @@ class DatabaseToNeo4j():
 
 
     def _create_constraints(self):
+        """
+        Creates constraints on node types in the graph. Used for initial setup.
+
+        Args: None
+
+        Returns: None
+
+        Todo:
+            - customise to create constraints on the selected structure
+            - edges?
+        """
 
         self.query(
             'CREATE CONSTRAINT protein_id '
@@ -138,10 +190,10 @@ class DatabaseToNeo4j():
         event.
 
         Args: 
-            - nodes: a list of BioCypherNode objects
+            nodes: a list of BioCypherNode objects
 
         Returns: 
-            - bool: The return value. True for success, False otherwise.
+            bool: The return value. True for success, False otherwise.
         '''
 
         if not all(isinstance(n, BioCypherNode) for n in nodes):
@@ -178,10 +230,10 @@ class DatabaseToNeo4j():
         on match and on create, irrespective of the actual event.
 
         Args: 
-            - edges: a list of BioCypherEdge objects
+            edges: a list of BioCypherEdge objects
 
         Returns: 
-            - bool: The return value. True for success, False otherwise.
+            bool: The return value. True for success, False otherwise.
         '''
 
         if not all(isinstance(e, BioCypherEdge) for e in edges):
