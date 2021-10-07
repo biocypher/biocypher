@@ -10,7 +10,6 @@ jobs:
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
-        build-command: "sphinx-build -b html . _build"
         
     - name: Commit files
       run: |
@@ -25,5 +24,5 @@ jobs:
       env:
         REPO: self
         BRANCH: gh-pages
-        FOLDER: ./docs/_build/html
+        FOLDER: docs/_build/html
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
