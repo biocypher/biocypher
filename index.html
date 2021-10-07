@@ -34,6 +34,24 @@
 <h1>BioCypher: a unified language of property graph databases for biomedical science<a class="headerlink" href="#biocypher-a-unified-language-of-property-graph-databases-for-biomedical-science" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
+<div class="section" id="pass-a-neo4j-driver-instance">
+<h2>Pass a Neo4j driver instance<a class="headerlink" href="#pass-a-neo4j-driver-instance" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-biocypher.check">
+<span id="check-the-active-database-for-consistency-with-the-biocypher-format-and-return-chosen-primary-identifiers"></span><h2>Check the active database for consistency with the BioCypher format and return chosen primary identifiers<a class="headerlink" href="#module-biocypher.check" title="Permalink to this headline">¶</a></h2>
+<p>This module is used for assessing a Neo4j instance for compliance with the
+BioCypher standard and returning pass/fail, and, in the event of “pass”, it
+returns the primary identifiers chosen by the user of the active database
+to be used in translation of the input data to the correct format required
+for the active database. It is part of the BioCypher python package,
+homepage: TODO.</p>
+<p>Copyright 2021, Heidelberg University Clinic</p>
+<dl class="simple">
+<dt>File author(s): Sebastian Lobentanzer</dt><dd><p>…</p>
+</dd>
+</dl>
+<p>Distributed under GPLv3 license, see LICENSE.txt.</p>
+</div>
 <div class="section" id="module-biocypher.create">
 <span id="create-and-update-entries-in-a-database"></span><h2>Create and update entries in a database<a class="headerlink" href="#module-biocypher.create" title="Permalink to this headline">¶</a></h2>
 <p>This module is used for the creating a generic property graph database for use
@@ -120,9 +138,8 @@ passed to neo4j for the respective node (dict)</p>
 </p></li>
 </ul>
 </dd>
-</dl>
-<p>Returns:
-- get_id: node id (string)
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>node id (string)
 - get_label: node label (string)
 - get_properties: node properties (dict)
 - get_dict: dict of all the above for entry into Neo4j via APOC
@@ -130,6 +147,15 @@ passed to neo4j for the respective node (dict)</p>
 <blockquote>
 <div><p>BioCypherNode class for handover</p>
 </div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p>get_id</p></li>
+</ul>
+</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="biocypher.create.BioCypherNode.create_node_list">
 <code class="sig-name descname">create_node_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode.create_node_list" title="Permalink to this definition">¶</a></dt>
@@ -144,21 +170,6 @@ passed to neo4j for the respective node (dict)</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-biocypher.check">
-<span id="check-the-active-database-for-consistency-with-the-biocypher-format-and-return-chosen-primary-identifiers"></span><h2>Check the active database for consistency with the BioCypher format and return chosen primary identifiers<a class="headerlink" href="#module-biocypher.check" title="Permalink to this headline">¶</a></h2>
-<p>This module is used for assessing a Neo4j instance for compliance with the
-BioCypher standard and returning pass/fail, and, in the event of “pass”, it
-returns the primary identifiers chosen by the user of the active database
-to be used in translation of the input data to the correct format required
-for the active database. It is part of the BioCypher python package,
-homepage: TODO.</p>
-<p>Copyright 2021, Heidelberg University Clinic</p>
-<dl class="simple">
-<dt>File author(s): Sebastian Lobentanzer</dt><dd><p>…</p>
-</dd>
-</dl>
-<p>Distributed under GPLv3 license, see LICENSE.txt.</p>
 </div>
 <div class="section" id="module-biocypher.translate">
 <span id="translate-functionality-for-implemented-types-of-knowledge"></span><h2>Translate functionality for implemented types of knowledge<a class="headerlink" href="#module-biocypher.translate" title="Permalink to this headline">¶</a></h2>
