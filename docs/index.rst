@@ -7,9 +7,15 @@
 BioCypher: a unified language of property graph databases for biomedical science
 ################################################################################
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+Introduction
+============
+BioCypher shall serve as guideline and translation mechanism for both the 
+creation of property graph databases from primary data as well as for the 
+querying of these databases. Our greater aim is to combine the computational 
+power of graph databases with the search for answers of our most pressing 
+biological questions and facilitate interfacing with cutting edge developments 
+in the areas of causal reasoning, representation learning, and natural language 
+processing, all of which depend on having a consistent descriptive vocabulary.
 
 Pass a Neo4j driver instance
 ============================
@@ -37,3 +43,8 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
