@@ -19,7 +19,7 @@ processing, all of which depend on having a consistent descriptive vocabulary.
 
 Pass a Neo4j driver instance
 ============================
-.. automodule:: biocypher.driver
+.. automodule:: biocypher.driver_b
    :members: 
 
 Check the active database for consistency with the BioCypher format and return chosen primary identifiers
