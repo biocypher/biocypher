@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-This module handles the passing of a Neo4j driver from the client to BioCypher. 
-It is part of the BioCypher python package, homepage: TODO.
-
+This module handles the passing of a Neo4j driver from the client to BioCypher
+and the modification of the database structure. It is part of the BioCypher 
+python package, homepage: TODO.
 
 Copyright 2021, Heidelberg University Clinic
 
@@ -14,7 +14,8 @@ File author(s): Sebastian Lobentanzer
 Distributed under GPLv3 license, see LICENSE.txt.
 
 Todo: 
-    - implement
+    - create and update a biocypher info node that stores version and used 
+        identifiers
 """
 
 import neo4j
