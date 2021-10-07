@@ -11,15 +11,20 @@ BioCypher: a unified language of property graph databases for biomedical science
    :maxdepth: 2
    :caption: Contents:
 
-Create and update entries in a database
-=======================================
-.. automodule:: biocypher.create
+Pass a Neo4j driver instance
+============================
+.. automodule:: biocypher.driver
    :members: 
 
 Check the active database for consistency with the BioCypher format and return chosen primary identifiers
 =========================================================================================================
 .. automodule:: biocypher.check
    :members:
+
+Create and update entries in a database
+=======================================
+.. automodule:: biocypher.create
+   :members: 
 
 Translate functionality for implemented types of knowledge
 ==========================================================
