@@ -30,6 +30,7 @@ author = 'Sebastian Lobentanzer'
 extensions = [
 'sphinx.ext.autodoc',
 'sphinx.ext.napoleon',
+'sphinx.ext.todo', # not for output but to remove warnings
 'sphinx_rtd_theme'
 ]
 
