@@ -99,6 +99,12 @@ python package, homepage: TODO.</p>
 <dd><p>This class accepts a Neo4jDriver object to interact with a running instance
 of Neo4j, specified by the driver object. This way, connection and
 authentification can be handled by the user in a safe and personalised manner.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>driver</strong> – an instance of a Neo4jDriver object created from connection to
+a running database instance.</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="biocypher.driver.DatabaseToNeo4j.add_biocypher_edges_to_graph">
 <code class="sig-name descname">add_biocypher_edges_to_graph</code><span class="sig-paren">(</span><em class="sig-param">edges</em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.DatabaseToNeo4j.add_biocypher_edges_to_graph" title="Permalink to this definition"></a></dt>
@@ -169,9 +175,7 @@ of now, just passing pypath input through).</p>
 <dt id="biocypher.driver.DatabaseToNeo4j.init_db">
 <code class="sig-name descname">init_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.DatabaseToNeo4j.init_db" title="Permalink to this definition"></a></dt>
 <dd><p>Used to initialise a property graph database by deleting contents and
-constraints and setting up new contraints.</p>
-<p>Args: None</p>
-<p>Returns: None</p>
+constraints and setting up new constraints.</p>
 </dd></dl>
 
 <dl class="method">
@@ -202,8 +206,6 @@ instance for passing a parameter dictionary</p></li>
 <code class="sig-name descname">wipe_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.DatabaseToNeo4j.wipe_db" title="Permalink to this definition"></a></dt>
 <dd><p>Used in initialisation, deletes all nodes and edges and drops all
 constraints.</p>
-<p>Args: None</p>
-<p>Returns: None</p>
 </dd></dl>
 
 </dd></dl>
@@ -246,7 +248,7 @@ Neo4j sense of a label, ie, the entity descriptor after the colon, such
 as “:TARGETS”) are non-optional and called source_id, target_id, and
 relationship_label to avoid confusion with properties called “label”,
 which usually denotes the human-readable form. Relationship labels are
-written in UPPERCASE, as per Neo4j consensus.</p>
+written in UPPERCASE and as verbs, as per Neo4j consensus.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -257,32 +259,90 @@ written in UPPERCASE, as per Neo4j consensus.</p>
 passed to Neo4j for the respective edge (dict)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p>source node id (string)
-get_target_id: target node id (string)
-get_label: relationship label, ie, the type of interaction (string)
-get_properties: relationship properties (dict)
-get_dict: dict of all the above for entry into Neo4j via APOC
-pypath2neo4j_relationship: translation function for pypath relationships</p>
-<blockquote>
-<div><p>into EdgeFromPypath class for handover</p>
-</div></blockquote>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>get_source_id</p>
-</dd>
 </dl>
 <dl class="method">
 <dt id="biocypher.create.BioCypherEdge.create_relationship_list">
 <code class="sig-name descname">create_relationship_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherEdge.create_relationship_list" title="Permalink to this definition"></a></dt>
 <dd><p>Create list of BioCypherEdge objects from dict of pypath relationships.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>relationships</strong> – currently, a collection of pypath relationships.
+should be adapted to accept arbitrary collections.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="biocypher.create.BioCypherEdge.get_dict">
 <code class="sig-name descname">get_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherEdge.get_dict" title="Permalink to this definition"></a></dt>
-<dd><p>Convert self to format accepted by Neo4j driver (Python dict -&gt; Neo4j Map).</p>
+<dd><p>Convert self to format accepted by Neo4j driver (Python dict -&gt; Neo4j
+Map).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>source_id, target_id and relationship_label as top-level
+key-value pairs, properties as second-level dict.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.create.BioCypherEdge.get_label">
+<code class="sig-name descname">get_label</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherEdge.get_label" title="Permalink to this definition"></a></dt>
+<dd><p>Returns relationship label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>relationship_label</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.create.BioCypherEdge.get_properties">
+<code class="sig-name descname">get_properties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherEdge.get_properties" title="Permalink to this definition"></a></dt>
+<dd><p>Returns all other relationship properties apart from primary ids and
+label as key-value pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>properties</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.create.BioCypherEdge.get_source_id">
+<code class="sig-name descname">get_source_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherEdge.get_source_id" title="Permalink to this definition"></a></dt>
+<dd><p>Returns primary node identifier of relationship source.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>source_id</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.create.BioCypherEdge.get_target_id">
+<code class="sig-name descname">get_target_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherEdge.get_target_id" title="Permalink to this definition"></a></dt>
+<dd><p>Returns primary node identifier of relationship target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>target_id</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -294,8 +354,8 @@ pypath2neo4j_relationship: translation function for pypath relationships</p>
 <p>Has id, label, property dict; id and label (in the Neo4j sense of a label,
 ie, the entity descriptor after the colon, such as “:Protein”) are
 non-optional and called node_id and node_label to avoid confusion with
-“label” properties. Node labels are written in CamelBack as per Neo4j
-consensus.</p>
+“label” properties. Node labels are written in CamelBack and as nouns, as
+per Neo4j consensus.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -305,31 +365,81 @@ consensus.</p>
 passed to neo4j for the respective node (dict)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p>node id (string)
-get_label: node label (string)
-get_properties: node properties (dict)
-get_dict: dict of all the above for entry into Neo4j via APOC
-create_node_list: translation function for biomedical entities into</p>
-<blockquote>
-<div><p>BioCypherNode class for handover</p>
-</div></blockquote>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>get_id</p>
-</dd>
 </dl>
 <dl class="method">
 <dt id="biocypher.create.BioCypherNode.create_node_list">
 <code class="sig-name descname">create_node_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode.create_node_list" title="Permalink to this definition"></a></dt>
 <dd><p>Create list of BioCypherNode objects from collection of entities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>entities</strong> – currently, a collection of pypath objects. should
+be adapted to accept arbitrary collections.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of BioCypherNode objects</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="biocypher.create.BioCypherNode.get_dict">
 <code class="sig-name descname">get_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode.get_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Convert self to format accepted by Neo4j driver (Python dict -&gt; Neo4j Map).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>node_id and node_label as top-level key-value pairs,
+properties as second-level dict.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.create.BioCypherNode.get_id">
+<code class="sig-name descname">get_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode.get_id" title="Permalink to this definition"></a></dt>
+<dd><p>Returns primary node identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>node_id</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.create.BioCypherNode.get_label">
+<code class="sig-name descname">get_label</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode.get_label" title="Permalink to this definition"></a></dt>
+<dd><p>Returns node label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>node_label</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.create.BioCypherNode.get_properties">
+<code class="sig-name descname">get_properties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode.get_properties" title="Permalink to this definition"></a></dt>
+<dd><p>Returns all other node properties apart from primary id and label as
+key-value pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>properties</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
