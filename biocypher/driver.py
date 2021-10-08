@@ -29,6 +29,10 @@ class DatabaseToNeo4j():
     This class accepts a Neo4jDriver object to interact with a running instance 
     of Neo4j, specified by the driver object. This way, connection and 
     authentification can be handled by the user in a safe and personalised manner.
+
+    Args:
+        driver: an instance of a Neo4jDriver object created from connection to
+            a running database instance.
     """
 
     def __init__(self, driver):
@@ -62,11 +66,7 @@ class DatabaseToNeo4j():
     def init_db(self):
         """
         Used to initialise a property graph database by deleting contents and 
-        constraints and setting up new contraints.
-
-        Args: None
-
-        Returns: None
+        constraints and setting up new constraints.
 
         Todo:
             - set up constraint creation interactively depending on the need
@@ -82,10 +82,6 @@ class DatabaseToNeo4j():
         """
         Used in initialisation, deletes all nodes and edges and drops all 
         constraints.
-
-        Args: None
-
-        Returns: None
         """
 
         self.query('MATCH (n) DETACH DELETE n;')
@@ -97,10 +93,6 @@ class DatabaseToNeo4j():
         """
         Used in initialisation, drops all constraints in the database. Requires
         graph database to be empty.
-
-        Args: None
-
-        Returns: None
         """
 
         s = self.driver.session()
@@ -113,13 +105,10 @@ class DatabaseToNeo4j():
         """
         Creates constraints on node types in the graph. Used for initial setup.
 
-        Args: None
-
-        Returns: None
-
         Todo:
             - customise to create constraints on the selected structure
             - edges?
+            - apoc?
         """
 
         self.query(
