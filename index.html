@@ -37,7 +37,7 @@
               <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">BioCypher: a unified language of property graph databases for biomedical science</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
-<li><a class="reference internal" href="#pass-a-neo4j-driver-instance">Pass a Neo4j driver instance</a></li>
+<li><a class="reference internal" href="#module-biocypher.driver">Pass a Neo4j driver instance</a></li>
 <li><a class="reference internal" href="#module-biocypher.check">Check the active database for consistency with the BioCypher format and return chosen primary identifiers</a></li>
 <li><a class="reference internal" href="#module-biocypher.create">Create and update entries in a database</a></li>
 <li><a class="reference internal" href="#module-biocypher.translate">Translate functionality for implemented types of knowledge</a></li>
@@ -82,8 +82,132 @@ biological questions and facilitate interfacing with cutting edge developments
 in the areas of causal reasoning, representation learning, and natural language
 processing, all of which depend on having a consistent descriptive vocabulary.</p>
 </div>
-<div class="section" id="pass-a-neo4j-driver-instance">
-<h2>Pass a Neo4j driver instance<a class="headerlink" href="#pass-a-neo4j-driver-instance" title="Permalink to this headline"></a></h2>
+<div class="section" id="module-biocypher.driver">
+<span id="pass-a-neo4j-driver-instance"></span><h2>Pass a Neo4j driver instance<a class="headerlink" href="#module-biocypher.driver" title="Permalink to this headline"></a></h2>
+<p>This module handles the passing of a Neo4j driver from the client to BioCypher
+and the modification of the database structure. It is part of the BioCypher
+python package, homepage: TODO.</p>
+<p>Copyright 2021, Heidelberg University Clinic</p>
+<dl class="simple">
+<dt>File author(s): Sebastian Lobentanzer</dt><dd><p>…</p>
+</dd>
+</dl>
+<p>Distributed under GPLv3 license, see LICENSE.txt.</p>
+<dl class="class">
+<dt id="biocypher.driver.DatabaseToNeo4j">
+<em class="property">class </em><code class="sig-prename descclassname">biocypher.driver.</code><code class="sig-name descname">DatabaseToNeo4j</code><span class="sig-paren">(</span><em class="sig-param">driver</em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.DatabaseToNeo4j" title="Permalink to this definition"></a></dt>
+<dd><p>This class accepts a Neo4jDriver object to interact with a running instance
+of Neo4j, specified by the driver object. This way, connection and
+authentification can be handled by the user in a safe and personalised manner.</p>
+<dl class="method">
+<dt id="biocypher.driver.DatabaseToNeo4j.add_biocypher_edges_to_graph">
+<code class="sig-name descname">add_biocypher_edges_to_graph</code><span class="sig-paren">(</span><em class="sig-param">edges</em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.DatabaseToNeo4j.add_biocypher_edges_to_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Accepts an edge type handoff class (BioCypherEdge) with source and
+target ids, label, and a dict of properties (passing on the type of
+property, ie, int, string …).</p>
+<p>The dict retrieved by the get_dict() method is passed into Neo4j as a
+map of maps, explicitly encoding source and target ids and the
+relationship label, and adding all edge properties from the ‘properties’
+key of the dict. The merge is performed via APOC, matching only on
+source and target id to prevent duplicates. The same properties are set
+on match and on create, irrespective of the actual event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>edges</strong> – a list of BioCypherEdge objects</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The return value. True for success, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.driver.DatabaseToNeo4j.add_biocypher_nodes_to_graph">
+<code class="sig-name descname">add_biocypher_nodes_to_graph</code><span class="sig-paren">(</span><em class="sig-param">nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.DatabaseToNeo4j.add_biocypher_nodes_to_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Accepts a node type handoff class (BioCypherNode) with id, label, and a
+dict of properties (passing on the type of property, ie, int, string
+…).</p>
+<p>The dict retrieved by the get_dict() method is passed into Neo4j as a
+map of maps, explicitly encoding node id and label, and adding all other
+properties from the ‘properties’ key of the dict. The merge is performed
+via APOC, matching only on node id to prevent duplicates. The same
+properties are set on match and on create, irrespective of the actual
+event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nodes</strong> – a list of BioCypherNode objects</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The return value. True for success, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.driver.DatabaseToNeo4j.add_edges_to_graph">
+<code class="sig-name descname">add_edges_to_graph</code><span class="sig-paren">(</span><em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.DatabaseToNeo4j.add_edges_to_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Generic edge adder function to add any kind of input to the graph via
+the BioCypherEdge class. Should employ translation functionality (as
+of now, just passing pypath input through).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.driver.DatabaseToNeo4j.add_nodes_to_graph">
+<code class="sig-name descname">add_nodes_to_graph</code><span class="sig-paren">(</span><em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.DatabaseToNeo4j.add_nodes_to_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Generic node adder function to add any kind of input to the graph via
+the BioCypherNode class. Should employ translation functionality (as
+of now, just passing pypath input through).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.driver.DatabaseToNeo4j.init_db">
+<code class="sig-name descname">init_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.DatabaseToNeo4j.init_db" title="Permalink to this definition"></a></dt>
+<dd><p>Used to initialise a property graph database by deleting contents and
+constraints and setting up new contraints.</p>
+<p>Args: None</p>
+<p>Returns: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.driver.DatabaseToNeo4j.query">
+<code class="sig-name descname">query</code><span class="sig-paren">(</span><em class="sig-param">query</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.DatabaseToNeo4j.query" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a session with the driver passed into the class at instantiation,
+runs a CYPHER query and returns the response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> – a valid CYPHER query, can include APOC if the APOC plugin is
+installed in the accessed database</p></li>
+<li><p><strong>**kwargs</strong> – optional objects used in CYPHER interactive mode, for
+instance for passing a parameter dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the Neo4j response to the query</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="biocypher.driver.DatabaseToNeo4j.wipe_db">
+<code class="sig-name descname">wipe_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.DatabaseToNeo4j.wipe_db" title="Permalink to this definition"></a></dt>
+<dd><p>Used in initialisation, deletes all nodes and edges and drops all
+constraints.</p>
+<p>Args: None</p>
+<p>Returns: None</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-biocypher.check">
 <span id="check-the-active-database-for-consistency-with-the-biocypher-format-and-return-chosen-primary-identifiers"></span><h2>Check the active database for consistency with the BioCypher format and return chosen primary identifiers<a class="headerlink" href="#module-biocypher.check" title="Permalink to this headline"></a></h2>
