@@ -4,3 +4,12 @@ This is the development repository for BioCypher, our proposal for a [unified la
 Ideally, BioCypher would enable "plug-and-play" functionality between participating database systems, ie, arbitrary transfer of input or output from one database to the other, and hybrid property graphs made up of subsets of different databases for specific purposes. We strive for being compliant with the [openCypher](https://opencypher.org/) project. Technically, BioCypher will be implemented as a python module, enforcing consensus nomenclature and graph structure in creation of databases while providing translation facilities between identifier systems.
 
 ![BioCypher](BioCypher.png)
+
+## Usage
+BioCypher is currently in prototype stage. To use it locally, please install it into a python environment from the cloned repo. After activating the environment and changing to a folder of your choice, do:
+
+```
+git clone https://github.com/saezlab/BioCypher.git
+cd BioCypher
+python setup.py install
+```
