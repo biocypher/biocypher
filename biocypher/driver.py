@@ -40,6 +40,11 @@ class DatabaseToNeo4j():
         if isinstance(driver, neo4j.Neo4jDriver):
             self.driver = driver
 
+        # get database representation ('check' module)
+
+        # if db representation node exists, load representation into class variable
+        # else create new: default yml, interactive?
+
     
     def query(self, query, **kwargs):
         """
@@ -53,7 +58,7 @@ class DatabaseToNeo4j():
                 instance for passing a parameter dictionary
         
         Returns:
-            response: the Neo4j response to the query
+            neo4j.Result: the Neo4j response to the query
         """
 
         session = self.driver.session()
@@ -183,6 +188,9 @@ class DatabaseToNeo4j():
 
         Returns: 
             bool: The return value. True for success, False otherwise.
+
+        Todo:
+            - use return nodes to implement test?
         '''
 
         if not all(isinstance(n, BioCypherNode) for n in nodes):
