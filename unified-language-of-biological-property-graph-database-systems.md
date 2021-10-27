@@ -27,6 +27,9 @@ The common language should provide the following features:
 	- automated web scraping of resources for periodic updating workflows via one-command interface (via pypath)
 	- translation facilities to interface with **natural language queries** from non-bioinformatian researchers and clinicians (see CLARE)
 
+# Schema constituents
+Below, we want to collect all possible annotations that could be valuable in BioMed property graphs. Please feel free to add any important features.
+
 ## Node types
 - DNA: genes, variants, methylation
 	- genes
@@ -103,5 +106,14 @@ The common language should provide the following features:
 - Super-cellular
 	- Tissue interactions
 
+## Nodes vs. Edges
+For some data to be represented, there may not be a best solution for structural representation in any given context; these may necessitate a decision on whether they should be represented, eg, as nodes or edges in the graph. While edges give superior performance, sometimes increased granularity or further connection to other parts of the graph may be required (there cannot be edges to or from other edges). For instance:
+- Protein-protein interactions
+- Complex interactions
+- ...
+
 ## Schema nodes
 To allow interoperability within the diverse possible schema representations in any local graph, we propose to include meta-nodes to represent the concrete schema decisions (primary identifiers, structural properties, ...). The meta-nodes may represent a versioning system of the development of the particular graph, with the most recent node being the "current" state of the graph. The meta-nodes are assigned a unique label, ":BioCypher", and properties that represent the date of implementation (for versioning) and all other properties chosen for the particular database. Meta-nodes are connected via edges carrying the label ":PRECEDES". The current node can then be found by searching for the most recent date or by identifying the :BioCypher node that does not ":PRECEDE" any other.
+
+# Grammar implementation
+One way of facilitating the grammar of BioMed CYPHER queries would be a modular architecture of queries that can be assembled to generate custom APOC procedures. These could be defined from a repertoire of standard use cases to be combined in a block-wise manner, from natural language input, graphical interface, or webpage input forms. They should be amenable to fine-tuning down to interacting with CYPHER directly.
