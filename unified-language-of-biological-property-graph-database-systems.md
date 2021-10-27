@@ -51,3 +51,6 @@ The common language should provide the following features:
 	- Ligand interaction: endogenous and drugs, assays
 - Super-cellular
 	- Tissue interactions
+
+## Schema nodes
+To allow interoperability within the diverse possible schema representations in any local graph, we propose to include meta-nodes to represent the concrete schema decisions (primary identifiers, structural properties, ...). The meta-nodes may represent a versioning system of the development of the particular graph, with the most recent node being the "current" state of the graph. The meta-nodes are assigned a unique label, ":BioCypher", and properties that represent the date of implementation (for versioning) and all other properties chosen for the particular database. Meta-nodes are connected via edges carrying the label ":PRECEDES". The current node can then be found by searching for the most recent date or by identifying the :BioCypher node that does not ":PRECEDE" any other.
