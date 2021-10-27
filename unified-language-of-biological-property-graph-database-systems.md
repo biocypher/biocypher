@@ -9,7 +9,7 @@ All other properties of nodes and edges are optional and can have any data type,
 
 Further specification will probably be needed for standard situations of graph queries. If the above specifications are a "vocabulary" of biological property graph representation, the queries used can be seen as the "grammar". Together, they make up the language of property graph biological representation.
 
-There are simple "sentences", such as finding targets of a certain set of nodes, or an intersection between perturbed pathways, and complex "sentences", such as an aggregate score of context-dependent multiple interactions or activities of protein complexes comprised of several context-dependent obligate and optional members. Particularly in the complex case, ad-hoc generation of non-permanent virtual relationships inside the graph are preferable to hard-coded information for all possible situations and queries. This is the case in which a unified grammar of biological property graphs is of most value, because it provides methodological uniformity and allows comparison and benchmarking of complex queries.
+There are simple "sentences", such as finding targets of a certain set of nodes, or an intersection between perturbed pathways, and complex "sentences", such as an aggregate score of context-dependent multiple interactions or activities of protein complexes comprised of several context-dependent obligate and optional members. Particularly in the complex case, ad-hoc generation of non-permanent virtual relationships inside the graph are preferable to hard-coded information for all possible situations and queries. This is the case in which a unified grammar of biological property graphs is of most value, because it provides methodological uniformity and allows comparison and benchmarking of complex queries. It also facilitates the generation and application of consecutive queries that venture into more detail based on the results of former, more general queries. This approach could be implemented in a "chat-like" interface based on natural language queries.
 
 The common language should provide the following features:
 - Vocabulary:
@@ -19,6 +19,7 @@ The common language should provide the following features:
 - Grammar:
 	- consensus grammar for biological queries of any complexity
 		- ligand-receptor-secondMessenger-transcriptionFactor ("what is downstream of acetylcholine?")
+		- complexes: which complexes contribute to immune stimuli in B cells; which proteins are essential/optional for these complexes; which drugs target the essential proteins?
 	- standard situations in biomed questions, including biological prior knowledge
 		- "which cell line is most similar to my patient's biopsy?"
 		- "what are the known driver mutations in ovarian cancer?"
@@ -28,13 +29,63 @@ The common language should provide the following features:
 
 ## Node types
 - DNA: genes, variants, methylation
+	- genes
+		- ENSG
+		- HGNC Symbol
+		- ...
+	- variants
+	- methylation
 - RNA: coding transcripts, small and large non-coding RNA
+	- protein-coding transcripts
+		- ENST
+		- ...
+	- mature microRNA
+		- standard name (miRBase)
+		- miRBase accession (MIMAT)
+	- microRNA precursor
+		- standard name (miRBase)
+		- miRBase accession (MIID)
+	- transfer RNA
+		- amino-acid/codon centred (eg LysCGA)
+		- ...
+	- transfer RNA fragments
+		- MINTmap license plate
+		- amino-acid/codon centred (eg 3'-LysCGA-22)
+		- ...
+	- long non-coding RNA
+		- ...
 - Protein: proteins, phosphoproteins, transcription factors, enzymes, protein complexes
+	- protein
+		- ENSP
+		- UniProt
+		- HGNC Symbol
+		- ...
+	- phosphoprotein
+		- ...
+	- transcription factor
+		- ...
+	- enzyme
+		- ...
+	- complex
+		- ...
 - Small molecule: drugs, non-drug chemical compounds, substances, oligonucleotides
+	- compound
+	- drug
+	- oligonucleotide
+	- antibody
+	- substance
 - Annotation: resource, ontological, other prior knowledge (eg, driver mutations in cancer)
-- Super-cellular: cell lines, tissues, in vivo, clinical
+	- resource
+	- evidence
+	- ontology
+	- ...
+- Supra-cellular: cell lines, tissues, in vivo, clinical
+	- cell line
+	- tissue
+	- patient
+	- ...
 
-## Interaction types
+## Relationship types
 - Transcriptional
 	- Methylation
 	- Chromatin accessibility
