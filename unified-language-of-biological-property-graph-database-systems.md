@@ -30,6 +30,8 @@ The common language should provide the following features:
 # Schema constituents
 Below, we want to collect all possible annotations that could be valuable in BioMed property graphs. Please feel free to add any important features.
 
+Open question: do we want multiple node labels, in a hierarchical fashion? Are there use cases for having multiple layers like ":Entity -> :Molecule -> :Protein -> :Isoform"? Subsets with or without overlaps, such as protein types (enzyme, kinase, etc), drug targets, ...? General categories, such as complex constituents, known interactors, ...?
+
 ## Node types
 - DNA: genes, variants, methylation
 	- genes
