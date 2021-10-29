@@ -3,7 +3,7 @@
 
 """
 This module handles the passing of a Neo4j driver from the client to BioCypher
-and the modification of the database structure. It is part of the BioCypher 
+and the modification of the database structure. It is part of the BioCypher
 python package, homepage: TODO.
 
 Copyright 2021, Heidelberg University Clinic
@@ -13,8 +13,8 @@ File author(s): Sebastian Lobentanzer
 
 Distributed under GPLv3 license, see LICENSE.txt.
 
-Todo: 
-    - create and update a biocypher info node that stores version and used 
+Todo:
+    - create and update a biocypher info node that stores version and used
         identifiers
 """
 
@@ -26,7 +26,7 @@ from .create import BioCypherEdge, BioCypherNode
 from . import translate
 
 
-class DatabaseToNeo4j():
+class Driver():
     """
     Manages the connection to the Neo4j server. Establishes the connection
     and executes queries.
@@ -132,7 +132,6 @@ class DatabaseToNeo4j():
         self.db_close()
 
 
-    
     def query(self, query, **kwargs):
         """
         Creates a session with the driver passed into the class at instantiation,
@@ -141,9 +140,9 @@ class DatabaseToNeo4j():
         Args:
             query: a valid CYPHER query, can include APOC if the APOC plugin is
                 installed in the accessed database
-            **kwargs: optional objects used in CYPHER interactive mode, for 
+            **kwargs: optional objects used in CYPHER interactive mode, for
                 instance for passing a parameter dictionary
-        
+
         Returns:
             neo4j.Result: the Neo4j response to the query
         """
@@ -157,7 +156,7 @@ class DatabaseToNeo4j():
 
     def init_db(self):
         """
-        Used to initialise a property graph database by deleting contents and 
+        Used to initialise a property graph database by deleting contents and
         constraints and setting up new constraints.
 
         Todo:
@@ -172,7 +171,7 @@ class DatabaseToNeo4j():
 
     def wipe_db(self):
         """
-        Used in initialisation, deletes all nodes and edges and drops all 
+        Used in initialisation, deletes all nodes and edges and drops all
         constraints.
         """
 
@@ -235,30 +234,30 @@ class DatabaseToNeo4j():
         )
 
 
-    def add_nodes_to_graph(self, values):
+    def add_nodes(self, values):
         """
         Generic node adder function to add any kind of input to the graph via
         the BioCypherNode class. Should employ translation functionality (as
         of now, just passing pypath input through).
         """
-        
+
         bn = translate.nodes_from_pypath(values) # replace with check-translate function
-        self.add_biocypher_nodes_to_graph(bn)
+        self.add_biocypher_nodes(bn)
 
 
-    def add_edges_to_graph(self, values):
+    def add_edges(self, values):
         """
         Generic edge adder function to add any kind of input to the graph via
         the BioCypherEdge class. Should employ translation functionality (as
         of now, just passing pypath input through).
         """
-        
+
         bn = translate.edges_from_pypath(values) # replace with check-translate function
-        self.add_biocypher_edges_to_graph(bn)
+        self.add_biocypher_edges(bn)
 
 
-    def add_biocypher_nodes_to_graph(self, nodes):
-        '''
+    def add_biocypher_nodes(self, nodes):
+        """
         Accepts a node type handoff class (BioCypherNode) with id, label, and a
         dict of properties (passing on the type of property, ie, int, string
         ...).
@@ -270,21 +269,21 @@ class DatabaseToNeo4j():
         properties are set on match and on create, irrespective of the actual
         event.
 
-        Args: 
+        Args:
             nodes: a list of BioCypherNode objects
 
-        Returns: 
+        Returns:
             bool: The return value. True for success, False otherwise.
 
         Todo:
             - use return nodes to implement test?
-        '''
+        """
 
         if not all(isinstance(n, BioCypherNode) for n in nodes):
             raise TypeError("Nodes must be passed as type NodeFromPypath. "
             "Please use the generic add_edges_to_graph() function.")
 
-        print('Merging %s nodes.' % len(nodes))
+        self._log('Merging %s nodes.' % len(nodes))
 
         entities = [node.get_dict() for node in nodes]
 
@@ -300,8 +299,8 @@ class DatabaseToNeo4j():
         return True
 
 
-    def add_biocypher_edges_to_graph(self, edges):
-        '''
+    def add_biocypher_edges(self, edges):
+        """
         Accepts an edge type handoff class (BioCypherEdge) with source and
         target ids, label, and a dict of properties (passing on the type of
         property, ie, int, string ...).
@@ -313,19 +312,19 @@ class DatabaseToNeo4j():
         source and target id to prevent duplicates. The same properties are set
         on match and on create, irrespective of the actual event.
 
-        Args: 
+        Args:
             edges: a list of BioCypherEdge objects
 
-        Returns: 
+        Returns:
             bool: The return value. True for success, False otherwise.
-        '''
+        """
 
         if not all(isinstance(e, BioCypherEdge) for e in edges):
             raise TypeError("Edges must be passed as type EdgeFromPypath. "
             "Please use the generic add_edges_to_graph() function.")
 
         # relationships
-        print('Merging %s edges.' % len(edges))
+        self._log('Merging %s edges.' % len(edges))
 
         rels = [edge.get_dict() for edge in edges]
 
