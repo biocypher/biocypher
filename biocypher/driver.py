@@ -18,6 +18,8 @@ Todo:
         identifiers
 """
 
+import importlib as imp
+
 import neo4j
 
 from .create import BioCypherEdge, BioCypherNode
@@ -26,24 +28,109 @@ from . import translate
 
 class DatabaseToNeo4j():
     """
-    This class accepts a Neo4jDriver object to interact with a running instance 
-    of Neo4j, specified by the driver object. This way, connection and 
-    authentification can be handled by the user in a safe and personalised manner.
+    Manages the connection to the Neo4j server. Establishes the connection
+    and executes queries.
+
+    The connection can be defined in three ways:
+        * Providing a ready ``neo4j.Driver`` instance
+        * By URI and authentication data
+        * By a YML config file
 
     Args:
-        driver: an instance of a Neo4jDriver object created from connection to
-            a running database instance.
+        driver (neo4j.Driver): A ``neo4j.Driver`` instance, created by,
+            for example, ``neo4j.GraphDatabase.driver``.
+        db_name (str): Name of the database (Neo4j graph) to use.
+        db_uri (str): Protocol, host and port to access the Neo4j server.
+        db_auth (tuple): Neo4j server authentication data: tuple of user
+            name and password.
+        config_file (str): Path to a YML config file which provides the URI,
+            user name and password.
     """
 
-    def __init__(self, driver):
-        
-        if isinstance(driver, neo4j.Neo4jDriver):
+    def __init__(
+            self,
+            driver = None,
+            db_name = None,
+            db_uri = 'neo4j://localhost:7687',
+            db_auth = None,
+            config_file = 'db_config.yml',
+        ):
+
+        if driver:
+
             self.driver = driver
+
+        else:
+
+            self._db_config = {
+                'uri': db_uri,
+                'auth': db_auth,
+            }
+            self._config_file = config_file
+
+            self.db_connect()
 
         # get database representation ('check' module)
 
         # if db representation node exists, load representation into class variable
         # else create new: default yml, interactive?
+
+
+    def reload(self):
+        """
+        Reloads the object from the module level.
+        """
+
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+
+
+    def _log(self, msg = '', level = 0):
+        """
+        Later we will connect this to a logger.
+        """
+
+        pass
+
+
+    def db_connect(self):
+
+        if not all(self._db_config.values()):
+
+            self.read_config()
+
+        # check for database running?
+        self.driver = neo4j.GraphDatabase.driver(**self._db_config)
+
+        self._log('Opened database connection.')
+
+
+    def read_config(self, section = 'default'):
+
+        if self._config_file and os.path.exists(self._config_file):
+
+            self._log('Reading config from `%s`.' % self._config_file)
+
+            with open(self._config_file, 'r') as fp:
+
+                conf = yaml.safe_load(fp.read())
+
+            self._db_config.update(conf[section])
+            self._db_config['auth'] = tuple(self._db_config['auth'])
+
+
+    def db_close(self):
+
+        self.driver.close()
+
+
+    def __del__(self):
+
+        self.db_close()
+
 
     
     def query(self, query, **kwargs):
