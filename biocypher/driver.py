@@ -45,6 +45,8 @@ class Driver():
             name and password.
         config_file (str): Path to a YML config file which provides the URI,
             user name and password.
+        wipe (bool): Wipe the database after connection, ensuring the data
+            is loaded into an empty database.
     """
 
     def __init__(
@@ -54,13 +56,12 @@ class Driver():
             db_uri = 'neo4j://localhost:7687',
             db_auth = None,
             config_file = 'db_config.yml',
+            wipe = False,
         ):
 
-        if driver:
+        self.driver = driver
 
-            self.driver = driver
-
-        else:
+        if not self.driver:
 
             self._db_config = {
                 'uri': db_uri,
@@ -69,6 +70,10 @@ class Driver():
             self._config_file = config_file
 
             self.db_connect()
+
+        if wipe:
+
+            self.wipe_db()
 
         # get database representation ('check' module)
 
