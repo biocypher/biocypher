@@ -18,15 +18,17 @@ Todo:
         identifiers
 """
 
+import os
 import importlib as imp
 
+import yaml
 import neo4j
 
 from .create import BioCypherEdge, BioCypherNode
 from . import translate
 
 
-class Driver():
+class DriverBase(object):
     """
     Manages the connection to the Neo4j server. Establishes the connection
     and executes queries.
@@ -109,18 +111,41 @@ class Driver():
 
 
     def db_connect(self):
+        """
+        Creates a database connection manager (driver) based on the current
+        configuration.
+        """
 
         if not all(self._db_config.values()):
 
             self.read_config()
 
         # check for database running?
-        self.driver = neo4j.GraphDatabase.driver(**self._db_config)
+        self.driver = neo4j.GraphDatabase.driver(
+            uri = self.uri,
+            auth = self.auth,
+        )
 
         self._log('Opened database connection.')
 
 
+    @property
+    def uri(self):
+
+        return self._db_config['uri']
+
+
+    @property
+    def auth(self):
+
+        return self._db_config['auth']
+
+
     def read_config(self, section = 'default'):
+        """
+        Populates the instance configuration from one section of a YML config
+        file.
+        """
 
         if self._config_file and os.path.exists(self._config_file):
 
@@ -138,14 +163,19 @@ class Driver():
             self._db_config['db'] = self._default_db
 
 
-    def db_close(self):
+    def close(self):
+        """
+        Closes the Neo4j driver if it exists and is open.
+        """
 
-        self.driver.close()
+        if hasattr(self.driver, 'close'):
+
+            self.driver.close()
 
 
     def __del__(self):
 
-        self.db_close()
+        self.close()
 
 
     @property
@@ -162,7 +192,7 @@ class Driver():
 
     def _db_name(self, which = 'HOME'):
 
-        resp = self.query('SHOW %s DATABASE;' % which).data()
+        resp = self.query('SHOW %s DATABASE;' % which)
 
         if resp:
 
@@ -188,7 +218,7 @@ class Driver():
         fetch_size = fetch_size or self._db_config['fetch_size']
 
         session = self.driver.session(database = db, fetch_size = fetch_size)
-        response = session.run(query, **kwargs)
+        response = session.run(query, **kwargs).data()
         session.close()
 
         return response
@@ -236,7 +266,7 @@ class Driver():
 
         name = name or self.current_db
 
-        resp = self.query('SHOW DATABASES WHERE NAME = "%s";' % name).data()
+        resp = self.query('SHOW DATABASES WHERE name = "%s";' % name)
 
         if resp:
 
@@ -254,7 +284,7 @@ class Driver():
             (bool): `True` if the database is online.
         """
 
-        self.db_status(name = name) == 'online'
+        return self.db_status(name = name) == 'online'
 
 
     def create_db(self, name = None):
@@ -365,14 +395,55 @@ class Driver():
 
     def _drop_constraints(self):
         """
-        Used in initialisation, drops all constraints in the database.
-        Requires the database to be empty.
+        Drops all constraints in the database. Requires the database to be
+        empty.
         """
 
         s = self.driver.session()
+
         for constraint in s.run("CALL db.constraints"):
+
             s.run("DROP CONSTRAINT " + constraint[0])
+
         s.close()
+
+
+class Driver(DriverBase):
+    """
+    Manages a connection to a biocypher database.
+
+    The connection can be defined in three ways:
+        * Providing a ready ``neo4j.Driver`` instance
+        * By URI and authentication data
+        * By a YML config file
+
+    Args:
+        driver (neo4j.Driver): A ``neo4j.Driver`` instance, created by,
+            for example, ``neo4j.GraphDatabase.driver``.
+        db_name (str): Name of the database (Neo4j graph) to use.
+        db_uri (str): Protocol, host and port to access the Neo4j server.
+        db_auth (tuple): Neo4j server authentication data: tuple of user
+            name and password.
+        fetch_size (int): Optional; the fetch size to use in database
+            transactions.
+        config_file (str): Path to a YML config file which provides the URI,
+            user name and password.
+        wipe (bool): Wipe the database after connection, ensuring the data
+            is loaded into an empty database.
+    """
+
+    def __init__(
+            self,
+            driver = None,
+            db_name = None,
+            db_uri = 'neo4j://localhost:7687',
+            db_auth = None,
+            fetch_size = 100,
+            config_file = 'db_config.yml',
+            wipe = False,
+        ):
+
+        DriverBase.__init__(**locals())
 
 
     def _create_constraints(self):
