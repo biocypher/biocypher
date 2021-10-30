@@ -76,6 +76,8 @@ class Driver():
 
             self.db_connect()
 
+        self.ensure_db()
+
         if wipe:
 
             self.wipe_db()
@@ -345,10 +347,26 @@ class Driver():
         self._drop_constraints()
 
 
+    def ensure_db(self):
+        """
+        Makes sure the database used by this instance exists and is online.
+        If the database creation or startup is necessary but the user does
+        not have the sufficient privileges, an exception will be raised.
+        """
+
+        if not self.db_exists():
+
+            self.create_db()
+
+        if not self.db_online():
+
+            self.start_db()
+
+
     def _drop_constraints(self):
         """
-        Used in initialisation, drops all constraints in the database. Requires
-        graph database to be empty.
+        Used in initialisation, drops all constraints in the database.
+        Requires the database to be empty.
         """
 
         s = self.driver.session()
