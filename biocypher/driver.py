@@ -19,6 +19,7 @@ Todo:
 """
 
 import os
+import re
 import importlib as imp
 
 import yaml
@@ -86,8 +87,8 @@ class DriverBase(object):
 
         # get database representation ('check' module)
 
-        # if db representation node exists, load representation into class variable
-        # else create new: default yml, interactive?
+        # if db representation node exists, load representation into class
+        # variable else create new: default yml, interactive?
 
 
     def reload(self):
@@ -426,6 +427,28 @@ class DriverBase(object):
         )[0]['count']
 
 
+    @property
+    def user(self):
+        """
+        User for the currently active connection.
+
+        Returns:
+            (str): The name of the user, `None` if no connection or no
+                unencrypted authentication data is available.
+        """
+
+        if self.driver:
+
+            opener_vars = dict(zip(
+                self.driver._pool.opener.__code__.co_freevars,
+                self.driver._pool.opener.__closure__,
+            ))
+
+            if 'auth' in opener_vars:
+
+                return opener_vars['auth'].cell_contents[0]
+
+
     def __len__(self):
 
         return self.node_count
@@ -449,6 +472,28 @@ class DriverBase(object):
 
             self._context_session.close()
             delattr(self, '_context_session')
+
+
+    def __repr__(self):
+
+        return '<%s %s>' % (
+            self.__class__.__name__,
+            self._connection_str if self.driver else '[no connection]'
+        )
+
+
+    @property
+    def _connection_str(self):
+
+        return '%s://%s:%u/%s' % (
+            re.split(
+                r'(?<=[a-z])(?=[A-Z])',
+                self.driver.__class__.__name__,
+            )[0].lower(),
+            self.driver._pool.address[0] if self.driver else 'unknown',
+            self.driver._pool.address[1] if self.driver else 0,
+            self.user or 'unknown',
+        )
 
 
 class Driver(DriverBase):
@@ -662,4 +707,3 @@ class Driver(DriverBase):
 
         # print('Creating Interaction nodes.')
         # self.query(query, parameters = {'nodes': nodes})
-
