@@ -255,6 +255,70 @@ class Driver():
         self.db_status(name = name) == 'online'
 
 
+    def create_db(self, name = None):
+        """
+        Create a database if it does not already exist.
+
+        Args:
+            name (str): Name of the database.
+        """
+
+        self._manage_db('CREATE', name = name, options = 'IF NOT EXISTS')
+
+
+    def start_db(self, name = None):
+        """
+        Starts a database (brings it online) if it is offline.
+
+        Args:
+            name (str): Name of the database.
+        """
+
+        self._manage_db('START', name = name)
+
+
+    def stop_db(self, name = None):
+        """
+        Stops a database, making sure it's offline.
+
+        Args:
+            name (str): Name of the database.
+        """
+
+        self._manage_db('STOP', name = name)
+
+
+    def drop_db(self, name = None):
+        """
+        Deletes a database if it exists.
+
+        Args:
+            name (str): Name of the database.
+        """
+
+        self._manage_db('DROP', name = name, options = 'IF EXISTS')
+
+
+    def _manage_db(self, cmd, name = None, options = None):
+        """
+        Executes a database management command.
+
+        Args:
+            cmd (str): The command: CREATE, START, STOP, DROP, etc.
+            name (str): Name of the database.
+            options (str): The optional parts of the command, following the
+                database name.
+        """
+
+        self.query(
+            '%s DATABASE %s %s;' % (
+                cmd,
+                name or self.current_db,
+                options or '',
+            )
+        )
+
+
     def init_db(self):
         """
         Used to initialise a property graph database by deleting contents and
