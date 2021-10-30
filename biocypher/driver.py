@@ -59,7 +59,7 @@ class DriverBase(object):
             db_name = None,
             db_uri = 'neo4j://localhost:7687',
             db_auth = None,
-            fetch_size = 100,
+            fetch_size = 1000,
             config_file = 'db_config.yml',
             wipe = False,
         ):
@@ -406,6 +406,49 @@ class DriverBase(object):
             s.run("DROP CONSTRAINT " + constraint[0])
 
         s.close()
+
+
+    def node_count(self):
+        """
+        Number of nodes in the database.
+        """
+
+        return self.query('MATCH (n) RETURN COUNT(n) AS count;')[0]['count']
+
+
+    def edge_count(self):
+        """
+        Number of edges in the database.
+        """
+
+        return self.query(
+            'MATCH ()-[r]->() RETURN COUNT(r) AS count;'
+        )[0]['count']
+
+
+    def __len__(self):
+
+        return self.node_count
+
+
+    def session(self, **kwargs):
+
+        return self.driver.session(**kwargs)
+
+
+    def __enter__(self):
+
+        self._context_session = self.session()
+
+        return self._context_session
+
+
+    def __exit__(self, *exc):
+
+        if hasattr(self, '_context_session'):
+
+            self._context_session.close()
+            delattr(self, '_context_session')
 
 
 class Driver(DriverBase):
