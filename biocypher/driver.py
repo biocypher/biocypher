@@ -32,7 +32,9 @@ from . import translate
 class DriverBase(object):
     """
     Manages the connection to the Neo4j server. Establishes the connection
-    and executes queries.
+    and executes queries. A wrapper around the `Driver` object from the
+    :py:mod:`neo4j` module, which is stored in the :py:attr:`driver`
+    attribute.
 
     The connection can be defined in three ways:
         * Providing a ready ``neo4j.Driver`` instance
@@ -409,6 +411,7 @@ class DriverBase(object):
         s.close()
 
 
+    @property
     def node_count(self):
         """
         Number of nodes in the database.
@@ -417,6 +420,7 @@ class DriverBase(object):
         return self.query('MATCH (n) RETURN COUNT(n) AS count;')[0]['count']
 
 
+    @property
     def edge_count(self):
         """
         Number of edges in the database.
