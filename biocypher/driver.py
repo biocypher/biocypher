@@ -43,6 +43,8 @@ class Driver():
         db_uri (str): Protocol, host and port to access the Neo4j server.
         db_auth (tuple): Neo4j server authentication data: tuple of user
             name and password.
+        fetch_size (int): Optional; the fetch size to use in database
+            transactions.
         config_file (str): Path to a YML config file which provides the URI,
             user name and password.
         wipe (bool): Wipe the database after connection, ensuring the data
@@ -55,6 +57,7 @@ class Driver():
             db_name = None,
             db_uri = 'neo4j://localhost:7687',
             db_auth = None,
+            fetch_size = 100,
             config_file = 'db_config.yml',
             wipe = False,
         ):
@@ -66,6 +69,8 @@ class Driver():
             self._db_config = {
                 'uri': db_uri,
                 'auth': db_auth,
+                'db': db_name,
+                'fetch_size': fetch_size,
             }
             self._config_file = config_file
 
@@ -126,6 +131,10 @@ class Driver():
             self._db_config.update(conf[section])
             self._db_config['auth'] = tuple(self._db_config['auth'])
 
+        if not self._db_config['db']:
+
+            self._db_config['db'] = self._default_db
+
 
     def db_close(self):
 
@@ -137,14 +146,35 @@ class Driver():
         self.db_close()
 
 
-    def query(self, query, **kwargs):
+    @property
+    def _home_db(self):
+
+        return self._db_name()
+
+
+    @property
+    def _default_db(self):
+
+        return self._db_name('DEFAULT')
+
+
+    def _db_name(self, which = 'HOME'):
+
+        resp = self.query('SHOW %s DATABASE;' % which).data()
+
+        if resp:
+
+            return resp[0]['name']
+
+
+    def query(self, query, db = None, fetch_size = None, **kwargs):
         """
-        Creates a session with the driver passed into the class at instantiation,
-        runs a CYPHER query and returns the response.
+        Creates a session with the driver passed into the class at
+        instantiation, runs a CYPHER query and returns the response.
 
         Args:
-            query: a valid CYPHER query, can include APOC if the APOC plugin is
-                installed in the accessed database
+            query: a valid CYPHER query, can include APOC if the APOC plugin
+                is installed in the accessed database
             **kwargs: optional objects used in CYPHER interactive mode, for
                 instance for passing a parameter dictionary
 
@@ -152,11 +182,77 @@ class Driver():
             neo4j.Result: the Neo4j response to the query
         """
 
-        session = self.driver.session()
+        db = db or self._db_config['db'] or neo4j.DEFAULT_DATABASE
+        fetch_size = fetch_size or self._db_config['fetch_size']
+
+        session = self.driver.session(database = db, fetch_size = fetch_size)
         response = session.run(query, **kwargs)
         session.close()
 
         return response
+
+
+    @property
+    def current_db(self):
+        """
+        Name of the database (graph) where the next query would be executed.
+
+        Returns:
+            (str): Name of a database.
+        """
+
+        return self._db_config['db'] or self._home_db
+
+
+    def db_exists(self, name = None):
+        """
+        Tells if a database exists in the storage of the Neo4j server.
+
+        Args:
+            name (str): Name of a database (graph).
+
+        Returns:
+            (bool): `True` if the database exists.
+        """
+
+        return bool(self.db_status(name = name))
+
+
+    def db_status(self, name = None, field = 'currentStatus'):
+        """
+        Tells the current status or other state info of a database.
+
+        Args:
+            name (str): Name of a database (graph).
+            field (str,NoneType): The field to return.
+
+        Returns:
+            (str,dict): The status as a string, `None` if the database does
+                not exist. If :py:arg:`field` is `None` a dictionary with
+                all fields will be returned.
+        """
+
+        name = name or self.current_db
+
+        resp = self.query('SHOW DATABASES WHERE NAME = "%s";' % name).data()
+
+        if resp:
+
+            return resp[0][field] if field in resp[0] else resp[0]
+
+
+    def db_online(self, name = None):
+        """
+        Tells if a database is currently online (active).
+
+        Args:
+            name (str): Name of a database (graph).
+
+        Returns:
+            (bool): `True` if the database is online.
+        """
+
+        self.db_status(name = name) == 'online'
 
 
     def init_db(self):
@@ -171,7 +267,7 @@ class Driver():
 
         self.wipe_db()
         self._create_constraints()
-        print('Initialising database.')
+        self._log('Initialising database.')
 
 
     def wipe_db(self):
