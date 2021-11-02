@@ -19,13 +19,28 @@ __version__ = '2021.0'
 
 from distutils.core import setup
 
+
+def read_requirements():
+
+    with open('requirements.txt', 'r') as fp:
+
+        requirements = [
+            name.strip()
+            for name in fp
+            if name and not name.startswith('-')
+        ]
+
+    return requirements
+
+
 setup(
-    name='biocypher',
-    version=__version__,
-    py_modules=[
-	'biocypher.check', 
-	'biocypher.create',
-	'biocypher.driver',
-	'biocypher.translate'
-	],
-    )
+    name = 'biocypher',
+    version = __version__,
+    py_modules = [
+        'biocypher.check',
+        'biocypher.create',
+        'biocypher.driver',
+        'biocypher.translate'
+    ],
+    install_requires = read_requirements(),
+)
