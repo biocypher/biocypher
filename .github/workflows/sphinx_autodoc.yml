@@ -10,9 +10,12 @@ jobs:
     - name: Install dependencies
       run: |
         pip3 install -r requirements.txt
-    - uses: ammaraskar/sphinx-action@master
-      with:
-        docs-folder: "docs/"
+    - name: Build docs
+      run: |
+        pip3 install sphinx sphinx-rtd-theme
+        cd docs
+        make html
+        cd ..
     - name: Commit files
       run: |
         git config --local user.email "action@github.com"
