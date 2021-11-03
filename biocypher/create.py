@@ -73,7 +73,7 @@ class BioCypherNode():
 
     Args: 
         node_id: consensus "best" id for biological entity (string) 
-        node_label: type of biological entity, capitalised (string) 
+        node_label: type of entity, capitalised (string) 
         **properties (kwargs): collection of all other properties to be 
             passed to neo4j for the respective node (dict)
 
@@ -87,6 +87,9 @@ class BioCypherNode():
         - check for correct ID patterns (eg "ENSG" + string of numbers, 
             uniprot length)
         - ID conversion using pypath translation facilities for now
+        - one label is required as a minimum, but do we want multiple 
+            hierarchical labels? if so, how do we implement optional
+            secondary labels?
     """
 
 
@@ -296,6 +299,7 @@ class BioCypherEdge():
 
 
 # quick and dirty replacement functions
+# this belongs in translate or in the pypath adapter directly
 def _process_id(identifier):
 
     return str(identifier).replace('COMPLEX:', 'COMPLEX_')

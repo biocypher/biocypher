@@ -24,3 +24,30 @@ Todo:
         properties and that gets updated each time the graph is modified?
         - versioning could be the date of change
 """
+
+from .create import BioCypherNode
+from datetime import datetime
+
+
+class MetaNode(BioCypherNode):
+    """
+    Versioning and graph structure information meta node. Inherits from 
+    BioCypherNode but sets label to fixed ":BioCypher" and sets version 
+    by using the current date and time.
+
+    Todo:
+        - could implement a continuous versioning system where we get the most 
+            recent version from the graph and add one increment.
+        - way to instantiate the MetaNode without having to give id and label?
+        - put in create or here?
+    """
+    
+    def __init__(self, node_id, node_label, **properties):
+        super().__init__(node_id, node_label, **properties)
+        self.node_id = self.get_current_id()
+        self.node_label = ":BioCypher"
+
+    def get_current_id(self):
+        now = datetime.now()
+        return now.strftime("v%Y%M%d%:%H%M%S")
+
