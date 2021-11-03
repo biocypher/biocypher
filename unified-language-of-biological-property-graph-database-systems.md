@@ -32,6 +32,8 @@ Below, we want to collect all possible annotations that could be valuable in Bio
 
 Open question: do we want multiple node labels, in a hierarchical fashion? Are there use cases for having multiple layers like ":Entity -> :Molecule -> :Protein -> :Isoform"? Subsets with or without overlaps, such as protein types (enzyme, kinase, etc), drug targets, ...? General categories, such as complex constituents, known interactors, ...?
 
+We could introduce top-level layers (that can be enabled or disabled by the user) as a means of accessibility to the granular structure of the graph. For instance, every molecular entity can receive the top-level label ":Molecule", interactions/complexes/etc can have the label ":Function", evidences and other annotations can have the label ":Annotation", and so on. These can become more granular and stacked (eg, ":Molecule" > ":SmallMolecule" > ":Drug"), and can be enabled or disabled in the configuration yml file.
+
 ## Node types
 - DNA: genes, variants, methylation
 	- genes
