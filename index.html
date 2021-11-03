@@ -40,7 +40,7 @@
 <li><a class="reference internal" href="#">BioCypher: a unified language of property graph databases for biomedical science</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#module-biocypher.driver">Pass a Neo4j driver instance</a></li>
-<li><a class="reference internal" href="#module-biocypher.check">Check the active database for consistency with the BioCypher format and return chosen primary identifiers</a></li>
+<li><a class="reference internal" href="#module-biocypher.check">Check the active database for consistency with the BioCypher format</a></li>
 <li><a class="reference internal" href="#module-biocypher.create">Create and update entries in a database</a></li>
 <li><a class="reference internal" href="#module-biocypher.translate">Translate functionality for implemented types of knowledge</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
@@ -88,9 +88,9 @@ side objective is the creation of human-readable graph syntax.</p>
 <ul class="simple">
 <li><p>A graph database can be built from any arbitrary collection of biomedical data.
 We here examplarise the building of a biological prior knowledge graph from the
-OmniPath database (cite), but BioCypher includes the extensive translation
-functionality from PyPath to accommodate custom requirements for graph database
-contents.</p></li>
+OmniPath database (Türei et al. 2021), but BioCypher includes the extensive
+translation functionality from PyPath to accommodate custom requirements for
+graph database contents.</p></li>
 <li><p>A BioCypher graph has to be instantiated as such from the beginning, an existing
 property graph cannot currently be “updated” to conform to the BioCypher format.</p></li>
 <li><p>As a first step, an empty Neo4j database has to be created and started; the
@@ -100,7 +100,14 @@ security in authentication).</p></li>
 <li><p>After the database driver has been passed to BioCypher, a new database can be
 establised given the selected data structure, to be determined in the primary
 configuration file. In this step, all constraints and indices are set to
-conform to the selected database structure. These can also be modified afterwards.</p></li>
+conform to the selected database structure. These can also be modified afterwards.</p>
+<ul>
+<li><p>Note: if the database to be created is very extensive, BioCypher offers a
+“secure export” method to create CSV files that can be used to instantiate
+a new graph database very quickly using the <a class="reference external" href="https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/">Admin Import</a>
+feature of Neo4j.</p></li>
+</ul>
+</li>
 <li><p>The database structure and version is recorded in a meta-graph that serves as
 a versioning system and simultaneously as a means of transmitting information
 about the graph structure for the case of re-loading an existing database for
@@ -471,7 +478,7 @@ constraints.</p>
 
 </section>
 <section id="module-biocypher.check">
-<span id="check-the-active-database-for-consistency-with-the-biocypher-format-and-return-chosen-primary-identifiers"></span><h2>Check the active database for consistency with the BioCypher format and return chosen primary identifiers<a class="headerlink" href="#module-biocypher.check" title="Permalink to this headline"></a></h2>
+<span id="check-the-active-database-for-consistency-with-the-biocypher-format"></span><h2>Check the active database for consistency with the BioCypher format<a class="headerlink" href="#module-biocypher.check" title="Permalink to this headline"></a></h2>
 <p>This module is used for assessing a Neo4j instance for compliance with the
 BioCypher standard and returning pass/fail, and, in the event of “pass”, it
 returns the primary identifiers chosen by the user of the active database
