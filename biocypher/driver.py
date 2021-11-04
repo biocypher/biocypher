@@ -691,7 +691,6 @@ class Driver(DriverBase):
             'YIELD node \n'
             'RETURN node'
         )
-
         self.query(entity_query, parameters = {'entities': entities})
 
         return True
