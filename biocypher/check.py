@@ -18,7 +18,6 @@ File author(s): Sebastian Lobentanzer
 Distributed under GPLv3 license, see LICENSE.txt.
 
 Todo: 
-    - implement check on start
     - when to do versioning?
         - setting in config file regarding the granularity?
     - a unique node with label ":BioCypher" and id representing basic versioning
@@ -27,7 +26,6 @@ Todo:
         - versioning could be the date of change
 """
 
-from yaml.loader import FullLoader
 from .create import BioCypherNode
 from datetime import datetime
 import yaml
@@ -45,6 +43,7 @@ class MetaNode(BioCypherNode):
     the connection to the termination of the BioCypher adapter instance).
 
     Todo:
+        - extend to three types: Versioning, MetaNode and MetaEdge
         - granularity of versioning?
             - if many short calls are made in a short amount of time, closing
                 biocypher after each call, the number of meta-nodes would be
