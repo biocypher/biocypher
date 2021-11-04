@@ -66,8 +66,8 @@ class MetaNode(BioCypherNode):
         super().__init__(node_id, node_label, **properties)
         self.bcy_driver = bcy_driver
         self.node_id = self.get_current_id()
-        self.node_label = ":BioCypher"
-        self._graph_state = self.get_graph_state()
+        self.node_label = "BioCypher"
+        self.graph_state = self.get_graph_state()
 
 
     def get_current_id(self):
@@ -87,11 +87,14 @@ class MetaNode(BioCypherNode):
         """
 
         result = self.bcy_driver.query(
-            'MATCH (m:BioCypher)'
-            'WHERE NOT (:BioCypher)-[:PRECEDES]->(m)'
-            'RETURN m')
+            'MATCH (meta:BioCypher)'
+            'WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)'
+            'RETURN meta')
+
 
         # if result is empty, initialise
-
+        if len(result) == 0:
+            return None
         # else, pass on graph state
-
+        else:
+            return result[0]['meta']

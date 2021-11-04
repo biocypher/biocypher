@@ -513,17 +513,47 @@ class Driver(DriverBase):
 
         DriverBase.__init__(**locals())
 
-        if wipe:
-
-            self.init_db()
-
         # get database representation ('check' module)
         # immutable variable of each instance (ie, each call from the 
         # adapter to BioCypher)
-        db_info = MetaNode(self, None, None)
+        self.db_meta = MetaNode(self, None, None)
 
-        # if db representation node exists, load representation into class
-        # variable else create new: default yml, interactive?
+        # if db representation node does not exist or explicitly asked for wipe
+        # create new graph representation: default yml, interactive?
+        if wipe or self.db_meta.graph_state is None:
+            self.init_db()
+
+        # else load graph representation into class variable and update meta 
+        # graph by adding and connecting the current meta node
+        elif self.db_meta.graph_state is not None:
+            self.load_graph_state()
+            self.update_meta_graph()
+
+
+    def update_meta_graph(self):
+        self.add_biocypher_nodes(self.db_meta)
+        old_id = self.db_meta.graph_state['id']
+        new_id = self.db_meta.node_id
+        self.query(
+                'MATCH (n:BioCypher {id: $old_id}), (m:BioCypher {id: $new_id})'
+                'CREATE (n)-[:PRECEDES]->(m)',
+                old_id = old_id, new_id = new_id
+            )
+
+
+    def load_graph_state(self):
+        """
+        Loads graph state representation from meta node found in active DBMS.
+        """
+        pass
+
+
+    def create_graph_state(self):
+        """
+        Creates new graph state representation based on user specifications,
+        eg, from the schema_config.yml.
+        """
+        pass
 
 
     def init_db(self):
