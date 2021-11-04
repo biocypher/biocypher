@@ -109,8 +109,7 @@ class MetaNode(BioCypherNode):
         new schema information properties from configuration file.
         """
 
-        #if self.graph_state is None:
-            # get graph state from config
+        # get graph state from config
         with open('schema_config.yaml') as f:
             dataMap = yaml.safe_load(f)
         return dataMap

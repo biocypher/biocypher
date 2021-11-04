@@ -525,20 +525,36 @@ class Driver(DriverBase):
 
         # else load graph representation into class variable and update meta 
         # graph by adding and connecting the current meta node
-        elif self.db_meta.graph_state is not None:
+        else:
             self.load_graph_state()
-            self.update_meta_graph()
+
+        # then
+        self.update_meta_graph()
 
 
     def update_meta_graph(self):
+        # add meta node
         self.add_biocypher_nodes(self.db_meta)
-        old_id = self.db_meta.graph_state['id']
-        new_id = self.db_meta.node_id
-        self.query(
-                'MATCH (n:BioCypher {id: $old_id}), (m:BioCypher {id: $new_id})'
-                'CREATE (n)-[:PRECEDES]->(m)',
-                old_id = old_id, new_id = new_id
+
+        # connect meta node to previous
+        e_meta = BioCypherEdge(
+            self.db_meta.graph_state['id'],
+            self.db_meta.node_id,
+            'PRECEDES'
             )
+        self.add_biocypher_edges(e_meta)
+
+        # add structure nodes
+        n = []
+        for entity, params in self.db_meta.schema.items():
+            n.append(BioCypherNode(entity, "Meta", **params))
+        self.add_biocypher_nodes(n)
+
+        # connect structure nodes
+        e = []
+        for entity in self.db_meta.schema.keys():
+            e.append(BioCypherEdge(self.db_meta.get_id(), entity, "Contains"))
+        self.add_biocypher_edges(e)
 
 
     def load_graph_state(self):
@@ -568,18 +584,8 @@ class Driver(DriverBase):
 
         self.wipe_db()
         self._create_constraints()
-        self._create_first_meta_node()
+        self.update_meta_graph()
         self._log('Initialising database.')
-    
-
-    def _create_first_meta_node(self):
-        """
-        Used in initialisation, creates meta node representing versioning and
-        graph structure.
-        """
-
-        n = MetaNode(self, None, None)
-        self.add_biocypher_nodes(n)
         
 
     def _create_constraints(self):
@@ -710,6 +716,8 @@ class Driver(DriverBase):
         Returns:
             bool: The return value. True for success, False otherwise.
         """
+
+        if type(edges) is not list: edges = [ edges ]
 
         if not all(isinstance(e, BioCypherEdge) for e in edges):
             raise TypeError("Edges must be passed as type EdgeFromPypath. "
