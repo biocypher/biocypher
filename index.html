@@ -664,7 +664,7 @@ label as key-value pairs.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher.create.BioCypherNode">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">biocypher.create.</span></span><span class="sig-name descname"><span class="pre">BioCypherNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">biocypher.create.</span></span><span class="sig-name descname"><span class="pre">BioCypherNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode" title="Permalink to this definition"></a></dt>
 <dd><p>Handoff class to represent biomedical entities as Neo4j nodes.</p>
 <p>Has id, label, property dict; id and label (in the Neo4j sense of a label,
 ie, the entity descriptor after the colon, such as “:Protein”) are
@@ -738,6 +738,20 @@ properties as second-level dict.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.create.BioCypherNode.get_optional_labels">
+<span class="sig-name descname"><span class="pre">get_optional_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode.get_optional_labels" title="Permalink to this definition"></a></dt>
+<dd><p>Returns all optional labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>properties</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
