@@ -125,6 +125,7 @@ python package, homepage: TODO.</p>
 </dd>
 </dl>
 <p>Distributed under GPLv3 license, see LICENSE.txt.</p>
+<p>Todo:</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher.driver.Driver">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">biocypher.driver.</span></span><span class="sig-name descname"><span class="pre">Driver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'neo4j://localhost:7687'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_auth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'db_config.yml'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wipe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver" title="Permalink to this definition"></a></dt>
@@ -219,6 +220,26 @@ of now, just passing pypath input through).</p>
 <dd><p>Generic node adder function to add any kind of input to the graph via
 the BioCypherNode class. Should employ translation functionality (as
 of now, just passing pypath input through).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.create_graph_state">
+<span class="sig-name descname"><span class="pre">create_graph_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.create_graph_state" title="Permalink to this definition"></a></dt>
+<dd><p>Creates new graph state representation based on user specifications,
+eg, from the schema_config.yml.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.init_db">
+<span class="sig-name descname"><span class="pre">init_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.init_db" title="Permalink to this definition"></a></dt>
+<dd><p>Used to initialise a property graph database by deleting contents and
+constraints and setting up new constraints.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.load_graph_state">
+<span class="sig-name descname"><span class="pre">load_graph_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.load_graph_state" title="Permalink to this definition"></a></dt>
+<dd><p>Loads graph state representation from meta node found in active DBMS.</p>
 </dd></dl>
 
 </dd></dl>
@@ -378,13 +399,6 @@ If the database creation or startup is necessary but the user does
 not have the sufficient privileges, an exception will be raised.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher.driver.DriverBase.init_db">
-<span class="sig-name descname"><span class="pre">init_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.DriverBase.init_db" title="Permalink to this definition"></a></dt>
-<dd><p>Used to initialise a property graph database by deleting contents and
-constraints and setting up new constraints.</p>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="biocypher.driver.DriverBase.node_count">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">node_count</span></span><a class="headerlink" href="#biocypher.driver.DriverBase.node_count" title="Permalink to this definition"></a></dt>
@@ -491,6 +505,32 @@ homepage: TODO.</p>
 </dd>
 </dl>
 <p>Distributed under GPLv3 license, see LICENSE.txt.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher.check.MetaNode">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">biocypher.check.</span></span><span class="sig-name descname"><span class="pre">MetaNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bcy_driver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.MetaNode" title="Permalink to this definition"></a></dt>
+<dd><p>Versioning and graph structure information meta node. Inherits from
+BioCypherNode but sets label to fixed “:BioCypher” and sets version
+by using the current date and time (meaning it overrides both
+mandatory args from BioCypherNode).</p>
+<p>Is created upon establishment of connection with the database and remains
+fixed for each BioCypher “session” (ie, the entire duration from starting
+the connection to the termination of the BioCypher adapter instance).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.check.MetaNode.get_current_id">
+<span class="sig-name descname"><span class="pre">get_current_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.MetaNode.get_current_id" title="Permalink to this definition"></a></dt>
+<dd><p>Versioning using datetime.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.check.MetaNode.get_graph_state">
+<span class="sig-name descname"><span class="pre">get_graph_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.MetaNode.get_graph_state" title="Permalink to this definition"></a></dt>
+<dd><p>Check in active DBMS connection for existence of MetaNodes, return
+the most recent MetaNode as representation of the graph state. If no
+MetaNode found, assume blank graph state and initialise.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-biocypher.create">
 <span id="create-and-update-entries-in-a-database"></span><h2>Create and update entries in a database<a class="headerlink" href="#module-biocypher.create" title="Permalink to this headline"></a></h2>
@@ -628,7 +668,7 @@ per Neo4j consensus.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – consensus “best” id for biological entity (string)</p></li>
-<li><p><strong>node_label</strong> – type of biological entity, capitalised (string)</p></li>
+<li><p><strong>node_label</strong> – primary type of entity, capitalised (string)</p></li>
 <li><p><strong>**properties</strong> (<em>kwargs</em>) – collection of all other properties to be
 passed to neo4j for the respective node (dict)</p></li>
 </ul>
@@ -684,7 +724,7 @@ properties as second-level dict.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.create.BioCypherNode.get_label">
 <span class="sig-name descname"><span class="pre">get_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode.get_label" title="Permalink to this definition"></a></dt>
-<dd><p>Returns node label.</p>
+<dd><p>Returns primary node label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>node_label</p>
