@@ -27,8 +27,10 @@ Todo:
         - versioning could be the date of change
 """
 
+from yaml.loader import FullLoader
 from .create import BioCypherNode
 from datetime import datetime
+import yaml
 
 
 class MetaNode(BioCypherNode):
@@ -68,6 +70,7 @@ class MetaNode(BioCypherNode):
         self.node_id = self.get_current_id()
         self.node_label = "BioCypher"
         self.graph_state = self.get_graph_state()
+        self.schema = self.get_graph_schema()
 
 
     def get_current_id(self):
@@ -98,3 +101,16 @@ class MetaNode(BioCypherNode):
         # else, pass on graph state
         else:
             return result[0]['meta']
+
+
+    def get_graph_schema(self):
+        """
+        Return graph schema information from meta node if it exists, or create
+        new schema information properties from configuration file.
+        """
+
+        #if self.graph_state is None:
+            # get graph state from config
+        with open('schema_config.yaml') as f:
+            dataMap = yaml.safe_load(f)
+        return dataMap
