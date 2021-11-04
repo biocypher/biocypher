@@ -18,7 +18,9 @@ File author(s): Sebastian Lobentanzer
 Distributed under GPLv3 license, see LICENSE.txt.
 
 Todo: 
-    - implement
+    - implement check on start
+    - when to do versioning?
+        - setting in config file regarding the granularity?
     - a unique node with label ":BioCypher" and id representing basic versioning
         that carries information about the preferred primary identifiers etc as
         properties and that gets updated each time the graph is modified?
@@ -33,13 +35,20 @@ class MetaNode(BioCypherNode):
     """
     Versioning and graph structure information meta node. Inherits from 
     BioCypherNode but sets label to fixed ":BioCypher" and sets version 
-    by using the current date and time.
+    by using the current date and time (meaning it overrides both 
+    mandatory args from BioCypherNode).
 
     Todo:
         - could implement a continuous versioning system where we get the most 
             recent version from the graph and add one increment.
         - way to instantiate the MetaNode without having to give id and label?
+            - can only think of creating a parent to both BioCypherNode and 
+                MetaNode that does not have mandatory id and label.
         - put in create or here?
+        - add graph structure information
+            - on creation will be generated from yml or json?
+                - yml is more readable
+            - as dict? from yml/json?
     """
     
     def __init__(self, node_id, node_label, **properties):
@@ -50,4 +59,5 @@ class MetaNode(BioCypherNode):
     def get_current_id(self):
         now = datetime.now()
         return now.strftime("v%Y%M%d%:%H%M%S")
+
 

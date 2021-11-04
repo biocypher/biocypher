@@ -14,8 +14,7 @@ File author(s): Sebastian Lobentanzer
 Distributed under GPLv3 license, see LICENSE.txt.
 
 Todo:
-    - create and update a biocypher info node that stores version and used
-        identifiers
+
 """
 
 import os
@@ -627,7 +626,7 @@ class Driver(DriverBase):
 
         if not all(isinstance(n, BioCypherNode) for n in nodes):
             raise TypeError("Nodes must be passed as type NodeFromPypath. "
-            "Please use the generic add_edges_to_graph() function.")
+            "Please use the generic add_edges() function.")
 
         self._log('Merging %s nodes.' % len(nodes))
 
@@ -667,7 +666,7 @@ class Driver(DriverBase):
 
         if not all(isinstance(e, BioCypherEdge) for e in edges):
             raise TypeError("Edges must be passed as type EdgeFromPypath. "
-            "Please use the generic add_edges_to_graph() function.")
+            "Please use the generic add_edges() function.")
 
         # relationships
         self._log('Merging %s edges.' % len(edges))

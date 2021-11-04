@@ -73,7 +73,7 @@ class BioCypherNode():
 
     Args: 
         node_id: consensus "best" id for biological entity (string) 
-        node_label: type of entity, capitalised (string) 
+        node_label: primary type of entity, capitalised (string) 
         **properties (kwargs): collection of all other properties to be 
             passed to neo4j for the respective node (dict)
 
@@ -114,7 +114,7 @@ class BioCypherNode():
 
     def get_label(self):
         """
-        Returns node label.
+        Returns primary node label.
 
         Returns:
             str: node_label
