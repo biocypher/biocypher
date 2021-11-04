@@ -26,6 +26,7 @@ import neo4j
 
 from .create import BioCypherEdge, BioCypherNode
 from . import translate
+from .check import MetaNode
 
 
 class DriverBase(object):
@@ -82,16 +83,7 @@ class DriverBase(object):
 
         self.ensure_db()
 
-        if wipe:
-
-            self.wipe_db()
-
-        # get database representation ('check' module)
-
-        # if db representation node exists, load representation into class
-        # variable else create new: default yml, interactive?
-
-
+        
     def reload(self):
         """
         Reloads the object from the module level.
@@ -353,21 +345,6 @@ class DriverBase(object):
         )
 
 
-    def init_db(self):
-        """
-        Used to initialise a property graph database by deleting contents and
-        constraints and setting up new constraints.
-
-        Todo:
-            - set up constraint creation interactively depending on the need
-                of the database
-        """
-
-        self.wipe_db()
-        self._create_constraints()
-        self._log('Initialising database.')
-
-
     def wipe_db(self):
         """
         Used in initialisation, deletes all nodes and edges and drops all
@@ -536,6 +513,44 @@ class Driver(DriverBase):
 
         DriverBase.__init__(**locals())
 
+        if wipe:
+
+            self.init_db()
+
+        # get database representation ('check' module)
+        # immutable variable of each instance (ie, each call from the 
+        # adapter to BioCypher)
+        db_info = MetaNode(self, None, None)
+
+        # if db representation node exists, load representation into class
+        # variable else create new: default yml, interactive?
+
+
+    def init_db(self):
+        """
+        Used to initialise a property graph database by deleting contents and
+        constraints and setting up new constraints.
+
+        Todo:
+            - set up constraint creation interactively depending on the need
+                of the database
+        """
+
+        self.wipe_db()
+        self._create_constraints()
+        self._create_first_meta_node()
+        self._log('Initialising database.')
+    
+
+    def _create_first_meta_node(self):
+        """
+        Used in initialisation, creates meta node representing versioning and
+        graph structure.
+        """
+
+        n = MetaNode(self, None, None)
+        self.add_biocypher_nodes(n)
+        
 
     def _create_constraints(self):
         """
@@ -623,6 +638,8 @@ class Driver(DriverBase):
         Todo:
             - use return nodes to implement test?
         """
+
+        if type(nodes) is not list: nodes = [ nodes ]
 
         if not all(isinstance(n, BioCypherNode) for n in nodes):
             raise TypeError("Nodes must be passed as type NodeFromPypath. "

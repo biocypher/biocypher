@@ -20,11 +20,11 @@ Todo:
     - ensure that all relationship source and target IDs are in the node list?
         Or in the graph? Would require direct connection...
         - Calls to the classes are independent, so there is no way to check 
-        directly; nodes can be created at any point in time previous to edge
-        creation. We could require a pass of all the nodes in the graph when 
-        creating edges. Pro: this would also allow a check whether the existing
-        graph adheres to BioCypher, at least in the node domain. If it doesn't, 
-        the call does not make much sense.
+            directly; nodes can be created at any point in time previous to edge
+            creation. We could require a pass of all the nodes in the graph when 
+            creating edges. Pro: this would also allow a check whether the existing
+            graph adheres to BioCypher, at least in the node domain. If it doesn't, 
+            the call does not make much sense.
         - We could pass in the driver/session object into the BioCypher class.
     - alternatively, do we merge the relationship, creating new nodes in the 
         process? could lead to duplications when nodes are created that exist in 

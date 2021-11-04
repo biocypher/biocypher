@@ -38,9 +38,19 @@ class MetaNode(BioCypherNode):
     by using the current date and time (meaning it overrides both 
     mandatory args from BioCypherNode).
 
+    Is created upon establishment of connection with the database and remains
+    fixed for each BioCypher "session" (ie, the entire duration from starting
+    the connection to the termination of the BioCypher adapter instance).
+
     Todo:
+        - granularity of versioning?
+            - if many short calls are made in a short amount of time, closing
+                biocypher after each call, the number of meta-nodes would be
+                too large. on the other hand, one node per day may be too 
+                little for some.
         - could implement a continuous versioning system where we get the most 
-            recent version from the graph and add one increment.
+            recent version from the graph and add one increment, or a way to 
+            pass in an arbitrary version of choice.
         - way to instantiate the MetaNode without having to give id and label?
             - can only think of creating a parent to both BioCypherNode and 
                 MetaNode that does not have mandatory id and label.
@@ -51,13 +61,37 @@ class MetaNode(BioCypherNode):
             - as dict? from yml/json?
     """
     
-    def __init__(self, node_id, node_label, **properties):
+
+    def __init__(self, bcy_driver, node_id, node_label, **properties):
         super().__init__(node_id, node_label, **properties)
+        self.bcy_driver = bcy_driver
         self.node_id = self.get_current_id()
         self.node_label = ":BioCypher"
+        self._graph_state = self.get_graph_state()
+
 
     def get_current_id(self):
-        now = datetime.now()
-        return now.strftime("v%Y%M%d%:%H%M%S")
+        """
+        Versioning using datetime.
+        """
 
+        now = datetime.now()
+        return now.strftime("v%Y%m%d%:%H%M%S")
+
+
+    def get_graph_state(self):
+        """
+        Check in active DBMS connection for existence of MetaNodes, return
+        the most recent MetaNode as representation of the graph state. If no
+        MetaNode found, assume blank graph state and initialise.
+        """
+
+        result = self.bcy_driver.query(
+            'MATCH (m:BioCypher)'
+            'WHERE NOT (:BioCypher)-[:PRECEDES]->(m)'
+            'RETURN m')
+
+        # if result is empty, initialise
+
+        # else, pass on graph state
 
