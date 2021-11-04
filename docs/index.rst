@@ -35,7 +35,7 @@ A short summary of how BioCypher is supposed to be used:
    security in authentication).
 
 -  After the database driver has been passed to BioCypher, a new database can be 
-   establised given the selected data structure, to be determined in the primary 
+   established given the selected data structure, to be determined in the primary 
    configuration file. In this step, all constraints and indices are set to 
    conform to the selected database structure. These can also be modified afterwards.
 
