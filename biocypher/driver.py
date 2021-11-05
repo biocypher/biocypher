@@ -546,14 +546,14 @@ class Driver(DriverBase):
 
         # add structure nodes
         n = []
-        for entity, params in self.db_meta.schema.items():
+        for entity, params in self.db_meta.schema['Nodes'].items():
             n.append(MetaNode(entity, **params))
         self.add_biocypher_nodes(n)
 
         # connect structure nodes
         e = []
         current_version = self.db_meta.get_id()
-        for entity in self.db_meta.schema.keys():
+        for entity in self.db_meta.schema['Nodes'].keys():
             e.append(MetaEdge(current_version, entity, "CONTAINS"))
         self.add_biocypher_edges(e)
 

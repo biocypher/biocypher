@@ -1,0 +1,13 @@
+---
+Nodes:
+  Protein:
+    preferred_id: uniprot
+  miRNA:
+    preferred_id: mirbase_name
+  Species:
+    preferred_id: taxon_id
+EDGES:
+  POST_TRANSLATIONAL:
+    Protein: Protein
+  POST_TRANSCRIPTIONAL:
+    miRNA: Protein
