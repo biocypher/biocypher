@@ -46,7 +46,7 @@ A short summary of how BioCypher is supposed to be used:
       feature of Neo4j.
 
 
--  The database structure and version is recorded in a meta-graph that serves as 
+-  The database structure and version are recorded in a meta-graph that serves as 
    a versioning system and simultaneously as a means of transmitting information
    about the graph structure for the case of re-loading an existing database for 
    updating it with new information.

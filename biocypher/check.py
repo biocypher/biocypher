@@ -31,7 +31,7 @@ from datetime import datetime
 import yaml
 
 
-class MetaNode(BioCypherNode):
+class VersionNode(BioCypherNode):
     """
     Versioning and graph structure information meta node. Inherits from 
     BioCypherNode but sets label to fixed ":BioCypher" and sets version 
