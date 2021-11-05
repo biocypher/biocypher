@@ -26,24 +26,52 @@ Todo:
         - versioning could be the date of change
 """
 
-from .create import BioCypherNode
+from .create import BioCypherEdge, BioCypherNode
 from datetime import datetime
 import yaml
+
+
+class MetaNode(BioCypherNode):
+    """
+    Graph structure information node representing node type entities in the 
+    BioCypher graph. Inherits from BioCypherNode but fixes label to 
+    ":MetaNode". Is connected to VersionNode via ":CONTAINS" relationship.
+    """
+
+    def __init__(
+        self, node_id, node_label = "MetaNode", 
+        optional_labels=None, **properties
+    ):
+        super().__init__(node_id, node_label, optional_labels, **properties)
+
+
+class MetaEdge(BioCypherEdge):
+    """
+    Graph structure information edge in the meta-graph. Inherits from 
+    BioCypherNode but fixes label to ":CONTAINS".
+    """
+
+    def __init__(
+        self, source_id, target_id, 
+        relationship_label = "CONTAINS", **properties
+    ):
+        super().__init__(source_id, target_id, relationship_label, **properties)
+
 
 
 class VersionNode(BioCypherNode):
     """
     Versioning and graph structure information meta node. Inherits from 
-    BioCypherNode but sets label to fixed ":BioCypher" and sets version 
+    BioCypherNode but fixes label to ":BioCypher" and sets version 
     by using the current date and time (meaning it overrides both 
     mandatory args from BioCypherNode).
 
     Is created upon establishment of connection with the database and remains
     fixed for each BioCypher "session" (ie, the entire duration from starting
-    the connection to the termination of the BioCypher adapter instance).
+    the connection to the termination of the BioCypher adapter instance). Is 
+    connected to MetaNodes and MetaEdges via ":CONTAINS" relationships.
 
     Todo:
-        - extend to three types: Versioning, MetaNode and MetaEdge
         - granularity of versioning?
             - if many short calls are made in a short amount of time, closing
                 biocypher after each call, the number of meta-nodes would be
@@ -63,11 +91,16 @@ class VersionNode(BioCypherNode):
     """
     
 
-    def __init__(self, bcy_driver, node_id, node_label, **properties):
+    def __init__(
+        self, bcy_driver, 
+        node_id = None, node_label = "BioCypher", 
+        **properties
+    ):
+
         super().__init__(node_id, node_label, **properties)
         self.bcy_driver = bcy_driver
         self.node_id = self.get_current_id()
-        self.node_label = "BioCypher"
+        self.node_label = node_label
         self.graph_state = self.get_graph_state()
         self.schema = self.get_graph_schema()
 

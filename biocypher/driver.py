@@ -26,7 +26,7 @@ import neo4j
 
 from .create import BioCypherEdge, BioCypherNode
 from . import translate
-from .check import VersionNode
+from .check import MetaEdge, VersionNode, MetaNode
 
 
 class DriverBase(object):
@@ -516,7 +516,7 @@ class Driver(DriverBase):
         # get database version node ('check' module)
         # immutable variable of each instance (ie, each call from the 
         # adapter to BioCypher)
-        self.db_meta = VersionNode(self, None, None)
+        self.db_meta = VersionNode(self)
 
         # if db representation node does not exist or explicitly asked for wipe
         # create new graph representation: default yml, interactive?
@@ -547,13 +547,14 @@ class Driver(DriverBase):
         # add structure nodes
         n = []
         for entity, params in self.db_meta.schema.items():
-            n.append(BioCypherNode(entity, "Meta", **params))
+            n.append(MetaNode(entity, **params))
         self.add_biocypher_nodes(n)
 
         # connect structure nodes
         e = []
+        current_version = self.db_meta.get_id()
         for entity in self.db_meta.schema.keys():
-            e.append(BioCypherEdge(self.db_meta.get_id(), entity, "Contains"))
+            e.append(MetaEdge(current_version, entity, "CONTAINS"))
         self.add_biocypher_edges(e)
 
 
