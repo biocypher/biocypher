@@ -546,16 +546,36 @@ class Driver(DriverBase):
 
         # add structure nodes
         n = []
-        for entity, params in self.db_meta.schema['Node'].items():
+        schema_nodes = self.db_meta.schema['Node']
+        #append only bottom level key-value pairs
+        bottom_pairs = self.get_bottom_pairs(schema_nodes)
+        for entity, params in bottom_pairs:
             n.append(MetaNode(entity, **params))
         self.add_biocypher_nodes(n)
 
         # connect structure nodes
         e = []
         current_version = self.db_meta.get_id()
-        for entity in self.db_meta.schema['Node'].keys():
+        for entity in [item[0] for item in bottom_pairs]:
             e.append(MetaEdge(current_version, entity, "CONTAINS"))
         self.add_biocypher_edges(e)
+
+
+    def get_bottom_pairs(self, d):
+        bp = []
+        stack = list(d.items()) 
+        visited = set() 
+        while stack: 
+            key, value = stack.pop() 
+            if isinstance(value, dict): 
+                if key not in visited: 
+                    stack.extend(value.items()) 
+            else: 
+                bp.append([last_visited, {key: value}])
+            visited.add(key)
+            last_visited = key
+
+        return bp
 
 
     def load_graph_state(self):

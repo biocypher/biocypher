@@ -4,12 +4,26 @@ Title: BioCypher graph schema configuration file
 # set-up BioCypher property graph database.
 
 Node:
-  Protein:
-    preferred_id: uniprot
-  miRNA:
-    preferred_id: mirbase_name
-  Species:
-    preferred_id: taxon_id
+  Molecule:
+    Protein:
+      preferred_id: uniprot
+    miRNA:
+      preferred_id: mirbase_name
+    ChemicalCompound:
+      Drug:
+        preferred_id: pubchem
+
+  Complex:
+    preferred_id: complex_id
+
+  Annotation:
+    Species:
+      preferred_id: taxon_id
+    Evidence:
+      Literature:
+        preferred_id: pmid
+      HighThroughput:
+        preferred_id: assay_id
 
 EDGE:
   POST_TRANSLATIONAL:
