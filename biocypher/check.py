@@ -18,12 +18,9 @@ File author(s): Sebastian Lobentanzer
 Distributed under GPLv3 license, see LICENSE.txt.
 
 Todo: 
+    - connect graph structure setup (from config) with data parsing
     - when to do versioning?
         - setting in config file regarding the granularity?
-    - a unique node with label ":BioCypher" and id representing basic versioning
-        that carries information about the preferred primary identifiers etc as
-        properties and that gets updated each time the graph is modified?
-        - versioning could be the date of change
 """
 
 from .create import BioCypherEdge, BioCypherNode
