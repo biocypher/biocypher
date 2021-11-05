@@ -35,7 +35,7 @@ A short summary of how BioCypher is supposed to be used:
    security in authentication).
 
 -  After the database driver has been passed to BioCypher, a new database can be 
-   establised given the selected data structure, to be determined in the primary 
+   established given the selected data structure, to be determined in the primary 
    configuration file. In this step, all constraints and indices are set to 
    conform to the selected database structure. These can also be modified afterwards.
 
@@ -46,7 +46,7 @@ A short summary of how BioCypher is supposed to be used:
       feature of Neo4j.
 
 
--  The database structure and version is recorded in a meta-graph that serves as 
+-  The database structure and version are recorded in a meta-graph that serves as 
    a versioning system and simultaneously as a means of transmitting information
    about the graph structure for the case of re-loading an existing database for 
    updating it with new information.

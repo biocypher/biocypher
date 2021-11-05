@@ -98,7 +98,7 @@ Python database driver can then be established either through BioCypher directly
 or on the user’s end and passed to BioCypher (if there is greater need for data
 security in authentication).</p></li>
 <li><p>After the database driver has been passed to BioCypher, a new database can be
-establised given the selected data structure, to be determined in the primary
+established given the selected data structure, to be determined in the primary
 configuration file. In this step, all constraints and indices are set to
 conform to the selected database structure. These can also be modified afterwards.</p>
 <ul>
@@ -108,7 +108,7 @@ a new graph database very quickly using the <a class="reference external" href="
 feature of Neo4j.</p></li>
 </ul>
 </li>
-<li><p>The database structure and version is recorded in a meta-graph that serves as
+<li><p>The database structure and version are recorded in a meta-graph that serves as
 a versioning system and simultaneously as a means of transmitting information
 about the graph structure for the case of re-loading an existing database for
 updating it with new information.</p></li>
@@ -506,31 +506,47 @@ homepage: TODO.</p>
 </dl>
 <p>Distributed under GPLv3 license, see LICENSE.txt.</p>
 <dl class="py class">
+<dt class="sig sig-object py" id="biocypher.check.MetaEdge">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">biocypher.check.</span></span><span class="sig-name descname"><span class="pre">MetaEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationship_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CONTAINS'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.MetaEdge" title="Permalink to this definition"></a></dt>
+<dd><p>Graph structure information edge in the meta-graph. Inherits from
+BioCypherNode but fixes label to “:CONTAINS”.</p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="biocypher.check.MetaNode">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">biocypher.check.</span></span><span class="sig-name descname"><span class="pre">MetaNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bcy_driver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.MetaNode" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">biocypher.check.</span></span><span class="sig-name descname"><span class="pre">MetaNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MetaNode'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.MetaNode" title="Permalink to this definition"></a></dt>
+<dd><p>Graph structure information node representing node type entities in the
+BioCypher graph. Inherits from BioCypherNode but fixes label to
+“:MetaNode”. Is connected to VersionNode via “:CONTAINS” relationship.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher.check.VersionNode">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">biocypher.check.</span></span><span class="sig-name descname"><span class="pre">VersionNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bcy_driver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BioCypher'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode" title="Permalink to this definition"></a></dt>
 <dd><p>Versioning and graph structure information meta node. Inherits from
-BioCypherNode but sets label to fixed “:BioCypher” and sets version
+BioCypherNode but fixes label to “:BioCypher” and sets version
 by using the current date and time (meaning it overrides both
 mandatory args from BioCypherNode).</p>
 <p>Is created upon establishment of connection with the database and remains
 fixed for each BioCypher “session” (ie, the entire duration from starting
-the connection to the termination of the BioCypher adapter instance).</p>
+the connection to the termination of the BioCypher adapter instance). Is
+connected to MetaNodes and MetaEdges via “:CONTAINS” relationships.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="biocypher.check.MetaNode.get_current_id">
-<span class="sig-name descname"><span class="pre">get_current_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.MetaNode.get_current_id" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="biocypher.check.VersionNode.get_current_id">
+<span class="sig-name descname"><span class="pre">get_current_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_current_id" title="Permalink to this definition"></a></dt>
 <dd><p>Versioning using datetime.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="biocypher.check.MetaNode.get_graph_schema">
-<span class="sig-name descname"><span class="pre">get_graph_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.MetaNode.get_graph_schema" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="biocypher.check.VersionNode.get_graph_schema">
+<span class="sig-name descname"><span class="pre">get_graph_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_graph_schema" title="Permalink to this definition"></a></dt>
 <dd><p>Return graph schema information from meta node if it exists, or create
 new schema information properties from configuration file.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="biocypher.check.MetaNode.get_graph_state">
-<span class="sig-name descname"><span class="pre">get_graph_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.MetaNode.get_graph_state" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="biocypher.check.VersionNode.get_graph_state">
+<span class="sig-name descname"><span class="pre">get_graph_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_graph_state" title="Permalink to this definition"></a></dt>
 <dd><p>Check in active DBMS connection for existence of MetaNodes, return
 the most recent MetaNode as representation of the graph state. If no
 MetaNode found, assume blank graph state and initialise.</p>
