@@ -547,7 +547,7 @@ class Driver(DriverBase):
         # add structure nodes
         n = []
         schema_nodes = self.db_meta.schema['Node']
-        #append only bottom level key-value pairs
+        # append only bottom level key-value pairs
         bottom_pairs = self.get_bottom_pairs(schema_nodes)
         for entity, params in bottom_pairs:
             n.append(MetaNode(entity, **params))
@@ -562,18 +562,28 @@ class Driver(DriverBase):
 
 
     def get_bottom_pairs(self, d):
+        """
+        Get leaves of the tree hierarchy from the data structure dict
+        contained in the schema config yaml.
+
+        Todo:
+            - extend to entire label chains from leaf to root
+            - instead of saving last visited, look ahead one level and
+                check there for "dict or no dict"
+        """
         bp = []
         stack = list(d.items()) 
         visited = set() 
         while stack: 
             key, value = stack.pop() 
-            if isinstance(value, dict): 
-                if key not in visited: 
-                    stack.extend(value.items()) 
-            else: 
-                bp.append([last_visited, {key: value}])
+            if isinstance(value, dict):
+                k, v = value.popitem()
+                if isinstance(v, dict):
+                    if key not in visited: 
+                        stack.extend(value.items()) 
+                else: 
+                    bp.append([key, {k: v}])
             visited.add(key)
-            last_visited = key
 
         return bp
 
@@ -605,7 +615,6 @@ class Driver(DriverBase):
 
         self.wipe_db()
         self._create_constraints()
-        self.update_meta_graph()
         self._log('Initialising database.')
         
 

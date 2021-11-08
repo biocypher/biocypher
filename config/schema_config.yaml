@@ -1,0 +1,115 @@
+Title: BioCypher graph schema configuration file
+
+# This configuration file establishes the hierarchy and connectivity in a newly
+# set-up BioCypher property graph database.
+
+Molecule:
+  Protein:
+    preferred_id: uniprot
+    represented_as: node
+  miRNA:
+    preferred_id: mirbase_name
+    represented_as: node
+  ChemicalCompound:
+    Drug:
+      preferred_id: pubchem
+      represented_as: node
+
+Complex:
+  preferred_id: complex_id
+  represented_as: node
+
+Annotation:
+  Species:
+    preferred_id: taxon_id
+    represented_as: node
+  Evidence:
+    Literature:
+      preferred_id: pmid
+      represented_as: node
+    HighThroughput:
+      preferred_id: assay_id
+      represented_as: node
+
+Interaction:
+  PostTranslational:
+    Phosphorylation:
+      source: Protein
+      target: Protein
+      represented_as: edge
+    Acetylation:
+      source: Protein
+      target: Protein
+      represented_as: edge
+      
+  PostTranscriptional:
+    RISCDependent:
+      source: miRNA
+      target: Protein
+      represented_as: edge
+
+  DiseaseAssociation:
+    source: Protein
+    target: Disease
+    represented_as: edge
+
+
+## CROssBAR list of source database attributes
+# UniProtKB (related MongoDB collections: Proteins):
+# accession(protein,UniProt)
+# ec
+# fullName
+# gene(symbol)
+# go
+# interpro
+# omim
+# orphanet
+# pfam
+# reactome
+# taxId
+
+# IntAct (related MongoDB collections: Intact):
+# accession(protein,UniProt)
+# confidence
+# gene(symbol)
+
+# EFO (related MongoDB collections: EFO disease terms):
+# doid
+# label
+# mesh
+# oboId
+# omimId
+# synonym
+
+# HPO (related MongoDB collections: HPO):
+# genesymbol
+# hpotermname
+# synonym
+
+# ChEMBL (related MongoDB collections: Molecules, Targets, Assays, Activities):
+# assayChemblId
+# assayType
+# assayOrganism
+# moleculeChemblId
+# canonicalSmiles
+# inchiKey
+# pchemblValue
+# targetChemblId
+# accession(protein,UniProt)
+# targetIds
+# DrugBank (related MongoDB collections: Drugs):
+# accession(target protein,UniProt)
+# chemblId
+# identifier
+# name
+# pubchemCid
+
+# PubChem (related MongoDB collections: PubChem Bioassay Sids, PubChem Biossays, PubChem Compounds, PubChem Substances):
+# canonicalSmiles
+# cid
+# inchiKey
+# accession(target protein,UniProt)
+# assayPubchemId
+# ncbiProteinId
+# sids
+# outcome

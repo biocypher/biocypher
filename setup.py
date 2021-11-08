@@ -17,7 +17,7 @@ Todo:
 
 __version__ = '2021.0'
 
-from distutils.core import setup
+from setuptools import setup
 
 
 def read_requirements():
@@ -43,4 +43,6 @@ setup(
         'biocypher.translate'
     ],
     install_requires = read_requirements(),
+    include_package_data=True,
+    data_files=[('biocypher',['config/schema_config.yaml'])],
 )

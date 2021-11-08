@@ -5,3 +5,6 @@ docs/pypath_log/
 docs/_build/
 .DS_Store
 .vscode
+biocypher.egg-info/
+*.egg
+dist/

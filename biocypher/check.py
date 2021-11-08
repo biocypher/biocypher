@@ -26,6 +26,7 @@ Todo:
 from .create import BioCypherEdge, BioCypherNode
 from datetime import datetime
 import yaml
+import os
 
 
 class MetaNode(BioCypherNode):
@@ -138,7 +139,13 @@ class VersionNode(BioCypherNode):
         new schema information properties from configuration file.
         """
 
+        ROOT = os.path.join(
+            *os.path.split(
+                os.path.abspath(os.path.dirname(__file__))
+            )
+        )
+
         # get graph state from config
-        with open('schema_config.yaml') as f:
+        with open(ROOT + '/schema_config.yaml') as f:
             dataMap = yaml.safe_load(f)
         return dataMap
