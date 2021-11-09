@@ -230,6 +230,13 @@ eg, from the schema_config.yml.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.get_leaves">
+<span class="sig-name descname"><span class="pre">get_leaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.get_leaves" title="Permalink to this definition"></a></dt>
+<dd><p>Get leaves of the tree hierarchy from the data structure dict
+contained in the schema config yaml.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="biocypher.driver.Driver.init_db">
 <span class="sig-name descname"><span class="pre">init_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.init_db" title="Permalink to this definition"></a></dt>
 <dd><p>Used to initialise a property graph database by deleting contents and
@@ -362,7 +369,7 @@ configuration.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>The status as a string, <cite>None</cite> if the database does</dt><dd><p>not exist. If <a href="#id3"><span class="problematic" id="id4">:py:arg:`field`</span></a> is <cite>None</cite> a dictionary with
+<dt>The status as a string, <cite>None</cite> if the database does</dt><dd><p>not exist. If <a href="#id4"><span class="problematic" id="id5">:py:arg:`field`</span></a> is <cite>None</cite> a dictionary with
 all fields will be returned.</p>
 </dd>
 </dl>
