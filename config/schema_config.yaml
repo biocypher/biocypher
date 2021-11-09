@@ -33,23 +33,28 @@ Annotation:
 
 Interaction:
   PostTranslational:
+    # higher-level preferred_ids?
     Phosphorylation:
       represented_as: edge
+      preferred_id: tba
       source: Protein
       target: Protein
     Acetylation:
       represented_as: edge
+      preferred_id: tba
       source: Protein
       target: Protein
       
   PostTranscriptional:
     RISCDependent:
       represented_as: edge
+      preferred_id: tba
       source: miRNA
       target: Protein
 
   DiseaseAssociation:
     represented_as: edge
+    preferred_id: tba
     source: Protein
     target: Disease
 
