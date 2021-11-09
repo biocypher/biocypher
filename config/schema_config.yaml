@@ -5,53 +5,53 @@ Title: BioCypher graph schema configuration file
 
 Molecule:
   Protein:
+    represented_as: node
     preferred_id: uniprot
-    represented_as: node
   miRNA:
-    preferred_id: mirbase_name
     represented_as: node
+    preferred_id: mirbase_name
   ChemicalCompound:
     Drug:
-      preferred_id: pubchem
       represented_as: node
+      preferred_id: pubchem
 
 Complex:
-  preferred_id: complex_id
   represented_as: node
+  preferred_id: complex_id
 
 Annotation:
   Species:
-    preferred_id: taxon_id
     represented_as: node
+    preferred_id: taxon_id
   Evidence:
     Literature:
+      represented_as: node
       preferred_id: pmid
-      represented_as: node
     HighThroughput:
-      preferred_id: assay_id
       represented_as: node
+      preferred_id: assay_id
 
 Interaction:
   PostTranslational:
     Phosphorylation:
+      represented_as: edge
       source: Protein
       target: Protein
-      represented_as: edge
     Acetylation:
+      represented_as: edge
       source: Protein
       target: Protein
-      represented_as: edge
       
   PostTranscriptional:
     RISCDependent:
+      represented_as: edge
       source: miRNA
       target: Protein
-      represented_as: edge
 
   DiseaseAssociation:
+    represented_as: edge
     source: Protein
     target: Disease
-    represented_as: edge
 
 
 ## CROssBAR list of source database attributes

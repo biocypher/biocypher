@@ -139,6 +139,7 @@ class VersionNode(BioCypherNode):
         new schema information properties from configuration file.
         """
 
+        # include to load default yaml from module
         ROOT = os.path.join(
             *os.path.split(
                 os.path.abspath(os.path.dirname(__file__))
@@ -149,3 +150,6 @@ class VersionNode(BioCypherNode):
         with open(ROOT + '/schema_config.yaml') as f:
             dataMap = yaml.safe_load(f)
         return dataMap
+
+        # get optional user-defined changes to graph structure yaml
+        # TODO

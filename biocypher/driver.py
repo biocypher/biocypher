@@ -546,22 +546,21 @@ class Driver(DriverBase):
 
         # add structure nodes
         n = []
-        schema_nodes = self.db_meta.schema['Node']
         # append only bottom level key-value pairs
-        bottom_pairs = self.get_bottom_pairs(schema_nodes)
-        for entity, params in bottom_pairs:
+        leaves = self.get_leaves(self.db_meta.schema)
+        for entity, params in leaves:
             n.append(MetaNode(entity, **params))
         self.add_biocypher_nodes(n)
 
-        # connect structure nodes
+        # connect structure nodes to version node
         e = []
         current_version = self.db_meta.get_id()
-        for entity in [item[0] for item in bottom_pairs]:
+        for entity in [item[0] for item in leaves]:
             e.append(MetaEdge(current_version, entity, "CONTAINS"))
         self.add_biocypher_edges(e)
 
 
-    def get_bottom_pairs(self, d):
+    def get_leaves(self, d):
         """
         Get leaves of the tree hierarchy from the data structure dict
         contained in the schema config yaml.
@@ -571,21 +570,20 @@ class Driver(DriverBase):
             - instead of saving last visited, look ahead one level and
                 check there for "dict or no dict"
         """
-        bp = []
+        leaves = []
         stack = list(d.items()) 
         visited = set() 
         while stack: 
             key, value = stack.pop() 
             if isinstance(value, dict):
-                k, v = value.popitem()
-                if isinstance(v, dict):
+                if 'represented_as' not in value.keys():
                     if key not in visited: 
                         stack.extend(value.items()) 
                 else: 
-                    bp.append([key, {k: v}])
+                    leaves.append([key, value])
             visited.add(key)
 
-        return bp
+        return leaves
 
 
     def load_graph_state(self):
