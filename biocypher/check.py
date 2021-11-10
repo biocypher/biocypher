@@ -148,7 +148,7 @@ class VersionNode(BioCypherNode):
         )
 
         # get graph state from config
-        with open(ROOT + '/schema_config.yaml') as f:
+        with open(ROOT + '/../config/schema_config.yaml') as f:
             dataMap = yaml.safe_load(f)
         return dataMap
 

@@ -1,0 +1,5 @@
+default:
+  db: neo4j
+  auth:  
+    - user 
+    - password

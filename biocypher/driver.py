@@ -63,7 +63,7 @@ class DriverBase(object):
             db_uri = 'neo4j://localhost:7687',
             db_auth = None,
             fetch_size = 1000,
-            config_file = 'db_config.yml',
+            config_file = 'config/db_config.yaml',
             wipe = False,
         ):
 
@@ -77,7 +77,14 @@ class DriverBase(object):
                 'db': db_name,
                 'fetch_size': fetch_size,
             }
-            self._config_file = config_file
+
+            # include to load default yaml from module
+            ROOT = os.path.join(
+                *os.path.split(
+                    os.path.abspath(os.path.dirname(__file__))
+                )
+            )
+            self._config_file = ROOT + "/../" + config_file
 
             self.db_connect()
 
@@ -144,6 +151,7 @@ class DriverBase(object):
         if self._config_file and os.path.exists(self._config_file):
 
             self._log('Reading config from `%s`.' % self._config_file)
+            
 
             with open(self._config_file, 'r') as fp:
 
@@ -507,7 +515,7 @@ class Driver(DriverBase):
             db_uri = 'neo4j://localhost:7687',
             db_auth = None,
             fetch_size = 100,
-            config_file = 'db_config.yml',
+            config_file = 'config/db_config.yaml',
             wipe = False,
         ):
 

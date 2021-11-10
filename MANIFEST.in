@@ -1,1 +1,1 @@
-include config/schema_config.yaml
+include config/*.yaml

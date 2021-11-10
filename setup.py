@@ -44,5 +44,7 @@ setup(
     ],
     install_requires = read_requirements(),
     include_package_data=True,
-    data_files=[('biocypher',['config/schema_config.yaml'])],
+    data_files=[
+        ('biocypher',['config/schema_config.yaml']),
+        ('biocypher',['config/db_config.yaml'])],
 )
