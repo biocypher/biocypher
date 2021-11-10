@@ -516,17 +516,14 @@ class Driver(DriverBase):
         # get database version node ('check' module)
         # immutable variable of each instance (ie, each call from the 
         # adapter to BioCypher)
+        # checks for existence of graph representation and returns if found,
+        # else creates new one
         self.db_meta = VersionNode(self)
 
         # if db representation node does not exist or explicitly asked for wipe
         # create new graph representation: default yml, interactive?
         if wipe or self.db_meta.graph_state is None:
             self.init_db()
-
-        # else load graph representation into class variable and update meta 
-        # graph by adding and connecting the current meta node
-        else:
-            self.load_graph_state()
 
         # then
         self.update_meta_graph()
@@ -547,58 +544,17 @@ class Driver(DriverBase):
         # add structure nodes
         n = []
         # append only bottom level key-value pairs
-        leaves = self.get_leaves(self.db_meta.schema)
-        for entity, params in leaves:
+        
+        for entity, params in self.db_meta.leaves:
             n.append(MetaNode(entity, **params))
         self.add_biocypher_nodes(n)
 
         # connect structure nodes to version node
         e = []
         current_version = self.db_meta.get_id()
-        for entity in [item[0] for item in leaves]:
+        for entity in [item[0] for item in self.db_meta.leaves]:
             e.append(MetaEdge(current_version, entity, "CONTAINS"))
         self.add_biocypher_edges(e)
-
-
-    def get_leaves(self, d):
-        """
-        Get leaves of the tree hierarchy from the data structure dict
-        contained in the schema config yaml.
-
-        Todo:
-            - extend to entire label chains from leaf to root
-            - instead of saving last visited, look ahead one level and
-                check there for "dict or no dict"
-        """
-        leaves = []
-        stack = list(d.items()) 
-        visited = set() 
-        while stack: 
-            key, value = stack.pop() 
-            if isinstance(value, dict):
-                if 'represented_as' not in value.keys():
-                    if key not in visited: 
-                        stack.extend(value.items()) 
-                else: 
-                    leaves.append([key, value])
-            visited.add(key)
-
-        return leaves
-
-
-    def load_graph_state(self):
-        """
-        Loads graph state representation from meta node found in active DBMS.
-        """
-        pass
-
-
-    def create_graph_state(self):
-        """
-        Creates new graph state representation based on user specifications,
-        eg, from the schema_config.yml.
-        """
-        pass
 
 
     def init_db(self):
@@ -658,14 +614,14 @@ class Driver(DriverBase):
         )
 
 
-    def add_nodes(self, values):
+    def add_nodes(self, id_type_tuples):
         """
         Generic node adder function to add any kind of input to the graph via
         the BioCypherNode class. Should employ translation functionality (as
         of now, just passing pypath input through).
         """
 
-        bn = translate.nodes_from_pypath(values) # replace with check-translate function
+        bn = translate.translate_nodes(self.db_meta.schema, id_type_tuples)
         self.add_biocypher_nodes(bn)
 
 

@@ -26,6 +26,39 @@ Todo:
 """
 
 from .create import BioCypherEdge, BioCypherNode
+from bmt import Toolkit
+
+
+class BiolinkAdapter(object):
+    """
+    Performs various functions to integrate the Biolink ontology.
+    """
+
+    def __init__(self, schema) -> None:
+        super().__init__()
+        self.schema = schema
+
+    def translate_schema_to_biolink(self):
+        t = Toolkit()
+        for entity in self.schema.leaves:
+            t.get_element(entity)
+
+# -------------------------------------------
+# Create nodes and edges from separate inputs
+# -------------------------------------------
+
+def translate_nodes(schema, id_type_tuples):
+    """
+    Translates input node representation to a representation that conforms
+    to the schema of the given BioCypher graph. For now requires explicit 
+    statement of node type on pass.
+    """
+
+    biolink = BiolinkAdapter(schema)
+
+    for id, type in id_type_tuples:
+        pass
+
 
 def nodes_from_pypath(values):
     return(BioCypherNode.create_node_list(values))

@@ -101,6 +101,7 @@ class VersionNode(BioCypherNode):
         self.node_label = node_label
         self.graph_state = self.get_graph_state()
         self.schema = self.get_graph_schema()
+        self.leaves = self.get_leaves(self.schema)
 
 
     def get_current_id(self):
@@ -114,9 +115,9 @@ class VersionNode(BioCypherNode):
 
     def get_graph_state(self):
         """
-        Check in active DBMS connection for existence of MetaNodes, return
-        the most recent MetaNode as representation of the graph state. If no
-        MetaNode found, assume blank graph state and initialise.
+        Check in active DBMS connection for existence of VersionNodes, return
+        the most recent VersionNode as representation of the graph state. If no
+        VersionNode found, assume blank graph state and initialise.
         """
 
         result = self.bcy_driver.query(
@@ -135,7 +136,7 @@ class VersionNode(BioCypherNode):
 
     def get_graph_schema(self):
         """
-        Return graph schema information from meta node if it exists, or create
+        Return graph schema information from meta graph if it exists, or create
         new schema information properties from configuration file.
         """
 
@@ -153,3 +154,29 @@ class VersionNode(BioCypherNode):
 
         # get optional user-defined changes to graph structure yaml
         # TODO
+
+
+    def get_leaves(self, d):
+        """
+        Get leaves of the tree hierarchy from the data structure dict
+        contained in the schema config yaml.
+
+        Todo:
+            - extend to entire label chains from leaf to root
+            - instead of saving last visited, look ahead one level and
+                check there for "dict or no dict"
+        """
+        leaves = []
+        stack = list(d.items()) 
+        visited = set() 
+        while stack: 
+            key, value = stack.pop() 
+            if isinstance(value, dict):
+                if 'represented_as' not in value.keys():
+                    if key not in visited: 
+                        stack.extend(value.items()) 
+                else: 
+                    leaves.append([key, value])
+            visited.add(key)
+
+        return leaves
