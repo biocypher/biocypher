@@ -166,40 +166,6 @@ class BioCypherNode():
             ])
         return d
 
-    
-    def create_node_list(entities):
-        """
-        Create list of BioCypherNode objects from collection of entities.
-
-        Args:
-            entities: currently, a collection of pypath objects. should 
-                be adapted to accept arbitrary collections.
-
-        Returns:
-            list: a list of BioCypherNode objects
-
-        Todo:
-            - enforce structure (node id and label explicit)?
-            - account for all additional properties automatically
-            - use check and translate functionalities to find out graph
-                structure and make input compatible
-        """
-        lst = []
-
-        for node in entities:
-            n = BioCypherNode(
-                # these are mandatory
-                node_id = _process_id(node.identifier),
-                node_label = _process_type(node.entity_type),
-                # here are all additional properties
-                id_type = node.id_type,
-                taxon = node.taxon,
-                label = _process_id(node.label)
-                )
-            lst.append(n)
-
-        return lst
-
 
 class BioCypherEdge():
     """
@@ -315,20 +281,11 @@ class BioCypherEdge():
         return lst
 
 
-# quick and dirty replacement functions
-# this belongs in translate or in the pypath adapter directly
 def _process_id(identifier):
+    """
+    Replace critical symbols in pypath ids so that neo4j doesn't throw
+    a type error.
 
+    TODO remove
+    """
     return str(identifier).replace('COMPLEX:', 'COMPLEX_')
-
-
-# replace strings to fit with capitalised label scheme
-# to be replaced by the translation facilities
-def _process_type(identifier):
-
-    s = str(identifier)
-    s = s.replace('complex', 'Complex')
-    s = s.replace('protein', 'Protein')
-    s = s.replace('mirna', 'miRNA')
-    
-    return s

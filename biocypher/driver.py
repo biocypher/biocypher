@@ -545,7 +545,7 @@ class Driver(DriverBase):
         n = []
         # append only bottom level key-value pairs
         
-        for entity, params in self.db_meta.leaves:
+        for entity, params in self.db_meta.leaves.items():
             n.append(MetaNode(entity, **params))
         self.add_biocypher_nodes(n)
 

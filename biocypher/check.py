@@ -166,7 +166,7 @@ class VersionNode(BioCypherNode):
             - instead of saving last visited, look ahead one level and
                 check there for "dict or no dict"
         """
-        leaves = []
+        leaves = dict()
         stack = list(d.items()) 
         visited = set() 
         while stack: 
@@ -176,7 +176,7 @@ class VersionNode(BioCypherNode):
                     if key not in visited: 
                         stack.extend(value.items()) 
                 else: 
-                    leaves.append([key, value])
+                    leaves[key] = value
             visited.add(key)
 
         return leaves

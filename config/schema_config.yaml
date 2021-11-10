@@ -22,21 +22,28 @@ Title: BioCypher graph schema configuration file
 # for instance in the case of functional protein complexes. These are represented
 # by so-called "mixins", which are not officially part of the hierarchy.
 
+Protein: # this is the Biolink entity name and will be used as the node label
+         # do not modify or else the Biolink translation will fail
+  represented_as: node
+  preferred_id: UniProtKB # this is the Biolink spelling of the identifier used
+  # it represents a CURIE URI prefix
+  label_in_input: protein # modify this to allow translation
+  # this is the entity name (ie, type) in the input database
+  
 Drug:
   represented_as: node
   preferred_id: PUBCHEM
-
-Protein:
-  represented_as: node
-  preferred_id: UniProtKB
+  label_in_input: drug
 
 microRNA:
   represented_as: node
   preferred_id: MIR
+  label_in_input: mirna
     
 MacromolecularComplexMixin:
   represented_as: node
   preferred_id: CPX
+  label_in_input: complex
 
 OrganismTaxon:
   represented_as: node

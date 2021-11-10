@@ -34,34 +34,69 @@ class BiolinkAdapter(object):
     Performs various functions to integrate the Biolink ontology.
     """
 
-    def __init__(self, schema) -> None:
+    def __init__(self, leaves) -> None:
         super().__init__()
-        self.schema = schema
+        self.leaves = self.translate_leaves_to_biolink(leaves)
 
-    def translate_schema_to_biolink(self):
+
+    def translate_leaves_to_biolink(self, leaves):
         t = Toolkit()
-        for entity in self.schema.leaves:
-            e = t.get_element(entity[0]) # element name
+        l = []
+        for entity in leaves.keys():
+            e = t.get_element(entity) # element name
+            if e is not None:
+                l.append([entity, e])
+            else:
+                print("Entity not found:" + entity[0])
+                l.append([entity, None])
+        
+        return l
 
 # -------------------------------------------
 # Create nodes and edges from separate inputs
 # -------------------------------------------
 
-def translate_nodes(schema, id_type_tuples):
+def translate_nodes(leaves, id_type_tuples):
     """
     Translates input node representation to a representation that conforms
     to the schema of the given BioCypher graph. For now requires explicit 
     statement of node type on pass.
+
+
     """
 
-    biolink = BiolinkAdapter(schema)
+    # biolink = BiolinkAdapter(leaves)
 
+    lst = []
     for id, type in id_type_tuples:
-        pass
+        path = getpath(leaves, type)
+        if path is not None:
+            bl_type = path[0]
+            n = BioCypherNode(
+                node_id=id,
+                node_label=bl_type,
+                # additional here
+            )
+            lst.append(n)
+        else:
+            print("No path for type " + type)
 
+    return lst
 
-def nodes_from_pypath(values):
-    return(BioCypherNode.create_node_list(values))
 
 def edges_from_pypath(records):
     return(BioCypherEdge.create_relationship_list(records))
+
+# quick and dirty replacement functions
+# this belongs in translate or in the pypath adapter directly
+
+
+def getpath(nested_dict, value, prepath=()):
+    for k, v in nested_dict.items():
+        path = prepath + (k,)
+        if v == value: # found value
+            return path
+        elif hasattr(v, 'items'): # v is a dict
+            p = getpath(v, value, path) # recursive call
+            if p is not None:
+                return p
