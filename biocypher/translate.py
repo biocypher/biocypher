@@ -41,7 +41,7 @@ class BiolinkAdapter(object):
     def translate_schema_to_biolink(self):
         t = Toolkit()
         for entity in self.schema.leaves:
-            t.get_element(entity)
+            e = t.get_element(entity[0]) # element name
 
 # -------------------------------------------
 # Create nodes and edges from separate inputs

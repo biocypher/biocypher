@@ -1,62 +1,108 @@
 Title: BioCypher graph schema configuration file
 
 # This configuration file establishes the hierarchy and connectivity in a newly
-# set-up BioCypher property graph database.
+# set-up BioCypher property graph database. Naming should adhere to Biolink
+# nomenclature (available at https://biolink.github.io/biolink-model/ or via 
+# the python module 'biolink-model-toolkit').
 
-Molecule:
-  Protein:
-    represented_as: node
-    preferred_id: uniprot
-  miRNA:
-    represented_as: node
-    preferred_id: mirbase_name
-  ChemicalCompound:
-    Drug:
-      represented_as: node
-      preferred_id: pubchem
+# The BioCypher YAML file specifies only the leaves of the hierarchy tree of
+# the desired graph; the hierarchical structure of entities will be derived 
+# from the Biolink model. Thus, only the immediate constituents of the graph
+# need to be specified in the schema config.
 
-Complex:
+
+# ---
+# "Named Things"
+# ---
+# The implementation of named things is fairly straightforward, since they are
+# usually represented in node form, which is also the Biolink recommendation.
+# The same is not true for associations.
+#
+# A little more complex is the representation of aggregates of named things, 
+# for instance in the case of functional protein complexes. These are represented
+# by so-called "mixins", which are not officially part of the hierarchy.
+
+Drug:
   represented_as: node
-  preferred_id: complex_id
+  preferred_id: PUBCHEM
 
-Annotation:
-  Species:
-    represented_as: node
-    preferred_id: taxon_id
-  Evidence:
-    Literature:
-      represented_as: node
-      preferred_id: pmid
-    HighThroughput:
-      represented_as: node
-      preferred_id: assay_id
+Protein:
+  represented_as: node
+  preferred_id: UniProtKB
 
-Interaction:
-  PostTranslational:
-    # higher-level preferred_ids?
-    Phosphorylation:
-      represented_as: edge
-      preferred_id: tba
-      source: Protein
-      target: Protein
-    Acetylation:
-      represented_as: edge
-      preferred_id: tba
-      source: Protein
-      target: Protein
-      
-  PostTranscriptional:
-    RISCDependent:
-      represented_as: edge
-      preferred_id: tba
-      source: miRNA
-      target: Protein
+microRNA:
+  represented_as: node
+  preferred_id: MIR
+    
+MacromolecularComplexMixin:
+  represented_as: node
+  preferred_id: CPX
 
-  DiseaseAssociation:
+OrganismTaxon:
+  represented_as: node
+  preferred_id: NCBITaxon
+
+Publication:
+  represented_as: node
+  preferred_id: NLMID
+ConfidenceLevel:
+  represented_as: node
+  preferred_id: None
+
+Disease:
+  represented_as: node
+  preferred_id: ICD10
+
+
+# ---
+# Associations
+# ---
+# Associations are not supposed to be represented in node form as per the 
+# specifications of Biolink. However, in an analytic context, it often makes 
+# sense to represent interactions as nodes in Neo4j, because it enables, for
+# instance, the annotation of a relationship with a publication as source of
+# evidence. The Biolink specifications for these types of relationships do 
+# not go into depth; for example, the hierarchy for molecular interactions
+# (ie, "associations") ends at "PairwiseMolecularInteraction", there are no 
+# explicit terms for protein-protein-interaction, phosphorylation, miRNA-
+# targeting, etc. Biolink proposes to use interaction identifiers from 
+# ontologies, such as https://www.ebi.ac.uk/ols/ontologies/mi/.
+
+PairwiseMolecularInteraction:
+  represented_as: node
+  preferred_id: EBI
+
+DiseaseToEntityAssociationMixin:
+  represented_as: edge
+  preferred_id: tbd
+  source: Disease
+  target: Protein
+EntityToDiseaseAssociationMixin:
+  represented_as: edge
+  preferred_id: tbd
+  source: Protein
+  target: Disease
+
+PostTranslational:
+  # higher-level preferred_ids?
+  Phosphorylation:
     represented_as: edge
-    preferred_id: tba
+    preferred_id: tbd
     source: Protein
-    target: Disease
+    target: Protein
+  Acetylation:
+    represented_as: edge
+    preferred_id: tbd
+    source: Protein
+    target: Protein
+      
+PostTranscriptional:
+  RISCDependent:
+    represented_as: edge
+    preferred_id: tbd
+    source: miRNA
+    target: Protein
+
 
 
 ## CROssBAR list of source database attributes
