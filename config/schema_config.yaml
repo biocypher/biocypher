@@ -87,6 +87,7 @@ PostTranslationalInteraction:
   source: Protein # optional other sources?
   target: Protein
   label_in_input: post_translational
+  label_as_edge: INTERACTS_POST_TRANSLATIONAL
 
 
 DiseaseToEntityAssociationMixin:

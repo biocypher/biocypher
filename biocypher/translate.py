@@ -82,7 +82,7 @@ def gen_translate_nodes(leaves, id_type_tuples):
             print("No path for type " + type)
 
 
-def translate_edges(leaves, src_tar_type_tuples):
+def gen_translate_edges(leaves, src_tar_type_tuples):
     """
     Translates input edge representation to a representation that conforms
     to the schema of the given BioCypher graph. For now requires explicit 
@@ -90,6 +90,48 @@ def translate_edges(leaves, src_tar_type_tuples):
 
 
     """
+
+    for src, tar, type in src_tar_type_tuples:
+        path = getpath(leaves, type)
+
+        if path is not None:
+            bl_type = path[0]
+            rep = leaves[bl_type]['represented_as']
+
+            if rep == 'node':
+                node_id = src + "->" + tar
+                n = BioCypherNode(
+                    node_id=node_id,
+                    node_label=bl_type,
+                    # additional here
+                )
+                e_s = BioCypherEdge(
+                    source_id=src,
+                    target_id=node_id,
+                    relationship_label="IS_SOURCE_OF",
+                    # additional here
+                )
+                e_t = BioCypherEdge(
+                    source_id=tar,
+                    target_id=node_id,
+                    relationship_label="IS_TARGET_OF",
+                    # additional here
+                )
+                yield (n, e_s, e_t)
+            
+            else:
+                edge_label = leaves[bl_type]['label_as_edge']
+                yield BioCypherEdge(
+                    source_id=src,
+                    target_id=tar,
+                    relationship_label=edge_label,
+                    # additional here
+                )
+
+        else:
+            print("No path for type " + type)
+
+
 
     
 

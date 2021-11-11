@@ -22,6 +22,7 @@ import re
 import itertools
 import importlib as imp
 from types import GeneratorType
+from biocypher import driver
 
 import yaml
 import neo4j
@@ -56,6 +57,9 @@ class DriverBase(object):
             user name and password.
         wipe (bool): Wipe the database after connection, ensuring the data
             is loaded into an empty database.
+
+    Todo:
+        - remove biocypher-specific init args
     """
 
     def __init__(
@@ -67,6 +71,7 @@ class DriverBase(object):
             fetch_size = 1000,
             config_file = 'config/db_config.yaml',
             wipe = False,
+            version = True,
         ):
 
         self.driver = driver
@@ -519,24 +524,29 @@ class Driver(DriverBase):
             fetch_size = 100,
             config_file = 'config/db_config.yaml',
             wipe = False,
+            version = True,
         ):
 
         DriverBase.__init__(**locals())
 
-        # get database version node ('check' module)
-        # immutable variable of each instance (ie, each call from the 
-        # adapter to BioCypher)
-        # checks for existence of graph representation and returns if found,
-        # else creates new one
-        self.db_meta = VersionNode(self)
+        if version:
+            # get database version node ('check' module)
+            # immutable variable of each instance (ie, each call from the 
+            # adapter to BioCypher)
+            # checks for existence of graph representation and returns if found,
+            # else creates new one
+            self.db_meta = VersionNode(self)
 
-        # if db representation node does not exist or explicitly asked for wipe
-        # create new graph representation: default yml, interactive?
-        if wipe or self.db_meta.graph_state is None:
-            self.init_db()
+            # if db representation node does not exist or explicitly asked for wipe
+            # create new graph representation: default yml, interactive?
+            if wipe or self.db_meta.graph_state is None:
+                self.init_db()
 
-        # then
-        self.update_meta_graph()
+            # then
+            self.update_meta_graph()
+        else:
+            if wipe:
+                self.init_db()
 
 
     def update_meta_graph(self):
@@ -544,12 +554,13 @@ class Driver(DriverBase):
         self.add_biocypher_nodes(self.db_meta)
 
         # connect version node to previous
-        e_meta = BioCypherEdge(
-            self.db_meta.graph_state['id'],
-            self.db_meta.node_id,
-            'PRECEDES'
-            )
-        self.add_biocypher_edges(e_meta)
+        if self.node_count > 1:
+            e_meta = BioCypherEdge(
+                self.db_meta.graph_state['id'],
+                self.db_meta.node_id,
+                'PRECEDES'
+                )
+            self.add_biocypher_edges(e_meta)
 
         # add structure nodes
         n = []
@@ -641,14 +652,14 @@ class Driver(DriverBase):
         self.add_biocypher_nodes(bn)
 
 
-    def add_edges(self, values):
+    def add_edges(self, src_tar_type_tuples):
         """
         Generic edge adder function to add any kind of input to the graph via
         the BioCypherEdge class. Should employ translation functionality (as
         of now, just passing pypath input through).
         """
 
-        bn = translate.edges_from_pypath(values) # replace with check-translate function
+        bn = translate.gen_translate_edges(self.db_meta.schema, src_tar_type_tuples)
         self.add_biocypher_edges(bn)
 
 
@@ -683,8 +694,10 @@ class Driver(DriverBase):
                     "Nodes must be passed as type BioCypherNode. "
                     "Please use the generic add_edges() function.")
             else:
-                self._log('Merging %s nodes.' % sum(1 for _ in cnodes))
-        # single nodes or node lists
+                s = sum(1 for _ in cnodes) + 1
+                self._log('Merging %s nodes.' % s)
+        
+        # receive single nodes or node lists
         else:
             if type(nodes) is not list: 
                 nodes = [ nodes ]
@@ -713,6 +726,11 @@ class Driver(DriverBase):
         target ids, label, and a dict of properties (passing on the type of
         property, ie, int, string ...).
 
+        The individual edge is either passed as a singleton, in the case of 
+        representation as an edge in the graph, or as a 3-tuple, in the case of
+        representation as a node (with two edges connecting to interaction
+        partners).
+
         The dict retrieved by the get_dict() method is passed into Neo4j as a
         map of maps, explicitly encoding source and target ids and the
         relationship label, and adding all edge properties from the 'properties'
@@ -727,33 +745,68 @@ class Driver(DriverBase):
             bool: The return value. True for success, False otherwise.
         """
 
-        if type(edges) is not list: edges = [ edges ]
+        tup = False
 
-        if not all(isinstance(e, BioCypherEdge) for e in edges):
-            raise TypeError("Edges must be passed as type EdgeFromPypath. "
-            "Please use the generic add_edges() function.")
+        # receive generator objects
+        if isinstance(edges, GeneratorType):
+            gen = True
+            edges, cedges = itertools.tee(edges)
+            cedge = next(cedges)
+            if type(cedge) == tuple:
+                # create one node and two edges
+                tup = True
+                cedge = cedge[1]
+            if not isinstance(cedge, BioCypherEdge):
+                # type error
+                raise Exception("It appears that the first edge is not a BioCypherEdge. "
+                    "Nodes must be passed as type BioCypherEdge. "
+                    "Please use the generic add_edges() function.")
+            else:
+                # create one edge
+                s = sum(1 for _ in cedges) + 1 
+                self._log('Merging %s nodes.' % s)
+        
+        # receive single edges or edge lists
+        else:
+            if type(edges) is not list: 
+                edges = [ edges ]
 
-        # relationships
-        self._log('Merging %s edges.' % len(edges))
+            # flatten
+            if any(isinstance(i, list) for i in edges):
+                edges = [item for sublist in edges for item in sublist]
 
-        rels = [edge.get_dict() for edge in edges]
+            if type(edges[0]) == tuple:
+                tup = True
+            elif not all(isinstance(e, BioCypherEdge) for e in edges):
+                raise Exception("Nodes must be passed as type NodeFromPypath. ")
+            
+            self._log('Merging %s edges.' % len(edges))
+        
 
-        # merging only on the ids of the molecules, passing the properties on
-        # match and on create; removing the node labels seemed least complicated
-        query = (
-            'UNWIND $rels AS r \n'
-            'MATCH '
-            '(src {id: r.source_id}), '
-            '(tar {id: r.target_id}) \n'
-            'CALL apoc.merge.relationship('
-            'src, r.relationship_label, NULL, r.properties, tar, r.properties) '
-            'YIELD rel \n'
-            'RETURN rel'
-        )
+        # cypher query
+        if not tup:
+            rels = [edge.get_dict() for edge in edges]
 
-        self.query(query, parameters = {'rels': rels})
+            # merging only on the ids of the molecules, passing the properties on
+            # match and on create; removing the node labels seemed least complicated
+            query = (
+                'UNWIND $rels AS r '
+                'MERGE (src {id: r.source_id}) '
+                'MERGE (tar {id: r.target_id}) '
+                'WITH src, tar, r '
+                'CALL apoc.merge.relationship('
+                'src, r.relationship_label, NULL, r.properties, tar, r.properties) '
+                'YIELD rel '
+                'RETURN rel'
+            )
 
-        return True
+            self.query(query, parameters = {'rels': rels})
+
+        else:
+            self.add_biocypher_nodes([tup[0] for tup in edges])
+            self.add_biocypher_edges([list(tup[1:3]) for tup in edges])
+
+        return True 
 
 
         # interaction nodes: required? parallel?
