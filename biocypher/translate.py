@@ -56,7 +56,7 @@ class BiolinkAdapter(object):
 # Create nodes and edges from separate inputs
 # -------------------------------------------
 
-def translate_nodes(leaves, id_type_tuples):
+def gen_translate_nodes(leaves, id_type_tuples):
     """
     Translates input node representation to a representation that conforms
     to the schema of the given BioCypher graph. For now requires explicit 
@@ -67,22 +67,31 @@ def translate_nodes(leaves, id_type_tuples):
 
     # biolink = BiolinkAdapter(leaves)
 
-    lst = []
     for id, type in id_type_tuples:
         path = getpath(leaves, type)
+
         if path is not None:
             bl_type = path[0]
-            n = BioCypherNode(
+            yield BioCypherNode(
                 node_id=id,
                 node_label=bl_type,
                 # additional here
             )
-            lst.append(n)
+
         else:
             print("No path for type " + type)
 
-    return lst
 
+def translate_edges(leaves, src_tar_type_tuples):
+    """
+    Translates input edge representation to a representation that conforms
+    to the schema of the given BioCypher graph. For now requires explicit 
+    statement of edge type on pass.
+
+
+    """
+
+    
 
 def edges_from_pypath(records):
     return(BioCypherEdge.create_relationship_list(records))

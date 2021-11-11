@@ -19,7 +19,9 @@ Todo:
 
 import os
 import re
+import itertools
 import importlib as imp
+from types import GeneratorType
 
 import yaml
 import neo4j
@@ -557,10 +559,16 @@ class Driver(DriverBase):
             n.append(MetaNode(entity, **params))
         self.add_biocypher_nodes(n)
 
+        # remove connection of structure nodes from previous version node(s)
+        self.query(
+            "MATCH ()-[r:CONTAINS]-()"
+            "DELETE r"
+        )
+
         # connect structure nodes to version node
         e = []
         current_version = self.db_meta.get_id()
-        for entity in [item[0] for item in self.db_meta.leaves]:
+        for entity in self.db_meta.leaves.keys():
             e.append(MetaEdge(current_version, entity, "CONTAINS"))
         self.add_biocypher_edges(e)
 
@@ -629,7 +637,7 @@ class Driver(DriverBase):
         of now, just passing pypath input through).
         """
 
-        bn = translate.translate_nodes(self.db_meta.schema, id_type_tuples)
+        bn = translate.gen_translate_nodes(self.db_meta.schema, id_type_tuples)
         self.add_biocypher_nodes(bn)
 
 
@@ -667,13 +675,24 @@ class Driver(DriverBase):
             - use return nodes to implement test?
         """
 
-        if type(nodes) is not list: nodes = [ nodes ]
+        # receive generator objects
+        if isinstance(nodes, GeneratorType):
+            nodes, cnodes = itertools.tee(nodes)
+            if not isinstance(next(cnodes), BioCypherNode):
+                raise Exception("It appears that the first node is not a BioCypherNode. "
+                    "Nodes must be passed as type BioCypherNode. "
+                    "Please use the generic add_edges() function.")
+            else:
+                self._log('Merging %s nodes.' % sum(1 for _ in cnodes))
+        # single nodes or node lists
+        else:
+            if type(nodes) is not list: 
+                nodes = [ nodes ]
+            if not all(isinstance(n, BioCypherNode) for n in nodes):
+                raise Exception("Nodes must be passed as type NodeFromPypath. ")
+            else:
+                self._log('Merging %s nodes.' % len(nodes))
 
-        if not all(isinstance(n, BioCypherNode) for n in nodes):
-            raise TypeError("Nodes must be passed as type NodeFromPypath. "
-            "Please use the generic add_edges() function.")
-
-        self._log('Merging %s nodes.' % len(nodes))
 
         entities = [node.get_dict() for node in nodes]
 
