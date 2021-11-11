@@ -3,7 +3,7 @@ from biocypher.translate import translate_nodes
 from biocypher.check import VersionNode
 from biocypher.driver import Driver
 
-def test():
+def test_translate_nodes():
     v = VersionNode(Driver())
     id_type = [
         ('G9205', 'protein'), 
@@ -17,4 +17,4 @@ def test():
     assert t[2].get_label() == 'MacromolecularComplexMixin'
 
 if __name__ == "__main__":
-    test()
+    test_translate_nodes()
