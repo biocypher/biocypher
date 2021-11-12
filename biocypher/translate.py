@@ -90,7 +90,8 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
     conforms to the schema of the given BioCypher graph. For now
     requires explicit statement of edge type on pass.
 
-
+    Todo:
+        - id of interactions (now simple concat with "_")
     """
 
     for src, tar, type in src_tar_type_tuples:
@@ -101,6 +102,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
             rep = leaves[bl_type]["represented_as"]
 
             if rep == "node":
+                # TODO update
                 node_id = str(src) + "_" + str(tar)
                 n = BioCypherNode(
                     node_id=node_id,
