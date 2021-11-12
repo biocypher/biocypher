@@ -38,28 +38,29 @@ class BiolinkAdapter(object):
         super().__init__()
         self.leaves = self.translate_leaves_to_biolink(leaves)
 
-
     def translate_leaves_to_biolink(self, leaves):
         t = Toolkit()
         l = []
         for entity in leaves.keys():
-            e = t.get_element(entity) # element name
+            e = t.get_element(entity)  # element name
             if e is not None:
                 l.append([entity, e])
             else:
                 print("Entity not found:" + entity[0])
                 l.append([entity, None])
-        
+
         return l
+
 
 # -------------------------------------------
 # Create nodes and edges from separate inputs
 # -------------------------------------------
 
+
 def gen_translate_nodes(leaves, id_type_tuples):
     """
     Translates input node representation to a representation that conforms
-    to the schema of the given BioCypher graph. For now requires explicit 
+    to the schema of the given BioCypher graph. For now requires explicit
     statement of node type on pass.
 
 
@@ -85,7 +86,7 @@ def gen_translate_nodes(leaves, id_type_tuples):
 def gen_translate_edges(leaves, src_tar_type_tuples):
     """
     Translates input edge representation to a representation that conforms
-    to the schema of the given BioCypher graph. For now requires explicit 
+    to the schema of the given BioCypher graph. For now requires explicit
     statement of edge type on pass.
 
 
@@ -96,9 +97,9 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
 
         if path is not None:
             bl_type = path[0]
-            rep = leaves[bl_type]['represented_as']
+            rep = leaves[bl_type]["represented_as"]
 
-            if rep == 'node':
+            if rep == "node":
                 node_id = src + "->" + tar
                 n = BioCypherNode(
                     node_id=node_id,
@@ -118,9 +119,9 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
                     # additional here
                 )
                 yield (n, e_s, e_t)
-            
+
             else:
-                edge_label = leaves[bl_type]['label_as_edge']
+                edge_label = leaves[bl_type]["label_as_edge"]
                 yield BioCypherEdge(
                     source_id=src,
                     target_id=tar,
@@ -132,11 +133,9 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
             print("No path for type " + type)
 
 
-
-    
-
 def edges_from_pypath(records):
-    return(BioCypherEdge.create_relationship_list(records))
+    return BioCypherEdge.create_relationship_list(records)
+
 
 # quick and dirty replacement functions
 # this belongs in translate or in the pypath adapter directly
@@ -145,9 +144,9 @@ def edges_from_pypath(records):
 def getpath(nested_dict, value, prepath=()):
     for k, v in nested_dict.items():
         path = prepath + (k,)
-        if v == value: # found value
+        if v == value:  # found value
             return path
-        elif hasattr(v, 'items'): # v is a dict
-            p = getpath(v, value, path) # recursive call
+        elif hasattr(v, "items"):  # v is a dict
+            p = getpath(v, value, path)  # recursive call
             if p is not None:
                 return p

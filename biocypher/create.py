@@ -6,7 +6,7 @@ This module is used for the creating a generic property graph database for use
 in biomedical research applications. It takes as inputs ordered collections of
 biomedical nodes and relationships and yields specific classes for property
 graph nodes and edges that adhere to the BioCypher standard. It is part of the
-BioCypher python package, homepage: TODO.
+BioCypher python package, homepage: TODO. 
 
 
 Copyright 2021, Heidelberg University Clinic
@@ -45,7 +45,7 @@ Todo:
 """
 
 # Futures
-# from __future__ import 
+# from __future__ import
 
 
 # Built-in/Generic Imports
@@ -61,43 +61,40 @@ import sys
 # import pypath.utils.mapping as mapping
 
 
-class BioCypherNode():
+class BioCypherNode:
     """
     Handoff class to represent biomedical entities as Neo4j nodes.
 
     Has id, label, property dict; id and label (in the Neo4j sense of a label,
     ie, the entity descriptor after the colon, such as ":Protein") are
     non-optional and called node_id and node_label to avoid confusion with
-    "label" properties. Node labels are written in CamelBack and as nouns, as 
+    "label" properties. Node labels are written in CamelBack and as nouns, as
     per Neo4j consensus.
 
-    Args: 
-        node_id: consensus "best" id for biological entity (string) 
-        node_label: primary type of entity, capitalised (string) 
-        **properties (kwargs): collection of all other properties to be 
+    Args:
+        node_id: consensus "best" id for biological entity (string)
+        node_label: primary type of entity, capitalised (string)
+        **properties (kwargs): collection of all other properties to be
             passed to neo4j for the respective node (dict)
 
-    Todo: 
+    Todo:
         - "allowed list" of property names
-        - account for all properties automatically 
-        - input of properties explicit via kwargs, or require user to pass 
-            dicts directly? 
-        - check and correct small inconsistencies such as capitalisation of 
+        - account for all properties automatically
+        - input of properties explicit via kwargs, or require user to pass
+            dicts directly?
+        - check and correct small inconsistencies such as capitalisation of
             ID names ("uniprot" vs "UniProt")
-        - check for correct ID patterns (eg "ENSG" + string of numbers, 
+        - check for correct ID patterns (eg "ENSG" + string of numbers,
             uniprot length)
         - ID conversion using pypath translation facilities for now
-        - one label is required as a minimum, but do we want multiple 
+        - one label is required as a minimum, but do we want multiple
             hierarchical labels? if so, how do we implement optional
             secondary labels?
     """
 
-
     def __init__(
-        self, node_id, node_label, 
-        optional_labels = None,
-        **properties
-        ):
+        self, node_id, node_label, optional_labels=None, **properties
+    ):
         self.node_id = node_id
         self.node_label = node_label
         self.properties = properties
@@ -108,7 +105,6 @@ class BioCypherNode():
             else:
                 raise Exception("Optional labels expected as list of strings.")
 
-
     def get_id(self):
         """
         Returns primary node identifier.
@@ -117,7 +113,6 @@ class BioCypherNode():
             str: node_id
         """
         return self.node_id
-
 
     def get_label(self):
         """
@@ -128,7 +123,6 @@ class BioCypherNode():
         """
         return self.node_label
 
-
     def get_optional_labels(self):
         """
         Returns all optional labels.
@@ -137,7 +131,6 @@ class BioCypherNode():
             dict: properties
         """
         return self.optional_labels
-
 
     def get_properties(self):
         """
@@ -149,40 +142,41 @@ class BioCypherNode():
         """
         return self.properties
 
-
     def get_dict(self):
         """
         Convert self to format accepted by Neo4j driver (Python dict -> Neo4j Map).
 
         Returns:
-            dict: node_id and node_label as top-level key-value pairs, 
+            dict: node_id and node_label as top-level key-value pairs,
             properties as second-level dict.
         """
         d = {}
-        d.update([
-            ('node_id', self.node_id), 
-            ('node_label', self.node_label), 
-            ('properties', self.properties)
-            ])
+        d.update(
+            [
+                ("node_id", self.node_id),
+                ("node_label", self.node_label),
+                ("properties", self.properties),
+            ]
+        )
         return d
 
 
-class BioCypherEdge():
+class BioCypherEdge:
     """
     Handoff class to represent biomedical relationships in Neo4j.
 
-    Has source and target ids, label, property dict; ids and label (in the 
-    Neo4j sense of a label, ie, the entity descriptor after the colon, such 
-    as ":TARGETS") are non-optional and called source_id, target_id, and 
-    relationship_label to avoid confusion with properties called "label", 
-    which usually denotes the human-readable form. Relationship labels are 
+    Has source and target ids, label, property dict; ids and label (in the
+    Neo4j sense of a label, ie, the entity descriptor after the colon, such
+    as ":TARGETS") are non-optional and called source_id, target_id, and
+    relationship_label to avoid confusion with properties called "label",
+    which usually denotes the human-readable form. Relationship labels are
     written in UPPERCASE and as verbs, as per Neo4j consensus.
 
     Args:
-        source_id, target_id: consensus "best" id for biological entity 
+        source_id, target_id: consensus "best" id for biological entity
             (string)
         relationship_label: type of interaction, UPPERCASE (string)
-        **properties (kwargs): collection of all other properties to be 
+        **properties (kwargs): collection of all other properties to be
             passed to Neo4j for the respective edge (dict)
 
     Todo:
@@ -190,10 +184,7 @@ class BioCypherEdge():
         - check structural consistency with BioCypher standard
     """
 
-    def __init__(
-        self, source_id, target_id, relationship_label, 
-        **properties
-        ):
+    def __init__(self, source_id, target_id, relationship_label, **properties):
         self.source_id = source_id
         self.target_id = target_id
         self.relationship_label = relationship_label
@@ -228,7 +219,7 @@ class BioCypherEdge():
 
     def get_properties(self):
         """
-        Returns all other relationship properties apart from primary ids and 
+        Returns all other relationship properties apart from primary ids and
         label as key-value pairs.
 
         Returns:
@@ -238,19 +229,22 @@ class BioCypherEdge():
 
     def get_dict(self):
         """
-        Convert self to format accepted by Neo4j driver (Python dict -> Neo4j 
+        Convert self to format accepted by Neo4j driver (Python dict -> Neo4j
         Map).
 
         Returns:
-            dict: source_id, target_id and relationship_label as top-level 
+            dict: source_id, target_id and relationship_label as top-level
             key-value pairs, properties as second-level dict.
         """
         d = {}
-        d.update([
-            ('source_id', self.source_id), 
-            ('target_id', self.target_id), 
-            ('relationship_label', self.relationship_label), 
-            ('properties', self.properties)])
+        d.update(
+            [
+                ("source_id", self.source_id),
+                ("target_id", self.target_id),
+                ("relationship_label", self.relationship_label),
+                ("properties", self.properties),
+            ]
+        )
         return d
 
     def create_relationship_list(relationships):
@@ -258,7 +252,7 @@ class BioCypherEdge():
         Create list of BioCypherEdge objects from dict of pypath relationships.
 
         Args:
-            relationships: currently, a collection of pypath relationships. 
+            relationships: currently, a collection of pypath relationships.
                 should be adapted to accept arbitrary collections.
 
         Todo:
@@ -269,13 +263,13 @@ class BioCypherEdge():
         for edge in relationships:
             e = BioCypherEdge(
                 # these are mandatory
-                source_id = _process_id(edge.id_a),
-                target_id = _process_id(edge.id_b),
-                relationship_label = edge.type.upper(),
+                source_id=_process_id(edge.id_a),
+                target_id=_process_id(edge.id_b),
+                relationship_label=edge.type.upper(),
                 # here are any additional properties
-                directed = edge.directed,
-                effect = edge.effect
-                )
+                directed=edge.directed,
+                effect=edge.effect,
+            )
             lst.append(e)
 
         return lst
@@ -288,4 +282,4 @@ def _process_id(identifier):
 
     TODO remove
     """
-    return str(identifier).replace('COMPLEX:', 'COMPLEX_')
+    return str(identifier).replace("COMPLEX:", "COMPLEX_")

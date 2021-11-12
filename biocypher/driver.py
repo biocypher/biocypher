@@ -63,33 +63,31 @@ class DriverBase(object):
     """
 
     def __init__(
-            self,
-            driver = None,
-            db_name = None,
-            db_uri = 'neo4j://localhost:7687',
-            db_auth = None,
-            fetch_size = 1000,
-            config_file = 'config/db_config.yaml',
-            wipe = False,
-            version = True,
-        ):
+        self,
+        driver=None,
+        db_name=None,
+        db_uri="neo4j://localhost:7687",
+        db_auth=None,
+        fetch_size=1000,
+        config_file="config/db_config.yaml",
+        wipe=False,
+        version=True,
+    ):
 
         self.driver = driver
 
         if not self.driver:
 
             self._db_config = {
-                'uri': db_uri,
-                'auth': db_auth,
-                'db': db_name,
-                'fetch_size': fetch_size,
+                "uri": db_uri,
+                "auth": db_auth,
+                "db": db_name,
+                "fetch_size": fetch_size,
             }
 
             # include to load default yaml from module
             ROOT = os.path.join(
-                *os.path.split(
-                    os.path.abspath(os.path.dirname(__file__))
-                )
+                *os.path.split(os.path.abspath(os.path.dirname(__file__)))
             )
             self._config_file = ROOT + "/../" + config_file
 
@@ -97,26 +95,23 @@ class DriverBase(object):
 
         self.ensure_db()
 
-        
     def reload(self):
         """
         Reloads the object from the module level.
         """
 
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        mod = __import__(modname, fromlist=[modname.split(".")[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
-        setattr(self, '__class__', new)
+        setattr(self, "__class__", new)
 
-
-    def _log(self, msg = '', level = 0):
+    def _log(self, msg="", level=0):
         """
         Later we will connect this to a logger.
         """
 
         pass
-
 
     def db_connect(self):
         """
@@ -130,26 +125,23 @@ class DriverBase(object):
 
         # check for database running?
         self.driver = neo4j.GraphDatabase.driver(
-            uri = self.uri,
-            auth = self.auth,
+            uri=self.uri,
+            auth=self.auth,
         )
 
-        self._log('Opened database connection.')
-
+        self._log("Opened database connection.")
 
     @property
     def uri(self):
 
-        return self._db_config['uri']
-
+        return self._db_config["uri"]
 
     @property
     def auth(self):
 
-        return self._db_config['auth']
+        return self._db_config["auth"]
 
-
-    def read_config(self, section = 'default'):
+    def read_config(self, section="default"):
         """
         Populates the instance configuration from one section of a YML config
         file.
@@ -157,58 +149,51 @@ class DriverBase(object):
 
         if self._config_file and os.path.exists(self._config_file):
 
-            self._log('Reading config from `%s`.' % self._config_file)
-            
+            self._log("Reading config from `%s`." % self._config_file)
 
-            with open(self._config_file, 'r') as fp:
+            with open(self._config_file, "r") as fp:
 
                 conf = yaml.safe_load(fp.read())
 
             self._db_config.update(conf[section])
-            self._db_config['auth'] = tuple(self._db_config['auth'])
+            self._db_config["auth"] = tuple(self._db_config["auth"])
 
-        if not self._db_config['db']:
+        if not self._db_config["db"]:
 
-            self._db_config['db'] = self._default_db
-
+            self._db_config["db"] = self._default_db
 
     def close(self):
         """
         Closes the Neo4j driver if it exists and is open.
         """
 
-        if hasattr(self.driver, 'close'):
+        if hasattr(self.driver, "close"):
 
             self.driver.close()
-
 
     def __del__(self):
 
         self.close()
-
 
     @property
     def _home_db(self):
 
         return self._db_name()
 
-
     @property
     def _default_db(self):
 
-        return self._db_name('DEFAULT')
+        return self._db_name("DEFAULT")
 
+    def _db_name(self, which="HOME"):
 
-    def _db_name(self, which = 'HOME'):
-
-        resp = self.query('SHOW %s DATABASE;' % which)
+        resp = self.query("SHOW %s DATABASE;" % which)
 
         if resp:
 
-            return resp[0]['name']
+            return resp[0]["name"]
 
-
-    def query(self, query, db = None, fetch_size = None, **kwargs):
+    def query(self, query, db=None, fetch_size=None, **kwargs):
         """
         Creates a session with the driver passed into the class at
         instantiation, runs a CYPHER query and returns the response.
@@ -223,15 +208,14 @@ class DriverBase(object):
             neo4j.Result: the Neo4j response to the query
         """
 
-        db = db or self._db_config['db'] or neo4j.DEFAULT_DATABASE
-        fetch_size = fetch_size or self._db_config['fetch_size']
+        db = db or self._db_config["db"] or neo4j.DEFAULT_DATABASE
+        fetch_size = fetch_size or self._db_config["fetch_size"]
 
-        session = self.driver.session(database = db, fetch_size = fetch_size)
+        session = self.driver.session(database=db, fetch_size=fetch_size)
         response = session.run(query, **kwargs).data()
         session.close()
 
         return response
-
 
     @property
     def current_db(self):
@@ -242,10 +226,9 @@ class DriverBase(object):
             (str): Name of a database.
         """
 
-        return self._db_config['db'] or self._home_db
+        return self._db_config["db"] or self._home_db
 
-
-    def db_exists(self, name = None):
+    def db_exists(self, name=None):
         """
         Tells if a database exists in the storage of the Neo4j server.
 
@@ -256,10 +239,9 @@ class DriverBase(object):
             (bool): `True` if the database exists.
         """
 
-        return bool(self.db_status(name = name))
+        return bool(self.db_status(name=name))
 
-
-    def db_status(self, name = None, field = 'currentStatus'):
+    def db_status(self, name=None, field="currentStatus"):
         """
         Tells the current status or other state info of a database.
 
@@ -281,8 +263,7 @@ class DriverBase(object):
 
             return resp[0][field] if field in resp[0] else resp[0]
 
-
-    def db_online(self, name = None):
+    def db_online(self, name=None):
         """
         Tells if a database is currently online (active).
 
@@ -293,10 +274,9 @@ class DriverBase(object):
             (bool): `True` if the database is online.
         """
 
-        return self.db_status(name = name) == 'online'
+        return self.db_status(name=name) == "online"
 
-
-    def create_db(self, name = None):
+    def create_db(self, name=None):
         """
         Create a database if it does not already exist.
 
@@ -304,10 +284,9 @@ class DriverBase(object):
             name (str): Name of the database.
         """
 
-        self._manage_db('CREATE', name = name, options = 'IF NOT EXISTS')
+        self._manage_db("CREATE", name=name, options="IF NOT EXISTS")
 
-
-    def start_db(self, name = None):
+    def start_db(self, name=None):
         """
         Starts a database (brings it online) if it is offline.
 
@@ -315,10 +294,9 @@ class DriverBase(object):
             name (str): Name of the database.
         """
 
-        self._manage_db('START', name = name)
+        self._manage_db("START", name=name)
 
-
-    def stop_db(self, name = None):
+    def stop_db(self, name=None):
         """
         Stops a database, making sure it's offline.
 
@@ -326,10 +304,9 @@ class DriverBase(object):
             name (str): Name of the database.
         """
 
-        self._manage_db('STOP', name = name)
+        self._manage_db("STOP", name=name)
 
-
-    def drop_db(self, name = None):
+    def drop_db(self, name=None):
         """
         Deletes a database if it exists.
 
@@ -337,10 +314,9 @@ class DriverBase(object):
             name (str): Name of the database.
         """
 
-        self._manage_db('DROP', name = name, options = 'IF EXISTS')
+        self._manage_db("DROP", name=name, options="IF EXISTS")
 
-
-    def _manage_db(self, cmd, name = None, options = None):
+    def _manage_db(self, cmd, name=None, options=None):
         """
         Executes a database management command.
 
@@ -352,13 +328,13 @@ class DriverBase(object):
         """
 
         self.query(
-            '%s DATABASE %s %s;' % (
+            "%s DATABASE %s %s;"
+            % (
                 cmd,
                 name or self.current_db,
-                options or '',
+                options or "",
             )
         )
-
 
     def wipe_db(self):
         """
@@ -366,10 +342,9 @@ class DriverBase(object):
         constraints.
         """
 
-        self.query('MATCH (n) DETACH DELETE n;')
+        self.query("MATCH (n) DETACH DELETE n;")
 
         self._drop_constraints()
-
 
     def ensure_db(self):
         """
@@ -386,7 +361,6 @@ class DriverBase(object):
 
             self.start_db()
 
-
     def _drop_constraints(self):
         """
         Drops all constraints in the database. Requires the database to be
@@ -401,15 +375,13 @@ class DriverBase(object):
 
         s.close()
 
-
     @property
     def node_count(self):
         """
         Number of nodes in the database.
         """
 
-        return self.query('MATCH (n) RETURN COUNT(n) AS count;')[0]['count']
-
+        return self.query("MATCH (n) RETURN COUNT(n) AS count;")[0]["count"]
 
     @property
     def edge_count(self):
@@ -417,10 +389,9 @@ class DriverBase(object):
         Number of edges in the database.
         """
 
-        return self.query(
-            'MATCH ()-[r]->() RETURN COUNT(r) AS count;'
-        )[0]['count']
-
+        return self.query("MATCH ()-[r]->() RETURN COUNT(r) AS count;")[0][
+            "count"
+        ]
 
     @property
     def user(self):
@@ -434,25 +405,24 @@ class DriverBase(object):
 
         if self.driver:
 
-            opener_vars = dict(zip(
-                self.driver._pool.opener.__code__.co_freevars,
-                self.driver._pool.opener.__closure__,
-            ))
+            opener_vars = dict(
+                zip(
+                    self.driver._pool.opener.__code__.co_freevars,
+                    self.driver._pool.opener.__closure__,
+                )
+            )
 
-            if 'auth' in opener_vars:
+            if "auth" in opener_vars:
 
-                return opener_vars['auth'].cell_contents[0]
-
+                return opener_vars["auth"].cell_contents[0]
 
     def __len__(self):
 
         return self.node_count
 
-
     def session(self, **kwargs):
 
         return self.driver.session(**kwargs)
-
 
     def __enter__(self):
 
@@ -460,34 +430,31 @@ class DriverBase(object):
 
         return self._context_session
 
-
     def __exit__(self, *exc):
 
-        if hasattr(self, '_context_session'):
+        if hasattr(self, "_context_session"):
 
             self._context_session.close()
-            delattr(self, '_context_session')
-
+            delattr(self, "_context_session")
 
     def __repr__(self):
 
-        return '<%s %s>' % (
+        return "<%s %s>" % (
             self.__class__.__name__,
-            self._connection_str if self.driver else '[no connection]'
+            self._connection_str if self.driver else "[no connection]",
         )
-
 
     @property
     def _connection_str(self):
 
-        return '%s://%s:%u/%s' % (
+        return "%s://%s:%u/%s" % (
             re.split(
-                r'(?<=[a-z])(?=[A-Z])',
+                r"(?<=[a-z])(?=[A-Z])",
                 self.driver.__class__.__name__,
             )[0].lower(),
-            self.driver._pool.address[0] if self.driver else 'unknown',
+            self.driver._pool.address[0] if self.driver else "unknown",
             self.driver._pool.address[1] if self.driver else 0,
-            self.user or 'unknown',
+            self.user or "unknown",
         )
 
 
@@ -516,22 +483,22 @@ class Driver(DriverBase):
     """
 
     def __init__(
-            self,
-            driver = None,
-            db_name = None,
-            db_uri = 'neo4j://localhost:7687',
-            db_auth = None,
-            fetch_size = 100,
-            config_file = 'config/db_config.yaml',
-            wipe = False,
-            version = True,
-        ):
+        self,
+        driver=None,
+        db_name=None,
+        db_uri="neo4j://localhost:7687",
+        db_auth=None,
+        fetch_size=100,
+        config_file="config/db_config.yaml",
+        wipe=False,
+        version=True,
+    ):
 
         DriverBase.__init__(**locals())
 
         if version:
             # get database version node ('check' module)
-            # immutable variable of each instance (ie, each call from the 
+            # immutable variable of each instance (ie, each call from the
             # adapter to BioCypher)
             # checks for existence of graph representation and returns if found,
             # else creates new one
@@ -548,7 +515,6 @@ class Driver(DriverBase):
             if wipe:
                 self.init_db()
 
-
     def update_meta_graph(self):
         # add version node
         self.add_biocypher_nodes(self.db_meta)
@@ -556,25 +522,22 @@ class Driver(DriverBase):
         # connect version node to previous
         if self.node_count > 1:
             e_meta = BioCypherEdge(
-                self.db_meta.graph_state['id'],
+                self.db_meta.graph_state["id"],
                 self.db_meta.node_id,
-                'PRECEDES'
-                )
+                "PRECEDES",
+            )
             self.add_biocypher_edges(e_meta)
 
         # add structure nodes
         n = []
         # append only bottom level key-value pairs
-        
+
         for entity, params in self.db_meta.leaves.items():
             n.append(MetaNode(entity, **params))
         self.add_biocypher_nodes(n)
 
         # remove connection of structure nodes from previous version node(s)
-        self.query(
-            "MATCH ()-[r:CONTAINS]-()"
-            "DELETE r"
-        )
+        self.query("MATCH ()-[r:CONTAINS]-()" "DELETE r")
 
         # connect structure nodes to version node
         e = []
@@ -582,7 +545,6 @@ class Driver(DriverBase):
         for entity in self.db_meta.leaves.keys():
             e.append(MetaEdge(current_version, entity, "CONTAINS"))
         self.add_biocypher_edges(e)
-
 
     def init_db(self):
         """
@@ -596,8 +558,7 @@ class Driver(DriverBase):
 
         self.wipe_db()
         self._create_constraints()
-        self._log('Initialising database.')
-        
+        self._log("Initialising database.")
 
     def _create_constraints(self):
         """
@@ -610,36 +571,35 @@ class Driver(DriverBase):
         """
 
         self.query(
-            'CREATE CONSTRAINT protein_id '
-            'IF NOT EXISTS ON (n:Protein) '
-            'ASSERT n.id IS UNIQUE'
+            "CREATE CONSTRAINT protein_id "
+            "IF NOT EXISTS ON (n:Protein) "
+            "ASSERT n.id IS UNIQUE"
         )
         self.query(
-            'CREATE CONSTRAINT complex_id '
-            'IF NOT EXISTS ON (n:Complex) '
-            'ASSERT n.id IS UNIQUE'
+            "CREATE CONSTRAINT complex_id "
+            "IF NOT EXISTS ON (n:Complex) "
+            "ASSERT n.id IS UNIQUE"
         )
         self.query(
-            'CREATE CONSTRAINT mirna_id '
-            'IF NOT EXISTS ON (n:miRNA) '
-            'ASSERT n.id IS UNIQUE'
+            "CREATE CONSTRAINT mirna_id "
+            "IF NOT EXISTS ON (n:miRNA) "
+            "ASSERT n.id IS UNIQUE"
         )
         self.query(
-            'CREATE CONSTRAINT reference_id '
-            'IF NOT EXISTS ON (n:Reference) '
-            'ASSERT n.id IS UNIQUE'
+            "CREATE CONSTRAINT reference_id "
+            "IF NOT EXISTS ON (n:Reference) "
+            "ASSERT n.id IS UNIQUE"
         )
         self.query(
-            'CREATE CONSTRAINT source_id '
-            'IF NOT EXISTS ON (n:Resource) '
-            'ASSERT n.id IS UNIQUE'
+            "CREATE CONSTRAINT source_id "
+            "IF NOT EXISTS ON (n:Resource) "
+            "ASSERT n.id IS UNIQUE"
         )
         self.query(
-            'CREATE CONSTRAINT interaction_key '
-            'IF NOT EXISTS ON (n:Interaction) '
-            'ASSERT n.key IS UNIQUE'
+            "CREATE CONSTRAINT interaction_key "
+            "IF NOT EXISTS ON (n:Interaction) "
+            "ASSERT n.key IS UNIQUE"
         )
-
 
     def add_nodes(self, id_type_tuples):
         """
@@ -651,7 +611,6 @@ class Driver(DriverBase):
         bn = translate.gen_translate_nodes(self.db_meta.schema, id_type_tuples)
         self.add_biocypher_nodes(bn)
 
-
     def add_edges(self, src_tar_type_tuples):
         """
         Generic edge adder function to add any kind of input to the graph via
@@ -659,9 +618,10 @@ class Driver(DriverBase):
         of now, just passing pypath input through).
         """
 
-        bn = translate.gen_translate_edges(self.db_meta.schema, src_tar_type_tuples)
+        bn = translate.gen_translate_edges(
+            self.db_meta.schema, src_tar_type_tuples
+        )
         self.add_biocypher_edges(bn)
-
 
     def add_biocypher_nodes(self, nodes):
         """
@@ -690,35 +650,37 @@ class Driver(DriverBase):
         if isinstance(nodes, GeneratorType):
             nodes, cnodes = itertools.tee(nodes)
             if not isinstance(next(cnodes), BioCypherNode):
-                raise Exception("It appears that the first node is not a BioCypherNode. "
+                raise Exception(
+                    "It appears that the first node is not a BioCypherNode. "
                     "Nodes must be passed as type BioCypherNode. "
-                    "Please use the generic add_edges() function.")
+                    "Please use the generic add_edges() function."
+                )
             else:
                 s = sum(1 for _ in cnodes) + 1
-                self._log('Merging %s nodes.' % s)
-        
+                self._log("Merging %s nodes." % s)
+
         # receive single nodes or node lists
         else:
-            if type(nodes) is not list: 
-                nodes = [ nodes ]
+            if type(nodes) is not list:
+                nodes = [nodes]
             if not all(isinstance(n, BioCypherNode) for n in nodes):
-                raise Exception("Nodes must be passed as type NodeFromPypath. ")
+                raise Exception(
+                    "Nodes must be passed as type NodeFromPypath. "
+                )
             else:
-                self._log('Merging %s nodes.' % len(nodes))
-
+                self._log("Merging %s nodes." % len(nodes))
 
         entities = [node.get_dict() for node in nodes]
 
         entity_query = (
-            'UNWIND $entities AS ent \n'
-            'CALL apoc.merge.node([ent.node_label], {id: ent.node_id}, ent.properties) '
-            'YIELD node \n'
-            'RETURN node'
+            "UNWIND $entities AS ent \n"
+            "CALL apoc.merge.node([ent.node_label], {id: ent.node_id}, ent.properties) "
+            "YIELD node \n"
+            "RETURN node"
         )
-        self.query(entity_query, parameters = {'entities': entities})
+        self.query(entity_query, parameters={"entities": entities})
 
         return True
-
 
     def add_biocypher_edges(self, edges):
         """
@@ -726,7 +688,7 @@ class Driver(DriverBase):
         target ids, label, and a dict of properties (passing on the type of
         property, ie, int, string ...).
 
-        The individual edge is either passed as a singleton, in the case of 
+        The individual edge is either passed as a singleton, in the case of
         representation as an edge in the graph, or as a 3-tuple, in the case of
         representation as a node (with two edges connecting to interaction
         partners).
@@ -758,18 +720,20 @@ class Driver(DriverBase):
                 cedge = cedge[1]
             if not isinstance(cedge, BioCypherEdge):
                 # type error
-                raise Exception("It appears that the first edge is not a BioCypherEdge. "
+                raise Exception(
+                    "It appears that the first edge is not a BioCypherEdge. "
                     "Nodes must be passed as type BioCypherEdge. "
-                    "Please use the generic add_edges() function.")
+                    "Please use the generic add_edges() function."
+                )
             else:
                 # create one edge
-                s = sum(1 for _ in cedges) + 1 
-                self._log('Merging %s nodes.' % s)
-        
+                s = sum(1 for _ in cedges) + 1
+                self._log("Merging %s nodes." % s)
+
         # receive single edges or edge lists
         else:
-            if type(edges) is not list: 
-                edges = [ edges ]
+            if type(edges) is not list:
+                edges = [edges]
 
             # flatten
             if any(isinstance(i, list) for i in edges):
@@ -778,10 +742,11 @@ class Driver(DriverBase):
             if type(edges[0]) == tuple:
                 tup = True
             elif not all(isinstance(e, BioCypherEdge) for e in edges):
-                raise Exception("Nodes must be passed as type NodeFromPypath. ")
-            
-            self._log('Merging %s edges.' % len(edges))
-        
+                raise Exception(
+                    "Nodes must be passed as type NodeFromPypath. "
+                )
+
+            self._log("Merging %s edges." % len(edges))
 
         # cypher query
         if not tup:
@@ -790,24 +755,23 @@ class Driver(DriverBase):
             # merging only on the ids of the molecules, passing the properties on
             # match and on create; removing the node labels seemed least complicated
             query = (
-                'UNWIND $rels AS r '
-                'MERGE (src {id: r.source_id}) '
-                'MERGE (tar {id: r.target_id}) '
-                'WITH src, tar, r '
-                'CALL apoc.merge.relationship('
-                'src, r.relationship_label, NULL, r.properties, tar, r.properties) '
-                'YIELD rel '
-                'RETURN rel'
+                "UNWIND $rels AS r "
+                "MERGE (src {id: r.source_id}) "
+                "MERGE (tar {id: r.target_id}) "
+                "WITH src, tar, r "
+                "CALL apoc.merge.relationship("
+                "src, r.relationship_label, NULL, r.properties, tar, r.properties) "
+                "YIELD rel "
+                "RETURN rel"
             )
 
-            self.query(query, parameters = {'rels': rels})
+            self.query(query, parameters={"rels": rels})
 
         else:
             self.add_biocypher_nodes([tup[0] for tup in edges])
             self.add_biocypher_edges([list(tup[1:3]) for tup in edges])
 
-        return True 
-
+        return True
 
         # interaction nodes: required? parallel?
         # nodes = [

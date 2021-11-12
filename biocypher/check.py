@@ -31,55 +31,58 @@ import os
 
 class MetaNode(BioCypherNode):
     """
-    Graph structure information node representing node type entities in the 
-    BioCypher graph. Inherits from BioCypherNode but fixes label to 
+    Graph structure information node representing node type entities in the
+    BioCypher graph. Inherits from BioCypherNode but fixes label to
     ":MetaNode". Is connected to VersionNode via ":CONTAINS" relationship.
     """
 
     def __init__(
-        self, node_id, node_label = "MetaNode", 
-        optional_labels=None, **properties
+        self,
+        node_id,
+        node_label="MetaNode",
+        optional_labels=None,
+        **properties
     ):
         super().__init__(node_id, node_label, optional_labels, **properties)
 
 
 class MetaEdge(BioCypherEdge):
     """
-    Graph structure information edge in the meta-graph. Inherits from 
+    Graph structure information edge in the meta-graph. Inherits from
     BioCypherNode but fixes label to ":CONTAINS".
     """
 
     def __init__(
-        self, source_id, target_id, 
-        relationship_label = "CONTAINS", **properties
+        self, source_id, target_id, relationship_label="CONTAINS", **properties
     ):
-        super().__init__(source_id, target_id, relationship_label, **properties)
-
+        super().__init__(
+            source_id, target_id, relationship_label, **properties
+        )
 
 
 class VersionNode(BioCypherNode):
     """
-    Versioning and graph structure information meta node. Inherits from 
-    BioCypherNode but fixes label to ":BioCypher" and sets version 
-    by using the current date and time (meaning it overrides both 
+    Versioning and graph structure information meta node. Inherits from
+    BioCypherNode but fixes label to ":BioCypher" and sets version
+    by using the current date and time (meaning it overrides both
     mandatory args from BioCypherNode).
 
     Is created upon establishment of connection with the database and remains
     fixed for each BioCypher "session" (ie, the entire duration from starting
-    the connection to the termination of the BioCypher adapter instance). Is 
+    the connection to the termination of the BioCypher adapter instance). Is
     connected to MetaNodes and MetaEdges via ":CONTAINS" relationships.
 
     Todo:
         - granularity of versioning?
             - if many short calls are made in a short amount of time, closing
                 biocypher after each call, the number of meta-nodes would be
-                too large. on the other hand, one node per day may be too 
+                too large. on the other hand, one node per day may be too
                 little for some.
-        - could implement a continuous versioning system where we get the most 
-            recent version from the graph and add one increment, or a way to 
+        - could implement a continuous versioning system where we get the most
+            recent version from the graph and add one increment, or a way to
             pass in an arbitrary version of choice.
         - way to instantiate the MetaNode without having to give id and label?
-            - can only think of creating a parent to both BioCypherNode and 
+            - can only think of creating a parent to both BioCypherNode and
                 MetaNode that does not have mandatory id and label.
         - put in create or here?
         - add graph structure information
@@ -87,12 +90,9 @@ class VersionNode(BioCypherNode):
                 - yml is more readable
             - as dict? from yml/json?
     """
-    
 
     def __init__(
-        self, bcy_driver, 
-        node_id = None, node_label = "BioCypher", 
-        **properties
+        self, bcy_driver, node_id=None, node_label="BioCypher", **properties
     ):
 
         super().__init__(node_id, node_label, **properties)
@@ -103,7 +103,6 @@ class VersionNode(BioCypherNode):
         self.schema = self.get_graph_schema()
         self.leaves = self.get_leaves(self.schema)
 
-
     def get_current_id(self):
         """
         Versioning using datetime.
@@ -111,7 +110,6 @@ class VersionNode(BioCypherNode):
 
         now = datetime.now()
         return now.strftime("v%Y%m%d%:%H%M%S")
-
 
     def get_graph_state(self):
         """
@@ -121,18 +119,17 @@ class VersionNode(BioCypherNode):
         """
 
         result = self.bcy_driver.query(
-            'MATCH (meta:BioCypher)'
-            'WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)'
-            'RETURN meta')
-
+            "MATCH (meta:BioCypher)"
+            "WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)"
+            "RETURN meta"
+        )
 
         # if result is empty, initialise
         if len(result) == 0:
             return None
         # else, pass on graph state
         else:
-            return result[0]['meta']
-
+            return result[0]["meta"]
 
     def get_graph_schema(self):
         """
@@ -142,19 +139,16 @@ class VersionNode(BioCypherNode):
 
         # include to load default yaml from module
         ROOT = os.path.join(
-            *os.path.split(
-                os.path.abspath(os.path.dirname(__file__))
-            )
+            *os.path.split(os.path.abspath(os.path.dirname(__file__)))
         )
 
         # get graph state from config
-        with open(ROOT + '/../config/schema_config.yaml') as f:
+        with open(ROOT + "/../config/schema_config.yaml") as f:
             dataMap = yaml.safe_load(f)
         return dataMap
 
         # get optional user-defined changes to graph structure yaml
         # TODO
-
 
     def get_leaves(self, d):
         """
@@ -167,15 +161,15 @@ class VersionNode(BioCypherNode):
                 check there for "dict or no dict"
         """
         leaves = dict()
-        stack = list(d.items()) 
-        visited = set() 
-        while stack: 
-            key, value = stack.pop() 
+        stack = list(d.items())
+        visited = set()
+        while stack:
+            key, value = stack.pop()
             if isinstance(value, dict):
-                if 'represented_as' not in value.keys():
-                    if key not in visited: 
-                        stack.extend(value.items()) 
-                else: 
+                if "represented_as" not in value.keys():
+                    if key not in visited:
+                        stack.extend(value.items())
+                else:
                     leaves[key] = value
             visited.add(key)
 
