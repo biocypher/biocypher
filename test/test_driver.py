@@ -4,29 +4,6 @@ import pytest
 
 
 def test_add_biocypher_nodes():
-    """
-    ??:
-    Sometimes randomly (?) fails because graph state is not acquired,
-    even though there is a check for that in line 534 of `driver.py`.
-        self = <Driver neo4j://localhost:7687/user>
-
-        def update_meta_graph(self):
-            # add version node
-            self.add_biocypher_nodes(self.db_meta)
-
-            # connect version node to previous
-            e_meta = BioCypherEdge(
-    >           self.db_meta.graph_state['id'],
-                self.db_meta.node_id,
-                'PRECEDES'
-                )
-    E       TypeError: 'NoneType' object is not subscriptable
-
-    biocypher/driver.py:547: TypeError
-
-    Currently, each test adds a version node. May be something to avoid in
-    the future.
-    """
     # neo4j database needs to be running!
     d = Driver(version=False)
 
