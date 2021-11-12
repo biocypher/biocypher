@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-This module handles the passing of a Neo4j driver from the client to BioCypher
-and the modification of the database structure. It is part of the BioCypher
-python package, homepage: TODO.
+This module handles the passing of a Neo4j driver from the client to 
+BioCypher and the modification of the database structure. It is part of 
+the BioCypher python package, homepage: TODO.
 
 Copyright 2021, Heidelberg University Clinic
 
@@ -34,10 +34,10 @@ from .check import MetaEdge, VersionNode, MetaNode
 
 class DriverBase(object):
     """
-    Manages the connection to the Neo4j server. Establishes the connection
-    and executes queries. A wrapper around the `Driver` object from the
-    :py:mod:`neo4j` module, which is stored in the :py:attr:`driver`
-    attribute.
+    Manages the connection to the Neo4j server. Establishes the
+    connection and executes queries. A wrapper around the `Driver`
+    object from the :py:mod:`neo4j` module, which is stored in the
+    :py:attr:`driver` attribute.
 
     The connection can be defined in three ways:
         * Providing a ready ``neo4j.Driver`` instance
@@ -48,15 +48,16 @@ class DriverBase(object):
         driver (neo4j.Driver): A ``neo4j.Driver`` instance, created by,
             for example, ``neo4j.GraphDatabase.driver``.
         db_name (str): Name of the database (Neo4j graph) to use.
-        db_uri (str): Protocol, host and port to access the Neo4j server.
+        db_uri (str): Protocol, host and port to access the Neo4j
+            server.
         db_auth (tuple): Neo4j server authentication data: tuple of user
             name and password.
         fetch_size (int): Optional; the fetch size to use in database
             transactions.
-        config_file (str): Path to a YML config file which provides the URI,
-            user name and password.
-        wipe (bool): Wipe the database after connection, ensuring the data
-            is loaded into an empty database.
+        config_file (str): Path to a YML config file which provides the
+            URI, user name and password.
+        wipe (bool): Wipe the database after connection, ensuring the
+            data is loaded into an empty database.
 
     Todo:
         - remove biocypher-specific init args
@@ -115,8 +116,8 @@ class DriverBase(object):
 
     def db_connect(self):
         """
-        Creates a database connection manager (driver) based on the current
-        configuration.
+        Creates a database connection manager (driver) based on the
+        current configuration.
         """
 
         if not all(self._db_config.values()):
@@ -143,8 +144,8 @@ class DriverBase(object):
 
     def read_config(self, section="default"):
         """
-        Populates the instance configuration from one section of a YML config
-        file.
+        Populates the instance configuration from one section of a YAML
+        config file.
         """
 
         if self._config_file and os.path.exists(self._config_file):
@@ -199,10 +200,10 @@ class DriverBase(object):
         instantiation, runs a CYPHER query and returns the response.
 
         Args:
-            query: a valid CYPHER query, can include APOC if the APOC plugin
-                is installed in the accessed database
-            **kwargs: optional objects used in CYPHER interactive mode, for
-                instance for passing a parameter dictionary
+            query: a valid CYPHER query, can include APOC if the APOC
+                plugin is installed in the accessed database
+            **kwargs: optional objects used in CYPHER interactive mode,
+                for instance for passing a parameter dictionary
 
         Returns:
             neo4j.Result: the Neo4j response to the query
@@ -220,7 +221,8 @@ class DriverBase(object):
     @property
     def current_db(self):
         """
-        Name of the database (graph) where the next query would be executed.
+        Name of the database (graph) where the next query would be
+        executed.
 
         Returns:
             (str): Name of a database.
@@ -250,9 +252,9 @@ class DriverBase(object):
             field (str,NoneType): The field to return.
 
         Returns:
-            (str,dict): The status as a string, `None` if the database does
-                not exist. If :py:arg:`field` is `None` a dictionary with
-                all fields will be returned.
+            (str,dict): The status as a string, `None` if the database
+                does not exist. If :py:arg:`field` is `None` a
+                dictionary with all fields will be returned.
         """
 
         name = name or self.current_db
@@ -323,8 +325,8 @@ class DriverBase(object):
         Args:
             cmd (str): The command: CREATE, START, STOP, DROP, etc.
             name (str): Name of the database.
-            options (str): The optional parts of the command, following the
-                database name.
+            options (str): The optional parts of the command, following
+                the database name.
         """
 
         self.query(
@@ -338,8 +340,8 @@ class DriverBase(object):
 
     def wipe_db(self):
         """
-        Used in initialisation, deletes all nodes and edges and drops all
-        constraints.
+        Used in initialisation, deletes all nodes and edges and drops
+        all constraints.
         """
 
         self.query("MATCH (n) DETACH DELETE n;")
@@ -348,9 +350,10 @@ class DriverBase(object):
 
     def ensure_db(self):
         """
-        Makes sure the database used by this instance exists and is online.
-        If the database creation or startup is necessary but the user does
-        not have the sufficient privileges, an exception will be raised.
+        Makes sure the database used by this instance exists and is
+        online. If the database creation or startup is necessary but the
+        user does not have the sufficient privileges, an exception will
+        be raised.
         """
 
         if not self.db_exists():
@@ -363,8 +366,8 @@ class DriverBase(object):
 
     def _drop_constraints(self):
         """
-        Drops all constraints in the database. Requires the database to be
-        empty.
+        Drops all constraints in the database. Requires the database to
+        be empty.
         """
 
         s = self.driver.session()
@@ -471,15 +474,16 @@ class Driver(DriverBase):
         driver (neo4j.Driver): A ``neo4j.Driver`` instance, created by,
             for example, ``neo4j.GraphDatabase.driver``.
         db_name (str): Name of the database (Neo4j graph) to use.
-        db_uri (str): Protocol, host and port to access the Neo4j server.
+        db_uri (str): Protocol, host and port to access the Neo4j
+            server.
         db_auth (tuple): Neo4j server authentication data: tuple of user
             name and password.
         fetch_size (int): Optional; the fetch size to use in database
             transactions.
-        config_file (str): Path to a YML config file which provides the URI,
-            user name and password.
-        wipe (bool): Wipe the database after connection, ensuring the data
-            is loaded into an empty database.
+        config_file (str): Path to a YML config file which provides the
+            URI, user name and password.
+        wipe (bool): Wipe the database after connection, ensuring the
+            data is loaded into an empty database.
     """
 
     def __init__(
@@ -498,14 +502,15 @@ class Driver(DriverBase):
 
         if version:
             # get database version node ('check' module)
-            # immutable variable of each instance (ie, each call from the
-            # adapter to BioCypher)
-            # checks for existence of graph representation and returns if found,
-            # else creates new one
+            # immutable variable of each instance (ie, each call from
+            # the adapter to BioCypher)
+            # checks for existence of graph representation and returns
+            # if found, else creates new one
             self.db_meta = VersionNode(self)
 
-            # if db representation node does not exist or explicitly asked for wipe
-            # create new graph representation: default yml, interactive?
+            # if db representation node does not exist or explicitly
+            # asked for wipe, create new graph representation: default
+            # yml, interactive?
             if wipe or self.db_meta.graph_state is None:
                 self.init_db()
 
@@ -536,7 +541,8 @@ class Driver(DriverBase):
             n.append(MetaNode(entity, **params))
         self.add_biocypher_nodes(n)
 
-        # remove connection of structure nodes from previous version node(s)
+        # remove connection of structure nodes from previous version
+        # node(s)
         self.query("MATCH ()-[r:CONTAINS]-()" "DELETE r")
 
         # connect structure nodes to version node
@@ -548,12 +554,12 @@ class Driver(DriverBase):
 
     def init_db(self):
         """
-        Used to initialise a property graph database by deleting contents and
-        constraints and setting up new constraints.
+        Used to initialise a property graph database by deleting
+        contents and constraints and setting up new constraints.
 
         Todo:
-            - set up constraint creation interactively depending on the need
-                of the database
+            - set up constraint creation interactively depending on the
+                need of the database
         """
 
         self.wipe_db()
@@ -562,50 +568,30 @@ class Driver(DriverBase):
 
     def _create_constraints(self):
         """
-        Creates constraints on node types in the graph. Used for initial setup.
+        Creates constraints on node types in the graph. Used for
+        initial setup.
 
-        Todo:
-            - customise to create constraints on the selected structure
-            - edges?
-            - apoc?
+        Grabs leaves of the schema_config.yaml file and creates
+        constraints on the id of all entities represented as nodes.
         """
 
-        self.query(
-            "CREATE CONSTRAINT protein_id "
-            "IF NOT EXISTS ON (n:Protein) "
-            "ASSERT n.id IS UNIQUE"
-        )
-        self.query(
-            "CREATE CONSTRAINT complex_id "
-            "IF NOT EXISTS ON (n:Complex) "
-            "ASSERT n.id IS UNIQUE"
-        )
-        self.query(
-            "CREATE CONSTRAINT mirna_id "
-            "IF NOT EXISTS ON (n:miRNA) "
-            "ASSERT n.id IS UNIQUE"
-        )
-        self.query(
-            "CREATE CONSTRAINT reference_id "
-            "IF NOT EXISTS ON (n:Reference) "
-            "ASSERT n.id IS UNIQUE"
-        )
-        self.query(
-            "CREATE CONSTRAINT source_id "
-            "IF NOT EXISTS ON (n:Resource) "
-            "ASSERT n.id IS UNIQUE"
-        )
-        self.query(
-            "CREATE CONSTRAINT interaction_key "
-            "IF NOT EXISTS ON (n:Interaction) "
-            "ASSERT n.key IS UNIQUE"
-        )
+        # get structure
+        for leaf in self.db_meta.leaves.items():
+            label = leaf[0]
+            if leaf[1]["represented_as"] == "node":
+
+                s = (
+                    f"CREATE CONSTRAINT {label}_id "
+                    f"IF NOT EXISTS ON (n:{label}) "
+                    "ASSERT n.id IS UNIQUE"
+                )
+                self.query(s)
 
     def add_nodes(self, id_type_tuples):
         """
-        Generic node adder function to add any kind of input to the graph via
-        the BioCypherNode class. Should employ translation functionality (as
-        of now, just passing pypath input through).
+        Generic node adder function to add any kind of input to the
+        graph via the BioCypherNode class. Employs translation
+        functionality.
         """
 
         bn = translate.gen_translate_nodes(self.db_meta.schema, id_type_tuples)
@@ -613,9 +599,9 @@ class Driver(DriverBase):
 
     def add_edges(self, src_tar_type_tuples):
         """
-        Generic edge adder function to add any kind of input to the graph via
-        the BioCypherEdge class. Should employ translation functionality (as
-        of now, just passing pypath input through).
+        Generic edge adder function to add any kind of input to the
+        graph via the BioCypherEdge class. Employs translation
+        functionality.
         """
 
         bn = translate.gen_translate_edges(
@@ -625,16 +611,16 @@ class Driver(DriverBase):
 
     def add_biocypher_nodes(self, nodes):
         """
-        Accepts a node type handoff class (BioCypherNode) with id, label, and a
-        dict of properties (passing on the type of property, ie, int, string
-        ...).
+        Accepts a node type handoff class (BioCypherNode) with id,
+        label, and a dict of properties (passing on the type of
+        property, ie, int, string ...).
 
-        The dict retrieved by the get_dict() method is passed into Neo4j as a
-        map of maps, explicitly encoding node id and label, and adding all other
-        properties from the 'properties' key of the dict. The merge is performed
-        via APOC, matching only on node id to prevent duplicates. The same
-        properties are set on match and on create, irrespective of the actual
-        event.
+        The dict retrieved by the get_dict() method is passed into Neo4j
+        as a map of maps, explicitly encoding node id and label, and
+        adding all other properties from the 'properties' key of the
+        dict. The merge is performed via APOC, matching only on node id
+        to prevent duplicates. The same properties are set on match and
+        on create, irrespective of the actual event.
 
         Args:
             nodes: a list of BioCypherNode objects
@@ -673,9 +659,10 @@ class Driver(DriverBase):
         entities = [node.get_dict() for node in nodes]
 
         entity_query = (
-            "UNWIND $entities AS ent \n"
-            "CALL apoc.merge.node([ent.node_label], {id: ent.node_id}, ent.properties) "
-            "YIELD node \n"
+            "UNWIND $entities AS ent "
+            "CALL apoc.merge.node([ent.node_label], "
+            "{id: ent.node_id}, ent.properties) "
+            "YIELD node "
             "RETURN node"
         )
         self.query(entity_query, parameters={"entities": entities})
@@ -684,21 +671,22 @@ class Driver(DriverBase):
 
     def add_biocypher_edges(self, edges):
         """
-        Accepts an edge type handoff class (BioCypherEdge) with source and
-        target ids, label, and a dict of properties (passing on the type of
-        property, ie, int, string ...).
+        Accepts an edge type handoff class (BioCypherEdge) with source
+        and target ids, label, and a dict of properties (passing on the
+        type of property, ie, int, string ...).
 
-        The individual edge is either passed as a singleton, in the case of
-        representation as an edge in the graph, or as a 3-tuple, in the case of
-        representation as a node (with two edges connecting to interaction
-        partners).
+        The individual edge is either passed as a singleton, in the case
+        of representation as an edge in the graph, or as a 3-tuple, in
+        the case of representation as a node (with two edges connecting
+        to interaction partners).
 
-        The dict retrieved by the get_dict() method is passed into Neo4j as a
-        map of maps, explicitly encoding source and target ids and the
-        relationship label, and adding all edge properties from the 'properties'
-        key of the dict. The merge is performed via APOC, matching only on
-        source and target id to prevent duplicates. The same properties are set
-        on match and on create, irrespective of the actual event.
+        The dict retrieved by the get_dict() method is passed into Neo4j
+        as a map of maps, explicitly encoding source and target ids and
+        the relationship label, and adding all edge properties from the
+        'properties' key of the dict. The merge is performed via APOC,
+        matching only on source and target id to prevent duplicates. The
+        same properties are set on match and on create, irrespective of
+        the actual event.
 
         Args:
             edges: a list of BioCypherEdge objects
@@ -711,7 +699,9 @@ class Driver(DriverBase):
 
         # receive generator objects
         if isinstance(edges, GeneratorType):
-            gen = True
+            # itertools solution is kind of slow and cumbersome
+            # however, needs to detect tuples...
+
             edges, cedges = itertools.tee(edges)
             cedge = next(cedges)
             if type(cedge) == tuple:
@@ -726,8 +716,7 @@ class Driver(DriverBase):
                     "Please use the generic add_edges() function."
                 )
             else:
-                # create one edge
-                s = sum(1 for _ in cedges) + 1
+                s = "?"  # sum(1 for _ in cedges) + 1  # not very fast
                 self._log("Merging %s nodes." % s)
 
         # receive single edges or edge lists
@@ -752,15 +741,17 @@ class Driver(DriverBase):
         if not tup:
             rels = [edge.get_dict() for edge in edges]
 
-            # merging only on the ids of the molecules, passing the properties on
-            # match and on create; removing the node labels seemed least complicated
+            # merging only on the ids of the molecules, passing the
+            # properties on match and on create; removing the node
+            # labels seemed least complicated
             query = (
                 "UNWIND $rels AS r "
                 "MERGE (src {id: r.source_id}) "
                 "MERGE (tar {id: r.target_id}) "
                 "WITH src, tar, r "
-                "CALL apoc.merge.relationship("
-                "src, r.relationship_label, NULL, r.properties, tar, r.properties) "
+                "CALL apoc.merge.relationship"
+                "(src, r.relationship_label, NULL, "
+                "r.properties, tar, r.properties) "
                 "YIELD rel "
                 "RETURN rel"
             )
@@ -768,8 +759,11 @@ class Driver(DriverBase):
             self.query(query, parameters={"rels": rels})
 
         else:
-            self.add_biocypher_nodes([tup[0] for tup in edges])
-            self.add_biocypher_edges([list(tup[1:3]) for tup in edges])
+            # TODO: how to extract first and second/third element from
+            # generator separately?
+            edge_list = list(edges)
+            self.add_biocypher_nodes([tup[0] for tup in edge_list])
+            self.add_biocypher_edges([list(tup[1:3]) for tup in edge_list])
 
         return True
 

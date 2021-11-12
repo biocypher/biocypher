@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-This module handles the lookup and storage of entity IDs that are part of the
-BioCypher structure. It is part of the BioCypher python package, homepage: TODO.
+This module handles the lookup and storage of entity IDs that are part 
+of the BioCypher schema. It is part of the BioCypher python package, 
+homepage: TODO.
 
 
 Copyright 2021, Heidelberg University Clinic
@@ -17,12 +18,12 @@ Todo:
     - genericise: standardise input data to BioCypher specifications or, 
         optionally, user specifications.
         - if the database exists, read biocypher info node
-        - if newly created, ask for user input as to which IDs to use etc
+        - if newly created, ask for user input as to which IDs to use 
+            etc
         - default scenario?
     - type checking
-    - which system for storage? json dump/load? has the advantage of being human-
-        readable
-    - import ID types from pypath dictionary (later, externalised dictionary)?
+    - import ID types from pypath dictionary (later, externalised 
+        dictionary)? biolink?
 """
 
 from .create import BioCypherEdge, BioCypherNode
@@ -59,9 +60,9 @@ class BiolinkAdapter(object):
 
 def gen_translate_nodes(leaves, id_type_tuples):
     """
-    Translates input node representation to a representation that conforms
-    to the schema of the given BioCypher graph. For now requires explicit
-    statement of node type on pass.
+    Translates input node representation to a representation that
+    conforms to the schema of the given BioCypher graph. For now
+    requires explicit statement of node type on pass.
 
 
     """
@@ -85,9 +86,9 @@ def gen_translate_nodes(leaves, id_type_tuples):
 
 def gen_translate_edges(leaves, src_tar_type_tuples):
     """
-    Translates input edge representation to a representation that conforms
-    to the schema of the given BioCypher graph. For now requires explicit
-    statement of edge type on pass.
+    Translates input edge representation to a representation that
+    conforms to the schema of the given BioCypher graph. For now
+    requires explicit statement of edge type on pass.
 
 
     """
@@ -100,7 +101,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
             rep = leaves[bl_type]["represented_as"]
 
             if rep == "node":
-                node_id = src + "->" + tar
+                node_id = str(src) + "_" + str(tar)
                 n = BioCypherNode(
                     node_id=node_id,
                     node_label=bl_type,

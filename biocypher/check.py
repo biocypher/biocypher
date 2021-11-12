@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """
-This module is used for assessing a Neo4j instance for compliance with the
-BioCypher standard and returning pass/fail, and, in the event of "pass", it 
-returns the primary identifiers chosen by the user of the active database
-to be used in translation of the input data to the correct format required
-for the active database. It is part of the BioCypher python package, 
-homepage: TODO.
+This module is used for assessing a Neo4j instance for compliance with 
+the BioCypher standard and returning pass/fail, and, in the event of 
+"pass", it returns the primary identifiers chosen by the user of the 
+active database to be used in translation of the input data to the 
+correct format required for the active database. It is part of the 
+BioCypher python package, homepage: TODO.
 
 
 Copyright 2021, Heidelberg University Clinic
@@ -31,9 +31,10 @@ import os
 
 class MetaNode(BioCypherNode):
     """
-    Graph structure information node representing node type entities in the
-    BioCypher graph. Inherits from BioCypherNode but fixes label to
-    ":MetaNode". Is connected to VersionNode via ":CONTAINS" relationship.
+    Graph structure information node representing node type entities in
+    the BioCypher graph. Inherits from BioCypherNode but fixes label to
+    ":MetaNode". Is connected to VersionNode via ":CONTAINS"
+    relationship.
     """
 
     def __init__(
@@ -67,23 +68,26 @@ class VersionNode(BioCypherNode):
     by using the current date and time (meaning it overrides both
     mandatory args from BioCypherNode).
 
-    Is created upon establishment of connection with the database and remains
-    fixed for each BioCypher "session" (ie, the entire duration from starting
-    the connection to the termination of the BioCypher adapter instance). Is
-    connected to MetaNodes and MetaEdges via ":CONTAINS" relationships.
+    Is created upon establishment of connection with the database and
+    remains fixed for each BioCypher "session" (ie, the entire duration
+    from starting the connection to the termination of the BioCypher
+    adapter instance). Is connected to MetaNodes and MetaEdges via
+    ":CONTAINS" relationships.
 
     Todo:
         - granularity of versioning?
-            - if many short calls are made in a short amount of time, closing
-                biocypher after each call, the number of meta-nodes would be
-                too large. on the other hand, one node per day may be too
-                little for some.
-        - could implement a continuous versioning system where we get the most
-            recent version from the graph and add one increment, or a way to
-            pass in an arbitrary version of choice.
-        - way to instantiate the MetaNode without having to give id and label?
-            - can only think of creating a parent to both BioCypherNode and
-                MetaNode that does not have mandatory id and label.
+            - if many short calls are made in a short amount of time,
+                closing biocypher after each call, the number of
+                meta-nodes would be too large. on the other hand, one
+                node per day may be too little for some.
+        - could implement a continuous versioning system where we get
+            the most recent version from the graph and add one
+            increment, or a way to pass in an arbitrary version of
+            choice.
+        - way to instantiate the MetaNode without having to give id and
+            label?
+            - can only think of creating a parent to both BioCypherNode
+                and MetaNode that does not have mandatory id and label.
         - put in create or here?
         - add graph structure information
             - on creation will be generated from yml or json?
@@ -113,9 +117,10 @@ class VersionNode(BioCypherNode):
 
     def get_graph_state(self):
         """
-        Check in active DBMS connection for existence of VersionNodes, return
-        the most recent VersionNode as representation of the graph state. If no
-        VersionNode found, assume blank graph state and initialise.
+        Check in active DBMS connection for existence of VersionNodes,
+        return the most recent VersionNode as representation of the
+        graph state. If no VersionNode found, assume blank graph state
+        and initialise.
         """
 
         result = self.bcy_driver.query(
@@ -133,8 +138,9 @@ class VersionNode(BioCypherNode):
 
     def get_graph_schema(self):
         """
-        Return graph schema information from meta graph if it exists, or create
-        new schema information properties from configuration file.
+        Return graph schema information from meta graph if it exists, or
+        create new schema information properties from configuration
+        file.
         """
 
         # include to load default yaml from module

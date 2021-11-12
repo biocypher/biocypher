@@ -65,5 +65,5 @@ if __name__ == "__main__":
     ps = pstats.Stats(profile, stream=s).sort_stats(sortby)
     ps.print_stats()
     # print(s.getvalue())
-    filename = "create_network.prof"  # You can change this if needed
+    filename = "create_network.prof"
     ps.dump_stats(filename)

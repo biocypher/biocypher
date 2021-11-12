@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-This module is used for the creating a generic property graph database for use
-in biomedical research applications. It takes as inputs ordered collections of
-biomedical nodes and relationships and yields specific classes for property
-graph nodes and edges that adhere to the BioCypher standard. It is part of the
-BioCypher python package, homepage: TODO. 
+This module is used for the creating a generic property graph database 
+for use in biomedical research applications. It takes as inputs ordered 
+collections of biomedical nodes and relationships and yields specific 
+classes for property graph nodes and edges that adhere to the BioCypher 
+standard. It is part of the BioCypher python package, homepage: TODO. 
 
 
 Copyright 2021, Heidelberg University Clinic
@@ -17,31 +17,36 @@ File author(s): Sebastian Lobentanzer
 Distributed under GPLv3 license, see LICENSE.txt.
 
 Todo:
-    - ensure that all relationship source and target IDs are in the node list?
-        Or in the graph? Would require direct connection...
-        - Calls to the classes are independent, so there is no way to check 
-            directly; nodes can be created at any point in time previous to edge
-            creation. We could require a pass of all the nodes in the graph when 
-            creating edges. Pro: this would also allow a check whether the existing
-            graph adheres to BioCypher, at least in the node domain. If it doesn't, 
+    - ensure that all relationship source and target IDs are in the node 
+        list? Or in the graph? Would require direct connection...
+        - Calls to the classes are independent, so there is no way to 
+            check directly; nodes can be created at any point in time 
+            previous to edge creation. We could require a pass of all 
+            the nodes in the graph when creating edges. Pro: this would 
+            also allow a check whether the existing graph adheres to 
+            BioCypher, at least in the node domain. If it doesn't, 
             the call does not make much sense.
-        - We could pass in the driver/session object into the BioCypher class.
-    - alternatively, do we merge the relationship, creating new nodes in the 
-        process? could lead to duplications when nodes are created that exist in 
-        the graph but there is confusion with the ID. could be prevented by 
-        BioCypher knowing about the ENTIRE pool of possible nodes.
+        - We could pass in the driver/session object into the BioCypher 
+            class.
+    - alternatively, do we merge the relationship, creating new nodes in 
+        the process? could lead to duplications when nodes are created 
+        that exist in the graph but there is confusion with the ID. 
+        could be prevented by BioCypher knowing about the ENTIRE pool of 
+        possible nodes.
     - allow custom node and edge labels / annotation?
-    - establish a dictionary lookup with the id types to be used / basic type 
-        checking of the input
-    - translation of id types using pypath translation facilities (to be later 
-        externalised)
+    - establish a dictionary lookup with the id types to be used / basic 
+        type checking of the input
+    - translation of id types using pypath translation facilities (to be 
+        later externalised)
     - provide options to the user:
-        - primary id type(s) of their liking (critical, does not guarantee 
-            interoperability: do we want this?)
-            - there could be multiple "standard cases" of graph, and upon 
-                choosing or detecting one of these, BioCypher could translate
-        - granularity: the ability to opt out (!) of the more detailed structural
-            components (opt in would again not guarantee interoperability)
+        - primary id type(s) of their liking (critical, does not 
+            guarantee interoperability: do we want this?)
+            - there could be multiple "standard cases" of graph, and 
+                upon choosing or detecting one of these, BioCypher could 
+                translate
+        - granularity: the ability to opt out (!) of the more detailed 
+            structural components (opt in would again not guarantee 
+            interoperability)
 """
 
 # Futures
@@ -65,11 +70,11 @@ class BioCypherNode:
     """
     Handoff class to represent biomedical entities as Neo4j nodes.
 
-    Has id, label, property dict; id and label (in the Neo4j sense of a label,
-    ie, the entity descriptor after the colon, such as ":Protein") are
-    non-optional and called node_id and node_label to avoid confusion with
-    "label" properties. Node labels are written in CamelBack and as nouns, as
-    per Neo4j consensus.
+    Has id, label, property dict; id and label (in the Neo4j sense of a
+    label, ie, the entity descriptor after the colon, such as
+    ":Protein") are non-optional and called node_id and node_label to
+    avoid confusion with "label" properties. Node labels are written in
+    CamelBack and as nouns, as per Neo4j consensus.
 
     Args:
         node_id: consensus "best" id for biological entity (string)
@@ -80,10 +85,10 @@ class BioCypherNode:
     Todo:
         - "allowed list" of property names
         - account for all properties automatically
-        - input of properties explicit via kwargs, or require user to pass
-            dicts directly?
-        - check and correct small inconsistencies such as capitalisation of
-            ID names ("uniprot" vs "UniProt")
+        - input of properties explicit via kwargs, or require user to
+            pass dicts directly?
+        - check and correct small inconsistencies such as capitalisation
+            of ID names ("uniprot" vs "UniProt")
         - check for correct ID patterns (eg "ENSG" + string of numbers,
             uniprot length)
         - ID conversion using pypath translation facilities for now
@@ -134,8 +139,8 @@ class BioCypherNode:
 
     def get_properties(self):
         """
-        Returns all other node properties apart from primary id and label as
-        key-value pairs.
+        Returns all other node properties apart from primary id and
+        label as key-value pairs.
 
         Returns:
             dict: properties
@@ -144,7 +149,8 @@ class BioCypherNode:
 
     def get_dict(self):
         """
-        Convert self to format accepted by Neo4j driver (Python dict -> Neo4j Map).
+        Convert self to format accepted by Neo4j driver (Python dict ->
+        Neo4j Map).
 
         Returns:
             dict: node_id and node_label as top-level key-value pairs,
@@ -165,12 +171,13 @@ class BioCypherEdge:
     """
     Handoff class to represent biomedical relationships in Neo4j.
 
-    Has source and target ids, label, property dict; ids and label (in the
-    Neo4j sense of a label, ie, the entity descriptor after the colon, such
-    as ":TARGETS") are non-optional and called source_id, target_id, and
-    relationship_label to avoid confusion with properties called "label",
-    which usually denotes the human-readable form. Relationship labels are
-    written in UPPERCASE and as verbs, as per Neo4j consensus.
+    Has source and target ids, label, property dict; ids and label (in
+    the Neo4j sense of a label, ie, the entity descriptor after the
+    colon, such as ":TARGETS") are non-optional and called source_id,
+    target_id, and relationship_label to avoid confusion with properties
+    called "label", which usually denotes the human-readable form.
+    Relationship labels are written in UPPERCASE and as verbs, as per
+    Neo4j consensus.
 
     Args:
         source_id, target_id: consensus "best" id for biological entity
@@ -219,8 +226,8 @@ class BioCypherEdge:
 
     def get_properties(self):
         """
-        Returns all other relationship properties apart from primary ids and
-        label as key-value pairs.
+        Returns all other relationship properties apart from primary ids
+        and label as key-value pairs.
 
         Returns:
             dict: properties
@@ -229,12 +236,13 @@ class BioCypherEdge:
 
     def get_dict(self):
         """
-        Convert self to format accepted by Neo4j driver (Python dict -> Neo4j
-        Map).
+        Convert self to format accepted by Neo4j driver (Python dict ->
+        Neo4j Map).
 
         Returns:
-            dict: source_id, target_id and relationship_label as top-level
-            key-value pairs, properties as second-level dict.
+            dict: source_id, target_id and relationship_label as
+                top-level key-value pairs, properties as second-level
+                dict.
         """
         d = {}
         d.update(
@@ -249,11 +257,13 @@ class BioCypherEdge:
 
     def create_relationship_list(relationships):
         """
-        Create list of BioCypherEdge objects from dict of pypath relationships.
+        Create list of BioCypherEdge objects from dict of pypath
+        relationships.
 
         Args:
-            relationships: currently, a collection of pypath relationships.
-                should be adapted to accept arbitrary collections.
+            relationships: currently, a collection of pypath
+                relationships. should be adapted to accept arbitrary
+                collections.
 
         Todo:
             - account for all additional properties automatically
