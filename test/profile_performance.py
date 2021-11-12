@@ -1,8 +1,7 @@
-from biocypher import create
 from biocypher.create import BioCypherEdge, BioCypherNode
 from biocypher.driver import Driver
 import random
-import cProfile, pstats, io, shutil
+import cProfile, pstats, io
 
 
 def create_network_by_gen(num_nodes, num_edges):
