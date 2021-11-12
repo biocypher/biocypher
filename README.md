@@ -15,3 +15,5 @@ python setup.py install
 ```
 
 Exemplary usage of BioCypher to build a graph database is shown in the [PyPath](https://github.com/saezlab/pypath) repository. The example PyPath->BioCypher adapter is in the [biocypher](https://github.com/saezlab/pypath/tree/dev/src/pypath/biocypher) directory, the example script for building a local database using the adapter is located in the [scripts](https://github.com/saezlab/pypath/tree/dev/src/scripts) directory. 
+
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
