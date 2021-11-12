@@ -8,3 +8,4 @@ docs/_build/
 biocypher.egg-info/
 *.egg
 dist/
+*.prof
