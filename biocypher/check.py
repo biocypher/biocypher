@@ -130,7 +130,7 @@ class VersionNode(BioCypherNode):
         )
 
         # if result is empty, initialise
-        if len(result) == 0:
+        if not result:
             return None
         # else, pass on graph state
         else:
