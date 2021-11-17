@@ -9,3 +9,4 @@ biocypher.egg-info/
 *.egg
 dist/
 *.prof
+*.coverage
