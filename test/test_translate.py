@@ -2,10 +2,26 @@ from biocypher.create import BioCypherEdge, BioCypherNode
 from biocypher.translate import gen_translate_edges, gen_translate_nodes
 from biocypher.check import VersionNode
 from biocypher.driver import Driver
+import pytest
 
 
-def test_translate_nodes():
-    v = VersionNode(Driver(version=False))
+@pytest.fixture
+def driver():
+    # neo4j database needs to be running!
+    d = Driver(version=False)
+    yield d
+
+    # teardown
+    d.close()
+
+
+@pytest.fixture
+def version_node(driver):
+    return VersionNode(driver)
+
+
+def test_translate_nodes(version_node):
+    v = version_node
     id_type = [
         ("G9205", "protein"),
         ("hsa-miR-132-3p", "mirna"),
@@ -21,12 +37,12 @@ def test_translate_nodes():
     assert next(t).get_label() == "MacromolecularComplexMixin"
 
 
-def test_translate_edges():
+def test_translate_edges(version_node):
     # edge type association (defined in `schema_config.yaml`)
     # TODO
 
     # node type association (defined in `schema_config.yaml`)
-    v = VersionNode(Driver(version=False))
+    v = version_node
     src_tar_type = [
         ("G21058", "G50127", "post_translational"),
         ("G15258", "G16347", "post_translational"),
