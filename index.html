@@ -43,6 +43,7 @@
 <li><a class="reference internal" href="#module-biocypher.check">Check the active database for consistency with the BioCypher format</a></li>
 <li><a class="reference internal" href="#module-biocypher.create">Create and update entries in a database</a></li>
 <li><a class="reference internal" href="#module-biocypher.translate">Translate functionality for implemented types of knowledge</a></li>
+<li><a class="reference internal" href="#module-biocypher.write">Write the graph to CSV files for quick ‘admin import’</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
@@ -76,31 +77,33 @@
 <h1>BioCypher: a unified language of property graph databases for biomedical science<a class="headerlink" href="#biocypher-a-unified-language-of-property-graph-databases-for-biomedical-science" title="Permalink to this headline"></a></h1>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
-<p>BioCypher is designed to serve as guideline and translation mechanism for both the
-creation of property graph databases from primary data as well as for the
+<p>BioCypher is designed to serve as guideline and translation mechanism for both
+the creation of property graph databases from primary data as well as for the
 querying of these databases. Our greater aim is to combine the computational
 power of graph databases with the search for answers of our most pressing
 biological questions and facilitate interfacing with cutting edge developments
 in the areas of causal reasoning, representation learning, and natural language
-processing, all of which depend on having a consistent descriptive vocabulary. A
-side objective is the creation of human-readable graph syntax.</p>
+processing, all of which depend on having a consistent descriptive vocabulary.
+A side objective is the creation of human-readable graph syntax.</p>
 <p>A short summary of how BioCypher is supposed to be used:</p>
 <ul class="simple">
-<li><p>A graph database can be built from any arbitrary collection of biomedical data.
-We here examplarise the building of a biological prior knowledge graph from the
-OmniPath database (Türei et al. 2021), but BioCypher includes the extensive
-translation functionality from PyPath to accommodate custom requirements for
-graph database contents.</p></li>
-<li><p>A BioCypher graph has to be instantiated as such from the beginning, an existing
-property graph cannot currently be “updated” to conform to the BioCypher format.</p></li>
+<li><p>A graph database can be built from any arbitrary collection of biomedical
+data. We here examplarise the building of a biological prior knowledge graph
+from the OmniPath database (Türei et al. 2021), but BioCypher includes the
+extensive translation functionality from PyPath to accommodate custom
+requirements for graph database contents.</p></li>
+<li><p>A BioCypher graph has to be instantiated as such from the beginning, an
+existing property graph cannot currently be “updated” to conform to the
+BioCypher format.</p></li>
 <li><p>As a first step, an empty Neo4j database has to be created and started; the
-Python database driver can then be established either through BioCypher directly
-or on the user’s end and passed to BioCypher (if there is greater need for data
-security in authentication).</p></li>
-<li><p>After the database driver has been passed to BioCypher, a new database can be
-established given the selected data structure, to be determined in the primary
-configuration file. In this step, all constraints and indices are set to
-conform to the selected database structure. These can also be modified afterwards.</p>
+Python database driver can then be established either through BioCypher
+directly or on the user’s end and passed to BioCypher (if there is greater
+need for data security in authentication).</p></li>
+<li><p>After the database driver has been passed to BioCypher, a new database can
+be established given the selected data structure, to be determined in the
+primary configuration file. In this step, all constraints and indices are
+set to conform to the selected database structure. These can also be
+modified afterwards.</p>
 <ul>
 <li><p>Note: if the database to be created is very extensive, BioCypher offers a
 “secure export” method to create CSV files that can be used to instantiate
@@ -820,6 +823,20 @@ conforms to the schema of the given BioCypher graph. For now
 requires explicit statement of node type on pass.</p>
 </dd></dl>
 
+</section>
+<section id="module-biocypher.write">
+<span id="write-the-graph-to-csv-files-for-quick-admin-import"></span><h2>Write the graph to CSV files for quick ‘admin import’<a class="headerlink" href="#module-biocypher.write" title="Permalink to this headline"></a></h2>
+<p>This module handles the configuration and disk writing of CSV files
+intended for use with the Neo4J admin import function, to quickly
+transfer large amounts of content into an unused database. For more
+explanation, see <a class="reference external" href="https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/">https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/</a>. This module is part of the BioCypher python
+package, homepage: TODO.</p>
+<p>Copyright 2021, Heidelberg University Clinic</p>
+<dl class="simple">
+<dt>File author(s): Sebastian Lobentanzer</dt><dd><p>…</p>
+</dd>
+</dl>
+<p>Distributed under GPLv3 license, see LICENSE.txt.</p>
 </section>
 <section id="indices-and-tables">
 <h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline"></a></h2>
