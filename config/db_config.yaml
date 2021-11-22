@@ -1,5 +1,5 @@
 default:
   db: neo4j
   auth:  
-    - user 
-    - password
+    - neo4j 
+    - your_password_here

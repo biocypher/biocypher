@@ -21,6 +21,11 @@ def driver():
     d.close()
 
 
+def test_connect_to_db(driver):
+
+    assert driver.db_exists()
+
+
 def test_add_invalid_biocypher_node(driver):
     # neo4j database needs to be running!
     d = driver
