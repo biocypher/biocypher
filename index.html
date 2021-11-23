@@ -805,6 +805,13 @@ homepage: TODO.</p>
 <dt class="sig sig-object py" id="biocypher.translate.BiolinkAdapter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.translate.</span></span><span class="sig-name descname"><span class="pre">BiolinkAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.translate.BiolinkAdapter" title="Permalink to this definition"></a></dt>
 <dd><p>Performs various functions to integrate the Biolink ontology.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.translate.BiolinkAdapter.translate_leaves_to_biolink">
+<span class="sig-name descname"><span class="pre">translate_leaves_to_biolink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.translate.BiolinkAdapter.translate_leaves_to_biolink" title="Permalink to this definition"></a></dt>
+<dd><p>Translates the graph structure given in the <cite>schema_config.yaml</cite>
+to Biolink-conforming nomenclature.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -813,6 +820,22 @@ homepage: TODO.</p>
 <dd><p>Translates input edge representation to a representation that
 conforms to the schema of the given BioCypher graph. For now
 requires explicit statement of edge type on pass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>leaves</strong> (<em>dict</em>) – dictionary detailing the leaves of the hierarchy
+tree representing the structure of the graph; the leaves are
+the entities that will be direct components of the graph,
+while the intermediary nodes are additional labels for
+filtering purposes.</p></li>
+<li><p><strong>src_tar_type_tuples</strong> (<em>list of tuples</em>) – collection of tuples
+representing source and target of an interaction via their
+unique ids as well as the type of interaction in the
+original database notation, which is translated to BioCypher
+notation using the <cite>leaves</cite>.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -821,6 +844,21 @@ requires explicit statement of edge type on pass.</p>
 <dd><p>Translates input node representation to a representation that
 conforms to the schema of the given BioCypher graph. For now
 requires explicit statement of node type on pass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>leaves</strong> (<em>dict</em>) – dictionary detailing the leaves of the hierarchy
+tree representing the structure of the graph; the leaves are
+the entities that will be direct components of the graph,
+while the intermediary nodes are additional labels for
+filtering purposes.</p></li>
+<li><p><strong>id_type_tuples</strong> (<em>list of tuples</em>) – collection of tuples
+representing individual nodes by their unique id and a type
+that is translated from the original database notation to
+the corresponding BioCypher notation.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
