@@ -51,3 +51,46 @@ bin/neo4j-admin import --database=neo4j
 Can use regex, e.g., [..] import/rels-part*. In this case, use padding 
 for ordering of the earlier part files ("01, 02").
 """
+
+
+"""
+# collect database information
+
+types of nodes: which nodes require separate representation, how many
+    types are there?
+
+types of edges: similarly
+
+"""
+
+"""
+# write files
+
+one header for each type of node and edge
+    parse through database content OR 
+    get info from dedicated output
+
+split data into parts
+    write from stream, generator?
+    create a chunk of certain size in python, then write using
+        with open('part.csv', 'x') as file:
+            file.write(chunk)
+
+    size of parts, csv 1M lines? (arbitrary)
+
+"""
+
+"""
+# import
+
+1. stop the db
+
+2. shell command:
+bin/neo4j-admin import --database=neo4j
+# nodes per type, separate header, regex for parts:
+    --nodes="<path>/<node_type>-header.csv,<path>/<node_type>-part.*"
+# edges per type, separate header, regex for parts:
+    --relationships="<path>/<edge_type>-header.csv,<path>/<edge_type>-part.*"
+
+3. start db, test for consistency
+"""

@@ -22,6 +22,7 @@ import re
 import itertools
 import importlib as imp
 from types import GeneratorType
+from typing import List
 from biocypher import driver
 
 import yaml
@@ -704,6 +705,7 @@ class Driver(DriverBase):
 
             edges, cedges = itertools.tee(edges)
             cedge = next(cedges)
+
             if type(cedge) == tuple:
                 # create one node and two edges
                 tup = True
@@ -759,11 +761,10 @@ class Driver(DriverBase):
             self.query(query, parameters={"rels": rels})
 
         else:
-            # TODO: how to extract first and second/third element from
-            # generator separately?
-            edge_list = list(edges)
-            self.add_biocypher_nodes([tup[0] for tup in edge_list])
-            self.add_biocypher_edges([list(tup[1:3]) for tup in edge_list])
+            z = zip(*((e[0], list(e[1:3])) for e in edges))
+            nod, edg = [list(a) for a in z]
+            self.add_biocypher_nodes(nod)
+            self.add_biocypher_edges(edg)
 
         return True
 

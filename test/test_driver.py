@@ -218,3 +218,42 @@ def test_add_biocypher_interaction_as_node_tuples(driver):
         and r[0]["label3"] == "is_source_of"
         and r[0]["label4"] == "is_target_of"
     )
+
+
+def test_add_biocypher_interaction_as_node_tuples_generator(driver):
+    # neo4j database needs to be running!
+    d = driver
+
+    i1 = BioCypherNode("int1", "Int1")
+    i2 = BioCypherNode("int2", "Int2")
+    d.add_biocypher_nodes([i1, i2])
+    e1 = BioCypherEdge("src", "int1", "is_source_of")
+    e2 = BioCypherEdge("tar", "int1", "is_target_of")
+    e3 = BioCypherEdge("src", "int2", "is_source_of")
+    e4 = BioCypherEdge("tar", "int2", "is_target_of")
+    tuplist = [(i1, e1, e2), (i2, e3, e4)]
+
+    def gen(list):
+        for tup in list:
+            yield tup
+
+    d.add_biocypher_edges(gen(tuplist))
+    r = d.query(
+        "MATCH (n2)-[e4:is_target_of]->(i2:Int2)<-[e3:is_source_of]-"
+        "(n1)-[e1:is_source_of]->(i1:Int1)<-[e2:is_target_of]-(n2)"
+        "WITH n1, n2, i1, i2, n1.id AS id1, n2.id AS id2, "
+        "i1.id AS id3, i2.id AS id4, "
+        "type(e1) AS label1, type(e2) AS label2, "
+        "type(e3) AS label3, type(e4) AS label4 "
+        "RETURN id1, id2, id3, id4, label1, label2, label3, label4"
+    )
+    assert (
+        r[0]["id1"] == "src"
+        and r[0]["id2"] == "tar"
+        and r[0]["id3"] == "int1"
+        and r[0]["id4"] == "int2"
+        and r[0]["label1"] == "is_source_of"
+        and r[0]["label2"] == "is_target_of"
+        and r[0]["label3"] == "is_source_of"
+        and r[0]["label4"] == "is_target_of"
+    )
