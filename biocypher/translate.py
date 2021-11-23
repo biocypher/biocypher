@@ -18,9 +18,15 @@ Todo:
     - genericise: standardise input data to BioCypher specifications or, 
         optionally, user specifications.
         - if the database exists, read biocypher info node
-        - if newly created, ask for user input as to which IDs to use 
-            etc
-        - default scenario?
+        - if newly created, ask for user input (?) as to which IDs to 
+            use etc
+        - default scenario -> YAML?
+        - the consensus representation ("target" of translation) is 
+            the literal Biolink class, which is assigned to database
+            content using user input for each class to be represented
+            in the graph ("source" of translation). currently, 
+            implemented by assigning source nomenclature explicitly in
+            the schema_config.yaml file ("label_in_input").
     - type checking
     - import ID types from pypath dictionary (later, externalised 
         dictionary)? biolink?
@@ -40,6 +46,10 @@ class BiolinkAdapter(object):
         self.leaves = self.translate_leaves_to_biolink(leaves)
 
     def translate_leaves_to_biolink(self, leaves):
+        """
+        Translates the graph structure given in the `schema_config.yaml`
+        to Biolink-conforming nomenclature.
+        """
         t = Toolkit()
         l = []
         for entity in leaves.keys():
@@ -64,6 +74,16 @@ def gen_translate_nodes(leaves, id_type_tuples):
     conforms to the schema of the given BioCypher graph. For now
     requires explicit statement of node type on pass.
 
+    Args:
+        leaves (dict): dictionary detailing the leaves of the hierarchy
+            tree representing the structure of the graph; the leaves are
+            the entities that will be direct components of the graph,
+            while the intermediary nodes are additional labels for
+            filtering purposes.
+        id_type_tuples (list of tuples): collection of tuples
+            representing individual nodes by their unique id and a type
+            that is translated from the original database notation to
+            the corresponding BioCypher notation.
 
     """
 
@@ -89,6 +109,18 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
     Translates input edge representation to a representation that
     conforms to the schema of the given BioCypher graph. For now
     requires explicit statement of edge type on pass.
+
+    Args:
+        leaves (dict): dictionary detailing the leaves of the hierarchy
+            tree representing the structure of the graph; the leaves are
+            the entities that will be direct components of the graph,
+            while the intermediary nodes are additional labels for
+            filtering purposes.
+        src_tar_type_tuples (list of tuples): collection of tuples
+            representing source and target of an interaction via their
+            unique ids as well as the type of interaction in the
+            original database notation, which is translated to BioCypher
+            notation using the `leaves`.
 
     Todo:
         - id of interactions (now simple concat with "_")
