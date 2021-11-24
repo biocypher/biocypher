@@ -72,6 +72,7 @@ def create_networks():
 
 def visualise_benchmark():
     import matplotlib.pyplot as plt
+    import pickle
 
     with open("benchmark.pickle", "rb") as f:
         res = pickle.load(f)
@@ -83,16 +84,26 @@ def visualise_benchmark():
 
     plt.plot(x, gen, marker="o", label="Generator")
     plt.plot(x, lis, marker="o", label="List")
+    plt.xlabel("Network size (nodes)")
+    plt.ylabel("Time (s)")
+    plt.legend()
     plt.show()
 
 
 if __name__ == "__main__":
     prof = False
+    run = False
+    viz = True
+
     if prof:
         profile = cProfile.Profile()
         profile.enable()
 
-    create_networks()
+    if run:
+        create_networks()
+
+    if viz:
+        visualise_benchmark()
 
     if prof:
         profile.disable()
