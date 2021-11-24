@@ -71,8 +71,19 @@ def create_networks():
 
 
 def visualise_benchmark():
+    import matplotlib.pyplot as plt
+
     with open("benchmark.pickle", "rb") as f:
         res = pickle.load(f)
+
+    x = [key for key in res.keys() if "gen" in key]
+    x = [int(e.replace("gen", "")) for e in x]
+    gen = [value for key, value in res.items() if "gen" in key]
+    lis = [value for key, value in res.items() if "lis" in key]
+
+    plt.plot(x, gen, marker="o", label="Generator")
+    plt.plot(x, lis, marker="o", label="List")
+    plt.show()
 
 
 if __name__ == "__main__":
