@@ -2,6 +2,7 @@ from biocypher.create import BioCypherEdge, BioCypherNode
 from biocypher.driver import Driver
 import random
 import cProfile, pstats, io
+import timeit, pickle
 
 
 def create_network_by_gen(num_nodes, num_edges):
@@ -50,20 +51,45 @@ def create_network_by_list(num_nodes, num_edges):
 
 
 def create_networks():
-    create_network_by_gen(2000, 2000)
-    create_network_by_list(2000, 2000)
+    seq = (10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000)
+    res = dict()
+
+    for n in seq:
+        gen = timeit.timeit(
+            lambda: create_network_by_gen(n, int(n * 1.5)), number=1
+        )
+        lis = timeit.timeit(
+            lambda: create_network_by_list(n, int(n * 1.5)), number=1
+        )
+
+        res.update({"gen%s" % n: gen, "lis%s" % n: lis})
+
+    with open("benchmark.pickle", "wb") as f:
+        pickle.dump(res, f)
+
+    print(res)
+
+
+def visualise_benchmark():
+    with open("benchmark.pickle", "rb") as f:
+        res = pickle.load(f)
 
 
 if __name__ == "__main__":
-    profile = cProfile.Profile()
-    profile.enable()
-    create_networks()
-    profile.disable()
+    prof = False
+    if prof:
+        profile = cProfile.Profile()
+        profile.enable()
 
-    s = io.StringIO()
-    sortby = pstats.SortKey.CUMULATIVE
-    ps = pstats.Stats(profile, stream=s).sort_stats(sortby)
-    ps.print_stats()
-    # print(s.getvalue())
-    filename = "create_network.prof"
-    ps.dump_stats(filename)
+    create_networks()
+
+    if prof:
+        profile.disable()
+
+        s = io.StringIO()
+        sortby = pstats.SortKey.CUMULATIVE
+        ps = pstats.Stats(profile, stream=s).sort_stats(sortby)
+        ps.print_stats()
+        # print(s.getvalue())
+        filename = "create_network.prof"
+        ps.dump_stats(filename)

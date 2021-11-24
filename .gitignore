@@ -10,3 +10,4 @@ biocypher.egg-info/
 dist/
 *.prof
 *.coverage
+*.pickle
