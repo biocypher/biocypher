@@ -215,7 +215,10 @@ class BaseDriver(object):
                 for instance for passing a parameter dictionary
 
         Returns:
-            neo4j.Result: the Neo4j response to the query
+            neo4j.Record.data: the Neo4j response to the query, consumed
+                by the shorthand .data() function on the Result object
+            neo4j.ResultSummary: information about the Result returned
+                by the .consume() function on the Result object
 
         Todo:
             - generalise? had to create conditionals for profiling, as
@@ -767,8 +770,7 @@ class Driver(BaseDriver):
                 entity_query, parameters={"entities": entities}
             )
         else:
-            self.query(entity_query, parameters={"entities": entities})
-        return True
+            return self.query(entity_query, parameters={"entities": entities})
 
     def add_biocypher_edges(self, edges, profile=False):
         """
@@ -861,8 +863,7 @@ class Driver(BaseDriver):
             if profile:
                 return self.profile(query, parameters={"rels": rels})
             else:
-                self.query(query, parameters={"rels": rels})
-                return True
+                return self.query(query, parameters={"rels": rels})
 
         else:
             z = zip(*((e[0], list(e[1:3])) for e in edges))

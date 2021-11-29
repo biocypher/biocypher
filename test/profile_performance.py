@@ -137,7 +137,7 @@ if __name__ == "__main__":
 
     if neo4j_prof:
         node_profile, edge_profile = profile_neo4j(
-            num_nodes=10000, num_edges=15000
+            num_nodes=1000, num_edges=1500
         )
         print("### NODE PROFILE ###")
         for p in node_profile:
@@ -147,6 +147,20 @@ if __name__ == "__main__":
         for e in edge_profile:
             print("Step: " + e[0])
             print("Args: " + str(e[1]))
+
+        """
+        Eager execution of the apoc.merge.relationships is the primary 
+        holdup for this function. More info about Eager here: 
+        https://community.neo4j.com/t/cypher-sleuthing-the-eager-operator/10730
+
+        She says: "In order to get around the eager operator, we need to 
+        ensure Cypher isn’t worried about conflicting operations. The 
+        best way to do this is to divide our query into single 
+        operations so that Cypher won’t invoke eager as a safeguard. 
+        Let’s profile this as two queries to see that."
+
+        Should we MERGE the nodes and edges in separate queries?
+        """
 
     # cleanup
     delete_test_network()
