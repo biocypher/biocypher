@@ -289,7 +289,7 @@ be raised.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.driver.BaseDriver.explain">
-<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.explain" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.explain" title="Permalink to this definition"></a></dt>
 <dd><p>Wrapper for EXPLAIN function query to bring summary in
 readable form.</p>
 <p>CAVE: Only handles linear profiles (no branching) as of now.</p>
@@ -303,7 +303,7 @@ readable form.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.driver.BaseDriver.profile">
-<span class="sig-name descname"><span class="pre">profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.profile" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.profile" title="Permalink to this definition"></a></dt>
 <dd><p>Wrapper for PROFILE function query to bring summary in
 readable form.</p>
 <p>CAVE: Only handles linear profiles (no branching) as of now.</p>
@@ -311,7 +311,7 @@ readable form.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.driver.BaseDriver.query">
-<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.query" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.query" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a session with the driver passed into the class at
 instantiation, runs a CYPHER query and returns the response.</p>
 <dl class="field-list simple">
@@ -324,10 +324,16 @@ for instance for passing a parameter dictionary</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the Neo4j response to the query</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>the Neo4j response to the query, consumed</dt><dd><p>by the shorthand .data() function on the Result object</p>
+</dd>
+<dt>neo4j.ResultSummary: information about the Result returned</dt><dd><p>by the .consume() function on the Result object</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>neo4j.Result</p>
+<dd class="field-odd"><p>neo4j.Record.data</p>
 </dd>
 </dl>
 </dd></dl>
@@ -427,7 +433,37 @@ data is loaded into an empty database.</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.driver.Driver.add_biocypher_edges">
-<span class="sig-name descname"><span class="pre">add_biocypher_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.add_biocypher_edges" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_biocypher_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.add_biocypher_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Accepts an edge type handoff class (BioCypherEdge) with source
+and target ids, label, and a dict of properties (passing on the
+type of property, ie, int, string …).</p>
+<p>The individual edge is either passed as a singleton, in the case
+of representation as an edge in the graph, or as a 3-tuple, in
+the case of representation as a node (with two edges connecting
+to interaction partners).</p>
+<p>The dict retrieved by the get_dict() method is passed into Neo4j
+as a map of maps, explicitly encoding source and target ids and
+the relationship label, and adding all edge properties from the
+‘properties’ key of the dict. The merge is performed via APOC,
+matching only on source and target id to prevent duplicates. The
+same properties are set on match and on create, irrespective of
+the actual event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>edges</strong> – a list of BioCypherEdge objects</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The return value. True for success, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.add_biocypher_edges_mod">
+<span class="sig-name descname"><span class="pre">add_biocypher_edges_mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.add_biocypher_edges_mod" title="Permalink to this definition"></a></dt>
 <dd><p>Accepts an edge type handoff class (BioCypherEdge) with source
 and target ids, label, and a dict of properties (passing on the
 type of property, ie, int, string …).</p>
@@ -457,7 +493,7 @@ the actual event.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.driver.Driver.add_biocypher_nodes">
-<span class="sig-name descname"><span class="pre">add_biocypher_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.add_biocypher_nodes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_biocypher_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.add_biocypher_nodes" title="Permalink to this definition"></a></dt>
 <dd><p>Accepts a node type handoff class (BioCypherNode) with id,
 label, and a dict of properties (passing on the type of
 property, ie, int, string …).</p>
