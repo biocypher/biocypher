@@ -200,6 +200,7 @@ class BaseDriver(object):
         query,
         db=None,
         fetch_size=None,
+        write=True,  # route to write server (default)
         explain=False,
         profile=False,
         **kwargs,
@@ -254,17 +255,31 @@ class BaseDriver(object):
         elif profile:
             query = "PROFILE " + query
 
-        with self.driver.session(
-            database=db, fetch_size=fetch_size
-        ) as session:
-            res = session.run(query, **kwargs)
-            return res.data(), res.consume()
+        if write:
+            # default case, write acces (route to write server)
+            with self.driver.session(
+                database=db,
+                fetch_size=fetch_size,
+            ) as session:
+                res = session.run(query, **kwargs)
+                return res.data(), res.consume()
+        else:
+            # route to read server to free up write capacity, only to be
+            # used in cases with assured read-only access
+            with self.driver.session(
+                default_access_mode=neo4j.READ_ACCESS,  # route to read server
+                database=db,
+                fetch_size=fetch_size,
+            ) as session:
+                res = session.run(query, **kwargs)
+                return res.data(), res.consume()
 
     def explain(
         self,
         query,
         db=None,
         fetch_size=None,
+        write=True,
         **kwargs,
     ):
         """Wrapper for EXPLAIN function query to bring summary in
@@ -273,7 +288,7 @@ class BaseDriver(object):
         CAVE: Only handles linear profiles (no branching) as of now."""
 
         data, summary = self.query(
-            query, db, fetch_size, explain=True, **kwargs
+            query, db, fetch_size, write, explain=True, **kwargs
         )
         ls = []
         ot = summary.plan["operatorType"]
@@ -294,6 +309,7 @@ class BaseDriver(object):
         query,
         db=None,
         fetch_size=None,
+        write=True,
         **kwargs,
     ):
         """Wrapper for PROFILE function query to bring summary in
@@ -302,7 +318,7 @@ class BaseDriver(object):
         CAVE: Only handles linear profiles (no branching) as of now."""
 
         data, summary = self.query(
-            query, db, fetch_size, profile=True, **kwargs
+            query, db, fetch_size, write, profile=True, **kwargs
         )
         ls = []
         ot = summary.profile["operatorType"]
