@@ -302,6 +302,7 @@ class BaseDriver(object):
             ls = ls + [(ot, args)]
             stack = stack[0]["children"]  # only linear profiles
 
+        ls.reverse()
         return ls
 
     def profile(
@@ -332,6 +333,7 @@ class BaseDriver(object):
             ls = ls + [(ot, args)]
             stack = stack[0]["children"]  # only linear profiles
 
+        ls.reverse()
         return ls
 
     @property
