@@ -844,11 +844,18 @@ class Driver(BaseDriver):
 
             self._log("Merging %s edges." % len(edges))
 
+        if tup:
+            # split up tuples in nodes and edges if detected
+            z = zip(*((e[0], list(e[1:3])) for e in edges))
+            nod, edg = [list(a) for a in z]
+            self.add_biocypher_nodes(nod)
+            self.add_biocypher_edges(edg)
+
         # cypher query
-        if not tup:
+        else:
             rels = [edge.get_dict() for edge in edges]
 
-            # merging only on the ids of the molecules, passing the
+            # merging only on the ids of the entities, passing the
             # properties on match and on create; removing the node
             # labels seemed least complicated
             query = (
@@ -867,9 +874,3 @@ class Driver(BaseDriver):
                 return self.profile(query, parameters={"rels": rels})
             else:
                 return self.query(query, parameters={"rels": rels})
-
-        else:
-            z = zip(*((e[0], list(e[1:3])) for e in edges))
-            nod, edg = [list(a) for a in z]
-            self.add_biocypher_nodes(nod)
-            self.add_biocypher_edges(edg)

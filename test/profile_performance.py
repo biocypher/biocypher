@@ -152,6 +152,8 @@ if __name__ == "__main__":
         Eager execution of the apoc.merge.relationships is the primary 
         holdup for this function. More info about Eager here: 
         https://community.neo4j.com/t/cypher-sleuthing-the-eager-operator/10730
+        and here:
+        https://neo4j.com/docs/cypher-manual/current/execution-plans/operators/#query-plan-eager
 
         She says: "In order to get around the eager operator, we need to 
         ensure Cypher isn’t worried about conflicting operations. The 
