@@ -177,12 +177,12 @@ if __name__ == "__main__":
         locale.setlocale(locale.LC_ALL, "")
 
         node_profile, edge_profile, edge_profile_mod = profile_neo4j(
-            num_nodes=1000, num_edges=1500
+            num_nodes=100, num_edges=150
         )
 
         print("")
-        print(f"{bcolors.OKBLUE}### NODE PROFILE ###{bcolors.ENDC}")
-        med_np = statistics.median(n[2] for n in node_profile)
+        print(f"{bcolors.HEADER}### NODE PROFILE ###{bcolors.ENDC}")
+        med_np = statistics.mean(n[2] for n in node_profile)
         for p in node_profile:
             print(f"{bcolors.OKBLUE}> Step: {p[0]}{bcolors.ENDC}")
             print(f"Args: {p[1]}")
@@ -192,8 +192,8 @@ if __name__ == "__main__":
                 print(f"Time: {p[2]:n}")
 
         print("")
-        print(f"{bcolors.OKBLUE}### EDGE PROFILE ###{bcolors.ENDC}")
-        med_ep = statistics.median(e[2] for e in edge_profile)
+        print(f"{bcolors.HEADER}### EDGE PROFILE ###{bcolors.ENDC}")
+        med_ep = statistics.mean(e[2] for e in edge_profile)
         for ep in edge_profile:
             print(f"{bcolors.OKBLUE}> Step: {ep[0]}{bcolors.ENDC}")
             print(f"Args: {ep[1]}")
@@ -203,8 +203,8 @@ if __name__ == "__main__":
                 print(f"Time: {ep[2]:n}")
 
         print("")
-        print(f"{bcolors.OKBLUE}### MODIFIED EDGE PROFILE ###{bcolors.ENDC}")
-        med_em = statistics.median(e[2] for e in edge_profile_mod)
+        print(f"{bcolors.HEADER}### MODIFIED EDGE PROFILE ###{bcolors.ENDC}")
+        med_em = statistics.mean(e[2] for e in edge_profile_mod)
         for em in edge_profile_mod:
             print(f"{bcolors.OKBLUE}> Step: {em[0]}{bcolors.ENDC}")
             print(f"Args: {em[1]}")
@@ -229,7 +229,8 @@ if __name__ == "__main__":
         Updated to MERGE the nodes and edges in separate queries; the 
         function `create_biocypher_edges_mod()` returns only the results
         of the edge query, not the node merge. This makes the query much
-        slower for some reason; memory usage also increases. 
+        slower for some reason (though Eager was successfully removed). 
+        The culprit ProcedureCall performs many PageCacheHits; why?
         Additionally, the "Apply" step now also consumes time.
         """
 
