@@ -5,7 +5,7 @@ import cProfile, pstats, io
 import timeit, pickle
 
 
-def create_network_by_gen(num_nodes, num_edges):
+def create_network_by_gen(num_nodes, num_edges, profile=False):
     d = Driver(version=False)
 
     def node_gen(num_nodes):
@@ -13,16 +13,19 @@ def create_network_by_gen(num_nodes, num_edges):
             yield BioCypherNode(i, "test")
 
     def edge_gen(num_edges):
-        for i in range(num_edges):
+        for _ in range(num_edges):
             src = random.randint(1, num_nodes)
             tar = random.randint(1, num_nodes)
 
             yield BioCypherEdge(src, tar, "test")
 
-    d.add_biocypher_nodes(node_gen(num_nodes))
-    d.add_biocypher_edges(edge_gen(num_edges))
+    node_profile = d.add_biocypher_nodes(node_gen(num_nodes), profile=profile)
+    edge_profile = d.add_biocypher_edges(edge_gen(num_edges), profile=profile)
 
-    d.query("MATCH (n:test) DETACH DELETE n")
+    if profile:
+        return node_profile, edge_profile
+
+    d.close()
 
 
 def create_network_by_list(num_nodes, num_edges):
@@ -37,7 +40,7 @@ def create_network_by_list(num_nodes, num_edges):
 
     def edge_list(num_edges):
         ls = []
-        for i in range(num_edges):
+        for _ in range(num_edges):
             src = random.randint(1, num_nodes)
             tar = random.randint(1, num_nodes)
             ls.append(BioCypherEdge(src, tar, "test"))
@@ -47,7 +50,14 @@ def create_network_by_list(num_nodes, num_edges):
     d.add_biocypher_nodes(node_list(num_nodes))
     d.add_biocypher_edges(edge_list(num_edges))
 
+    d.close()
+
+
+def delete_test_network():
+    d = Driver(version=False)
+    d.query("MATCH (n)-[:test]-() DETACH DELETE n")
     d.query("MATCH (n:test) DETACH DELETE n")
+    d.close()
 
 
 def create_networks():
@@ -58,9 +68,11 @@ def create_networks():
         gen = timeit.timeit(
             lambda: create_network_by_gen(n, int(n * 1.5)), number=1
         )
+        delete_test_network()
         lis = timeit.timeit(
             lambda: create_network_by_list(n, int(n * 1.5)), number=1
         )
+        delete_test_network()
 
         res.update({"gen%s" % n: gen, "lis%s" % n: lis})
 
@@ -90,22 +102,26 @@ def visualise_benchmark():
     plt.show()
 
 
-if __name__ == "__main__":
-    prof = False
-    run = False
-    viz = True
+def profile_neo4j(num_nodes, num_edges):
 
-    if prof:
+    np, ep = create_network_by_gen(num_nodes, num_edges, profile=True)
+    return np, ep
+
+
+if __name__ == "__main__":
+    python_prof = False
+    neo4j_prof = True
+    run = False
+    viz = False
+
+    if python_prof:
         profile = cProfile.Profile()
         profile.enable()
 
     if run:
         create_networks()
 
-    if viz:
-        visualise_benchmark()
-
-    if prof:
+    if python_prof:
         profile.disable()
 
         s = io.StringIO()
@@ -115,3 +131,22 @@ if __name__ == "__main__":
         # print(s.getvalue())
         filename = "create_network.prof"
         ps.dump_stats(filename)
+
+    if viz:
+        visualise_benchmark()
+
+    if neo4j_prof:
+        node_profile, edge_profile = profile_neo4j(
+            num_nodes=10000, num_edges=15000
+        )
+        print("### NODE PROFILE ###")
+        for p in node_profile:
+            print("Step: " + p[0])
+            print("Args: " + str(p[1]))
+        print("### EDGE PROFILE ###")
+        for e in edge_profile:
+            print("Step: " + e[0])
+            print("Args: " + str(e[1]))
+
+    # cleanup
+    delete_test_network()

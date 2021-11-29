@@ -680,7 +680,7 @@ class Driver(BaseDriver):
         )
         self.add_biocypher_edges(bn)
 
-    def add_biocypher_nodes(self, nodes):
+    def add_biocypher_nodes(self, nodes, profile=False):
         """
         Accepts a node type handoff class (BioCypherNode) with id,
         label, and a dict of properties (passing on the type of
@@ -736,11 +736,16 @@ class Driver(BaseDriver):
             "YIELD node "
             "RETURN node"
         )
-        self.query(entity_query, parameters={"entities": entities})
 
+        if profile:
+            return self.profile(
+                entity_query, parameters={"entities": entities}
+            )
+        else:
+            self.query(entity_query, parameters={"entities": entities})
         return True
 
-    def add_biocypher_edges(self, edges):
+    def add_biocypher_edges(self, edges, profile=False):
         """
         Accepts an edge type handoff class (BioCypherEdge) with source
         and target ids, label, and a dict of properties (passing on the
@@ -828,32 +833,14 @@ class Driver(BaseDriver):
                 "RETURN rel"
             )
 
-            self.query(query, parameters={"rels": rels})
+            if profile:
+                return self.profile(query, parameters={"rels": rels})
+            else:
+                self.query(query, parameters={"rels": rels})
+                return True
 
         else:
             z = zip(*((e[0], list(e[1:3])) for e in edges))
             nod, edg = [list(a) for a in z]
             self.add_biocypher_nodes(nod)
             self.add_biocypher_edges(edg)
-
-        return True
-
-        # interaction nodes: required? parallel?
-        # nodes = [
-        #     {
-        #         'directed': rec.directed,
-        #         'effect': rec.effect,
-        #         'type': rec.type,
-        #         'key': self.interaction_key(rec),
-        #     }
-        #     for rec in self.network.generate_df_records()
-        # ]
-
-        # query = (
-        #     'UNWIND $nodes AS nod '
-        #     'CREATE (i:Interaction) '
-        #     'SET i += nod;'
-        # )
-
-        # print('Creating Interaction nodes.')
-        # self.query(query, parameters = {'nodes': nodes})
