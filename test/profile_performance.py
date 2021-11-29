@@ -124,10 +124,48 @@ def visualise_benchmark():
 
 
 def profile_neo4j(num_nodes, num_edges):
+    # for number formatting
+    import locale
+    import statistics
+
+    locale.setlocale(locale.LC_ALL, "")
     setup_constraint()
 
-    np, ep, epm = create_network_by_gen(num_nodes, num_edges, profile=True)
-    return np, ep, epm
+    node_profile, edge_profile, edge_profile_mod = create_network_by_gen(
+        num_nodes, num_edges, profile=True
+    )
+    print("")
+    print(f"{bcolors.HEADER}### NODE PROFILE ###{bcolors.ENDC}")
+    med_np = statistics.mean(n[2] for n in node_profile)
+    for p in node_profile:
+        print(f"{bcolors.OKBLUE}> Step: {p[0]}{bcolors.ENDC}")
+        print(f"Args: {p[1]}")
+        if p[2] > med_np:
+            print(f"{bcolors.WARNING}Time: {p[2]:n}{bcolors.ENDC}")
+        else:
+            print(f"Time: {p[2]:n}")
+
+    print("")
+    print(f"{bcolors.HEADER}### EDGE PROFILE ###{bcolors.ENDC}")
+    med_ep = statistics.mean(e[2] for e in edge_profile)
+    for ep in edge_profile:
+        print(f"{bcolors.OKBLUE}> Step: {ep[0]}{bcolors.ENDC}")
+        print(f"Args: {ep[1]}")
+        if ep[2] > med_ep:
+            print(f"{bcolors.WARNING}Time: {ep[2]:n}{bcolors.ENDC}")
+        else:
+            print(f"Time: {ep[2]:n}")
+
+    print("")
+    print(f"{bcolors.HEADER}### MODIFIED EDGE PROFILE ###{bcolors.ENDC}")
+    med_em = statistics.mean(e[2] for e in edge_profile_mod)
+    for em in edge_profile_mod:
+        print(f"{bcolors.OKBLUE}> Step: {em[0]}{bcolors.ENDC}")
+        print(f"Args: {em[1]}")
+        if em[2] > med_em:
+            print(f"{bcolors.WARNING}Time: {em[2]:n}{bcolors.ENDC}")
+        else:
+            print(f"Time: {em[2]:n}")
 
 
 class bcolors:
@@ -170,49 +208,7 @@ if __name__ == "__main__":
         visualise_benchmark()
 
     if neo4j_prof:
-        # for number formatting
-        import locale
-        import statistics
-
-        locale.setlocale(locale.LC_ALL, "")
-
-        node_profile, edge_profile, edge_profile_mod = profile_neo4j(
-            num_nodes=100, num_edges=150
-        )
-
-        print("")
-        print(f"{bcolors.HEADER}### NODE PROFILE ###{bcolors.ENDC}")
-        med_np = statistics.mean(n[2] for n in node_profile)
-        for p in node_profile:
-            print(f"{bcolors.OKBLUE}> Step: {p[0]}{bcolors.ENDC}")
-            print(f"Args: {p[1]}")
-            if p[2] > med_np:
-                print(f"{bcolors.WARNING}Time: {p[2]:n}{bcolors.ENDC}")
-            else:
-                print(f"Time: {p[2]:n}")
-
-        print("")
-        print(f"{bcolors.HEADER}### EDGE PROFILE ###{bcolors.ENDC}")
-        med_ep = statistics.mean(e[2] for e in edge_profile)
-        for ep in edge_profile:
-            print(f"{bcolors.OKBLUE}> Step: {ep[0]}{bcolors.ENDC}")
-            print(f"Args: {ep[1]}")
-            if ep[2] > med_ep:
-                print(f"{bcolors.WARNING}Time: {ep[2]:n}{bcolors.ENDC}")
-            else:
-                print(f"Time: {ep[2]:n}")
-
-        print("")
-        print(f"{bcolors.HEADER}### MODIFIED EDGE PROFILE ###{bcolors.ENDC}")
-        med_em = statistics.mean(e[2] for e in edge_profile_mod)
-        for em in edge_profile_mod:
-            print(f"{bcolors.OKBLUE}> Step: {em[0]}{bcolors.ENDC}")
-            print(f"Args: {em[1]}")
-            if em[2] > med_em:
-                print(f"{bcolors.WARNING}Time: {em[2]:n}{bcolors.ENDC}")
-            else:
-                print(f"Time: {em[2]:n}")
-
+        profile_neo4j(num_nodes=10, num_edges=15)
         """
         Eager execution of the apoc.merge.relationships is the primary 
         holdup for this function. More info about Eager here: 
