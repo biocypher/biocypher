@@ -216,6 +216,15 @@ class BaseDriver(object):
 
         Returns:
             neo4j.Result: the Neo4j response to the query
+
+        Todo:
+            - generalise? had to create conditionals for profiling, as
+                the returns are not equally important. the .data()
+                shorthand may not be applicable in all cases. should we
+                return the `Result` object directly plus the summary
+                object from .consume()?
+            - use session.run() or individual transactions?
+            - use write and read distinctions in calling transactions?
         """
 
         db = db or self._db_config["db"] or neo4j.DEFAULT_DATABASE
