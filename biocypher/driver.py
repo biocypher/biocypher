@@ -299,7 +299,11 @@ class BaseDriver(object):
         while stack:
             ot = stack[0]["operatorType"]
             args = stack[0]["args"]
-            ls = ls + [(ot, args)]
+            if stack[0]["args"]["Time"]:
+                time = stack[0]["args"]["Time"]
+            else:
+                time = 0
+            ls = ls + [(ot, args, time)]
             stack = stack[0]["children"]  # only linear profiles
 
         ls.reverse()
@@ -324,13 +328,21 @@ class BaseDriver(object):
         ls = []
         ot = summary.profile["operatorType"]
         args = summary.profile["args"]
-        ls = ls + [(ot, args)]
+        if "Time" in args.keys():
+            time = args["Time"]
+        else:
+            time = 0
+        ls = ls + [(ot, args, time)]
 
         stack = summary.profile["children"]
         while stack:
             ot = stack[0]["operatorType"]
             args = stack[0]["args"]
-            ls = ls + [(ot, args)]
+            if "Time" in args.keys():
+                time = args["Time"]
+            else:
+                time = 0
+            ls = ls + [(ot, args, time)]
             stack = stack[0]["children"]  # only linear profiles
 
         ls.reverse()

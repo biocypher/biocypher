@@ -130,6 +130,18 @@ def profile_neo4j(num_nodes, num_edges):
     return np, ep, epm
 
 
+class bcolors:
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
+
 if __name__ == "__main__":
     python_prof = False
     neo4j_prof = True
@@ -158,21 +170,48 @@ if __name__ == "__main__":
         visualise_benchmark()
 
     if neo4j_prof:
+        # for number formatting
+        import locale
+        import statistics
+
+        locale.setlocale(locale.LC_ALL, "")
+
         node_profile, edge_profile, edge_profile_mod = profile_neo4j(
-            num_nodes=10, num_edges=15
+            num_nodes=1000, num_edges=1500
         )
-        print("### NODE PROFILE ###")
+
+        print("")
+        print(f"{bcolors.OKBLUE}### NODE PROFILE ###{bcolors.ENDC}")
+        med_np = statistics.median(n[2] for n in node_profile)
         for p in node_profile:
-            print("Step: " + p[0])
-            print("Args: " + str(p[1]))
-        print("### EDGE PROFILE ###")
-        for e in edge_profile:
-            print("Step: " + e[0])
-            print("Args: " + str(e[1]))
-        print("### MODIFIED EDGE PROFILE ###")
+            print(f"{bcolors.OKBLUE}> Step: {p[0]}{bcolors.ENDC}")
+            print(f"Args: {p[1]}")
+            if p[2] > med_np:
+                print(f"{bcolors.WARNING}Time: {p[2]:n}{bcolors.ENDC}")
+            else:
+                print(f"Time: {p[2]:n}")
+
+        print("")
+        print(f"{bcolors.OKBLUE}### EDGE PROFILE ###{bcolors.ENDC}")
+        med_ep = statistics.median(e[2] for e in edge_profile)
+        for ep in edge_profile:
+            print(f"{bcolors.OKBLUE}> Step: {ep[0]}{bcolors.ENDC}")
+            print(f"Args: {ep[1]}")
+            if ep[2] > med_ep:
+                print(f"{bcolors.WARNING}Time: {ep[2]:n}{bcolors.ENDC}")
+            else:
+                print(f"Time: {ep[2]:n}")
+
+        print("")
+        print(f"{bcolors.OKBLUE}### MODIFIED EDGE PROFILE ###{bcolors.ENDC}")
+        med_em = statistics.median(e[2] for e in edge_profile_mod)
         for em in edge_profile_mod:
-            print("Step: " + em[0])
-            print("Args: " + str(em[1]))
+            print(f"{bcolors.OKBLUE}> Step: {em[0]}{bcolors.ENDC}")
+            print(f"Args: {em[1]}")
+            if em[2] > med_em:
+                print(f"{bcolors.WARNING}Time: {em[2]:n}{bcolors.ENDC}")
+            else:
+                print(f"Time: {em[2]:n}")
 
         """
         Eager execution of the apoc.merge.relationships is the primary 
@@ -188,7 +227,7 @@ if __name__ == "__main__":
         Let’s profile this as two queries to see that."
 
         Updated to MERGE the nodes and edges in separate queries; the 
-        function `create_biocypher_edges()` now returns only the results
+        function `create_biocypher_edges_mod()` returns only the results
         of the edge query, not the node merge. This makes the query much
         slower for some reason; memory usage also increases. 
         Additionally, the "Apply" step now also consumes time.
