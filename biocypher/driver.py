@@ -33,7 +33,7 @@ from . import translate
 from .check import MetaEdge, VersionNode, MetaNode
 
 
-class DriverBase(object):
+class BaseDriver(object):
     """
     Manages the connection to the Neo4j server. Establishes the
     connection and executes queries. A wrapper around the `Driver`
@@ -195,7 +195,15 @@ class DriverBase(object):
 
             return resp[0]["name"]
 
-    def query(self, query, db=None, fetch_size=None, **kwargs):
+    def query(
+        self,
+        query,
+        db=None,
+        fetch_size=None,
+        explain=False,
+        profile=False,
+        **kwargs,
+    ):
         """
         Creates a session with the driver passed into the class at
         instantiation, runs a CYPHER query and returns the response.
@@ -213,11 +221,73 @@ class DriverBase(object):
         db = db or self._db_config["db"] or neo4j.DEFAULT_DATABASE
         fetch_size = fetch_size or self._db_config["fetch_size"]
 
-        session = self.driver.session(database=db, fetch_size=fetch_size)
-        response = session.run(query, **kwargs).data()
-        session.close()
+        if explain:
+            query = "EXPLAIN " + query
+        elif profile:
+            query = "PROFILE " + query
 
-        return response
+        with self.driver.session(
+            database=db, fetch_size=fetch_size
+        ) as session:
+
+            if explain or profile:
+                return session.run(query, **kwargs).consume()
+            else:
+                return session.run(query, **kwargs).data()
+
+    def explain(
+        self,
+        query,
+        db=None,
+        fetch_size=None,
+        **kwargs,
+    ):
+        """Wrapper for EXPLAIN function query to bring summary in
+        readable form.
+
+        CAVE: Only handles linear profiles (no branching) as of now."""
+
+        summary = self.query(query, db, fetch_size, explain=True, **kwargs)
+        ls = []
+        ot = summary.plan["operatorType"]
+        args = summary.plan["args"]
+        ls = ls + [(ot, args)]
+
+        stack = summary.plan["children"]  # only linear profiles
+        while stack:
+            ot = stack[0]["operatorType"]
+            args = stack[0]["args"]
+            ls = ls + [(ot, args)]
+            stack = stack[0]["children"]  # only linear profiles
+
+        return ls
+
+    def profile(
+        self,
+        query,
+        db=None,
+        fetch_size=None,
+        **kwargs,
+    ):
+        """Wrapper for PROFILE function query to bring summary in
+        readable form.
+
+        CAVE: Only handles linear profiles (no branching) as of now."""
+
+        summary = self.query(query, db, fetch_size, profile=True, **kwargs)
+        ls = []
+        ot = summary.profile["operatorType"]
+        args = summary.profile["args"]
+        ls = ls + [(ot, args)]
+
+        stack = summary.profile["children"]
+        while stack:
+            ot = stack[0]["operatorType"]
+            args = stack[0]["args"]
+            ls = ls + [(ot, args)]
+            stack = stack[0]["children"]  # only linear profiles
+
+        return ls
 
     @property
     def current_db(self):
@@ -462,7 +532,7 @@ class DriverBase(object):
         )
 
 
-class Driver(DriverBase):
+class Driver(BaseDriver):
     """
     Manages a connection to a biocypher database.
 
@@ -493,13 +563,13 @@ class Driver(DriverBase):
         db_name=None,
         db_uri="neo4j://localhost:7687",
         db_auth=None,
-        fetch_size=100,
+        fetch_size=1000,
         config_file="config/db_config.yaml",
         wipe=False,
         version=True,
     ):
 
-        DriverBase.__init__(**locals())
+        BaseDriver.__init__(**locals())
 
         if version:
             # get database version node ('check' module)
