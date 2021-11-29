@@ -123,7 +123,7 @@ class VersionNode(BioCypherNode):
         and initialise.
         """
 
-        result = self.bcy_driver.query(
+        result, summary = self.bcy_driver.query(
             "MATCH (meta:BioCypher)"
             "WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)"
             "RETURN meta"

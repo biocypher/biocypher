@@ -189,7 +189,7 @@ class BaseDriver(object):
 
     def _db_name(self, which="HOME"):
 
-        resp = self.query("SHOW %s DATABASE;" % which)
+        resp, summary = self.query("SHOW %s DATABASE;" % which)
 
         if resp:
 
@@ -257,11 +257,8 @@ class BaseDriver(object):
         with self.driver.session(
             database=db, fetch_size=fetch_size
         ) as session:
-
-            if explain or profile:
-                return session.run(query, **kwargs).consume()
-            else:
-                return session.run(query, **kwargs).data()
+            res = session.run(query, **kwargs)
+            return res.data(), res.consume()
 
     def explain(
         self,
@@ -275,7 +272,9 @@ class BaseDriver(object):
 
         CAVE: Only handles linear profiles (no branching) as of now."""
 
-        summary = self.query(query, db, fetch_size, explain=True, **kwargs)
+        data, summary = self.query(
+            query, db, fetch_size, explain=True, **kwargs
+        )
         ls = []
         ot = summary.plan["operatorType"]
         args = summary.plan["args"]
@@ -302,7 +301,9 @@ class BaseDriver(object):
 
         CAVE: Only handles linear profiles (no branching) as of now."""
 
-        summary = self.query(query, db, fetch_size, profile=True, **kwargs)
+        data, summary = self.query(
+            query, db, fetch_size, profile=True, **kwargs
+        )
         ls = []
         ot = summary.profile["operatorType"]
         args = summary.profile["args"]
@@ -358,7 +359,7 @@ class BaseDriver(object):
 
         name = name or self.current_db
 
-        resp = self.query('SHOW DATABASES WHERE name = "%s";' % name)
+        resp, summary = self.query('SHOW DATABASES WHERE name = "%s";' % name)
 
         if resp:
 
@@ -483,7 +484,9 @@ class BaseDriver(object):
         Number of nodes in the database.
         """
 
-        return self.query("MATCH (n) RETURN COUNT(n) AS count;")[0]["count"]
+        res, summary = self.query("MATCH (n) RETURN COUNT(n) AS count;")
+
+        return res[0]["count"]
 
     @property
     def edge_count(self):
@@ -491,9 +494,9 @@ class BaseDriver(object):
         Number of edges in the database.
         """
 
-        return self.query("MATCH ()-[r]->() RETURN COUNT(r) AS count;")[0][
-            "count"
-        ]
+        res, summary = self.query("MATCH ()-[r]->() RETURN COUNT(r) AS count;")
+
+        return res[0]["count"]
 
     @property
     def user(self):
