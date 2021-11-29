@@ -129,7 +129,6 @@ def profile_neo4j(num_nodes, num_edges):
     import statistics
 
     locale.setlocale(locale.LC_ALL, "")
-    setup_constraint()
 
     node_profile, edge_profile, edge_profile_mod = create_network_by_gen(
         num_nodes, num_edges, profile=True
@@ -186,6 +185,9 @@ if __name__ == "__main__":
     run = False
     viz = False
 
+    # setup
+    setup_constraint()
+
     if python_prof:
         profile = cProfile.Profile()
         profile.enable()
@@ -222,14 +224,30 @@ if __name__ == "__main__":
         operations so that Cypher won’t invoke eager as a safeguard. 
         Let’s profile this as two queries to see that."
 
-        Updated to MERGE the nodes and edges in separate queries; the 
-        function `create_biocypher_edges_mod()` returns only the results
-        of the edge query, not the node merge. This makes the query much
-        slower for some reason (though Eager was successfully removed). 
-        The culprit ProcedureCall performs many PageCacheHits; why?
-        Additionally, the "Apply" step now also consumes time.
+        Essentially, I think this means that Neo4j waits for the MERGE
+        performed on the source and target nodes before going on to the 
+        WITH statement.
+
+        Updated to MERGE the nodes and edges in separate queries in the 
+        function `create_biocypher_edges_mod()`; it returns only the 
+        results of the edge query, not the node merge. Splitting node 
+        and edge queries makes the edge query much slower for some 
+        reason (though Eager was successfully removed). The culprit 
+        ProcedureCall performs many PageCacheHits; why?
+        Additionally, the "Apply" step now also consumes time (although
+        very little).
+
+        The MATCH statements do not seem to require any significant 
+        processing time, as the majority of required time is the apoc
+        procedure call. If the source and target MERGE statements also
+        do not require significant time in our use cases, the Eager
+        would not cause a large increase in processing time, anyway.
+
+        However, I still don't understand why the same apoc statement 
+        takes longer when using the MATCH on the previously merged 
+        nodes. 
         """
 
-    # cleanup
+    # teardown
     delete_test_network()
     remove_constraint()
