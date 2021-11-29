@@ -23,7 +23,12 @@ def create_network_by_gen(num_nodes, num_edges, profile=False):
     edge_profile = d.add_biocypher_edges(edge_gen(num_edges), profile=profile)
 
     if profile:
-        return node_profile, edge_profile
+        delete_test_network()
+        d.add_biocypher_nodes(node_gen(num_nodes), profile=False)
+        edge_profile_mod = d.add_biocypher_edges_mod(
+            edge_gen(num_edges), profile=profile
+        )
+        return node_profile, edge_profile, edge_profile_mod
 
     d.close()
 
@@ -50,6 +55,22 @@ def create_network_by_list(num_nodes, num_edges):
     d.add_biocypher_nodes(node_list(num_nodes))
     d.add_biocypher_edges(edge_list(num_edges))
 
+    d.close()
+
+
+def setup_constraint():
+    d = Driver(version=False)
+    d.query(
+        "CREATE CONSTRAINT test_id "
+        "IF NOT EXISTS ON (n:test) "
+        "ASSERT n.id IS UNIQUE "
+    )
+    d.close()
+
+
+def remove_constraint():
+    d = Driver(version=False)
+    d.query("DROP CONSTRAINT test_id")
     d.close()
 
 
@@ -103,9 +124,10 @@ def visualise_benchmark():
 
 
 def profile_neo4j(num_nodes, num_edges):
+    setup_constraint()
 
-    np, ep = create_network_by_gen(num_nodes, num_edges, profile=True)
-    return np, ep
+    np, ep, epm = create_network_by_gen(num_nodes, num_edges, profile=True)
+    return np, ep, epm
 
 
 if __name__ == "__main__":
@@ -136,8 +158,8 @@ if __name__ == "__main__":
         visualise_benchmark()
 
     if neo4j_prof:
-        node_profile, edge_profile = profile_neo4j(
-            num_nodes=1000, num_edges=1500
+        node_profile, edge_profile, edge_profile_mod = profile_neo4j(
+            num_nodes=10, num_edges=15
         )
         print("### NODE PROFILE ###")
         for p in node_profile:
@@ -147,6 +169,10 @@ if __name__ == "__main__":
         for e in edge_profile:
             print("Step: " + e[0])
             print("Args: " + str(e[1]))
+        print("### MODIFIED EDGE PROFILE ###")
+        for em in edge_profile_mod:
+            print("Step: " + em[0])
+            print("Args: " + str(em[1]))
 
         """
         Eager execution of the apoc.merge.relationships is the primary 
@@ -161,8 +187,13 @@ if __name__ == "__main__":
         operations so that Cypher won’t invoke eager as a safeguard. 
         Let’s profile this as two queries to see that."
 
-        Should we MERGE the nodes and edges in separate queries?
+        Updated to MERGE the nodes and edges in separate queries; the 
+        function `create_biocypher_edges()` now returns only the results
+        of the edge query, not the node merge. This makes the query much
+        slower for some reason; memory usage also increases. 
+        Additionally, the "Apply" step now also consumes time.
         """
 
     # cleanup
     delete_test_network()
+    remove_constraint()
