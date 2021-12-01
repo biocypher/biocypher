@@ -1,5 +1,6 @@
 from biocypher.create import BioCypherEdge, BioCypherNode
 from biocypher.driver import Driver
+from biocypher.utils import bcolors
 import random
 import cProfile, pstats, io
 import timeit, pickle
@@ -19,16 +20,24 @@ def create_network_by_gen(num_nodes, num_edges, profile=False):
 
             yield BioCypherEdge(src, tar, "test")
 
-    node_profile = d.add_biocypher_nodes(node_gen(num_nodes), profile=profile)
-    edge_profile = d.add_biocypher_edges(edge_gen(num_edges), profile=profile)
+    node_profile, np_printout = d.add_biocypher_nodes(
+        node_gen(num_nodes), profile=profile
+    )
+    edge_profile, ep_printout = d.add_biocypher_edges(
+        edge_gen(num_edges), profile=profile
+    )
 
     if profile:
         delete_test_network()
         d.add_biocypher_nodes(node_gen(num_nodes), profile=False)
-        edge_profile_mod = d.add_biocypher_edges_mod(
+        edge_profile_mod, epm_printout = d.add_biocypher_edges_mod(
             edge_gen(num_edges), profile=profile
         )
-        return node_profile, edge_profile, edge_profile_mod
+        return (
+            (node_profile, np_printout),
+            (edge_profile, ep_printout),
+            (edge_profile_mod, epm_printout),
+        )
 
     d.close()
 
@@ -124,59 +133,20 @@ def visualise_benchmark():
 
 
 def profile_neo4j(num_nodes, num_edges):
-    # for number formatting
-    import locale
-    import statistics
 
-    locale.setlocale(locale.LC_ALL, "")
-
-    node_profile, edge_profile, edge_profile_mod = create_network_by_gen(
-        num_nodes, num_edges, profile=True
-    )
+    np, ep, epm = create_network_by_gen(num_nodes, num_edges, profile=True)
     print("")
     print(f"{bcolors.HEADER}### NODE PROFILE ###{bcolors.ENDC}")
-    med_np = statistics.mean(n[2] for n in node_profile)
-    for p in node_profile:
-        print(f"{bcolors.OKBLUE}> Step: {p[0]}{bcolors.ENDC}")
-        print(f"Args: {p[1]}")
-        if p[2] > med_np:
-            print(f"{bcolors.WARNING}Time: {p[2]:n}{bcolors.ENDC}")
-        else:
-            print(f"Time: {p[2]:n}")
-
+    for p in np[1]:
+        print(p)
     print("")
     print(f"{bcolors.HEADER}### EDGE PROFILE ###{bcolors.ENDC}")
-    med_ep = statistics.mean(e[2] for e in edge_profile)
-    for ep in edge_profile:
-        print(f"{bcolors.OKBLUE}> Step: {ep[0]}{bcolors.ENDC}")
-        print(f"Args: {ep[1]}")
-        if ep[2] > med_ep:
-            print(f"{bcolors.WARNING}Time: {ep[2]:n}{bcolors.ENDC}")
-        else:
-            print(f"Time: {ep[2]:n}")
-
+    for p in ep[1]:
+        print(p)
     print("")
     print(f"{bcolors.HEADER}### MODIFIED EDGE PROFILE ###{bcolors.ENDC}")
-    med_em = statistics.mean(e[2] for e in edge_profile_mod)
-    for em in edge_profile_mod:
-        print(f"{bcolors.OKBLUE}> Step: {em[0]}{bcolors.ENDC}")
-        print(f"Args: {em[1]}")
-        if em[2] > med_em:
-            print(f"{bcolors.WARNING}Time: {em[2]:n}{bcolors.ENDC}")
-        else:
-            print(f"Time: {em[2]:n}")
-
-
-class bcolors:
-    HEADER = "\033[95m"
-    OKBLUE = "\033[94m"
-    OKCYAN = "\033[96m"
-    OKGREEN = "\033[92m"
-    WARNING = "\033[93m"
-    FAIL = "\033[91m"
-    ENDC = "\033[0m"
-    BOLD = "\033[1m"
-    UNDERLINE = "\033[4m"
+    for p in epm[1]:
+        print(p)
 
 
 if __name__ == "__main__":

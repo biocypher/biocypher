@@ -260,3 +260,13 @@ def test_add_biocypher_interaction_as_node_tuples_generator(driver):
         and r[0]["label3"] == "is_source_of"
         and r[0]["label4"] == "is_target_of"
     )
+
+
+def test_pretty(driver):
+    driver.profile(
+        "UNWIND [1,2,3,4,5] as id "
+        "MERGE (n:Test {id: id}) "
+        "MERGE (x:Test {id: id + 1})"
+    )
+
+    assert True
