@@ -211,8 +211,16 @@ class BaseDriver(object):
         instantiation, runs a CYPHER query and returns the response.
 
         Args:
-            query: a valid CYPHER query, can include APOC if the APOC
+            query (str): a valid CYPHER query, can include APOC if the APOC
                 plugin is installed in the accessed database
+            db (str): the DB inside the Neo4j server that should be queried
+            fetch_size (int): the Neo4j fetch size parameter
+            write (bool): indicates whether to address write- or read-
+                servers
+            explain (bool): indicates whether to EXPLAIN the CYPHER
+                query and return the ResultSummary
+            explain (bool): indicates whether to PROFILE the CYPHER
+                query and return the ResultSummary
             **kwargs: optional objects used in CYPHER interactive mode,
                 for instance for passing a parameter dictionary
 
@@ -283,10 +291,13 @@ class BaseDriver(object):
         write=True,
         **kwargs,
     ):
-        """Wrapper for EXPLAIN function query to bring summary in
+        """
+        Wrapper for EXPLAIN function query to bring summary in
         readable form.
 
-        CAVE: Only handles linear profiles (no branching) as of now."""
+        CAVE: Only handles linear profiles (no branching) as of now.
+        TODO include branching as in profile()
+        """
 
         data, summary = self.query(
             query, db, fetch_size, write, explain=True, **kwargs
@@ -318,10 +329,27 @@ class BaseDriver(object):
         write=True,
         **kwargs,
     ):
-        """Wrapper for PROFILE function query to bring summary in
+        """
+        Wrapper for PROFILE function query to bring summary in
         readable form.
 
-        CAVE: Only handles linear profiles (no branching) as of now."""
+        Args:
+            query (str): a valid Cypher query (see `query()`)
+            db (str): the DB inside the Neo4j server that should be queried
+            fetch_size (int): the Neo4j fetch size parameter
+            write (bool): indicates whether to address write- or read-
+                servers
+            explain (bool): indicates whether to EXPLAIN the CYPHER
+                query and return the ResultSummary
+            explain (bool): indicates whether to PROFILE the CYPHER
+                query and return the ResultSummary
+            **kwargs: optional objects used in CYPHER interactive mode,
+                for instance for passing a parameter dictionary
+
+        Returns:
+            dict: the raw profile returned by the Neo4j bolt driver
+            list of str: a list of strings ready for printing
+        """
 
         data, summary = self.query(
             query, db, fetch_size, write, profile=True, **kwargs
