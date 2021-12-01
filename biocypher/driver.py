@@ -328,6 +328,9 @@ class BaseDriver(object):
         )
 
         prof = summary.profile
+        exec_time = (
+            summary.result_available_after + summary.result_consumed_after
+        )
 
         # get structure
         # TODO (readability may be better when ordered from top to bottom)
@@ -381,7 +384,8 @@ class BaseDriver(object):
                             )
             return lines
 
-        printout = pretty(prof, indent=0)
+        header = f"Execution time: {exec_time:n}\n"
+        printout = pretty(prof, [header], indent=0)
 
         return prof, printout
 
