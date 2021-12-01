@@ -292,7 +292,8 @@ be raised.</p>
 <span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.explain" title="Permalink to this definition"></a></dt>
 <dd><p>Wrapper for EXPLAIN function query to bring summary in
 readable form.</p>
-<p>CAVE: Only handles linear profiles (no branching) as of now.</p>
+<p>CAVE: Only handles linear profiles (no branching) as of now.
+TODO include branching as in profile()</p>
 </dd></dl>
 
 <dl class="py property">
@@ -306,7 +307,30 @@ readable form.</p>
 <span class="sig-name descname"><span class="pre">profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.profile" title="Permalink to this definition"></a></dt>
 <dd><p>Wrapper for PROFILE function query to bring summary in
 readable form.</p>
-<p>CAVE: Only handles linear profiles (no branching) as of now.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – a valid Cypher query (see <cite>query()</cite>)</p></li>
+<li><p><strong>db</strong> (<em>str</em>) – the DB inside the Neo4j server that should be queried</p></li>
+<li><p><strong>fetch_size</strong> (<em>int</em>) – the Neo4j fetch size parameter</p></li>
+<li><p><strong>write</strong> (<em>bool</em>) – indicates whether to address write- or read-
+servers</p></li>
+<li><p><strong>explain</strong> (<em>bool</em>) – indicates whether to EXPLAIN the CYPHER
+query and return the ResultSummary</p></li>
+<li><p><strong>explain</strong> – indicates whether to PROFILE the CYPHER
+query and return the ResultSummary</p></li>
+<li><p><strong>**kwargs</strong> – optional objects used in CYPHER interactive mode,
+for instance for passing a parameter dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the raw profile returned by the Neo4j bolt driver
+list of str: a list of strings ready for printing</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -317,8 +341,16 @@ instantiation, runs a CYPHER query and returns the response.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>query</strong> – a valid CYPHER query, can include APOC if the APOC
+<li><p><strong>query</strong> (<em>str</em>) – a valid CYPHER query, can include APOC if the APOC
 plugin is installed in the accessed database</p></li>
+<li><p><strong>db</strong> (<em>str</em>) – the DB inside the Neo4j server that should be queried</p></li>
+<li><p><strong>fetch_size</strong> (<em>int</em>) – the Neo4j fetch size parameter</p></li>
+<li><p><strong>write</strong> (<em>bool</em>) – indicates whether to address write- or read-
+servers</p></li>
+<li><p><strong>explain</strong> (<em>bool</em>) – indicates whether to EXPLAIN the CYPHER
+query and return the ResultSummary</p></li>
+<li><p><strong>explain</strong> – indicates whether to PROFILE the CYPHER
+query and return the ResultSummary</p></li>
 <li><p><strong>**kwargs</strong> – optional objects used in CYPHER interactive mode,
 for instance for passing a parameter dictionary</p></li>
 </ul>
