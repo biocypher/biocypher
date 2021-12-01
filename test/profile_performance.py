@@ -23,7 +23,7 @@ def create_network_by_gen(num_nodes, num_edges, profile=False):
     node_profile, np_printout = d.add_biocypher_nodes(
         node_gen(num_nodes), profile=profile
     )
-    edge_profile, ep_printout = d.add_biocypher_edges(
+    edge_profile, ep_printout = d.add_biocypher_edges_mod(
         edge_gen(num_edges), profile=profile
     )
 
@@ -42,7 +42,7 @@ def create_network_by_gen(num_nodes, num_edges, profile=False):
     d.close()
 
 
-def create_network_by_list(num_nodes, num_edges):
+def create_network_by_list(num_nodes, num_edges, mod=False):
     d = Driver(version=False)
 
     def node_list(num_nodes):
@@ -62,7 +62,10 @@ def create_network_by_list(num_nodes, num_edges):
         return ls
 
     d.add_biocypher_nodes(node_list(num_nodes))
-    d.add_biocypher_edges(edge_list(num_edges))
+    if mod:
+        d.add_biocypher_edges_mod(edge_list(num_edges))
+    else:
+        d.add_biocypher_edges(edge_list(num_edges))
 
     d.close()
 
@@ -95,16 +98,16 @@ def create_networks():
     res = dict()
 
     for n in seq:
-        gen = timeit.timeit(
-            lambda: create_network_by_gen(n, int(n * 1.5)), number=1
-        )
-        delete_test_network()
         lis = timeit.timeit(
             lambda: create_network_by_list(n, int(n * 1.5)), number=1
         )
         delete_test_network()
+        lism = timeit.timeit(
+            lambda: create_network_by_list(n, int(n * 1.5), mod=True), number=1
+        )
+        delete_test_network()
 
-        res.update({"gen%s" % n: gen, "lis%s" % n: lis})
+        res.update({"lis%s" % n: lis, "lism%s" % n: lism})
 
     with open("benchmark.pickle", "wb") as f:
         pickle.dump(res, f)
@@ -119,13 +122,13 @@ def visualise_benchmark():
     with open("benchmark.pickle", "rb") as f:
         res = pickle.load(f)
 
-    x = [key for key in res.keys() if "gen" in key]
-    x = [int(e.replace("gen", "")) for e in x]
-    gen = [value for key, value in res.items() if "gen" in key]
-    lis = [value for key, value in res.items() if "lis" in key]
+    x = [key for key in res.keys() if "lism" in key]
+    x = [int(e.replace("lism", "")) for e in x]
+    lis = [value for key, value in res.items() if "lism" not in key]
+    lism = [value for key, value in res.items() if "lism" in key]
 
-    plt.plot(x, gen, marker="o", label="Generator")
     plt.plot(x, lis, marker="o", label="List")
+    plt.plot(x, lism, marker="o", label="List (modified)")
     plt.xlabel("Network size (nodes)")
     plt.ylabel("Time (s)")
     plt.legend()
@@ -151,9 +154,9 @@ def profile_neo4j(num_nodes, num_edges):
 
 if __name__ == "__main__":
     python_prof = False
-    neo4j_prof = True
+    neo4j_prof = False
     run = False
-    viz = False
+    viz = True
 
     # setup
     setup_constraint()
@@ -200,22 +203,7 @@ if __name__ == "__main__":
 
         Updated to MERGE the nodes and edges in separate queries in the 
         function `create_biocypher_edges_mod()`; it returns only the 
-        results of the edge query, not the node merge. Splitting node 
-        and edge queries makes the edge query much slower for some 
-        reason (though Eager was successfully removed). The culprit 
-        ProcedureCall performs many PageCacheHits; why?
-        Additionally, the "Apply" step now also consumes time (although
-        very little).
-
-        The MATCH statements do not seem to require any significant 
-        processing time, as the majority of required time is the apoc
-        procedure call. If the source and target MERGE statements also
-        do not require significant time in our use cases, the Eager
-        would not cause a large increase in processing time, anyway.
-
-        However, I still don't understand why the same apoc statement 
-        takes longer when using the MATCH on the previously merged 
-        nodes. 
+        results of the edge query, not the node merge.
         """
 
     # teardown
