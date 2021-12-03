@@ -6,7 +6,7 @@ import cProfile, pstats, io
 import timeit, pickle
 
 
-def create_network_by_gen(num_nodes, num_edges, profile=False):
+def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
     d = Driver(version=False)
 
     def node_gen(num_nodes):
@@ -21,10 +21,10 @@ def create_network_by_gen(num_nodes, num_edges, profile=False):
             yield BioCypherEdge(src, tar, "test")
 
     node_profile, np_printout = d.add_biocypher_nodes(
-        node_gen(num_nodes), profile=profile
+        node_gen(num_nodes), profile=profile, explain=explain
     )
     edge_profile, ep_printout = d.add_biocypher_edges_mod(
-        edge_gen(num_edges), profile=profile
+        edge_gen(num_edges), profile=profile, explain=explain
     )
 
     if profile:
@@ -32,6 +32,17 @@ def create_network_by_gen(num_nodes, num_edges, profile=False):
         d.add_biocypher_nodes(node_gen(num_nodes), profile=False)
         edge_profile_mod, epm_printout = d.add_biocypher_edges_mod(
             edge_gen(num_edges), profile=profile
+        )
+        return (
+            (node_profile, np_printout),
+            (edge_profile, ep_printout),
+            (edge_profile_mod, epm_printout),
+        )
+    elif explain:
+        delete_test_network()
+        d.add_biocypher_nodes(node_gen(num_nodes), explain=False)
+        edge_profile_mod, epm_printout = d.add_biocypher_edges_mod(
+            edge_gen(num_edges), explain=explain
         )
         return (
             (node_profile, np_printout),
@@ -152,6 +163,23 @@ def profile_neo4j(num_nodes, num_edges):
         print(p)
 
 
+def explain_neo4j(num_nodes, num_edges):
+
+    np, ep, epm = create_network_by_gen(num_nodes, num_edges, explain=True)
+    print("")
+    print(f"{bcolors.HEADER}### NODE PROFILE ###{bcolors.ENDC}")
+    for p in np[1]:
+        print(p)
+    print("")
+    print(f"{bcolors.HEADER}### EDGE PROFILE ###{bcolors.ENDC}")
+    for p in ep[1]:
+        print(p)
+    print("")
+    print(f"{bcolors.HEADER}### MODIFIED EDGE PROFILE ###{bcolors.ENDC}")
+    for p in epm[1]:
+        print(p)
+
+
 if __name__ == "__main__":
     # profile python performance with cProfile
     python_prof = False
@@ -160,7 +188,9 @@ if __name__ == "__main__":
     # visualise using matplotlib
     viz = False
     # profile neo4j performance with PROFILE query
-    neo4j_prof = True
+    neo4j_prof = False
+    # plan neo4j query with EXPLAIN
+    neo4j_expl = True
 
     # setup
     setup_constraint()
@@ -209,6 +239,9 @@ if __name__ == "__main__":
         function `create_biocypher_edges_mod()`; it returns only the 
         results of the edge query, not the node merge.
         """
+
+    if neo4j_expl:
+        explain_neo4j(num_nodes=10, num_edges=15)
 
     # teardown
     delete_test_network()

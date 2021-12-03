@@ -30,7 +30,7 @@ import neo4j
 from .create import BioCypherEdge, BioCypherNode
 from . import translate
 from .check import MetaEdge, VersionNode, MetaNode
-from .utils import bcolors
+from .utils import pretty
 
 
 class BaseDriver(object):
@@ -301,24 +301,9 @@ class BaseDriver(object):
         data, summary = self.query(
             query, db, fetch_size, write, explain=True, **kwargs
         )
-        ls = []
-        ot = summary.plan["operatorType"]
-        args = summary.plan["args"]
-        ls = ls + [(ot, args)]
-
-        stack = summary.plan["children"]  # only linear profiles
-        while stack:
-            ot = stack[0]["operatorType"]
-            args = stack[0]["args"]
-            if stack[0]["args"]["Time"]:
-                time = stack[0]["args"]["Time"]
-            else:
-                time = 0
-            ls = ls + [(ot, args, time)]
-            stack = stack[0]["children"]  # only linear profiles
-
-        ls.reverse()
-        return ls
+        plan = summary.plan
+        printout = pretty(plan)
+        return plan, printout
 
     def profile(
         self,
@@ -363,60 +348,6 @@ class BaseDriver(object):
         # TODO (readability may be better when ordered from top to bottom)
 
         # get print representation
-        def pretty(d, lines=[], indent=0):
-            """
-            Takes Neo4j profile dictionary and an optional header as
-            list and creates a list of output strings to be printed.
-            """
-            # if more items, branch
-            if d:
-                if isinstance(d, list):
-                    for sd in d:
-                        pretty(sd, lines, indent)
-                elif isinstance(d, dict):
-                    typ = d.pop("operatorType", None)
-                    if typ:
-                        lines.append(
-                            ("\t" * (indent))
-                            + "|"
-                            + "\t"
-                            + f"{bcolors.OKBLUE}Step: {typ} {bcolors.ENDC}"
-                        )
-
-                    # buffer children
-                    chi = d.pop("children", None)
-
-                    for key, value in d.items():
-                        if key == "args":
-                            pretty(value, lines, indent)
-                        elif (
-                            key == "Time" or key == "time"
-                        ):  # both are there for some reason, sometimes
-                            # both in the same process
-                            lines.append(
-                                ("\t" * (indent))
-                                + "|"
-                                + "\t"
-                                + str(key)
-                                + ": "
-                                + f"{bcolors.WARNING}{value:,}{bcolors.ENDC}".replace(
-                                    ",", " "
-                                )
-                            )
-                        else:
-                            lines.append(
-                                ("\t" * (indent))
-                                + "|"
-                                + "\t"
-                                + str(key)
-                                + ": "
-                                + str(value)
-                            )
-
-                    # now the children
-                    pretty(chi, lines, indent + 1)
-            return lines
-
         header = f"Execution time: {exec_time:n}\n"
         printout = pretty(prof, [header], indent=0)
 
@@ -815,7 +746,7 @@ class Driver(BaseDriver):
         )
         self.add_biocypher_edges(bn)
 
-    def add_biocypher_nodes(self, nodes, profile=False):
+    def add_biocypher_nodes(self, nodes, explain=False, profile=False):
         """
         Accepts a node type handoff class (BioCypherNode) with id,
         label, and a dict of properties (passing on the type of
@@ -872,14 +803,18 @@ class Driver(BaseDriver):
             "RETURN node"
         )
 
-        if profile:
+        if explain:
+            return self.explain(
+                entity_query, parameters={"entities": entities}
+            )
+        elif profile:
             return self.profile(
                 entity_query, parameters={"entities": entities}
             )
         else:
             return self.query(entity_query, parameters={"entities": entities})
 
-    def add_biocypher_edges(self, edges, profile=False):
+    def add_biocypher_edges(self, edges, explain=False, profile=False):
         """
         Accepts an edge type handoff class (BioCypherEdge) with source
         and target ids, label, and a dict of properties (passing on the
@@ -974,12 +909,14 @@ class Driver(BaseDriver):
                 "RETURN rel"
             )
 
-            if profile:
+            if explain:
+                return self.explain(query, parameters={"rels": rels})
+            elif profile:
                 return self.profile(query, parameters={"rels": rels})
             else:
                 return self.query(query, parameters={"rels": rels})
 
-    def add_biocypher_edges_mod(self, edges, profile=False):
+    def add_biocypher_edges_mod(self, edges, explain=False, profile=False):
         """
         Accepts an edge type handoff class (BioCypherEdge) with source
         and target ids, label, and a dict of properties (passing on the
@@ -1081,7 +1018,9 @@ class Driver(BaseDriver):
                 "RETURN rel"
             )
 
-            if profile:
+            if explain:
+                return self.explain(edge_query, parameters={"rels": rels})
+            elif profile:
                 return self.profile(edge_query, parameters={"rels": rels})
             else:
                 return self.query(edge_query, parameters={"rels": rels})
