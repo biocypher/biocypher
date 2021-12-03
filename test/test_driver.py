@@ -262,11 +262,11 @@ def test_add_biocypher_interaction_as_node_tuples_generator(driver):
     )
 
 
-def test_pretty(driver):
-    driver.profile(
+def test_pretty_profile(driver):
+    data, summary = driver.profile(
         "UNWIND [1,2,3,4,5] as id "
         "MERGE (n:Test {id: id}) "
         "MERGE (x:Test {id: id + 1})"
     )
 
-    assert True
+    assert hasattr(data, "args") and summary.startswith("Execution")
