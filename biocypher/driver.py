@@ -23,7 +23,6 @@ import itertools
 import importlib as imp
 from types import GeneratorType
 from typing import List
-from biocypher import driver
 
 import yaml
 import neo4j
@@ -384,10 +383,11 @@ class BaseDriver(object):
                             + f"{bcolors.OKBLUE}Step: {typ} {bcolors.ENDC}"
                         )
 
+                    # buffer children
+                    chi = d.pop("children", None)
+
                     for key, value in d.items():
-                        if key == "children":
-                            pretty(value, lines, indent + 1)
-                        elif key == "args":
+                        if key == "args":
                             pretty(value, lines, indent)
                         elif (
                             key == "Time" or key == "time"
@@ -399,7 +399,9 @@ class BaseDriver(object):
                                 + "\t"
                                 + str(key)
                                 + ": "
-                                + f"{bcolors.WARNING}{value:n}{bcolors.ENDC}"
+                                + f"{bcolors.WARNING}{value:,}{bcolors.ENDC}".replace(
+                                    ",", " "
+                                )
                             )
                         else:
                             lines.append(
@@ -410,6 +412,9 @@ class BaseDriver(object):
                                 + ": "
                                 + str(value)
                             )
+
+                    # now the children
+                    pretty(chi, lines, indent + 1)
             return lines
 
         header = f"Execution time: {exec_time:n}\n"

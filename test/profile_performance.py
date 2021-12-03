@@ -153,10 +153,14 @@ def profile_neo4j(num_nodes, num_edges):
 
 
 if __name__ == "__main__":
+    # profile python performance with cProfile
     python_prof = False
-    neo4j_prof = False
+    # run network creation (needed for python profiling)
     run = False
-    viz = True
+    # visualise using matplotlib
+    viz = False
+    # profile neo4j performance with PROFILE query
+    neo4j_prof = True
 
     # setup
     setup_constraint()
