@@ -18,4 +18,3 @@ Exemplary usage of BioCypher to build a graph database is shown in the [PyPath](
 
 ### Note for contributors: 
 The project uses [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) and documentation format [Napoleon](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html) with a [Sphinx](https://www.sphinx-doc.org/en/master/) autodoc GitHub Actions workflow.
-
