@@ -12,7 +12,7 @@ jobs:
         pip3 install -r requirements.txt
     - name: Build docs
       run: |
-        pip3 install sphinx sphinx-rtd-theme
+        pip3 install sphinx sphinx_rtd_theme
         cd docs
         make html
         cd ..
