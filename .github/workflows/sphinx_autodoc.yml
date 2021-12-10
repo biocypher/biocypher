@@ -12,7 +12,6 @@ jobs:
         pip install -r requirements.txt
     - name: Build docs
       run: |
-        pip install -U sphinx sphinx_rtd_theme
         cd docs
         make html
         cd ..
