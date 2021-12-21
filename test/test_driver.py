@@ -34,7 +34,7 @@ def test_explain(driver):
     e = driver.explain(query)
     t = e[0]
 
-    assert t[0] == "ProduceResults@" + driver.current_db
+    assert "args" in t and "identifiers" in t
 
 
 def test_profile(driver):
@@ -42,7 +42,7 @@ def test_profile(driver):
     p = driver.profile(query)
     t = p[0]
 
-    assert t[0] == "ProduceResults@" + driver.current_db
+    assert "args" in t and "identifiers" in t
 
 
 def test_add_invalid_biocypher_node(driver):
