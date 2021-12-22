@@ -78,3 +78,13 @@ def test_custom_bmt_yaml(version_node):
     p = ad.leaves["Protein"]
 
     assert p.description == "Test"
+
+
+def test_biolink_yaml_extension(version_node):
+    ad = BiolinkAdapter(
+        version_node.leaves,
+        custom_yaml_file="config/biocypher-biolink-model.yaml",
+    )
+    p = ad.leaves["PostTranslationalInteraction"]
+
+    assert p.description == "A pairwise interaction between two proteins"

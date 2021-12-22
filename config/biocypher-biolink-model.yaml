@@ -9223,6 +9223,31 @@ classes:
       object:
         range: molecular entity
 
+  post translational interaction:
+    description: >-
+      A pairwise interaction between two proteins
+    is_a: pairwise molecular interaction
+    defining_slots:
+      - subject
+      - predicate
+      - object
+    slot_usage:
+      subject:
+        range: protein
+      id:
+        description: Identifier for the interaction
+        examples: 
+          - value: Todo
+        values_from: 
+          - Todo
+      predicate:
+        subproperty_of: molecularly interacts with
+        description: "interaction relationship type"
+        examples: 
+          - value: Todo
+      object:
+        range: protein
+
   cell line to entity association mixin:
     description: >-
       An relationship between a cell line and another entity
