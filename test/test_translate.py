@@ -66,7 +66,15 @@ def test_translate_edges(version_node):
 
 
 def test_adapter(version_node):
-    ad = BiolinkAdapter(version_node.leaves)
-    l = ad.leaves
+    ad = BiolinkAdapter(version_node.leaves, custom_yaml=False)
 
     assert isinstance(ad.leaves["Protein"], ClassDefinition)
+
+
+def test_custom_bmt_yaml(version_node):
+    ad = BiolinkAdapter(
+        version_node.leaves, custom_yaml_file="config/test-biolink-model.yaml"
+    )
+    p = ad.leaves["Protein"]
+
+    assert p.description == "Test"

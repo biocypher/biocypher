@@ -32,6 +32,7 @@ Todo:
         dictionary)? biolink?
 """
 
+import os
 from .create import BioCypherEdge, BioCypherNode
 from bmt import Toolkit
 import biocypher.biolinkmodel as bl
@@ -45,16 +46,33 @@ class BiolinkAdapter(object):
         - refer to pythonised biolink model from YAML
     """
 
-    def __init__(self, leaves) -> None:
-        super().__init__()
-        self.leaves = self.translate_leaves_to_biolink(leaves)
+    def __init__(
+        self,
+        leaves,
+        custom_yaml=True,
+        custom_yaml_file="config/biocypher-biolink-model.yaml",
+    ) -> None:
+        self.leaves = self.translate_leaves_to_biolink(
+            leaves, custom_yaml, custom_yaml_file
+        )
 
-    def translate_leaves_to_biolink(self, leaves):
+    def translate_leaves_to_biolink(
+        self, leaves, custom_yaml, custom_yaml_file
+    ):
         """
         Translates the graph structure given in the `schema_config.yaml`
         to Biolink-conforming nomenclature.
         """
-        t = Toolkit()  # loads biolink model toolkit python API
+        if custom_yaml:
+            # load toolkit from local YAML
+            ROOT = os.path.join(
+                *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+            )
+            bl_yaml = ROOT + "/../" + custom_yaml_file
+            t = Toolkit(bl_yaml)  # loads biolink model toolkit python API
+        else:
+            t = Toolkit()
+
         l = {}
         for entity in leaves.keys():
             e = t.get_element(entity)  # element name
