@@ -9248,6 +9248,25 @@ classes:
       object:
         range: protein
 
+  phosphorylation:
+    description: >-
+      The action of one protein phosphorylating another protein
+    is_a: post translational interaction
+    defining_slots:
+      - subject
+      - predicate
+      - object
+    slot_usage:
+      subject:
+        range: protein
+      id:
+        description: Identifier of phosphorylation
+      predicate:
+        subproperty_of: molecularly interacts with
+        description: "interaction relationship type"
+      object:
+        range: protein
+
   cell line to entity association mixin:
     description: >-
       An relationship between a cell line and another entity

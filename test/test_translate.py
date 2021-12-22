@@ -85,6 +85,11 @@ def test_biolink_yaml_extension(version_node):
         version_node.leaves,
         custom_yaml_file="config/biocypher-biolink-model.yaml",
     )
-    p = ad.leaves["PostTranslationalInteraction"]
+    p1 = ad.leaves["PostTranslationalInteraction"]
+    p2 = ad.leaves["Phosphorylation"]
 
-    assert p.description == "A pairwise interaction between two proteins"
+    assert (
+        p1.description == "A pairwise interaction between two proteins"
+        and p2.description
+        == "The action of one protein phosphorylating another protein"
+    )
