@@ -1,5 +1,10 @@
+from linkml_runtime.linkml_model.meta import ClassDefinition
 from biocypher.create import BioCypherEdge, BioCypherNode
-from biocypher.translate import gen_translate_edges, gen_translate_nodes
+from biocypher.translate import (
+    gen_translate_edges,
+    gen_translate_nodes,
+    BiolinkAdapter,
+)
 from biocypher.check import VersionNode
 from biocypher.driver import Driver
 import pytest
@@ -21,17 +26,16 @@ def version_node(driver):
 
 
 def test_translate_nodes(version_node):
-    v = version_node
     id_type = [
         ("G9205", "protein"),
         ("hsa-miR-132-3p", "mirna"),
         ("ASDB_OSBS", "complex"),
     ]
-    t = gen_translate_nodes(v.leaves, id_type)
+    t = gen_translate_nodes(version_node.leaves, id_type)
 
     assert all(type(n) == BioCypherNode for n in t)
 
-    t = gen_translate_nodes(v.leaves, id_type)
+    t = gen_translate_nodes(version_node.leaves, id_type)
     assert next(t).get_label() == "Protein"
     assert next(t).get_label() == "microRNA"
     assert next(t).get_label() == "MacromolecularComplexMixin"
@@ -61,6 +65,8 @@ def test_translate_edges(version_node):
     assert n[2].get_label() == "IS_TARGET_OF"
 
 
-if __name__ == "__main__":
-    test_translate_nodes()
-    test_translate_edges()
+def test_adapter(version_node):
+    ad = BiolinkAdapter(version_node.leaves)
+    l = ad.leaves
+
+    assert isinstance(ad.leaves["Protein"], ClassDefinition)

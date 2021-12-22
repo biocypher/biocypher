@@ -34,6 +34,7 @@ Todo:
 
 from .create import BioCypherEdge, BioCypherNode
 from bmt import Toolkit
+import biocypher.biolinkmodel as bl
 
 
 class BiolinkAdapter(object):
@@ -53,15 +54,17 @@ class BiolinkAdapter(object):
         Translates the graph structure given in the `schema_config.yaml`
         to Biolink-conforming nomenclature.
         """
-        t = Toolkit()
-        l = []
+        t = Toolkit()  # loads biolink model toolkit python API
+        l = {}
         for entity in leaves.keys():
             e = t.get_element(entity)  # element name
+
+            # find element in bmt
             if e is not None:
-                l.append([entity, e])
+                l[entity] = e
             else:
                 print("Entity not found:" + entity[0])
-                l.append([entity, None])
+                l[entity] = None
 
         return l
 
