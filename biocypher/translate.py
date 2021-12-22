@@ -39,6 +39,9 @@ from bmt import Toolkit
 class BiolinkAdapter(object):
     """
     Performs various functions to integrate the Biolink ontology.
+
+    Todo:
+        - refer to pythonised biolink model from YAML
     """
 
     def __init__(self, leaves) -> None:
