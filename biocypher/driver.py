@@ -906,8 +906,8 @@ class Driver(BaseDriver):
 
             edge_query = (
                 "UNWIND $rels AS r "
-                "MATCH (src:test {id: r.source_id}) "
-                "MATCH (tar:test {id: r.target_id}) "
+                "MATCH (src {id: r.source_id}) "
+                "MATCH (tar {id: r.target_id}) "
                 "WITH src, tar, r "
                 "CALL apoc.merge.relationship"
                 "(src, r.relationship_label, NULL, "
