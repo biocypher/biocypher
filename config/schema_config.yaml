@@ -48,6 +48,7 @@ MacromolecularComplexMixin:
 OrganismTaxon:
   represented_as: node
   preferred_id: NCBITaxon
+  label_in_input: taxon
 
 Publication:
   represented_as: node

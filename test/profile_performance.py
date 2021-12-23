@@ -23,14 +23,14 @@ def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
     node_profile, np_printout = d.add_biocypher_nodes(
         node_gen(num_nodes), profile=profile, explain=explain
     )
-    edge_profile, ep_printout = d.add_biocypher_edges_mod(
+    edge_profile, ep_printout = d.add_biocypher_edges(
         edge_gen(num_edges), profile=profile, explain=explain
     )
 
     if profile:
         delete_test_network()
         d.add_biocypher_nodes(node_gen(num_nodes), profile=False)
-        edge_profile_mod, epm_printout = d.add_biocypher_edges_mod(
+        edge_profile_mod, epm_printout = d.add_biocypher_edges(
             edge_gen(num_edges), profile=profile
         )
         return (
@@ -41,7 +41,7 @@ def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
     elif explain:
         delete_test_network()
         d.add_biocypher_nodes(node_gen(num_nodes), explain=False)
-        edge_profile_mod, epm_printout = d.add_biocypher_edges_mod(
+        edge_profile_mod, epm_printout = d.add_biocypher_edges(
             edge_gen(num_edges), explain=explain
         )
         return (
@@ -53,7 +53,7 @@ def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
     d.close()
 
 
-def create_network_by_list(num_nodes, num_edges, mod=False):
+def create_network_by_list(num_nodes, num_edges):
     d = Driver(version=False)
 
     def node_list(num_nodes):
@@ -73,10 +73,7 @@ def create_network_by_list(num_nodes, num_edges, mod=False):
         return ls
 
     d.add_biocypher_nodes(node_list(num_nodes))
-    if mod:
-        d.add_biocypher_edges_mod(edge_list(num_edges))
-    else:
-        d.add_biocypher_edges(edge_list(num_edges))
+    d.add_biocypher_edges(edge_list(num_edges))
 
     d.close()
 
