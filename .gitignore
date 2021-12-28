@@ -11,3 +11,4 @@ dist/
 *.prof
 *.coverage
 *.pickle
+log/*

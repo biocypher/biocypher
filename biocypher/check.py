@@ -24,9 +24,12 @@ Todo:
 """
 
 from .create import BioCypherEdge, BioCypherNode
+from .logger import get_logger
 from datetime import datetime
 import yaml
 import os
+
+logger = get_logger(__name__)
 
 
 class MetaNode(BioCypherNode):
@@ -42,7 +45,7 @@ class MetaNode(BioCypherNode):
         node_id,
         node_label="MetaNode",
         optional_labels=None,
-        **properties
+        **properties,
     ):
         super().__init__(node_id, node_label, optional_labels, **properties)
 
@@ -123,6 +126,8 @@ class VersionNode(BioCypherNode):
         and initialise.
         """
 
+        logger.info("Getting graph state.")
+
         result, summary = self.bcy_driver.query(
             "MATCH (meta:BioCypher)"
             "WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)"
@@ -131,9 +136,11 @@ class VersionNode(BioCypherNode):
 
         # if result is empty, initialise
         if not result:
+            logger.info("No existing graph found, initialising.")
             return None
         # else, pass on graph state
         else:
+            logger.info(f"Found graph state")
             return result[0]["meta"]
 
     def get_graph_schema(self):

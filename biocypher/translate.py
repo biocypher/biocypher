@@ -33,9 +33,13 @@ Todo:
 """
 
 import os
-from .create import BioCypherEdge, BioCypherNode
 from bmt import Toolkit
+
+from .create import BioCypherEdge, BioCypherNode
+from .logger import get_logger
 import biocypher.biolinkmodel as bl
+
+logger = get_logger(__name__)
 
 
 class BiolinkAdapter(object):
@@ -63,7 +67,11 @@ class BiolinkAdapter(object):
         Translates the graph structure given in the `schema_config.yaml`
         to Biolink-conforming nomenclature.
         """
+        logger.info("Translating BioCypher config leaves to Biolink.")
         if custom_yaml:
+            logger.info(
+                "Creating Biolink model toolkit from custom YAML file."
+            )
             # load toolkit from local YAML
             ROOT = os.path.join(
                 *os.path.split(os.path.abspath(os.path.dirname(__file__)))
@@ -71,6 +79,7 @@ class BiolinkAdapter(object):
             bl_yaml = ROOT + "/../" + custom_yaml_file
             t = Toolkit(bl_yaml)  # loads biolink model toolkit python API
         else:
+            logger.info("Creating Biolink model toolkit from remote default.")
             t = Toolkit()
 
         l = {}
@@ -113,6 +122,8 @@ def gen_translate_nodes(leaves, id_type_tuples):
 
     # biolink = BiolinkAdapter(leaves)
 
+    logger.info(f"Translating {len(id_type_tuples)} nodes to BioCypher.")
+
     for id, type in id_type_tuples:
         path = getpath(leaves, type)
 
@@ -149,6 +160,8 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
     Todo:
         - id of interactions (now simple concat with "_")
     """
+
+    logger.info(f"Translating {len(src_tar_type_tuples)} edges to BioCypher.")
 
     for src, tar, type in src_tar_type_tuples:
         path = getpath(leaves, type)

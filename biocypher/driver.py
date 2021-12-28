@@ -31,6 +31,9 @@ from .create import BioCypherEdge, BioCypherNode
 from . import translate
 from .check import MetaEdge, VersionNode, MetaNode
 from .utils import pretty
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class BaseDriver(object):
@@ -77,9 +80,13 @@ class BaseDriver(object):
     ):
 
         self.driver = driver
+        if self.driver:
+            logger.info("Loading from supplied driver.")
 
         if not self.driver:
-
+            logger.info(
+                "No driver supplied, initialising driver from local configuration."
+            )
             self._db_config = {
                 "uri": db_uri,
                 "auth": db_auth,
@@ -108,13 +115,6 @@ class BaseDriver(object):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, "__class__", new)
 
-    def _log(self, msg="", level=0):
-        """
-        Later we will connect this to a logger.
-        """
-
-        pass
-
     def db_connect(self):
         """
         Creates a database connection manager (driver) based on the
@@ -131,7 +131,7 @@ class BaseDriver(object):
             auth=self.auth,
         )
 
-        self._log("Opened database connection.")
+        logger.info("Opened database connection.")
 
     @property
     def uri(self):
@@ -151,7 +151,7 @@ class BaseDriver(object):
 
         if self._config_file and os.path.exists(self._config_file):
 
-            self._log("Reading config from `%s`." % self._config_file)
+            logger.info("Reading config from `%s`." % self._config_file)
 
             with open(self._config_file, "r") as fp:
 
@@ -298,6 +298,8 @@ class BaseDriver(object):
         TODO include branching as in profile()
         """
 
+        logger.info("Explaining a query.")
+
         data, summary = self.query(
             query, db, fetch_size, write, explain=True, **kwargs
         )
@@ -334,6 +336,8 @@ class BaseDriver(object):
             dict: the raw profile returned by the Neo4j bolt driver
             list of str: a list of strings ready for printing
         """
+
+        logger.info("Profiling a query.")
 
         data, summary = self.query(
             query, db, fetch_size, write, profile=True, **kwargs
@@ -658,6 +662,7 @@ class Driver(BaseDriver):
                 self.init_db()
 
     def update_meta_graph(self):
+        logger.info("Updating Neo4j meta graph.")
         # add version node
         self.add_biocypher_nodes(self.db_meta)
 
@@ -701,7 +706,7 @@ class Driver(BaseDriver):
 
         self.wipe_db()
         self._create_constraints()
-        self._log("Initialising database.")
+        logger.info("Initialising database.")
 
     def _create_constraints(self):
         """
@@ -711,6 +716,8 @@ class Driver(BaseDriver):
         Grabs leaves of the schema_config.yaml file and creates
         constraints on the id of all entities represented as nodes.
         """
+
+        logger.info(f"Creating constraints for node types in config.")
 
         # get structure
         for leaf in self.db_meta.leaves.items():
@@ -780,7 +787,7 @@ class Driver(BaseDriver):
                 )
             else:
                 s = sum(1 for _ in cnodes) + 1
-                self._log("Merging %s nodes." % s)
+                logger.info("Merging %s nodes." % s)
 
         # receive single nodes or node lists
         else:
@@ -791,7 +798,7 @@ class Driver(BaseDriver):
                     "Nodes must be passed as type NodeFromPypath. "
                 )
             else:
-                self._log("Merging %s nodes." % len(nodes))
+                logger.info("Merging %s nodes." % len(nodes))
 
         entities = [node.get_dict() for node in nodes]
 
@@ -812,7 +819,9 @@ class Driver(BaseDriver):
                 entity_query, parameters={"entities": entities}
             )
         else:
-            return self.query(entity_query, parameters={"entities": entities})
+            res = self.query(entity_query, parameters={"entities": entities})
+            logger.info("Finished merging nodes.")
+            return res
 
     def add_biocypher_edges(self, edges, explain=False, profile=False):
         """
@@ -863,7 +872,7 @@ class Driver(BaseDriver):
                 )
             else:
                 s = "?"  # sum(1 for _ in cedges) + 1  # not very fast
-                self._log("Merging %s nodes." % s)
+                logger.info("Merging %s nodes." % s)
 
         # receive single edges or edge lists
         else:
@@ -881,7 +890,7 @@ class Driver(BaseDriver):
                     "Nodes must be passed as type NodeFromPypath. "
                 )
 
-            self._log("Merging %s edges." % len(edges))
+            logger.info("Merging %s edges." % len(edges))
 
         if tup:
             # split up tuples in nodes and edges if detected
@@ -921,4 +930,6 @@ class Driver(BaseDriver):
             elif profile:
                 return self.profile(edge_query, parameters={"rels": rels})
             else:
-                return self.query(edge_query, parameters={"rels": rels})
+                res = self.query(edge_query, parameters={"rels": rels})
+                logger.info("Finished merging edges.")
+                return res
