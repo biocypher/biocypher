@@ -32,6 +32,7 @@ from . import translate
 from .check import MetaEdge, VersionNode, MetaNode
 from .utils import pretty
 from .logger import get_logger
+from .write import BatchWriter
 
 logger = get_logger(__name__)
 
@@ -940,3 +941,27 @@ class Driver(BaseDriver):
                 res = self.query(edge_query, parameters={"rels": rels})
                 logger.info("Finished merging edges.")
                 return res
+
+    def write_nodes(self, nodes, dirname=None):
+        """
+        Write BioCypher nodes to disk using the :py:mod:`write` module,
+        formatting the CSV to enable Neo4j admin import from the target
+        directory.
+        """
+
+        if not self.batch_writer:
+            self.batch_writer = BatchWriter(dirname=dirname)
+
+        # write header files
+        self.batch_writer.write_node_headers(self.db_meta.schema)
+
+        # contains types of nodes and edges and
+        # their designations in the input data
+
+        # write content (in batches if required)
+        nodes  # contains node data with input designations that need to
+        # be translated to biocypher designations
+        pass
+
+    def write_edges(self, edges):
+        pass

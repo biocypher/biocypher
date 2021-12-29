@@ -135,7 +135,8 @@ class VersionNode(BioCypherNode):
             return None
         # else, pass on graph state
         else:
-            logger.info(f"Found graph state")
+            version = result[0]["meta"]["id"]
+            logger.info(f"Found graph state at {version}.")
             return result[0]["meta"]
 
     def get_graph_schema(self):

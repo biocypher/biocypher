@@ -18,12 +18,88 @@ File author(s): Sebastian Lobentanzer
 Distributed under GPLv3 license, see LICENSE.txt.
 """
 
+import os
+from datetime import datetime
+from .logger import get_logger
+
+logger = get_logger(__name__)
+
+
+class BatchWriter:
+    """
+    Class for writing node and edge representations to disk using the
+    format specified by Neo4j for the use of admin import.
+    """
+
+    def __init__(self, dirname=None) -> None:
+        self.delim = ";"
+        self.adelim = "|"
+        self.quote = "'"
+
+        if not dirname:
+            now = datetime.now()
+            dirname = now.strftime("%Y%m%d%H%M")
+
+        logger.info(f"Trying to crete output folder at out/{dirname}.")
+        ROOT = os.path.join(
+            *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+        )
+        self.output_path = ROOT + "/../out/" + dirname + "/"
+        try:
+            os.mkdir(self.output_path)
+            logger.info("Folder created successfully.")
+        except FileExistsError:
+            logger.error("Output directory already exists; cannot continue.")
+
+    # file handling
+    def write_node_headers(self, schema):
+        # extract nodes
+        nodes = [n for n in schema.items() if n[1]["represented_as"] == "node"]
+
+        for n in nodes:
+            # create header CSV with ID, properties, labels
+            label = n[0]
+            props = n[1]
+            id = props["preferred_id"] + ":ID"
+
+            # to programmatically define properties to be written, the
+            # data would have to be parsed before writing the header.
+            # alternatively, desired properties could also be provided
+            # via the schema_config.yaml, but that is more effort for
+            # the user.
+
+            # for now, substitute test properties: TODO
+            props = ["p1", "p2"]
+            if len(props) > 1:
+                props = self.delim.join(props)
+
+            # multiple labels:
+            opt_labels = None
+            # optional labels could be collected from the schema-config
+            # tree, including all upstream labels
+            if opt_labels:
+                labels = label + opt_labels
+                # concatenate with array delimiter
+                labels = [":" + l for l in labels]
+                labels = self.adelim.join(labels)
+            else:
+                labels = ":" + label
+            # prepend colon
+
+            file_path = self.output_path + label + "-header.csv"
+            with open(file_path, "w") as f:
+                # concatenate with delimiter
+                row = self.delim.join([id, props, labels])
+                f.write(row)
+
+
 """
 1. Collect representations of any type of node and edge in the python 
-objects.
+   objects.
 2. Coordinate representation to optimise number of CSVs to be written.
+
     - Depends on mutual information (properties are explicitly stated
-        in the CSV header)
+      in the CSV header)
     - Also depends on performance (maybe), with very large collections
     - Can properties the node/relationship does not own be left blank?
 
