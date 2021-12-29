@@ -75,11 +75,507 @@ about the graph structure for the case of re-loading an existing database for
 updating it with new information.</p></li>
 </ul>
 </section>
-<section id="pass-a-neo4j-driver-instance">
-<h2>Pass a Neo4j driver instance<a class="headerlink" href="#pass-a-neo4j-driver-instance" title="Permalink to this headline"></a></h2>
+<section id="module-biocypher.driver">
+<span id="pass-a-neo4j-driver-instance"></span><h2>Pass a Neo4j driver instance<a class="headerlink" href="#module-biocypher.driver" title="Permalink to this headline"></a></h2>
+<p>This module handles the passing of a Neo4j driver from the client to
+BioCypher and the modification of the database structure. It is part of
+the BioCypher python package, homepage: TODO.</p>
+<p>Copyright 2021, Heidelberg University Clinic</p>
+<dl class="simple">
+<dt>File author(s): Sebastian Lobentanzer</dt><dd><p>…</p>
+</dd>
+</dl>
+<p>Distributed under GPLv3 license, see LICENSE.txt.</p>
+<p>Todo:</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.driver.</span></span><span class="sig-name descname"><span class="pre">BaseDriver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'neo4j://localhost:7687'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_auth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config/db_config.yaml'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wipe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver" title="Permalink to this definition"></a></dt>
+<dd><p>Manages the connection to the Neo4j server. Establishes the
+connection and executes queries. A wrapper around the <cite>Driver</cite>
+object from the <code class="xref py py-mod docutils literal notranslate"><span class="pre">neo4j</span></code> module, which is stored in the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">driver</span></code> attribute.</p>
+<dl class="simple">
+<dt>The connection can be defined in three ways:</dt><dd><ul class="simple">
+<li><p>Providing a ready <code class="docutils literal notranslate"><span class="pre">neo4j.Driver</span></code> instance</p></li>
+<li><p>By URI and authentication data</p></li>
+<li><p>By a YML config file</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>driver</strong> (<em>neo4j.Driver</em>) – A <code class="docutils literal notranslate"><span class="pre">neo4j.Driver</span></code> instance, created by,
+for example, <code class="docutils literal notranslate"><span class="pre">neo4j.GraphDatabase.driver</span></code>.</p></li>
+<li><p><strong>db_name</strong> (<em>str</em>) – Name of the database (Neo4j graph) to use.</p></li>
+<li><p><strong>db_uri</strong> (<em>str</em>) – Protocol, host and port to access the Neo4j
+server.</p></li>
+<li><p><strong>db_auth</strong> (<em>tuple</em>) – Neo4j server authentication data: tuple of user
+name and password.</p></li>
+<li><p><strong>fetch_size</strong> (<em>int</em>) – Optional; the fetch size to use in database
+transactions.</p></li>
+<li><p><strong>config_file</strong> (<em>str</em>) – Path to a YML config file which provides the
+URI, user name and password.</p></li>
+<li><p><strong>wipe</strong> (<em>bool</em>) – Wipe the database after connection, ensuring the
+data is loaded into an empty database.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.close" title="Permalink to this definition"></a></dt>
+<dd><p>Closes the Neo4j driver if it exists and is open.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.create_db">
+<span class="sig-name descname"><span class="pre">create_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.create_db" title="Permalink to this definition"></a></dt>
+<dd><p>Create a database if it does not already exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the database.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.current_db">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_db</span></span><a class="headerlink" href="#biocypher.driver.BaseDriver.current_db" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the database (graph) where the next query would be
+executed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Name of a database.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.db_connect">
+<span class="sig-name descname"><span class="pre">db_connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.db_connect" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a database connection manager (driver) based on the
+current configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.db_exists">
+<span class="sig-name descname"><span class="pre">db_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.db_exists" title="Permalink to this definition"></a></dt>
+<dd><p>Tells if a database exists in the storage of the Neo4j server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of a database (graph).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><cite>True</cite> if the database exists.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(bool)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.db_online">
+<span class="sig-name descname"><span class="pre">db_online</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.db_online" title="Permalink to this definition"></a></dt>
+<dd><p>Tells if a database is currently online (active).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of a database (graph).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><cite>True</cite> if the database is online.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(bool)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.db_status">
+<span class="sig-name descname"><span class="pre">db_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'currentStatus'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.db_status" title="Permalink to this definition"></a></dt>
+<dd><p>Tells the current status or other state info of a database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of a database (graph).</p></li>
+<li><p><strong>field</strong> (<em>str</em><em>,</em><em>NoneType</em>) – The field to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The status as a string, <cite>None</cite> if the database</dt><dd><p>does not exist. If <a href="#id2"><span class="problematic" id="id3">:py:arg:`field`</span></a> is <cite>None</cite> a
+dictionary with all fields will be returned.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(str,dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.drop_db">
+<span class="sig-name descname"><span class="pre">drop_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.drop_db" title="Permalink to this definition"></a></dt>
+<dd><p>Deletes a database if it exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the database.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.edge_count">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">edge_count</span></span><a class="headerlink" href="#biocypher.driver.BaseDriver.edge_count" title="Permalink to this definition"></a></dt>
+<dd><p>Number of edges in the database.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.ensure_db">
+<span class="sig-name descname"><span class="pre">ensure_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.ensure_db" title="Permalink to this definition"></a></dt>
+<dd><p>Makes sure the database used by this instance exists and is
+online. If the database creation or startup is necessary but the
+user does not have the sufficient privileges, an exception will
+be raised.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.explain" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper for EXPLAIN function query to bring summary in
+readable form.</p>
+<p>CAVE: Only handles linear profiles (no branching) as of now.
+TODO include branching as in profile()</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.node_count">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_count</span></span><a class="headerlink" href="#biocypher.driver.BaseDriver.node_count" title="Permalink to this definition"></a></dt>
+<dd><p>Number of nodes in the database.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.profile">
+<span class="sig-name descname"><span class="pre">profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.profile" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper for PROFILE function query to bring summary in
+readable form.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – a valid Cypher query (see <cite>query()</cite>)</p></li>
+<li><p><strong>db</strong> (<em>str</em>) – the DB inside the Neo4j server that should be queried</p></li>
+<li><p><strong>fetch_size</strong> (<em>int</em>) – the Neo4j fetch size parameter</p></li>
+<li><p><strong>write</strong> (<em>bool</em>) – indicates whether to address write- or read-
+servers</p></li>
+<li><p><strong>explain</strong> (<em>bool</em>) – indicates whether to EXPLAIN the CYPHER
+query and return the ResultSummary</p></li>
+<li><p><strong>explain</strong> – indicates whether to PROFILE the CYPHER
+query and return the ResultSummary</p></li>
+<li><p><strong>**kwargs</strong> – optional objects used in CYPHER interactive mode,
+for instance for passing a parameter dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the raw profile returned by the Neo4j bolt driver
+list of str: a list of strings ready for printing</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.query">
+<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.query" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a session with the driver passed into the class at
+instantiation, runs a CYPHER query and returns the response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – a valid CYPHER query, can include APOC if the APOC
+plugin is installed in the accessed database</p></li>
+<li><p><strong>db</strong> (<em>str</em>) – the DB inside the Neo4j server that should be queried</p></li>
+<li><p><strong>fetch_size</strong> (<em>int</em>) – the Neo4j fetch size parameter</p></li>
+<li><p><strong>write</strong> (<em>bool</em>) – indicates whether to address write- or read-
+servers</p></li>
+<li><p><strong>explain</strong> (<em>bool</em>) – indicates whether to EXPLAIN the CYPHER
+query and return the ResultSummary</p></li>
+<li><p><strong>explain</strong> – indicates whether to PROFILE the CYPHER
+query and return the ResultSummary</p></li>
+<li><p><strong>**kwargs</strong> – optional objects used in CYPHER interactive mode,
+for instance for passing a parameter dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>the Neo4j response to the query, consumed</dt><dd><p>by the shorthand .data() function on the Result object</p>
+</dd>
+<dt>neo4j.ResultSummary: information about the Result returned</dt><dd><p>by the .consume() function on the Result object</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>neo4j.Record.data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.read_config">
+<span class="sig-name descname"><span class="pre">read_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.read_config" title="Permalink to this definition"></a></dt>
+<dd><p>Populates the instance configuration from one section of a YAML
+config file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.reload">
+<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.reload" title="Permalink to this definition"></a></dt>
+<dd><p>Reloads the object from the module level.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.start_db">
+<span class="sig-name descname"><span class="pre">start_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.start_db" title="Permalink to this definition"></a></dt>
+<dd><p>Starts a database (brings it online) if it is offline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the database.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.stop_db">
+<span class="sig-name descname"><span class="pre">stop_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.stop_db" title="Permalink to this definition"></a></dt>
+<dd><p>Stops a database, making sure it’s offline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the database.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.user">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user</span></span><a class="headerlink" href="#biocypher.driver.BaseDriver.user" title="Permalink to this definition"></a></dt>
+<dd><p>User for the currently active connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>The name of the user, <cite>None</cite> if no connection or no</dt><dd><p>unencrypted authentication data is available.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.BaseDriver.wipe_db">
+<span class="sig-name descname"><span class="pre">wipe_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.wipe_db" title="Permalink to this definition"></a></dt>
+<dd><p>Used in initialisation, deletes all nodes and edges and drops
+all constraints.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher.driver.Driver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.driver.</span></span><span class="sig-name descname"><span class="pre">Driver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'neo4j://localhost:7687'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_auth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config/db_config.yaml'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wipe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver" title="Permalink to this definition"></a></dt>
+<dd><p>Manages a connection to a biocypher database.</p>
+<dl class="simple">
+<dt>The connection can be defined in three ways:</dt><dd><ul class="simple">
+<li><p>Providing a ready <code class="docutils literal notranslate"><span class="pre">neo4j.Driver</span></code> instance</p></li>
+<li><p>By URI and authentication data</p></li>
+<li><p>By a YML config file</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>driver</strong> (<em>neo4j.Driver</em>) – A <code class="docutils literal notranslate"><span class="pre">neo4j.Driver</span></code> instance, created by,
+for example, <code class="docutils literal notranslate"><span class="pre">neo4j.GraphDatabase.driver</span></code>.</p></li>
+<li><p><strong>db_name</strong> (<em>str</em>) – Name of the database (Neo4j graph) to use.</p></li>
+<li><p><strong>db_uri</strong> (<em>str</em>) – Protocol, host and port to access the Neo4j
+server.</p></li>
+<li><p><strong>db_auth</strong> (<em>tuple</em>) – Neo4j server authentication data: tuple of user
+name and password.</p></li>
+<li><p><strong>fetch_size</strong> (<em>int</em>) – Optional; the fetch size to use in database
+transactions.</p></li>
+<li><p><strong>config_file</strong> (<em>str</em>) – Path to a YML config file which provides the
+URI, user name and password.</p></li>
+<li><p><strong>wipe</strong> (<em>bool</em>) – Wipe the database after connection, ensuring the
+data is loaded into an empty database.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.add_biocypher_edges">
+<span class="sig-name descname"><span class="pre">add_biocypher_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.add_biocypher_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Accepts an edge type handoff class (BioCypherEdge) with source
+and target ids, label, and a dict of properties (passing on the
+type of property, ie, int, string …).</p>
+<p>The individual edge is either passed as a singleton, in the case
+of representation as an edge in the graph, or as a 3-tuple, in
+the case of representation as a node (with two edges connecting
+to interaction partners).</p>
+<p>The dict retrieved by the get_dict() method is passed into Neo4j
+as a map of maps, explicitly encoding source and target ids and
+the relationship label, and adding all edge properties from the
+‘properties’ key of the dict. The merge is performed via APOC,
+matching only on source and target id to prevent duplicates. The
+same properties are set on match and on create, irrespective of
+the actual event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>edges</strong> – a list of BioCypherEdge objects</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The return value. True for success, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.add_biocypher_nodes">
+<span class="sig-name descname"><span class="pre">add_biocypher_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.add_biocypher_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Accepts a node type handoff class (BioCypherNode) with id,
+label, and a dict of properties (passing on the type of
+property, ie, int, string …).</p>
+<p>The dict retrieved by the get_dict() method is passed into Neo4j
+as a map of maps, explicitly encoding node id and label, and
+adding all other properties from the ‘properties’ key of the
+dict. The merge is performed via APOC, matching only on node id
+to prevent duplicates. The same properties are set on match and
+on create, irrespective of the actual event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nodes</strong> – a list of BioCypherNode objects</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The return value. True for success, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.add_edges">
+<span class="sig-name descname"><span class="pre">add_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_tar_type_tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.add_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Generic edge adder function to add any kind of input to the
+graph via the BioCypherEdge class. Employs translation
+functionality.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.add_nodes">
+<span class="sig-name descname"><span class="pre">add_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_type_tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.add_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Generic node adder function to add any kind of input to the
+graph via the BioCypherNode class. Employs translation
+functionality.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.init_db">
+<span class="sig-name descname"><span class="pre">init_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.init_db" title="Permalink to this definition"></a></dt>
+<dd><p>Used to initialise a property graph database by deleting
+contents and constraints and setting up new constraints.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="check-the-active-database-for-consistency-with-the-biocypher-format">
-<h2>Check the active database for consistency with the BioCypher format<a class="headerlink" href="#check-the-active-database-for-consistency-with-the-biocypher-format" title="Permalink to this headline"></a></h2>
+<section id="module-biocypher.check">
+<span id="check-the-active-database-for-consistency-with-the-biocypher-format"></span><h2>Check the active database for consistency with the BioCypher format<a class="headerlink" href="#module-biocypher.check" title="Permalink to this headline"></a></h2>
+<p>This module is used for assessing a Neo4j instance for compliance with
+the BioCypher standard and returning pass/fail, and, in the event of
+“pass”, it returns the primary identifiers chosen by the user of the
+active database to be used in translation of the input data to the
+correct format required for the active database. It is part of the
+BioCypher python package, homepage: TODO.</p>
+<p>Copyright 2021, Heidelberg University Clinic</p>
+<dl class="simple">
+<dt>File author(s): Sebastian Lobentanzer</dt><dd><p>…</p>
+</dd>
+</dl>
+<p>Distributed under GPLv3 license, see LICENSE.txt.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher.check.MetaEdge">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.check.</span></span><span class="sig-name descname"><span class="pre">MetaEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationship_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CONTAINS'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.MetaEdge" title="Permalink to this definition"></a></dt>
+<dd><p>Graph structure information edge in the meta-graph. Inherits from
+BioCypherNode but fixes label to “:CONTAINS”.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher.check.MetaNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.check.</span></span><span class="sig-name descname"><span class="pre">MetaNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MetaNode'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.MetaNode" title="Permalink to this definition"></a></dt>
+<dd><p>Graph structure information node representing node type entities in
+the BioCypher graph. Inherits from BioCypherNode but fixes label to
+“:MetaNode”. Is connected to VersionNode via “:CONTAINS”
+relationship.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher.check.VersionNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.check.</span></span><span class="sig-name descname"><span class="pre">VersionNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bcy_driver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BioCypher'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode" title="Permalink to this definition"></a></dt>
+<dd><p>Versioning and graph structure information meta node. Inherits from
+BioCypherNode but fixes label to “:BioCypher” and sets version
+by using the current date and time (meaning it overrides both
+mandatory args from BioCypherNode).</p>
+<p>Is created upon establishment of connection with the database and
+remains fixed for each BioCypher “session” (ie, the entire duration
+from starting the connection to the termination of the BioCypher
+adapter instance). Is connected to MetaNodes and MetaEdges via
+“:CONTAINS” relationships.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.check.VersionNode.get_current_id">
+<span class="sig-name descname"><span class="pre">get_current_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_current_id" title="Permalink to this definition"></a></dt>
+<dd><p>Versioning using datetime.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.check.VersionNode.get_graph_schema">
+<span class="sig-name descname"><span class="pre">get_graph_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_graph_schema" title="Permalink to this definition"></a></dt>
+<dd><p>Return graph schema information from meta graph if it exists, or
+create new schema information properties from configuration
+file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.check.VersionNode.get_graph_state">
+<span class="sig-name descname"><span class="pre">get_graph_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_graph_state" title="Permalink to this definition"></a></dt>
+<dd><p>Check in active DBMS connection for existence of VersionNodes,
+return the most recent VersionNode as representation of the
+graph state. If no VersionNode found, assume blank graph state
+and initialise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.check.VersionNode.get_leaves">
+<span class="sig-name descname"><span class="pre">get_leaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_leaves" title="Permalink to this definition"></a></dt>
+<dd><p>Get leaves of the tree hierarchy from the data structure dict
+contained in the schema config yaml.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-biocypher.create">
 <span id="create-and-update-entries-in-a-database"></span><h2>Create and update entries in a database<a class="headerlink" href="#module-biocypher.create" title="Permalink to this headline"></a></h2>
@@ -306,11 +802,91 @@ label as key-value pairs.</p>
 </dd></dl>
 
 </section>
-<section id="translate-functionality-for-implemented-types-of-knowledge">
-<h2>Translate functionality for implemented types of knowledge<a class="headerlink" href="#translate-functionality-for-implemented-types-of-knowledge" title="Permalink to this headline"></a></h2>
+<section id="module-biocypher.translate">
+<span id="translate-functionality-for-implemented-types-of-knowledge"></span><h2>Translate functionality for implemented types of knowledge<a class="headerlink" href="#module-biocypher.translate" title="Permalink to this headline"></a></h2>
+<p>This module handles the lookup and storage of entity IDs that are part
+of the BioCypher schema. It is part of the BioCypher python package,
+homepage: TODO.</p>
+<p>Copyright 2021, Heidelberg University Clinic</p>
+<dl class="simple">
+<dt>File author(s): Sebastian Lobentanzer</dt><dd><p>…</p>
+</dd>
+</dl>
+<p>Distributed under GPLv3 license, see LICENSE.txt.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher.translate.BiolinkAdapter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.translate.</span></span><span class="sig-name descname"><span class="pre">BiolinkAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_yaml</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_yaml_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config/biocypher-biolink-model.yaml'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.translate.BiolinkAdapter" title="Permalink to this definition"></a></dt>
+<dd><p>Performs various functions to integrate the Biolink ontology.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.translate.BiolinkAdapter.translate_leaves_to_biolink">
+<span class="sig-name descname"><span class="pre">translate_leaves_to_biolink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_yaml</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_yaml_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.translate.BiolinkAdapter.translate_leaves_to_biolink" title="Permalink to this definition"></a></dt>
+<dd><p>Translates the graph structure given in the <cite>schema_config.yaml</cite>
+to Biolink-conforming nomenclature.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="biocypher.translate.gen_translate_edges">
+<span class="sig-prename descclassname"><span class="pre">biocypher.translate.</span></span><span class="sig-name descname"><span class="pre">gen_translate_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_tar_type_tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.translate.gen_translate_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Translates input edge representation to a representation that
+conforms to the schema of the given BioCypher graph. For now
+requires explicit statement of edge type on pass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>leaves</strong> (<em>dict</em>) – dictionary detailing the leaves of the hierarchy
+tree representing the structure of the graph; the leaves are
+the entities that will be direct components of the graph,
+while the intermediary nodes are additional labels for
+filtering purposes.</p></li>
+<li><p><strong>src_tar_type_tuples</strong> (<em>list of tuples</em>) – collection of tuples
+representing source and target of an interaction via their
+unique ids as well as the type of interaction in the
+original database notation, which is translated to BioCypher
+notation using the <cite>leaves</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="biocypher.translate.gen_translate_nodes">
+<span class="sig-prename descclassname"><span class="pre">biocypher.translate.</span></span><span class="sig-name descname"><span class="pre">gen_translate_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type_tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.translate.gen_translate_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Translates input node representation to a representation that
+conforms to the schema of the given BioCypher graph. For now
+requires explicit statement of node type on pass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>leaves</strong> (<em>dict</em>) – dictionary detailing the leaves of the hierarchy
+tree representing the structure of the graph; the leaves are
+the entities that will be direct components of the graph,
+while the intermediary nodes are additional labels for
+filtering purposes.</p></li>
+<li><p><strong>id_type_tuples</strong> (<em>list of tuples</em>) – collection of tuples
+representing individual nodes by their unique id and a type
+that is translated from the original database notation to
+the corresponding BioCypher notation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="write-the-graph-to-csv-files-for-quick-admin-import">
-<h2>Write the graph to CSV files for quick ‘admin import’<a class="headerlink" href="#write-the-graph-to-csv-files-for-quick-admin-import" title="Permalink to this headline"></a></h2>
+<section id="module-biocypher.write">
+<span id="write-the-graph-to-csv-files-for-quick-admin-import"></span><h2>Write the graph to CSV files for quick ‘admin import’<a class="headerlink" href="#module-biocypher.write" title="Permalink to this headline"></a></h2>
+<p>This module handles the configuration and disk writing of CSV files
+intended for use with the Neo4J admin import function, to quickly
+transfer large amounts of content into an unused database. For more
+explanation, see <a class="reference external" href="https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/">https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/</a>. This module is part of the BioCypher python
+package, homepage: TODO.</p>
+<p>Copyright 2021, Heidelberg University Clinic</p>
+<dl class="simple">
+<dt>File author(s): Sebastian Lobentanzer</dt><dd><p>…</p>
+</dd>
+</dl>
+<p>Distributed under GPLv3 license, see LICENSE.txt.</p>
 </section>
 <section id="module-biocypher.logger">
 <span id="logging"></span><h2>Logging<a class="headerlink" href="#module-biocypher.logger" title="Permalink to this headline"></a></h2>
