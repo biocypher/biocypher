@@ -83,7 +83,6 @@ class VersionNode(BioCypherNode):
           label?
             - can only think of creating a parent to both BioCypherNode
               and MetaNode that does not have mandatory id and label.
-
         - add graph structure information
         - on creation will be generated from yml or json?
             - yml is more readable
