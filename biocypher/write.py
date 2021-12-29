@@ -53,6 +53,19 @@ class BatchWriter:
 
     # file handling
     def write_node_headers(self, schema):
+        """
+        Writes single CSV file for each graph entity that is represented
+        as a node as per the definition in the `schema_config.yaml`,
+        containing only the header for this type of node.
+
+        Args:
+            schema (dict): graph schema as taken from `schema_config.yaml`
+                and, equivalently, from `Driver.db_meta.schema`.
+
+        Todo:
+            - handling of properties: parse the data or specify in YAML
+            - optional labels: parse from YAML hierarchy
+        """
         # extract nodes
         nodes = [n for n in schema.items() if n[1]["represented_as"] == "node"]
 
