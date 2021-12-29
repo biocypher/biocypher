@@ -942,6 +942,22 @@ package, homepage: TODO.</p>
 </dl>
 <p>Distributed under GPLv3 license, see LICENSE.txt.</p>
 <p>Todo:</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="biocypher.logger.get_logger">
+<span class="sig-prename descclassname"><span class="pre">biocypher.logger.</span></span><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.logger.get_logger" title="Permalink to this definition"></a></dt>
+<dd><p>Main function of providing a logger instance to any module. Should
+be called from each module separately, e.g., after imports, assign
+<code class="docutils literal notranslate"><span class="pre">logger</span> <span class="pre">=</span> <span class="pre">get_logger(__name__)</span></code> to yield a module-specific logger
+that can be used according to Python <cite>logging</cite>.</p>
+<p>The file handler creates a log file named after the current date and
+time. Levels to output to file and console can be set here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of the logger instance</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="indices-and-tables">
 <h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline"></a></h2>
