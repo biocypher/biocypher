@@ -230,29 +230,29 @@ class BaseDriver(object):
                 by the .consume() function on the Result object
 
         Todo:
-            - generalise? had to create conditionals for profiling, as
+            generalise? had to create conditionals for profiling, as
                 the returns are not equally important. the .data()
                 shorthand may not be applicable in all cases. should we
                 return the `Result` object directly plus the summary
                 object from .consume()?
-                - From Docs: "Any query results obtained within a
-                    transaction function should be consumed within that
-                    function, as connection-bound resources cannot be
-                    managed correctly when out of scope. To that end,
-                    transaction functions can return values but these
-                    should be derived values rather than raw results."
-            - use session.run() or individual transactions?
-                - From Docs: "Transaction functions are the recommended
-                    form for containing transactional units of work.
-                    When a transaction fails, the driver retry logic is
-                    invoked. For several failure cases, the transaction
-                    can be immediately retried against a different
-                    server. These cases include connection issues,
-                    server role changes (e.g. leadership elections)
-                    and transient errors."
-            - use write and read distinctions in calling transactions
+            From Docs: "Any query results obtained within a
+                transaction function should be consumed within that
+                function, as connection-bound resources cannot be
+                managed correctly when out of scope. To that end,
+                transaction functions can return values but these
+                should be derived values rather than raw results."
+            use session.run() or individual transactions?
+            From Docs: "Transaction functions are the recommended
+                form for containing transactional units of work.
+                When a transaction fails, the driver retry logic is
+                invoked. For several failure cases, the transaction
+                can be immediately retried against a different
+                server. These cases include connection issues,
+                server role changes (e.g. leadership elections)
+                and transient errors."
+            use write and read distinctions in calling transactions
                 ("access mode")?
-            - use neo4j `@unit_of_work`?
+            use neo4j `@unit_of_work`?
         """
 
         db = db or self._db_config["db"] or neo4j.DEFAULT_DATABASE
