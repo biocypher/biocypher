@@ -82,10 +82,13 @@ class VersionNode(BioCypherNode):
         - granularity of versioning?
         - way to instantiate the MetaNode without having to give id and
           label?
+
             - can only think of creating a parent to both BioCypherNode
               and MetaNode that does not have mandatory id and label.
+
         - add graph structure information
         - on creation will be generated from yml or json?
+
             - yml is more readable
             - as dict? from yml/json?
     """

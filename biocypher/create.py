@@ -27,8 +27,10 @@ Todo:
       also allow a check whether the existing graph adheres to 
       BioCypher, at least in the node domain. If it doesn't, 
       the call does not make much sense.
+
         - We could pass in the driver/session object into the BioCypher 
           class.
+
     - alternatively, do we merge the relationship, creating new nodes in 
       the process? could lead to duplications when nodes are created 
       that exist in the graph but there is confusion with the ID. 
@@ -40,11 +42,14 @@ Todo:
     - translation of id types using pypath translation facilities (to be 
       later externalised)
     - provide options to the user:
+
         - primary id type(s) of their liking (critical, does not 
           guarantee interoperability: do we want this?)
+
             - there could be multiple "standard cases" of graph, and 
               upon choosing or detecting one of these, BioCypher could 
               translate
+              
         - granularity: the ability to opt out (!) of the more detailed 
           structural components (opt in would again not guarantee 
           interoperability)

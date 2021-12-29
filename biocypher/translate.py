@@ -18,6 +18,7 @@ Todo:
 
     - genericise: standardise input data to BioCypher specifications or, 
       optionally, user specifications.
+
         - if the database exists, read biocypher info node
         - if newly created, ask for user input (?) as to which IDs to 
           use etc
@@ -28,6 +29,7 @@ Todo:
           in the graph ("source" of translation). currently, 
           implemented by assigning source nomenclature explicitly in
           the schema_config.yaml file ("label_in_input").
+          
     - type checking
     - import ID types from pypath dictionary (later, externalised 
       dictionary)? biolink?
