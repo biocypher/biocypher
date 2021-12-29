@@ -17,6 +17,7 @@ File author(s): Sebastian Lobentanzer
 Distributed under GPLv3 license, see LICENSE.txt.
 
 Todo:
+
     - ensure that all relationship source and target IDs are in the node 
       list? Or in the graph? Would require direct connection...
     - Calls to the classes are independent, so there is no way to 

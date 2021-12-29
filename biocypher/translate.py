@@ -15,8 +15,9 @@ File author(s): Sebastian Lobentanzer
 Distributed under GPLv3 license, see LICENSE.txt.
 
 Todo: 
+
     - genericise: standardise input data to BioCypher specifications or, 
-        optionally, user specifications.
+      optionally, user specifications.
         - if the database exists, read biocypher info node
         - if newly created, ask for user input (?) as to which IDs to 
           use etc
@@ -30,7 +31,6 @@ Todo:
     - type checking
     - import ID types from pypath dictionary (later, externalised 
       dictionary)? biolink?
-      
 """
 
 import os

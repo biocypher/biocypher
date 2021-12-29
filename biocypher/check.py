@@ -78,6 +78,7 @@ class VersionNode(BioCypherNode):
     ":CONTAINS" relationships.
 
     Todo:
+
         - granularity of versioning?
         - way to instantiate the MetaNode without having to give id and
           label?
