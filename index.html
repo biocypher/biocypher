@@ -943,6 +943,20 @@ package, homepage: TODO.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.write.</span></span><span class="sig-name descname"><span class="pre">BatchWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.BatchWriter" title="Permalink to this definition"></a></dt>
 <dd><p>Class for writing node and edge representations to disk using the
 format specified by Neo4j for the use of admin import.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.write.BatchWriter.write_node_headers">
+<span class="sig-name descname"><span class="pre">write_node_headers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.BatchWriter.write_node_headers" title="Permalink to this definition"></a></dt>
+<dd><p>Writes single CSV file for each graph entity that is represented
+as a node as per the definition in the <cite>schema_config.yaml</cite>,
+containing only the header for this type of node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>schema</strong> (<em>dict</em>) – graph schema as taken from <cite>schema_config.yaml</cite>
+and, equivalently, from <cite>Driver.db_meta.schema</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
