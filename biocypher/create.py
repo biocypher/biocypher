@@ -18,35 +18,35 @@ Distributed under GPLv3 license, see LICENSE.txt.
 
 Todo:
     - ensure that all relationship source and target IDs are in the node 
-        list? Or in the graph? Would require direct connection...
-        - Calls to the classes are independent, so there is no way to 
-            check directly; nodes can be created at any point in time 
-            previous to edge creation. We could require a pass of all 
-            the nodes in the graph when creating edges. Pro: this would 
-            also allow a check whether the existing graph adheres to 
-            BioCypher, at least in the node domain. If it doesn't, 
-            the call does not make much sense.
+      list? Or in the graph? Would require direct connection...
+    - Calls to the classes are independent, so there is no way to 
+      check directly; nodes can be created at any point in time 
+      previous to edge creation. We could require a pass of all 
+      the nodes in the graph when creating edges. Pro: this would 
+      also allow a check whether the existing graph adheres to 
+      BioCypher, at least in the node domain. If it doesn't, 
+      the call does not make much sense.
         - We could pass in the driver/session object into the BioCypher 
-            class.
+          class.
     - alternatively, do we merge the relationship, creating new nodes in 
-        the process? could lead to duplications when nodes are created 
-        that exist in the graph but there is confusion with the ID. 
-        could be prevented by BioCypher knowing about the ENTIRE pool of 
-        possible nodes.
+      the process? could lead to duplications when nodes are created 
+      that exist in the graph but there is confusion with the ID. 
+      could be prevented by BioCypher knowing about the ENTIRE pool of 
+      possible nodes.
     - allow custom node and edge labels / annotation?
     - establish a dictionary lookup with the id types to be used / basic 
-        type checking of the input
+      type checking of the input
     - translation of id types using pypath translation facilities (to be 
-        later externalised)
+      later externalised)
     - provide options to the user:
         - primary id type(s) of their liking (critical, does not 
-            guarantee interoperability: do we want this?)
+          guarantee interoperability: do we want this?)
             - there could be multiple "standard cases" of graph, and 
-                upon choosing or detecting one of these, BioCypher could 
-                translate
+              upon choosing or detecting one of these, BioCypher could 
+              translate
         - granularity: the ability to opt out (!) of the more detailed 
-            structural components (opt in would again not guarantee 
-            interoperability)
+          structural components (opt in would again not guarantee 
+          interoperability)
 """
 
 # Futures
