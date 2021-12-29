@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>BioCypher: a unified language of property graph databases for biomedical science &#8212; BioCypher  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -103,7 +103,7 @@ object from the <code class="xref py py-mod docutils literal notranslate"><span 
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>driver</strong> (<em>neo4j.Driver</em>) – A <code class="docutils literal notranslate"><span class="pre">neo4j.Driver</span></code> instance, created by,
 for example, <code class="docutils literal notranslate"><span class="pre">neo4j.GraphDatabase.driver</span></code>.</p></li>
@@ -132,7 +132,7 @@ data is loaded into an empty database.</p></li>
 <span class="sig-name descname"><span class="pre">create_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.create_db" title="Permalink to this definition"></a></dt>
 <dd><p>Create a database if it does not already exist.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the database.</p>
 </dd>
 </dl>
@@ -144,10 +144,10 @@ data is loaded into an empty database.</p></li>
 <dd><p>Name of the database (graph) where the next query would be
 executed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Name of a database.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>(str)</p>
 </dd>
 </dl>
@@ -165,13 +165,13 @@ current configuration.</p>
 <span class="sig-name descname"><span class="pre">db_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.db_exists" title="Permalink to this definition"></a></dt>
 <dd><p>Tells if a database exists in the storage of the Neo4j server.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of a database (graph).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><cite>True</cite> if the database exists.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>(bool)</p>
 </dd>
 </dl>
@@ -182,13 +182,13 @@ current configuration.</p>
 <span class="sig-name descname"><span class="pre">db_online</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.db_online" title="Permalink to this definition"></a></dt>
 <dd><p>Tells if a database is currently online (active).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of a database (graph).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><cite>True</cite> if the database is online.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>(bool)</p>
 </dd>
 </dl>
@@ -199,13 +199,13 @@ current configuration.</p>
 <span class="sig-name descname"><span class="pre">db_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'currentStatus'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.db_status" title="Permalink to this definition"></a></dt>
 <dd><p>Tells the current status or other state info of a database.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – Name of a database (graph).</p></li>
 <li><p><strong>field</strong> (<em>str</em><em>,</em><em>NoneType</em>) – The field to return.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>The status as a string, <cite>None</cite> if the database</dt><dd><p>does not exist. If <code class="xref py py-attr docutils literal notranslate"><span class="pre">field</span></code> is <cite>None</cite> a
 dictionary with all fields will be returned.</p>
@@ -213,7 +213,7 @@ dictionary with all fields will be returned.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>(str,dict)</p>
 </dd>
 </dl>
@@ -224,7 +224,7 @@ dictionary with all fields will be returned.</p>
 <span class="sig-name descname"><span class="pre">drop_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.drop_db" title="Permalink to this definition"></a></dt>
 <dd><p>Deletes a database if it exists.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the database.</p>
 </dd>
 </dl>
@@ -266,7 +266,7 @@ TODO include branching as in profile()</p>
 <dd><p>Wrapper for PROFILE function query to bring summary in
 readable form.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>query</strong> (<em>str</em>) – a valid Cypher query (see <cite>query()</cite>)</p></li>
 <li><p><strong>db</strong> (<em>str</em>) – the DB inside the Neo4j server that should be queried</p></li>
@@ -281,11 +281,11 @@ query and return the ResultSummary</p></li>
 for instance for passing a parameter dictionary</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the raw profile returned by the Neo4j bolt driver
 list of str: a list of strings ready for printing</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -297,7 +297,7 @@ list of str: a list of strings ready for printing</p>
 <dd><p>Creates a session with the driver passed into the class at
 instantiation, runs a CYPHER query and returns the response.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>query</strong> (<em>str</em>) – a valid CYPHER query, can include APOC if the APOC
 plugin is installed in the accessed database</p></li>
@@ -313,7 +313,7 @@ query and return the ResultSummary</p></li>
 for instance for passing a parameter dictionary</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p>neo4j.Record.data: the Neo4j response to the query, consumed
 by the shorthand .data() function on the Result object</p></li>
@@ -322,7 +322,7 @@ by the .consume() function on the Result object</p></li>
 </ul>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>tuple of two</p>
 </dd>
 </dl>
@@ -346,7 +346,7 @@ config file.</p>
 <span class="sig-name descname"><span class="pre">start_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.start_db" title="Permalink to this definition"></a></dt>
 <dd><p>Starts a database (brings it online) if it is offline.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the database.</p>
 </dd>
 </dl>
@@ -357,7 +357,7 @@ config file.</p>
 <span class="sig-name descname"><span class="pre">stop_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.BaseDriver.stop_db" title="Permalink to this definition"></a></dt>
 <dd><p>Stops a database, making sure it’s offline.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the database.</p>
 </dd>
 </dl>
@@ -368,14 +368,14 @@ config file.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user</span></span><a class="headerlink" href="#biocypher.driver.BaseDriver.user" title="Permalink to this definition"></a></dt>
 <dd><p>User for the currently active connection.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><dl class="simple">
 <dt>The name of the user, <cite>None</cite> if no connection or no</dt><dd><p>unencrypted authentication data is available.</p>
 </dd>
 </dl>
 </p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>(str)</p>
 </dd>
 </dl>
@@ -403,7 +403,7 @@ all constraints.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>driver</strong> (<em>neo4j.Driver</em>) – A <code class="docutils literal notranslate"><span class="pre">neo4j.Driver</span></code> instance, created by,
 for example, <code class="docutils literal notranslate"><span class="pre">neo4j.GraphDatabase.driver</span></code>.</p></li>
@@ -439,13 +439,13 @@ matching only on source and target id to prevent duplicates. The
 same properties are set on match and on create, irrespective of
 the actual event.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>edges</strong> – a list of BioCypherEdge objects</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The return value. True for success, False otherwise.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
@@ -464,13 +464,13 @@ dict. The merge is performed via APOC, matching only on node id
 to prevent duplicates. The same properties are set on match and
 on create, irrespective of the actual event.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>nodes</strong> – a list of BioCypherNode objects</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The return value. True for success, False otherwise.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
@@ -602,7 +602,7 @@ called “label”, which usually denotes the human-readable form.
 Relationship labels are written in UPPERCASE and as verbs, as per
 Neo4j consensus.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>source_id</strong> – consensus “best” id for biological entity
 (string)</p></li>
@@ -620,7 +620,7 @@ passed to Neo4j for the respective edge (dict)</p></li>
 <dd><p>Create list of BioCypherEdge objects from dict of pypath
 relationships.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>relationships</strong> – currently, a collection of pypath
 relationships. should be adapted to accept arbitrary
 collections.</p>
@@ -634,7 +634,7 @@ collections.</p>
 <dd><p>Convert self to format accepted by Neo4j driver (Python dict -&gt;
 Neo4j Map).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><dl class="simple">
 <dt>source_id, target_id and relationship_label as</dt><dd><p>top-level key-value pairs, properties as second-level
 dict.</p>
@@ -642,7 +642,7 @@ dict.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>dict</p>
 </dd>
 </dl>
@@ -653,10 +653,10 @@ dict.</p>
 <span class="sig-name descname"><span class="pre">get_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherEdge.get_label" title="Permalink to this definition"></a></dt>
 <dd><p>Returns relationship label.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>relationship_label</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>str</p>
 </dd>
 </dl>
@@ -668,10 +668,10 @@ dict.</p>
 <dd><p>Returns all other relationship properties apart from primary ids
 and label as key-value pairs.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>properties</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>dict</p>
 </dd>
 </dl>
@@ -682,10 +682,10 @@ and label as key-value pairs.</p>
 <span class="sig-name descname"><span class="pre">get_source_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherEdge.get_source_id" title="Permalink to this definition"></a></dt>
 <dd><p>Returns primary node identifier of relationship source.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>source_id</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>str</p>
 </dd>
 </dl>
@@ -696,10 +696,10 @@ and label as key-value pairs.</p>
 <span class="sig-name descname"><span class="pre">get_target_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherEdge.get_target_id" title="Permalink to this definition"></a></dt>
 <dd><p>Returns primary node identifier of relationship target.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>target_id</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>str</p>
 </dd>
 </dl>
@@ -717,7 +717,7 @@ label, ie, the entity descriptor after the colon, such as
 avoid confusion with “label” properties. Node labels are written in
 CamelBack and as nouns, as per Neo4j consensus.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – consensus “best” id for biological entity (string)</p></li>
 <li><p><strong>node_label</strong> – primary type of entity, capitalised (string)</p></li>
@@ -732,11 +732,11 @@ passed to neo4j for the respective node (dict)</p></li>
 <dd><p>Convert self to format accepted by Neo4j driver (Python dict -&gt;
 Neo4j Map).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>node_id and node_label as top-level key-value pairs,
 properties as second-level dict.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>dict</p>
 </dd>
 </dl>
@@ -747,10 +747,10 @@ properties as second-level dict.</p>
 <span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode.get_id" title="Permalink to this definition"></a></dt>
 <dd><p>Returns primary node identifier.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>node_id</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>str</p>
 </dd>
 </dl>
@@ -761,10 +761,10 @@ properties as second-level dict.</p>
 <span class="sig-name descname"><span class="pre">get_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode.get_label" title="Permalink to this definition"></a></dt>
 <dd><p>Returns primary node label.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>node_label</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>str</p>
 </dd>
 </dl>
@@ -775,10 +775,10 @@ properties as second-level dict.</p>
 <span class="sig-name descname"><span class="pre">get_optional_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode.get_optional_labels" title="Permalink to this definition"></a></dt>
 <dd><p>Returns all optional labels.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>properties</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>dict</p>
 </dd>
 </dl>
@@ -790,10 +790,10 @@ properties as second-level dict.</p>
 <dd><p>Returns all other node properties apart from primary id and
 label as key-value pairs.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>properties</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>dict</p>
 </dd>
 </dl>
@@ -833,7 +833,7 @@ to Biolink-conforming nomenclature.</p>
 conforms to the schema of the given BioCypher graph. For now
 requires explicit statement of edge type on pass.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>leaves</strong> (<em>dict</em>) – dictionary detailing the leaves of the hierarchy
 tree representing the structure of the graph; the leaves are
@@ -857,7 +857,7 @@ notation using the <cite>leaves</cite>.</p></li>
 conforms to the schema of the given BioCypher graph. For now
 requires explicit statement of node type on pass.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>leaves</strong> (<em>dict</em>) – dictionary detailing the leaves of the hierarchy
 tree representing the structure of the graph; the leaves are
