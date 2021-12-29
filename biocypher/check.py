@@ -78,24 +78,16 @@ class VersionNode(BioCypherNode):
     ":CONTAINS" relationships.
 
     Todo:
-        granularity of versioning?
-        if many short calls are made in a short amount of time,
-            closing biocypher after each call, the number of
-            meta-nodes would be too large. on the other hand, one
-            node per day may be too little for some.
-        could implement a continuous versioning system where we get
-            the most recent version from the graph and add one
-            increment, or a way to pass in an arbitrary version of
-            choice.
-        way to instantiate the MetaNode without having to give id and
-            label?
-        can only think of creating a parent to both BioCypherNode
-            and MetaNode that does not have mandatory id and label.
-        put in create or here?
-        add graph structure information
-        on creation will be generated from yml or json?
-        yml is more readable
-        as dict? from yml/json?
+        - granularity of versioning?
+        - way to instantiate the MetaNode without having to give id and
+          label?
+            - can only think of creating a parent to both BioCypherNode
+              and MetaNode that does not have mandatory id and label.
+
+        - add graph structure information
+        - on creation will be generated from yml or json?
+            - yml is more readable
+            - as dict? from yml/json?
     """
 
     def __init__(
