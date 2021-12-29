@@ -542,6 +542,14 @@ functionality.</p>
 contents and constraints and setting up new constraints.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.write_nodes">
+<span class="sig-name descname"><span class="pre">write_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.write_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Write BioCypher nodes to disk using the <code class="xref py py-mod docutils literal notranslate"><span class="pre">write</span></code> module,
+formatting the CSV to enable Neo4j admin import from the target
+directory.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -930,6 +938,13 @@ package, homepage: TODO.</p>
 </dd>
 </dl>
 <p>Distributed under GPLv3 license, see LICENSE.txt.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher.write.BatchWriter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.write.</span></span><span class="sig-name descname"><span class="pre">BatchWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.BatchWriter" title="Permalink to this definition"></a></dt>
+<dd><p>Class for writing node and edge representations to disk using the
+format specified by Neo4j for the use of admin import.</p>
+</dd></dl>
+
 </section>
 <section id="module-biocypher.logger">
 <span id="logging"></span><h2>Logging<a class="headerlink" href="#module-biocypher.logger" title="Permalink to this headline"></a></h2>
@@ -948,12 +963,18 @@ package, homepage: TODO.</p>
 <dd><p>Main function of providing a logger instance to any module. Should
 be called from each module separately, e.g., after imports, assign
 <code class="docutils literal notranslate"><span class="pre">logger</span> <span class="pre">=</span> <span class="pre">get_logger(__name__)</span></code> to yield a module-specific logger
-that can be used according to Python <cite>logging</cite>.</p>
+that can be used according to Python <code class="xref py py-mod docutils literal notranslate"><span class="pre">logging</span></code>.</p>
 <p>The file handler creates a log file named after the current date and
 time. Levels to output to file and console can be set here.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of the logger instance</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an instance of the Python <code class="xref py py-mod docutils literal notranslate"><span class="pre">Logger</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>logging.getLogger</p>
 </dd>
 </dl>
 </dd></dl>
