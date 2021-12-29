@@ -18,7 +18,6 @@ File author(s): Sebastian Lobentanzer
 Distributed under GPLv3 license, see LICENSE.txt.
 """
 
-
 """
 1. Collect representations of any type of node and edge in the python 
 objects.
