@@ -77,6 +77,11 @@ Write the graph to CSV files for quick 'admin import'
 .. automodule:: biocypher.write
    :members:
 
+Logging
+=======
+.. automodule:: biocypher.logger
+   :members:
+
 Indices and tables
 ==================
 
