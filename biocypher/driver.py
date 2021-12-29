@@ -392,7 +392,7 @@ class BaseDriver(object):
 
         Returns:
             (str,dict): The status as a string, `None` if the database
-                does not exist. If :py:arg:`field` is `None` a
+                does not exist. If :py:attr:`field` is `None` a
                 dictionary with all fields will be returned.
         """
 
