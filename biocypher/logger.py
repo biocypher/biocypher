@@ -23,6 +23,18 @@ from datetime import datetime
 
 
 def get_logger(name):
+    """
+    Main function of providing a logger instance to any module. Should
+    be called from each module separately, e.g., after imports, assign
+    ``logger = get_logger(__name__)`` to yield a module-specific logger
+    that can be used according to Python `logging`.
+
+    The file handler creates a log file named after the current date and
+    time. Levels to output to file and console can be set here.
+
+    Args:
+        name (str): name of the logger instance
+    """
     file_formatter = logging.Formatter(
         "%(asctime)s\t%(levelname)s\tmodule:%(module)s\n%(message)s"
     )
