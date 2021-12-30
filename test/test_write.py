@@ -85,13 +85,15 @@ def test_write_headers(bw):
         )
         and m
         == (
-            "MIR:ID;p1;p2;:Microrna|:NoncodingRnaProduct|:RnaProduct|:Transcript"
-            "|:NucleicAcidEntity|:MolecularEntity|:ChemicalEntity|:NamedThing"
-            "|:Entity|:GeneProductMixin|:GeneOrGeneProduct"
-            "|:MacromolecularMachineMixin|:GenomicEntity|:ThingWithTaxon"
-            "|:PhysicalEssence|:PhysicalEssenceOrOccurrent|:OntologyClass"
+            "MIR:ID;p1;p2;:MicroRNA|:NoncodingRNAProduct|:RNAProduct"
+            "|:Transcript|:NucleicAcidEntity|:MolecularEntity"
+            "|:ChemicalEntity|:NamedThing|:Entity|:GeneProductMixin"
+            "|:GeneOrGeneProduct|:MacromolecularMachineMixin"
+            "|:GenomicEntity|:ThingWithTaxon|:PhysicalEssence"
+            "|:PhysicalEssenceOrOccurrent|:OntologyClass"
             "|:PhysicalEssence|:PhysicalEssenceOrOccurrent"
-            "|:ChemicalOrDrugOrTreatment|:ChemicalEntityOrGeneOrGeneProduct"
+            "|:ChemicalOrDrugOrTreatment"
+            "|:ChemicalEntityOrGeneOrGeneProduct"
             "|:ChemicalEntityOrProteinOrPolypeptide"
         )
         and l == "PLID:ID;p1;p2;:PostTranslationalInteraction"

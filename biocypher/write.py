@@ -99,8 +99,9 @@ class BatchWriter:
 
             if opt_labels:
                 labels = opt_labels
+                # remove prefix
+                labels = [l.replace("biolink", "") for l in labels]
                 # concatenate with array delimiter
-                labels = [":" + l for l in labels]
                 labels = self.adelim.join(labels)
             else:
                 labels = ":" + label

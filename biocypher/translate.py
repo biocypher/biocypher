@@ -97,12 +97,7 @@ class BiolinkAdapter(object):
             if e is not None:
                 # create dict of biolink class definition and biolink
                 # ancestors
-                ancestors = t.get_ancestors(entity)
-                # make PascalCase from lowercase with spaces
-                ancestors = [
-                    "".join(x for x in elem.title() if not x.isspace())
-                    for elem in ancestors
-                ]
+                ancestors = t.get_ancestors(entity, formatted=True)
                 l[entity] = {"class_definition": e, "ancestors": ancestors}
             else:
                 logger.info("Entity not found:" + entity[0])
