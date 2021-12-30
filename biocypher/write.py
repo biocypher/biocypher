@@ -95,17 +95,15 @@ class BatchWriter:
                 props = self.delim.join(props)
 
             # multiple labels:
-            opt_labels = None
-            # optional labels could be collected from the schema-config
-            # tree, including all upstream labels
+            opt_labels = self.bl_adapter.leaves[label]["ancestors"]
+
             if opt_labels:
-                labels = label + opt_labels
+                labels = opt_labels
                 # concatenate with array delimiter
                 labels = [":" + l for l in labels]
                 labels = self.adelim.join(labels)
             else:
                 labels = ":" + label
-            # prepend colon
 
             file_path = self.output_path + label + "-header.csv"
             with open(file_path, "w") as f:
@@ -156,10 +154,6 @@ class BatchWriter:
                 # concatenate with delimiter
                 row = self.delim.join([id, props, labels])
                 f.write(row)
-
-    def get_opt_labels(self, entity):
-        # access biolink hierarchy
-        pass
 
 
 """

@@ -75,8 +75,25 @@ def test_write_headers(bw):
         c = f.read()
 
     assert (
-        p == "UniProtKB:ID;p1;p2;:Protein"
-        and m == "MIR:ID;p1;p2;:microRNA"
+        p
+        == (
+            "UniProtKB:ID;p1;p2;:Protein|:Polypeptide|:BiologicalEntity"
+            "|:NamedThing|:Entity|:GeneProductMixin|:GeneOrGeneProduct"
+            "|:MacromolecularMachineMixin|:ThingWithTaxon|:ThingWithTaxon"
+            "|:ChemicalEntityOrGeneOrGeneProduct"
+            "|:ChemicalEntityOrProteinOrPolypeptide"
+        )
+        and m
+        == (
+            "MIR:ID;p1;p2;:Microrna|:NoncodingRnaProduct|:RnaProduct|:Transcript"
+            "|:NucleicAcidEntity|:MolecularEntity|:ChemicalEntity|:NamedThing"
+            "|:Entity|:GeneProductMixin|:GeneOrGeneProduct"
+            "|:MacromolecularMachineMixin|:GenomicEntity|:ThingWithTaxon"
+            "|:PhysicalEssence|:PhysicalEssenceOrOccurrent|:OntologyClass"
+            "|:PhysicalEssence|:PhysicalEssenceOrOccurrent"
+            "|:ChemicalOrDrugOrTreatment|:ChemicalEntityOrGeneOrGeneProduct"
+            "|:ChemicalEntityOrProteinOrPolypeptide"
+        )
         and l == "PLID:ID;p1;p2;:PostTranslationalInteraction"
         and c == "PCID:ID;p1;p2;:PostTranscriptionalInteraction"
     )
