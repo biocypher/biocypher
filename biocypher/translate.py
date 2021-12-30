@@ -40,7 +40,8 @@ from bmt import Toolkit
 
 from .create import BioCypherEdge, BioCypherNode
 from .logger import get_logger
-import biocypher.biolinkmodel as bl
+
+import biocypher.biolinkmodel as bl  # do we need this? is it different from bmt Toolkit?
 
 logger = get_logger(__name__)
 
@@ -59,6 +60,7 @@ class BiolinkAdapter(object):
         custom_yaml=True,
         custom_yaml_file="config/biocypher-biolink-model.yaml",
     ) -> None:
+        logger.debug("Instantiating Biolink Adapter.")
         self.leaves = self.translate_leaves_to_biolink(
             leaves, custom_yaml, custom_yaml_file
         )

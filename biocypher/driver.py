@@ -27,6 +27,8 @@ from typing import List
 import yaml
 import neo4j
 
+from build.lib.biocypher.translate import BiolinkAdapter
+
 from .create import BioCypherEdge, BioCypherNode
 from . import translate
 from .check import MetaEdge, VersionNode, MetaNode
@@ -946,9 +948,14 @@ class Driver(BaseDriver):
         directory.
         """
 
+        # instantiate adapter on demand because it takes time to load
+        # the biolink model toolkit
+        if not self.bl_adapter:
+            self.bl_adapter = BiolinkAdapter(self.db_meta.leaves)
+
         if not self.batch_writer:
             self.batch_writer = BatchWriter(
-                self.db_meta.schema, dirname=dirname
+                self.db_meta.schema, self.bl_adapter, dirname=dirname
             )
 
         # write header files

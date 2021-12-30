@@ -1,5 +1,6 @@
 import pytest
 import os
+from biocypher.translate import BiolinkAdapter
 from biocypher.write import BatchWriter
 
 
@@ -27,7 +28,8 @@ def bw():
             "label_in_input": "POST_TRANSCRIPTIONAL",
         },
     }
-    bw = BatchWriter(schema, dirname="Test")
+    bl_adapter = BiolinkAdapter(leaves=schema)
+    bw = BatchWriter(schema, bl_adapter, dirname="Test")
 
     yield bw
 

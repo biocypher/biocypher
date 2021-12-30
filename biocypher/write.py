@@ -33,11 +33,12 @@ class BatchWriter:
     format specified by Neo4j for the use of admin import.
     """
 
-    def __init__(self, schema, dirname=None) -> None:
+    def __init__(self, schema, bl_adapter, dirname=None) -> None:
         self.delim = ";"
         self.adelim = "|"
         self.quote = "'"
         self.schema = schema
+        self.bl_adapter = bl_adapter
 
         if not dirname:
             now = datetime.now()
@@ -158,8 +159,7 @@ class BatchWriter:
 
     def get_opt_labels(self, entity):
         # access biolink hierarchy
-        ba = BiolinkAdapter(self.schema.leaves)
-        ba
+        pass
 
 
 """
