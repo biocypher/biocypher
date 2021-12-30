@@ -144,7 +144,12 @@ class VersionNode(BioCypherNode):
         Return graph schema information from meta graph if it exists, or
         create new schema information properties from configuration
         file.
+
+        Todo:
+            - get schema from meta graph
         """
+
+        # TODO get from graph
 
         # include to load default yaml from module
         ROOT = os.path.join(
@@ -155,9 +160,6 @@ class VersionNode(BioCypherNode):
         with open(ROOT + "/../config/schema_config.yaml") as f:
             dataMap = yaml.safe_load(f)
         return dataMap
-
-        # get optional user-defined changes to graph structure yaml
-        # TODO
 
     def get_leaves(self, d):
         """
