@@ -93,10 +93,10 @@ def test_biolink_yaml_extension(version_node):
     assert (
         p1["class_definition"].description
         == "A pairwise interaction between two proteins"
-        and "PairwiseMolecularInteraction" in p1["ancestors"]
-        and "Entity" in p1["ancestors"]
+        and "biolink:PairwiseMolecularInteraction" in p1["ancestors"]
+        and "biolink:Entity" in p1["ancestors"]
         and p2["class_definition"].description
         == "The action of one protein phosphorylating another protein"
-        and "PostTranslationalInteraction" in p2["ancestors"]
-        and "Entity" in p2["ancestors"]
+        and "biolink:PostTranslationalInteraction" in p2["ancestors"]
+        and "biolink:Entity" in p2["ancestors"]
     )

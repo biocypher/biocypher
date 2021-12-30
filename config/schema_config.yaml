@@ -97,7 +97,10 @@ EntityToDiseaseAssociationMixin:
 PostTranslationalInteraction:
   represented_as: node
   preferred_id: tbd
-  source: Protein # optional other sources?
+  source: Protein 
+  # optional other sources/targets?
+  # source and target need to adhere to Biolink naming, otherwise the
+  # meta-graph will not work
   target: Protein
   label_in_input: post_translational
   label_as_edge: INTERACTS_POST_TRANSLATIONAL
@@ -113,10 +116,10 @@ Acetylation:
   target: Protein
       
 PostTranscriptionalInteraction:
-  RISCDependent:
+  RISCDependentInteraction:
     represented_as: edge
     preferred_id: tbd
-    source: miRNA
+    source: microRNA
     target: Protein
 
 

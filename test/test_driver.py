@@ -27,7 +27,7 @@ def driver():
 
 
 def test_create_driver():
-    d = Driver(increment_version=False)
+    d = Driver(increment_version=True)
 
     assert isinstance(d, Driver)
 

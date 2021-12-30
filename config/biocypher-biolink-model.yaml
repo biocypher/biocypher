@@ -8158,6 +8158,13 @@ classes:
     in_subset:
       - model_organism_database
 
+  microRNA or siRNA:
+    description: >-
+      A union of small RNA species that perform transcript silencing via
+      the RISC complex; this mixin is helpful when searching for post-
+      transcriptional interactions.
+    mixin: true
+
   ## Genomic Classes
 
   genome:
@@ -9247,6 +9254,45 @@ classes:
           - value: Todo
       object:
         range: protein
+
+  post transcriptional interaction:
+    description: >-
+      An interaction between a transcript and a modifying actor
+    is_a: pairwise molecular interaction
+    defining_slots:
+      - subject
+      - predicate
+      - object
+    slot_usage:
+      subject:
+        range: microRNA or siRNA
+      id:
+        description: Identifier for the interaction
+        examples: 
+          - value: Todo
+        values_from: 
+          - Todo
+      predicate:
+        subproperty_of: molecularly interacts with
+        description: "interaction relationship type"
+        examples: 
+          - value: Todo
+      object:
+        range: transcript
+
+  RISC dependent interaction:
+    description: >-
+      The interaction of a short interfering RNA with an mRNA transcript
+    is_a: post transcriptional interaction
+    defining_slots:
+      - subject
+      - predicate
+      - object
+    slot_usage:
+      subject:
+        range: microRNA or siRNA
+      object:
+        range: transcript
 
   phosphorylation:
     description: >-

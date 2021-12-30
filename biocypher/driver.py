@@ -683,23 +683,33 @@ class Driver(BaseDriver):
             self.add_biocypher_edges(e_meta)
 
         # add structure nodes
-        n = []
-        # append only bottom level key-value pairs
-
+        no_l = []
+        # leaves of the hierarchy specified in schema yaml
         for entity, params in self.db_meta.leaves.items():
-            n.append(MetaNode(entity, **params))
-        self.add_biocypher_nodes(n)
+            no_l.append(MetaNode(entity, **params))
+        self.add_biocypher_nodes(no_l)
 
         # remove connection of structure nodes from previous version
         # node(s)
         self.query("MATCH ()-[r:CONTAINS]-()" "DELETE r")
 
         # connect structure nodes to version node
-        e = []
+        ed_v = []
         current_version = self.db_meta.get_id()
         for entity in self.db_meta.leaves.keys():
-            e.append(MetaEdge(current_version, entity, "CONTAINS"))
-        self.add_biocypher_edges(e)
+            ed_v.append(MetaEdge(current_version, entity, "CONTAINS"))
+        self.add_biocypher_edges(ed_v)
+
+        # add graph structure between MetaNodes
+        ed = []
+        for no in no_l:
+            id = no.get_id()
+            src = no.get_properties().get("source")
+            tar = no.get_properties().get("target")
+            if not None in [id, src, tar]:
+                ed.append(BioCypherEdge(id, src, "IS_SOURCE_OF"))
+                ed.append(BioCypherEdge(id, tar, "IS_TARGET_OF"))
+        self.add_biocypher_edges(ed)
 
     def init_db(self):
         """
@@ -812,7 +822,7 @@ class Driver(BaseDriver):
         entity_query = (
             "UNWIND $entities AS ent "
             "CALL apoc.merge.node([ent.node_label], "
-            "{id: ent.node_id}, ent.properties) "
+            "{id: ent.node_id}, ent.properties, ent.properties) "
             "YIELD node "
             "RETURN node"
         )
