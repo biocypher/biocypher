@@ -20,6 +20,8 @@ Distributed under GPLv3 license, see LICENSE.txt.
 
 import os
 from datetime import datetime
+
+from biocypher.translate import BiolinkAdapter
 from .logger import get_logger
 
 logger = get_logger(__name__)
@@ -154,8 +156,10 @@ class BatchWriter:
                 row = self.delim.join([id, props, labels])
                 f.write(row)
 
-        def get_opt_labels(entities):
-            pass
+    def get_opt_labels(self, entity):
+        # access biolink hierarchy
+        ba = BiolinkAdapter(self.schema.leaves)
+        ba
 
 
 """

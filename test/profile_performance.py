@@ -7,7 +7,7 @@ import timeit, pickle
 
 
 def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
-    d = Driver(version=False)
+    d = Driver(increment_version=False)
 
     def node_gen(num_nodes):
         for i in range(num_nodes):
@@ -54,7 +54,7 @@ def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
 
 
 def create_network_by_list(num_nodes, num_edges):
-    d = Driver(version=False)
+    d = Driver(increment_version=False)
 
     def node_list(num_nodes):
         ls = []
@@ -79,7 +79,7 @@ def create_network_by_list(num_nodes, num_edges):
 
 
 def setup_constraint():
-    d = Driver(version=False)
+    d = Driver(increment_version=False)
     d.query(
         "CREATE CONSTRAINT test_id "
         "IF NOT EXISTS ON (n:test) "
@@ -89,13 +89,13 @@ def setup_constraint():
 
 
 def remove_constraint():
-    d = Driver(version=False)
+    d = Driver(increment_version=False)
     d.query("DROP CONSTRAINT test_id")
     d.close()
 
 
 def delete_test_network():
-    d = Driver(version=False)
+    d = Driver(increment_version=False)
     d.query("MATCH (n)-[:test]-() DETACH DELETE n")
     d.query("MATCH (n:test) DETACH DELETE n")
     d.close()

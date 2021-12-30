@@ -13,7 +13,7 @@ import pytest
 @pytest.fixture
 def driver():
     # neo4j database needs to be running!
-    d = Driver(version=False)
+    d = Driver(increment_version=False)
     yield d
 
     # teardown

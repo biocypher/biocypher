@@ -9,7 +9,7 @@ import pytest
 @pytest.fixture
 def driver():
     # neo4j database needs to be running!
-    d = Driver(version=False)
+    d = Driver(increment_version=False)
     # create single node in case of empty DB for testing?
     # d.add_biocypher_nodes(BioCypherNode("TestID", "Test"))
     yield d
@@ -24,6 +24,12 @@ def driver():
     d.query("MATCH (n2) WHERE n2.id = 'src'" "DETACH DELETE n2")
     d.query("MATCH (n3) WHERE n3.id = 'tar'" "DETACH DELETE n3")
     d.close()
+
+
+def test_create_driver():
+    d = Driver(increment_version=False)
+
+    assert isinstance(d, Driver)
 
 
 def test_connect_to_db(driver):

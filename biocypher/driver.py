@@ -77,7 +77,7 @@ class BaseDriver(object):
         fetch_size=1000,
         config_file="config/db_config.yaml",
         wipe=False,
-        version=True,
+        increment_version=True,
     ):
 
         self.driver = driver
@@ -644,30 +644,27 @@ class Driver(BaseDriver):
         fetch_size=1000,
         config_file="config/db_config.yaml",
         wipe=False,
-        version=True,
+        increment_version=True,
     ):
 
         BaseDriver.__init__(**locals())
 
-        if version:
-            # get database version node ('check' module)
-            # immutable variable of each instance (ie, each call from
-            # the adapter to BioCypher)
-            # checks for existence of graph representation and returns
-            # if found, else creates new one
-            self.db_meta = VersionNode(self)
+        # get database version node ('check' module)
+        # immutable variable of each instance (ie, each call from
+        # the adapter to BioCypher)
+        # checks for existence of graph representation and returns
+        # if found, else creates new one
+        self.db_meta = VersionNode(self)
 
-            # if db representation node does not exist or explicitly
-            # asked for wipe, create new graph representation: default
-            # yml, interactive?
-            if wipe or self.db_meta.graph_state is None:
-                self.init_db()
+        # if db representation node does not exist or explicitly
+        # asked for wipe, create new graph representation: default
+        # yml, interactive?
+        if wipe or self.db_meta.graph_state is None:
+            self.init_db()
 
-            # then
+        if increment_version:
+            # set new current version node
             self.update_meta_graph()
-        else:
-            if wipe:
-                self.init_db()
 
     def update_meta_graph(self):
         logger.info("Updating Neo4j meta graph.")
@@ -950,10 +947,12 @@ class Driver(BaseDriver):
         """
 
         if not self.batch_writer:
-            self.batch_writer = BatchWriter(dirname=dirname)
+            self.batch_writer = BatchWriter(
+                self.db_meta.schema, dirname=dirname
+            )
 
         # write header files
-        self.batch_writer.write_node_headers(self.db_meta.schema)
+        self.batch_writer.write_node_headers()
 
         # contains types of nodes and edges and
         # their designations in the input data
