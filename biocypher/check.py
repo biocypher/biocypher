@@ -107,11 +107,14 @@ class VersionNode(BioCypherNode):
 
     def get_current_id(self):
         """
-        Versioning using datetime.
+        For now does versioning using datetime.
+
+        Can later implement incremental versioning, versioning from
+        config file, or manual specification via argument.
         """
 
         now = datetime.now()
-        return now.strftime("v%Y%m%d%:%H%M%S")
+        return now.strftime("v%Y%m%d%-%H%M%S")
 
     def get_graph_state(self):
         """
