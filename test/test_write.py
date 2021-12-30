@@ -53,7 +53,7 @@ def test_writer_and_output_dir(bw):
     )
 
 
-def test_write_headers(bw):
+def test_write_node_headers(bw):
     bw.write_node_headers()
     ROOT = os.path.join(
         *os.path.split(os.path.abspath(os.path.dirname(__file__)))
@@ -64,6 +64,27 @@ def test_write_headers(bw):
     with open(path + "microRNA-header.csv", "r") as f:
         m = f.read()
 
+    assert p == (
+        "UniProtKB:ID;p1;p2;:Protein|:Polypeptide|:BiologicalEntity"
+        "|:NamedThing|:Entity|:GeneProductMixin|:GeneOrGeneProduct"
+        "|:MacromolecularMachineMixin|:ThingWithTaxon|:ThingWithTaxon"
+        "|:ChemicalEntityOrGeneOrGeneProduct"
+        "|:ChemicalEntityOrProteinOrPolypeptide"
+    ) and m == (
+        "MIR:ID;p1;p2;:MicroRNA|:NoncodingRNAProduct|:RNAProduct"
+        "|:Transcript|:NucleicAcidEntity|:MolecularEntity"
+        "|:ChemicalEntity|:NamedThing|:Entity|:GeneProductMixin"
+        "|:GeneOrGeneProduct|:MacromolecularMachineMixin"
+        "|:GenomicEntity|:ThingWithTaxon|:PhysicalEssence"
+        "|:PhysicalEssenceOrOccurrent|:OntologyClass"
+        "|:PhysicalEssence|:PhysicalEssenceOrOccurrent"
+        "|:ChemicalOrDrugOrTreatment"
+        "|:ChemicalEntityOrGeneOrGeneProduct"
+        "|:ChemicalEntityOrProteinOrPolypeptide"
+    )
+
+
+def test_write_edge_headers(bw):
     bw.write_edge_headers()
     ROOT = os.path.join(
         *os.path.split(os.path.abspath(os.path.dirname(__file__)))
@@ -75,27 +96,6 @@ def test_write_headers(bw):
         c = f.read()
 
     assert (
-        p
-        == (
-            "UniProtKB:ID;p1;p2;:Protein|:Polypeptide|:BiologicalEntity"
-            "|:NamedThing|:Entity|:GeneProductMixin|:GeneOrGeneProduct"
-            "|:MacromolecularMachineMixin|:ThingWithTaxon|:ThingWithTaxon"
-            "|:ChemicalEntityOrGeneOrGeneProduct"
-            "|:ChemicalEntityOrProteinOrPolypeptide"
-        )
-        and m
-        == (
-            "MIR:ID;p1;p2;:MicroRNA|:NoncodingRNAProduct|:RNAProduct"
-            "|:Transcript|:NucleicAcidEntity|:MolecularEntity"
-            "|:ChemicalEntity|:NamedThing|:Entity|:GeneProductMixin"
-            "|:GeneOrGeneProduct|:MacromolecularMachineMixin"
-            "|:GenomicEntity|:ThingWithTaxon|:PhysicalEssence"
-            "|:PhysicalEssenceOrOccurrent|:OntologyClass"
-            "|:PhysicalEssence|:PhysicalEssenceOrOccurrent"
-            "|:ChemicalOrDrugOrTreatment"
-            "|:ChemicalEntityOrGeneOrGeneProduct"
-            "|:ChemicalEntityOrProteinOrPolypeptide"
-        )
-        and l == "PLID:ID;p1;p2;:PostTranslationalInteraction"
-        and c == "PCID:ID;p1;p2;:PostTranscriptionalInteraction"
+        l == ":START_ID;PLID;p1;p2;:END_ID;PostTranslationalInteraction"
+        and c == ":START_ID;PCID;p1;p2;:END_ID;PostTranscriptionalInteraction"
     )

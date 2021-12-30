@@ -124,7 +124,7 @@ class BatchWriter:
             # create header CSV with ID, properties, labels
             label = ed[0]
             props = ed[1]
-            id = props["preferred_id"] + ":ID"
+            id = props["preferred_id"]
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
@@ -137,23 +137,12 @@ class BatchWriter:
             if len(props) > 1:
                 props = self.delim.join(props)
 
-            # multiple labels:
-            opt_labels = None
-            # optional labels could be collected from the schema-config
-            # tree, including all upstream labels
-            if opt_labels:
-                labels = label + opt_labels
-                # concatenate with array delimiter
-                labels = [":" + l for l in labels]
-                labels = self.adelim.join(labels)
-            else:
-                labels = ":" + label
-            # prepend colon
-
             file_path = self.output_path + label + "-header.csv"
             with open(file_path, "w") as f:
                 # concatenate with delimiter
-                row = self.delim.join([id, props, labels])
+                row = self.delim.join(
+                    [":START_ID", id, props, ":END_ID", label]
+                )
                 f.write(row)
 
 
