@@ -67,12 +67,56 @@ class BatchWriter:
             - optional labels: parse from YAML hierarchy
         """
         # extract nodes
-        nodes = [n for n in schema.items() if n[1]["represented_as"] == "node"]
+        nodes = [
+            no for no in schema.items() if no[1]["represented_as"] == "node"
+        ]
 
-        for n in nodes:
+        for no in nodes:
             # create header CSV with ID, properties, labels
-            label = n[0]
-            props = n[1]
+            label = no[0]
+            props = no[1]
+            id = props["preferred_id"] + ":ID"
+
+            # to programmatically define properties to be written, the
+            # data would have to be parsed before writing the header.
+            # alternatively, desired properties could also be provided
+            # via the schema_config.yaml, but that is more effort for
+            # the user.
+
+            # for now, substitute test properties: TODO
+            props = ["p1", "p2"]
+            if len(props) > 1:
+                props = self.delim.join(props)
+
+            # multiple labels:
+            opt_labels = None
+            # optional labels could be collected from the schema-config
+            # tree, including all upstream labels
+            if opt_labels:
+                labels = label + opt_labels
+                # concatenate with array delimiter
+                labels = [":" + l for l in labels]
+                labels = self.adelim.join(labels)
+            else:
+                labels = ":" + label
+            # prepend colon
+
+            file_path = self.output_path + label + "-header.csv"
+            with open(file_path, "w") as f:
+                # concatenate with delimiter
+                row = self.delim.join([id, props, labels])
+                f.write(row)
+
+    def write_edge_headers(self, schema):
+        # extract nodes
+        edges = [
+            ed for ed in schema.items() if ed[1]["represented_as"] == "edge"
+        ]
+
+        for ed in edges:
+            # create header CSV with ID, properties, labels
+            label = ed[0]
+            props = ed[1]
             id = props["preferred_id"] + ":ID"
 
             # to programmatically define properties to be written, the
@@ -124,6 +168,13 @@ The header contains information for each field, for ID and properties
 in the format <name>: <field_type>. E.g.: 
 ´UniProtKB:ID;genesymbol;entrez_id:int;:LABEL´. Multiple labels can 
 be given by separating with the array delimiter.
+
+There are three mandatory fields for relationship data:
+:START_ID — ID refering to a node.
+:END_ID — ID refering to a node.
+:TYPE — The relationship type.
+
+E.g.: `:START_ID;relationship_id;residue;:END_ID;:TYPE`.
 
 Headers would best be separate files, data files with similar name but
 different ending. Example from Neo4j documentation:
