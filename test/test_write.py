@@ -67,7 +67,7 @@ def test_write_node_headers(bw):
     assert p == (
         "UniProtKB:ID;p1;p2;:Protein|:Polypeptide|:BiologicalEntity"
         "|:NamedThing|:Entity|:GeneProductMixin|:GeneOrGeneProduct"
-        "|:MacromolecularMachineMixin|:ThingWithTaxon|:ThingWithTaxon"
+        "|:MacromolecularMachineMixin|:ThingWithTaxon"
         "|:ChemicalEntityOrGeneOrGeneProduct"
         "|:ChemicalEntityOrProteinOrPolypeptide"
     ) and m == (
@@ -77,9 +77,7 @@ def test_write_node_headers(bw):
         "|:GeneOrGeneProduct|:MacromolecularMachineMixin"
         "|:GenomicEntity|:ThingWithTaxon|:PhysicalEssence"
         "|:PhysicalEssenceOrOccurrent|:OntologyClass"
-        "|:PhysicalEssence|:PhysicalEssenceOrOccurrent"
-        "|:ChemicalOrDrugOrTreatment"
-        "|:ChemicalEntityOrGeneOrGeneProduct"
+        "|:ChemicalOrDrugOrTreatment|:ChemicalEntityOrGeneOrGeneProduct"
         "|:ChemicalEntityOrProteinOrPolypeptide"
     )
 

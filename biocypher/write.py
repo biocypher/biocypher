@@ -20,8 +20,8 @@ Distributed under GPLv3 license, see LICENSE.txt.
 
 import os
 from datetime import datetime
+from collections import OrderedDict
 
-from biocypher.translate import BiolinkAdapter
 from .logger import get_logger
 
 logger = get_logger(__name__)
@@ -101,6 +101,8 @@ class BatchWriter:
                 labels = opt_labels
                 # remove prefix
                 labels = [l.replace("biolink", "") for l in labels]
+                # remove duplicates
+                labels = list(OrderedDict.fromkeys(labels))
                 # concatenate with array delimiter
                 labels = self.adelim.join(labels)
             else:
