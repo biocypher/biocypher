@@ -31,10 +31,11 @@ class BatchWriter:
     format specified by Neo4j for the use of admin import.
     """
 
-    def __init__(self, dirname=None) -> None:
+    def __init__(self, schema, dirname=None) -> None:
         self.delim = ";"
         self.adelim = "|"
         self.quote = "'"
+        self.schema = schema
 
         if not dirname:
             now = datetime.now()
@@ -52,7 +53,7 @@ class BatchWriter:
             logger.error("Output directory already exists; cannot continue.")
 
     # file handling
-    def write_node_headers(self, schema):
+    def write_node_headers(self):
         """
         Writes single CSV file for each graph entity that is represented
         as a node as per the definition in the `schema_config.yaml`,
@@ -68,7 +69,9 @@ class BatchWriter:
         """
         # extract nodes
         nodes = [
-            no for no in schema.items() if no[1]["represented_as"] == "node"
+            no
+            for no in self.schema.items()
+            if no[1]["represented_as"] == "node"
         ]
 
         for no in nodes:
@@ -107,10 +110,12 @@ class BatchWriter:
                 row = self.delim.join([id, props, labels])
                 f.write(row)
 
-    def write_edge_headers(self, schema):
+    def write_edge_headers(self):
         # extract nodes
         edges = [
-            ed for ed in schema.items() if ed[1]["represented_as"] == "edge"
+            ed
+            for ed in self.schema.items()
+            if ed[1]["represented_as"] == "edge"
         ]
 
         for ed in edges:
@@ -148,6 +153,9 @@ class BatchWriter:
                 # concatenate with delimiter
                 row = self.delim.join([id, props, labels])
                 f.write(row)
+
+        def get_opt_labels(entities):
+            pass
 
 
 """

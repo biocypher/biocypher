@@ -5,7 +5,29 @@ from biocypher.write import BatchWriter
 
 @pytest.fixture
 def bw():
-    bw = BatchWriter(dirname="Test")
+    schema = {
+        "Protein": {
+            "represented_as": "node",
+            "preferred_id": "UniProtKB",
+            "label_in_input": "protein",
+        },
+        "microRNA": {
+            "represented_as": "node",
+            "preferred_id": "MIR",
+            "label_in_input": "miRNA",
+        },
+        "PostTranslationalInteraction": {
+            "represented_as": "edge",
+            "preferred_id": "PLID",
+            "label_in_input": "POST_TRANSLATIONAL",
+        },
+        "PostTranscriptionalInteraction": {
+            "represented_as": "edge",
+            "preferred_id": "PCID",
+            "label_in_input": "POST_TRANSCRIPTIONAL",
+        },
+    }
+    bw = BatchWriter(schema, dirname="Test")
 
     yield bw
 
@@ -30,30 +52,7 @@ def test_writer_and_output_dir(bw):
 
 
 def test_write_headers(bw):
-    schema = {
-        "Protein": {
-            "represented_as": "node",
-            "preferred_id": "UniProtKB",
-            "label_in_input": "protein",
-        },
-        "microRNA": {
-            "represented_as": "node",
-            "preferred_id": "MIR",
-            "label_in_input": "miRNA",
-        },
-        "PostTranslationalInteraction": {
-            "represented_as": "edge",
-            "preferred_id": "PLID",
-            "label_in_input": "POST_TRANSLATIONAL",
-        },
-        "PostTranscriptionalInteraction": {
-            "represented_as": "edge",
-            "preferred_id": "PCID",
-            "label_in_input": "POST_TRANSCRIPTIONAL",
-        },
-    }
-
-    bw.write_node_headers(schema)
+    bw.write_node_headers()
     ROOT = os.path.join(
         *os.path.split(os.path.abspath(os.path.dirname(__file__)))
     )
@@ -63,7 +62,7 @@ def test_write_headers(bw):
     with open(path + "microRNA-header.csv", "r") as f:
         m = f.read()
 
-    bw.write_edge_headers(schema)
+    bw.write_edge_headers()
     ROOT = os.path.join(
         *os.path.split(os.path.abspath(os.path.dirname(__file__)))
     )
