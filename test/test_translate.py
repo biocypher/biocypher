@@ -68,7 +68,9 @@ def test_translate_edges(version_node):
 def test_adapter(version_node):
     ad = BiolinkAdapter(version_node.leaves, custom_yaml=False)
 
-    assert isinstance(ad.leaves["Protein"], ClassDefinition)
+    assert isinstance(
+        ad.leaves["Protein"]["class_definition"], ClassDefinition
+    )
 
 
 def test_custom_bmt_yaml(version_node):
@@ -77,7 +79,7 @@ def test_custom_bmt_yaml(version_node):
     )
     p = ad.leaves["Protein"]
 
-    assert p.description == "Test"
+    assert p["class_definition"].description == "Test"
 
 
 def test_biolink_yaml_extension(version_node):
@@ -89,7 +91,12 @@ def test_biolink_yaml_extension(version_node):
     p2 = ad.leaves["Phosphorylation"]
 
     assert (
-        p1.description == "A pairwise interaction between two proteins"
-        and p2.description
+        p1["class_definition"].description
+        == "A pairwise interaction between two proteins"
+        and "PairwiseMolecularInteraction" in p1["ancestors"]
+        and "Entity" in p1["ancestors"]
+        and p2["class_definition"].description
         == "The action of one protein phosphorylating another protein"
+        and "PostTranslationalInteraction" in p2["ancestors"]
+        and "Entity" in p2["ancestors"]
     )

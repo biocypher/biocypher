@@ -67,8 +67,10 @@ class BiolinkAdapter(object):
         self, leaves, custom_yaml, custom_yaml_file
     ):
         """
-        Translates the graph structure given in the `schema_config.yaml`
-        to Biolink-conforming nomenclature.
+        Translates the leaves (direct constituents of the graph) given
+        in the `schema_config.yaml` to Biolink-conforming nomenclature.
+        Simultaneously get the structure in the form of the parents of
+        each leaf.
         """
         logger.info("Translating BioCypher config leaves to Biolink.")
         if custom_yaml:
@@ -91,13 +93,26 @@ class BiolinkAdapter(object):
 
             # find element in bmt
             if e is not None:
-                l[entity] = e
+                # create dict of biolink class definition and biolink
+                # ancestors
+                ancestors = t.get_ancestors(entity)
+                # make PascalCase from lowercase with spaces
+                ancestors = [
+                    "".join(x for x in elem.title() if not x.isspace())
+                    for elem in ancestors
+                ]
+                l[entity] = {"class_definition": e, "ancestors": ancestors}
             else:
-                print("Entity not found:" + entity[0])
+                logger.info("Entity not found:" + entity[0])
                 l[entity] = None
 
         return l
 
+
+"""
+Biolink toolkit wiki: 
+https://biolink.github.io/biolink-model-toolkit/example_usage.html
+"""
 
 # -------------------------------------------
 # Create nodes and edges from separate inputs
