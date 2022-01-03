@@ -55,8 +55,11 @@ def test_profile(driver):
 
 def test_add_invalid_biocypher_node(driver):
     # neo4j database needs to be running!
-    with pytest.raises(Exception):
-        driver.add_biocypher_nodes(1)
+
+    r1, r2 = driver.add_biocypher_nodes(1)
+    r3, r4 = driver.add_biocypher_nodes("String")
+
+    assert not r1 and not r2 and not r3 and not r4
 
 
 def test_add_single_biocypher_node(driver):
@@ -98,8 +101,10 @@ def test_add_biocypher_node_generator(driver):
 
 def test_add_invalid_biocypher_edge(driver):
     # neo4j database needs to be running!
-    with pytest.raises(Exception):
-        driver.add_biocypher_edges(1)
+    r1, r2 = driver.add_biocypher_edges(1)
+    r3, r4 = driver.add_biocypher_edges("String")
+
+    assert not r1 and not r2 and not r3 and not r4
 
 
 def test_add_single_biocypher_edge_explicit_node_creation(driver):

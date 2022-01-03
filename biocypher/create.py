@@ -115,10 +115,12 @@ class BioCypherNode:
         self.properties = properties
 
         if optional_labels is not None:
-            if type(optional_labels) is list:
+            if type(optional_labels) is str or list:
                 self.optional_labels = optional_labels
             else:
-                raise Exception("Optional labels expected as list of strings.")
+                logger.warn(
+                    "Optional labels expected as string or list of strings."
+                )
 
     def get_id(self):
         """
@@ -138,14 +140,18 @@ class BioCypherNode:
         """
         return self.node_label
 
-    def get_optional_labels(self):
+    def get_all_labels(self):
         """
         Returns all optional labels.
 
         Returns:
             dict: properties
         """
-        return self.optional_labels
+        ls = []
+        ls.append(self.node_label)
+        for l in self.optional_labels:
+            ls.append(l)
+        return ls
 
     def get_properties(self):
         """

@@ -21,8 +21,10 @@ Distributed under GPLv3 license, see LICENSE.txt.
 import os
 from datetime import datetime
 from collections import OrderedDict
+from types import GeneratorType
 
 from .logger import get_logger
+from .create import BioCypherEdge, BioCypherNode
 
 logger = get_logger(__name__)
 logger.debug(f"Loading module {__name__}.")
@@ -39,9 +41,10 @@ class BatchWriter:
 
     Args:
         schema (dict): dictionary detailing the BioCypher graph schema
-            (from `check.VersionNode`)
-        bl_adapter (check.BiolinkAdapter): instance of BiolinkAdapter to
-            enable translation and ontology queries
+            (from :py:class:`VersionNode`)
+        bl_adapter (BiolinkAdapter): instance of
+            :py:class:`BiolinkAdapter` to enable translation and
+            ontology queries
     """
 
     def __init__(self, schema, bl_adapter, dirname=None) -> None:
@@ -56,7 +59,7 @@ class BatchWriter:
             now = datetime.now()
             dirname = now.strftime("%Y%m%d%H%M")
 
-        logger.info(f"Trying to crete output folder at out/{dirname}.")
+        logger.info(f"Trying to create output folder at out/{dirname}.")
         ROOT = os.path.join(
             *os.path.split(os.path.abspath(os.path.dirname(__file__)))
         )
@@ -159,8 +162,74 @@ class BatchWriter:
                 )
                 f.write(row)
 
-    def write_node_body(self):
-        pass
+    def write_node_body(self, nodes):
+        """
+        Writes biocypher nodes to CSV conforming to the headers created
+        with `write_node_headers()`. Expects list or generator of nodes
+        from the :py:class:`BioCypherNode` class.
+
+        Args:
+            nodes (BioCypherNode): a list or generator of nodes in
+                :py:class:`BioCypherNode` format
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+
+        # TODO implement property management (see above)
+
+        if isinstance(nodes, GeneratorType):
+            pass
+
+        else:
+            if type(nodes) is not list:
+                logger.error("Nodes must be passed as list or generator.")
+                return False
+            else:
+                if not all(isinstance(n, BioCypherNode) for n in nodes):
+                    logger.error("Nodes must be passed as type BioCypherNode.")
+                    return False
+                else:
+                    logger.info("Writing %s nodes to CSV." % len(nodes))
+
+                    for label in self.schema.keys():
+                        nl = [n for n in nodes if n.get_label() == label]
+                        if nl and not len(nl) > 1e6:
+                            # single file per entity type
+                            # id, properties, label(s)
+
+                            # from list of nodes to list of strings
+                            lines = []
+                            for n in nl:
+                                lines.append(
+                                    self.delim.join(
+                                        [
+                                            n.get_id(),
+                                            # here we need a list of properties in
+                                            # the same order as in the header
+                                            self.delim.join(
+                                                list(
+                                                    n.get_properties().values()
+                                                )
+                                            ),
+                                            self.adelim.join(
+                                                n.get_all_labels()
+                                            ),
+                                        ]
+                                    )
+                                    + "\n"
+                                )
+                            file_path = (
+                                self.output_path + label + "-part00.csv"
+                            )
+                            with open(file_path, "w") as f:
+                                # concatenate with delimiter
+                                f.writelines(lines)
+                        else:
+                            # batches
+                            pass
+
+        return True
 
     def write_edge_body(self):
         pass

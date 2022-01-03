@@ -27,10 +27,9 @@ from typing import List
 import yaml
 import neo4j
 
-from build.lib.biocypher.translate import BiolinkAdapter
 
 from .create import BioCypherEdge, BioCypherNode
-from . import translate
+from .translate import BiolinkAdapter, gen_translate_edges, gen_translate_nodes
 from .check import MetaEdge, VersionNode, MetaNode
 from .utils import pretty
 from .logger import get_logger
@@ -756,7 +755,7 @@ class Driver(BaseDriver):
         functionality.
         """
 
-        bn = translate.gen_translate_nodes(self.db_meta.schema, id_type_tuples)
+        bn = gen_translate_nodes(self.db_meta.schema, id_type_tuples)
         self.add_biocypher_nodes(bn)
 
     def add_edges(self, src_tar_type_tuples):
@@ -766,9 +765,7 @@ class Driver(BaseDriver):
         functionality.
         """
 
-        bn = translate.gen_translate_edges(
-            self.db_meta.schema, src_tar_type_tuples
-        )
+        bn = gen_translate_edges(self.db_meta.schema, src_tar_type_tuples)
         self.add_biocypher_edges(bn)
 
     def add_biocypher_nodes(self, nodes, explain=False, profile=False):
@@ -798,11 +795,12 @@ class Driver(BaseDriver):
         if isinstance(nodes, GeneratorType):
             nodes, cnodes = itertools.tee(nodes)
             if not isinstance(next(cnodes), BioCypherNode):
-                raise Exception(
+                logger.warn(
                     "It appears that the first node is not a BioCypherNode. "
                     "Nodes must be passed as type BioCypherNode. "
                     "Please use the generic add_edges() function."
                 )
+                return (False, False)
             else:
                 s = sum(1 for _ in cnodes) + 1
                 logger.info("Merging %s nodes." % s)
@@ -812,9 +810,8 @@ class Driver(BaseDriver):
             if type(nodes) is not list:
                 nodes = [nodes]
             if not all(isinstance(n, BioCypherNode) for n in nodes):
-                raise Exception(
-                    "Nodes must be passed as type NodeFromPypath. "
-                )
+                logger.error("Nodes must be passed as type BioCypherNode.")
+                return (False, False)
             else:
                 logger.info("Merging %s nodes." % len(nodes))
 
@@ -883,11 +880,12 @@ class Driver(BaseDriver):
                 cedge = cedge[1]
             if not isinstance(cedge, BioCypherEdge):
                 # type error
-                raise Exception(
+                logger.warn(
                     "It appears that the first edge is not a BioCypherEdge. "
                     "Nodes must be passed as type BioCypherEdge. "
                     "Please use the generic add_edges() function."
                 )
+                return (False, False)
             else:
                 s = "?"  # sum(1 for _ in cedges) + 1  # not very fast
                 logger.info("Merging %s nodes." % s)
@@ -904,9 +902,8 @@ class Driver(BaseDriver):
             if type(edges[0]) == tuple:
                 tup = True
             elif not all(isinstance(e, BioCypherEdge) for e in edges):
-                raise Exception(
-                    "Nodes must be passed as type NodeFromPypath. "
-                )
+                logger.error("Nodes must be passed as type BioCypherEdge.")
+                return (False, False)
 
             logger.info("Merging %s edges." % len(edges))
 
