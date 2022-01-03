@@ -65,9 +65,12 @@ class BaseDriver(object):
             URI, user name and password.
         wipe (bool): Wipe the database after connection, ensuring the
             data is loaded into an empty database.
+        increment_version (bool): Whether to increase version number
+            automatically and create a new BioCypher version node in the
+            graph.
 
     Todo:
-        - remove biocypher-specific init args
+        - remove biocypher-specific init args, possible?
     """
 
     def __init__(
@@ -635,6 +638,9 @@ class Driver(BaseDriver):
             URI, user name and password.
         wipe (bool): Wipe the database after connection, ensuring the
             data is loaded into an empty database.
+        increment_version (bool): Whether to increase version number
+            automatically and create a new BioCypher version node in the
+            graph.
     """
 
     def __init__(
