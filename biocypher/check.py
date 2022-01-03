@@ -152,20 +152,31 @@ class VersionNode(BioCypherNode):
         Todo:
             - get schema from meta graph
         """
+        if self.graph_state:
+            # TODO do we want information about actual structure here?
+            res = self.bcy_driver.query(
+                "MATCH (src:MetaNode) "
+                # "OPTIONAL MATCH (src)-[r]->(tar)"
+                "RETURN src"  # , type(r) AS type, tar"
+            )
+            gs_dict = {}
+            for r in res[0]:
+                src = r["src"]
+                key = src.pop("id")
+                gs_dict[key] = src
 
-        # if self.graph_state:
-        #     # TODO get from graph
-        #     return
-        # else:
-        # load default yaml from module
-        ROOT = os.path.join(
-            *os.path.split(os.path.abspath(os.path.dirname(__file__)))
-        )
+            return gs_dict
 
-        # get graph state from config
-        with open(ROOT + "/../config/schema_config.yaml") as f:
-            dataMap = yaml.safe_load(f)
-        return dataMap
+        else:
+            # load default yaml from module
+            ROOT = os.path.join(
+                *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+            )
+
+            # get graph state from config
+            with open(ROOT + "/../config/schema_config.yaml") as f:
+                dataMap = yaml.safe_load(f)
+            return dataMap
 
     def get_leaves(self, d):
         """

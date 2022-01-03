@@ -115,12 +115,11 @@ Acetylation:
   source: Protein
   target: Protein
       
-PostTranscriptionalInteraction:
-  RISCDependentInteraction:
-    represented_as: edge
-    preferred_id: tbd
-    source: microRNA
-    target: Protein
+RISCDependentInteraction:
+  represented_as: edge
+  preferred_id: tbd
+  source: microRNA
+  target: Protein
 
 
 
