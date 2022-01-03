@@ -30,6 +30,7 @@ import yaml
 import os
 
 logger = get_logger(__name__)
+logger.debug(f"Loading module {__name__}.")
 
 
 class MetaNode(BioCypherNode):
@@ -115,7 +116,7 @@ class VersionNode(BioCypherNode):
         """
 
         now = datetime.now()
-        return now.strftime("v%Y%m%d%-%H%M%S")
+        return now.strftime("v%Y%m%d-%H%M%S")
 
     def get_graph_state(self):
         """

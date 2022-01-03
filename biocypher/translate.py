@@ -44,6 +44,7 @@ from .logger import get_logger
 import biocypher.biolinkmodel as bl  # do we need this? is it different from bmt Toolkit?
 
 logger = get_logger(__name__)
+logger.debug(f"Loading module {__name__}.")
 
 
 class BiolinkAdapter(object):

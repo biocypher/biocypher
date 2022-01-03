@@ -25,6 +25,7 @@ from collections import OrderedDict
 from .logger import get_logger
 
 logger = get_logger(__name__)
+logger.debug(f"Loading module {__name__}.")
 
 
 class BatchWriter:

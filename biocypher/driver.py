@@ -37,6 +37,7 @@ from .logger import get_logger
 from .write import BatchWriter
 
 logger = get_logger(__name__)
+logger.debug(f"Loading module {__name__}.")
 
 
 class BaseDriver(object):
