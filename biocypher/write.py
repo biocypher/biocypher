@@ -31,10 +31,21 @@ logger.debug(f"Loading module {__name__}.")
 class BatchWriter:
     """
     Class for writing node and edge representations to disk using the
-    format specified by Neo4j for the use of admin import.
+    format specified by Neo4j for the use of admin import. Each batch
+    writer instance has a fixed representation that needs to be passed
+    at instantiation via the :py:attr:`schema` argument. The instance
+    also expects a biolink adapter via :py:attr:`bl_adapter` to be able
+    to convert and extend the hierarchy.
+
+    Args:
+        schema (dict): dictionary detailing the BioCypher graph schema
+            (from `check.VersionNode`)
+        bl_adapter (check.BiolinkAdapter): instance of BiolinkAdapter to
+            enable translation and ontology queries
     """
 
     def __init__(self, schema, bl_adapter, dirname=None) -> None:
+        """ """
         self.delim = ";"
         self.adelim = "|"
         self.quote = "'"
@@ -147,6 +158,12 @@ class BatchWriter:
                     [":START_ID", id, props, ":END_ID", label]
                 )
                 f.write(row)
+
+    def write_node_body(self):
+        pass
+
+    def write_edge_body(self):
+        pass
 
 
 """

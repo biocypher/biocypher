@@ -84,11 +84,11 @@ class BioCypherNode:
     label, ie, the entity descriptor after the colon, such as
     ":Protein") are non-optional and called node_id and node_label to
     avoid confusion with "label" properties. Node labels are written in
-    CamelBack and as nouns, as per Neo4j consensus.
+    PascalCase and as nouns, as per Neo4j consensus.
 
     Args:
-        node_id: consensus "best" id for biological entity (string)
-        node_label: primary type of entity, capitalised (string)
+        node_id (string): consensus "best" id for biological entity
+        node_label (string): primary type of entity, capitalised
         **properties (kwargs): collection of all other properties to be
             passed to neo4j for the respective node (dict)
 
@@ -190,9 +190,9 @@ class BioCypherEdge:
     Neo4j consensus.
 
     Args:
-        source_id, target_id: consensus "best" id for biological entity
-            (string)
-        relationship_label: type of interaction, UPPERCASE (string)
+        source_id, target_id (string): consensus "best" id for
+            biological entity
+        relationship_label (string): type of interaction, UPPERCASE
         **properties (kwargs): collection of all other properties to be
             passed to Neo4j for the respective edge (dict)
 
