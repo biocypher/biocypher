@@ -644,7 +644,7 @@ class Driver(BaseDriver):
         db_uri="neo4j://localhost:7687",
         db_auth=None,
         fetch_size=1000,
-        config_file="config/db_config.yaml",
+        config_file="config/module_config.yaml",
         wipe=False,
         increment_version=True,
     ):

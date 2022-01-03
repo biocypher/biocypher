@@ -1,0 +1,13 @@
+Title: BioCypher python module configuration file
+
+
+# Set up Neo4j connection using credentials
+default:
+  db: neo4j # DB name
+  auth: # credentials
+    - neo4j # user name
+    - your_password_here # password
+
+# Logging granularity
+# Set debug to true if more granular logging is desired
+debug: true

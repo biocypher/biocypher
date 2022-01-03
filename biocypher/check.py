@@ -107,7 +107,8 @@ class VersionNode(BioCypherNode):
 
     def get_current_id(self):
         """
-        For now does versioning using datetime.
+        Instantiate a version ID for the current session. For now does
+        versioning using datetime.
 
         Can later implement incremental versioning, versioning from
         config file, or manual specification via argument.
@@ -152,9 +153,11 @@ class VersionNode(BioCypherNode):
             - get schema from meta graph
         """
 
-        # TODO get from graph
-
-        # include to load default yaml from module
+        # if self.graph_state:
+        #     # TODO get from graph
+        #     return
+        # else:
+        # load default yaml from module
         ROOT = os.path.join(
             *os.path.split(os.path.abspath(os.path.dirname(__file__)))
         )

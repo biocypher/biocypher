@@ -1,5 +1,0 @@
-default:
-  db: neo4j
-  auth:  
-    - neo4j 
-    - your_password_here

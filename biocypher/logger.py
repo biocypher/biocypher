@@ -19,6 +19,7 @@ Todo:
 
 import logging
 import os
+import yaml
 from datetime import datetime
 
 
@@ -52,8 +53,15 @@ def get_logger(name):
     if not os.path.isfile(logfile):
         print(f"Starting BioCypher logger at log/{date_time}.log")
 
+    config_file = ROOT + "/../config/module_config.yaml"
+    with open(config_file, "r") as fp:
+        conf = yaml.safe_load(fp.read())
+
     file_handler = logging.FileHandler(logfile)
-    file_handler.setLevel(logging.DEBUG)
+    if conf["debug"]:
+        file_handler.setLevel(logging.DEBUG)
+    else:
+        file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(file_formatter)
 
     stdout_handler = logging.StreamHandler()
