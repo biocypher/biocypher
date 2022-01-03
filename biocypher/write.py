@@ -179,6 +179,7 @@ class BatchWriter:
         # TODO implement property management (see above)
 
         if isinstance(nodes, GeneratorType):
+            logger.info("Writing node CSV from generator.")
             pass
 
         else:
@@ -190,7 +191,9 @@ class BatchWriter:
                     logger.error("Nodes must be passed as type BioCypherNode.")
                     return False
                 else:
-                    logger.info("Writing %s nodes to CSV." % len(nodes))
+                    logger.info(
+                        "Writing %s nodes from list to CSV." % len(nodes)
+                    )
 
                     for label in self.schema.keys():
                         nl = [n for n in nodes if n.get_label() == label]

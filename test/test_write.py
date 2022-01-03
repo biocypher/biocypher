@@ -4,6 +4,15 @@ from biocypher.translate import BiolinkAdapter
 from biocypher.write import BatchWriter
 from biocypher.create import BioCypherNode, BioCypherEdge
 
+import random
+import string
+
+
+def get_random_string(length):
+    # choose from all lowercase letter
+    letters = string.ascii_lowercase
+    return "".join(random.choice(letters) for _ in range(length))
+
 
 @pytest.fixture
 def bw():
@@ -143,3 +152,39 @@ def test_write_node_body_from_list(bw):
         "m3;Property1;Property2;microRNA|SubLabel1|SubLabel2\n"
         "m4;Property1;Property2;microRNA|SubLabel1|SubLabel2\n"
     )
+
+
+def test_write_node_body_from_large_list(bw):
+    nodes = []
+    # 5e5 proteins and miRNAs
+    le = int(5e5)
+    print("Creating list")
+    for i in range(le):
+        bnp = BioCypherNode(
+            f"p{i+1}",
+            "Protein",
+            optional_labels=["SubLabel1", "SubLabel2"],
+            p1=get_random_string(4),
+            p2=get_random_string(8),
+        )
+        nodes.append(bnp)
+        bnm = BioCypherNode(
+            f"m{i+1}",
+            "microRNA",
+            optional_labels=["SubLabel1", "SubLabel2"],
+            p1=get_random_string(4),
+            p2=get_random_string(8),
+        )
+        nodes.append(bnm)
+
+    bw.write_node_body(nodes)
+
+    ROOT = os.path.join(
+        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+    )
+    path = ROOT + "/../out/Test/"
+    pr_lines = sum(1 for _ in open(path + "Protein-part00.csv"))
+
+    mi_lines = sum(1 for _ in open(path + "microRNA-part00.csv"))
+
+    assert pr_lines == le and mi_lines == le
