@@ -22,6 +22,7 @@ import os
 from datetime import datetime
 from collections import OrderedDict
 from types import GeneratorType
+from collections import defaultdict
 
 from .logger import get_logger
 from .create import BioCypherEdge, BioCypherNode
@@ -180,7 +181,38 @@ class BatchWriter:
 
         if isinstance(nodes, GeneratorType):
             logger.info("Writing node CSV from generator.")
-            pass
+
+            # one loop through generator for each node type is not
+            # possible, since it is consumed
+            #
+            # go through generator, for each new encountered label
+            # create separate bin, add to each existing bin until full,
+            # when full, write to disk and empty bin to start over with
+            # adding that label until finally the generator is depleted;
+            # keep track of parts for each bin when emptying/writing
+            bins = defaultdict(list)
+            bin_l = {}
+            parts = {}
+            for n in nodes:
+                label = n.get_label()
+                if not label in bins.keys():
+                    bins[label].append(n)
+                    bin_l[label] = 1
+                    parts[label] = 0
+                else:
+                    bins[label].append(n)
+                    bin_l[label] += 1
+                    if not bin_l[label] < 1e6:
+                        self.write_single_list_to_file(
+                            bins[label], label, parts[label]
+                        )
+                        bins[label] = []
+                        bin_l[label] = 0
+                        parts[label] += 1
+
+            # after generator depleted, write remainder of bins
+            for label, nl in bins.items():
+                self.write_single_list_to_file(nl, label, parts[label])
 
         else:
             if type(nodes) is not list:
@@ -200,34 +232,8 @@ class BatchWriter:
                         if nl and not len(nl) > 1e6:
                             # single file per entity type
                             # id, properties, label(s)
+                            self.write_single_list_to_file(nl, label, 0)
 
-                            # from list of nodes to list of strings
-                            lines = []
-                            for n in nl:
-                                lines.append(
-                                    self.delim.join(
-                                        [
-                                            n.get_id(),
-                                            # here we need a list of properties in
-                                            # the same order as in the header
-                                            self.delim.join(
-                                                list(
-                                                    n.get_properties().values()
-                                                )
-                                            ),
-                                            self.adelim.join(
-                                                n.get_all_labels()
-                                            ),
-                                        ]
-                                    )
-                                    + "\n"
-                                )
-                            file_path = (
-                                self.output_path + label + "-part00.csv"
-                            )
-                            with open(file_path, "w") as f:
-                                # concatenate with delimiter
-                                f.writelines(lines)
                         else:
                             # batches
                             pass
@@ -236,6 +242,28 @@ class BatchWriter:
 
     def write_edge_body(self):
         pass
+
+    def write_single_list_to_file(self, node_list, label, part):
+        # from list of nodes to list of strings
+        lines = []
+        for n in node_list:
+            lines.append(
+                self.delim.join(
+                    [
+                        n.get_id(),
+                        # here we need a list of properties in
+                        # the same order as in the header
+                        self.delim.join(list(n.get_properties().values())),
+                        self.adelim.join(n.get_all_labels()),
+                    ]
+                )
+                + "\n"
+            )
+        padded_part = str(part).zfill(3)
+        file_path = self.output_path + label + "-part" + padded_part + ".csv"
+        with open(file_path, "w") as f:
+            # concatenate with delimiter
+            f.writelines(lines)
 
 
 """
