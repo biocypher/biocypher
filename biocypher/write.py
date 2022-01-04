@@ -219,24 +219,12 @@ class BatchWriter:
                 logger.error("Nodes must be passed as list or generator.")
                 return False
             else:
-                if not all(isinstance(n, BioCypherNode) for n in nodes):
-                    logger.error("Nodes must be passed as type BioCypherNode.")
-                    return False
-                else:
-                    logger.info(
-                        "Writing %s nodes from list to CSV." % len(nodes)
-                    )
 
-                    for label in self.schema.keys():
-                        nl = [n for n in nodes if n.get_label() == label]
-                        if nl and not len(nl) > 1e6:
-                            # single file per entity type
-                            # id, properties, label(s)
-                            self.write_single_list_to_file(nl, label, 0)
+                def gen(nodes):
+                    for n in nodes:
+                        yield n
 
-                        else:
-                            # batches
-                            pass
+                self.write_node_body(gen(nodes))
 
         return True
 
@@ -244,6 +232,22 @@ class BatchWriter:
         pass
 
     def write_single_list_to_file(self, node_list, label, part):
+        """
+        This function takes one list of biocypher nodes and writes them
+        to a Neo4j admin import compatible CSV file.
+
+        Args:
+            node_list (list): list of BioCypherNodes to be written
+            label (str): the primary label of the node
+            part (int): for large amounts of data, import is done in
+                parts denoted by a suffix in the CSV file name
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        if not all(isinstance(n, BioCypherNode) for n in node_list):
+            logger.error("Nodes must be passed as type BioCypherNode.")
+            return False
         # from list of nodes to list of strings
         lines = []
         for n in node_list:
@@ -264,6 +268,8 @@ class BatchWriter:
         with open(file_path, "w") as f:
             # concatenate with delimiter
             f.writelines(lines)
+
+        return True
 
 
 """
