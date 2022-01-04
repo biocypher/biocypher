@@ -146,6 +146,11 @@ class BatchWriter:
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
+
+            # on the other hand, we need to write the data anyways. may
+            # make sense to just reverse the order and pass written
+            # properties to the header writer function.
+
             # alternatively, desired properties could also be provided
             # via the schema_config.yaml, but that is more effort for
             # the user.
@@ -182,14 +187,6 @@ class BatchWriter:
         if isinstance(nodes, GeneratorType):
             logger.info("Writing node CSV from generator.")
 
-            # one loop through generator for each node type is not
-            # possible, since it is consumed
-            #
-            # go through generator, for each new encountered label
-            # create separate bin, add to each existing bin until full,
-            # when full, write to disk and empty bin to start over with
-            # adding that label until finally the generator is depleted;
-            # keep track of parts for each bin when emptying/writing
             bins = defaultdict(list)
             bin_l = {}
             parts = {}
@@ -203,7 +200,7 @@ class BatchWriter:
                     bins[label].append(n)
                     bin_l[label] += 1
                     if not bin_l[label] < 1e6:
-                        self.write_single_list_to_file(
+                        self.write_single_node_list_to_file(
                             bins[label], label, parts[label]
                         )
                         bins[label] = []
@@ -212,7 +209,7 @@ class BatchWriter:
 
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
-                self.write_single_list_to_file(nl, label, parts[label])
+                self.write_single_node_list_to_file(nl, label, parts[label])
 
         else:
             if type(nodes) is not list:
@@ -227,11 +224,12 @@ class BatchWriter:
                 self.write_node_body(gen(nodes))
 
         return True
+        # TODO return property information for header?
 
     def write_edge_body(self):
         pass
 
-    def write_single_list_to_file(self, node_list, label, part):
+    def write_single_node_list_to_file(self, node_list, label, part):
         """
         This function takes one list of biocypher nodes and writes them
         to a Neo4j admin import compatible CSV file.
@@ -288,13 +286,13 @@ Formatting: --delimiter=";"
 
 The header contains information for each field, for ID and properties
 in the format <name>: <field_type>. E.g.: 
-´UniProtKB:ID;genesymbol;entrez_id:int;:LABEL´. Multiple labels can 
+`UniProtKB:ID;genesymbol;entrez_id:int;:LABEL`. Multiple labels can 
 be given by separating with the array delimiter.
 
 There are three mandatory fields for relationship data:
-:START_ID — ID refering to a node.
-:END_ID — ID refering to a node.
-:TYPE — The relationship type.
+:START_ID — ID referring to a node.
+:END_ID — ID referring to a node.
+:TYPE — The relationship type.
 
 E.g.: `:START_ID;relationship_id;residue;:END_ID;:TYPE`.
 
