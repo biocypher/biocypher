@@ -198,9 +198,6 @@ class BatchWriter:
 
         Returns:
             bool: The return value. True for success, False otherwise.
-
-        Todo:
-            - optional labels: parse from YAML hierarchy
         """
         # load headers from data parse
         headers = self.property_dict
@@ -220,7 +217,7 @@ class BatchWriter:
             # data would have to be parsed before writing the header.
             # alternatively, desired properties could also be provided
             # via the schema_config.yaml, but that is more effort for
-            # the user. provide option to fix desired properties in
+            # the user. TODO provide option to fix desired properties in
             # YAML.
 
             if len(props) > 1:
@@ -247,47 +244,6 @@ class BatchWriter:
                 f.write(row)
 
         return True
-
-    def _write_edge_headers(self):
-        # extract nodes
-        edges = [
-            ed
-            for ed in self.schema.items()
-            if ed[1]["represented_as"] == "edge"
-        ]
-
-        for ed in edges:
-            # create header CSV with ID, properties, labels
-            label = ed[0]
-            props = ed[1]
-            id = props["preferred_id"]
-
-            # to programmatically define properties to be written, the
-            # data would have to be parsed before writing the header.
-
-            # on the other hand, we need to write the data anyways. may
-            # make sense to just reverse the order and pass written
-            # properties to the header writer function.
-
-            # alternatively, desired properties could also be provided
-            # via the schema_config.yaml, but that is more effort for
-            # the user.
-
-            # for now, substitute test properties: TODO
-            props = ["p1", "p2"]
-            if len(props) > 1:
-                props = self.delim.join(props)
-
-            file_path = self.output_path + label + "-header.csv"
-            with open(file_path, "w") as f:
-                # concatenate with delimiter
-                row = self.delim.join(
-                    [":START_ID", id, props, ":END_ID", label]
-                )
-                f.write(row)
-
-    def _write_edge_data(self):
-        pass
 
     def _write_single_node_list_to_file(self, node_list, label, part, props):
         """
@@ -342,6 +298,47 @@ class BatchWriter:
             f.writelines(lines)
 
         return True
+
+    def _write_edge_data(self):
+        pass
+
+    def _write_edge_headers(self):
+        # extract nodes
+        edges = [
+            ed
+            for ed in self.schema.items()
+            if ed[1]["represented_as"] == "edge"
+        ]
+
+        for ed in edges:
+            # create header CSV with ID, properties, labels
+            label = ed[0]
+            props = ed[1]
+            id = props["preferred_id"]
+
+            # to programmatically define properties to be written, the
+            # data would have to be parsed before writing the header.
+
+            # on the other hand, we need to write the data anyways. may
+            # make sense to just reverse the order and pass written
+            # properties to the header writer function.
+
+            # alternatively, desired properties could also be provided
+            # via the schema_config.yaml, but that is more effort for
+            # the user.
+
+            # for now, substitute test properties: TODO
+            props = ["p1", "p2"]
+            if len(props) > 1:
+                props = self.delim.join(props)
+
+            file_path = self.output_path + label + "-header.csv"
+            with open(file_path, "w") as f:
+                # concatenate with delimiter
+                row = self.delim.join(
+                    [":START_ID", id, props, ":END_ID", label]
+                )
+                f.write(row)
 
 
 """

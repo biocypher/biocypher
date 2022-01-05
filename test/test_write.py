@@ -341,7 +341,7 @@ def test_write_node_data_from_large_gen(bw):
 
 def test_inconsistent_properties(bw):
     nodes = []
-    le = int(1e4 + 4)
+    le = 4
     print("Creating list")
     for i in range(le):
         bnp = BioCypherNode(
@@ -361,19 +361,35 @@ def test_inconsistent_properties(bw):
         )
         nodes.append(bnm)
 
-    bn = BioCypherNode(
+    bn1 = BioCypherNode(
         "p0",
         "Protein",
         optional_labels=["SubLabel1", "SubLabel2"],
         p1=get_random_string(4),
         p2=get_random_string(8),
         p3=get_random_string(16),
+        p4=get_random_string(16),
     )
-    nodes.append(bn)
+    nodes.append(bn1)
 
     def node_gen(nodes):
         for n in nodes:
             yield n
+
+    passed = bw._write_node_data(
+        node_gen(nodes), batch_size=int(1e4)
+    )  # reduce test time
+
+    assert not passed
+
+    del nodes[-1]
+    bn2 = BioCypherNode(
+        "p0",
+        "Protein",
+        optional_labels=["SubLabel1", "SubLabel2"],
+        p1=get_random_string(4),
+    )
+    nodes.append(bn2)
 
     passed = bw._write_node_data(
         node_gen(nodes), batch_size=int(1e4)
