@@ -124,7 +124,9 @@ def test_write_node_headers(bw):
         )
         nodes.append(bnm)
 
-    bw._write_node_data(nodes)  # need nodes first for properties
+    bw._write_node_data(
+        nodes, batch_size=1e6
+    )  # need nodes first for properties
     passed = bw._write_node_headers()
     ROOT = os.path.join(
         *os.path.split(os.path.abspath(os.path.dirname(__file__)))
@@ -178,7 +180,7 @@ def test_write_node_data_from_list(bw):
         )
         nodes.append(bnm)
 
-    passed = bw._write_node_data(nodes)
+    passed = bw._write_node_data(nodes, batch_size=1e6)
 
     ROOT = os.path.join(
         *os.path.split(os.path.abspath(os.path.dirname(__file__)))
@@ -225,7 +227,7 @@ def test_write_node_data_from_gen(bw):
         for n in nodes:
             yield n
 
-    passed = bw._write_node_data(node_gen(nodes))
+    passed = bw._write_node_data(node_gen(nodes), batch_size=1e6)
 
     ROOT = os.path.join(
         *os.path.split(os.path.abspath(os.path.dirname(__file__)))
@@ -352,3 +354,59 @@ def test_inconsistent_properties(bw):
     )  # reduce test time
 
     assert not passed
+
+
+def test_accidental_exact_batch_size(bw):
+    nodes = []
+    le = int(1e4)
+    print("Creating list")
+    for i in range(le):
+        bnp = BioCypherNode(
+            f"p{i+1}",
+            "Protein",
+            optional_labels=["SubLabel1", "SubLabel2"],
+            p1=get_random_string(4),
+            p2=get_random_string(8),
+        )
+        nodes.append(bnp)
+        bnm = BioCypherNode(
+            f"m{i+1}",
+            "microRNA",
+            optional_labels=["SubLabel1", "SubLabel2"],
+            p1=get_random_string(4),
+            p2=get_random_string(8),
+        )
+        nodes.append(bnm)
+
+    def node_gen(nodes):
+        for n in nodes:
+            yield n
+
+    passed = bw.write_nodes(
+        node_gen(nodes), batch_size=int(1e4)
+    )  # reduce test time
+
+    ROOT = os.path.join(
+        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+    )
+    path = ROOT + "/../out/Test/"
+
+    pr_lines = sum(1 for _ in open(path + "Protein-part000.csv"))
+    mi_lines = sum(1 for _ in open(path + "microRNA-part000.csv"))
+    pr_lines1 = sum(1 for _ in open(path + "Protein-part001.csv"))
+    mi_lines1 = sum(1 for _ in open(path + "microRNA-part001.csv"))
+
+    with open(path + "Protein-header.csv", "r") as f:
+        p = f.read()
+    with open(path + "microRNA-header.csv", "r") as f:
+        m = f.read()
+
+    assert (
+        passed
+        and pr_lines == 1e4
+        and mi_lines == 1e4
+        and pr_lines1 == 0
+        and mi_lines1 == 0
+        and p == "UniProtKB:ID;p1;p2;:LABEL"
+        and m == "MIR:ID;p1;p2;:LABEL"
+    )

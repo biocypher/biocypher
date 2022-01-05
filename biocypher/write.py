@@ -72,7 +72,7 @@ class BatchWriter:
         except FileExistsError:
             logger.error("Output directory already exists; cannot continue.")
 
-    def write_nodes(self, nodes):
+    def write_nodes(self, nodes, batch_size=int(1e6)):
         """
         Wrapper for writing nodes and headers.
 
@@ -86,7 +86,7 @@ class BatchWriter:
         # TODO check represented_as
 
         # write node data
-        passed = self._write_node_data(nodes)
+        passed = self._write_node_data(nodes, batch_size)
         if not passed:
             logger.error("Error while writing node data.")
             return False
@@ -101,7 +101,7 @@ class BatchWriter:
     def write_edges(self, edges):
         pass
 
-    def _write_node_data(self, nodes, batch_size=int(1e6)):
+    def _write_node_data(self, nodes, batch_size):
         """
         Writes biocypher nodes to CSV conforming to the headers created
         with `write_node_headers()`. Expects list or generator of nodes
@@ -138,7 +138,7 @@ class BatchWriter:
                     # use first node to define properties for checking
                     # could later be by checking all nodes but much more
                     # complicated, particularly involving batch writing
-                    # (would require "do-overs")
+                    # (would require "do-overs") TODO
                     props[label] = list(n.get_properties().keys())
 
                     # get label hierarchy
@@ -209,9 +209,8 @@ class BatchWriter:
                     for n in nodes:
                         yield n
 
-                return self._write_node_data(gen(nodes))
+                return self._write_node_data(gen(nodes), batch_size=batch_size)
 
-    # file handling
     def _write_node_headers(self):
         """
         Writes single CSV file for a graph entity that is represented
@@ -351,13 +350,6 @@ class BatchWriter:
 
 
 """
-1. Collect representations of any type of node and edge in the python 
-   objects.
-2. Coordinate representation to optimise number of CSVs to be written.
-
-    - Depends on mutual information (properties are explicitly stated
-      in the CSV header)
-    - Also depends on performance (maybe), with very large collections
     - Can properties the node/relationship does not own be left blank?
 
 Formatting: --delimiter=";"
@@ -391,33 +383,6 @@ Can use regex, e.g., [..] import/rels-part*. In this case, use padding
 for ordering of the earlier part files ("01, 02").
 """
 
-
-"""
-# collect database information
-
-types of nodes: which nodes require separate representation, how many
-    types are there?
-
-types of edges: similarly
-
-"""
-
-"""
-# write files
-
-one header for each type of node and edge
-    parse through database content OR 
-    get info from dedicated output
-
-split data into parts
-    write from stream, generator?
-    create a chunk of certain size in python, then write using
-        with open('part.csv', 'x') as file:
-            file.write(chunk)
-
-    size of parts, csv 1M lines? (arbitrary)
-
-"""
 
 """
 # import
