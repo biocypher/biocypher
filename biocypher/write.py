@@ -168,7 +168,7 @@ class BatchWriter:
                 )
                 f.write(row)
 
-    def write_node_body(self, nodes):
+    def write_node_body(self, nodes, batch_size=int(1e6)):
         """
         Writes biocypher nodes to CSV conforming to the headers created
         with `write_node_headers()`. Expects list or generator of nodes
@@ -187,19 +187,25 @@ class BatchWriter:
         if isinstance(nodes, GeneratorType):
             logger.info("Writing node CSV from generator.")
 
-            bins = defaultdict(list)
-            bin_l = {}
-            parts = {}
+            bins = defaultdict(list)  # dict to store a list for each
+            # label that is passed in
+            bin_l = {}  # dict to store the length of each list for
+            # batching cutoff
+            parts = {}  # dict to store the number of parts of each label
+            # for file naming
             for n in nodes:
                 label = n.get_label()
                 if not label in bins.keys():
+                    # start new list
                     bins[label].append(n)
                     bin_l[label] = 1
                     parts[label] = 0
                 else:
+                    # add to list
                     bins[label].append(n)
                     bin_l[label] += 1
-                    if not bin_l[label] < 1e6:
+                    if not bin_l[label] < batch_size:
+                        # batch size controlled here
                         self.write_single_node_list_to_file(
                             bins[label], label, parts[label]
                         )

@@ -155,42 +155,6 @@ def test_write_node_body_from_list(bw):
     )
 
 
-def test_write_node_body_from_large_list(bw):
-    nodes = []
-    # 5e5 proteins and miRNAs
-    le = int(5e5)
-    print("Creating list")
-    for i in range(le):
-        bnp = BioCypherNode(
-            f"p{i+1}",
-            "Protein",
-            optional_labels=["SubLabel1", "SubLabel2"],
-            p1=get_random_string(4),
-            p2=get_random_string(8),
-        )
-        nodes.append(bnp)
-        bnm = BioCypherNode(
-            f"m{i+1}",
-            "microRNA",
-            optional_labels=["SubLabel1", "SubLabel2"],
-            p1=get_random_string(4),
-            p2=get_random_string(8),
-        )
-        nodes.append(bnm)
-
-    bw.write_node_body(nodes)
-
-    ROOT = os.path.join(
-        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
-    )
-    path = ROOT + "/../out/Test/"
-    pr_lines = sum(1 for _ in open(path + "Protein-part000.csv"))
-
-    mi_lines = sum(1 for _ in open(path + "microRNA-part000.csv"))
-
-    assert pr_lines == le and mi_lines == le
-
-
 def test_write_node_body_from_gen(bw):
     nodes = []
     le = 4
@@ -243,7 +207,7 @@ def test_write_node_body_from_gen(bw):
 
 def test_write_node_body_from_large_gen(bw):
     nodes = []
-    le = int(1e6 + 4)
+    le = int(1e4 + 4)
     print("Creating list")
     for i in range(le):
         bnp = BioCypherNode(
@@ -267,7 +231,9 @@ def test_write_node_body_from_large_gen(bw):
         for n in nodes:
             yield n
 
-    bw.write_node_body(node_gen(nodes))
+    bw.write_node_body(
+        node_gen(nodes), batch_size=int(1e4)
+    )  # reduce test time
 
     ROOT = os.path.join(
         *os.path.split(os.path.abspath(os.path.dirname(__file__)))
@@ -280,8 +246,8 @@ def test_write_node_body_from_large_gen(bw):
     mi_lines1 = sum(1 for _ in open(path + "microRNA-part001.csv"))
 
     assert (
-        pr_lines == 1e6
-        and mi_lines == 1e6
+        pr_lines == 1e4
+        and mi_lines == 1e4
         and pr_lines1 == 4
         and mi_lines1 == 4
     )
