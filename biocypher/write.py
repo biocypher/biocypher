@@ -55,6 +55,7 @@ class BatchWriter:
         self.quote = "'"
         self.schema = schema
         self.bl_adapter = bl_adapter
+        self.property_dict = None
 
         if not dirname:
             now = datetime.now()
@@ -71,42 +72,157 @@ class BatchWriter:
         except FileExistsError:
             logger.error("Output directory already exists; cannot continue.")
 
-    # file handling
-    def write_node_headers(self):
+    def write_nodes(self, nodes):
         """
-        Writes single CSV file for each graph entity that is represented
+        Wrapper for writing nodes and headers.
+
+        Args:
+            nodes (BioCypherNode): a list or generator of nodes in
+                :py:class:`BioCypherNode` format
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        # TODO check represented_as
+
+        # write node data
+        passed = self._write_node_data(nodes)
+        if not passed:
+            logger.error("Error while writing node data.")
+            return False
+        # pass property data to header writer per node type written
+        passed = self._write_node_headers()
+        if not passed:
+            logger.error("Error while writing node headers.")
+            return False
+
+        return True
+
+    def write_edges(self, edges):
+        pass
+
+    def _write_node_data(self, nodes, batch_size=int(1e6)):
+        """
+        Writes biocypher nodes to CSV conforming to the headers created
+        with `write_node_headers()`. Expects list or generator of nodes
+        from the :py:class:`BioCypherNode` class.
+
+        Args:
+            nodes (BioCypherNode): a list or generator of nodes in
+                :py:class:`BioCypherNode` format
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+
+        # TODO implement property management (see above)
+
+        if isinstance(nodes, GeneratorType):
+            logger.info("Writing node CSV from generator.")
+
+            bins = defaultdict(list)  # dict to store a list for each
+            # label that is passed in
+            bin_l = {}  # dict to store the length of each list for
+            # batching cutoff
+            parts = {}  # dict to store the number of parts of each label
+            # for file naming
+            props = defaultdict(list)  # dict to store a list of properties
+            # for each label to check for consistency
+            for n in nodes:
+                label = n.get_label()
+                if not label in bins.keys():
+                    # start new list
+                    bins[label].append(n)
+                    bin_l[label] = 1
+                    parts[label] = 0
+                    # use first node to define properties for checking
+                    # could later be by checking all nodes but much more
+                    # complicated, particularly involving batch writing
+                    # (would require "do-overs")
+                    props[label] = list(n.get_properties().keys())
+
+                else:
+                    # add to list
+                    bins[label].append(n)
+                    bin_l[label] += 1
+                    if not bin_l[label] < batch_size:
+                        # batch size controlled here
+                        passed = self._write_single_node_list_to_file(
+                            bins[label], label, parts[label], props[label]
+                        )
+
+                        if not passed:
+                            return False
+
+                        bins[label] = []
+                        bin_l[label] = 0
+                        parts[label] += 1
+
+            # after generator depleted, write remainder of bins
+            for label, nl in bins.items():
+                passed = self._write_single_node_list_to_file(
+                    nl, label, parts[label], props[label]
+                )
+
+                if not passed:
+                    return False
+
+            # use complete bin list to write header files
+            # TODO by accident exact batch size
+            # TODO if a node type has varying properties
+            # (ie missingness), we'd need to collect all possible
+            # properties in the generator pass
+
+            # save first-node properties to instance attribute
+            self.property_dict = props
+
+            return True
+        else:
+            if type(nodes) is not list:
+                logger.error("Nodes must be passed as list or generator.")
+                return False
+            else:
+
+                def gen(nodes):
+                    for n in nodes:
+                        yield n
+
+                return self._write_node_data(gen(nodes))
+
+    # file handling
+    def _write_node_headers(self):
+        """
+        Writes single CSV file for a graph entity that is represented
         as a node as per the definition in the `schema_config.yaml`,
         containing only the header for this type of node.
 
-        Args:
-            schema (dict): graph schema as taken from `schema_config.yaml`
-                and, equivalently, from `Driver.db_meta.schema`.
+        Returns:
+            bool: The return value. True for success, False otherwise.
 
         Todo:
-            - handling of properties: parse the data or specify in YAML
             - optional labels: parse from YAML hierarchy
         """
-        # extract nodes
-        nodes = [
-            no
-            for no in self.schema.items()
-            if no[1]["represented_as"] == "node"
-        ]
+        # load headers from data parse
+        headers = self.property_dict
+        if not headers:
+            logger.error(
+                "Header information not found. Was the data parsed first?"
+            )
+            return False
 
-        for no in nodes:
+        for label, props in headers.items():
             # create header CSV with ID, properties, labels
-            label = no[0]
-            props = no[1]
-            id = props["preferred_id"] + ":ID"
+
+            # preferred ID from schema
+            id = self.schema[label]["preferred_id"] + ":ID"
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
             # alternatively, desired properties could also be provided
             # via the schema_config.yaml, but that is more effort for
-            # the user.
+            # the user. provide option to fix desired properties in
+            # YAML.
 
-            # for now, substitute test properties: TODO
-            props = ["p1", "p2"]
             if len(props) > 1:
                 props = self.delim.join(props)
 
@@ -130,7 +246,9 @@ class BatchWriter:
                 row = self.delim.join([id, props, labels])
                 f.write(row)
 
-    def write_edge_headers(self):
+        return True
+
+    def _write_edge_headers(self):
         # extract nodes
         edges = [
             ed
@@ -168,74 +286,10 @@ class BatchWriter:
                 )
                 f.write(row)
 
-    def write_node_body(self, nodes, batch_size=int(1e6)):
-        """
-        Writes biocypher nodes to CSV conforming to the headers created
-        with `write_node_headers()`. Expects list or generator of nodes
-        from the :py:class:`BioCypherNode` class.
-
-        Args:
-            nodes (BioCypherNode): a list or generator of nodes in
-                :py:class:`BioCypherNode` format
-
-        Returns:
-            bool: The return value. True for success, False otherwise.
-        """
-
-        # TODO implement property management (see above)
-
-        if isinstance(nodes, GeneratorType):
-            logger.info("Writing node CSV from generator.")
-
-            bins = defaultdict(list)  # dict to store a list for each
-            # label that is passed in
-            bin_l = {}  # dict to store the length of each list for
-            # batching cutoff
-            parts = {}  # dict to store the number of parts of each label
-            # for file naming
-            for n in nodes:
-                label = n.get_label()
-                if not label in bins.keys():
-                    # start new list
-                    bins[label].append(n)
-                    bin_l[label] = 1
-                    parts[label] = 0
-                else:
-                    # add to list
-                    bins[label].append(n)
-                    bin_l[label] += 1
-                    if not bin_l[label] < batch_size:
-                        # batch size controlled here
-                        self.write_single_node_list_to_file(
-                            bins[label], label, parts[label]
-                        )
-                        bins[label] = []
-                        bin_l[label] = 0
-                        parts[label] += 1
-
-            # after generator depleted, write remainder of bins
-            for label, nl in bins.items():
-                self.write_single_node_list_to_file(nl, label, parts[label])
-
-        else:
-            if type(nodes) is not list:
-                logger.error("Nodes must be passed as list or generator.")
-                return False
-            else:
-
-                def gen(nodes):
-                    for n in nodes:
-                        yield n
-
-                self.write_node_body(gen(nodes))
-
-        return True
-        # TODO return property information for header?
-
-    def write_edge_body(self):
+    def _write_edge_data(self):
         pass
 
-    def write_single_node_list_to_file(self, node_list, label, part):
+    def _write_single_node_list_to_file(self, node_list, label, part, props):
         """
         This function takes one list of biocypher nodes and writes them
         to a Neo4j admin import compatible CSV file.
@@ -252,9 +306,23 @@ class BatchWriter:
         if not all(isinstance(n, BioCypherNode) for n in node_list):
             logger.error("Nodes must be passed as type BioCypherNode.")
             return False
+
         # from list of nodes to list of strings
         lines = []
         for n in node_list:
+            # check for deviations in properties
+            keys = list(n.get_properties().keys())
+            if not keys == props:
+                onode = n.get_id()
+                oprop1 = set(props).difference(keys)
+                oprop2 = set(keys).difference(props)
+                logger.error(
+                    f"At least one node of the class {n.get_label()} "
+                    f"has more or fewer properties than the others. "
+                    f"Offending node: {onode}, offending property: "
+                    f"{max([oprop1, oprop2])}."
+                )
+                return False
             lines.append(
                 self.delim.join(
                     [

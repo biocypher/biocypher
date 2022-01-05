@@ -973,7 +973,7 @@ class Driver(BaseDriver):
             )
 
         # write header files
-        self.batch_writer.write_node_headers()
+        self.batch_writer.write_nodes()
 
         # contains types of nodes and edges and
         # their designations in the input data
