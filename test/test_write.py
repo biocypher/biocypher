@@ -98,25 +98,8 @@ def test_write_node_data_and_headers(bw):
 
     assert (
         passed
-        and p
-        == (
-            "UniProtKB:ID;p1;p2;:Protein|:Polypeptide|:BiologicalEntity"
-            "|:NamedThing|:Entity|:GeneProductMixin|:GeneOrGeneProduct"
-            "|:MacromolecularMachineMixin|:ThingWithTaxon"
-            "|:ChemicalEntityOrGeneOrGeneProduct"
-            "|:ChemicalEntityOrProteinOrPolypeptide"
-        )
-        and m
-        == (
-            "MIR:ID;p1;p2;:MicroRNA|:NoncodingRNAProduct|:RNAProduct"
-            "|:Transcript|:NucleicAcidEntity|:MolecularEntity"
-            "|:ChemicalEntity|:NamedThing|:Entity|:GeneProductMixin"
-            "|:GeneOrGeneProduct|:MacromolecularMachineMixin"
-            "|:GenomicEntity|:ThingWithTaxon|:PhysicalEssence"
-            "|:PhysicalEssenceOrOccurrent|:OntologyClass"
-            "|:ChemicalOrDrugOrTreatment|:ChemicalEntityOrGeneOrGeneProduct"
-            "|:ChemicalEntityOrProteinOrPolypeptide"
-        )
+        and p == ("UniProtKB:ID;p1;p2;:LABEL")
+        and m == ("MIR:ID;p1;p2;:LABEL")
     )
 
 
@@ -154,25 +137,8 @@ def test_write_node_headers(bw):
 
     assert (
         passed
-        and p
-        == (
-            "UniProtKB:ID;p1;p2;:Protein|:Polypeptide|:BiologicalEntity"
-            "|:NamedThing|:Entity|:GeneProductMixin|:GeneOrGeneProduct"
-            "|:MacromolecularMachineMixin|:ThingWithTaxon"
-            "|:ChemicalEntityOrGeneOrGeneProduct"
-            "|:ChemicalEntityOrProteinOrPolypeptide"
-        )
-        and m
-        == (
-            "MIR:ID;p1;p2;:MicroRNA|:NoncodingRNAProduct|:RNAProduct"
-            "|:Transcript|:NucleicAcidEntity|:MolecularEntity"
-            "|:ChemicalEntity|:NamedThing|:Entity|:GeneProductMixin"
-            "|:GeneOrGeneProduct|:MacromolecularMachineMixin"
-            "|:GenomicEntity|:ThingWithTaxon|:PhysicalEssence"
-            "|:PhysicalEssenceOrOccurrent|:OntologyClass"
-            "|:ChemicalOrDrugOrTreatment|:ChemicalEntityOrGeneOrGeneProduct"
-            "|:ChemicalEntityOrProteinOrPolypeptide"
-        )
+        and p == ("UniProtKB:ID;p1;p2;:LABEL")
+        and m == ("MIR:ID;p1;p2;:LABEL")
     )
 
 
@@ -200,7 +166,6 @@ def test_write_node_data_from_list(bw):
         bnp = BioCypherNode(
             f"p{i+1}",
             "Protein",
-            optional_labels=["SubLabel1", "SubLabel2"],
             p1="Property1",
             p2="Property2",
         )
@@ -208,7 +173,6 @@ def test_write_node_data_from_list(bw):
         bnm = BioCypherNode(
             f"m{i+1}",
             "microRNA",
-            optional_labels=["SubLabel1", "SubLabel2"],
             p1="Property1",
             p2="Property2",
         )
@@ -228,14 +192,10 @@ def test_write_node_data_from_list(bw):
 
     assert (
         passed
-        and pr == "p1;Property1;Property2;Protein|SubLabel1|SubLabel2\n"
-        "p2;Property1;Property2;Protein|SubLabel1|SubLabel2\n"
-        "p3;Property1;Property2;Protein|SubLabel1|SubLabel2\n"
-        "p4;Property1;Property2;Protein|SubLabel1|SubLabel2\n"
-        and mi == "m1;Property1;Property2;microRNA|SubLabel1|SubLabel2\n"
-        "m2;Property1;Property2;microRNA|SubLabel1|SubLabel2\n"
-        "m3;Property1;Property2;microRNA|SubLabel1|SubLabel2\n"
-        "m4;Property1;Property2;microRNA|SubLabel1|SubLabel2\n"
+        and pr
+        == "p1;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np2;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np3;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np4;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
+        and mi
+        == "m1;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm2;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm3;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm4;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
     )
 
 
@@ -279,14 +239,10 @@ def test_write_node_data_from_gen(bw):
 
     assert (
         passed
-        and pr == "p1;Property1;Property2;Protein|SubLabel1|SubLabel2\n"
-        "p2;Property1;Property2;Protein|SubLabel1|SubLabel2\n"
-        "p3;Property1;Property2;Protein|SubLabel1|SubLabel2\n"
-        "p4;Property1;Property2;Protein|SubLabel1|SubLabel2\n"
-        and mi == "m1;Property1;Property2;microRNA|SubLabel1|SubLabel2\n"
-        "m2;Property1;Property2;microRNA|SubLabel1|SubLabel2\n"
-        "m3;Property1;Property2;microRNA|SubLabel1|SubLabel2\n"
-        "m4;Property1;Property2;microRNA|SubLabel1|SubLabel2\n"
+        and pr
+        == "p1;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np2;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np3;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np4;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
+        and mi
+        == "m1;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm2;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm3;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm4;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
     )
 
 

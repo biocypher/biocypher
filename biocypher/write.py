@@ -115,8 +115,6 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
 
-        # TODO implement property management (see above)
-
         if isinstance(nodes, GeneratorType):
             logger.info("Writing node CSV from generator.")
 
@@ -128,6 +126,8 @@ class BatchWriter:
             # for file naming
             props = defaultdict(list)  # dict to store a list of properties
             # for each label to check for consistency
+            labels = {}  # dict to store the additional labels for each
+            # primary graph constituent from biolink hierarchy
             for n in nodes:
                 label = n.get_label()
                 if not label in bins.keys():
@@ -141,6 +141,24 @@ class BatchWriter:
                     # (would require "do-overs")
                     props[label] = list(n.get_properties().keys())
 
+                    # get label hierarchy
+                    # multiple labels:
+                    all_labels = self.bl_adapter.leaves[label]["ancestors"]
+
+                    if all_labels:
+                        # remove prefix
+                        all_labels = [
+                            l.replace("biolink:", "") for l in all_labels
+                        ]
+                        # remove duplicates
+                        all_labels = list(OrderedDict.fromkeys(all_labels))
+                        # concatenate with array delimiter
+                        all_labels = self.adelim.join(all_labels)
+                    else:
+                        all_labels = label
+
+                    labels[label] = all_labels
+
                 else:
                     # add to list
                     bins[label].append(n)
@@ -148,7 +166,11 @@ class BatchWriter:
                     if not bin_l[label] < batch_size:
                         # batch size controlled here
                         passed = self._write_single_node_list_to_file(
-                            bins[label], label, parts[label], props[label]
+                            bins[label],
+                            label,
+                            parts[label],
+                            props[label],
+                            labels[label],
                         )
 
                         if not passed:
@@ -161,7 +183,7 @@ class BatchWriter:
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
                 passed = self._write_single_node_list_to_file(
-                    nl, label, parts[label], props[label]
+                    nl, label, parts[label], props[label], labels[label]
                 )
 
                 if not passed:
@@ -200,14 +222,13 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
         # load headers from data parse
-        headers = self.property_dict
-        if not headers:
+        if not self.property_dict:
             logger.error(
                 "Header information not found. Was the data parsed first?"
             )
             return False
 
-        for label, props in headers.items():
+        for label, props in self.property_dict.items():
             # create header CSV with ID, properties, labels
 
             # preferred ID from schema
@@ -223,29 +244,17 @@ class BatchWriter:
             if len(props) > 1:
                 props = self.delim.join(props)
 
-            # multiple labels:
-            opt_labels = self.bl_adapter.leaves[label]["ancestors"]
-
-            if opt_labels:
-                labels = opt_labels
-                # remove prefix
-                labels = [l.replace("biolink", "") for l in labels]
-                # remove duplicates
-                labels = list(OrderedDict.fromkeys(labels))
-                # concatenate with array delimiter
-                labels = self.adelim.join(labels)
-            else:
-                labels = ":" + label
-
             file_path = self.output_path + label + "-header.csv"
             with open(file_path, "w") as f:
                 # concatenate with delimiter
-                row = self.delim.join([id, props, labels])
+                row = self.delim.join([id, props, ":LABEL"])
                 f.write(row)
 
         return True
 
-    def _write_single_node_list_to_file(self, node_list, label, part, props):
+    def _write_single_node_list_to_file(
+        self, node_list, label, part, props, labels
+    ):
         """
         This function takes one list of biocypher nodes and writes them
         to a Neo4j admin import compatible CSV file.
@@ -286,7 +295,7 @@ class BatchWriter:
                         # here we need a list of properties in
                         # the same order as in the header
                         self.delim.join(list(n.get_properties().values())),
-                        self.adelim.join(n.get_all_labels()),
+                        labels,
                     ]
                 )
                 + "\n"
