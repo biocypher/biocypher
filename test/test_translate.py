@@ -75,7 +75,7 @@ def test_adapter(version_node):
 
 def test_custom_bmt_yaml(version_node):
     ad = BiolinkAdapter(
-        version_node.leaves, custom_yaml_file="config/test-biolink-model.yaml"
+        version_node.leaves, custom_yaml_file="/config/test-biolink-model.yaml"
     )
     p = ad.leaves["Protein"]
 
@@ -85,7 +85,7 @@ def test_custom_bmt_yaml(version_node):
 def test_biolink_yaml_extension(version_node):
     ad = BiolinkAdapter(
         version_node.leaves,
-        custom_yaml_file="config/biocypher-biolink-model.yaml",
+        custom_yaml_file="/config/biocypher-biolink-model.yaml",
     )
     p1 = ad.leaves["PostTranslationalInteraction"]
     p2 = ad.leaves["Phosphorylation"]

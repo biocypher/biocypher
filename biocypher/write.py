@@ -63,9 +63,11 @@ class BatchWriter:
 
         logger.info(f"Trying to create output folder at out/{dirname}.")
         ROOT = os.path.join(
-            *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+            *os.path.split(
+                os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+            )
         )
-        self.output_path = ROOT + "/../out/" + dirname + "/"
+        self.output_path = ROOT + "/out/" + dirname + "/"
         try:
             os.mkdir(self.output_path)
             logger.info("Folder created successfully.")

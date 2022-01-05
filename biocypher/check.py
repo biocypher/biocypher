@@ -171,11 +171,13 @@ class VersionNode(BioCypherNode):
         else:
             # load default yaml from module
             ROOT = os.path.join(
-                *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+                *os.path.split(
+                    os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+                )
             )
 
             # get graph state from config
-            with open(ROOT + "/../config/schema_config.yaml") as f:
+            with open(ROOT + "/config/schema_config.yaml") as f:
                 dataMap = yaml.safe_load(f)
             return dataMap
 

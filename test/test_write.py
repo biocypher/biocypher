@@ -46,9 +46,11 @@ def bw():
 
     # teardown
     ROOT = os.path.join(
-        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
     )
-    path = ROOT + "/../out/Test/"
+    path = ROOT + "/out/Test/"
     for f in os.listdir(path):
         os.remove(os.path.join(path, f))
     os.rmdir(path)
@@ -56,9 +58,11 @@ def bw():
 
 def test_writer_and_output_dir(bw):
     ROOT = os.path.join(
-        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
     )
-    path = ROOT + "/../out/Test/"
+    path = ROOT + "/out/Test/"
     assert (
         os.path.isdir(path) and isinstance(bw, BatchWriter) and bw.delim == ";"
     )
@@ -88,9 +92,11 @@ def test_write_node_data_and_headers(bw):
     passed = bw.write_nodes(nodes)
 
     ROOT = os.path.join(
-        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
     )
-    path = ROOT + "/../out/Test/"
+    path = ROOT + "/out/Test/"
     with open(path + "Protein-header.csv", "r") as f:
         p = f.read()
     with open(path + "microRNA-header.csv", "r") as f:
@@ -129,9 +135,11 @@ def test_write_node_headers(bw):
     )  # need nodes first for properties
     passed = bw._write_node_headers()
     ROOT = os.path.join(
-        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
     )
-    path = ROOT + "/../out/Test/"
+    path = ROOT + "/out/Test/"
     with open(path + "Protein-header.csv", "r") as f:
         p = f.read()
     with open(path + "microRNA-header.csv", "r") as f:
@@ -147,9 +155,11 @@ def test_write_node_headers(bw):
 def test_write_edge_headers(bw):
     bw._write_edge_headers()
     ROOT = os.path.join(
-        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
     )
-    path = ROOT + "/../out/Test/"
+    path = ROOT + "/out/Test/"
     with open(path + "PostTranslationalInteraction-header.csv", "r") as f:
         l = f.read()
     with open(path + "PostTranscriptionalInteraction-header.csv", "r") as f:
@@ -183,9 +193,11 @@ def test_write_node_data_from_list(bw):
     passed = bw._write_node_data(nodes, batch_size=1e6)
 
     ROOT = os.path.join(
-        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
     )
-    path = ROOT + "/../out/Test/"
+    path = ROOT + "/out/Test/"
     with open(path + "Protein-part000.csv", "r") as f:
         pr = f.read()
 
@@ -230,9 +242,11 @@ def test_write_node_data_from_gen(bw):
     passed = bw._write_node_data(node_gen(nodes), batch_size=1e6)
 
     ROOT = os.path.join(
-        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
     )
-    path = ROOT + "/../out/Test/"
+    path = ROOT + "/out/Test/"
     with open(path + "Protein-part000.csv", "r") as f:
         pr = f.read()
 
@@ -279,9 +293,11 @@ def test_write_node_data_from_large_gen(bw):
     )  # reduce test time
 
     ROOT = os.path.join(
-        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
     )
-    path = ROOT + "/../out/Test/"
+    path = ROOT + "/out/Test/"
 
     pr_lines = sum(1 for _ in open(path + "Protein-part000.csv"))
     mi_lines = sum(1 for _ in open(path + "microRNA-part000.csv"))
@@ -387,9 +403,11 @@ def test_accidental_exact_batch_size(bw):
     )  # reduce test time
 
     ROOT = os.path.join(
-        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
     )
-    path = ROOT + "/../out/Test/"
+    path = ROOT + "/out/Test/"
 
     pr_lines = sum(1 for _ in open(path + "Protein-part000.csv"))
     mi_lines = sum(1 for _ in open(path + "microRNA-part000.csv"))

@@ -46,14 +46,17 @@ def get_logger(name):
 
     now = datetime.now()
     date_time = now.strftime("%Y%m%d%H%M%S")
+    # go two dirs back to project root
     ROOT = os.path.join(
-        *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
     )
-    logfile = ROOT + "/../log/" + date_time + ".log"
+    logfile = ROOT + "/log/" + date_time + ".log"
     if not os.path.isfile(logfile):
-        print(f"Starting BioCypher logger at log/{date_time}.log")
+        print(f"Starting BioCypher logger at {logfile}.")
 
-    config_file = ROOT + "/../config/module_config.yaml"
+    config_file = ROOT + "/config/module_config.yaml"
     with open(config_file, "r") as fp:
         conf = yaml.safe_load(fp.read())
 

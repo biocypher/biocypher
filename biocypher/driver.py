@@ -80,7 +80,7 @@ class BaseDriver(object):
         db_uri="neo4j://localhost:7687",
         db_auth=None,
         fetch_size=1000,
-        config_file="config/db_config.yaml",
+        config_file="/config/db_config.yaml",
         wipe=False,
         increment_version=True,
     ):
@@ -102,9 +102,11 @@ class BaseDriver(object):
 
             # include to load default yaml from module
             ROOT = os.path.join(
-                *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+                *os.path.split(
+                    os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+                )
             )
-            self._config_file = ROOT + "/../" + config_file
+            self._config_file = ROOT + config_file
 
             self.db_connect()
 
@@ -650,7 +652,7 @@ class Driver(BaseDriver):
         db_uri="neo4j://localhost:7687",
         db_auth=None,
         fetch_size=1000,
-        config_file="config/module_config.yaml",
+        config_file="/config/module_config.yaml",
         wipe=False,
         increment_version=True,
     ):

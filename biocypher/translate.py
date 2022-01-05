@@ -59,7 +59,7 @@ class BiolinkAdapter(object):
         self,
         leaves,
         custom_yaml=True,
-        custom_yaml_file="config/biocypher-biolink-model.yaml",
+        custom_yaml_file="/config/biocypher-biolink-model.yaml",
     ) -> None:
         logger.debug("Instantiating Biolink Adapter.")
         self.leaves = self.translate_leaves_to_biolink(
@@ -82,9 +82,11 @@ class BiolinkAdapter(object):
             )
             # load toolkit from local YAML
             ROOT = os.path.join(
-                *os.path.split(os.path.abspath(os.path.dirname(__file__)))
+                *os.path.split(
+                    os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+                )
             )
-            bl_yaml = ROOT + "/../" + custom_yaml_file
+            bl_yaml = ROOT + custom_yaml_file
             t = Toolkit(bl_yaml)  # loads biolink model toolkit python API
         else:
             logger.info("Creating Biolink model toolkit from remote default.")
