@@ -44,14 +44,14 @@ def get_logger(name):
     )
     stdout_formatter = logging.Formatter("%(levelname)s -- %(message)s")
 
-    now = datetime.now()
-    date_time = now.strftime("%Y%m%d%H%M%S")
-    # go two dirs back to project root
     ROOT = os.path.join(
         *os.path.split(
             os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
         )
     )
+    now = datetime.now()
+    date_time = now.strftime("%Y%m%d-%H%M%S")
+    # go two dirs back to project root
     logfile = ROOT + "/log/" + date_time + ".log"
     if not os.path.isfile(logfile):
         print(f"Starting BioCypher logger at {logfile}.")

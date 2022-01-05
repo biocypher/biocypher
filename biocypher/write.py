@@ -24,10 +24,10 @@ from collections import OrderedDict
 from types import GeneratorType
 from collections import defaultdict
 
-from .logger import get_logger
 from .create import BioCypherEdge, BioCypherNode
+import logging
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 logger.debug(f"Loading module {__name__}.")
 
 

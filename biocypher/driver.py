@@ -27,16 +27,17 @@ from typing import List
 import yaml
 import neo4j
 
+from .logger import get_logger
+
+# create root logger
+logger = get_logger("biocypher")
+logger.debug(f"Loading module {__name__}.")
 
 from .create import BioCypherEdge, BioCypherNode
 from .translate import BiolinkAdapter, gen_translate_edges, gen_translate_nodes
 from .check import MetaEdge, VersionNode, MetaNode
 from .utils import pretty
-from .logger import get_logger
 from .write import BatchWriter
-
-logger = get_logger(__name__)
-logger.debug(f"Loading module {__name__}.")
 
 
 class BaseDriver(object):
