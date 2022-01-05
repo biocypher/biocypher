@@ -190,7 +190,6 @@ class BatchWriter:
                     return False
 
             # use complete bin list to write header files
-            # TODO by accident exact batch size
             # TODO if a node type has varying properties
             # (ie missingness), we'd need to collect all possible
             # properties in the generator pass
@@ -272,6 +271,9 @@ class BatchWriter:
             return False
 
         # from list of nodes to list of strings
+        # TODO string properties in quotes (?)
+        # only necessary if they contain spaces?
+        # TODO property types such as ":int"?
         lines = []
         for n in node_list:
             # check for deviations in properties
