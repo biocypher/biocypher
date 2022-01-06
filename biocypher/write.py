@@ -126,8 +126,9 @@ class BatchWriter:
             # batching cutoff
             parts = {}  # dict to store the number of parts of each label
             # for file naming
-            props = defaultdict(list)  # dict to store a list of properties
-            # for each label to check for consistency
+            props = defaultdict(dict)  # dict to store a dict of properties
+            # for each label to check for consistency and their type
+            # for now, relevant for `int`
             labels = {}  # dict to store the additional labels for each
             # primary graph constituent from biolink hierarchy
             for n in nodes:
@@ -141,7 +142,10 @@ class BatchWriter:
                     # could later be by checking all nodes but much more
                     # complicated, particularly involving batch writing
                     # (would require "do-overs") TODO
-                    props[label] = list(n.get_properties().keys())
+                    d = dict(n.get_properties())
+                    for k, v in d.items():
+                        d[k] = type(v)
+                    props[label] = d
 
                     # get label hierarchy
                     # multiple labels:
@@ -185,7 +189,11 @@ class BatchWriter:
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
                 passed = self._write_single_node_list_to_file(
-                    nl, label, parts[label], props[label], labels[label]
+                    nl,
+                    label,
+                    parts[label],
+                    props[label],
+                    labels[label],
                 )
 
                 if not passed:
@@ -241,19 +249,27 @@ class BatchWriter:
             # the user. TODO provide option to fix desired properties in
             # YAML.
 
-            if len(props) > 1:
-                props = self.delim.join(props)
+            # concatenate key:value in props
+            props_list = [
+                f"{k}:{v.__name__}" if v.__name__ == "int" else f"{k}"
+                for k, v in props.items()
+            ]
+
+            # create list of lists and flatten
+            # removes need for empty check of property list
+            out_list = [[id], props_list, [":LABEL"]]
+            out_list = [val for sublist in out_list for val in sublist]
 
             file_path = self.output_path + label + "-header.csv"
             with open(file_path, "w") as f:
                 # concatenate with delimiter
-                row = self.delim.join([id, props, ":LABEL"])
+                row = self.delim.join(out_list)
                 f.write(row)
 
         return True
 
     def _write_single_node_list_to_file(
-        self, node_list, label, part, props, labels
+        self, node_list, label, part, prop_dict, labels
     ):
         """
         This function takes one list of biocypher nodes and writes them
@@ -264,6 +280,10 @@ class BatchWriter:
             label (str): the primary label of the node
             part (int): for large amounts of data, import is done in
                 parts denoted by a suffix in the CSV file name
+            prop_dict (dict): properties of node class passed from parsing
+                function and their types
+            labels (str): string of one or several concatenated labels
+                for the node class
 
         Returns:
             bool: The return value. True for success, False otherwise.
@@ -279,11 +299,13 @@ class BatchWriter:
         lines = []
         for n in node_list:
             # check for deviations in properties
-            keys = list(n.get_properties().keys())
-            if not keys == props:
+            nprops = n.get_properties()
+            hprops = list(prop_dict.keys())
+            keys = list(nprops.keys())
+            if not keys == hprops:
                 onode = n.get_id()
-                oprop1 = set(props).difference(keys)
-                oprop2 = set(keys).difference(props)
+                oprop1 = set(hprops).difference(keys)
+                oprop2 = set(keys).difference(hprops)
                 logger.error(
                     f"At least one node of the class {n.get_label()} "
                     f"has more or fewer properties than the others. "
@@ -291,18 +313,36 @@ class BatchWriter:
                     f"{max([oprop1, oprop2])}."
                 )
                 return False
-            lines.append(
-                self.delim.join(
-                    [
-                        n.get_id(),
-                        # here we need a list of properties in
-                        # the same order as in the header
-                        self.delim.join(list(n.get_properties().values())),
-                        labels,
-                    ]
+            if not hprops == []:
+                plist = []
+                for e, t in zip(nprops.values(), prop_dict.values()):
+                    if t == int:
+                        plist.append(str(e))
+                    else:
+                        plist.append(self.quote + str(e) + self.quote)
+                # make all into strings, put actual strings in quotes
+                lines.append(
+                    self.delim.join(
+                        [
+                            n.get_id(),
+                            # here we need a list of properties in
+                            # the same order as in the header
+                            self.delim.join(plist),
+                            labels,
+                        ]
+                    )
+                    + "\n"
                 )
-                + "\n"
-            )
+            else:
+                lines.append(
+                    self.delim.join(
+                        [
+                            n.get_id(),
+                            labels,
+                        ]
+                    )
+                    + "\n"
+                )
         padded_part = str(part).zfill(3)
         file_path = self.output_path + label + "-part" + padded_part + ".csv"
         with open(file_path, "w") as f:

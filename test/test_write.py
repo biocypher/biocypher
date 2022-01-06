@@ -75,17 +75,15 @@ def test_write_node_data_and_headers(bw):
         bnp = BioCypherNode(
             f"p{i+1}",
             "Protein",
-            optional_labels=["SubLabel1", "SubLabel2"],
-            p1="Property1",
-            p2="Property2",
+            string_property="StringProperty1",
+            taxon=9606,
         )
         nodes.append(bnp)
         bnm = BioCypherNode(
             f"m{i+1}",
             "microRNA",
-            optional_labels=["SubLabel1", "SubLabel2"],
-            p1="Property1",
-            p2="Property2",
+            string_property="StringProperty1",
+            taxon=9606,
         )
         nodes.append(bnm)
 
@@ -104,51 +102,8 @@ def test_write_node_data_and_headers(bw):
 
     assert (
         passed
-        and p == ("UniProtKB:ID;p1;p2;:LABEL")
-        and m == ("MIR:ID;p1;p2;:LABEL")
-    )
-
-
-def test_write_node_headers(bw):
-    nodes = []
-    # four proteins, four miRNAs
-    for i in range(4):
-        bnp = BioCypherNode(
-            f"p{i+1}",
-            "Protein",
-            optional_labels=["SubLabel1", "SubLabel2"],
-            p1="Property1",
-            p2="Property2",
-        )
-        nodes.append(bnp)
-        bnm = BioCypherNode(
-            f"m{i+1}",
-            "microRNA",
-            optional_labels=["SubLabel1", "SubLabel2"],
-            p1="Property1",
-            p2="Property2",
-        )
-        nodes.append(bnm)
-
-    bw._write_node_data(
-        nodes, batch_size=1e6
-    )  # need nodes first for properties
-    passed = bw._write_node_headers()
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
-    with open(path + "Protein-header.csv", "r") as f:
-        p = f.read()
-    with open(path + "microRNA-header.csv", "r") as f:
-        m = f.read()
-
-    assert (
-        passed
-        and p == ("UniProtKB:ID;p1;p2;:LABEL")
-        and m == ("MIR:ID;p1;p2;:LABEL")
+        and p == ("UniProtKB:ID;string_property;taxon:int;:LABEL")
+        and m == ("MIR:ID;string_property;taxon:int;:LABEL")
     )
 
 
@@ -178,15 +133,15 @@ def test_write_node_data_from_list(bw):
         bnp = BioCypherNode(
             f"p{i+1}",
             "Protein",
-            p1="Property1",
-            p2="Property2",
+            string_property="StringProperty1",
+            taxon=9606,
         )
         nodes.append(bnp)
         bnm = BioCypherNode(
             f"m{i+1}",
             "microRNA",
-            p1="Property1",
-            p2="Property2",
+            string_property="StringProperty1",
+            taxon=9606,
         )
         nodes.append(bnm)
 
@@ -207,9 +162,9 @@ def test_write_node_data_from_list(bw):
     assert (
         passed
         and pr
-        == "p1;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np2;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np3;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np4;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
+        == "p1;'StringProperty1';9606;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np2;'StringProperty1';9606;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np3;'StringProperty1';9606;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np4;'StringProperty1';9606;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
         and mi
-        == "m1;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm2;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm3;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm4;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
+        == "m1;'StringProperty1';9606;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm2;'StringProperty1';9606;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm3;'StringProperty1';9606;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm4;'StringProperty1';9606;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
     )
 
 
@@ -221,17 +176,15 @@ def test_write_node_data_from_gen(bw):
         bnp = BioCypherNode(
             f"p{i+1}",
             "Protein",
-            optional_labels=["SubLabel1", "SubLabel2"],
-            p1="Property1",
-            p2="Property2",
+            string_property="StringProperty1",
+            taxon=9606,
         )
         nodes.append(bnp)
         bnm = BioCypherNode(
             f"m{i+1}",
             "microRNA",
-            optional_labels=["SubLabel1", "SubLabel2"],
-            p1="Property1",
-            p2="Property2",
+            string_property="StringProperty1",
+            taxon=9606,
         )
         nodes.append(bnm)
 
@@ -256,9 +209,9 @@ def test_write_node_data_from_gen(bw):
     assert (
         passed
         and pr
-        == "p1;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np2;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np3;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np4;Property1;Property2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
+        == "p1;'StringProperty1';9606;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np2;'StringProperty1';9606;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np3;'StringProperty1';9606;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np4;'StringProperty1';9606;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
         and mi
-        == "m1;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm2;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm3;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm4;Property1;Property2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
+        == "m1;'StringProperty1';9606;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm2;'StringProperty1';9606;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm3;'StringProperty1';9606;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm4;'StringProperty1';9606;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
     )
 
 
@@ -270,7 +223,6 @@ def test_write_node_data_from_large_gen(bw):
         bnp = BioCypherNode(
             f"p{i+1}",
             "Protein",
-            optional_labels=["SubLabel1", "SubLabel2"],
             p1=get_random_string(4),
             p2=get_random_string(8),
         )
@@ -278,7 +230,6 @@ def test_write_node_data_from_large_gen(bw):
         bnm = BioCypherNode(
             f"m{i+1}",
             "microRNA",
-            optional_labels=["SubLabel1", "SubLabel2"],
             p1=get_random_string(4),
             p2=get_random_string(8),
         )
@@ -321,7 +272,6 @@ def test_inconsistent_properties(bw):
         bnp = BioCypherNode(
             f"p{i+1}",
             "Protein",
-            optional_labels=["SubLabel1", "SubLabel2"],
             p1=get_random_string(4),
             p2=get_random_string(8),
         )
@@ -329,7 +279,6 @@ def test_inconsistent_properties(bw):
         bnm = BioCypherNode(
             f"m{i+1}",
             "microRNA",
-            optional_labels=["SubLabel1", "SubLabel2"],
             p1=get_random_string(4),
             p2=get_random_string(8),
         )
@@ -338,7 +287,6 @@ def test_inconsistent_properties(bw):
     bn1 = BioCypherNode(
         "p0",
         "Protein",
-        optional_labels=["SubLabel1", "SubLabel2"],
         p1=get_random_string(4),
         p2=get_random_string(8),
         p3=get_random_string(16),
@@ -360,7 +308,6 @@ def test_inconsistent_properties(bw):
     bn2 = BioCypherNode(
         "p0",
         "Protein",
-        optional_labels=["SubLabel1", "SubLabel2"],
         p1=get_random_string(4),
     )
     nodes.append(bn2)
@@ -380,17 +327,15 @@ def test_accidental_exact_batch_size(bw):
         bnp = BioCypherNode(
             f"p{i+1}",
             "Protein",
-            optional_labels=["SubLabel1", "SubLabel2"],
             p1=get_random_string(4),
-            p2=get_random_string(8),
+            taxon=9606,
         )
         nodes.append(bnp)
         bnm = BioCypherNode(
             f"m{i+1}",
             "microRNA",
-            optional_labels=["SubLabel1", "SubLabel2"],
             p1=get_random_string(4),
-            p2=get_random_string(8),
+            taxon=9606,
         )
         nodes.append(bnm)
 
@@ -425,6 +370,6 @@ def test_accidental_exact_batch_size(bw):
         and mi_lines == 1e4
         and pr_lines1 == 0
         and mi_lines1 == 0
-        and p == "UniProtKB:ID;p1;p2;:LABEL"
-        and m == "MIR:ID;p1;p2;:LABEL"
+        and p == "UniProtKB:ID;p1;taxon:int;:LABEL"
+        and m == "MIR:ID;p1;taxon:int;:LABEL"
     )

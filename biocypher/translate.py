@@ -36,6 +36,7 @@ Todo:
 """
 
 import os
+from types import GeneratorType
 from bmt import Toolkit
 
 from .create import BioCypherEdge, BioCypherNode
@@ -140,19 +141,17 @@ def gen_translate_nodes(leaves, id_type_tuples):
     """
 
     # biolink = BiolinkAdapter(leaves)
+    if not isinstance(id_type_tuples, GeneratorType):
+        logger.info(f"Translating {len(id_type_tuples)} nodes to BioCypher.")
+    else:
+        logger.info(f"Translating nodes to BioCypher from generator.")
 
-    logger.info(f"Translating {len(id_type_tuples)} nodes to BioCypher.")
-
-    for id, type in id_type_tuples:
+    for id, type, props in id_type_tuples:
         path = getpath(leaves, type)
 
         if path is not None:
             bl_type = path[0]
-            yield BioCypherNode(
-                node_id=id,
-                node_label=bl_type,
-                # additional here
-            )
+            yield BioCypherNode(node_id=id, node_label=bl_type, **props)
 
         else:
             print("No path for type " + type)

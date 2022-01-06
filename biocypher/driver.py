@@ -666,6 +666,8 @@ class Driver(BaseDriver):
         # checks for existence of graph representation and returns
         # if found, else creates new one
         self.db_meta = VersionNode(self)
+        self.bl_adapter = None
+        self.batch_writer = None
 
         # if db representation node does not exist or explicitly
         # asked for wipe, create new graph representation: default
@@ -963,6 +965,12 @@ class Driver(BaseDriver):
         Write BioCypher nodes to disk using the :py:mod:`write` module,
         formatting the CSV to enable Neo4j admin import from the target
         directory.
+
+        Args:
+            nodes (iterable): collection of nodes to be written in
+                BioCypher-compatible CSV format; can be any compatible
+                (ie, translatable) input format or already as
+                :py:class:`BioCypherNode`.
         """
 
         # instantiate adapter on demand because it takes time to load
@@ -975,15 +983,20 @@ class Driver(BaseDriver):
                 self.db_meta.schema, self.bl_adapter, dirname=dirname
             )
 
-        # write header files
-        self.batch_writer.write_nodes()
+        # TODO generator vs list handling
+        # TODO translate to biocypher nodes and edges
+        testnode = None  # peek first of generator or list
+        if not isinstance(testnode, BioCypherNode):
+            tnodes = gen_translate_nodes(self.db_meta.leaves, nodes)
+        else:
+            tnodes = nodes
+        # write node files
+        self.batch_writer.write_nodes(tnodes)
+        # write edge files
 
         # contains types of nodes and edges and
         # their designations in the input data
 
-        # write content (in batches if required)
-        nodes  # contains node data with input designations that need to
-        # be translated to biocypher designations
         pass
 
     def write_edges(self, edges):

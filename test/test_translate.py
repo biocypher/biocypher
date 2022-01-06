@@ -27,9 +27,9 @@ def version_node(driver):
 
 def test_translate_nodes(version_node):
     id_type = [
-        ("G9205", "protein"),
-        ("hsa-miR-132-3p", "mirna"),
-        ("ASDB_OSBS", "complex"),
+        ("G9205", "protein", {"taxon": 9606}),
+        ("hsa-miR-132-3p", "mirna", {"taxon": 9606}),
+        ("ASDB_OSBS", "complex", {"taxon": 9606}),
     ]
     t = gen_translate_nodes(version_node.leaves, id_type)
 

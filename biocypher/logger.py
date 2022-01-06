@@ -54,7 +54,11 @@ def get_logger(name):
     # go two dirs back to project root
     logfile = ROOT + "/log/" + date_time + ".log"
     if not os.path.isfile(logfile):
-        print(f"Starting BioCypher logger at {logfile}.")
+        version = 0  # TODO
+        print(
+            f"This is BioCypher v{version}.\n"
+            f"Starting BioCypher logger at `{logfile}`."
+        )
 
     config_file = ROOT + "/config/module_config.yaml"
     with open(config_file, "r") as fp:
