@@ -6,7 +6,6 @@ from biocypher.create import BioCypherNode, BioCypherEdge
 
 import random
 import string
-import itertools
 
 
 def get_random_string(length):
@@ -107,25 +106,6 @@ def test_write_node_data_and_headers(bw):
     )
 
 
-def test_write_edge_headers(bw):
-    bw._write_edge_headers()
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
-    with open(path + "PostTranslationalInteraction-header.csv", "r") as f:
-        l = f.read()
-    with open(path + "PostTranscriptionalInteraction-header.csv", "r") as f:
-        c = f.read()
-
-    assert (
-        l == ":START_ID;PLID;p1;p2;:END_ID;PostTranslationalInteraction"
-        and c == ":START_ID;PCID;p1;p2;:END_ID;PostTranscriptionalInteraction"
-    )
-
-
 def test_write_node_data_from_list(bw):
     nodes = []
     # four proteins, four miRNAs
@@ -212,6 +192,49 @@ def test_write_node_data_from_gen(bw):
         == "p1;'StringProperty1';9606;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np2;'StringProperty1';9606;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np3;'StringProperty1';9606;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np4;'StringProperty1';9606;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
         and mi
         == "m1;'StringProperty1';9606;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm2;'StringProperty1';9606;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm3;'StringProperty1';9606;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm4;'StringProperty1';9606;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
+    )
+
+
+def test_write_node_data_from_gen_no_props(bw):
+    nodes = []
+    le = 4
+    print("Creating list")
+    for i in range(le):
+        bnp = BioCypherNode(
+            f"p{i+1}",
+            "Protein",
+        )
+        nodes.append(bnp)
+        bnm = BioCypherNode(
+            f"m{i+1}",
+            "microRNA",
+        )
+        nodes.append(bnm)
+
+    def node_gen(nodes):
+        for n in nodes:
+            yield n
+
+    passed = bw._write_node_data(node_gen(nodes), batch_size=1e6)
+
+    ROOT = os.path.join(
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
+    )
+    path = ROOT + "/out/Test/"
+    with open(path + "Protein-part000.csv", "r") as f:
+        pr = f.read()
+
+    with open(path + "microRNA-part000.csv", "r") as f:
+        mi = f.read()
+
+    assert (
+        passed
+        and pr
+        == "p1;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np2;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np3;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\np4;Protein|Polypeptide|BiologicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|ThingWithTaxon|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
+        and mi
+        == "m1;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm2;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm3;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\nm4;MicroRNA|NoncodingRNAProduct|RNAProduct|Transcript|NucleicAcidEntity|MolecularEntity|ChemicalEntity|NamedThing|Entity|GeneProductMixin|GeneOrGeneProduct|MacromolecularMachineMixin|GenomicEntity|ThingWithTaxon|PhysicalEssence|PhysicalEssenceOrOccurrent|OntologyClass|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide\n"
     )
 
 
@@ -373,3 +396,28 @@ def test_accidental_exact_batch_size(bw):
         and p == "UniProtKB:ID;p1;taxon:int;:LABEL"
         and m == "MIR:ID;p1;taxon:int;:LABEL"
     )
+
+
+def test_write_edge_data_and_headers(bw):
+    edges = []
+    bw._write_edge_data()
+    bw._write_edge_headers()
+    ROOT = os.path.join(
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
+    )
+    path = ROOT + "/out/Test/"
+    with open(path + "PostTranslationalInteraction-header.csv", "r") as f:
+        l = f.read()
+    with open(path + "PostTranscriptionalInteraction-header.csv", "r") as f:
+        c = f.read()
+
+    assert (
+        l == ":START_ID;PLID;p1;p2;:END_ID;PostTranslationalInteraction"
+        and c == ":START_ID;PCID;p1;p2;:END_ID;PostTranscriptionalInteraction"
+    )
+
+
+# TODO extend tests to "raw" input (not biocypher nodes)
+# where? translate? is not "unit" test

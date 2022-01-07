@@ -215,8 +215,7 @@ class BatchWriter:
             else:
 
                 def gen(nodes):
-                    for n in nodes:
-                        yield n
+                    yield from nodes
 
                 return self._write_node_data(gen(nodes), batch_size=batch_size)
 
@@ -313,7 +312,7 @@ class BatchWriter:
                     f"{max([oprop1, oprop2])}."
                 )
                 return False
-            if not hprops == []:
+            if hprops:
                 plist = []
                 for e, t in zip(nprops.values(), prop_dict.values()):
                     if t == int:
