@@ -114,28 +114,24 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
         passed = False
-        if isinstance(edges, GeneratorType):
-            edges = peekable(edges)
-
-            if isinstance(edges.peek(), BioCypherRelAsNode):
-                # unwrap generator in one step
-                z = zip(
-                    *(
-                        (
-                            e.get_node(),
-                            [e.get_source_edge(), e.get_target_edge()],
-                        )
-                        for e in edges
+        edges = peekable(edges)
+        if isinstance(edges.peek(), BioCypherRelAsNode):
+            # unwrap generator in one step
+            z = zip(
+                *(
+                    (
+                        e.get_node(),
+                        [e.get_source_edge(), e.get_target_edge()],
                     )
+                    for e in edges
                 )
-                nod, edg = [list(a) for a in z]
-                edg = [val for sublist in edg for val in sublist]  # flatten
+            )
+            nod, edg = [list(a) for a in z]
+            edg = [val for sublist in edg for val in sublist]  # flatten
 
-                passed = self.write_nodes(nod) and self.write_edges(edg)
+            passed = self.write_nodes(nod) and self.write_edges(edg)
 
-            elif isinstance(edges.peek(), BioCypherEdge):
-                passed = self._write_edge_data(edges, batch_size)
-        elif isinstance(edges, list):
+        elif isinstance(edges.peek(), BioCypherEdge):
             passed = self._write_edge_data(edges, batch_size)
 
         if not passed:
