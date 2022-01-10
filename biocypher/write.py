@@ -468,17 +468,10 @@ class BatchWriter:
             return False
 
         for label, props in self.edge_property_dict.items():
-            # create header CSV with ID, properties, labels
+            # create header CSV with :START_ID, (optional) properties,
+            # :END_ID, :TYPE
 
-            # preferred ID from schema
-            id = self.schema[label]["preferred_id"] + ":ID"
-
-            # to programmatically define properties to be written, the
-            # data would have to be parsed before writing the header.
-            # alternatively, desired properties could also be provided
-            # via the schema_config.yaml, but that is more effort for
-            # the user. TODO provide option to fix desired properties in
-            # YAML.
+            # TODO provide option to fix desired properties in YAML.
 
             # concatenate key:value in props
             props_list = [
@@ -488,7 +481,7 @@ class BatchWriter:
 
             # create list of lists and flatten
             # removes need for empty check of property list
-            out_list = [[id], props_list, [":LABEL"]]
+            out_list = [[":START_ID"], props_list, [":END_ID"], [":TYPE"]]
             out_list = [val for sublist in out_list for val in sublist]
 
             file_path = self.output_path + label + "-header.csv"

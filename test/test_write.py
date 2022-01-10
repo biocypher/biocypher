@@ -481,14 +481,15 @@ def test_write_edge_data_and_headers(bw):
         )
     )
     path = ROOT + "/out/Test/"
-    with open(path + "PostTranslationalInteraction-header.csv", "r") as f:
+    with open(path + "INTERACTS_POST_TRANSLATIONAL-header.csv", "r") as f:
         l = f.read()
-    with open(path + "PostTranscriptionalInteraction-header.csv", "r") as f:
+    with open(path + "INHIBITS_POST_TRANSCRIPTIONAL-header.csv", "r") as f:
         c = f.read()
 
     assert (
-        l == ":START_ID;PLID;p1;p2;:END_ID;PostTranslationalInteraction"
-        and c == ":START_ID;PCID;p1;p2;:END_ID;PostTranscriptionalInteraction"
+        passed
+        and l == ":START_ID;residue;level:int;:END_ID;:TYPE"
+        and c == ":START_ID;site;confidence:int;:END_ID;:TYPE"
     )
 
 
