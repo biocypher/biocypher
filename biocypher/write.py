@@ -123,10 +123,13 @@ class BatchWriter:
                         e.get_node(),
                         [e.get_source_edge(), e.get_target_edge()],
                     )
+                    if isinstance(e, BioCypherRelAsNode)
+                    else (None, [e])
                     for e in edges
                 )
             )
             nod, edg = [list(a) for a in z]
+            nod = [n for n in nod if n]
             edg = [val for sublist in edg for val in sublist]  # flatten
 
             passed = self.write_nodes(nod) and self.write_edges(edg)

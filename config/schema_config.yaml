@@ -116,7 +116,7 @@ Acetylation:
   target: Protein
       
 PostTranscriptionalInteraction:
-  represented_as: node
+  represented_as: edge
   preferred_id: tbd
   source: microRNA
   target: Protein

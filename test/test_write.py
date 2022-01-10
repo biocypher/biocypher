@@ -706,6 +706,10 @@ def test_BioCypherRelAsNode_implementation(bw):
     )
 
 
+def test_write_mixed_edges(bw):
+    pass  # TODO
+
+
 # TODO extend tests to "raw" input (not biocypher nodes)
 # where? translate? is not "unit" test
 
