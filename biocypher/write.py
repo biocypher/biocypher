@@ -106,8 +106,11 @@ class BatchWriter:
     def _write_node_data(self, nodes, batch_size):
         """
         Writes biocypher nodes to CSV conforming to the headers created
-        with `write_node_headers()`. Expects list or generator of nodes
-        from the :py:class:`BioCypherNode` class.
+        with `_write_node_headers()`, and is actually required to be run
+        before calling `_write_node_headers()` to set the
+        :py:attr:`self.property_dict` for passing the node properties
+        to the instance. Expects list or generator of nodes from the
+        :py:class:`BioCypherNode` class.
 
         Args:
             nodes (BioCypherNode): a list or generator of nodes in
@@ -350,46 +353,189 @@ class BatchWriter:
 
         return True
 
-    def _write_edge_data(self):
-        pass
+    def _write_edge_data(self, edges, batch_size):
+        """
+        Writes biocypher edges to CSV conforming to the headers created
+        with `_write_edge_headers()`, and is actually required to be run
+        before calling `_write_node_headers()` to set the
+        :py:attr:`self.property_dict` for passing the edge properties
+        to the instance. Expects list or generator of edges
+        from the :py:class:`BioCypherEdge` class.
+
+        Args:
+            edges (BioCypherEdge): a list or generator of edges in
+                :py:class:`BioCypherEdge` format
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+
+        if isinstance(edges, GeneratorType):
+            logger.info("Writing edge CSV from generator.")
+
+            bins = defaultdict(list)  # dict to store a list for each
+            # label that is passed in
+            bin_l = {}  # dict to store the length of each list for
+            # batching cutoff
+            parts = {}  # dict to store the number of parts of each label
+            # for file naming
+            props = defaultdict(dict)  # dict to store a dict of properties
+            # for each label to check for consistency and their type
+            # for now, relevant for `int`
+            for e in edges:
+                label = e.get_label()
+                if not label in bins.keys():
+                    # start new list
+                    bins[label].append(e)
+                    bin_l[label] = 1
+                    parts[label] = 0
+                    # use first edge to define properties for checking
+                    # could later be by checking all edges but much more
+                    # complicated, particularly involving batch writing
+                    # (would require "do-overs") TODO
+                    d = dict(e.get_properties())
+                    for k, v in d.items():
+                        d[k] = type(v)
+                    props[label] = d
+
+                else:
+                    # add to list
+                    bins[label].append(e)
+                    bin_l[label] += 1
+                    if not bin_l[label] < batch_size:
+                        # batch size controlled here
+                        passed = self._write_single_edge_list_to_file(
+                            bins[label],
+                            label,
+                            parts[label],
+                            props[label],
+                        )
+
+                        if not passed:
+                            return False
+
+                        bins[label] = []
+                        bin_l[label] = 0
+                        parts[label] += 1
+
+            # after generator depleted, write remainder of bins
+            for label, nl in bins.items():
+                passed = self._write_single_edge_list_to_file(
+                    nl,
+                    label,
+                    parts[label],
+                    props[label],
+                )
+
+                if not passed:
+                    return False
+
+            # use complete bin list to write header files
+            # TODO if a edge type has varying properties
+            # (ie missingness), we'd need to collect all possible
+            # properties in the generator pass
+
+            # save first-edge properties to instance attribute
+            self.property_dict = props
+
+            return True
+        else:
+            if type(edges) is not list:
+                logger.error("Edges must be passed as list or generator.")
+                return False
+            else:
+
+                def gen(edges):
+                    yield from edges
+
+                return self._write_edge_data(gen(edges), batch_size=batch_size)
 
     def _write_edge_headers(self):
-        # extract nodes
-        edges = [
-            ed
-            for ed in self.schema.items()
-            if ed[1]["represented_as"] == "edge"
-        ]
+        pass
 
-        for ed in edges:
-            # create header CSV with ID, properties, labels
-            label = ed[0]
-            props = ed[1]
-            id = props["preferred_id"]
+    def _write_single_edge_list_to_file(
+        self, edge_list, label, part, prop_dict
+    ):
+        """
+        This function takes one list of biocypher edges and writes them
+        to a Neo4j admin import compatible CSV file.
 
-            # to programmatically define properties to be written, the
-            # data would have to be parsed before writing the header.
+        Args:
+            edge_list (list): list of BioCypherEdges to be written
+            label (str): the label (type) of the edge; verb form, all
+                capital with underscores
+            part (int): for large amounts of data, import is done in
+                parts denoted by a suffix in the CSV file name
+            prop_dict (dict): properties of node class passed from parsing
+                function and their types
 
-            # on the other hand, we need to write the data anyways. may
-            # make sense to just reverse the order and pass written
-            # properties to the header writer function.
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        if not all(isinstance(n, BioCypherEdge) for n in edge_list):
+            logger.error("Edges must be passed as type BioCypherEdge.")
+            return False
 
-            # alternatively, desired properties could also be provided
-            # via the schema_config.yaml, but that is more effort for
-            # the user.
-
-            # for now, substitute test properties: TODO
-            props = ["p1", "p2"]
-            if len(props) > 1:
-                props = self.delim.join(props)
-
-            file_path = self.output_path + label + "-header.csv"
-            with open(file_path, "w") as f:
-                # concatenate with delimiter
-                row = self.delim.join(
-                    [":START_ID", id, props, ":END_ID", label]
+        # from list of edges to list of strings
+        # TODO string properties in quotes (?)
+        # only necessary if they contain spaces?
+        # TODO property types such as ":int"?
+        lines = []
+        for e in edge_list:
+            # check for deviations in properties
+            eprops = e.get_properties()
+            hprops = list(prop_dict.keys())
+            keys = list(eprops.keys())
+            if not keys == hprops:
+                oedge = f"{e.get_source_id()}-{e.get_target_id()}"
+                oprop1 = set(hprops).difference(keys)
+                oprop2 = set(keys).difference(hprops)
+                logger.error(
+                    f"At least one edge of the class {e.get_label()} "
+                    f"has more or fewer properties than the others. "
+                    f"Offending edge: {oedge}, offending property: "
+                    f"{max([oprop1, oprop2])}."
                 )
-                f.write(row)
+                return False
+            if hprops:
+                plist = []
+                for ev, tv in zip(eprops.values(), prop_dict.values()):
+                    if tv == int:
+                        plist.append(str(ev))
+                    else:
+                        plist.append(self.quote + str(ev) + self.quote)
+                # make all into strings, put actual strings in quotes
+                lines.append(
+                    self.delim.join(
+                        [
+                            e.get_source_id(),
+                            # here we need a list of properties in
+                            # the same order as in the header
+                            self.delim.join(plist),
+                            e.get_target_id(),
+                            e.get_label(),
+                        ]
+                    )
+                    + "\n"
+                )
+            else:
+                lines.append(
+                    self.delim.join(
+                        [
+                            e.get_source_id(),
+                            e.get_target_id(),
+                            e.get_label(),
+                        ]
+                    )
+                    + "\n"
+                )
+        padded_part = str(part).zfill(3)
+        file_path = self.output_path + label + "-part" + padded_part + ".csv"
+        with open(file_path, "w") as f:
+            # concatenate with delimiter
+            f.writelines(lines)
+
+        return True
 
 
 """

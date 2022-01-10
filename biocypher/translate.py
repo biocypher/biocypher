@@ -177,6 +177,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
 
     Todo:
         - id of interactions (now simple concat with "_")
+            - do we even need one?
     """
 
     logger.info(f"Translating {len(src_tar_type_tuples)} edges to BioCypher.")
