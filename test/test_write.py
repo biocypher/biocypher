@@ -444,6 +444,157 @@ def test_write_edge_data_from_gen(bw):
     )
 
 
+def test_write_edge_data_from_large_gen(bw):
+    le = int(1e4 + 4)
+    edges = []
+    for i in range(le):
+        e1 = BioCypherEdge(
+            source_id=f"p{i}",
+            target_id=f"p{i + 1}",
+            relationship_label="INTERACTS_POST_TRANSLATIONAL",
+            residue="T253",
+            level=4,
+            # we suppose the verb-form relationship label is created by
+            # translation functionality in translate.py
+        )
+        edges.append(e1)
+        e2 = BioCypherEdge(
+            source_id=f"m{i}",
+            target_id=f"p{i + 1}",
+            relationship_label="INHIBITS_POST_TRANSCRIPTIONAL",
+            site="3-UTR",
+            confidence=1,
+            # we suppose the verb-form relationship label is created by
+            # translation functionality in translate.py
+        )
+        edges.append(e2)
+
+    def edge_gen(edges):
+        yield from edges
+
+    passed = bw._write_edge_data(edge_gen(edges), batch_size=int(1e4))
+
+    ROOT = os.path.join(
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
+    )
+    path = ROOT + "/out/Test/"
+
+    l_lines = sum(
+        1 for _ in open(path + "INTERACTS_POST_TRANSLATIONAL-part000.csv")
+    )
+    c_lines = sum(
+        1 for _ in open(path + "INHIBITS_POST_TRANSCRIPTIONAL-part000.csv")
+    )
+    l_lines1 = sum(
+        1 for _ in open(path + "INTERACTS_POST_TRANSLATIONAL-part001.csv")
+    )
+    c_lines1 = sum(
+        1 for _ in open(path + "INHIBITS_POST_TRANSCRIPTIONAL-part001.csv")
+    )
+
+    assert (
+        passed
+        and l_lines == 1e4
+        and c_lines == 1e4
+        and l_lines1 == 4
+        and c_lines1 == 4
+    )
+
+
+def test_write_edge_data_from_list(bw):
+    le = 4
+    edges = []
+    for i in range(le):
+        e1 = BioCypherEdge(
+            source_id=f"p{i}",
+            target_id=f"p{i + 1}",
+            relationship_label="INTERACTS_POST_TRANSLATIONAL",
+            residue="T253",
+            level=4,
+            # we suppose the verb-form relationship label is created by
+            # translation functionality in translate.py
+        )
+        edges.append(e1)
+        e2 = BioCypherEdge(
+            source_id=f"m{i}",
+            target_id=f"p{i + 1}",
+            relationship_label="INHIBITS_POST_TRANSCRIPTIONAL",
+            site="3-UTR",
+            confidence=1,
+            # we suppose the verb-form relationship label is created by
+            # translation functionality in translate.py
+        )
+        edges.append(e2)
+
+    passed = bw._write_edge_data(edges, batch_size=int(1e4))
+
+    ROOT = os.path.join(
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
+    )
+    path = ROOT + "/out/Test/"
+
+    with open(path + "INTERACTS_POST_TRANSLATIONAL-part000.csv", "r") as f:
+        l = f.read()
+    with open(path + "INHIBITS_POST_TRANSCRIPTIONAL-part000.csv", "r") as f:
+        c = f.read()
+
+    assert (
+        passed
+        and l
+        == "p0;'T253';4;p1;INTERACTS_POST_TRANSLATIONAL\np1;'T253';4;p2;INTERACTS_POST_TRANSLATIONAL\np2;'T253';4;p3;INTERACTS_POST_TRANSLATIONAL\np3;'T253';4;p4;INTERACTS_POST_TRANSLATIONAL\n"
+        and c
+        == "m0;'3-UTR';1;p1;INHIBITS_POST_TRANSCRIPTIONAL\nm1;'3-UTR';1;p2;INHIBITS_POST_TRANSCRIPTIONAL\nm2;'3-UTR';1;p3;INHIBITS_POST_TRANSCRIPTIONAL\nm3;'3-UTR';1;p4;INHIBITS_POST_TRANSCRIPTIONAL\n"
+    )
+
+
+def test_write_edge_data_from_list_no_props(bw):
+    le = 4
+    edges = []
+    for i in range(le):
+        e1 = BioCypherEdge(
+            source_id=f"p{i}",
+            target_id=f"p{i + 1}",
+            relationship_label="INTERACTS_POST_TRANSLATIONAL",
+            # we suppose the verb-form relationship label is created by
+            # translation functionality in translate.py
+        )
+        edges.append(e1)
+        e2 = BioCypherEdge(
+            source_id=f"m{i}",
+            target_id=f"p{i + 1}",
+            relationship_label="INHIBITS_POST_TRANSCRIPTIONAL",
+            # we suppose the verb-form relationship label is created by
+            # translation functionality in translate.py
+        )
+        edges.append(e2)
+
+    passed = bw._write_edge_data(edges, batch_size=int(1e4))
+
+    ROOT = os.path.join(
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
+    )
+    path = ROOT + "/out/Test/"
+
+    with open(path + "INTERACTS_POST_TRANSLATIONAL-part000.csv", "r") as f:
+        l = f.read()
+    with open(path + "INHIBITS_POST_TRANSCRIPTIONAL-part000.csv", "r") as f:
+        c = f.read()
+
+    assert (
+        passed
+        and l
+        == "p0;p1;INTERACTS_POST_TRANSLATIONAL\np1;p2;INTERACTS_POST_TRANSLATIONAL\np2;p3;INTERACTS_POST_TRANSLATIONAL\np3;p4;INTERACTS_POST_TRANSLATIONAL\n"
+        and c
+        == "m0;p1;INHIBITS_POST_TRANSCRIPTIONAL\nm1;p2;INHIBITS_POST_TRANSCRIPTIONAL\nm2;p3;INHIBITS_POST_TRANSCRIPTIONAL\nm3;p4;INHIBITS_POST_TRANSCRIPTIONAL\n"
+    )
+
+
 def test_write_edge_data_and_headers(bw):
     le = 4
     edges = []
