@@ -55,7 +55,8 @@ class BatchWriter:
         self.quote = "'"
         self.schema = schema
         self.bl_adapter = bl_adapter
-        self.property_dict = None
+        self.node_property_dict = None
+        self.edge_property_dict = None
 
         if not dirname:
             now = datetime.now()
@@ -108,7 +109,7 @@ class BatchWriter:
         Writes biocypher nodes to CSV conforming to the headers created
         with `_write_node_headers()`, and is actually required to be run
         before calling `_write_node_headers()` to set the
-        :py:attr:`self.property_dict` for passing the node properties
+        :py:attr:`self.node_property_dict` for passing the node properties
         to the instance. Expects list or generator of nodes from the
         :py:class:`BioCypherNode` class.
 
@@ -208,7 +209,7 @@ class BatchWriter:
             # properties in the generator pass
 
             # save first-node properties to instance attribute
-            self.property_dict = props
+            self.node_property_dict = props
 
             return True
         else:
@@ -232,13 +233,13 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
         # load headers from data parse
-        if not self.property_dict:
+        if not self.node_property_dict:
             logger.error(
                 "Header information not found. Was the data parsed first?"
             )
             return False
 
-        for label, props in self.property_dict.items():
+        for label, props in self.node_property_dict.items():
             # create header CSV with ID, properties, labels
 
             # preferred ID from schema
@@ -358,7 +359,7 @@ class BatchWriter:
         Writes biocypher edges to CSV conforming to the headers created
         with `_write_edge_headers()`, and is actually required to be run
         before calling `_write_node_headers()` to set the
-        :py:attr:`self.property_dict` for passing the edge properties
+        :py:attr:`self.edge_property_dict` for passing the edge properties
         to the instance. Expects list or generator of edges
         from the :py:class:`BioCypherEdge` class.
 
@@ -436,7 +437,7 @@ class BatchWriter:
             # properties in the generator pass
 
             # save first-edge properties to instance attribute
-            self.property_dict = props
+            self.edge_property_dict = props
 
             return True
         else:
@@ -451,7 +452,52 @@ class BatchWriter:
                 return self._write_edge_data(gen(edges), batch_size=batch_size)
 
     def _write_edge_headers(self):
-        pass
+        """
+        Writes single CSV file for a graph entity that is represented
+        as an edge as per the definition in the `schema_config.yaml`,
+        containing only the header for this type of edge.
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        # load headers from data parse
+        if not self.edge_property_dict:
+            logger.error(
+                "Header information not found. Was the data parsed first?"
+            )
+            return False
+
+        for label, props in self.edge_property_dict.items():
+            # create header CSV with ID, properties, labels
+
+            # preferred ID from schema
+            id = self.schema[label]["preferred_id"] + ":ID"
+
+            # to programmatically define properties to be written, the
+            # data would have to be parsed before writing the header.
+            # alternatively, desired properties could also be provided
+            # via the schema_config.yaml, but that is more effort for
+            # the user. TODO provide option to fix desired properties in
+            # YAML.
+
+            # concatenate key:value in props
+            props_list = [
+                f"{k}:{v.__name__}" if v.__name__ == "int" else f"{k}"
+                for k, v in props.items()
+            ]
+
+            # create list of lists and flatten
+            # removes need for empty check of property list
+            out_list = [[id], props_list, [":LABEL"]]
+            out_list = [val for sublist in out_list for val in sublist]
+
+            file_path = self.output_path + label + "-header.csv"
+            with open(file_path, "w") as f:
+                # concatenate with delimiter
+                row = self.delim.join(out_list)
+                f.write(row)
+
+        return True
 
     def _write_single_edge_list_to_file(
         self, edge_list, label, part, prop_dict
