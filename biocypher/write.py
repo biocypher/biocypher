@@ -23,8 +23,9 @@ from datetime import datetime
 from collections import OrderedDict
 from types import GeneratorType
 from collections import defaultdict
+from more_itertools import peekable
 
-from .create import BioCypherEdge, BioCypherNode
+from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 import logging
 
 logger = logging.getLogger(__name__)
@@ -112,10 +113,31 @@ class BatchWriter:
         Returns:
             bool: The return value. True for success, False otherwise.
         """
-        # TODO check represented_as
+        passed = False
+        if isinstance(edges, GeneratorType):
+            edges = peekable(edges)
 
-        # write edge data
-        passed = self._write_edge_data(edges, batch_size)
+            if isinstance(edges.peek(), BioCypherRelAsNode):
+                # unwrap generator in one step
+                z = zip(
+                    *(
+                        (
+                            e.get_node(),
+                            [e.get_source_edge(), e.get_target_edge()],
+                        )
+                        for e in edges
+                    )
+                )
+                nod, edg = [list(a) for a in z]
+                edg = [val for sublist in edg for val in sublist]  # flatten
+
+                passed = self.write_nodes(nod) and self.write_edges(edg)
+
+            elif isinstance(edges.peek(), BioCypherEdge):
+                passed = self._write_edge_data(edges, batch_size)
+        elif isinstance(edges, list):
+            passed = self._write_edge_data(edges, batch_size)
+
         if not passed:
             logger.error("Error while writing edge data.")
             return False
@@ -394,7 +416,7 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
 
-        if isinstance(edges, GeneratorType):
+        if isinstance(edges, GeneratorType) or isinstance(edges, peekable):
             logger.info("Writing edge CSV from generator.")
 
             bins = defaultdict(list)  # dict to store a list for each

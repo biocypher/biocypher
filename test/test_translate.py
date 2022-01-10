@@ -48,21 +48,27 @@ def test_translate_edges(version_node):
     # node type association (defined in `schema_config.yaml`)
     v = version_node
     src_tar_type = [
-        ("G21058", "G50127", "post_translational"),
-        ("G15258", "G16347", "post_translational"),
-        ("G22418", "G50123", "post_translational"),
+        ("G21058", "G50127", "post_translational", {"prop1": "test"}),
+        (
+            "G15258",
+            "G16347",
+            "post_translational",
+            {"prop1": "test", "prop2": "test"},
+        ),
+        ("G22418", "G50123", "post_translational", {}),
     ]
     t = gen_translate_edges(v.leaves, src_tar_type)
 
     n = next(t)
+    no = n.get_node()
     assert (
-        type(n[0]) == BioCypherNode
-        and type(n[1]) == BioCypherEdge
-        and type(n[2]) == BioCypherEdge
+        type(n.get_node()) == BioCypherNode
+        and type(n.get_source_edge()) == BioCypherEdge
+        and type(n.get_target_edge()) == BioCypherEdge
     )
-    assert n[0].get_id() == "G21058_G50127"
-    assert n[1].get_source_id() == "G21058"
-    assert n[2].get_label() == "IS_TARGET_OF"
+    assert n.get_node().get_id() == "G21058_G50127"
+    assert n.get_source_edge().get_source_id() == "G21058"
+    assert n.get_target_edge().get_label() == "IS_TARGET_OF"
 
 
 def test_adapter(version_node):

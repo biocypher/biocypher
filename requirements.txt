@@ -2,3 +2,4 @@ neo4j
 PyYAML
 bmt
 sphinx-rtd-theme
+more_itertools

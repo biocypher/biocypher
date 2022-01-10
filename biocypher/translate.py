@@ -39,7 +39,7 @@ import os
 from types import GeneratorType
 from bmt import Toolkit
 
-from .create import BioCypherEdge, BioCypherNode
+from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 import biocypher.biolinkmodel as bl  # do we need this? is it different from bmt Toolkit?
 
@@ -210,7 +210,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
                     relationship_label="IS_TARGET_OF",
                     # additional here
                 )
-                yield (n, e_s, e_t)
+                yield BioCypherRelAsNode(n, e_s, e_t)
 
             else:
                 edge_label = leaves[bl_type]["label_as_edge"]

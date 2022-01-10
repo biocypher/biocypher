@@ -2,7 +2,7 @@ import pytest
 import os
 from biocypher.translate import BiolinkAdapter
 from biocypher.write import BatchWriter
-from biocypher.create import BioCypherNode, BioCypherEdge
+from biocypher.create import BioCypherNode, BioCypherEdge, BioCypherRelAsNode
 
 import random
 import string
@@ -29,13 +29,24 @@ def bw():
         },
         "PostTranslationalInteraction": {
             "represented_as": "edge",
+            "source": "Protein",
+            "target": "Protein",
             "preferred_id": "PLID",
             "label_in_input": "POST_TRANSLATIONAL",
         },
         "PostTranscriptionalInteraction": {
             "represented_as": "edge",
+            "source": "microRNA",
+            "target": "Transcript",
             "preferred_id": "PCID",
             "label_in_input": "POST_TRANSCRIPTIONAL",
+        },
+        "PairwiseMolecularInteraction": {
+            "represented_as": "node",
+            "source": "Protein",
+            "target": "Protein",
+            "preferred_id": "RNID",
+            "label_in_input": "pm_interaction",
         },
     }
     bl_adapter = BiolinkAdapter(leaves=schema)
@@ -643,5 +654,60 @@ def test_write_edge_data_and_headers(bw):
     )
 
 
+def test_BioCypherRelAsNode_implementation(bw):
+    trips = []
+    le = 4
+    for i in range(le):
+        n = BioCypherNode(
+            f"i{i+1}",
+            "PairwiseMolecularInteraction",
+        )
+        e1 = BioCypherEdge(
+            source_id=f"i{i+1}",
+            target_id=f"p{i+1}",
+            relationship_label="IS_SOURCE_OF",
+        )
+        e2 = BioCypherEdge(
+            source_id=f"i{i}",
+            target_id=f"p{i + 2}",
+            relationship_label="IS_TARGET_OF",
+        )
+        trips.append(BioCypherRelAsNode(n, e1, e2))
+
+    def gen(lis):
+        yield from lis
+
+    passed = bw.write_edges(gen(trips))
+
+    ROOT = os.path.join(
+        *os.path.split(
+            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        )
+    )
+    path = ROOT + "/out/Test/"
+    with open(path + "IS_SOURCE_OF-part000.csv", "r") as f:
+        s = f.read()
+    with open(path + "IS_TARGET_OF-part000.csv", "r") as f:
+        t = f.read()
+    with open(path + "PairwiseMolecularInteraction-part000.csv", "r") as f:
+        p = f.read()
+
+    assert (
+        passed
+        and os.path.isfile(path + "IS_SOURCE_OF-header.csv")
+        and os.path.isfile(path + "IS_TARGET_OF-header.csv")
+        and os.path.isfile(path + "PairwiseMolecularInteraction-header.csv")
+        and s
+        == "i1;p1;IS_SOURCE_OF\ni2;p2;IS_SOURCE_OF\ni3;p3;IS_SOURCE_OF\ni4;p4;IS_SOURCE_OF\n"
+        and t
+        == "i0;p2;IS_TARGET_OF\ni1;p3;IS_TARGET_OF\ni2;p4;IS_TARGET_OF\ni3;p5;IS_TARGET_OF\n"
+        and p
+        == "i1;PairwiseMolecularInteraction|PairwiseGeneToGeneInteraction|GeneToGeneAssociation|Association|Entity\ni2;PairwiseMolecularInteraction|PairwiseGeneToGeneInteraction|GeneToGeneAssociation|Association|Entity\ni3;PairwiseMolecularInteraction|PairwiseGeneToGeneInteraction|GeneToGeneAssociation|Association|Entity\ni4;PairwiseMolecularInteraction|PairwiseGeneToGeneInteraction|GeneToGeneAssociation|Association|Entity\n"
+    )
+
+
 # TODO extend tests to "raw" input (not biocypher nodes)
 # where? translate? is not "unit" test
+
+# TODO possible overwrite? eg IS_SOURCE_OF or IS_TARGET_OF gets called
+# more than one time?

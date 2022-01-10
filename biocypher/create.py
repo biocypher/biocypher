@@ -62,6 +62,45 @@ logger.debug(f"Loading module {__name__}.")
 # import pypath.utils.mapping as mapping
 
 
+class BioCypherRelAsNode:
+    """
+    Class to represent relationships as nodes (with in- and outgoing
+    edges) as a triplet of a BioCypherNode and two BioCypherEdges. Main
+    usage in type checking (instances where the receiving function needs
+    to check whether it receives a relationship as a single edge or as
+    a triplet).
+    """
+
+    def __init__(self, node, source_edge, target_edge) -> None:
+        if (
+            isinstance(node, BioCypherNode)
+            and isinstance(source_edge, BioCypherEdge)
+            and isinstance(target_edge, BioCypherEdge)
+        ):
+            self.node = node
+            self.source_edge = source_edge
+            self.target_edge = target_edge
+        else:
+            logger.error(
+                "BioCypherRelAsNode expects one node of type "
+                "BioCypherNode and two edges of type BioCypherEdge. "
+                "Aborting."
+            )
+            raise TypeError(
+                "BioCypherRelAsNode expects one node of type "
+                "BioCypherNode and two edges of type BioCypherEdge. "
+            )
+
+    def get_node(self):
+        return self.node
+
+    def get_source_edge(self):
+        return self.source_edge
+
+    def get_target_edge(self):
+        return self.target_edge
+
+
 class BioCypherNode:
     """
     Handoff class to represent biomedical entities as Neo4j nodes.

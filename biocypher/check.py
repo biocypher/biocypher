@@ -95,7 +95,12 @@ class VersionNode(BioCypherNode):
     """
 
     def __init__(
-        self, bcy_driver, node_id=None, node_label="BioCypher", **properties
+        self,
+        bcy_driver,
+        node_id=None,
+        node_label="BioCypher",
+        from_config=False,
+        **properties,
     ):
 
         super().__init__(node_id, node_label, **properties)
@@ -103,7 +108,7 @@ class VersionNode(BioCypherNode):
         self.node_id = self.get_current_id()
         self.node_label = node_label
         self.graph_state = self.get_graph_state()
-        self.schema = self.get_graph_schema()
+        self.schema = self.get_graph_schema(from_config=from_config)
         self.leaves = self.get_leaves(self.schema)
 
     def get_current_id(self):
@@ -144,7 +149,7 @@ class VersionNode(BioCypherNode):
             logger.info(f"Found graph state at {version}.")
             return result[0]["meta"]
 
-    def get_graph_schema(self):
+    def get_graph_schema(self, from_config):
         """
         Return graph schema information from meta graph if it exists, or
         create new schema information properties from configuration
@@ -153,7 +158,7 @@ class VersionNode(BioCypherNode):
         Todo:
             - get schema from meta graph
         """
-        if self.graph_state:
+        if self.graph_state and not from_config:
             # TODO do we want information about actual structure here?
             res = self.bcy_driver.query(
                 "MATCH (src:MetaNode) "

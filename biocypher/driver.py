@@ -665,15 +665,17 @@ class Driver(BaseDriver):
         # the adapter to BioCypher)
         # checks for existence of graph representation and returns
         # if found, else creates new one
-        self.db_meta = VersionNode(self)
         self.bl_adapter = None
         self.batch_writer = None
 
         # if db representation node does not exist or explicitly
         # asked for wipe, create new graph representation: default
         # yml, interactive?
-        if wipe or self.db_meta.graph_state is None:
+        if wipe:
+            self.db_meta = VersionNode(self, from_config=True)
             self.init_db()
+        else:
+            self.db_meta = VersionNode(self)
 
         if increment_version:
             # set new current version node
