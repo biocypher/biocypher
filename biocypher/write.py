@@ -101,7 +101,7 @@ class BatchWriter:
 
         return True
 
-    def write_edges(self, edges, batch_size):
+    def write_edges(self, edges, batch_size=int(1e6)):
         """
         Wrapper for writing edges and their headers.
 
