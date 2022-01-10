@@ -19,7 +19,7 @@ Todo:
 
 import os
 import re
-import itertools
+from more_itertools import peekable
 import importlib as imp
 from types import GeneratorType
 from typing import List
@@ -33,7 +33,7 @@ from .logger import get_logger
 logger = get_logger("biocypher")
 logger.debug(f"Loading module {__name__}.")
 
-from .create import BioCypherEdge, BioCypherNode
+from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from .translate import BiolinkAdapter, gen_translate_edges, gen_translate_nodes
 from .check import MetaEdge, VersionNode, MetaNode
 from .utils import pretty
@@ -806,8 +806,8 @@ class Driver(BaseDriver):
 
         # receive generator objects
         if isinstance(nodes, GeneratorType):
-            nodes, cnodes = itertools.tee(nodes)
-            if not isinstance(next(cnodes), BioCypherNode):
+            nodes = peekable(nodes)
+            if not isinstance(nodes.peek(), BioCypherNode):
                 logger.warn(
                     "It appears that the first node is not a BioCypherNode. "
                     "Nodes must be passed as type BioCypherNode. "
@@ -815,8 +815,7 @@ class Driver(BaseDriver):
                 )
                 return (False, False)
             else:
-                s = sum(1 for _ in cnodes) + 1
-                logger.info("Merging %s nodes." % s)
+                logger.info("Merging nodes from generator.")
 
         # receive single nodes or node lists
         else:
@@ -826,7 +825,7 @@ class Driver(BaseDriver):
                 logger.error("Nodes must be passed as type BioCypherNode.")
                 return (False, False)
             else:
-                logger.info("Merging %s nodes." % len(nodes))
+                logger.info(f"Merging {len(nodes)} nodes.")
 
         entities = [node.get_dict() for node in nodes]
 
@@ -877,31 +876,19 @@ class Driver(BaseDriver):
             bool: The return value. True for success, False otherwise.
         """
 
-        tup = False
+        rel_as_node = False
 
         # receive generator objects
         if isinstance(edges, GeneratorType):
             # itertools solution is kind of slow and cumbersome
             # however, needs to detect tuples...
 
-            edges, cedges = itertools.tee(edges)
-            cedge = next(cedges)
+            edges = peekable(edges)
 
-            if type(cedge) == tuple:
+            if isinstance(edges.peek(), BioCypherRelAsNode):
                 # create one node and two edges
-                tup = True
-                cedge = cedge[1]
-            if not isinstance(cedge, BioCypherEdge):
-                # type error
-                logger.warn(
-                    "It appears that the first edge is not a BioCypherEdge. "
-                    "Nodes must be passed as type BioCypherEdge. "
-                    "Please use the generic add_edges() function."
-                )
-                return (False, False)
-            else:
-                s = "?"  # sum(1 for _ in cedges) + 1  # not very fast
-                logger.info("Merging %s nodes." % s)
+                rel_as_node = True
+                logger.info("Merging nodes and edges from generator.")
 
         # receive single edges or edge lists
         else:
@@ -912,17 +899,25 @@ class Driver(BaseDriver):
             if any(isinstance(i, list) for i in edges):
                 edges = [item for sublist in edges for item in sublist]
 
-            if type(edges[0]) == tuple:
-                tup = True
+            if isinstance(edges[0], BioCypherRelAsNode):
+                rel_as_node = True
             elif not all(isinstance(e, BioCypherEdge) for e in edges):
                 logger.error("Nodes must be passed as type BioCypherEdge.")
                 return (False, False)
 
             logger.info("Merging %s edges." % len(edges))
 
-        if tup:
+        if rel_as_node:
             # split up tuples in nodes and edges if detected
-            z = zip(*((e[0], list(e[1:3])) for e in edges))
+            z = zip(
+                *(
+                    (
+                        e.get_node(),
+                        [e.get_source_edge(), e.get_target_edge()],
+                    )
+                    for e in edges
+                )
+            )
             nod, edg = [list(a) for a in z]
             self.add_biocypher_nodes(nod)
             self.add_biocypher_edges(edg)

@@ -1,7 +1,7 @@
 from neo4j import Neo4jDriver
 import neo4j
 from biocypher.driver import Driver
-from biocypher.create import BioCypherNode, BioCypherEdge
+from biocypher.create import BioCypherNode, BioCypherEdge, BioCypherRelAsNode
 from neo4j.work.summary import ResultSummary
 import pytest
 
@@ -207,7 +207,7 @@ def test_add_biocypher_edge_generator(driver):
     )
 
 
-def test_add_biocypher_interaction_as_node_tuples(driver):
+def test_add_biocypher_interaction_as_BioCypherRelAsNode_list(driver):
     # neo4j database needs to be running!
     i1 = BioCypherNode("int1", "Int1")
     i2 = BioCypherNode("int2", "Int2")
@@ -216,7 +216,8 @@ def test_add_biocypher_interaction_as_node_tuples(driver):
     e2 = BioCypherEdge("tar", "int1", "is_target_of")
     e3 = BioCypherEdge("src", "int2", "is_source_of")
     e4 = BioCypherEdge("tar", "int2", "is_target_of")
-    driver.add_biocypher_edges([(i1, e1, e2), (i2, e3, e4)])
+    r1, r2 = BioCypherRelAsNode(i1, e1, e2), BioCypherRelAsNode(i2, e3, e4)
+    driver.add_biocypher_edges([r1, r2])
     r, summary = driver.query(
         "MATCH (n2)-[e4:is_target_of]->(i2:Int2)<-[e3:is_source_of]-"
         "(n1)-[e1:is_source_of]->(i1:Int1)<-[e2:is_target_of]-(n2)"
@@ -238,7 +239,7 @@ def test_add_biocypher_interaction_as_node_tuples(driver):
     )
 
 
-def test_add_biocypher_interaction_as_node_tuples_generator(driver):
+def test_add_biocypher_interaction_as_BioCypherRelAsNode_generator(driver):
     # neo4j database needs to be running!
     i1 = BioCypherNode("int1", "Int1")
     i2 = BioCypherNode("int2", "Int2")
@@ -247,13 +248,14 @@ def test_add_biocypher_interaction_as_node_tuples_generator(driver):
     e2 = BioCypherEdge("tar", "int1", "is_target_of")
     e3 = BioCypherEdge("src", "int2", "is_source_of")
     e4 = BioCypherEdge("tar", "int2", "is_target_of")
-    tuplist = [(i1, e1, e2), (i2, e3, e4)]
+    r1, r2 = BioCypherRelAsNode(i1, e1, e2), BioCypherRelAsNode(i2, e3, e4)
+    relasnode_list = [r1, r2]
 
-    def gen(list):
-        for tup in list:
+    def gen(lis):
+        for tup in lis:
             yield tup
 
-    driver.add_biocypher_edges(gen(tuplist))
+    driver.add_biocypher_edges(gen(relasnode_list))
     r, summary = driver.query(
         "MATCH (n2)-[e4:is_target_of]->(i2:Int2)<-[e3:is_source_of]-"
         "(n1)-[e1:is_source_of]->(i1:Int1)<-[e2:is_target_of]-(n2)"
