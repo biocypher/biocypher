@@ -623,9 +623,8 @@ def test_write_edge_data_and_headers(bw):
     def edge_gen(edges):
         yield from edges
 
-    passed = bw._write_edge_data(edge_gen(edges), batch_size=int(1e4))
+    passed = bw.write_edges(edge_gen(edges), batch_size=int(1e4))
 
-    bw._write_edge_headers()
     ROOT = os.path.join(
         *os.path.split(
             os.path.abspath(os.path.dirname(os.path.dirname(__file__)))

@@ -77,7 +77,7 @@ class BatchWriter:
 
     def write_nodes(self, nodes, batch_size=int(1e6)):
         """
-        Wrapper for writing nodes and headers.
+        Wrapper for writing nodes and their headers.
 
         Args:
             nodes (BioCypherNode): a list or generator of nodes in
@@ -101,8 +101,31 @@ class BatchWriter:
 
         return True
 
-    def write_edges(self, edges):
-        pass
+    def write_edges(self, edges, batch_size):
+        """
+        Wrapper for writing edges and their headers.
+
+        Args:
+            edges (BioCypherEdge): a list or generator of edges in
+                :py:class:`BioCypherEdge` format
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        # TODO check represented_as
+
+        # write edge data
+        passed = self._write_edge_data(edges, batch_size)
+        if not passed:
+            logger.error("Error while writing edge data.")
+            return False
+        # pass property data to header writer per edge type written
+        passed = self._write_edge_headers()
+        if not passed:
+            logger.error("Error while writing edge headers.")
+            return False
+
+        return True
 
     def _write_node_data(self, nodes, batch_size):
         """
