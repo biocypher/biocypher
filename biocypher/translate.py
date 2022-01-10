@@ -180,9 +180,14 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
             - do we even need one?
     """
 
-    logger.info(f"Translating {len(src_tar_type_tuples)} edges to BioCypher.")
+    if not isinstance(src_tar_type_tuples, GeneratorType):
+        logger.info(
+            f"Translating {len(src_tar_type_tuples)} edges to BioCypher."
+        )
+    else:
+        logger.info(f"Translating edges to BioCypher from generator.")
 
-    for src, tar, type in src_tar_type_tuples:
+    for src, tar, type, props in src_tar_type_tuples:
         path = getpath(leaves, type)
 
         if path is not None:
@@ -192,11 +197,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
             if rep == "node":
                 # TODO update
                 node_id = str(src) + "_" + str(tar)
-                n = BioCypherNode(
-                    node_id=node_id,
-                    node_label=bl_type,
-                    # additional here
-                )
+                n = BioCypherNode(node_id=node_id, node_label=bl_type, **props)
                 e_s = BioCypherEdge(
                     source_id=src,
                     target_id=node_id,
@@ -217,7 +218,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
                     source_id=src,
                     target_id=tar,
                     relationship_label=edge_label,
-                    # additional here
+                    **props,
                 )
 
         else:

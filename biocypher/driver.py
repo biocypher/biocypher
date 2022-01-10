@@ -992,12 +992,36 @@ class Driver(BaseDriver):
             tnodes = nodes
         # write node files
         self.batch_writer.write_nodes(tnodes)
+
+    def write_edges(self, edges, dirname=None):
+        """
+        Write BioCypher edges to disk using the :py:mod:`write` module,
+        formatting the CSV to enable Neo4j admin import from the target
+        directory.
+
+        Args:
+            edges (iterable): collection of edges to be written in
+                BioCypher-compatible CSV format; can be any compatible
+                (ie, translatable) input format or already as
+                :py:class:`BioCypherEdge`.
+        """
+
+        # instantiate adapter on demand because it takes time to load
+        # the biolink model toolkit
+        if not self.bl_adapter:
+            self.bl_adapter = BiolinkAdapter(self.db_meta.leaves)
+
+        if not self.batch_writer:
+            self.batch_writer = BatchWriter(
+                self.db_meta.schema, self.bl_adapter, dirname=dirname
+            )
+
+        # TODO generator vs list handling
+        # TODO translate to biocypher nodes and edges
+        testedge = None  # peek first of generator or list
+        if not isinstance(testedge, BioCypherEdge):
+            tedges = gen_translate_edges(self.db_meta.leaves, edges)
+        else:
+            tedges = edges
         # write edge files
-
-        # contains types of nodes and edges and
-        # their designations in the input data
-
-        pass
-
-    def write_edges(self, edges):
-        pass
+        self.batch_writer.write_edges(tedges)
