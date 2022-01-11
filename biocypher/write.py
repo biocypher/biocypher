@@ -573,9 +573,6 @@ class BatchWriter:
             return False
 
         # from list of edges to list of strings
-        # TODO string properties in quotes (?)
-        # only necessary if they contain spaces?
-        # TODO property types such as ":int"?
         lines = []
         for e in edge_list:
             # check for deviations in properties
@@ -638,6 +635,9 @@ class BatchWriter:
         Function to return the import call detailing folder and
         individual node and edge headers and data files, as well as
         delimiters and database name.
+
+        Returns:
+            str: a bash command for neo4j-admin import
         """
         return self.import_call
 
@@ -646,6 +646,9 @@ class BatchWriter:
         Function to write the import call detailing folder and
         individual node and edge headers and data files, as well as
         delimiters and database name, to the export folder as txt.
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
         """
         file_path = self.output_path + "neo4j-admin-import-call.txt"
         logger.info(f"Writing neo4j-admin import call to {file_path}.")
