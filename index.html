@@ -549,6 +549,22 @@ contents and constraints and setting up new constraints.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.write_edges">
+<span class="sig-name descname"><span class="pre">write_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.write_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Write BioCypher edges to disk using the <code class="xref py py-mod docutils literal notranslate"><span class="pre">write</span></code> module,
+formatting the CSV to enable Neo4j admin import from the target
+directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>edges</strong> (<em>iterable</em>) – collection of edges to be written in
+BioCypher-compatible CSV format; can be any compatible
+(ie, translatable) input format or already as
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BioCypherEdge</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="biocypher.driver.Driver.write_nodes">
 <span class="sig-name descname"><span class="pre">write_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.write_nodes" title="Permalink to this definition"></a></dt>
 <dd><p>Write BioCypher nodes to disk using the <code class="xref py py-mod docutils literal notranslate"><span class="pre">write</span></code> module,
@@ -599,7 +615,7 @@ relationship.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher.check.VersionNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.check.</span></span><span class="sig-name descname"><span class="pre">VersionNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bcy_driver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BioCypher'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.check.</span></span><span class="sig-name descname"><span class="pre">VersionNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bcy_driver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BioCypher'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode" title="Permalink to this definition"></a></dt>
 <dd><p>Versioning and graph structure information meta node. Inherits from
 BioCypherNode but fixes label to “:BioCypher” and sets version
 by using the current date and time (meaning it overrides both
@@ -620,7 +636,7 @@ config file, or manual specification via argument.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.check.VersionNode.get_graph_schema">
-<span class="sig-name descname"><span class="pre">get_graph_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_graph_schema" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_graph_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_graph_schema" title="Permalink to this definition"></a></dt>
 <dd><p>Return graph schema information from meta graph if it exists, or
 create new schema information properties from configuration
 file.</p>
@@ -876,6 +892,16 @@ label as key-value pairs.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher.create.BioCypherRelAsNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.create.</span></span><span class="sig-name descname"><span class="pre">BioCypherRelAsNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_edge</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherRelAsNode" title="Permalink to this definition"></a></dt>
+<dd><p>Class to represent relationships as nodes (with in- and outgoing
+edges) as a triplet of a BioCypherNode and two BioCypherEdges. Main
+usage in type checking (instances where the receiving function needs
+to check whether it receives a relationship as a single edge or as
+a triplet).</p>
+</dd></dl>
+
 </section>
 <section id="module-biocypher.translate">
 <span id="translate-functionality-for-implemented-types-of-knowledge"></span><h2>Translate functionality for implemented types of knowledge<a class="headerlink" href="#module-biocypher.translate" title="Permalink to this headline"></a></h2>
@@ -985,9 +1011,27 @@ ontology queries</p></li>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="biocypher.write.BatchWriter.write_edges">
+<span class="sig-name descname"><span class="pre">write_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.BatchWriter.write_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper for writing edges and their headers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>edges</strong> (<a class="reference internal" href="#biocypher.create.BioCypherEdge" title="biocypher.create.BioCypherEdge"><em>BioCypherEdge</em></a>) – a list or generator of edges in
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BioCypherEdge</span></code> format</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The return value. True for success, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="biocypher.write.BatchWriter.write_nodes">
 <span class="sig-name descname"><span class="pre">write_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.BatchWriter.write_nodes" title="Permalink to this definition"></a></dt>
-<dd><p>Wrapper for writing nodes and headers.</p>
+<dd><p>Wrapper for writing nodes and their headers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>nodes</strong> (<a class="reference internal" href="#biocypher.create.BioCypherNode" title="biocypher.create.BioCypherNode"><em>BioCypherNode</em></a>) – a list or generator of nodes in
