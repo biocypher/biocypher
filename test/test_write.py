@@ -7,6 +7,11 @@ from biocypher.create import BioCypherNode, BioCypherEdge, BioCypherRelAsNode
 import random
 import string
 
+ROOT = os.path.join(
+    *os.path.split(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+)
+path = ROOT + "/out/Test/"
+
 
 def get_random_string(length):
     # choose from all lowercase letter
@@ -55,24 +60,12 @@ def bw():
     yield bw
 
     # teardown
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
     for f in os.listdir(path):
         os.remove(os.path.join(path, f))
     os.rmdir(path)
 
 
 def test_writer_and_output_dir(bw):
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
     assert (
         os.path.isdir(path) and isinstance(bw, BatchWriter) and bw.delim == ";"
     )
@@ -99,12 +92,6 @@ def test_write_node_data_and_headers(bw):
 
     passed = bw.write_nodes(nodes)
 
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
     with open(path + "Protein-header.csv", "r") as f:
         p = f.read()
     with open(path + "microRNA-header.csv", "r") as f:
@@ -138,12 +125,6 @@ def test_write_node_data_from_list(bw):
 
     passed = bw._write_node_data(nodes, batch_size=1e6)
 
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
     with open(path + "Protein-part000.csv", "r") as f:
         pr = f.read()
 
@@ -184,12 +165,6 @@ def test_write_node_data_from_gen(bw):
 
     passed = bw._write_node_data(node_gen(nodes), batch_size=1e6)
 
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
     with open(path + "Protein-part000.csv", "r") as f:
         pr = f.read()
 
@@ -226,12 +201,6 @@ def test_write_node_data_from_gen_no_props(bw):
 
     passed = bw._write_node_data(node_gen(nodes), batch_size=1e6)
 
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
     with open(path + "Protein-part000.csv", "r") as f:
         pr = f.read()
 
@@ -273,13 +242,6 @@ def test_write_node_data_from_large_gen(bw):
     passed = bw._write_node_data(
         node_gen(nodes), batch_size=int(1e4)
     )  # reduce test time
-
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
 
     pr_lines = sum(1 for _ in open(path + "Protein-part000.csv"))
     mi_lines = sum(1 for _ in open(path + "microRNA-part000.csv"))
@@ -376,13 +338,6 @@ def test_accidental_exact_batch_size(bw):
         node_gen(nodes), batch_size=int(1e4)
     )  # reduce test time
 
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
-
     pr_lines = sum(1 for _ in open(path + "Protein-part000.csv"))
     mi_lines = sum(1 for _ in open(path + "microRNA-part000.csv"))
     pr_lines1 = sum(1 for _ in open(path + "Protein-part001.csv"))
@@ -434,13 +389,6 @@ def test_write_edge_data_from_gen(bw):
 
     passed = bw._write_edge_data(edge_gen(edges), batch_size=int(1e4))
 
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
-
     with open(path + "INTERACTS_POST_TRANSLATIONAL-part000.csv", "r") as f:
         l = f.read()
     with open(path + "INHIBITS_POST_TRANSCRIPTIONAL-part000.csv", "r") as f:
@@ -484,13 +432,6 @@ def test_write_edge_data_from_large_gen(bw):
         yield from edges
 
     passed = bw._write_edge_data(edge_gen(edges), batch_size=int(1e4))
-
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
 
     l_lines = sum(
         1 for _ in open(path + "INTERACTS_POST_TRANSLATIONAL-part000.csv")
@@ -541,13 +482,6 @@ def test_write_edge_data_from_list(bw):
 
     passed = bw._write_edge_data(edges, batch_size=int(1e4))
 
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
-
     with open(path + "INTERACTS_POST_TRANSLATIONAL-part000.csv", "r") as f:
         l = f.read()
     with open(path + "INHIBITS_POST_TRANSCRIPTIONAL-part000.csv", "r") as f:
@@ -584,13 +518,6 @@ def test_write_edge_data_from_list_no_props(bw):
         edges.append(e2)
 
     passed = bw._write_edge_data(edges, batch_size=int(1e4))
-
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
 
     with open(path + "INTERACTS_POST_TRANSLATIONAL-part000.csv", "r") as f:
         l = f.read()
@@ -636,12 +563,6 @@ def test_write_edge_data_and_headers(bw):
 
     passed = bw.write_edges(edge_gen(edges), batch_size=int(1e4))
 
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
     with open(path + "INTERACTS_POST_TRANSLATIONAL-header.csv", "r") as f:
         l = f.read()
     with open(path + "INHIBITS_POST_TRANSCRIPTIONAL-header.csv", "r") as f:
@@ -679,12 +600,6 @@ def test_BioCypherRelAsNode_implementation(bw):
 
     passed = bw.write_edges(gen(trips))
 
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        )
-    )
-    path = ROOT + "/out/Test/"
     with open(path + "IS_SOURCE_OF-part000.csv", "r") as f:
         s = f.read()
     with open(path + "IS_TARGET_OF-part000.csv", "r") as f:
@@ -707,11 +622,49 @@ def test_BioCypherRelAsNode_implementation(bw):
 
 
 def test_write_mixed_edges(bw):
-    pass  # TODO
+    mixed = []
+    le = 4
+    for i in range(le):
+        n = BioCypherNode(
+            f"i{i+1}",
+            "PairwiseMolecularInteraction",
+        )
+        e1 = BioCypherEdge(
+            source_id=f"i{i+1}",
+            target_id=f"p{i+1}",
+            relationship_label="IS_SOURCE_OF",
+        )
+        e2 = BioCypherEdge(
+            source_id=f"i{i}",
+            target_id=f"p{i+2}",
+            relationship_label="IS_TARGET_OF",
+        )
+        mixed.append(BioCypherRelAsNode(n, e1, e2))
+
+        e3 = BioCypherEdge(
+            source_id=f"p{i+1}",
+            target_id=f"p{i+1}",
+            relationship_label="INTERACTS_POST_TRANSLATIONAL",
+        )
+        mixed.append(e3)
+
+    def gen(lis):
+        yield from lis
+
+    passed = bw.write_edges(gen(mixed))
+
+    assert (
+        passed
+        and os.path.isfile(path + "PairwiseMolecularInteraction-header.csv")
+        and os.path.isfile(path + "IS_SOURCE_OF-header.csv")
+        and os.path.isfile(path + "IS_TARGET_OF-header.csv")
+        and os.path.isfile(path + "INTERACTS_POST_TRANSLATIONAL-header.csv")
+    )
 
 
 # TODO extend tests to "raw" input (not biocypher nodes)
 # where? translate? is not "unit" test
 
 # TODO possible overwrite? eg IS_SOURCE_OF or IS_TARGET_OF gets called
-# more than one time?
+# more than one time? what if write function called multiple times with
+# different properties on the same node or edge types?
