@@ -957,7 +957,7 @@ class Driver(BaseDriver):
                 logger.info("Finished merging edges.")
                 return res
 
-    def write_nodes(self, nodes, dirname=None):
+    def write_nodes(self, nodes, dirname=None, db_name=None):
         """
         Write BioCypher nodes to disk using the :py:mod:`write` module,
         formatting the CSV to enable Neo4j admin import from the target
@@ -977,7 +977,10 @@ class Driver(BaseDriver):
 
         if not self.batch_writer:
             self.batch_writer = BatchWriter(
-                self.db_meta.schema, self.bl_adapter, dirname=dirname
+                self.db_meta.schema,
+                self.bl_adapter,
+                dirname=dirname,
+                db_name=db_name or self._db_name,
             )
 
         # TODO generator vs list handling
@@ -990,7 +993,7 @@ class Driver(BaseDriver):
         # write node files
         self.batch_writer.write_nodes(tnodes)
 
-    def write_edges(self, edges, dirname=None):
+    def write_edges(self, edges, dirname=None, db_name=None):
         """
         Write BioCypher edges to disk using the :py:mod:`write` module,
         formatting the CSV to enable Neo4j admin import from the target
@@ -1010,7 +1013,10 @@ class Driver(BaseDriver):
 
         if not self.batch_writer:
             self.batch_writer = BatchWriter(
-                self.db_meta.schema, self.bl_adapter, dirname=dirname
+                self.db_meta.schema,
+                self.bl_adapter,
+                dirname=dirname,
+                db_name=db_name or self._db_name,
             )
 
         # TODO generator vs list handling
@@ -1022,3 +1028,26 @@ class Driver(BaseDriver):
             tedges = edges
         # write edge files
         self.batch_writer.write_edges(tedges)
+
+    def get_import_call(self):
+        """
+        Upon using the batch writer for writing admin import CSV files,
+        return a string containing the neo4j admin import call with
+        delimiters, database name, and paths of node and edge files.
+
+        Returns:
+            str: a neo4j-admin import call
+        """
+        return self.batch_writer.get_import_call()
+
+    def write_import_call(self):
+        """
+        Upon using the batch writer for writing admin import CSV files,
+        write a string containing the neo4j admin import call with
+        delimiters, database name, and paths of node and edge files, to
+        the export directory.
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        return self.batch_writer.write_import_call()

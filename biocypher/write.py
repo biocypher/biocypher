@@ -49,7 +49,9 @@ class BatchWriter:
             ontology queries
     """
 
-    def __init__(self, schema, bl_adapter, dirname=None) -> None:
+    def __init__(
+        self, schema, bl_adapter, dirname=None, db_name="neo4j"
+    ) -> None:
         """ """
         self.delim = ";"
         self.adelim = "|"
@@ -58,6 +60,11 @@ class BatchWriter:
         self.bl_adapter = bl_adapter
         self.node_property_dict = None
         self.edge_property_dict = None
+        self.import_call = (
+            f"bin/neo4j-admin import --database={db_name} "
+            f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
+            '--quote="\'" '
+        )
 
         if not dirname:
             now = datetime.now()
@@ -313,6 +320,9 @@ class BatchWriter:
                 row = self.delim.join(out_list)
                 f.write(row)
 
+            # add file path to neo4 admin import statement
+            self.import_call += f'--nodes="{file_path},{self.output_path + label + "-part.*"}" '
+
         return True
 
     def _write_single_node_list_to_file(
@@ -534,6 +544,9 @@ class BatchWriter:
                 row = self.delim.join(out_list)
                 f.write(row)
 
+            # add file path to neo4 admin import statement
+            self.import_call += f'--relationships="{file_path},{self.output_path + label + "-part.*"}" '
+
         return True
 
     def _write_single_edge_list_to_file(
@@ -617,6 +630,27 @@ class BatchWriter:
         with open(file_path, "w") as f:
             # concatenate with delimiter
             f.writelines(lines)
+
+        return True
+
+    def get_import_call(self):
+        """
+        Function to return the import call detailing folder and
+        individual node and edge headers and data files, as well as
+        delimiters and database name.
+        """
+        return self.import_call
+
+    def write_import_call(self):
+        """
+        Function to write the import call detailing folder and
+        individual node and edge headers and data files, as well as
+        delimiters and database name, to the export folder as txt.
+        """
+        file_path = self.output_path + "neo4j-admin-import-call.txt"
+        logger.info(f"Writing neo4j-admin import call to {file_path}.")
+        with open(file_path, "w") as f:
+            f.write(self.import_call)
 
         return True
 
