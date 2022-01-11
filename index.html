@@ -542,6 +542,22 @@ functionality.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.get_import_call">
+<span class="sig-name descname"><span class="pre">get_import_call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.get_import_call" title="Permalink to this definition"></a></dt>
+<dd><p>Upon using the batch writer for writing admin import CSV files,
+return a string containing the neo4j admin import call with
+delimiters, database name, and paths of node and edge files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a neo4j-admin import call</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="biocypher.driver.Driver.init_db">
 <span class="sig-name descname"><span class="pre">init_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.init_db" title="Permalink to this definition"></a></dt>
 <dd><p>Used to initialise a property graph database by deleting
@@ -550,7 +566,7 @@ contents and constraints and setting up new constraints.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.driver.Driver.write_edges">
-<span class="sig-name descname"><span class="pre">write_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.write_edges" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">write_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.write_edges" title="Permalink to this definition"></a></dt>
 <dd><p>Write BioCypher edges to disk using the <code class="xref py py-mod docutils literal notranslate"><span class="pre">write</span></code> module,
 formatting the CSV to enable Neo4j admin import from the target
 directory.</p>
@@ -565,8 +581,25 @@ BioCypher-compatible CSV format; can be any compatible
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="biocypher.driver.Driver.write_import_call">
+<span class="sig-name descname"><span class="pre">write_import_call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.write_import_call" title="Permalink to this definition"></a></dt>
+<dd><p>Upon using the batch writer for writing admin import CSV files,
+write a string containing the neo4j admin import call with
+delimiters, database name, and paths of node and edge files, to
+the export directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The return value. True for success, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="biocypher.driver.Driver.write_nodes">
-<span class="sig-name descname"><span class="pre">write_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.write_nodes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">write_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.driver.Driver.write_nodes" title="Permalink to this definition"></a></dt>
 <dd><p>Write BioCypher nodes to disk using the <code class="xref py py-mod docutils literal notranslate"><span class="pre">write</span></code> module,
 formatting the CSV to enable Neo4j admin import from the target
 directory.</p>
@@ -992,7 +1025,7 @@ package, homepage: TODO.</p>
 <p>Distributed under GPLv3 license, see LICENSE.txt.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher.write.BatchWriter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.write.</span></span><span class="sig-name descname"><span class="pre">BatchWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bl_adapter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.BatchWriter" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.write.</span></span><span class="sig-name descname"><span class="pre">BatchWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bl_adapter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'neo4j'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.BatchWriter" title="Permalink to this definition"></a></dt>
 <dd><p>Class for writing node and edge representations to disk using the
 format specified by Neo4j for the use of admin import. Each batch
 writer instance has a fixed representation that needs to be passed
@@ -1011,6 +1044,14 @@ ontology queries</p></li>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="biocypher.write.BatchWriter.get_import_call">
+<span class="sig-name descname"><span class="pre">get_import_call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.BatchWriter.get_import_call" title="Permalink to this definition"></a></dt>
+<dd><p>Function to return the import call detailing folder and
+individual node and edge headers and data files, as well as
+delimiters and database name.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="biocypher.write.BatchWriter.write_edges">
 <span class="sig-name descname"><span class="pre">write_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.BatchWriter.write_edges" title="Permalink to this definition"></a></dt>
 <dd><p>Wrapper for writing edges and their headers.</p>
@@ -1026,6 +1067,14 @@ ontology queries</p></li>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher.write.BatchWriter.write_import_call">
+<span class="sig-name descname"><span class="pre">write_import_call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.BatchWriter.write_import_call" title="Permalink to this definition"></a></dt>
+<dd><p>Function to write the import call detailing folder and
+individual node and edge headers and data files, as well as
+delimiters and database name, to the export folder as txt.</p>
 </dd></dl>
 
 <dl class="py method">
