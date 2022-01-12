@@ -167,7 +167,7 @@ class BioCypherNode:
 
     def get_all_labels(self):
         """
-        Returns all optional labels.
+        Returns all labels, primary and optional.
 
         Returns:
             dict: properties
@@ -197,15 +197,11 @@ class BioCypherNode:
             dict: node_id and node_label as top-level key-value pairs,
             properties as second-level dict.
         """
-        d = {}
-        d.update(
-            [
-                ("node_id", self.node_id),
-                ("node_label", self.node_label),
-                ("properties", self.properties),
-            ]
-        )
-        return d
+        return {
+            "node_id": self.node_id,
+            "node_label": self.node_label,
+            "properties": self.properties,
+        }
 
 
 class BioCypherEdge:
@@ -285,16 +281,12 @@ class BioCypherEdge:
                 top-level key-value pairs, properties as second-level
                 dict.
         """
-        d = {}
-        d.update(
-            [
-                ("source_id", self.source_id),
-                ("target_id", self.target_id),
-                ("relationship_label", self.relationship_label),
-                ("properties", self.properties),
-            ]
-        )
-        return d
+        return {
+            "source_id": self.source_id,
+            "target_id": self.target_id,
+            "relationship_label": self.relationship_label,
+            "properties": self.properties,
+        }
 
     def create_relationship_list(relationships):
         """
