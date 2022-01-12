@@ -701,12 +701,8 @@ def test_create_import_call(bw):
     assert (
         passed
         and call == 'bin/neo4j-admin import --database=neo4j --delimiter=";" '
-        '--array-delimiter"|" --quote="\'" '
-        f'--nodes="{path}PairwiseMolecularInteraction-header.csv,'
-        f'{path}PairwiseMolecularInteraction-part.*" '
-        f'--relationships="{path}IS_SOURCE_OF-header.csv,{path}IS_SOURCE_OF-part.*" '
-        f'--relationships="{path}IS_TARGET_OF-header.csv,{path}IS_TARGET_OF-part.*" '
-        f'--relationships="{path}INTERACTS_POST_TRANSLATIONAL-header.csv,{path}INTERACTS_POST_TRANSLATIONAL-part.*" '
+        '--array-delimiter="|" --quote="\'" '
+        f'--nodes="{path}PairwiseMolecularInteraction-header.csv,{path}PairwiseMolecularInteraction-part.*" '
         f'--relationships="{path}IS_SOURCE_OF-header.csv,{path}IS_SOURCE_OF-part.*" '
         f'--relationships="{path}IS_TARGET_OF-header.csv,{path}IS_TARGET_OF-part.*" '
         f'--relationships="{path}INTERACTS_POST_TRANSLATIONAL-header.csv,{path}INTERACTS_POST_TRANSLATIONAL-part.*" '

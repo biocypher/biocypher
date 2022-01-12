@@ -50,15 +50,23 @@ def test_translate_edges(version_node):
     src_tar_type = [
         ("G21058", "G50127", "post_translational", {"prop1": "test"}),
         (
+            "G22418",
+            "G50123",
+            "post_translational",
+            {"directed": "arbitrary_string"},
+        ),
+        (
             "G15258",
             "G16347",
             "post_translational",
-            {"prop1": "test", "prop2": "test"},
+            {"directed": True, "effect": -1},
         ),
-        ("G22418", "G50123", "post_translational", {}),
     ]
     t = gen_translate_edges(v.leaves, src_tar_type)
 
+    n = next(t)
+    n = next(t)
+    assert n.get_source_edge().get_label() == "IS_PART_OF"
     n = next(t)
     no = n.get_node()
     assert (
@@ -66,8 +74,8 @@ def test_translate_edges(version_node):
         and type(n.get_source_edge()) == BioCypherEdge
         and type(n.get_target_edge()) == BioCypherEdge
     )
-    assert n.get_node().get_id() == "G21058_G50127_test"
-    assert n.get_source_edge().get_source_id() == "G21058"
+    assert n.get_node().get_id() == "G15258_G16347_True_-1"
+    assert n.get_source_edge().get_source_id() == "G15258"
     assert n.get_target_edge().get_label() == "IS_TARGET_OF"
 
 

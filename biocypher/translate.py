@@ -195,7 +195,6 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
             rep = leaves[bl_type]["represented_as"]
 
             if rep == "node":
-                # TODO update
                 node_id = (
                     str(src)
                     + "_"
@@ -204,16 +203,22 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
                     + "_".join(str(v) for v in props.values())
                 )
                 n = BioCypherNode(node_id=node_id, node_label=bl_type, **props)
+                # directionality check
+                if props.get("directed") == True:
+                    l1 = "IS_SOURCE_OF"
+                    l2 = "IS_TARGET_OF"
+                else:
+                    l1 = l2 = "IS_PART_OF"
                 e_s = BioCypherEdge(
                     source_id=src,
                     target_id=node_id,
-                    relationship_label="IS_SOURCE_OF",
+                    relationship_label=l1,
                     # additional here
                 )
                 e_t = BioCypherEdge(
                     source_id=tar,
                     target_id=node_id,
-                    relationship_label="IS_TARGET_OF",
+                    relationship_label=l2,
                     # additional here
                 )
                 yield BioCypherRelAsNode(n, e_s, e_t)
