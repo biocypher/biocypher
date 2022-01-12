@@ -236,15 +236,14 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
             print("No path for type " + type)
 
 
-def edges_from_pypath(records):
-    return BioCypherEdge.create_relationship_list(records)
-
-
-# quick and dirty replacement functions
-# this belongs in translate or in the pypath adapter directly
-
-
 def getpath(nested_dict, value, prepath=()):
+    """
+    Get specific value from unknown location in a nested dict.
+
+    Args:
+        nested_dict (dict): the dict to search
+        value: the dictionary value to find
+    """
     for k, v in nested_dict.items():
         path = prepath + (k,)
         if v == value:  # found value

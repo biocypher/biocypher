@@ -69,7 +69,9 @@ Disease:
 # specifications of Biolink. However, in an analytic context, it often makes 
 # sense to represent interactions as nodes in Neo4j, because it enables, for
 # instance, the annotation of a relationship with a publication as source of
-# evidence. The Biolink specifications for these types of relationships do 
+# evidence (also known as reification in the knowledge graph world). 
+
+# The Biolink specifications for these types of relationships do 
 # not go into depth; for example, the hierarchy for molecular interactions
 # (ie, "associations") ends at "PairwiseMolecularInteraction", there are no 
 # explicit terms for protein-protein-interaction, phosphorylation, miRNA-

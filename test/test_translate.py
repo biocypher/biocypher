@@ -114,3 +114,7 @@ def test_biolink_yaml_extension(version_node):
         and "biolink:PostTranslationalInteraction" in p2["ancestors"]
         and "biolink:Entity" in p2["ancestors"]
     )
+
+
+def test_translate_identifiers(version_node):
+    pass
