@@ -350,9 +350,6 @@ class BatchWriter:
             return False
 
         # from list of nodes to list of strings
-        # TODO string properties in quotes (?)
-        # only necessary if they contain spaces?
-        # TODO property types such as ":int"?
         lines = []
         for n in node_list:
             # check for deviations in properties
@@ -370,36 +367,21 @@ class BatchWriter:
                     f"{max([oprop1, oprop2])}."
                 )
                 return False
+
+            line = [n.get_id()]
             if hprops:
                 plist = []
+                # make all into strings, put actual strings in quotes
                 for e, t in zip(nprops.values(), prop_dict.values()):
                     if t == int:
                         plist.append(str(e))
                     else:
                         plist.append(self.quote + str(e) + self.quote)
-                # make all into strings, put actual strings in quotes
-                lines.append(
-                    self.delim.join(
-                        [
-                            n.get_id(),
-                            # here we need a list of properties in
-                            # the same order as in the header
-                            self.delim.join(plist),
-                            labels,
-                        ]
-                    )
-                    + "\n"
-                )
-            else:
-                lines.append(
-                    self.delim.join(
-                        [
-                            n.get_id(),
-                            labels,
-                        ]
-                    )
-                    + "\n"
-                )
+                line.append(self.delim.join(plist))
+            line.append(labels)
+
+            lines.append(self.delim.join(line) + "\n")
+
         padded_part = str(part).zfill(3)
         file_path = self.output_path + label + "-part" + padded_part + ".csv"
         with open(file_path, "w") as f:
