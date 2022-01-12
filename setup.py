@@ -11,11 +11,9 @@ File author(s): Sebastian Lobentanzer
                 ...
 
 Distributed under GPLv3 license, see LICENSE.txt.
-
-Todo:
 """
 
-__version__ = "2021.0"
+__version__ = "2022.0"
 
 from setuptools import setup
 

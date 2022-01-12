@@ -141,7 +141,7 @@ def gen_translate_nodes(leaves, id_type_tuples):
     """
 
     # biolink = BiolinkAdapter(leaves)
-    if not isinstance(id_type_tuples, GeneratorType):
+    if isinstance(id_type_tuples, list):
         logger.info(f"Translating {len(id_type_tuples)} nodes to BioCypher.")
     else:
         logger.info(f"Translating nodes to BioCypher from generator.")
@@ -180,7 +180,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
             - do we even need one?
     """
 
-    if not isinstance(src_tar_type_tuples, GeneratorType):
+    if isinstance(src_tar_type_tuples, list):
         logger.info(
             f"Translating {len(src_tar_type_tuples)} edges to BioCypher."
         )

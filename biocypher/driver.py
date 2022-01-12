@@ -983,10 +983,8 @@ class Driver(BaseDriver):
                 db_name=db_name or self._db_name,
             )
 
-        # TODO generator vs list handling
-        # TODO translate to biocypher nodes and edges
-        testnode = None  # peek first of generator or list
-        if not isinstance(testnode, BioCypherNode):
+        nodes = peekable(nodes)
+        if not isinstance(nodes.peek(), BioCypherNode):
             tnodes = gen_translate_nodes(self.db_meta.leaves, nodes)
         else:
             tnodes = nodes
@@ -1019,10 +1017,8 @@ class Driver(BaseDriver):
                 db_name=db_name or self._db_name,
             )
 
-        # TODO generator vs list handling
-        # TODO translate to biocypher nodes and edges
-        testedge = None  # peek first of generator or list
-        if not isinstance(testedge, BioCypherEdge):
+        edges = peekable(edges)
+        if not isinstance(edges.peek(), BioCypherEdge):
             tedges = gen_translate_edges(self.db_meta.leaves, edges)
         else:
             tedges = edges

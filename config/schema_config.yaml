@@ -96,7 +96,7 @@ EntityToDiseaseAssociationMixin:
 # will insert into custom biolink yaml, get hierarchy from there
 PostTranslationalInteraction:
   represented_as: node
-  preferred_id: tbd
+  preferred_id: concat_ids
   source: Protein 
   # optional other sources/targets?
   # source and target need to adhere to Biolink naming, otherwise the
@@ -116,8 +116,8 @@ Acetylation:
   target: Protein
       
 PostTranscriptionalInteraction:
-  represented_as: edge
-  preferred_id: tbd
+  represented_as: node
+  preferred_id: concat_ids
   source: microRNA
   target: Protein
   label_in_input: post_transcriptional
