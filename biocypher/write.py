@@ -139,7 +139,9 @@ class BatchWriter:
             nod = [n for n in nod if n]
             edg = [val for sublist in edg for val in sublist]  # flatten
 
-            passed = self.write_nodes(nod) and self.write_edges(edg)
+            passed = self.write_nodes(nod) and self._write_edge_data(
+                edg, batch_size
+            )
 
         elif isinstance(edges.peek(), BioCypherEdge):
             passed = self._write_edge_data(edges, batch_size)
@@ -633,7 +635,7 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
         file_path = self.output_path + "neo4j-admin-import-call.txt"
-        logger.info(f"Writing neo4j-admin import call to {file_path}.")
+        logger.info(f"Writing neo4j-admin import call to `{file_path}`.")
         with open(file_path, "w") as f:
             f.write(self.import_call)
 
