@@ -66,7 +66,7 @@ def test_translate_edges(version_node):
         and type(n.get_source_edge()) == BioCypherEdge
         and type(n.get_target_edge()) == BioCypherEdge
     )
-    assert n.get_node().get_id() == "G21058_G50127"
+    assert n.get_node().get_id() == "G21058_G50127_test"
     assert n.get_source_edge().get_source_id() == "G21058"
     assert n.get_target_edge().get_label() == "IS_TARGET_OF"
 

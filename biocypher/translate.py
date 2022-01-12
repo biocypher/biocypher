@@ -196,7 +196,9 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
 
             if rep == "node":
                 # TODO update
-                node_id = str(src) + "_" + str(tar)
+                node_id = (
+                    str(src) + "_" + str(tar) + "_" + "_".join(props.values())
+                )
                 n = BioCypherNode(node_id=node_id, node_label=bl_type, **props)
                 e_s = BioCypherEdge(
                     source_id=src,
