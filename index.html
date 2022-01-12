@@ -853,7 +853,7 @@ passed to neo4j for the respective node (dict)</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.create.BioCypherNode.get_all_labels">
 <span class="sig-name descname"><span class="pre">get_all_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherNode.get_all_labels" title="Permalink to this definition"></a></dt>
-<dd><p>Returns all optional labels.</p>
+<dd><p>Returns all labels, primary and optional.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>properties</p>
@@ -1049,6 +1049,14 @@ ontology queries</p></li>
 <dd><p>Function to return the import call detailing folder and
 individual node and edge headers and data files, as well as
 delimiters and database name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a bash command for neo4j-admin import</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1075,6 +1083,14 @@ delimiters and database name.</p>
 <dd><p>Function to write the import call detailing folder and
 individual node and edge headers and data files, as well as
 delimiters and database name, to the export folder as txt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The return value. True for success, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
