@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BioCypher: a unified language of property graph databases for biomedical science &mdash; BioCypher  documentation</title>
+  <title>Introduction &mdash; BioCypher  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -37,8 +37,15 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <!-- Local TOC -->
               <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">BioCypher: a unified language of property graph databases for biomedical science</a><ul>
-<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#quickstart">Quickstart</a><ul>
+<li><a class="reference internal" href="#the-host-module-adapter">The host module adapter</a></li>
+<li><a class="reference internal" href="#the-schema-configuration-yaml-file">The schema configuration YAML file</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-adapter">The Adapter</a></li>
+<li><a class="reference internal" href="#usage-notes">Usage Notes</a></li>
+<li><a class="reference internal" href="#submodule-documentation">Submodule documentation</a><ul>
 <li><a class="reference internal" href="#module-biocypher.driver">Pass a Neo4j driver instance</a></li>
 <li><a class="reference internal" href="#module-biocypher.check">Check the active database for consistency with the BioCypher format</a></li>
 <li><a class="reference internal" href="#module-biocypher.create">Create and update entries in a database</a></li>
@@ -64,7 +71,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home"></a> &raquo;</li>
-      <li>BioCypher: a unified language of property graph databases for biomedical science</li>
+      <li>Introduction</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -74,19 +81,130 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="biocypher-a-unified-language-of-property-graph-databases-for-biomedical-science">
-<h1>BioCypher: a unified language of property graph databases for biomedical science<a class="headerlink" href="#biocypher-a-unified-language-of-property-graph-databases-for-biomedical-science" title="Permalink to this headline"></a></h1>
-<section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
+  <section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h1>
 <p>BioCypher is designed to serve as guideline and translation mechanism for both
 the creation of property graph databases from primary data as well as for the
-querying of these databases. Our greater aim is to combine the computational
+querying of these databases. The purpose is to combine the computational
 power of graph databases with the search for answers of our most pressing
 biological questions and facilitate interfacing with cutting edge developments
 in the areas of causal reasoning, representation learning, and natural language
 processing, all of which depend on having a consistent descriptive vocabulary.
-A side objective is the creation of human-readable graph syntax.</p>
-<p>A short summary of how BioCypher is supposed to be used:</p>
+To achieve meaningful automatic representations in the biomedical language
+space, we include the <a class="reference external" href="https://biolink.github.io/biolink-model/">Biolink model</a>
+as underlying hierarchical ontology, supplying identification, filtering, and
+mapping capabilities. A side objective is the creation of human-readable graph
+syntax.</p>
+</section>
+<section id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline"></a></h1>
+<p>The main interface for interacting with the BioCypher module to create your
+own property graph consists of two components:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>the <a class="reference internal" href="#host-module-adapter"><span class="std std-ref">host module adapter</span></a>, a python program, and</p></li>
+<li><p>the <a class="reference internal" href="#schema-config"><span class="std std-ref">schema configuration file</span></a>, a YAML file.</p></li>
+</ol>
+</div></blockquote>
+<p>The adapter serves as a data interface between the source and BioCypher, piping
+the “raw” data into BioCypher for the creation of the property graph, while the
+schema configuration tells BioCypher how the graph should be structured,
+detailing the names of constituents and how they should be connected.</p>
+<section id="the-host-module-adapter">
+<span id="host-module-adapter"></span><h2>The host module adapter<a class="headerlink" href="#the-host-module-adapter" title="Permalink to this headline"></a></h2>
+<p>Currently, BioCypher expects input from the user module via an adapter module.
+Throughout the tutorial, we will exemplarise the use of BioCypher using
+OmniPath (more specifically, its infrastructural backend, PyPath). The adapter
+has the job of piping the data as it is represented in the original database
+into the BioCypher input, for instance as a <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code> object of
+single database entries, whether they be nodes or relationships in the graph
+to be created. For more details, please refer to the example <a class="reference external" href="https://github.com/saezlab/pypath/blob/master/src/pypath/biocypher/adapter.py">PyPath adapter</a>
+and the section on adapter functions.</p>
+</section>
+<section id="the-schema-configuration-yaml-file">
+<span id="schema-config"></span><h2>The schema configuration YAML file<a class="headerlink" href="#the-schema-configuration-yaml-file" title="Permalink to this headline"></a></h2>
+<p>The second important component of translation into a BioCypher-compatible
+property graph is the specification of graph constituents and their mode of
+representation in the graph. For instance, we want to add a representation for
+proteins to the OmniPath graph, and the proteins should be represented as
+nodes. To make this known to the BioCypher module, we use the
+<a class="reference external" href="https://github.com/saezlab/BioCypher/blob/main/config/schema_config.yaml">schema-config.yaml</a>,
+which details <em>only</em> the immediate constituents of the desired graph. The
+naming of these constituents must be equal to the ontological category of
+the entity in the Biolink schema. The ontological category (or class) of
+proteins in Biolink is simply <a class="reference external" href="https://biolink.github.io/biolink-model/docs/Protein.html">Protein</a>.
+However, for more complex concepts, such as - for instance - pairwise
+molecular interactions, the naming must also be consistent; in this case,
+<a class="reference external" href="https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html">PairwiseMolecularInteraction</a>.
+Similarly, if translation functionality between identifiers is desired, the
+identifier used for the class of graph entity must be consistent with the one
+used in the Biolink specification. For proteins, this can be <cite>UniProtKB</cite>
+(but not, for instance, <cite>UniProt</cite> or <cite>uniprot</cite>). For ease of access, we provide
+a standard yaml file with the most common graph constituents and identifiers.</p>
+<p>The other slots of a graph constituent entry contain information BioCypher
+needs to receive the input data correctly and construct the graph accordingly.
+For “Named Thing” entities such as the protein, this includes the mode of
+representation (YAML entry <cite>represented_as</cite>), which can be <cite>node</cite> or <cite>edge</cite>.
+Proteins can only feasibly represented as nodes, but for other entities, such
+as interactions or aggregates, representation can be both as node or as edge.
+In Biolink, these belong to the super-class
+<a class="reference external" href="https://biolink.github.io/biolink-model/docs/associations.html">Associations</a>.
+For associations, BioCypher additionally requires the specification of the
+source and target of the association; for instance, a post-translational
+interaction occurs between proteins, so the source and target attribute in the
+<cite>schema-config.yaml</cite> will both be <cite>Protein</cite>. Again, these should adhere to the
+naming scheme of Biolink. Following are two examples of <cite>schema-config.yaml</cite>
+entries, one for a “Named Thing”, the protein, and one for an association, the
+post-translational interaction.</p>
+<blockquote>
+<div><p>Protein:</p>
+<blockquote>
+<div><p>represented_as: node</p>
+<p>preferred_id: UniProtKB</p>
+<p>label_in_input: protein</p>
+</div></blockquote>
+</div></blockquote>
+<p>In the protein case, we are specifying its representation as a node, that we
+wish to use the UniProt identifier as the main identifier for proteins (the
+Biolink designation for UniProt identifiers is <cite>UniProtKB</cite>), and that proteins
+in the input coming from pypath carry the label <cite>protein</cite> (in lower-case).</p>
+<blockquote>
+<div><p>PostTranslationalInteraction:</p>
+<blockquote>
+<div><p>represented_as: node</p>
+<p>preferred_id: concat_ids</p>
+<p>source: Protein</p>
+<p>target: Protein</p>
+<p>label_in_input: post_translational</p>
+<p>label_as_edge: INTERACTS_POST_TRANSLATIONAL</p>
+</div></blockquote>
+</div></blockquote>
+<p>For the post-translational interaction, which is an association, we are
+specifying representation as a node (prompting BioCypher to create not only
+the node but also two edges connecting to the proteins participating in any
+particular post-translational interaction). Since there are no systematic
+identifiers for post-translational interactions, we concatenate the protein
+ids and relevant properties of the interaction to a new unique id
+(<cite>concat_ids</cite>). Note that BioCypher accepts non-Biolink IDs since not all
+possible entries possess a systematic identifier system, whereas the entity
+class (<cite>Protein</cite>, <cite>PostTranslationalInteraction</cite>) has to be included in the
+Biolink schema and spelled identically. For this reason, we extend the
+Biolink schema in cases where there exists no entry for our entity of choice.</p>
+<p>Further, we are specifying the source and target classes of our association
+(both <cite>Protein</cite>), the label we provide in the input from pypath
+(<cite>post_translational</cite>), and - optionally - the label we would want the edge
+in the graph to carry would the association be represented as an edge. This
+has no bearing on the current example, where we choose representation as a
+node, but is important for edge representation, as by consensus, property
+graph edges are represented in all upper case form and as verbs, to distinguish
+from nodes that are represented in PascalCase and as nouns.</p>
+</section>
+</section>
+<section id="the-adapter">
+<h1>The Adapter<a class="headerlink" href="#the-adapter" title="Permalink to this headline"></a></h1>
+</section>
+<section id="usage-notes">
+<h1>Usage Notes<a class="headerlink" href="#usage-notes" title="Permalink to this headline"></a></h1>
 <ul class="simple">
 <li><p>A graph database can be built from any arbitrary collection of biomedical
 data. We here examplarise the building of a biological prior knowledge graph
@@ -118,6 +236,8 @@ about the graph structure for the case of re-loading an existing database for
 updating it with new information.</p></li>
 </ul>
 </section>
+<section id="submodule-documentation">
+<h1>Submodule documentation<a class="headerlink" href="#submodule-documentation" title="Permalink to this headline"></a></h1>
 <section id="module-biocypher.driver">
 <span id="pass-a-neo4j-driver-instance"></span><h2>Pass a Neo4j driver instance<a class="headerlink" href="#module-biocypher.driver" title="Permalink to this headline"></a></h2>
 <p>This module handles the passing of a Neo4j driver from the client to
