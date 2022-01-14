@@ -739,20 +739,6 @@ passed to Neo4j for the respective edge (dict)</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="biocypher.create.BioCypherEdge.create_relationship_list">
-<span class="sig-name descname"><span class="pre">create_relationship_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherEdge.create_relationship_list" title="Permalink to this definition"></a></dt>
-<dd><p>Create list of BioCypherEdge objects from dict of pypath
-relationships.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>relationships</strong> – currently, a collection of pypath
-relationships. should be adapted to accept arbitrary
-collections.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="biocypher.create.BioCypherEdge.get_dict">
 <span class="sig-name descname"><span class="pre">get_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.create.BioCypherEdge.get_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Convert self to format accepted by Neo4j driver (Python dict -&gt;
@@ -1004,6 +990,20 @@ filtering purposes.</p></li>
 representing individual nodes by their unique id and a type
 that is translated from the original database notation to
 the corresponding BioCypher notation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="biocypher.translate.getpath">
+<span class="sig-prename descclassname"><span class="pre">biocypher.translate.</span></span><span class="sig-name descname"><span class="pre">getpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nested_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.translate.getpath" title="Permalink to this definition"></a></dt>
+<dd><p>Get specific value from unknown location in a nested dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nested_dict</strong> (<em>dict</em>) – the dict to search</p></li>
+<li><p><strong>value</strong> – the dictionary value to find</p></li>
 </ul>
 </dd>
 </dl>
