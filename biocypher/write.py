@@ -643,6 +643,12 @@ class BatchWriter:
 
 
 """
+documentation:
+https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/
+
+import like that:
+https://community.neo4j.com/t/how-can-i-use-a-database-created-with-neo4j-admin-import-in-neo4j-desktop/40594
+
     - Can properties the node/relationship does not own be left blank?
 
 Formatting: --delimiter=";"

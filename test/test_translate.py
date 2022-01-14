@@ -99,7 +99,7 @@ def test_custom_bmt_yaml(version_node):
 def test_biolink_yaml_extension(version_node):
     ad = BiolinkAdapter(
         version_node.leaves,
-        custom_yaml_file="/config/biocypher-biolink-model.yaml",
+        custom_yaml_file="/config/biocypher-biolink-model.yaml",  # unstable, move to test yaml
     )
     p1 = ad.leaves["PostTranslationalInteraction"]
     p2 = ad.leaves["Phosphorylation"]
@@ -117,4 +117,6 @@ def test_biolink_yaml_extension(version_node):
 
 
 def test_translate_identifiers(version_node):
+    # representation of a different schema
+    # host and guest db (which to translate)
     pass
