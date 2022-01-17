@@ -693,7 +693,13 @@ prevent duplicates. The same properties are set on match and on
 create, irrespective of the actual event.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>edges</strong> – a list of <a class="reference internal" href="#biocypher.create.BioCypherEdge" title="biocypher.create.BioCypherEdge"><code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherEdge</span></code></a> objects</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>edges</strong> – a list of <a class="reference internal" href="#biocypher.create.BioCypherEdge" title="biocypher.create.BioCypherEdge"><code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherEdge</span></code></a> objects</p></li>
+<li><p><strong>explain</strong> (<em>bool</em>) – whether to call <code class="docutils literal notranslate"><span class="pre">EXPLAIN</span></code> in front of the
+CYPHER query</p></li>
+<li><p><strong>profile</strong> (<em>bool</em>) – whether to call <code class="docutils literal notranslate"><span class="pre">PROFILE</span></code> in front of the
+CYPHER query</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The return value. True for success, False otherwise.</p>
@@ -720,7 +726,14 @@ on node id to prevent duplicates. The same properties are set on
 match and on create, irrespective of the actual event.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>nodes</strong> – a list of <a class="reference internal" href="#biocypher.create.BioCypherNode" title="biocypher.create.BioCypherNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherNode</span></code></a> objects</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (<em>iterable of BioCypherNode</em>) – a list of
+<a class="reference internal" href="#biocypher.create.BioCypherNode" title="biocypher.create.BioCypherNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherNode</span></code></a> objects</p></li>
+<li><p><strong>explain</strong> (<em>bool</em>) – whether to call <code class="docutils literal notranslate"><span class="pre">EXPLAIN</span></code> in front of the
+CYPHER query</p></li>
+<li><p><strong>profile</strong> (<em>bool</em>) – whether to call <code class="docutils literal notranslate"><span class="pre">PROFILE</span></code> in front of the
+CYPHER query</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The return value. True for success, False otherwise.</p>
