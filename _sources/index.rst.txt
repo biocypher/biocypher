@@ -3,6 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. image:: biocypher-open-graph.png
+
 ################################################################################
 Introduction
 ################################################################################
@@ -27,8 +29,8 @@ Quickstart
 The main interface for interacting with the BioCypher module to create your 
 own property graph consists of two components:
 
-   1. the :ref:`host module adapter <host-module-adapter>`, a python program, and
-   2. the :ref:`schema configuration file <schema-config>`, a YAML file. 
+1. the :ref:`host module adapter <host-module-adapter>`, a python program, and
+2. the :ref:`schema configuration file <schema-config>`, a YAML file. 
 
 The adapter serves as a data interface between the source and BioCypher, piping
 the "raw" data into BioCypher for the creation of the property graph, while the
@@ -42,13 +44,14 @@ The host module adapter
 
 Currently, BioCypher expects input from the user module via an adapter module.
 Throughout the tutorial, we will exemplarise the use of BioCypher using 
-OmniPath (more specifically, its infrastructural backend, PyPath). The adapter
+`OmniPath <https://omnipathdb.org>`_ (more specifically, its infrastructural 
+backend, `PyPath <https://github.com/saezlab/pypath>`_). The adapter
 has the job of piping the data as it is represented in the original database
 into the BioCypher input, for instance as a :py:class:`Generator` object of 
 single database entries, whether they be nodes or relationships in the graph
 to be created. For more details, please refer to the example `PyPath adapter 
 <https://github.com/saezlab/pypath/blob/master/src/pypath/biocypher/adapter.py>`_ 
-and the section on adapter functions.
+and the section on :ref:`adapter functions <adapter>`.
 
 .. _schema-config:
 
@@ -70,14 +73,32 @@ molecular interactions, the naming must also be consistent; in this case,
 `PairwiseMolecularInteraction <https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html>`_.
 Similarly, if translation functionality between identifiers is desired, the 
 identifier used for the class of graph entity must be consistent with the one 
-used in the Biolink specification. For proteins, this can be `UniProtKB`
-(but not, for instance, `UniProt` or `uniprot`). For ease of access, we provide 
-a standard yaml file with the most common graph constituents and identifiers.
+used in the Biolink specification. For proteins, this can be ``UniProtKB``
+(but not, for instance, ``UniProt`` or ``uniprot``). For ease of access, we provide 
+a standard yaml file with the most common graph constituents and identifiers,
+with the following basic structure:
+
+.. literal block
+
+:: 
+
+   Protein:
+
+      represented_as: node 
+
+      preferred_id: UniProtKB  
+
+      label_in_input: protein  
+
+In the protein case, we are specifying its representation as a node, that we 
+wish to use the UniProt identifier as the main identifier for proteins (the
+Biolink designation for UniProt identifiers is ``UniProtKB``), and that proteins
+in the input coming from ``PyPath`` carry the label ``protein`` (in lower-case).
 
 The other slots of a graph constituent entry contain information BioCypher
 needs to receive the input data correctly and construct the graph accordingly.
 For "Named Thing" entities such as the protein, this includes the mode of 
-representation (YAML entry `represented_as`), which can be `node` or `edge`. 
+representation (YAML entry ``represented_as``), which can be ``node`` or ``edge``. 
 Proteins can only feasibly represented as nodes, but for other entities, such 
 as interactions or aggregates, representation can be both as node or as edge. 
 In Biolink, these belong to the super-class 
@@ -85,23 +106,10 @@ In Biolink, these belong to the super-class
 For associations, BioCypher additionally requires the specification of the 
 source and target of the association; for instance, a post-translational 
 interaction occurs between proteins, so the source and target attribute in the 
-`schema-config.yaml` will both be `Protein`. Again, these should adhere to the
-naming scheme of Biolink. Following are two examples of `schema-config.yaml` 
-entries, one for a "Named Thing", the protein, and one for an association, the 
-post-translational interaction.
+``schema-config.yaml`` will both be ``Protein``. Again, these should adhere to the
+naming scheme of Biolink.
 
-   Protein: 
-
-      represented_as: node 
-   
-      preferred_id: UniProtKB  
-   
-      label_in_input: protein  
-
-In the protein case, we are specifying its representation as a node, that we 
-wish to use the UniProt identifier as the main identifier for proteins (the
-Biolink designation for UniProt identifiers is `UniProtKB`), and that proteins
-in the input coming from pypath carry the label `protein` (in lower-case).
+::
 
    PostTranslationalInteraction:
    
@@ -123,24 +131,107 @@ the node but also two edges connecting to the proteins participating in any
 particular post-translational interaction). Since there are no systematic 
 identifiers for post-translational interactions, we concatenate the protein
 ids and relevant properties of the interaction to a new unique id 
-(`concat_ids`). Note that BioCypher accepts non-Biolink IDs since not all 
-possible entries possess a systematic identifier system, whereas the entity 
-class (`Protein`, `PostTranslationalInteraction`) has to be included in the 
-Biolink schema and spelled identically. For this reason, we extend the 
-Biolink schema in cases where there exists no entry for our entity of choice.
+(arbitrarily named ``concat_ids``). Note that BioCypher accepts non-Biolink IDs 
+since not all possible entries possess a systematic identifier system, whereas 
+the entity class (``Protein``, ``PostTranslationalInteraction``) has to be 
+included in the Biolink schema and spelled identically. For this reason, we 
+:ref:`extend the Biolink schema <biolink>` in cases where there exists no entry 
+for our entity of choice.
 
 Further, we are specifying the source and target classes of our association
-(both `Protein`), the label we provide in the input from pypath 
-(`post_translational`), and - optionally - the label we would want the edge
+(both ``Protein``), the label we provide in the input from ``PyPath`` 
+(``post_translational``), and - optionally - the label we would want the edge
 in the graph to carry would the association be represented as an edge. This 
 has no bearing on the current example, where we choose representation as a 
 node, but is important for edge representation, as by consensus, property
 graph edges are represented in all upper case form and as verbs, to distinguish
 from nodes that are represented in PascalCase and as nouns.
 
+.. _biolink:
+
+The Biolink model extension
+---------------------------
+
+.. _adapter:
+
 ###################
 The Adapter
 ###################
+
+The adapter is a python program (in the case of ``PyPath``, a submodule) 
+responsible for piping the data that is to be represented in the graph into 
+BioCypher in a somewhat arbitrary format. In our example, the adapter performs 
+three main functions (with functions 2 and 3 being mutually optional):
+
+1. Load the ``PyPath`` data python object to be transferred to BioCypher
+2. Pass the data to BioCypher as a stream or list to be written to the Neo4j
+   database via the python driver ("online")
+3. Pass the data to BioCypher as a stream or list to be written to the Neo4j
+   database via admin import (batch import from CSV)
+
+Loading the Data
+================
+
+Depending on the data source, it is up to the user to find and define a 
+suitable representation to be piped into BioCypher. The way we handle it in
+``PyPath`` is only one of many: we load the entire ``PyPath`` object into memory, to 
+be passed to BioCypher using a generator that evaluates each ``PyPath`` object
+and transforms it to the tuple representation below. This is made possible 
+by the already standardised form in which the data is represented within 
+``PyPath``. For more heterogeneous data representations, additional transformations
+may be necessary before piping into BioCypher.
+
+Passing the Data
+================
+
+In the `pypath example 
+<https://github.com/saezlab/pypath/blob/fc4c959c168ce80427189f8dd237308707594ad0/src/pypath/biocypher/adapter.py#L189>`_, 
+we are using :py:class:`Generator`-type objects to pass an unordered collection 
+of ``PyPath`` contents into BioCypher. For nodes, we are specifying for each object 
+an ID and label (corresponding to its unique preferred identifier and its 
+ontological class), as well as a dictionary of arbitrary properties, each entry 
+as a 3-tuple. For relationships, the same applies, except that we are passing 
+two IDs, for source and target entities, which results in a 4-tuple.
+
+Currently, there are two modes of interaction with the graph database 
+implemented in BioCypher. The first takes place via the Neo4j python driver,
+which is either loaded by BioCypher or passed from the host module. The second
+generates CSV files containing node and edge data in a standardised and 
+safety-checked format to be used with the ``admin import`` functionality of 
+Neo4j. Safety checks are important here because Neo4j does not guarantee 
+consistency of the resulting graph when using this feature; on the upside,
+this mode of communication is much faster. However, it can only be used when
+creating a new graph, not for changing an already existing one.
+
+Communication via the Neo4j Python Driver
+-----------------------------------------
+
+The BioCypher :ref:`Driver <driver>` is the main submodule of BioCypher. It 
+establishes a connection with a running graph database via the 
+:class:`neo4j.GraphDatabase.driver`, integrates the funtions of the other 
+submodules, and serves as outside interface of BioCypher. This is the main
+class that should be interacted with in the host module's adapter class. It 
+handles authentification and basic database management as well as the creation
+and manipulation of graph entries.
+
+In our example, it is instantiated in the initialisation of the adapter, and 
+then called on for :ref:`interacting with a running graph <running>` and for 
+exporting a complete database in CSV format for the 
+:ref:`neo4j-admin import feature <admin_import>`.
+
+.. _running:
+
+Interacting with a running Neo4j instance
+*****************************************
+
+(via `add_nodes()` and `add_edges()`)
+
+.. _admin_import:
+
+Exporting for the `neo4j-admin import` feature
+**********************************************
+
+(via `write_nodes()` and `write_edges()`)
 
 ###################
 Usage Notes
@@ -149,7 +240,7 @@ Usage Notes
 -  A graph database can be built from any arbitrary collection of biomedical 
    data. We here examplarise the building of a biological prior knowledge graph 
    from the OmniPath database (Türei et al. 2021), but BioCypher includes the 
-   extensive translation functionality from PyPath to accommodate custom 
+   extensive translation functionality from ``PyPath`` to accommodate custom 
    requirements for graph database contents.
 
 -  A BioCypher graph has to be instantiated as such from the beginning, an 
@@ -183,38 +274,41 @@ Usage Notes
 Submodule documentation
 ##############################
 
-Pass a Neo4j driver instance
-============================
+.. _driver:
+
+`driver.py`: the BioCypher Neo4j Driver
+=======================================
 .. automodule:: biocypher.driver
    :members: 
 
-Check the active database for consistency with the BioCypher format
-===================================================================
+`check.py`: BioCypher Format Data Representation and Consistency Checks
+=======================================================================
 .. automodule:: biocypher.check
    :members:
 
-Create and update entries in a database
-=======================================
+`create.py`: Base Classes for Node and Edge Representations in BioCypher
+========================================================================
 .. automodule:: biocypher.create
    :members: 
 
-Translate functionality for implemented types of knowledge
-==========================================================
+`translate.py`: Translation Functionality for Implemented Types of Representation
+=================================================================================
 .. automodule:: biocypher.translate
    :members:
 
-Write the graph to CSV files for quick 'admin import'
-=====================================================
+`write.py`: Write the Graph to CSV Files for quick 'admin import'
+=================================================================
 .. automodule:: biocypher.write
    :members:
 
-Logging
-=======
+`logger.py`: Logging
+====================
 .. automodule:: biocypher.logger
    :members:
 
-Indices and tables
-==================
+###########################
+Indices, Tables, and Search
+###########################
 
 * :ref:`genindex`
 * :ref:`modindex`
