@@ -25,10 +25,11 @@ from datetime import datetime
 
 def get_logger(name):
     """
-    Main function of providing a logger instance to any module. Should
-    be called from each module separately, e.g., after imports, assign
-    ``logger = get_logger(__name__)`` to yield a module-specific logger
-    that can be used according to Python :py:mod:`logging`.
+    Method providing central logger instance to main module. Is called
+    only from main submodule, :mod:`biocypher.driver`. In child modules,
+    the standard Python logging facility is called
+    (using ``logging.getLogger(__name__)``), automatically inheriting
+    the handlers from the central logger.
 
     The file handler creates a log file named after the current date and
     time. Levels to output to file and console can be set here.
@@ -38,6 +39,9 @@ def get_logger(name):
 
     Returns:
         logging.getLogger: an instance of the Python :py:mod:`Logger`.
+
+    Todo:
+        - call from central __init__.py?
     """
     file_formatter = logging.Formatter(
         "%(asctime)s\t%(levelname)s\tmodule:%(module)s\n%(message)s"

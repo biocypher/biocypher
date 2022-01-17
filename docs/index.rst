@@ -128,15 +128,20 @@ naming scheme of Biolink.
 For the post-translational interaction, which is an association, we are 
 specifying representation as a node (prompting BioCypher to create not only
 the node but also two edges connecting to the proteins participating in any
-particular post-translational interaction). Since there are no systematic 
-identifiers for post-translational interactions, we concatenate the protein
-ids and relevant properties of the interaction to a new unique id 
-(arbitrarily named ``concat_ids``). Note that BioCypher accepts non-Biolink IDs 
-since not all possible entries possess a systematic identifier system, whereas 
-the entity class (``Protein``, ``PostTranslationalInteraction``) has to be 
-included in the Biolink schema and spelled identically. For this reason, we 
-:ref:`extend the Biolink schema <biolink>` in cases where there exists no entry 
-for our entity of choice.
+particular post-translational interaction). In other words, we are reifying
+the post-translational interaction in order to have a node to which other 
+nodes can be linked; for instance, we might want to add a publication to a
+particular interaction to serve as source of evidence, which is only possible
+for nodes in a property graph, not for edges.
+
+Since there are no systematic identifiers for post-translational interactions, 
+we concatenate the protein ids and relevant properties of the interaction to a 
+new unique id (arbitrarily named ``concat_ids``). 
+Note that BioCypher accepts non-Biolink IDs since not all possible entries 
+possess a systematic identifier system, whereas the entity class (``Protein``, 
+``PostTranslationalInteraction``) has to be included in the Biolink schema 
+and spelled identically. For this reason, we :ref:`extend the Biolink schema 
+<biolink>` in cases where there exists no entry for our entity of choice.
 
 Further, we are specifying the source and target classes of our association
 (both ``Protein``), the label we provide in the input from ``PyPath`` 
@@ -152,24 +157,65 @@ from nodes that are represented in PascalCase and as nouns.
 The Biolink model extension
 ===========================
 
+The post-translation interaction that we would like to model in OmniPath has no
+literal counterpart in the Biolink model, due to its design philosophy. 
+The most granular level of interactions as Biolink class is the 
+`PairwiseMolecularInteraction <https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html>`_;
+all more granular relationships should be encoded in the properties of the 
+class, which has severe performance implications for property graph 
+representation, for instance in filtering for specific relationship types.
+Briefly, it is the difference between being able to selectively return only 
+relationships of a certain class (eg, post-translational), and having to return
+all relationships to filter for the ones possessing the correct property in a 
+second step.
 
+Therefore, we extend the Biolink model in places where it is necessary for the
+BioCypher translation and integration to work. The extended model is the 
+central Biolink YAML file with additions following the same 
+`LinkML <https://linkml.io>`_ syntax as is used in the original model.
+Depending on the extent of the modification, not only new classes are 
+introduced, but also new mixin categories (eg, "microRNA or siRNA" to account
+for different types of small noncoding RNA). We provide `our extended version 
+of the Biolink model 
+<https://github.com/saezlab/BioCypher/blob/main/config/biocypher-biolink-model.yaml>`_ 
+with the BioCypher repository.
+
+Changes or additions desired by the user can be introduced locally in this file
+without having to modify remote contents. Users also have the option to create
+their own modified version of the Biolink YAML file under a different file name
+and specify that path in the ``custom_yaml_file`` argument of the 
+:class:`biocypher.translate.BiolinkAdapter` class, which handles all 
+communication between BioCypher and Biolink.
 
 .. _adapter:
 
-###################
-The Adapter
-###################
+##########################
+The Host-BioCypher Adapter
+##########################
 
-The adapter is a python program (in the case of ``PyPath``, a submodule) 
-responsible for piping the data that is to be represented in the graph into 
-BioCypher in a somewhat arbitrary format. In our example, the adapter performs 
-three main functions (with functions 2 and 3 being mutually optional):
+The "BioCypher adapter" is a python program (in the case of ``PyPath``, a 
+submodule) responsible for piping the data that is to be represented in the 
+graph into BioCypher in a somewhat arbitrary format. 
+It is an expansion tailor-made for the source database as an interface to 
+BioCypher; in developing BioCypher, we strive to make its structure as simple
+as possible to facilitate adaptation. Thus, the adapter usually consists of 
+only few central functions needed for the transfer of data between the 
+arbitrarily ordered source format and the highly "automatically compatible"
+target format of BioCypher.
+In our example, the adapter performs three main functions (with functions 2 
+and 3 being mutually optional):
 
 1. Load the ``PyPath`` data python object to be transferred to BioCypher
 2. Pass the data to BioCypher as a stream or list to be written to the Neo4j
    database via the python driver ("online")
 3. Pass the data to BioCypher as a stream or list to be written to the Neo4j
    database via admin import (batch import from CSV)
+
+While function #2 can be performed at any time with a new or pre-existing 
+BioCypher graph, function #3 can only be used to create a fresh database from
+scratch with all the input data. However, since ``neo4j-admin import`` is very
+fast, it can be used to combine subsets of two databases on the fly, creating
+a new, combined database in the process.
 
 Loading the Data
 ================
@@ -178,7 +224,7 @@ Depending on the data source, it is up to the user to find and define a
 suitable representation to be piped into BioCypher. The way we handle it in
 ``PyPath`` is only one of many: we load the entire ``PyPath`` object into memory, to 
 be passed to BioCypher using a generator that evaluates each ``PyPath`` object
-and transforms it to the tuple representation below. This is made possible 
+and transforms it to the tuple representation described below. This is made possible 
 by the already standardised form in which the data is represented within 
 ``PyPath``. For more heterogeneous data representations, additional transformations
 may be necessary before piping into BioCypher.
@@ -211,29 +257,74 @@ Communication via the Neo4j Python Driver
 The BioCypher :ref:`Driver <driver>` is the main submodule of BioCypher. It 
 establishes a connection with a running graph database via the 
 :class:`neo4j.GraphDatabase.driver`, integrates the funtions of the other 
-submodules, and serves as outside interface of BioCypher. This is the main
-class that should be interacted with in the host module's adapter class. It 
-handles authentification and basic database management as well as the creation
-and manipulation of graph entries.
+submodules, and serves as outside interface of BioCypher. The ``Driver`` is 
+the main class for interacting with BioCypher in the host module's adapter 
+class. It handles authentification and basic database management as well as 
+the creation and manipulation of graph entries.
 
 In our example, it is instantiated in the initialisation of the adapter, and 
 then called on for :ref:`interacting with a running graph <running>` and for 
 exporting a complete database in CSV format for the 
-:ref:`neo4j-admin import feature <admin_import>`.
+:ref:`neo4j-admin import feature <admin_import>`. Upon instantiation, it 
+automatically assesses the graph database it is connected to (specified using 
+the ``db_name`` attribute) regarding whether or not it already contains a 
+BioCypher graph, and, if so, what the structure of this graph is.
+
+If there exists no BioCypher graph in the currently active database, or if the
+user explicitly specifies so using the ``wipe`` attribute of the driver, a new
+BioCypher database is created using the schema configuration specified in the
+:ref:`schema-config.yaml <schema-config>`.
 
 .. _running:
 
 Interacting with a running Neo4j instance
 =========================================
 
-(via `add_nodes()` and `add_edges()`)
+Once instantiated, the BioCypher driver can be used to modify the current 
+graph by adding or deleting nodes, edges, properties, constraints, et cetera.
+Most commonly, the methods :meth:`biocypher.driver.Driver.add_nodes()` and 
+:meth:`biocypher.driver.Driver.add_edges()` are used to introduce new entries
+into the graph database.
 
 .. _admin_import:
 
 Exporting for the `neo4j-admin import` feature
 ==============================================
 
-(via `write_nodes()` and `write_edges()`)
+Particularly if the data are very extensive (or performance is of the utmost
+priorty), BioCypher can be used to facilitate a speedy and safe import of the
+data using the ``neo4j-admin import`` console command. `Admin Import 
+<https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/>`_ 
+is a particularly fast method of writing data to a newly created graph database
+(the database needs to be completely empty) that gains most of its performance
+advantage from turning off safety features regarding input data consistency.
+Therefore, a sound and consistent representation of the nodes and edges in the 
+graph is of high importance in this process, which is why the BioCypher export
+functionality has been specifically designed to perform type and content 
+checking for all data to be written to the graph.
+
+Data input from the source database is exactly as in the case of `interacting 
+with a running database <running>`, with the data representation being 
+converted to a series of CSV files in a designated output folder (standard 
+being ``out/`` and the current datetime). BioCypher creates separate header and
+data files for all node and edge types to be represented in the graph via the 
+driver methods :meth:`biocypher.driver.Driver.write_nodes()` and 
+:meth:`biocypher.driver.Driver.write_edges()`. Additionally, it creates a file
+called ``neo4j-admin-import-call.txt`` containing the console command for 
+creating a new database, which only has to be executed from the directory of 
+the currently running Neo4j database.
+
+The name of the database to be created is given by the ``db_name`` attribute
+of the driver method, ie, ``write_nodes()`` and ``write_edges()``, which should 
+receive the same name as in the ``PyPath`` adapter example, and can be 
+arbitrary. In case the ``db_name`` is not the default Neo4j database name, 
+``neo4j``, the database needs to be created in Neo4j before or after using 
+the ``neo4j-admin import`` statement. This can be done by executing, in the 
+running database (``<db_name>`` being the name assigned in the method):
+
+1. ``:use system``
+2. ``create database <db_name>``
+3. ``:use <db_name>``
 
 ###################
 Usage Notes
