@@ -150,7 +150,7 @@ from nodes that are represented in PascalCase and as nouns.
 .. _biolink:
 
 The Biolink model extension
----------------------------
+===========================
 
 
 
@@ -206,7 +206,7 @@ this mode of communication is much faster. However, it can only be used when
 creating a new graph, not for changing an already existing one.
 
 Communication via the Neo4j Python Driver
------------------------------------------
+=========================================
 
 The BioCypher :ref:`Driver <driver>` is the main submodule of BioCypher. It 
 establishes a connection with a running graph database via the 
@@ -224,14 +224,14 @@ exporting a complete database in CSV format for the
 .. _running:
 
 Interacting with a running Neo4j instance
-*****************************************
+=========================================
 
 (via `add_nodes()` and `add_edges()`)
 
 .. _admin_import:
 
 Exporting for the `neo4j-admin import` feature
-**********************************************
+==============================================
 
 (via `write_nodes()` and `write_edges()`)
 
