@@ -50,7 +50,7 @@ class BaseDriver(object):
     The connection can be defined in three ways:
         * Providing a ready ``neo4j.Driver`` instance
         * By URI and authentication data
-        * By a YML config file
+        * By a YAML config file
 
     Args:
         driver (neo4j.Driver): A ``neo4j.Driver`` instance, created by,
@@ -62,7 +62,7 @@ class BaseDriver(object):
             name and password.
         fetch_size (int): Optional; the fetch size to use in database
             transactions.
-        config_file (str): Path to a YML config file which provides the
+        config_file (str): Path to a YAML config file which provides the
             URI, user name and password.
         wipe (bool): Wipe the database after connection, ensuring the
             data is loaded into an empty database.
@@ -233,11 +233,11 @@ class BaseDriver(object):
                 for instance for passing a parameter dictionary
 
         Returns:
-            tuple of two:
+            2-tuple:
                 - neo4j.Record.data: the Neo4j response to the query, consumed
-                  by the shorthand .data() function on the Result object
-                - neo4j.ResultSummary: information about the Result returned
-                  by the .consume() function on the Result object
+                  by the shorthand ``.data()`` method on the ``Result`` object
+                - neo4j.ResultSummary: information about the result returned
+                  by the ``.consume()`` method on the ``Result`` object
 
         Todo:
 
@@ -336,21 +336,22 @@ class BaseDriver(object):
         readable form.
 
         Args:
-            query (str): a valid Cypher query (see `query()`)
+            query (str): a valid Cypher query (see :meth:`query()`)
             db (str): the DB inside the Neo4j server that should be queried
             fetch_size (int): the Neo4j fetch size parameter
             write (bool): indicates whether to address write- or read-
                 servers
-            explain (bool): indicates whether to EXPLAIN the CYPHER
+            explain (bool): indicates whether to ``EXPLAIN`` the CYPHER
                 query and return the ResultSummary
-            explain (bool): indicates whether to PROFILE the CYPHER
+            explain (bool): indicates whether to ``PROFILE`` the CYPHER
                 query and return the ResultSummary
             **kwargs: optional objects used in CYPHER interactive mode,
                 for instance for passing a parameter dictionary
 
         Returns:
-            dict: the raw profile returned by the Neo4j bolt driver
-            list of str: a list of strings ready for printing
+            2-tuple:
+                - dict: the raw profile returned by the Neo4j bolt driver
+                - list of str: a list of strings ready for printing
         """
 
         logger.info("Profiling a query.")
@@ -408,8 +409,8 @@ class BaseDriver(object):
 
         Returns:
             (str,dict): The status as a string, `None` if the database
-                does not exist. If :py:attr:`field` is `None` a
-                dictionary with all fields will be returned.
+            does not exist. If :py:attr:`field` is `None` a
+            dictionary with all fields will be returned.
         """
 
         name = name or self.current_db
@@ -560,7 +561,7 @@ class BaseDriver(object):
 
         Returns:
             (str): The name of the user, `None` if no connection or no
-                unencrypted authentication data is available.
+            unencrypted authentication data is available.
         """
 
         if self.driver:
@@ -625,7 +626,7 @@ class Driver(BaseDriver):
     The connection can be defined in three ways:
         * Providing a ready ``neo4j.Driver`` instance
         * By URI and authentication data
-        * By a YML config file
+        * By a YAML config file
 
     Args:
         driver (neo4j.Driver): A ``neo4j.Driver`` instance, created by,
@@ -637,7 +638,7 @@ class Driver(BaseDriver):
             name and password.
         fetch_size (int): Optional; the fetch size to use in database
             transactions.
-        config_file (str): Path to a YML config file which provides the
+        config_file (str): Path to a YAML config file which provides the
             URI, user name and password.
         wipe (bool): Wipe the database after connection, ensuring the
             data is loaded into an empty database.
@@ -670,7 +671,7 @@ class Driver(BaseDriver):
 
         # if db representation node does not exist or explicitly
         # asked for wipe, create new graph representation: default
-        # yml, interactive?
+        # yaml, interactive?
         if wipe:
             self.db_meta = VersionNode(self, from_config=True)
             self.init_db()
@@ -743,7 +744,7 @@ class Driver(BaseDriver):
         Creates constraints on node types in the graph. Used for
         initial setup.
 
-        Grabs leaves of the schema_config.yaml file and creates
+        Grabs leaves of the ``schema_config.yaml`` file and creates
         constraints on the id of all entities represented as nodes.
         """
 
@@ -763,39 +764,70 @@ class Driver(BaseDriver):
 
     def add_nodes(self, id_type_tuples):
         """
-        Generic node adder function to add any kind of input to the
-        graph via the BioCypherNode class. Employs translation
-        functionality.
+        Generic node adder method to add any kind of input to the
+        graph via the :class:`biocypher.create.BioCypherNode` class. Employs translation
+        functionality and calls the :meth:`add_biocypher_nodes()` method.
+
+        Args:
+            id_type_tuples (iterable of 3-tuple): for each node to add to
+                the biocypher graph, a 3-tuple with the following layout:
+                first, the (unique if constrained) ID of the node; second, the
+                type of the node, capitalised or PascalCase and in noun form
+                (Neo4j primary label, eg `:Protein`); and third, a dictionary
+                of arbitrary properties the node should possess (can be empty).
+
+        Returns:
+            2-tuple: the query result of :meth:`add_biocypher_nodes()`
+                - first entry: data
+                - second entry: Neo4j summary.
         """
 
         bn = gen_translate_nodes(self.db_meta.schema, id_type_tuples)
-        self.add_biocypher_nodes(bn)
+        return self.add_biocypher_nodes(bn)
 
     def add_edges(self, src_tar_type_tuples):
         """
-        Generic edge adder function to add any kind of input to the
-        graph via the BioCypherEdge class. Employs translation
-        functionality.
+        Generic edge adder method to add any kind of input to the
+        graph via the :class:`biocypher.create.BioCypherEdge` class.
+        Employs translation functionality and calls the
+        :meth:`add_biocypher_edges()` method.
+
+        Args:
+            id_type_tuples (iterable of 4-tuple): for each edge to add to
+                the biocypher graph, a 4-tuple with the following layout:
+                first and second, the (unique if constrained) IDs of the
+                source and target nodes of the relationship; third, the
+                type of the relationship, all caps with underscores and
+                in verb form (Neo4j primary label, eg `:IS_TARGET_OF`);
+                and fourth, a dictionary of arbitrary properties the edge
+                should possess (can be empty).
+
+        Returns:
+            2-tuple: the query result of :meth:`add_biocypher_edges()`
+                - first entry: data
+                - second entry: Neo4j summary.
         """
 
         bn = gen_translate_edges(self.db_meta.schema, src_tar_type_tuples)
-        self.add_biocypher_edges(bn)
+        return self.add_biocypher_edges(bn)
 
     def add_biocypher_nodes(self, nodes, explain=False, profile=False):
         """
-        Accepts a node type handoff class (BioCypherNode) with id,
+        Accepts a node type handoff class
+        (:class:`biocypher.create.BioCypherNode`) with id,
         label, and a dict of properties (passing on the type of
-        property, ie, int, string ...).
+        property, ie, ``int``, ``str``, ...).
 
-        The dict retrieved by the get_dict() method is passed into Neo4j
-        as a map of maps, explicitly encoding node id and label, and
-        adding all other properties from the 'properties' key of the
-        dict. The merge is performed via APOC, matching only on node id
-        to prevent duplicates. The same properties are set on match and
-        on create, irrespective of the actual event.
+        The dict retrieved by the
+        :meth:`biocypher.create.BioCypherNode.get_dict()` method is
+        passed into Neo4j as a map of maps, explicitly encoding node id
+        and label, and adding all other properties from the 'properties'
+        key of the dict. The merge is performed via APOC, matching only
+        on node id to prevent duplicates. The same properties are set on
+        match and on create, irrespective of the actual event.
 
         Args:
-            nodes: a list of BioCypherNode objects
+            nodes: a list of :class:`biocypher.create.BioCypherNode` objects
 
         Returns:
             bool: The return value. True for success, False otherwise.
@@ -811,7 +843,7 @@ class Driver(BaseDriver):
                 logger.warn(
                     "It appears that the first node is not a BioCypherNode. "
                     "Nodes must be passed as type BioCypherNode. "
-                    "Please use the generic add_edges() function."
+                    "Please use the generic add_edges() method."
                 )
                 return (False, False)
             else:
@@ -852,25 +884,27 @@ class Driver(BaseDriver):
 
     def add_biocypher_edges(self, edges, explain=False, profile=False):
         """
-        Accepts an edge type handoff class (BioCypherEdge) with source
+        Accepts an edge type handoff class
+        (:class:`biocypher.create.BioCypherEdge`) with source
         and target ids, label, and a dict of properties (passing on the
         type of property, ie, int, string ...).
 
         The individual edge is either passed as a singleton, in the case
-        of representation as an edge in the graph, or as a 3-tuple, in
+        of representation as an edge in the graph, or as a 4-tuple, in
         the case of representation as a node (with two edges connecting
         to interaction partners).
 
-        The dict retrieved by the get_dict() method is passed into Neo4j
-        as a map of maps, explicitly encoding source and target ids and
-        the relationship label, and adding all edge properties from the
-        'properties' key of the dict. The merge is performed via APOC,
-        matching only on source and target id to prevent duplicates. The
-        same properties are set on match and on create, irrespective of
-        the actual event.
+        The dict retrieved by the
+        :meth:`biocypher.create.BioCypherEdge.get_dict()` method is
+        passed into Neo4j as a map of maps, explicitly encoding source
+        and target ids and the relationship label, and adding all edge
+        properties from the 'properties' key of the dict. The merge is
+        performed via APOC, matching only on source and target id to
+        prevent duplicates. The same properties are set on match and on
+        create, irrespective of the actual event.
 
         Args:
-            edges: a list of BioCypherEdge objects
+            edges: a list of :class:`biocypher.create.BioCypherEdge` objects
 
         Returns:
             bool: The return value. True for success, False otherwise.
@@ -959,7 +993,7 @@ class Driver(BaseDriver):
 
     def write_nodes(self, nodes, dirname=None, db_name=None):
         """
-        Write BioCypher nodes to disk using the :py:mod:`write` module,
+        Write BioCypher nodes to disk using the :mod:`write` module,
         formatting the CSV to enable Neo4j admin import from the target
         directory.
 
@@ -967,7 +1001,7 @@ class Driver(BaseDriver):
             nodes (iterable): collection of nodes to be written in
                 BioCypher-compatible CSV format; can be any compatible
                 (ie, translatable) input format or already as
-                :py:class:`BioCypherNode`.
+                :class:`biocypher.create.BioCypherNode`.
         """
 
         # instantiate adapter on demand because it takes time to load
@@ -993,7 +1027,7 @@ class Driver(BaseDriver):
 
     def write_edges(self, edges, dirname=None, db_name=None):
         """
-        Write BioCypher edges to disk using the :py:mod:`write` module,
+        Write BioCypher edges to disk using the :mod:`write` module,
         formatting the CSV to enable Neo4j admin import from the target
         directory.
 
@@ -1001,7 +1035,7 @@ class Driver(BaseDriver):
             edges (iterable): collection of edges to be written in
                 BioCypher-compatible CSV format; can be any compatible
                 (ie, translatable) input format or already as
-                :py:class:`BioCypherEdge`.
+                :class:`biocypher.create.BioCypherEdge`.
         """
 
         # instantiate adapter on demand because it takes time to load
