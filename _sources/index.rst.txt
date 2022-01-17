@@ -22,6 +22,11 @@ as underlying hierarchical ontology, supplying identification, filtering, and
 mapping capabilities. A side objective is the creation of human-readable graph 
 syntax.
 
+**Important note:** BioCypher is currently in prototype state; we are working 
+on a full-featured implementation for the migration of OmniPath at the moment.
+Functionality regarding the translation between different database formats and
+identifiers therefore is rudimentary or non-existent as of now.
+
 ##########
 Quickstart
 ##########
