@@ -827,7 +827,12 @@ class Driver(BaseDriver):
         match and on create, irrespective of the actual event.
 
         Args:
-            nodes: a list of :class:`biocypher.create.BioCypherNode` objects
+            nodes (iterable of BioCypherNode): a list of
+                :class:`biocypher.create.BioCypherNode` objects
+            explain (bool): whether to call ``EXPLAIN`` in front of the
+                CYPHER query
+            profile (bool): whether to call ``PROFILE`` in front of the
+                CYPHER query
 
         Returns:
             bool: The return value. True for success, False otherwise.
@@ -905,6 +910,10 @@ class Driver(BaseDriver):
 
         Args:
             edges: a list of :class:`biocypher.create.BioCypherEdge` objects
+            explain (bool): whether to call ``EXPLAIN`` in front of the
+                CYPHER query
+            profile (bool): whether to call ``PROFILE`` in front of the
+                CYPHER query
 
         Returns:
             bool: The return value. True for success, False otherwise.

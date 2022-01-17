@@ -152,6 +152,8 @@ from nodes that are represented in PascalCase and as nouns.
 The Biolink model extension
 ---------------------------
 
+
+
 .. _adapter:
 
 ###################
@@ -316,5 +318,4 @@ Indices, Tables, and Search
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 4

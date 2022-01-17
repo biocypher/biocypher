@@ -46,7 +46,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "log/"]
 
 # -- Autodoc configuration ---------------------------------------------------
 
-autodoc_mock_imports = ["neo4j"]
+# autodoc_mock_imports = ["neo4j"]
 
 # -- Options for HTML output -------------------------------------------------
 
