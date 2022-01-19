@@ -365,7 +365,7 @@ class BatchWriter:
                 logger.error(
                     f"At least one node of the class {n.get_label()} "
                     f"has more or fewer properties than the others. "
-                    f"Offending node: {onode}, offending property: "
+                    f"Offending node: {onode!r}, offending property: "
                     f"{max([oprop1, oprop2])}."
                 )
                 return False
@@ -570,7 +570,7 @@ class BatchWriter:
                 logger.error(
                     f"At least one edge of the class {e.get_label()} "
                     f"has more or fewer properties than the others. "
-                    f"Offending edge: {oedge}, offending property: "
+                    f"Offending edge: {oedge!r}, offending property: "
                     f"{max([oprop1, oprop2])}."
                 )
                 return False
