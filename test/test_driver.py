@@ -1,8 +1,5 @@
-from neo4j import Neo4jDriver
-import neo4j
 from biocypher.driver import Driver
 from biocypher.create import BioCypherNode, BioCypherEdge, BioCypherRelAsNode
-from neo4j.work.summary import ResultSummary
 import pytest
 
 

@@ -36,12 +36,9 @@ Todo:
 """
 
 import os
-from types import GeneratorType
 from bmt import Toolkit
 
 from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-
-import biocypher.biolinkmodel as bl  # do we need this? is it different from bmt Toolkit?
 
 import logging
 
