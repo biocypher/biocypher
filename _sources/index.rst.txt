@@ -55,7 +55,7 @@ has the job of piping the data as it is represented in the original database
 into the BioCypher input, for instance as a :py:class:`Generator` object of 
 single database entries, whether they be nodes or relationships in the graph
 to be created. For more details, please refer to the example `PyPath adapter 
-<https://github.com/saezlab/pypath/blob/master/src/pypath/biocypher/adapter.py>`_ 
+<https://github.com/saezlab/pypath/blob/master/pypath/biocypher/adapter.py>`_ 
 and the section on :ref:`adapter functions <adapter>`.
 
 .. _schema-config:
