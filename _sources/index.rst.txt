@@ -5,9 +5,9 @@
 
 .. image:: biocypher-open-graph.png
 
-################################################################################
+############
 Introduction
-################################################################################
+############
 
 BioCypher is designed to serve as guideline and translation mechanism for both 
 the creation of property graph databases from primary data as well as for the 
