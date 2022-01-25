@@ -1,5 +1,5 @@
 neo4j
-PyYAML
+PyYAML~=5.3
 bmt
 sphinx-rtd-theme
 more_itertools
