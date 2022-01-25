@@ -2,21 +2,21 @@ name: biocypher
 channels:
   - conda-forge
 dependencies:
-  - ca-certificates=2021.5.30=h4653dfc_0
-  - libzlib=1.2.11=hee7b306_1013
-  - ncurses=6.2=h9aa5885_4
-  - openssl=3.0.0=h3422bc3_1
-  - pip=21.2.4=pyhd8ed1ab_0
-  - python=3.9.7=hc0da0df_3_cpython
-  - python_abi=3.9=2_cp39
-  - readline=8.1=hedafd6a_0
-  - setuptools=58.2.0=py39h2804cbe_0
-  - sqlite=3.36.0=h72a2b83_2
-  - tk=8.6.11=he1e0b03_1
-  - tzdata=2021c=he74cb21_0
-  - wheel=0.37.0=pyhd8ed1ab_1
-  - xz=5.2.5=h642e427_1
-  - zlib=1.2.11=hee7b306_1013
+  - ca-certificates=2021.5.30
+  - libzlib=1.2.11
+  - ncurses=6.2
+  - openssl=3.0.0
+  - pip=21.2.4
+  - python=3.9.7
+  - python_abi=3.9
+  - readline=8.1
+  - setuptools=58.2.0
+  - sqlite=3.36.0
+  - tk=8.6.11
+  - tzdata=2021c
+  - wheel=0.37.0
+  - xz=5.2.5
+  - zlib=1.2.11
   - pip:
     - alabaster==0.7.12
     - antlr4-python3-runtime==4.9.3
