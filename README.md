@@ -6,12 +6,13 @@ Ideally, BioCypher would enable "plug-and-play" functionality between participat
 ![BioCypher](BioCypher.png)
 
 ## Usage
-BioCypher is currently in prototype stage. To use it locally, please install it into a python environment from the cloned repo. After activating the environment and changing to a folder of your choice, do:
+BioCypher is currently in prototype stage. To use it locally, please clone the repository, change to a folder of your choice and then create the conda environment using the **_enviroment.yaml_**. This will create a conda environment called **_biocypher_**. Finally, the **_biocypher_** environment should be activated. The commands for these steps are given below:
 
 ```
 git clone https://github.com/saezlab/BioCypher.git
 cd BioCypher
-python setup.py install
+conda env create -f environment.yaml
+conda activate biocypher
 ```
 
 Exemplary usage of BioCypher to build a graph database is shown in the [PyPath](https://github.com/saezlab/pypath) repository. The example `PyPath->BioCypher` adapter is in the [biocypher](https://github.com/saezlab/pypath/tree/dev/src/pypath/biocypher) directory, the example script for building a local database using the adapter is located in the [scripts](https://github.com/saezlab/pypath/tree/dev/src/scripts) directory. The documentation can be found at https://saezlab.github.io/BioCypher/.
