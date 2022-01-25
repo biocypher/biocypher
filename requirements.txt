@@ -1,5 +1,6 @@
 neo4j
 PyYAML~=5.3
+click~=7.0
 bmt
 sphinx-rtd-theme
 more_itertools
