@@ -15,7 +15,7 @@ conda env create -f environment.yaml
 conda activate biocypher
 ```
 
-Exemplary usage of BioCypher to build a graph database is shown in the [PyPath](https://github.com/saezlab/pypath) repository. The example `PyPath->BioCypher` adapter is in the [biocypher](https://github.com/saezlab/pypath/tree/master/pypath/biocypher) directory, the example script for building a local database using the adapter is located in the [scripts](https://github.com/saezlab/pypath/tree/dev/src/scripts) directory. The documentation can be found at https://saezlab.github.io/BioCypher/.
+Exemplary usage of BioCypher to build a graph database is shown in the [PyPath](https://github.com/saezlab/pypath) repository. The example `PyPath->BioCypher` adapter is in the [biocypher](https://github.com/saezlab/pypath/tree/master/pypath/biocypher) directory, the example script for building a local database using the adapter is located in the [scripts](https://github.com/saezlab/pypath/blob/master/scripts/) directory. The documentation can be found at https://saezlab.github.io/BioCypher/.
 
 ### Note for contributors: 
 The project uses [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) and documentation format [Napoleon](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html) with a [Sphinx](https://www.sphinx-doc.org/en/master/) autodoc GitHub Actions workflow.
