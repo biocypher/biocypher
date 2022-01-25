@@ -8,12 +8,12 @@ dependencies:
   - openssl=3.0.0
   - pip=21.2.4
   - python=3.9.7
-  - python_abi=3.9
+  - python_abi=3.9=2_cp39
   - readline=8.1
   - setuptools=58.2.0
   - sqlite=3.36.0
   - tk=8.6.11
-  - tzdata=2021c
+  - tzdata=2021c=he74cb21_0
   - wheel=0.37.0
   - xz=5.2.5
   - zlib=1.2.11
@@ -100,7 +100,7 @@ dependencies:
     - pytest==6.2.5
     - pytest-cov==3.0.0
     - python-dateutil==2.8.2
-    - python-graphviz==0.18
+    - graphviz==0.18.1
     - pytz==2021.3
     - pyyaml==5.4.1
     - rdflib==5.0.0
