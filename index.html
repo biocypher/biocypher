@@ -104,10 +104,13 @@ space, we include the <a class="reference external" href="https://biolink.github
 as underlying hierarchical ontology, supplying identification, filtering, and
 mapping capabilities. A side objective is the creation of human-readable graph
 syntax.</p>
-<p><strong>Important note:</strong> BioCypher is currently in prototype state; we are working
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>BioCypher is currently in prototype state; we are working
 on a full-featured implementation for the migration of OmniPath at the moment.
 Functionality regarding the translation between different database formats and
 identifiers therefore is rudimentary or non-existent as of now.</p>
+</div>
 </section>
 <section id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline"></a></h1>
@@ -221,7 +224,7 @@ from nodes that are represented in PascalCase and as nouns.</p>
 </section>
 <section id="the-biolink-model-extension">
 <span id="biolink"></span><h2>The Biolink model extension<a class="headerlink" href="#the-biolink-model-extension" title="Permalink to this headline"></a></h2>
-<p>The post-translation interaction that we would like to model in OmniPath has no
+<p>The post-translational interaction that we would like to model in OmniPath has no
 literal counterpart in the Biolink model, due to its design philosophy.
 The most granular level of interactions as Biolink class is the
 <a class="reference external" href="https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html">PairwiseMolecularInteraction</a>;
@@ -336,7 +339,7 @@ into the graph database.</p>
 <section id="exporting-for-the-neo4j-admin-import-feature">
 <span id="admin-import"></span><h2>Exporting for the <cite>neo4j-admin import</cite> feature<a class="headerlink" href="#exporting-for-the-neo4j-admin-import-feature" title="Permalink to this headline"></a></h2>
 <p>Particularly if the data are very extensive (or performance is of the utmost
-priorty), BioCypher can be used to facilitate a speedy and safe import of the
+priority), BioCypher can be used to facilitate a speedy and safe import of the
 data using the <code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> console command. <a class="reference external" href="https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/">Admin Import</a>
 is a particularly fast method of writing data to a newly created graph database
 (the database needs to be completely empty) that gains most of its performance
@@ -345,8 +348,8 @@ Therefore, a sound and consistent representation of the nodes and edges in the
 graph is of high importance in this process, which is why the BioCypher export
 functionality has been specifically designed to perform type and content
 checking for all data to be written to the graph.</p>
-<p>Data input from the source database is exactly as in the case of <cite>interacting
-with a running database &lt;running&gt;</cite>, with the data representation being
+<p>Data input from the source database is exactly as in the case of <a class="reference external" href="running">interacting
+with a running database</a>, with the data representation being
 converted to a series of CSV files in a designated output folder (standard
 being <code class="docutils literal notranslate"><span class="pre">out/</span></code> and the current datetime). BioCypher creates separate header and
 data files for all node and edge types to be represented in the graph via the
@@ -356,7 +359,7 @@ called <code class="docutils literal notranslate"><span class="pre">neo4j-admin-
 creating a new database, which only has to be executed from the directory of
 the currently running Neo4j database.</p>
 <p>The name of the database to be created is given by the <code class="docutils literal notranslate"><span class="pre">db_name</span></code> attribute
-of the driver method, ie, <code class="docutils literal notranslate"><span class="pre">write_nodes()</span></code> and <code class="docutils literal notranslate"><span class="pre">write_edges()</span></code>, which should
+of the driver methods, ie, <code class="docutils literal notranslate"><span class="pre">write_nodes()</span></code> and <code class="docutils literal notranslate"><span class="pre">write_edges()</span></code>, which should
 receive the same name as in the <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> adapter example, and can be
 arbitrary. In case the <code class="docutils literal notranslate"><span class="pre">db_name</span></code> is not the default Neo4j database name,
 <code class="docutils literal notranslate"><span class="pre">neo4j</span></code>, the database needs to be created in Neo4j before or after using
