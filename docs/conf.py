@@ -46,7 +46,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "log/"]
 
 # -- Autodoc configuration ---------------------------------------------------
 
-# autodoc_mock_imports = ["neo4j"]
+autodoc_mock_imports = ["bmt"]
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -55,7 +55,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "log/"]
 
 html_theme = "sphinx_rtd_theme"
 html_theme_options = {
-    "navigation_depth": 4,
+    "navigation_depth": 2,
     "collapse_navigation": True,
 }
 

@@ -22,10 +22,12 @@ as underlying hierarchical ontology, supplying identification, filtering, and
 mapping capabilities. A side objective is the creation of human-readable graph 
 syntax.
 
-**Important note:** BioCypher is currently in prototype state; we are working 
-on a full-featured implementation for the migration of OmniPath at the moment.
-Functionality regarding the translation between different database formats and
-identifiers therefore is rudimentary or non-existent as of now.
+.. Caution::
+
+   BioCypher is currently in prototype state; we are working 
+   on a full-featured implementation for the migration of OmniPath at the moment.
+   Functionality regarding the translation between different database formats and
+   identifiers therefore is rudimentary or non-existent as of now.
 
 ##########
 Quickstart
@@ -162,7 +164,7 @@ from nodes that are represented in PascalCase and as nouns.
 The Biolink model extension
 ===========================
 
-The post-translation interaction that we would like to model in OmniPath has no
+The post-translational interaction that we would like to model in OmniPath has no
 literal counterpart in the Biolink model, due to its design philosophy. 
 The most granular level of interactions as Biolink class is the 
 `PairwiseMolecularInteraction <https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html>`_;
@@ -297,7 +299,7 @@ Exporting for the `neo4j-admin import` feature
 ==============================================
 
 Particularly if the data are very extensive (or performance is of the utmost
-priorty), BioCypher can be used to facilitate a speedy and safe import of the
+priority), BioCypher can be used to facilitate a speedy and safe import of the
 data using the ``neo4j-admin import`` console command. `Admin Import 
 <https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/>`_ 
 is a particularly fast method of writing data to a newly created graph database
@@ -309,7 +311,7 @@ functionality has been specifically designed to perform type and content
 checking for all data to be written to the graph.
 
 Data input from the source database is exactly as in the case of `interacting 
-with a running database <running>`, with the data representation being 
+with a running database <running>`_, with the data representation being 
 converted to a series of CSV files in a designated output folder (standard 
 being ``out/`` and the current datetime). BioCypher creates separate header and
 data files for all node and edge types to be represented in the graph via the 
@@ -320,7 +322,7 @@ creating a new database, which only has to be executed from the directory of
 the currently running Neo4j database.
 
 The name of the database to be created is given by the ``db_name`` attribute
-of the driver method, ie, ``write_nodes()`` and ``write_edges()``, which should 
+of the driver methods, ie, ``write_nodes()`` and ``write_edges()``, which should 
 receive the same name as in the ``PyPath`` adapter example, and can be 
 arbitrary. In case the ``db_name`` is not the default Neo4j database name, 
 ``neo4j``, the database needs to be created in Neo4j before or after using 
