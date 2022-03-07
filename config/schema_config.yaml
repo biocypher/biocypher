@@ -57,6 +57,10 @@ ConfidenceLevel:
   represented_as: node
   preferred_id: None
 
+Cell:
+  represented_as: node
+  preferred_id: CL
+
 Disease:
   represented_as: node
   preferred_id: ICD10

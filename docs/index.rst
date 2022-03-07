@@ -9,40 +9,46 @@
 Introduction
 ############
 
-BioCypher is designed to serve as guideline and translation mechanism for both 
-the creation of property graph databases from primary data as well as for the 
-querying of these databases. The purpose is to combine the computational 
-power of graph databases with the search for answers of our most pressing 
-biological questions and facilitate interfacing with cutting edge developments 
-in the areas of causal reasoning, representation learning, and natural language 
-processing, all of which depend on having a consistent descriptive vocabulary.
-To achieve meaningful automatic representations in the biomedical language 
-space, we include the `Biolink model <https://biolink.github.io/biolink-model/>`_ 
-as underlying hierarchical ontology, supplying identification, filtering, and 
-mapping capabilities. A side objective is the creation of human-readable graph 
-syntax.
+BioCypher is designed to serve as guideline and translation mechanism
+for both the creation of biomedical property graph databases from
+primary data as well as for the querying of these databases. The purpose
+is to combine the computational power of graph databases with the search
+for answers of our most pressing biological questions and facilitate
+interfacing with cutting edge developments in the areas of causal
+reasoning, representation learning, and natural language processing, all
+of which depend on having a consistent descriptive vocabulary. To
+achieve meaningful automatic representations in the biomedical language
+space, we include the `Biolink model
+<https://biolink.github.io/biolink-model/>`_ as underlying hierarchical
+ontology, supplying identification, filtering, and mapping capabilities.
+We are also keeping an open mind about adding alternative ontological
+systems using an opt-in philosophy. A side objective is the creation of
+human-readable graph syntax.
 
 .. Caution::
 
-   BioCypher is currently in prototype state; we are working 
-   on a full-featured implementation for the migration of OmniPath at the moment.
-   Functionality regarding the translation between different database formats and
-   identifiers therefore is rudimentary or non-existent as of now.
+   BioCypher is currently in prototype state; we are working on a
+   full-featured implementation for the migration of OmniPath at the
+   moment. Functionality regarding the translation between different
+   database formats and identifiers therefore is rudimentary or
+   non-existent as of now.
 
 ##########
 Quickstart
 ##########
 
-The main interface for interacting with the BioCypher module to create your 
-own property graph consists of two components:
+The main interface for interacting with the BioCypher module to create
+your own property graph consists of two components:
 
-1. the :ref:`host module adapter <host-module-adapter>`, a python program, and
+1. the :ref:`host module adapter <host-module-adapter>`, a python
+   program, and
 2. the :ref:`schema configuration file <schema-config>`, a YAML file. 
 
-The adapter serves as a data interface between the source and BioCypher, piping
-the "raw" data into BioCypher for the creation of the property graph, while the
-schema configuration tells BioCypher how the graph should be structured,
-detailing the names of constituents and how they should be connected.
+The adapter serves as a data interface between the source and BioCypher,
+piping the "raw" data into BioCypher for the creation of the property
+graph, while the schema configuration tells BioCypher how the graph
+should be structured, detailing the names of constituents and how they
+should be connected.
 
 .. _host-module-adapter:
 
