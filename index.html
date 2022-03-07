@@ -92,38 +92,43 @@
   <img alt="_images/biocypher-open-graph.png" src="_images/biocypher-open-graph.png" />
 <section id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h1>
-<p>BioCypher is designed to serve as guideline and translation mechanism for both
-the creation of property graph databases from primary data as well as for the
-querying of these databases. The purpose is to combine the computational
-power of graph databases with the search for answers of our most pressing
-biological questions and facilitate interfacing with cutting edge developments
-in the areas of causal reasoning, representation learning, and natural language
-processing, all of which depend on having a consistent descriptive vocabulary.
-To achieve meaningful automatic representations in the biomedical language
-space, we include the <a class="reference external" href="https://biolink.github.io/biolink-model/">Biolink model</a>
-as underlying hierarchical ontology, supplying identification, filtering, and
-mapping capabilities. A side objective is the creation of human-readable graph
-syntax.</p>
+<p>BioCypher is designed to serve as guideline and translation mechanism
+for both the creation of biomedical property graph databases from
+primary data as well as for the querying of these databases. The purpose
+is to combine the computational power of graph databases with the search
+for answers of our most pressing biological questions and facilitate
+interfacing with cutting edge developments in the areas of causal
+reasoning, representation learning, and natural language processing, all
+of which depend on having a consistent descriptive vocabulary. To
+achieve meaningful automatic representations in the biomedical language
+space, we include the <a class="reference external" href="https://biolink.github.io/biolink-model/">Biolink model</a> as underlying hierarchical
+ontology, supplying identification, filtering, and mapping capabilities.
+We are also keeping an open mind about adding alternative ontological
+systems using an opt-in philosophy. A side objective is the creation of
+human-readable graph syntax.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>BioCypher is currently in prototype state; we are working
-on a full-featured implementation for the migration of OmniPath at the moment.
-Functionality regarding the translation between different database formats and
-identifiers therefore is rudimentary or non-existent as of now.</p>
+<p>BioCypher is currently in prototype state; we are working on a
+full-featured implementation for the migration of OmniPath at the
+moment. Functionality regarding the translation between different
+database formats and identifiers therefore is rudimentary or
+non-existent as of now.</p>
 </div>
 </section>
 <section id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline"></a></h1>
-<p>The main interface for interacting with the BioCypher module to create your
-own property graph consists of two components:</p>
+<p>The main interface for interacting with the BioCypher module to create
+your own property graph consists of two components:</p>
 <ol class="arabic simple">
-<li><p>the <a class="reference internal" href="#host-module-adapter"><span class="std std-ref">host module adapter</span></a>, a python program, and</p></li>
+<li><p>the <a class="reference internal" href="#host-module-adapter"><span class="std std-ref">host module adapter</span></a>, a python
+program, and</p></li>
 <li><p>the <a class="reference internal" href="#schema-config"><span class="std std-ref">schema configuration file</span></a>, a YAML file.</p></li>
 </ol>
-<p>The adapter serves as a data interface between the source and BioCypher, piping
-the “raw” data into BioCypher for the creation of the property graph, while the
-schema configuration tells BioCypher how the graph should be structured,
-detailing the names of constituents and how they should be connected.</p>
+<p>The adapter serves as a data interface between the source and BioCypher,
+piping the “raw” data into BioCypher for the creation of the property
+graph, while the schema configuration tells BioCypher how the graph
+should be structured, detailing the names of constituents and how they
+should be connected.</p>
 <section id="the-host-module-adapter">
 <span id="host-module-adapter"></span><h2>The host module adapter<a class="headerlink" href="#the-host-module-adapter" title="Permalink to this headline"></a></h2>
 <p>Currently, BioCypher expects input from the user module via an adapter module.
