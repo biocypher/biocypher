@@ -104,8 +104,9 @@ achieve meaningful automatic representations in the biomedical language
 space, we include the <a class="reference external" href="https://biolink.github.io/biolink-model/">Biolink model</a> as underlying hierarchical
 ontology, supplying identification, filtering, and mapping capabilities.
 We are also keeping an open mind about adding alternative ontological
-systems using an opt-in philosophy. A side objective is the creation of
-human-readable graph syntax.</p>
+systems using an opt-in philosophy. Side objectives are the creation of
+human-readable graph syntax and facilitating the ultra-rapid graph
+creation through the Neo4j <a class="reference internal" href="#admin-import"><span class="std std-ref">admin-import</span></a> feature.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>BioCypher is currently in prototype state; we are working on a
@@ -324,7 +325,7 @@ the creation and manipulation of graph entries.</p>
 <p>In our example, it is instantiated in the initialisation of the adapter, and
 then called on for <a class="reference internal" href="#running"><span class="std std-ref">interacting with a running graph</span></a> and for
 exporting a complete database in CSV format for the
-<a class="reference internal" href="#admin-import"><span class="std std-ref">neo4j-admin import feature</span></a>. Upon instantiation, it
+<a class="reference internal" href="#admin-import"><span class="std std-ref">Neo4j admin-import feature</span></a>. Upon instantiation, it
 automatically assesses the graph database it is connected to (specified using
 the <code class="docutils literal notranslate"><span class="pre">db_name</span></code> attribute) regarding whether or not it already contains a
 BioCypher graph, and, if so, what the structure of this graph is.</p>
