@@ -22,8 +22,9 @@ space, we include the `Biolink model
 <https://biolink.github.io/biolink-model/>`_ as underlying hierarchical
 ontology, supplying identification, filtering, and mapping capabilities.
 We are also keeping an open mind about adding alternative ontological
-systems using an opt-in philosophy. A side objective is the creation of
-human-readable graph syntax.
+systems using an opt-in philosophy. Side objectives are the creation of
+human-readable graph syntax and facilitating the ultra-rapid graph 
+creation through the Neo4j :ref:`admin-import <admin_import>` feature.
 
 .. Caution::
 
@@ -278,7 +279,7 @@ the creation and manipulation of graph entries.
 In our example, it is instantiated in the initialisation of the adapter, and 
 then called on for :ref:`interacting with a running graph <running>` and for 
 exporting a complete database in CSV format for the 
-:ref:`neo4j-admin import feature <admin_import>`. Upon instantiation, it 
+:ref:`Neo4j admin-import feature <admin_import>`. Upon instantiation, it 
 automatically assesses the graph database it is connected to (specified using 
 the ``db_name`` attribute) regarding whether or not it already contains a 
 BioCypher graph, and, if so, what the structure of this graph is.
