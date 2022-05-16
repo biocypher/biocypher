@@ -23,7 +23,7 @@ space, we include the `Biolink model
 ontology, supplying identification, filtering, and mapping capabilities.
 We are also keeping an open mind about adding alternative ontological
 systems using an opt-in philosophy. Side objectives are the creation of
-human-readable graph syntax and facilitating the ultra-rapid graph 
+human-readable graph syntax and facilitating ultra-rapid graph 
 creation through the Neo4j :ref:`admin-import <admin_import>` feature.
 
 .. Caution::
