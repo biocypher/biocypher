@@ -9,7 +9,7 @@
 Introduction
 ############
 
-BioCypher (`Docs <https://github.com/saezlab/BioCypher>`_) is designed
+BioCypher (`GitHub <https://github.com/saezlab/BioCypher>`_) is designed
 to serve as guideline and translation mechanism for both the creation of
 biomedical property graph databases from primary data as well as for the
 seamless integration, optimisation, and querying of these databases. The
