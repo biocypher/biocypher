@@ -11,7 +11,7 @@ Configuration of the module logger.
 # File author(s): Sebastian Lobentanzer
 #                 ...
 #
-# Distributed under GPLv3 license, see LICENSE.txt.
+# Distributed under GPLv3 license, see the file `LICENSE`.
 #
 # Todo:
 #

@@ -15,7 +15,7 @@ Copyright 2021, Heidelberg University Clinic
 File author(s): Sebastian Lobentanzer
                 ...
 
-Distributed under GPLv3 license, see LICENSE.txt.
+Distributed under GPLv3 license, see the file `LICENSE`.
 """
 
 import os

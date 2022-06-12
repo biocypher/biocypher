@@ -15,7 +15,7 @@ Copyright 2021, Heidelberg University Clinic
 File author(s): Sebastian Lobentanzer
                 ...
 
-Distributed under GPLv3 license, see LICENSE.txt.
+Distributed under GPLv3 license, see the file `LICENSE`.
 
 Todo:
     - connect graph structure setup (from config) with data parsing
