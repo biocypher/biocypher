@@ -1,4 +1,4 @@
-name: "Update Sphinx Autodoc on Push"
+name: "Sphinx build docs on push"
 on:
 - push
 
@@ -6,15 +6,36 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@main
+    - name: Check out main
+      uses: actions/checkout@main
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.10
+    - name: Load cached Poetry installation
+      uses: actions/cache@v2
+      with:
+        path: ~/.local
+        key: poetry-0
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        installer-parallel: true
+    - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
     - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-    - name: Build docs
-      run: |
-        cd docs
-        make html
-        cd ..
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+    - name: Install library
+      run: poetry install --no-interaction
+    - name: Build documentation
+      run: poetry run make html --directory docs/
     - name: Commit files
       run: |
         git config --local user.email "action@github.com"
