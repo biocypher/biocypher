@@ -6,13 +6,45 @@ authors = [
     "Sebastian Lobentanzer <sebastian.lobentanzer@uni-heidelberg.de>",
     "Denes Turei <turei.denes@gmail.com>"
 ]
-license = "GPLv3"
+license = "GPL-3.0-only"
+packages = [
+    { include = "biocypher" }
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering :: Bio-Informatics"
+]
+repository = "https://github.com/saezlab/biocypher"
+readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.6"
+python = "^3.8"
+neo4j = ">=4.4.0"
+PyYAML = ">=5.0"
+click = ">=7.0"
+bmt = "*"
+more_itertools = "*"
 
 [tool.poetry.dev-dependencies]
+pytest = ">=6.0"
+tox = ">=3.20.1"
+pre-commit = ">=2.17.0"
+bump2version = "*"
+coverage = ">=6.0"
+sphinx = ">=5.0.0"
+sphinx-rtd-theme = ">=1.0.0"
+sphinx-last-updated-by-git = ">=0.3"
+sphinx-autodoc-typehints = ">=1.18.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/saezlab/biocypher/issues"
