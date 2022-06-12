@@ -11,3 +11,7 @@ dist/
 *.prof
 *.coverage
 *.pickle
+out/*
+biocypher-log/*
+*.log
+dist/*
