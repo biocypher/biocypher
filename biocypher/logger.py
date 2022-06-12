@@ -58,7 +58,9 @@ def get_logger(name):
     now = datetime.now()
     date_time = now.strftime("%Y%m%d-%H%M%S")
     # go two dirs back to project root
-    logfile = ROOT + "/log/" + date_time + ".log"
+    logdir = 'biocypher-log'
+    os.makedirs(logdir, exist_ok = True)
+    logfile = os.path.join(logdir, f"biocypher-{date_time}.log")
     if not os.path.isfile(logfile):
         version = 0  # TODO
         print(
