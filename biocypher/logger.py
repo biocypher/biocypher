@@ -87,3 +87,7 @@ def get_logger(name):
     logger.info(f"Logging into `{logfile}`.")
 
     return logger
+
+
+# create root logger
+logger = get_logger("biocypher")
