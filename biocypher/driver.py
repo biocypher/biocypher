@@ -17,6 +17,9 @@ Todo:
 
 """
 
+from .logger import logger
+logger.debug(f"Loading module {__name__}.")
+
 import os
 import re
 from more_itertools import peekable
@@ -26,8 +29,6 @@ from typing import List
 
 import yaml
 import neo4j
-
-logger.debug(f"Loading module {__name__}.")
 
 from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from .translate import BiolinkAdapter, gen_translate_edges, gen_translate_nodes

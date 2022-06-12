@@ -8,6 +8,9 @@ default:
     - neo4j # user name
     - your_password_here # password
 
+# Path to the log directory
+logdir: biocypher-log
+
 # Logging granularity
 # Set debug to true if more granular logging is desired
 debug: true

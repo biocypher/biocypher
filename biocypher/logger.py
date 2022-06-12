@@ -2,32 +2,36 @@
 # -*- coding: utf-8 -*-
 
 """
-This module handles logging for the BioCypher the BioCypher python
-package, homepage: TODO.
-
-Copyright 2021, Heidelberg University Clinic
-
-File author(s): Sebastian Lobentanzer
-                ...
-
-Distributed under GPLv3 license, see LICENSE.txt.
-
-Todo:
-
+Configuration of the module logger.
 """
 
+#
+# Copyright 2021, Heidelberg University Clinic
+#
+# File author(s): Sebastian Lobentanzer
+#                 ...
+#
+# Distributed under GPLv3 license, see LICENSE.txt.
+#
+# Todo:
+#
+
+__all__ = ["logger", "get_logger", "logfile", "log"]
 
 import logging
 import os
 import yaml
 from datetime import datetime
+import pydoc
 
 from biocypher import config
 from biocypher import __version__
 
 
-def get_logger(name):
+def get_logger(name: str = "biocypher") -> logging.Logger:
     """
+    Access the module logger, create a new one if does not exist yet.
+
     Method providing central logger instance to main module. Is called
     only from main submodule, :mod:`biocypher.driver`. In child modules,
     the standard Python logging facility is called
@@ -38,56 +42,68 @@ def get_logger(name):
     time. Levels to output to file and console can be set here.
 
     Args:
-        name (str): name of the logger instance
+        name:
+            Name of the logger instance.
 
     Returns:
-        logging.getLogger: an instance of the Python :py:mod:`Logger`.
-
-    Todo:
-        - call from central __init__.py?
+        An instance of the Python :py:mod:`logging.Logger`.
     """
-    file_formatter = logging.Formatter(
-        "%(asctime)s\t%(levelname)s\tmodule:%(module)s\n%(message)s"
-    )
-    stdout_formatter = logging.Formatter("%(levelname)s -- %(message)s")
 
-    ROOT = os.path.join(
-        *os.path.split(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    if not logging.getLogger(name).hasHandlers():
+
+        file_formatter = logging.Formatter(
+            "%(asctime)s\t%(levelname)s\tmodule:%(module)s\n%(message)s"
         )
-    )
-    now = datetime.now()
-    date_time = now.strftime("%Y%m%d-%H%M%S")
-    # go two dirs back to project root
-    logdir = 'biocypher-log'
-    os.makedirs(logdir, exist_ok = True)
-    logfile = os.path.join(logdir, f"biocypher-{date_time}.log")
+        stdout_formatter = logging.Formatter("%(levelname)s -- %(message)s")
 
-    conf = config.module_data('module_config')
+        now = datetime.now()
+        date_time = now.strftime("%Y%m%d-%H%M%S")
 
-    file_handler = logging.FileHandler(logfile)
+        conf = config.module_data('module_config')
+        logdir = conf["logdir"]
+        os.makedirs(logdir, exist_ok = True)
+        logfile = os.path.join(logdir, f"biocypher-{date_time}.log")
 
-    if conf["debug"]:
-        file_handler.setLevel(logging.DEBUG)
-    else:
-        file_handler.setLevel(logging.INFO)
+        file_handler = logging.FileHandler(logfile)
 
-    file_handler.setFormatter(file_formatter)
+        if conf["debug"]:
+            file_handler.setLevel(logging.DEBUG)
+        else:
+            file_handler.setLevel(logging.INFO)
 
-    stdout_handler = logging.StreamHandler()
-    stdout_handler.setLevel(logging.WARN)
-    stdout_handler.setFormatter(stdout_formatter)
+        file_handler.setFormatter(file_formatter)
 
-    logger = logging.getLogger(name)
-    logger.addHandler(file_handler)
-    logger.addHandler(stdout_handler)
-    logger.setLevel(logging.DEBUG)
+        stdout_handler = logging.StreamHandler()
+        stdout_handler.setLevel(logging.WARN)
+        stdout_handler.setFormatter(stdout_formatter)
 
-    logger.info(f"This is BioCypher v{__version__}.")
-    logger.info(f"Logging into `{logfile}`.")
+        logger = logging.getLogger(name)
+        logger.addHandler(file_handler)
+        logger.addHandler(stdout_handler)
+        logger.setLevel(logging.DEBUG)
 
-    return logger
+        logger.info(f"This is BioCypher v{__version__}.")
+        logger.info(f"Logging into `{logfile}`.")
+
+    return logging.getLogger(name)
 
 
-# create root logger
-logger = get_logger("biocypher")
+def logfile() -> str:
+    """
+    Path to the log file.
+    """
+
+    return get_logger().handlers[0].baseFilename
+
+
+def log():
+    """
+    Browse the log file.
+    """
+
+    with open(logfile(), 'r') as fp:
+
+        pydoc.pager(fp.read())
+
+
+logger = get_logger()
