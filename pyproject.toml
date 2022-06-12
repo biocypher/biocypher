@@ -31,6 +31,7 @@ click = ">=7.0"
 bmt = "*"
 more_itertools = "*"
 toml = "*"
+appdirs = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=6.0"
