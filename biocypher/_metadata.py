@@ -1,3 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+# Copyright 2021, Heidelberg University Clinic
+#
+# File author(s): Sebastian Lobentanzer
+#                 ...
+#
+# Distributed under GPLv3 license, see the file `LICENSE`.
+#
+
 """
 Package metadata (version, authors, etc).
 """

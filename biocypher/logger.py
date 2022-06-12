@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-Configuration of the module logger.
-"""
-
 #
 # Copyright 2021, Heidelberg University Clinic
 #
@@ -13,8 +9,10 @@ Configuration of the module logger.
 #
 # Distributed under GPLv3 license, see the file `LICENSE`.
 #
-# Todo:
-#
+
+"""
+Configuration of the module logger.
+"""
 
 __all__ = ["logger", "get_logger", "logfile", "log"]
 

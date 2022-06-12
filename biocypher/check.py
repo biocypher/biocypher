@@ -1,21 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#
+# Copyright 2021, Heidelberg University Clinic
+#
+# File author(s): Sebastian Lobentanzer
+#                 ...
+#
+# Distributed under GPLv3 license, see the file `LICENSE`.
+#
+
 """
-This module is used for assessing a Neo4j instance for compliance with
-the BioCypher standard and returning pass/fail, and, in the event of
-"pass", it returns the primary identifiers chosen by the user of the
-active database to be used in translation of the input data to the
-correct format required for the active database. It is part of the
-BioCypher python package, homepage: TODO.
-
-
-Copyright 2021, Heidelberg University Clinic
-
-File author(s): Sebastian Lobentanzer
-                ...
-
-Distributed under GPLv3 license, see the file `LICENSE`.
+Read and write BioCypher config of a Neo4j database instance.
+Each BioCypher database contains a configuration encoded in the graph itself.
+This configuration includes the version of the BioCypher standard, the
+preferred identifier types, etc.
 
 Todo:
     - connect graph structure setup (from config) with data parsing
@@ -23,14 +22,13 @@ Todo:
         - setting in config file regarding the granularity?
 """
 
+from .logger import logger
+logger.debug(f"Loading module {__name__}.")
+
 from .create import BioCypherEdge, BioCypherNode
 from datetime import datetime
 import yaml
 import os
-import logging
-
-logger = logging.getLogger(__name__)
-logger.debug(f"Loading module {__name__}.")
 
 
 class MetaNode(BioCypherNode):

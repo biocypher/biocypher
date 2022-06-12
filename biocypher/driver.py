@@ -1,20 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#
+# Copyright 2021, Heidelberg University Clinic
+#
+# File author(s): Sebastian Lobentanzer
+#                 ...
+#
+# Distributed under GPLv3 license, see the file `LICENSE`.
+#
+
 """
-This module handles the passing of a Neo4j driver from the client to
-BioCypher and the modification of the database structure. It is part of
-the BioCypher python package, homepage: TODO.
-
-Copyright 2021, Heidelberg University Clinic
-
-File author(s): Sebastian Lobentanzer
-                ...
-
-Distributed under GPLv3 license, see the file `LICENSE`.
-
-Todo:
-
+A wrapper around the Neo4j driver which handles the DBMS connection and
+provides basic management methods.
 """
 
 from .logger import logger

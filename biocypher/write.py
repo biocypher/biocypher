@@ -1,22 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#
+# Copyright 2021, Heidelberg University Clinic
+#
+# File author(s): Sebastian Lobentanzer
+#                 ...
+#
+# Distributed under GPLv3 license, see the file `LICENSE`.
+#
+
 """
-This module handles the configuration and disk writing of CSV files
-intended for use with the Neo4J admin import function, to quickly
-transfer large amounts of content into an unused database. For more
+Export of CSV files for the Neo4J admin import. The admin import is able
+to quickly transfer large amounts of content into an unused database. For more
 explanation, see https://neo4j.com/docs/operations-manual/current/tuto\
-rial/neo4j-admin-import/. This module is part of the BioCypher python
-package, homepage: TODO.
-
-
-Copyright 2021, Heidelberg University Clinic
-
-File author(s): Sebastian Lobentanzer
-                ...
-
-Distributed under GPLv3 license, see the file `LICENSE`.
+rial/neo4j-admin-import/.
 """
+
+from .logger import logger
+logger.debug(f"Loading module {__name__}.")
 
 import os
 from datetime import datetime
@@ -26,10 +28,6 @@ from collections import defaultdict
 from more_itertools import peekable
 
 from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-import logging
-
-logger = logging.getLogger(__name__)
-logger.debug(f"Loading module {__name__}.")
 
 
 class BatchWriter:

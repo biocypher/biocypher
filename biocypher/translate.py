@@ -1,18 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#
+# Copyright 2021, Heidelberg University Clinic
+#
+# File author(s): Sebastian Lobentanzer
+#                 ...
+#
+# Distributed under GPLv3 license, see the file `LICENSE`.
+#
+
 """
-This module handles the lookup and storage of entity IDs that are part
-of the BioCypher schema. It is part of the BioCypher python package,
-homepage: TODO.
-
-
-Copyright 2021, Heidelberg University Clinic
-
-File author(s): Sebastian Lobentanzer
-                ...
-
-Distributed under GPLv3 license, see the file `LICENSE`.
+Lookup and storage of entity IDs that are part of the BioCypher schema.
 
 Todo:
 
@@ -35,15 +34,13 @@ Todo:
       dictionary)? biolink?
 """
 
+from .logger import logger
+logger.debug(f"Loading module {__name__}.")
+
 import os
 from bmt import Toolkit
 
 from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-
-import logging
-
-logger = logging.getLogger(__name__)
-logger.debug(f"Loading module {__name__}.")
 
 
 class BiolinkAdapter(object):

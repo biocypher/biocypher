@@ -1,6 +1,20 @@
-import logging
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-logger = logging.getLogger(__name__)
+#
+# Copyright 2021, Heidelberg University Clinic
+#
+# File author(s): Sebastian Lobentanzer
+#                 ...
+#
+# Distributed under GPLv3 license, see the file `LICENSE`.
+#
+
+"""
+Miscellaneous, generic purpose methods used across the module.
+"""
+
+from .logger import logger
 logger.debug(f"Loading module {__name__}.")
 
 

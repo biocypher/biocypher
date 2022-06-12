@@ -1,20 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#
+# Copyright 2021, Heidelberg University Clinic
+#
+# File author(s): Sebastian Lobentanzer
+#                 ...
+#
+# Distributed under GPLv3 license, see the file `LICENSE`.
+#
+
 """
-This module is used for the creating a generic property graph database
-for use in biomedical research applications. It takes as inputs ordered
-collections of biomedical nodes and relationships and yields specific
-classes for property graph nodes and edges that adhere to the BioCypher
-standard. It is part of the BioCypher python package, homepage: TODO.
-
-
-Copyright 2021, Heidelberg University Clinic
-
-File author(s): Sebastian Lobentanzer
-                ...
-
-Distributed under GPLv3 license, see the file `LICENSE`.
+Create a property graph database for biomedical research applications.
+Transforms ordered collections of biomedical entities and relationships
+to BioCypher objects that represent property graph nodes and edges.
 
 Todo:
 
@@ -44,22 +43,8 @@ Todo:
           interoperability)
 """
 
-# Futures
-# from __future__ import
-
-
-# Built-in/Generic Imports
-import logging
-
-logger = logging.getLogger(__name__)
+from .logger import logger
 logger.debug(f"Loading module {__name__}.")
-
-# Libs
-# import pandas
-
-
-# pypath needs to be installed locally from current GitHub version
-# import pypath.utils.mapping as mapping
 
 
 class BioCypherRelAsNode:
