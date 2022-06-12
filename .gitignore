@@ -17,3 +17,4 @@ biocypher-log/*
 dist/*
 *.pye
 *.pyc
+*.kate-swp
