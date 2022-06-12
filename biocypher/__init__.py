@@ -4,4 +4,5 @@ What to include?
     - ..?
 """
 
+import biocypher._config as config
 from .driver import Driver

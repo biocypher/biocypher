@@ -22,6 +22,8 @@ import os
 import yaml
 from datetime import datetime
 
+from biocypher import config
+
 
 def get_logger(name):
     """
@@ -64,9 +66,7 @@ def get_logger(name):
             f"Starting BioCypher logger at `{logfile}`."
         )
 
-    config_file = ROOT + "/config/module_config.yaml"
-    with open(config_file, "r") as fp:
-        conf = yaml.safe_load(fp.read())
+    conf = config.module_data('module_config')
 
     file_handler = logging.FileHandler(logfile)
     if conf["debug"]:
