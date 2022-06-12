@@ -12,16 +12,20 @@
 #
 import os
 import sys
+import pathlib
+import datetime
 
-sys.path.insert(0, os.path.abspath(".."))
+here = pathlib.Path(__file__).parent
+sys.path.insert(0, str(here.parent))
 
+import biocypher  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 
 project = "BioCypher"
-copyright = "2021, Heidelberg University Clinic"
-author = "Sebastian Lobentanzer"
-
+version = biocypher.__version__
+author = biocypher.__author__
+copyright = f"2021-{datetime.now():%Y}, BioCypher developers"
 
 # -- General configuration ---------------------------------------------------
 
@@ -41,7 +45,7 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "log/"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "biocypher-log/"]
 
 
 # -- Autodoc configuration ---------------------------------------------------

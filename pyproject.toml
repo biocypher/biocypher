@@ -30,6 +30,7 @@ PyYAML = ">=5.0"
 click = ">=7.0"
 bmt = "*"
 more_itertools = "*"
+toml = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=6.0"
