@@ -27,7 +27,6 @@ logger.debug(f"Loading module {__name__}.")
 
 from .create import BioCypherEdge, BioCypherNode
 from datetime import datetime
-import yaml
 import os
 
 
@@ -173,15 +172,9 @@ class VersionNode(BioCypherNode):
 
         else:
             # load default yaml from module
-            ROOT = os.path.join(
-                *os.path.split(
-                    os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-                )
-            )
-
             # get graph state from config
-            with open(ROOT + "/config/schema_config.yaml") as f:
-                dataMap = yaml.safe_load(f)
+            dataMap = config.module_data("schema_config")
+
             return dataMap
 
     def get_leaves(self, d):
