@@ -23,6 +23,7 @@ import yaml
 from datetime import datetime
 
 from biocypher import config
+from biocypher import __version__
 
 
 def get_logger(name):
@@ -61,20 +62,16 @@ def get_logger(name):
     logdir = 'biocypher-log'
     os.makedirs(logdir, exist_ok = True)
     logfile = os.path.join(logdir, f"biocypher-{date_time}.log")
-    if not os.path.isfile(logfile):
-        version = 0  # TODO
-        print(
-            f"This is BioCypher v{version}.\n"
-            f"Starting BioCypher logger at `{logfile}`."
-        )
 
     conf = config.module_data('module_config')
 
     file_handler = logging.FileHandler(logfile)
+
     if conf["debug"]:
         file_handler.setLevel(logging.DEBUG)
     else:
         file_handler.setLevel(logging.INFO)
+
     file_handler.setFormatter(file_formatter)
 
     stdout_handler = logging.StreamHandler()
@@ -85,5 +82,8 @@ def get_logger(name):
     logger.addHandler(file_handler)
     logger.addHandler(stdout_handler)
     logger.setLevel(logging.DEBUG)
+
+    logger.info(f"This is BioCypher v{__version__}.")
+    logger.info(f"Logging into `{logfile}`.")
 
     return logger
