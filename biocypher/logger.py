@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This module handles logging for the BioCypher the BioCypher python 
+This module handles logging for the BioCypher the BioCypher python
 package, homepage: TODO.
 
 Copyright 2021, Heidelberg University Clinic

@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-This module is used for the creating a generic property graph database 
-for use in biomedical research applications. It takes as inputs ordered 
-collections of biomedical nodes and relationships and yields specific 
-classes for property graph nodes and edges that adhere to the BioCypher 
-standard. It is part of the BioCypher python package, homepage: TODO. 
+This module is used for the creating a generic property graph database
+for use in biomedical research applications. It takes as inputs ordered
+collections of biomedical nodes and relationships and yields specific
+classes for property graph nodes and edges that adhere to the BioCypher
+standard. It is part of the BioCypher python package, homepage: TODO.
 
 
 Copyright 2021, Heidelberg University Clinic
@@ -18,29 +18,29 @@ Distributed under GPLv3 license, see LICENSE.txt.
 
 Todo:
 
-    - Calls to the classes are independent, so there is no way to 
-      check directly; nodes can be created at any point in time 
-      previous to edge creation. We could require a pass of all 
-      the nodes in the graph when creating edges. Pro: this would 
-      also allow a check whether the existing graph adheres to 
-      BioCypher, at least in the node domain. If it doesn't, 
+    - Calls to the classes are independent, so there is no way to
+      check directly; nodes can be created at any point in time
+      previous to edge creation. We could require a pass of all
+      the nodes in the graph when creating edges. Pro: this would
+      also allow a check whether the existing graph adheres to
+      BioCypher, at least in the node domain. If it doesn't,
       the call does not make much sense.
 
-    - establish a dictionary lookup with the id types to be used / basic 
+    - establish a dictionary lookup with the id types to be used / basic
       type checking of the input
-    - translation of id types using pypath translation facilities (to be 
+    - translation of id types using pypath translation facilities (to be
       later externalised)
     - provide options to the user:
 
-        - primary id type(s) of their liking (critical, does not 
+        - primary id type(s) of their liking (critical, does not
           guarantee interoperability: do we want this?)
 
-            - there could be multiple "standard cases" of graph, and 
-              upon choosing or detecting one of these, BioCypher could 
+            - there could be multiple "standard cases" of graph, and
+              upon choosing or detecting one of these, BioCypher could
               translate
-              
-        - granularity: the ability to opt out (!) of the more detailed 
-          structural components (opt in would again not guarantee 
+
+        - granularity: the ability to opt out (!) of the more detailed
+          structural components (opt in would again not guarantee
           interoperability)
 """
 

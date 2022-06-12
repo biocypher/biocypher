@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-This module handles the passing of a Neo4j driver from the client to 
-BioCypher and the modification of the database structure. It is part of 
+This module handles the passing of a Neo4j driver from the client to
+BioCypher and the modification of the database structure. It is part of
 the BioCypher python package, homepage: TODO.
 
 Copyright 2021, Heidelberg University Clinic
@@ -27,10 +27,6 @@ from typing import List
 import yaml
 import neo4j
 
-from .logger import get_logger
-
-# create root logger
-logger = get_logger("biocypher")
 logger.debug(f"Loading module {__name__}.")
 
 from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode

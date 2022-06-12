@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-This module handles the lookup and storage of entity IDs that are part 
-of the BioCypher schema. It is part of the BioCypher python package, 
+This module handles the lookup and storage of entity IDs that are part
+of the BioCypher schema. It is part of the BioCypher python package,
 homepage: TODO.
 
 
@@ -14,24 +14,24 @@ File author(s): Sebastian Lobentanzer
 
 Distributed under GPLv3 license, see LICENSE.txt.
 
-Todo: 
+Todo:
 
-    - genericise: standardise input data to BioCypher specifications or, 
+    - genericise: standardise input data to BioCypher specifications or,
       optionally, user specifications.
 
         - if the database exists, read biocypher info node
-        - if newly created, ask for user input (?) as to which IDs to 
+        - if newly created, ask for user input (?) as to which IDs to
           use etc
         - default scenario -> YAML?
-        - the consensus representation ("target" of translation) is 
+        - the consensus representation ("target" of translation) is
           the literal Biolink class, which is assigned to database
           content using user input for each class to be represented
-          in the graph ("source" of translation). currently, 
+          in the graph ("source" of translation). currently,
           implemented by assigning source nomenclature explicitly in
           the schema_config.yaml file ("label_in_input").
-          
+
     - type checking
-    - import ID types from pypath dictionary (later, externalised 
+    - import ID types from pypath dictionary (later, externalised
       dictionary)? biolink?
 """
 
@@ -109,7 +109,7 @@ class BiolinkAdapter(object):
 
 
 """
-Biolink toolkit wiki: 
+Biolink toolkit wiki:
 https://biolink.github.io/biolink-model-toolkit/example_usage.html
 """
 

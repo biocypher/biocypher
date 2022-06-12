@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-This module is used for assessing a Neo4j instance for compliance with 
-the BioCypher standard and returning pass/fail, and, in the event of 
-"pass", it returns the primary identifiers chosen by the user of the 
-active database to be used in translation of the input data to the 
-correct format required for the active database. It is part of the 
+This module is used for assessing a Neo4j instance for compliance with
+the BioCypher standard and returning pass/fail, and, in the event of
+"pass", it returns the primary identifiers chosen by the user of the
+active database to be used in translation of the input data to the
+correct format required for the active database. It is part of the
 BioCypher python package, homepage: TODO.
 
 
@@ -17,7 +17,7 @@ File author(s): Sebastian Lobentanzer
 
 Distributed under GPLv3 license, see LICENSE.txt.
 
-Todo: 
+Todo:
     - connect graph structure setup (from config) with data parsing
     - when to do versioning?
         - setting in config file regarding the granularity?
