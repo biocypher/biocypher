@@ -14,3 +14,6 @@ logdir: biocypher-log
 # Logging granularity
 # Set debug to true if more granular logging is desired
 debug: true
+
+# Path to the output directory
+outdir: biocypher-out

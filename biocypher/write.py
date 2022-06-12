@@ -28,6 +28,13 @@ from collections import defaultdict
 from more_itertools import peekable
 
 from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from biocypher import config
+
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+
+    from .translate import BiolinkAdapter
 
 
 class BatchWriter:
@@ -48,8 +55,12 @@ class BatchWriter:
     """
 
     def __init__(
-        self, schema, bl_adapter, dirname=None, db_name="neo4j"
-    ) -> None:
+        self,
+        schema: dict,
+        bl_adapter: 'BiolinkAdapter',
+        path: Optional[str] = None,
+        db_name: str = "neo4j",
+    ):
         """ """
         self.delim = ";"
         self.adelim = "|"
@@ -64,22 +75,12 @@ class BatchWriter:
             '--quote="\'" '
         )
 
-        if not dirname:
-            now = datetime.now()
-            dirname = now.strftime("%Y%m%d%H%M")
+        timestamp = lambda: datetime.now().strftime("%Y%m%d%H%M")
 
-        logger.info(f"Trying to create output folder at out/{dirname}.")
-        ROOT = os.path.join(
-            *os.path.split(
-                os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-            )
-        )
-        self.output_path = ROOT + "/out/" + dirname + "/"
-        try:
-            os.mkdir(self.output_path)
-            logger.info("Folder created successfully.")
-        except FileExistsError:
-            logger.error("Output directory already exists; cannot continue.")
+        self.outdir = path or os.path.join(config["outdir"], timestamp())
+
+        logger.info(f"Creating output directory `{self.outdir}`.")
+        os.makedirs(self.outdir, exist_ok = True)
 
     def write_nodes(self, nodes, batch_size=int(1e6)):
         """
@@ -314,14 +315,18 @@ class BatchWriter:
             out_list = [[id], props_list, [":LABEL"]]
             out_list = [val for sublist in out_list for val in sublist]
 
-            file_path = self.output_path + label + "-header.csv"
+            file_path = os.path.join(self.outdir, f"{label}-header.csv")
+            parts_path = os.path.join(self.outdir, f"{label}-part.*")
+
             with open(file_path, "w") as f:
+
                 # concatenate with delimiter
                 row = self.delim.join(out_list)
                 f.write(row)
 
             # add file path to neo4 admin import statement
-            self.import_call += f'--nodes="{file_path},{self.output_path + label + "-part.*"}" '
+            self.import_call += \
+                f'--nodes="{file_path},{parts_path}" '
 
         return True
 
@@ -351,7 +356,9 @@ class BatchWriter:
 
         # from list of nodes to list of strings
         lines = []
+
         for n in node_list:
+
             # check for deviations in properties
             nprops = n.get_properties()
             hprops = list(prop_dict.keys())
@@ -369,7 +376,9 @@ class BatchWriter:
                 return False
 
             line = [n.get_id()]
+
             if hprops:
+
                 plist = []
                 # make all into strings, put actual strings in quotes
                 for e, t in zip(nprops.values(), prop_dict.values()):
@@ -383,8 +392,10 @@ class BatchWriter:
             lines.append(self.delim.join(line) + "\n")
 
         padded_part = str(part).zfill(3)
-        file_path = self.output_path + label + "-part" + padded_part + ".csv"
+        file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
+
         with open(file_path, "w") as f:
+
             # concatenate with delimiter
             f.writelines(lines)
 
@@ -457,6 +468,7 @@ class BatchWriter:
 
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
+
                 passed = self._write_single_edge_list_to_file(
                     nl,
                     label,
@@ -520,16 +532,20 @@ class BatchWriter:
             out_list = [[":START_ID"], props_list, [":END_ID"], [":TYPE"]]
             out_list = [val for sublist in out_list for val in sublist]
 
-            file_path = self.output_path + label + "-header.csv"
+            file_path = os.path.join(self.outdir, f"{label}-header.csv")
+            parts_path = os.path.join(self.outdir, f"{label}-part.*")
+
             with open(file_path, "w") as f:
+
                 # concatenate with delimiter
                 row = self.delim.join(out_list)
                 f.write(row)
 
             # add file path to neo4 admin import statement
-            self.import_call += f'--relationships="{file_path},{self.output_path + label + "-part.*"}" '
+            self.import_call += f'--relationships="{file_path},{parts_path}" '
 
         return True
+
 
     def _write_single_edge_list_to_file(
         self, edge_list, label, part, prop_dict
@@ -550,7 +566,9 @@ class BatchWriter:
         Returns:
             bool: The return value. True for success, False otherwise.
         """
+
         if not all(isinstance(n, BioCypherEdge) for n in edge_list):
+
             logger.error("Edges must be passed as type BioCypherEdge.")
             return False
 
@@ -605,14 +623,16 @@ class BatchWriter:
                     + "\n"
                 )
         padded_part = str(part).zfill(3)
-        file_path = self.output_path + label + "-part" + padded_part + ".csv"
+        file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
+
         with open(file_path, "w") as f:
             # concatenate with delimiter
             f.writelines(lines)
 
         return True
 
-    def get_import_call(self):
+
+    def get_import_call(self) -> str:
         """
         Function to return the import call detailing folder and
         individual node and edge headers and data files, as well as
@@ -621,9 +641,11 @@ class BatchWriter:
         Returns:
             str: a bash command for neo4j-admin import
         """
+
         return self.import_call
 
-    def write_import_call(self):
+
+    def write_import_call(self) -> bool:
         """
         Function to write the import call detailing folder and
         individual node and edge headers and data files, as well as
@@ -632,9 +654,12 @@ class BatchWriter:
         Returns:
             bool: The return value. True for success, False otherwise.
         """
-        file_path = self.output_path + "neo4j-admin-import-call.txt"
+
+        file_path = os.path.join(self.outdir, "neo4j-admin-import-call.sh")
         logger.info(f"Writing neo4j-admin import call to `{file_path}`.")
+
         with open(file_path, "w") as f:
+
             f.write(self.import_call)
 
         return True
