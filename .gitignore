@@ -15,3 +15,5 @@ out/*
 biocypher-log/*
 *.log
 dist/*
+*.pye
+*.pyc
