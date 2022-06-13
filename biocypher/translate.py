@@ -71,7 +71,7 @@ class BiolinkAdapter(object):
 
         self.set_schema()
         self.init_toolkit()
-        self.translate_leaves_to_biolink()
+        self.translate()
 
 
     def set_schema(self):
@@ -103,7 +103,7 @@ class BiolinkAdapter(object):
         )
 
 
-    def translate_leaves_to_biolink(self) -> dict:
+    def translate(self):
         """
         Translates the leaves (direct constituents of the graph) given
         in the `schema_config.yaml` to Biolink-conforming nomenclature.
@@ -132,7 +132,7 @@ class BiolinkAdapter(object):
                 logger.info("Entity not found:" + entity[0])
                 l[entity] = None
 
-        return l
+        self.biolink = l
 
 
 """
