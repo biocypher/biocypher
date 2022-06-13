@@ -23,7 +23,17 @@ import os
 import yaml
 import appdirs
 
-__all__ = ['module_data', 'read_config', 'config', 'reset']
+__all__ = ['module_data', 'module_data_path', 'read_config', 'config', 'reset']
+
+
+def module_data_path(name: str) -> str:
+    """
+    Absolute path to a YAML file shipped with the module.
+    """
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    return = os.path.join(here, f'{name}.yaml')
 
 
 def module_data(name: str) -> Any:
@@ -31,9 +41,7 @@ def module_data(name: str) -> Any:
     Retrieve the contents of a YAML file shipped with this module.
     """
 
-    here = os.path.dirname(os.path.abspath(__file__))
-
-    path = os.path.join(here, f'{name}.yaml')
+    path = module_data_path(name)
 
     return _read_yaml(path)
 
