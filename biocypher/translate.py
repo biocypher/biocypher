@@ -37,10 +37,12 @@ Todo:
 from .logger import logger
 logger.debug(f"Loading module {__name__}.")
 
-import os
-from bmt import Toolkit
+from typing import Optional
+
+import bmt
 
 from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from .config import module_data_path
 
 
 class BiolinkAdapter(object):
@@ -54,51 +56,79 @@ class BiolinkAdapter(object):
     def __init__(
         self,
         leaves,
-        custom_yaml=True,
-        custom_yaml_file="/config/biocypher-biolink-model.yaml",
+        schema_yaml: Optional[str]= None,
     ) -> None:
+
+        self.leaves = leaves
+        self.schema_yaml = schema_yaml
+
         logger.debug("Instantiating Biolink Adapter.")
-        self.leaves = self.translate_leaves_to_biolink(
-            leaves, custom_yaml, custom_yaml_file
+
+        self.main()
+
+
+    def main(self):
+
+        self.set_schema()
+        self.init_toolkit()
+        self.translate_leaves_to_biolink()
+
+
+    def set_schema(self):
+
+        schemata_builtin = {
+            'biocypher': 'biocypher-biolink-model',
+            'biolink': 'biolink-model',
+        }
+
+        self.schema_yaml = self.schema_yaml or 'biocypher'
+
+        if self.schema_yaml in schemata_builtin:
+
+            label = schemata_builtin[self.schema_yaml]
+            self.schema_yaml = module_data_path(label)
+
+
+    def init_toolkit(self) -> bmt.Toolkit:
+
+        logger.info(
+            'Creating BioLink model toolkit from '
+            f'`{self.schema_yaml or "default BioLink model"}`.'
         )
 
-    def translate_leaves_to_biolink(
-        self, leaves, custom_yaml, custom_yaml_file
-    ):
+        return (
+            bmt.Toolkit(self.schema_yaml)
+                if self.schema_yaml else
+            bmt.Toolkit()
+        )
+
+
+    def translate_leaves_to_biolink(self) -> dict:
         """
         Translates the leaves (direct constituents of the graph) given
         in the `schema_config.yaml` to Biolink-conforming nomenclature.
         Simultaneously get the structure in the form of the parents of
         each leaf.
         """
+
         logger.info("Translating BioCypher config leaves to Biolink.")
-        if custom_yaml:
-            logger.info(
-                "Creating Biolink model toolkit from custom YAML file."
-            )
-            # load toolkit from local YAML
-            ROOT = os.path.join(
-                *os.path.split(
-                    os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-                )
-            )
-            bl_yaml = ROOT + custom_yaml_file
-            t = Toolkit(bl_yaml)  # loads biolink model toolkit python API
-        else:
-            logger.info("Creating Biolink model toolkit from remote default.")
-            t = Toolkit()
 
         l = {}
+
         for entity in leaves.keys():
+
             e = t.get_element(entity)  # element name
 
             # find element in bmt
             if e is not None:
+
                 # create dict of biolink class definition and biolink
                 # ancestors
                 ancestors = t.get_ancestors(entity, formatted=True)
                 l[entity] = {"class_definition": e, "ancestors": ancestors}
+
             else:
+
                 logger.info("Entity not found:" + entity[0])
                 l[entity] = None
 
