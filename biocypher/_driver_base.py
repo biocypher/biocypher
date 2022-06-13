@@ -18,8 +18,11 @@ from ._logger import logger
 logger.debug(f'Loading module {__name__}.')
 
 import os
+import re
+import importlib as imp
 from typing import Optional
 
+import yaml
 import neo4j
 
 __all__ = ['DriverBase']
@@ -96,7 +99,7 @@ class DriverBase:
                 'fetch_size': fetch_size,
             }
 
-            self._config_file = config_file
+            self._config_file = config
 
             self.db_connect()
 
@@ -152,6 +155,19 @@ class DriverBase:
         config file.
         """
 
+        config_key_synonyms = {
+            'password': 'passwd',
+            'pw': 'passwd',
+            'username': 'user',
+            'login': 'user',
+            'host': 'uri',
+            'address': 'uri',
+            'server': 'uri',
+            'graph': 'db',
+            'database': 'db',
+            'name': 'db',
+        }
+
         if self._config_file and os.path.exists(self._config_file):
 
             logger.info('Reading config from `%s`.' % self._config_file)
@@ -162,7 +178,10 @@ class DriverBase:
 
             for k, v in conf.get(section, conf).items():
 
-                if not self.db_config.get(k, None):
+                k = k.lower()
+                k = config_key_synonyms.get(k, k)
+
+                if not self._db_config.get(k, None):
 
                     self._db_config[k] = v
 
