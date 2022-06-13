@@ -26,5 +26,5 @@ __all__ = [
 
 from ._metadata import __version__, __author__
 from ._config import module_data, config
-from .driver import Driver
-from .logger import logfile, log
+from ._driver import Driver
+from ._logger import logfile, log

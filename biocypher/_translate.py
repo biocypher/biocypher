@@ -34,15 +34,15 @@ Todo:
       dictionary)? biolink?
 """
 
-from .logger import logger
+from ._logger import logger
 logger.debug(f"Loading module {__name__}.")
 
 from typing import Optional
 
 import bmt
 
-from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from .config import module_data_path
+from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from ._config import module_data_path
 
 
 class BiolinkAdapter(object):

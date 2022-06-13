@@ -1,8 +1,8 @@
 import pytest
 import os
-from biocypher.translate import BiolinkAdapter
-from biocypher.write import BatchWriter
-from biocypher.create import BioCypherNode, BioCypherEdge, BioCypherRelAsNode
+from biocypher._translate import BiolinkAdapter
+from biocypher._write import BatchWriter
+from biocypher._create import BioCypherNode, BioCypherEdge, BioCypherRelAsNode
 
 import random
 import string

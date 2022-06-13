@@ -15,7 +15,7 @@ A wrapper around the Neo4j driver which handles the DBMS connection and
 provides basic management methods.
 """
 
-from .logger import logger
+from ._logger import logger
 logger.debug(f"Loading module {__name__}.")
 
 import os
@@ -29,12 +29,12 @@ if TYPE_CHECKING:
 
     import neo4j
 
-from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from .translate import BiolinkAdapter, gen_translate_edges, gen_translate_nodes
-from .check import MetaEdge, VersionNode, MetaNode
-from .utils import pretty
-from .write import BatchWriter
-from .config import config
+from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from ._translate import BiolinkAdapter, gen_translate_edges, gen_translate_nodes
+from ._check import MetaEdge, VersionNode, MetaNode
+from ._utils import pretty
+from ._write import BatchWriter
+from ._config import config
 from ._driver_base import DriverBase
 
 

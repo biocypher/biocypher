@@ -22,10 +22,10 @@ Todo:
         - setting in config file regarding the granularity?
 """
 
-from .logger import logger
+from ._logger import logger
 logger.debug(f"Loading module {__name__}.")
 
-from .create import BioCypherEdge, BioCypherNode
+from ._create import BioCypherEdge, BioCypherNode
 from datetime import datetime
 import os
 

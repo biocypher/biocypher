@@ -14,8 +14,7 @@ A wrapper around the Neo4j driver which handles the DBMS connection and
 provides basic management methods.
 """
 
-from .logger import logger
-
+from ._logger import logger
 logger.debug(f'Loading module {__name__}.')
 
 import os

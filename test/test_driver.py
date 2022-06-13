@@ -1,5 +1,5 @@
-from biocypher.driver import Driver
-from biocypher.create import BioCypherNode, BioCypherEdge, BioCypherRelAsNode
+from biocypher._driver import Driver
+from biocypher._create import BioCypherNode, BioCypherEdge, BioCypherRelAsNode
 import pytest
 
 

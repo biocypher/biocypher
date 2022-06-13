@@ -22,7 +22,7 @@ import yaml
 from datetime import datetime
 import pydoc
 
-from biocypher import config
+from biocypher import _config
 from biocypher import __version__
 
 

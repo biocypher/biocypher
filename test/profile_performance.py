@@ -1,6 +1,6 @@
-from biocypher.create import BioCypherEdge, BioCypherNode
-from biocypher.driver import Driver
-from biocypher.utils import bcolors
+from biocypher._create import BioCypherEdge, BioCypherNode
+from biocypher._driver import Driver
+from biocypher._utils import bcolors
 import random
 import cProfile, pstats, io
 import timeit, pickle

@@ -66,7 +66,7 @@ bin/neo4j-admin import --database=neo4j
 3. start db, test for consistency
 """
 
-from .logger import logger
+from ._logger import logger
 logger.debug(f"Loading module {__name__}.")
 
 import os
@@ -76,8 +76,8 @@ from types import GeneratorType
 from collections import defaultdict
 from more_itertools import peekable
 
-from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from biocypher import config
+from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from biocypher import _config
 
 from typing import Optional, TYPE_CHECKING
 

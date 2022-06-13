@@ -43,7 +43,7 @@ Todo:
           interoperability)
 """
 
-from .logger import logger
+from ._logger import logger
 logger.debug(f"Loading module {__name__}.")
 
 
