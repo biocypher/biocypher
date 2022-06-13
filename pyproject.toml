@@ -50,3 +50,59 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/saezlab/biocypher/issues"
+
+[tool.black]
+line-length = 80
+target-version = ['py310']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+)
+'''
+
+[tool.isort]
+from_first = true
+line_length = 80
+multi_line_output = 3
+include_trailing_comma = true
+use_parentheses = true
+known_num="numpy,pandas"
+sections = "FUTURE,STDLIB,THIRDPARTY,NUM,FIRSTPARTY,LOCALFOLDER"
+no_lines_before="LOCALFOLDER"
+balanced_wrapping = true
+force_grid_wrap = 0
+length_sort = "1"
+indent = "    "
+
+[tool.flake8]
+ignore = ["D200", "D202", "D401", "D105", "W504"]
+per-file-ignores = [
+    "docs/source/conf.py:D100",
+    "tests/*:D100,D101,D102",
+    "*/__init__.py:F401"
+]
+max-line-length = 80
+count = true
+
+[tool.yapf]
+based_on_style = "facebook"
+split_penalty_before_if_expr = 0
+split_penalty_import_names = 0
+split_penalty_comprehension = 0
+split_penalty_for_added_line_split = 0
+split_penalty_after_opening_bracket = 0
+split_before_first_argument = true
+split_before_named_assigns = true
+split_complex_comprehension = true
