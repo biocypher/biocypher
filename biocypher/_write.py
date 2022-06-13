@@ -41,12 +41,14 @@ E.g.: `:START_ID;relationship_id;residue;:END_ID;:TYPE`.
 Headers would best be separate files, data files with similar name but
 different ending. Example from Neo4j documentation:
 
-bin/neo4j-admin import --database=neo4j
---nodes=import/entities-header.csv,import/entities-part1.csv,
+.. code-block:: bash
+
+   bin/neo4j-admin import --database=neo4j
+   --nodes=import/entities-header.csv,import/entities-part1.csv,
     import/entities-part2.csv
---nodes=import/interactions-header.csv,import/interactions-part1.csv,
+   --nodes=import/interactions-header.csv,import/interactions-part1.csv,
     import/interaction-part2.csv
---relationships=import/rels-header.csv,import/rels-part1.csv,
+   --relationships=import/rels-header.csv,import/rels-part1.csv,
     import/rels-part2.csv
 
 Can use regex, e.g., [..] import/rels-part*. In this case, use padding
@@ -57,11 +59,14 @@ for ordering of the earlier part files ("01, 02").
 1. stop the db
 
 2. shell command:
-bin/neo4j-admin import --database=neo4j
-# nodes per type, separate header, regex for parts:
-    --nodes="<path>/<node_type>-header.csv,<path>/<node_type>-part.*"
-# edges per type, separate header, regex for parts:
-    --relationships="<path>/<edge_type>-header.csv,<path>/<edge_type>-part.*"
+
+.. code-block:: bash
+
+   bin/neo4j-admin import --database=neo4j
+   # nodes per type, separate header, regex for parts:
+   --nodes="<path>/<node_type>-header.csv,<path>/<node_type>-part.*"
+   # edges per type, separate header, regex for parts:
+   --relationships="<path>/<edge_type>-header.csv,<path>/<edge_type>-part.*"
 
 3. start db, test for consistency
 """

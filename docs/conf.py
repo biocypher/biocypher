@@ -13,7 +13,7 @@
 import os
 import sys
 import pathlib
-import datetime
+from datetime import datetime
 
 here = pathlib.Path(__file__).parent
 sys.path.insert(0, str(here.parent))
@@ -24,7 +24,7 @@ import biocypher  # noqa: E402
 
 project = "BioCypher"
 version = biocypher.__version__
-author = biocypher.__author__
+author = ', '.join(biocypher.__author__)
 copyright = f"2021-{datetime.now():%Y}, BioCypher developers"
 
 # -- General configuration ---------------------------------------------------
