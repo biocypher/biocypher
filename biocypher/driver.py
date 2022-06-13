@@ -23,7 +23,11 @@ import re
 from more_itertools import peekable
 import importlib as imp
 from types import GeneratorType
-from typing import List
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+
+    import neo4j
 
 from .create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from .translate import BiolinkAdapter, gen_translate_edges, gen_translate_nodes
@@ -44,35 +48,47 @@ class Driver(DriverBase):
         * By a YAML config file
 
     Args:
-        driver (neo4j.Driver): A ``neo4j.Driver`` instance, created by,
-            for example, ``neo4j.GraphDatabase.driver``.
-        db_name (str): Name of the database (Neo4j graph) to use.
-        db_uri (str): Protocol, host and port to access the Neo4j
-            server.
-        db_auth (tuple): Neo4j server authentication data: tuple of user
-            name and password.
-        fetch_size (int): Optional; the fetch size to use in database
-            transactions.
-        config_file (str): Path to a YAML config file which provides the
-            URI, user name and password.
-        wipe (bool): Wipe the database after connection, ensuring the
-            data is loaded into an empty database.
-        increment_version (bool): Whether to increase version number
-            automatically and create a new BioCypher version node in the
-            graph.
+        driver:
+            A ``neo4j.Driver`` instance, created by, for example,
+            ``neo4j.GraphDatabase.driver``.
+        db_name:
+            Name of the database (Neo4j graph) to use.
+        db_uri:
+            Protocol, host and port to access the Neo4j server.
+        db_user:
+            Neo4j user name.
+        db_passwd:
+            Password of the Neo4j user.
+        fetch_size:
+            Optional; the fetch size to use in database transactions.
+        config:
+            Path to a YAML config file which provides the URI, user name
+            and password.
+        wipe:
+            Wipe the database after connection, ensuring the data is
+            loaded into an empty database.
+        increment_version:
+            Whether to increase version number automatically and create a
+            new BioCypher version node in the graph.
     """
 
     def __init__(
         self,
-        driver=None,
-        db_name=None,
-        db_uri="neo4j://localhost:7687",
-        db_auth=None,
-        fetch_size=1000,
-        config_file="/config/module_config.yaml",
-        wipe=False,
+        driver: Optional['neo4j.Driver']=None,
+        db_name: Optionl[str]=None,
+        db_uri: Optionl[str]=None,
+        db_user: Optionl[str]=None,
+        db_passwd: Optionl[str]=None,
+        config: Optional[str]='neo4j.yaml',
+        fetch_size: int=1000,
+        wipe: bool=False,
         increment_version=True,
     ):
+
+        db_name = db_name or config('neo4j_db')
+        db_uri = db_uri or config('neo4j_uri')
+        db_user = db_user or config('neo4j_user')
+        db_passwd = db_user or config('neo4j_pw')
 
         BaseDriver.__init__(**locals())
 
