@@ -84,6 +84,7 @@ class DriverBase:
         self.driver = driver
         if self.driver:
             logger.info('Loading from supplied driver.')
+            self._config_from_driver()
 
         if not self.driver:
 
@@ -199,16 +200,16 @@ class DriverBase:
         self.close()
 
     @property
-    def _home_db(self):
+    def _home_db(self) -> Optional[str]:
 
         return self._db_name()
 
     @property
-    def _default_db(self):
+    def _default_db(self) -> Optional[str]:
 
         return self._db_name('DEFAULT')
 
-    def _db_name(self, which='HOME'):
+    def _db_name(self, which='HOME') -> Optional[str]:
 
         resp, summary = self.query('SHOW %s DATABASE;' % which)
 
@@ -218,12 +219,12 @@ class DriverBase:
 
     def query(
         self,
-        query,
-        db=None,
-        fetch_size=None,
-        write=True,  # route to write server (default)
-        explain=False,
-        profile=False,
+        query: str,
+        db: Optional[str]=None,
+        fetch_size: Optional[int]=None,
+        write: bool=True,  # route to write server (default)
+        explain: bool=False,
+        profile: bool=False,
         **kwargs,
     ):
         """
@@ -231,18 +232,23 @@ class DriverBase:
         instantiation, runs a CYPHER query and returns the response.
 
         Args:
-            query (str): a valid CYPHER query, can include APOC if the APOC
-                plugin is installed in the accessed database
-            db (str): the DB inside the Neo4j server that should be queried
-            fetch_size (int): the Neo4j fetch size parameter
-            write (bool): indicates whether to address write- or read-
-                servers
-            explain (bool): indicates whether to EXPLAIN the CYPHER
-                query and return the ResultSummary
-            explain (bool): indicates whether to PROFILE the CYPHER
-                query and return the ResultSummary
-            **kwargs: optional objects used in CYPHER interactive mode,
-                for instance for passing a parameter dictionary
+            query:
+                A valid CYPHER query, can include APOC if the APOC
+                plugin is installed in the accessed database.
+            db:
+                The DB inside the Neo4j server that should be queried
+                fetch_size (int): the Neo4j fetch size parameter.
+            write:
+                Indicates whether to address write- or read-servers.
+            explain:
+                Indicates whether to EXPLAIN the CYPHER query and
+                return the ResultSummary.
+            explain:
+                Indicates whether to PROFILE the CYPHER query and
+                return the ResultSummary.
+            **kwargs:
+                Optional objects used in CYPHER interactive mode,
+                for instance for passing a parameter dictionary.
 
         Returns:
             2-tuple:
@@ -283,32 +289,30 @@ class DriverBase:
 
         """
 
+        if explain:
+
+            query = 'EXPLAIN ' + query
+
+        elif profile:
+
+            query = 'PROFILE ' + query
+
         db = db or self._db_config['db'] or neo4j.DEFAULT_DATABASE
         fetch_size = fetch_size or self._db_config['fetch_size']
 
-        if explain:
-            query = 'EXPLAIN ' + query
-        elif profile:
-            query = 'PROFILE ' + query
+        session_args = {
+            'database': db,
+            'fetch_size': fetch_size,
+            'default_access_mode':
+                neo4j.WRITE_ACCESS if write else neo4j.READ_ACCESS,
+        }
 
-        if write:
-            # default case, write acces (route to write server)
-            with self.driver.session(
-                database=db,
-                fetch_size=fetch_size,
-            ) as session:
-                res = session.run(query, **kwargs)
-                return res.data(), res.consume()
-        else:
-            # route to read server to free up write capacity, only to be
-            # used in cases with assured read-only access
-            with self.driver.session(
-                default_access_mode=neo4j.READ_ACCESS,  # route to read server
-                database=db,
-                fetch_size=fetch_size,
-            ) as session:
-                res = session.run(query, **kwargs)
-                return res.data(), res.consume()
+        with self.session(**session_args) as session:
+
+            res = session.run(query, **kwargs)
+
+            return res.data(), res.consume()
+
 
     def explain(
         self,
