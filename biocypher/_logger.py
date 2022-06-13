@@ -57,14 +57,13 @@ def get_logger(name: str = "biocypher") -> logging.Logger:
         now = datetime.now()
         date_time = now.strftime("%Y%m%d-%H%M%S")
 
-        conf = config.module_data('module_config')
-        logdir = conf["logdir"]
+        logdir = _config.config('logdir')
         os.makedirs(logdir, exist_ok = True)
         logfile = os.path.join(logdir, f"biocypher-{date_time}.log")
 
         file_handler = logging.FileHandler(logfile)
 
-        if conf["debug"]:
+        if _config.config("debug"):
             file_handler.setLevel(logging.DEBUG)
         else:
             file_handler.setLevel(logging.INFO)

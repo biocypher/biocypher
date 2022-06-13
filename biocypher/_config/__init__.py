@@ -33,7 +33,7 @@ def module_data_path(name: str) -> str:
 
     here = os.path.dirname(os.path.abspath(__file__))
 
-    return = os.path.join(here, f'{name}.yaml')
+    return os.path.join(here, f'{name}.yaml')
 
 
 def module_data(name: str) -> Any:
