@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 #
 # Copyright 2021, Heidelberg University Clinic
@@ -16,15 +15,18 @@ provides basic management methods.
 """
 
 from .logger import logger
-logger.debug(f"Loading module {__name__}.")
 
-from typing import Optional
+logger.debug(f'Loading module {__name__}.')
+
 import os
+from typing import Optional
 
 import neo4j
 
+__all__ = ['DriverBase']
 
-class DriverBase(object):
+
+class DriverBase:
     """
 
     Manages the connection to the Neo4j server. Establishes the
@@ -57,6 +59,8 @@ class DriverBase(object):
         wipe:
             Wipe the database after connection, ensuring the data is
             loaded into an empty database.
+        kwargs:
+            Ignored.
 
     Todo:
         - remove biocypher-specific init args, possible?
@@ -69,27 +73,28 @@ class DriverBase(object):
         db_uri: Optionl[str]=None,
         db_user: Optionl[str]=None,
         db_passwd: Optionl[str]=None,
-        config: Optional[str]="neo4j.yaml",
+        config: Optional[str]='neo4j.yaml',
         fetch_size: int=1000,
         wipe: bool=False,
+        **kwargs
     ):
 
         self.driver = driver
         if self.driver:
-            logger.info("Loading from supplied driver.")
+            logger.info('Loading from supplied driver.')
 
         if not self.driver:
 
             logger.info(
-                "No driver supplied, initialising driver "
-                "from local configuration."
+                'No driver supplied, initialising driver '
+                'from local configuration.',
             )
             self._db_config = {
-                "uri": db_uri,
-                "user": db_user,
-                "passwd": db_passwd,
-                "db": db_name,
-                "fetch_size": fetch_size,
+                'uri': db_uri,
+                'user': db_user,
+                'passwd': db_passwd,
+                'db': db_name,
+                'fetch_size': fetch_size,
             }
 
             self._config_file = config_file
@@ -104,10 +109,10 @@ class DriverBase(object):
         """
 
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split(".")[0]])
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
-        setattr(self, "__class__", new)
+        setattr(self, '__class__', new)
 
     def db_connect(self):
         """
@@ -127,19 +132,19 @@ class DriverBase(object):
             auth=self.auth,
         )
 
-        logger.info("Opened database connection.")
+        logger.info('Opened database connection.')
 
     @property
     def uri(self):
 
-        return self._db_config.get("uri", None) or "neo4j://localhost:7687"
+        return self._db_config.get('uri', None) or 'neo4j://localhost:7687'
 
     @property
     def auth(self):
 
         return (
-            tuple(self._db_config.get("auth", ())) or
-            (self._db_config["user"], self._db_config["passwd"])
+            tuple(self._db_config.get('auth', ())) or
+            (self._db_config['user'], self._db_config['passwd'])
         )
 
     def read_config(self, section: Optional[str]=None):
@@ -150,9 +155,9 @@ class DriverBase(object):
 
         if self._config_file and os.path.exists(self._config_file):
 
-            logger.info("Reading config from `%s`." % self._config_file)
+            logger.info('Reading config from `%s`.' % self._config_file)
 
-            with open(self._config_file, "r") as fp:
+            with open(self._config_file) as fp:
 
                 conf = yaml.safe_load(fp.read())
 
@@ -167,7 +172,7 @@ class DriverBase(object):
         Closes the Neo4j driver if it exists and is open.
         """
 
-        if hasattr(self.driver, "close"):
+        if hasattr(self.driver, 'close'):
 
             self.driver.close()
 
@@ -183,15 +188,15 @@ class DriverBase(object):
     @property
     def _default_db(self):
 
-        return self._db_name("DEFAULT")
+        return self._db_name('DEFAULT')
 
-    def _db_name(self, which="HOME"):
+    def _db_name(self, which='HOME'):
 
-        resp, summary = self.query("SHOW %s DATABASE;" % which)
+        resp, summary = self.query('SHOW %s DATABASE;' % which)
 
         if resp:
 
-            return resp[0]["name"]
+            return resp[0]['name']
 
     def query(
         self,
@@ -260,13 +265,13 @@ class DriverBase(object):
 
         """
 
-        db = db or self._db_config["db"] or neo4j.DEFAULT_DATABASE
-        fetch_size = fetch_size or self._db_config["fetch_size"]
+        db = db or self._db_config['db'] or neo4j.DEFAULT_DATABASE
+        fetch_size = fetch_size or self._db_config['fetch_size']
 
         if explain:
-            query = "EXPLAIN " + query
+            query = 'EXPLAIN ' + query
         elif profile:
-            query = "PROFILE " + query
+            query = 'PROFILE ' + query
 
         if write:
             # default case, write acces (route to write server)
@@ -303,7 +308,7 @@ class DriverBase(object):
         TODO include branching as in profile()
         """
 
-        logger.info("Explaining a query.")
+        logger.info('Explaining a query.')
 
         data, summary = self.query(
             query, db, fetch_size, write, explain=True, **kwargs
@@ -343,7 +348,7 @@ class DriverBase(object):
                 - list of str: a list of strings ready for printing
         """
 
-        logger.info("Profiling a query.")
+        logger.info('Profiling a query.')
 
         data, summary = self.query(
             query, db, fetch_size, write, profile=True, **kwargs
@@ -358,7 +363,7 @@ class DriverBase(object):
         # TODO (readability may be better when ordered from top to bottom)
 
         # get print representation
-        header = f"Execution time: {exec_time:n}\n"
+        header = f'Execution time: {exec_time:n}\n'
         printout = pretty(prof, [header], indent=0)
 
         return prof, printout
@@ -373,7 +378,7 @@ class DriverBase(object):
             (str): Name of a database.
         """
 
-        return self._db_config["db"] or self._home_db
+        return self._db_config['db'] or self._home_db
 
     def db_exists(self, name=None):
         """
@@ -388,7 +393,7 @@ class DriverBase(object):
 
         return bool(self.db_status(name=name))
 
-    def db_status(self, name=None, field="currentStatus"):
+    def db_status(self, name=None, field='currentStatus'):
         """
         Tells the current status or other state info of a database.
 
@@ -421,7 +426,7 @@ class DriverBase(object):
             (bool): `True` if the database is online.
         """
 
-        return self.db_status(name=name) == "online"
+        return self.db_status(name=name) == 'online'
 
     def create_db(self, name=None):
         """
@@ -431,7 +436,7 @@ class DriverBase(object):
             name (str): Name of the database.
         """
 
-        self._manage_db("CREATE", name=name, options="IF NOT EXISTS")
+        self._manage_db('CREATE', name=name, options='IF NOT EXISTS')
 
     def start_db(self, name=None):
         """
@@ -441,7 +446,7 @@ class DriverBase(object):
             name (str): Name of the database.
         """
 
-        self._manage_db("START", name=name)
+        self._manage_db('START', name=name)
 
     def stop_db(self, name=None):
         """
@@ -451,7 +456,7 @@ class DriverBase(object):
             name (str): Name of the database.
         """
 
-        self._manage_db("STOP", name=name)
+        self._manage_db('STOP', name=name)
 
     def drop_db(self, name=None):
         """
@@ -461,7 +466,7 @@ class DriverBase(object):
             name (str): Name of the database.
         """
 
-        self._manage_db("DROP", name=name, options="IF EXISTS")
+        self._manage_db('DROP', name=name, options='IF EXISTS')
 
     def _manage_db(self, cmd, name=None, options=None):
         """
@@ -475,12 +480,12 @@ class DriverBase(object):
         """
 
         self.query(
-            "%s DATABASE %s %s;"
+            '%s DATABASE %s %s;'
             % (
                 cmd,
                 name or self.current_db,
-                options or "",
-            )
+                options or '',
+            ),
         )
 
     def wipe_db(self):
@@ -489,7 +494,7 @@ class DriverBase(object):
         all constraints.
         """
 
-        self.query("MATCH (n) DETACH DELETE n;")
+        self.query('MATCH (n) DETACH DELETE n;')
 
         self._drop_constraints()
 
@@ -517,9 +522,9 @@ class DriverBase(object):
 
         s = self.driver.session()
 
-        for constraint in s.run("CALL db.constraints"):
+        for constraint in s.run('CALL db.constraints'):
 
-            s.run("DROP CONSTRAINT " + constraint[0])
+            s.run('DROP CONSTRAINT ' + constraint[0])
 
         s.close()
 
@@ -529,9 +534,9 @@ class DriverBase(object):
         Number of nodes in the database.
         """
 
-        res, summary = self.query("MATCH (n) RETURN COUNT(n) AS count;")
+        res, summary = self.query('MATCH (n) RETURN COUNT(n) AS count;')
 
-        return res[0]["count"]
+        return res[0]['count']
 
     @property
     def edge_count(self):
@@ -539,9 +544,9 @@ class DriverBase(object):
         Number of edges in the database.
         """
 
-        res, summary = self.query("MATCH ()-[r]->() RETURN COUNT(r) AS count;")
+        res, summary = self.query('MATCH ()-[r]->() RETURN COUNT(r) AS count;')
 
-        return res[0]["count"]
+        return res[0]['count']
 
     @property
     def user(self) -> str:
@@ -559,12 +564,12 @@ class DriverBase(object):
                 zip(
                     self.driver._pool.opener.__code__.co_freevars,
                     self.driver._pool.opener.__closure__,
-                )
+                ),
             )
 
-            if "auth" in opener_vars:
+            if 'auth' in opener_vars:
 
-                return opener_vars["auth"].cell_contents[0]
+                return opener_vars['auth'].cell_contents[0]
 
     def __len__(self):
 
@@ -582,27 +587,27 @@ class DriverBase(object):
 
     def __exit__(self, *exc):
 
-        if hasattr(self, "_context_session"):
+        if hasattr(self, '_context_session'):
 
             self._context_session.close()
-            delattr(self, "_context_session")
+            delattr(self, '_context_session')
 
     def __repr__(self):
 
-        return "<%s %s>" % (
+        return '<{} {}>'.format(
             self.__class__.__name__,
-            self._connection_str if self.driver else "[no connection]",
+            self._connection_str if self.driver else '[no connection]',
         )
 
     @property
     def _connection_str(self):
 
-        return "%s://%s:%u/%s" % (
+        return '%s://%s:%u/%s' % (
             re.split(
-                r"(?<=[a-z])(?=[A-Z])",
+                r'(?<=[a-z])(?=[A-Z])',
                 self.driver.__class__.__name__,
             )[0].lower(),
-            self.driver._pool.address[0] if self.driver else "unknown",
+            self.driver._pool.address[0] if self.driver else 'unknown',
             self.driver._pool.address[1] if self.driver else 0,
-            self.user or "unknown",
+            self.user or 'unknown',
         )
