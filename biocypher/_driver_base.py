@@ -18,11 +18,15 @@ provides basic management methods.
 from .logger import logger
 logger.debug(f"Loading module {__name__}.")
 
+from typing import Optional
+import os
+
 import neo4j
 
 
 class DriverBase(object):
     """
+
     Manages the connection to the Neo4j server. Establishes the
     connection and executes queries. A wrapper around the `Driver`
     object from the :py:mod:`neo4j` module, which is stored in the
@@ -34,22 +38,25 @@ class DriverBase(object):
         * By a YAML config file
 
     Args:
-        driver (neo4j.Driver): A ``neo4j.Driver`` instance, created by,
-            for example, ``neo4j.GraphDatabase.driver``.
-        db_name (str): Name of the database (Neo4j graph) to use.
-        db_uri (str): Protocol, host and port to access the Neo4j
-            server.
-        db_auth (tuple): Neo4j server authentication data: tuple of user
-            name and password.
-        fetch_size (int): Optional; the fetch size to use in database
-            transactions.
-        config_file (str): Path to a YAML config file which provides the
-            URI, user name and password.
-        wipe (bool): Wipe the database after connection, ensuring the
-            data is loaded into an empty database.
-        increment_version (bool): Whether to increase version number
-            automatically and create a new BioCypher version node in the
-            graph.
+        driver:
+            A ``neo4j.Driver`` instance, created by, for example,
+            ``neo4j.GraphDatabase.driver``.
+        db_name:
+            Name of the database (Neo4j graph) to use.
+        db_uri:
+            Protocol, host and port to access the Neo4j server.
+        db_user:
+            Neo4j user name.
+        db_passwd:
+            Password of the Neo4j user.
+        fetch_size:
+            Optional; the fetch size to use in database transactions.
+        config:
+            Path to a YAML config file which provides the URI, user name
+            and password.
+        wipe:
+            Wipe the database after connection, ensuring the data is
+            loaded into an empty database.
 
     Todo:
         - remove biocypher-specific init args, possible?
@@ -57,13 +64,14 @@ class DriverBase(object):
 
     def __init__(
         self,
-        driver=None,
-        db_name=None,
-        db_uri="neo4j://localhost:7687",
-        db_auth=None,
-        fetch_size=1000,
-        wipe=False,
-        increment_version=True,
+        driver: Optional[neo4j.Driver]=None,
+        db_name: Optionl[str]=None,
+        db_uri: Optionl[str]=None,
+        db_user: Optionl[str]=None,
+        db_passwd: Optionl[str]=None,
+        config: Optional[str]="neo4j.yaml",
+        fetch_size: int=1000,
+        wipe: bool=False,
     ):
 
         self.driver = driver
@@ -78,18 +86,13 @@ class DriverBase(object):
             )
             self._db_config = {
                 "uri": db_uri,
-                "auth": db_auth,
+                "user": db_user,
+                "passwd": db_passwd,
                 "db": db_name,
                 "fetch_size": fetch_size,
             }
 
-            # include to load default yaml from module
-            ROOT = os.path.join(
-                *os.path.split(
-                    os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-                )
-            )
-            self._config_file = ROOT + config_file
+            self._config_file = config_file
 
             self.db_connect()
 
@@ -112,7 +115,9 @@ class DriverBase(object):
         current configuration.
         """
 
-        if not all(self._db_config.values()):
+        connect_essential = ('uri', 'user', 'passwd')
+
+        if not all(self._db_config.get(k, None) for k in connect_essential):
 
             self.read_config()
 
@@ -127,20 +132,21 @@ class DriverBase(object):
     @property
     def uri(self):
 
-        return self._db_config["uri"]
+        return self._db_config.get("uri", None) or "neo4j://localhost:7687"
 
     @property
     def auth(self):
 
-        return self._db_config["auth"]
+        return (
+            tuple(self._db_config.get("auth", ())) or
+            (self._db_config["user"], self._db_config["passwd"])
+        )
 
-    def read_config(self, section="default"):
+    def read_config(self, section: Optional[str]=None):
         """
         Populates the instance configuration from one section of a YAML
         config file.
         """
-
-        config.
 
         if self._config_file and os.path.exists(self._config_file):
 
@@ -150,12 +156,11 @@ class DriverBase(object):
 
                 conf = yaml.safe_load(fp.read())
 
-            self._db_config.update(conf[section])
-            self._db_config["auth"] = tuple(self._db_config["auth"])
+            for k, v in conf.get(section, conf).items():
 
-        if not self._db_config["db"]:
+                if not self.db_config.get(k, None):
 
-            self._db_config["db"] = self._default_db
+                    self._db_config[k] = v
 
     def close(self):
         """
@@ -539,12 +544,12 @@ class DriverBase(object):
         return res[0]["count"]
 
     @property
-    def user(self):
+    def user(self) -> str:
         """
         User for the currently active connection.
 
         Returns:
-            (str): The name of the user, `None` if no connection or no
+            The name of the user, `None` if no connection or no
             unencrypted authentication data is available.
         """
 
