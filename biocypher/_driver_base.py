@@ -20,7 +20,7 @@ logger.debug(f'Loading module {__name__}.')
 import os
 import re
 import importlib as imp
-from typing import Optional
+from typing import Optional, Union
 
 import yaml
 import neo4j
@@ -82,26 +82,26 @@ class DriverBase:
     ):
 
         self.driver = driver
+        self._db_config = {
+            'uri': db_uri,
+            'user': db_user,
+            'passwd': db_passwd,
+            'db': db_name,
+            'fetch_size': fetch_size,
+        }
+        self._config_file = config
+
         if self.driver:
-            logger.info('Loading from supplied driver.')
+
+            logger.info('Using the driver provided.')
             self._config_from_driver()
 
-        if not self.driver:
+        else:
 
             logger.info(
-                'No driver supplied, initialising driver '
-                'from local configuration.',
+                'No driver provided, initialising '
+                'it from local config.'
             )
-            self._db_config = {
-                'uri': db_uri,
-                'user': db_user,
-                'passwd': db_passwd,
-                'db': db_name,
-                'fetch_size': fetch_size,
-            }
-
-            self._config_file = config
-
             self.db_connect()
 
         self.ensure_db()
@@ -186,6 +186,34 @@ class DriverBase:
 
                     self._db_config[k] = v
 
+    def _config_from_driver(self):
+
+        driver_con = self.driver.verify_connectivity()
+
+        from_driver = dict(
+            uri = self._uri(
+                host = self.driver.default_host,
+                port = self.driver.default_port,
+            ),
+            db = next(driver_con.values().__iter__())[0]['database'],
+            fetch_size = self.driver._default_workspace_config.fetch_size,
+        )
+
+        for k, v in from_driver:
+
+            self._db_config[k] = self._db_config.get(k, v)
+
+
+    @staticmethod
+    def _uri(
+            host: str = 'localhost',
+            port: Union[str,int] = 7687,
+            protocol: str = 'neo4j',
+        ) -> str:
+
+        return f'{protocol}://{host}:{port}/'
+
+
     def close(self):
         """
         Closes the Neo4j driver if it exists and is open.
@@ -195,9 +223,11 @@ class DriverBase:
 
             self.driver.close()
 
+
     def __del__(self):
 
         self.close()
+
 
     @property
     def _home_db(self) -> Optional[str]:
@@ -228,8 +258,10 @@ class DriverBase:
         **kwargs,
     ):
         """
-        Creates a session with the driver passed into the class at
-        instantiation, runs a CYPHER query and returns the response.
+        Run a CYPHER query.
+
+        Create a session with the wrapped driver, run a CYPHER query and
+        return the response.
 
         Args:
             query:
