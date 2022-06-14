@@ -61,6 +61,8 @@ def read_config() -> dict:
 
     Read and merge the built-in default, the user level and directory level
     configuration.
+
+    TODO explain path configuration
     """
 
     defaults = module_data('module_config')
@@ -77,6 +79,8 @@ def read_config() -> dict:
 def config(*args, **kwargs) -> Optional[Any]:
     """
     Set or get module config parameters.
+
+    TODO explain: is setting permanent or session-specific?
     """
 
     if args and kwargs:
