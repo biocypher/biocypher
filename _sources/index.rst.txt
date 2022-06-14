@@ -386,32 +386,32 @@ Submodule documentation
 
 `driver.py`: the BioCypher Neo4j Driver
 =======================================
-.. automodule:: biocypher._driver
+.. automodule:: biocypher.driver
    :members: 
 
 `check.py`: BioCypher Format Data Representation and Consistency Checks
 =======================================================================
-.. automodule:: biocypher._check
+.. automodule:: biocypher.check
    :members:
 
 `create.py`: Base Classes for Node and Edge Representations in BioCypher
 ========================================================================
-.. automodule:: biocypher._create
+.. automodule:: biocypher.create
    :members: 
 
 `translate.py`: Translation Functionality for Implemented Types of Representation
 =================================================================================
-.. automodule:: biocypher._translate
+.. automodule:: biocypher.translate
    :members:
 
 `write.py`: Write the Graph to CSV Files for quick 'admin import'
 =================================================================
-.. automodule:: biocypher._write
+.. automodule:: biocypher.write
    :members:
 
 `logger.py`: Logging
 ====================
-.. automodule:: biocypher._logger
+.. automodule:: biocypher.logger
    :members:
 
 ###########################
