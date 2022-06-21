@@ -1018,46 +1018,6 @@ remains fixed for each BioCypher “session” (ie, the entire duration
 from starting the connection to the termination of the BioCypher
 adapter instance). Is connected to MetaNodes and MetaEdges via
 “:CONTAINS” relationships.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher.check.VersionNode.get_current_id">
-<span class="sig-name descname"><span class="pre">get_current_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_current_id" title="Permalink to this definition"></a></dt>
-<dd><p>Instantiate a version ID for the current session. For now does
-versioning using datetime.</p>
-<p>Can later implement incremental versioning, versioning from
-config file, or manual specification via argument.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher.check.VersionNode.get_graph_schema">
-<span class="sig-name descname"><span class="pre">get_graph_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_graph_schema" title="Permalink to this definition"></a></dt>
-<dd><p>Return graph schema information from meta graph if it exists, or
-create new schema information properties from configuration
-file.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher.check.VersionNode.get_graph_state">
-<span class="sig-name descname"><span class="pre">get_graph_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_graph_state" title="Permalink to this definition"></a></dt>
-<dd><p>Check in active DBMS connection for existence of VersionNodes,
-return the most recent VersionNode as representation of the
-graph state. If no VersionNode found, assume blank graph state
-and initialise.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher.check.VersionNode.get_leaves">
-<span class="sig-name descname"><span class="pre">get_leaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.check.VersionNode.get_leaves" title="Permalink to this definition"></a></dt>
-<dd><p>Get leaves of the tree hierarchy from the data structure dict
-contained in the <cite>schema_config.yaml</cite>. Serves no purpose
-currently since the decision to have the <cite>schema_config.yaml</cite>
-represent only the direct constituents of the desired graph and
-not the complete hierarchy any more; this will be derived from
-the (modified) Biolink model. Now only does filtering of the
-schema for entities that have a “represented_as” property.</p>
-<p>Will leave in since the “leaves” are a nice visual cue for the
-hierarchical representation of graph constituents.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>
