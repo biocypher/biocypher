@@ -109,7 +109,7 @@ class DriverBase:
             )
             self.db_connect()
 
-        self.ensure_db()
+        #self.ensure_db()
 
 
     def reload(self):
@@ -278,6 +278,7 @@ class DriverBase:
         write: bool=True,  # route to write server (default)
         explain: bool=False,
         profile: bool=False,
+        fallback_db: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -298,9 +299,13 @@ class DriverBase:
             explain:
                 Indicates whether to EXPLAIN the CYPHER query and
                 return the ResultSummary.
-            explain:
+            profile:
                 Indicates whether to PROFILE the CYPHER query and
                 return the ResultSummary.
+            fallback_db:
+                If the query fails due to the database being unavailable,
+                try to execute it against a fallback database. Typically
+                the default database "neo4j" can be used as a fallback.
             **kwargs:
                 Optional objects used in CYPHER interactive mode,
                 for instance for passing a parameter dictionary.
@@ -362,11 +367,36 @@ class DriverBase:
                 neo4j.WRITE_ACCESS if write else neo4j.READ_ACCESS,
         }
 
-        with self.session(**session_args) as session:
+        try:
 
-            res = session.run(query, **kwargs)
+            with self.session(**session_args) as session:
 
-            return res.data(), res.consume()
+                res = session.run(query, **kwargs)
+
+                return res.data(), res.consume()
+
+        except (neo4j.exceptions.Neo4jError, neo4j.exceptions.DriverError):
+
+            fallback_db = fallback_db or getattr(self, '_fallback_db', None)
+            self._fallback_db = None
+
+            if fallback_db:
+
+                logger.warn(
+                    f'Running query against fallback database `{fallback_db}`.'
+                )
+
+                return self.query(
+                    query = query,
+                    db = fallback_db,
+                    fetch_size = fetch_size,
+                    write = write,
+                    **kwargs
+                )
+
+            else:
+
+                raise
 
 
     def explain(
@@ -511,7 +541,16 @@ class DriverBase:
 
         name = name or self.current_db
 
-        resp, summary = self.query('SHOW DATABASES WHERE name = "%s";' % name)
+        query = f'SHOW DATABASES WHERE name = "{name}";'
+
+        with self.fallback_db():
+
+            resp, summary = self.query(query)
+
+        #except neo4j.exceptions.ServiceUnavailable:
+
+            #logger.warn(f'Database `{name}` is unavailable.')
+            #resp, summary = self.query(query, db = 'neo4j')
 
         if resp:
 
@@ -780,11 +819,36 @@ class DriverBase:
 
 
     @contextlib.contextmanager
-    def session(self, **kwargs):
+    def fallback_db(self, fallback: str = 'neo4j'):
+        """
+        Should running on the default database fail, try a fallback database.
+
+        A cotext that attempts to run queries against a fallback database if
+        running against the default database fails.
+
+        Args:
+            fallback:
+                Name of the fallback database.
+        """
+
+        fallback_db_prev = getattr(self, '_fallback_db', None)
+        self._fallback_db = fallback
 
         try:
 
-            session = self.driver.session(**kwargs)
+            yield None
+
+        finally:
+
+            self._fallback_db = fallback_db_prev
+
+
+    @contextlib.contextmanager
+    def session(self, **kwargs):
+
+        session = self.driver.session(**kwargs)
+
+        try:
 
             yield session
 
