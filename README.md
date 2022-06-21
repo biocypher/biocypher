@@ -24,6 +24,9 @@ between identifier systems.
 
 ## Usage
 
+❗❗❗ The `main` branch is currently non-functional due to refactoring efforts. 
+Please use the branch `revert-until-fix` for the time being.
+
 BioCypher is currently in prototype stage. To use it locally, please clone the
 repository, change to a folder of your choice and then create the conda
 environment using the **_enviroment.yaml_**. This will create a conda
