@@ -15,12 +15,15 @@ provides basic management methods.
 """
 
 from ._logger import logger
+
 logger.debug(f'Loading module {__name__}.')
 
+from typing import Union, Literal, Optional
 import os
 import re
+import warnings
 import importlib as imp
-from typing import Optional, Union
+import contextlib
 
 import yaml
 import neo4j
@@ -90,17 +93,19 @@ class DriverBase:
             'fetch_size': fetch_size,
         }
         self._config_file = config
+        self._drivers = {}
 
         if self.driver:
 
             logger.info('Using the driver provided.')
             self._config_from_driver()
+            self._register_current_driver()
 
         else:
 
             logger.info(
                 'No driver provided, initialising '
-                'it from local config.'
+                'it from local config.',
             )
             self.db_connect()
 
@@ -136,6 +141,7 @@ class DriverBase:
             uri=self.uri,
             auth=self.auth,
         )
+        self._register_current_driver()
 
         logger.info('Opened database connection.')
 
@@ -194,14 +200,12 @@ class DriverBase:
 
     def _config_from_driver(self):
 
-        driver_con = self.driver.verify_connectivity()
-
         from_driver = dict(
             uri = self._uri(
                 host = self.driver.default_host,
                 port = self.driver.default_port,
             ),
-            db = next(driver_con.values().__iter__())[0]['database'],
+            db = self.current_db,
             fetch_size = self.driver._default_workspace_config.fetch_size,
             user = self.user,
             passwd = self.passwd,
@@ -212,12 +216,17 @@ class DriverBase:
             self._db_config[k] = self._db_config.get(k, v)
 
 
+    def _register_current_driver(self):
+
+        self._drivers[self.current_db] = self.driver
+
+
     @staticmethod
     def _uri(
             host: str = 'localhost',
             port: Union[str,int] = 7687,
             protocol: str = 'neo4j',
-        ) -> str:
+    ) -> str:
 
         return f'{protocol}://{host}:{port}/'
 
@@ -249,7 +258,10 @@ class DriverBase:
         return self._db_name('DEFAULT')
 
 
-    def _db_name(self, which='HOME') -> Optional[str]:
+    def _db_name(
+            self,
+            which: Literal['HOME', 'DEFAULT'] = 'HOME',
+    ) -> Optional[str]:
 
         resp, summary = self.query('SHOW %s DATABASE;' % which)
 
@@ -448,6 +460,21 @@ class DriverBase:
         return self._db_config['db'] or self._home_db
 
 
+    @property
+    def _driver_con_db(self):
+
+        with warnings.catch_warnings():
+
+            warnings.simplefilter('ignore')
+            driver_con = self.driver.verify_connectivity()
+
+        if driver_con:
+
+            first_con = next(driver_con.values().__iter__())[0]
+
+            return first_con.get('database', None)
+
+
     def db_exists(self, name=None):
         """
         Tells if a database exists in the storage of the Neo4j server.
@@ -462,16 +489,22 @@ class DriverBase:
         return bool(self.db_status(name=name))
 
 
-    def db_status(self, name=None, field='currentStatus'):
+    def db_status(
+            self,
+            name: Optional[str] = None,
+            field: str = 'currentStatus',
+    ) -> Optional[Union[Literal['online', 'offline'], str, dict]]:
         """
         Tells the current status or other state info of a database.
 
         Args:
-            name (str): Name of a database (graph).
-            field (str,NoneType): The field to return.
+            name:
+                Name of a database (graph).
+            field:
+                The field to return.
 
         Returns:
-            (str,dict): The status as a string, `None` if the database
+            The status as a string, `None` if the database
             does not exist. If :py:attr:`field` is `None` a
             dictionary with all fields will be returned.
         """
@@ -482,10 +515,10 @@ class DriverBase:
 
         if resp:
 
-            return resp[0][field] if field in resp[0] else resp[0]
+            return resp[0].get(field, resp[0])
 
 
-    def db_online(self, name=None):
+    def db_online(self, name: Optional[str] = None):
         """
         Tells if a database is currently online (active).
 
@@ -499,7 +532,7 @@ class DriverBase:
         return self.db_status(name=name) == 'online'
 
 
-    def create_db(self, name=None):
+    def create_db(self, name: Optional[str] = None):
         """
         Create a database if it does not already exist.
 
@@ -510,7 +543,7 @@ class DriverBase:
         self._manage_db('CREATE', name=name, options='IF NOT EXISTS')
 
 
-    def start_db(self, name=None):
+    def start_db(self, name: Optional[str] = None):
         """
         Starts a database (brings it online) if it is offline.
 
@@ -521,7 +554,7 @@ class DriverBase:
         self._manage_db('START', name=name)
 
 
-    def stop_db(self, name=None):
+    def stop_db(self, name: Optional[str] = None):
         """
         Stops a database, making sure it's offline.
 
@@ -532,7 +565,7 @@ class DriverBase:
         self._manage_db('STOP', name=name)
 
 
-    def drop_db(self, name=None):
+    def drop_db(self, name: Optional[str] = None):
         """
         Deletes a database if it exists.
 
@@ -543,15 +576,22 @@ class DriverBase:
         self._manage_db('DROP', name=name, options='IF EXISTS')
 
 
-    def _manage_db(self, cmd, name=None, options=None):
+    def _manage_db(
+            self,
+            cmd: Literal['CREATE', 'START', 'STOP', 'DROP'],
+            name: Optional[str] = None,
+            options: Optional[str] = None,
+    ):
         """
         Executes a database management command.
 
         Args:
-            cmd (str): The command: CREATE, START, STOP, DROP, etc.
-            name (str): Name of the database.
-            options (str): The optional parts of the command, following
-                the database name.
+            cmd:
+                The command: CREATE, START, STOP, DROP, etc.
+            name:
+                Name of the database.
+            options:
+                The optional parts of the command, following the database name.
         """
 
         self.query(
@@ -590,6 +630,31 @@ class DriverBase:
         if not self.db_online():
 
             self.start_db()
+
+
+    def select_db(self, name: str):
+        """
+        Set the current database.
+
+        The Python driver is able to run only CYPHER statements, not Neo4j
+        commands, hence we can't simply do ``:use database;``, but we
+        create or re-use another `Driver` object.
+        """
+
+        current = self.current_db
+
+        if current != name:
+
+            self._register_current_driver()
+            self._db_config['db'] = name
+
+            if name in self._drivers:
+
+                self.driver = self._drivers[name]
+
+            else:
+
+                self.db_connect()
 
 
     def _drop_constraints(self):
@@ -692,6 +757,29 @@ class DriverBase:
         return self.node_count
 
 
+    @contextlib.contextmanager
+    def use_db(self, name: str):
+        """
+        A context where the default database is set to `name`.
+
+        Args:
+            name:
+                The name of the desired default database.
+        """
+
+        used_previously = self.current_db
+        self.select_db(name = name)
+
+        try:
+
+            yield None
+
+        finally:
+
+            self.select_db(name = used_previously)
+
+
+    @contextlib.contextmanager
     def session(self, **kwargs):
 
         try:
