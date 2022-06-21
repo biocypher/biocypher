@@ -1295,7 +1295,7 @@ homepage: TODO.</p>
 <p>Distributed under GPLv3 license, see LICENSE.txt.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher.translate.BiolinkAdapter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.translate.</span></span><span class="sig-name descname"><span class="pre">BiolinkAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_yaml</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_yaml_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/config/biocypher-biolink-model.yaml'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.translate.BiolinkAdapter" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.translate.</span></span><span class="sig-name descname"><span class="pre">BiolinkAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_yaml</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_yaml_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/biocypher/config/biocypher-biolink-model.yaml'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.translate.BiolinkAdapter" title="Permalink to this definition"></a></dt>
 <dd><p>Performs various functions to integrate the Biolink ontology.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.translate.BiolinkAdapter.translate_leaves_to_biolink">
@@ -1304,6 +1304,9 @@ homepage: TODO.</p>
 in the <cite>schema_config.yaml</cite> to Biolink-conforming nomenclature.
 Simultaneously get the structure in the form of the parents of
 each leaf.</p>
+<p>Additionally adds child leaves for each leaf that has multiple
+identifiers.</p>
+<p>TODO: add class definition id_prefixes check</p>
 </dd></dl>
 
 </dd></dl>
