@@ -91,6 +91,10 @@ class BiolinkAdapter(object):
 
     def init_toolkit(self) -> bmt.Toolkit:
 
+        """
+        TODO explain: isn't schma_yaml automatically at least
+        'biocypher' after running set_schema? How would we get default?
+        """
         logger.info(
             'Creating BioLink model toolkit from '
             f'`{self.schema_yaml or "default BioLink model"}`.'

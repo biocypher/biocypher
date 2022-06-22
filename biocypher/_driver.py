@@ -90,7 +90,7 @@ class Driver(DriverBase):
         db_user = db_user or config('neo4j_user')
         db_passwd = db_user or config('neo4j_pw')
 
-        BaseDriver.__init__(**locals())
+        DriverBase.__init__(**locals())
 
         # get database version node ('check' module)
         # immutable variable of each instance (ie, each call from
