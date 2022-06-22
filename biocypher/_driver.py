@@ -33,7 +33,6 @@ if TYPE_CHECKING:
 import neo4j_utils
 
 from ._check import MetaEdge, MetaNode, VersionNode
-from ._utils import pretty
 from ._write import BatchWriter
 from ._config import config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
