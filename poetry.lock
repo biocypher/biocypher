@@ -54,7 +54,7 @@ tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>
 
 [[package]]
 name = "babel"
-version = "2.10.1"
+version = "2.10.3"
 description = "Internationalization utilities"
 category = "main"
 optional = false
@@ -87,7 +87,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "bmt"
-version = "0.8.4"
+version = "0.8.8"
 description = ""
 category = "main"
 optional = false
@@ -119,7 +119,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "certifi"
-version = "2022.5.18.1"
+version = "2022.6.15"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
@@ -176,11 +176,25 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "colorama"
-version = "0.4.4"
+version = "0.4.5"
 description = "Cross-platform colored terminal text."
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[[package]]
+name = "colorlog"
+version = "6.6.0"
+description = "Add colours to the output of Python's logging module."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+colorama = {version = "*", markers = "sys_platform == \"win32\""}
+
+[package.extras]
+development = ["black", "flake8", "mypy", "pytest", "types-colorama"]
 
 [[package]]
 name = "commonmark"
@@ -363,7 +377,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 
 [[package]]
 name = "importlib-resources"
-version = "5.7.1"
+version = "5.8.0"
 description = "Read resources from Python packages"
 category = "main"
 optional = false
@@ -676,6 +690,27 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 pytz = "*"
+
+[[package]]
+name = "neo4j-utils"
+version = "0.0.4"
+description = ""
+category = "main"
+optional = false
+python-versions = "^3.8"
+develop = false
+
+[package.dependencies]
+colorlog = "*"
+neo4j = "^4.4"
+PyYAML = ">=5.0"
+toml = "*"
+
+[package.source]
+type = "git"
+url = "https://github.com/saezlab/neo4j-utils.git"
+reference = "master"
+resolved_reference = "20d01d804f629db55d2ed06b34250a263742426d"
 
 [[package]]
 name = "nodeenv"
@@ -1142,7 +1177,7 @@ pandas = ["pandas (>=1.3.5)"]
 
 [[package]]
 name = "sphinx"
-version = "5.0.1"
+version = "5.0.2"
 description = "Python documentation generator"
 category = "main"
 optional = false
@@ -1189,7 +1224,7 @@ type_comments = ["typed-ast (>=1.5.2)"]
 
 [[package]]
 name = "sphinx-click"
-version = "4.1.0"
+version = "4.2.0"
 description = "Sphinx extension that automatically documents click applications"
 category = "main"
 optional = false
@@ -1460,7 +1495,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "cba4a396d083e93c5f479c375e4c50fad276cd066bb1eca5fce4a0033c67a1e3"
+content-hash = "e0b85da60781075c8db10baee35a8b3ba62a1c2e0316166700a3ac6d7ad45184"
 
 [metadata.files]
 alabaster = [
@@ -1487,24 +1522,24 @@ attrs = [
     {file = "attrs-21.4.0.tar.gz", hash = "sha256:626ba8234211db98e869df76230a137c4c40a12d72445c45d5f5b716f076e2fd"},
 ]
 babel = [
-    {file = "Babel-2.10.1-py3-none-any.whl", hash = "sha256:3f349e85ad3154559ac4930c3918247d319f21910d5ce4b25d439ed8693b98d2"},
-    {file = "Babel-2.10.1.tar.gz", hash = "sha256:98aeaca086133efb3e1e2aad0396987490c8425929ddbcfe0550184fdc54cd13"},
+    {file = "Babel-2.10.3-py3-none-any.whl", hash = "sha256:ff56f4892c1c4bf0d814575ea23471c230d544203c7748e8c68f0089478d48eb"},
+    {file = "Babel-2.10.3.tar.gz", hash = "sha256:7614553711ee97490f732126dc077f8d0ae084ebc6a96e23db1482afabdb2c51"},
 ]
 black = [
     {file = "black-21.6b0-py3-none-any.whl", hash = "sha256:dfb8c5a069012b2ab1e972e7b908f5fb42b6bbabcba0a788b86dc05067c7d9c7"},
     {file = "black-21.6b0.tar.gz", hash = "sha256:dc132348a88d103016726fe360cb9ede02cecf99b76e3660ce6c596be132ce04"},
 ]
 bmt = [
-    {file = "bmt-0.8.4-py3-none-any.whl", hash = "sha256:ac5964f129e6aa9c03d7af8e449005d91963311f6067f2a5f921de531b524452"},
-    {file = "bmt-0.8.4.tar.gz", hash = "sha256:cf695c7132d688314fcfcf483b9483e856fc74890b700051fceac21e9a61773b"},
+    {file = "bmt-0.8.8-py3-none-any.whl", hash = "sha256:dbddca576fcd24e1e859a578a731e912d527251eec68c0522c25a5bac75a5f5d"},
+    {file = "bmt-0.8.8.tar.gz", hash = "sha256:c775fcc248fabdfd8b0f10a07989fd30aba543f6bc0d3f70d32af9e2214936ef"},
 ]
 bump2version = [
     {file = "bump2version-1.0.1-py2.py3-none-any.whl", hash = "sha256:37f927ea17cde7ae2d7baf832f8e80ce3777624554a653006c9144f8017fe410"},
     {file = "bump2version-1.0.1.tar.gz", hash = "sha256:762cb2bfad61f4ec8e2bdf452c7c267416f8c70dd9ecb1653fd0bbb01fa936e6"},
 ]
 certifi = [
-    {file = "certifi-2022.5.18.1-py3-none-any.whl", hash = "sha256:f1d53542ee8cbedbe2118b5686372fb33c297fcd6379b050cca0ef13a597382a"},
-    {file = "certifi-2022.5.18.1.tar.gz", hash = "sha256:9c5705e395cd70084351dd8ad5c41e65655e08ce46f2ec9cf6c2c08390f71eb7"},
+    {file = "certifi-2022.6.15-py3-none-any.whl", hash = "sha256:fe86415d55e84719d75f8b69414f6438ac3547d2078ab91b67e779ef69378412"},
+    {file = "certifi-2022.6.15.tar.gz", hash = "sha256:84c85a9078b11105f04f3036a9482ae10e4621616db313fe045dd24743a0820d"},
 ]
 cfgraph = [
     {file = "CFGraph-0.2.1.tar.gz", hash = "sha256:b57fe7044a10b8ff65aa3a8a8ddc7d4cd77bf511b42e57289cd52cbc29f8fe74"},
@@ -1526,8 +1561,12 @@ click = [
     {file = "click-8.1.3.tar.gz", hash = "sha256:7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e"},
 ]
 colorama = [
-    {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
-    {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+    {file = "colorama-0.4.5-py2.py3-none-any.whl", hash = "sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da"},
+    {file = "colorama-0.4.5.tar.gz", hash = "sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4"},
+]
+colorlog = [
+    {file = "colorlog-6.6.0-py2.py3-none-any.whl", hash = "sha256:351c51e866c86c3217f08e4b067a7974a678be78f07f85fc2d55b8babde6d94e"},
+    {file = "colorlog-6.6.0.tar.gz", hash = "sha256:344f73204009e4c83c5b6beb00b3c45dc70fcdae3c80db919e0a4171d006fde8"},
 ]
 commonmark = [
     {file = "commonmark-0.9.1-py2.py3-none-any.whl", hash = "sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9"},
@@ -1690,8 +1729,8 @@ importlib-metadata = [
     {file = "importlib_metadata-4.11.4.tar.gz", hash = "sha256:5d26852efe48c0a32b0509ffbc583fda1a2266545a78d104a6f4aff3db17d700"},
 ]
 importlib-resources = [
-    {file = "importlib_resources-5.7.1-py3-none-any.whl", hash = "sha256:e447dc01619b1e951286f3929be820029d48c75eb25d265c28b92a16548212b8"},
-    {file = "importlib_resources-5.7.1.tar.gz", hash = "sha256:b6062987dfc51f0fcb809187cffbd60f35df7acb4589091f154214af6d0d49d3"},
+    {file = "importlib_resources-5.8.0-py3-none-any.whl", hash = "sha256:7952325ffd516c05a8ad0858c74dff2c3343f136fe66a6002b2623dd1d43f223"},
+    {file = "importlib_resources-5.8.0.tar.gz", hash = "sha256:568c9f16cb204f9decc8d6d24a572eeea27dacbb4cee9e6b03a8025736769751"},
 ]
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
@@ -1819,6 +1858,7 @@ myst-parser = [
 neo4j = [
     {file = "neo4j-4.4.4.tar.gz", hash = "sha256:4f8982028021f9fc5e3e3605e6368302d6a97ea75a48666ae49fcc974113a3c8"},
 ]
+neo4j-utils = []
 nodeenv = [
     {file = "nodeenv-1.6.0-py2.py3-none-any.whl", hash = "sha256:621e6b7076565ddcacd2db0294c0381e01fd28945ab36bcf00f41c5daf63bef7"},
     {file = "nodeenv-1.6.0.tar.gz", hash = "sha256:3ef13ff90291ba2a4a7a4ff9a979b63ffdd00a464dbe04acf0ea6471517a4c2b"},
@@ -2158,16 +2198,16 @@ sparqlwrapper = [
     {file = "SPARQLWrapper-2.0.0.tar.gz", hash = "sha256:3fed3ebcc77617a4a74d2644b86fd88e0f32e7f7003ac7b2b334c026201731f1"},
 ]
 sphinx = [
-    {file = "Sphinx-5.0.1-py3-none-any.whl", hash = "sha256:36aa2a3c2f6d5230be94585bc5d74badd5f9ed8f3388b8eedc1726fe45b1ad30"},
-    {file = "Sphinx-5.0.1.tar.gz", hash = "sha256:f4da1187785a5bc7312cc271b0e867a93946c319d106363e102936a3d9857306"},
+    {file = "Sphinx-5.0.2-py3-none-any.whl", hash = "sha256:d3e57663eed1d7c5c50895d191fdeda0b54ded6f44d5621b50709466c338d1e8"},
+    {file = "Sphinx-5.0.2.tar.gz", hash = "sha256:b18e978ea7565720f26019c702cd85c84376e948370f1cd43d60265010e1c7b0"},
 ]
 sphinx-autodoc-typehints = [
     {file = "sphinx_autodoc_typehints-1.18.3-py3-none-any.whl", hash = "sha256:20294de2a818bda04953c5cb302ec5af46138c81980ad9efa6d8fc1fc4242518"},
     {file = "sphinx_autodoc_typehints-1.18.3.tar.gz", hash = "sha256:c04d8f8d70e988960e25b206af39a90df84e7e2c085bb24e123bc3684021b313"},
 ]
 sphinx-click = [
-    {file = "sphinx-click-4.1.0.tar.gz", hash = "sha256:fedebd39991243ec5cfa1c9e483db7ea2621b3df2012315c89c6f1f3722f192b"},
-    {file = "sphinx_click-4.1.0-py3-none-any.whl", hash = "sha256:60d6507bf623e20e9cbab732d19fc4890cc36a394c82ba8e2320f9f9fdc4571e"},
+    {file = "sphinx-click-4.2.0.tar.gz", hash = "sha256:8429705474ebb009de5603c35b6a7bfe8501dbdb12d847cbb01f18277d4b7d9a"},
+    {file = "sphinx_click-4.2.0-py3-none-any.whl", hash = "sha256:3ba8c97a40deaf09245c540accc4ac5c1d2942eaed0fa598403cdbf04a9cf95f"},
 ]
 sphinx-last-updated-by-git = [
     {file = "sphinx-last-updated-by-git-0.3.2.tar.gz", hash = "sha256:71300227d322cab4733fc1da4e34f50d51b244c45e44af5adfc2fe219112c88d"},
