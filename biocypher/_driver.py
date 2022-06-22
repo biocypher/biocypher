@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 #
 # Copyright 2021, Heidelberg University Clinic
@@ -16,29 +15,34 @@ provides basic management methods.
 """
 
 from ._logger import logger
-logger.debug(f"Loading module {__name__}.")
 
+logger.debug(f'Loading module {__name__}.')
+
+from types import GeneratorType
+from typing import TYPE_CHECKING, List, Optional
 import os
 import re
-from more_itertools import peekable
 import importlib as imp
-from types import GeneratorType
-from typing import List, Optional, TYPE_CHECKING
+
+from more_itertools import peekable
 
 if TYPE_CHECKING:
 
     import neo4j
 
-from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from ._translate import BiolinkAdapter, gen_translate_edges, gen_translate_nodes
-from ._check import MetaEdge, VersionNode, MetaNode
+import neo4j_utils
+
+from ._check import MetaEdge, MetaNode, VersionNode
 from ._utils import pretty
 from ._write import BatchWriter
 from ._config import config
-from ._driver_base import DriverBase
+from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from ._translate import BiolinkAdapter, gen_translate_edges, gen_translate_nodes
+
+__all__ = ['Driver']
 
 
-class Driver(DriverBase):
+class Driver(neo4j_utils.Driver):
     """
     Manages a connection to a biocypher database.
 
@@ -90,7 +94,7 @@ class Driver(DriverBase):
         db_user = db_user or config('neo4j_user')
         db_passwd = db_user or config('neo4j_pw')
 
-        DriverBase.__init__(**locals())
+        neo4j_utils.Driver.__init__(**locals())
 
         # get database version node ('check' module)
         # immutable variable of each instance (ie, each call from
@@ -114,16 +118,16 @@ class Driver(DriverBase):
             self.update_meta_graph()
 
     def update_meta_graph(self):
-        logger.info("Updating Neo4j meta graph.")
+        logger.info('Updating Neo4j meta graph.')
         # add version node
         self.add_biocypher_nodes(self.db_meta)
 
         # connect version node to previous
         if self.node_count > 1:
             e_meta = BioCypherEdge(
-                self.db_meta.graph_state["id"],
+                self.db_meta.graph_state['id'],
                 self.db_meta.node_id,
-                "PRECEDES",
+                'PRECEDES',
             )
             self.add_biocypher_edges(e_meta)
 
@@ -136,24 +140,24 @@ class Driver(DriverBase):
 
         # remove connection of structure nodes from previous version
         # node(s)
-        self.query("MATCH ()-[r:CONTAINS]-()" "DELETE r")
+        self.query('MATCH ()-[r:CONTAINS]-()' 'DELETE r')
 
         # connect structure nodes to version node
         ed_v = []
         current_version = self.db_meta.get_id()
         for entity in self.db_meta.leaves.keys():
-            ed_v.append(MetaEdge(current_version, entity, "CONTAINS"))
+            ed_v.append(MetaEdge(current_version, entity, 'CONTAINS'))
         self.add_biocypher_edges(ed_v)
 
         # add graph structure between MetaNodes
         ed = []
         for no in no_l:
             id = no.get_id()
-            src = no.get_properties().get("source")
-            tar = no.get_properties().get("target")
+            src = no.get_properties().get('source')
+            tar = no.get_properties().get('target')
             if not None in [id, src, tar]:
-                ed.append(BioCypherEdge(id, src, "IS_SOURCE_OF"))
-                ed.append(BioCypherEdge(id, tar, "IS_TARGET_OF"))
+                ed.append(BioCypherEdge(id, src, 'IS_SOURCE_OF'))
+                ed.append(BioCypherEdge(id, tar, 'IS_TARGET_OF'))
         self.add_biocypher_edges(ed)
 
     def init_db(self):
@@ -168,7 +172,7 @@ class Driver(DriverBase):
 
         self.wipe_db()
         self._create_constraints()
-        logger.info("Initialising database.")
+        logger.info('Initialising database.')
 
     def _create_constraints(self):
         """
@@ -179,17 +183,17 @@ class Driver(DriverBase):
         constraints on the id of all entities represented as nodes.
         """
 
-        logger.info(f"Creating constraints for node types in config.")
+        logger.info(f'Creating constraints for node types in config.')
 
         # get structure
         for leaf in self.db_meta.leaves.items():
             label = leaf[0]
-            if leaf[1]["represented_as"] == "node":
+            if leaf[1]['represented_as'] == 'node':
 
                 s = (
-                    f"CREATE CONSTRAINT {label}_id "
-                    f"IF NOT EXISTS ON (n:{label}) "
-                    "ASSERT n.id IS UNIQUE"
+                    f'CREATE CONSTRAINT {label}_id '
+                    f'IF NOT EXISTS ON (n:{label}) '
+                    'ASSERT n.id IS UNIQUE'
                 )
                 self.query(s)
 
@@ -277,45 +281,45 @@ class Driver(DriverBase):
             nodes = peekable(nodes)
             if not isinstance(nodes.peek(), BioCypherNode):
                 logger.warn(
-                    "It appears that the first node is not a BioCypherNode. "
-                    "Nodes must be passed as type BioCypherNode. "
-                    "Please use the generic add_edges() method."
+                    'It appears that the first node is not a BioCypherNode. '
+                    'Nodes must be passed as type BioCypherNode. '
+                    'Please use the generic add_edges() method.',
                 )
                 return (False, False)
             else:
-                logger.info("Merging nodes from generator.")
+                logger.info('Merging nodes from generator.')
 
         # receive single nodes or node lists
         else:
             if type(nodes) is not list:
                 nodes = [nodes]
             if not all(isinstance(n, BioCypherNode) for n in nodes):
-                logger.error("Nodes must be passed as type BioCypherNode.")
+                logger.error('Nodes must be passed as type BioCypherNode.')
                 return (False, False)
             else:
-                logger.info(f"Merging {len(nodes)} nodes.")
+                logger.info(f'Merging {len(nodes)} nodes.')
 
         entities = [node.get_dict() for node in nodes]
 
         entity_query = (
-            "UNWIND $entities AS ent "
-            "CALL apoc.merge.node([ent.node_label], "
-            "{id: ent.node_id}, ent.properties, ent.properties) "
-            "YIELD node "
-            "RETURN node"
+            'UNWIND $entities AS ent '
+            'CALL apoc.merge.node([ent.node_label], '
+            '{id: ent.node_id}, ent.properties, ent.properties) '
+            'YIELD node '
+            'RETURN node'
         )
 
         if explain:
             return self.explain(
-                entity_query, parameters={"entities": entities}
+                entity_query, parameters={'entities': entities},
             )
         elif profile:
             return self.profile(
-                entity_query, parameters={"entities": entities}
+                entity_query, parameters={'entities': entities},
             )
         else:
-            res = self.query(entity_query, parameters={"entities": entities})
-            logger.info("Finished merging nodes.")
+            res = self.query(entity_query, parameters={'entities': entities})
+            logger.info('Finished merging nodes.')
             return res
 
     def add_biocypher_edges(self, edges, explain=False, profile=False):
@@ -362,7 +366,7 @@ class Driver(DriverBase):
             if isinstance(edges.peek(), BioCypherRelAsNode):
                 # create one node and two edges
                 rel_as_node = True
-                logger.info("Merging nodes and edges from generator.")
+                logger.info('Merging nodes and edges from generator.')
 
         # receive single edges or edge lists
         else:
@@ -376,10 +380,10 @@ class Driver(DriverBase):
             if isinstance(edges[0], BioCypherRelAsNode):
                 rel_as_node = True
             elif not all(isinstance(e, BioCypherEdge) for e in edges):
-                logger.error("Nodes must be passed as type BioCypherEdge.")
+                logger.error('Nodes must be passed as type BioCypherEdge.')
                 return (False, False)
 
-            logger.info("Merging %s edges." % len(edges))
+            logger.info('Merging %s edges.' % len(edges))
 
         if rel_as_node:
             # split up tuples in nodes and edges if detected
@@ -392,7 +396,7 @@ class Driver(DriverBase):
                     for e in edges
                 )
             )
-            nod, edg = [list(a) for a in z]
+            nod, edg = (list(a) for a in z)
             self.add_biocypher_nodes(nod)
             self.add_biocypher_edges(edg)
 
@@ -404,31 +408,31 @@ class Driver(DriverBase):
             # properties on match and on create;
             # TODO add node labels?
             node_query = (
-                "UNWIND $rels AS r "
-                "MERGE (src {id: r.source_id}) "
-                "MERGE (tar {id: r.target_id}) "
+                'UNWIND $rels AS r '
+                'MERGE (src {id: r.source_id}) '
+                'MERGE (tar {id: r.target_id}) '
             )
-            self.query(node_query, parameters={"rels": rels})
+            self.query(node_query, parameters={'rels': rels})
 
             edge_query = (
-                "UNWIND $rels AS r "
-                "MATCH (src {id: r.source_id}) "
-                "MATCH (tar {id: r.target_id}) "
-                "WITH src, tar, r "
-                "CALL apoc.merge.relationship"
-                "(src, r.relationship_label, NULL, "
-                "r.properties, tar, r.properties) "
-                "YIELD rel "
-                "RETURN rel"
+                'UNWIND $rels AS r '
+                'MATCH (src {id: r.source_id}) '
+                'MATCH (tar {id: r.target_id}) '
+                'WITH src, tar, r '
+                'CALL apoc.merge.relationship'
+                '(src, r.relationship_label, NULL, '
+                'r.properties, tar, r.properties) '
+                'YIELD rel '
+                'RETURN rel'
             )
 
             if explain:
-                return self.explain(edge_query, parameters={"rels": rels})
+                return self.explain(edge_query, parameters={'rels': rels})
             elif profile:
-                return self.profile(edge_query, parameters={"rels": rels})
+                return self.profile(edge_query, parameters={'rels': rels})
             else:
-                res = self.query(edge_query, parameters={"rels": rels})
-                logger.info("Finished merging edges.")
+                res = self.query(edge_query, parameters={'rels': rels})
+                logger.info('Finished merging edges.')
                 return res
 
     def write_nodes(self, nodes, dirname=None, db_name=None):

@@ -32,6 +32,7 @@ bmt = "*"
 more_itertools = "*"
 toml = "*"
 appdirs = "*"
+neo4j_utils = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=6.0"

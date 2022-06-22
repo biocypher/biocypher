@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 #
 # Copyright 2021, Heidelberg University Clinic
@@ -14,19 +13,19 @@
 Configuration of the module logger.
 """
 
-__all__ = ["logger", "get_logger", "logfile", "log"]
+__all__ = ['get_logger', 'log', 'logfile']
 
-import logging
-import os
-import yaml
 from datetime import datetime
+import os
 import pydoc
+import logging
 
-from biocypher import _config
-from biocypher import __version__
+import yaml
+
+from biocypher import _config, __version__
 
 
-def get_logger(name: str = "biocypher") -> logging.Logger:
+def get_logger(name: str = 'neo4ju') -> logging.Logger:
     """
     Access the module logger, create a new one if does not exist yet.
 
@@ -50,20 +49,20 @@ def get_logger(name: str = "biocypher") -> logging.Logger:
     if not logging.getLogger(name).hasHandlers():
 
         file_formatter = logging.Formatter(
-            "%(asctime)s\t%(levelname)s\tmodule:%(module)s\n%(message)s"
+            '%(asctime)s\t%(levelname)s\tmodule:%(module)s\n%(message)s',
         )
-        stdout_formatter = logging.Formatter("%(levelname)s -- %(message)s")
+        stdout_formatter = logging.Formatter('%(levelname)s -- %(message)s')
 
         now = datetime.now()
-        date_time = now.strftime("%Y%m%d-%H%M%S")
+        date_time = now.strftime('%Y%m%d-%H%M%S')
 
         logdir = _config.config('logdir')
         os.makedirs(logdir, exist_ok = True)
-        logfile = os.path.join(logdir, f"biocypher-{date_time}.log")
+        logfile = os.path.join(logdir, f'biocypher-{date_time}.log')
 
         file_handler = logging.FileHandler(logfile)
 
-        if _config.config("debug"):
+        if _config.config('debug'):
             file_handler.setLevel(logging.DEBUG)
         else:
             file_handler.setLevel(logging.INFO)
@@ -79,8 +78,8 @@ def get_logger(name: str = "biocypher") -> logging.Logger:
         logger.addHandler(stdout_handler)
         logger.setLevel(logging.DEBUG)
 
-        logger.info(f"This is BioCypher v{__version__}.")
-        logger.info(f"Logging into `{logfile}`.")
+        logger.info(f'This is BioCypher v{__version__}.')
+        logger.info(f'Logging into `{logfile}`.')
 
     return logging.getLogger(name)
 
@@ -98,7 +97,7 @@ def log():
     Browse the log file.
     """
 
-    with open(logfile(), 'r') as fp:
+    with open(logfile()) as fp:
 
         pydoc.pager(fp.read())
 
