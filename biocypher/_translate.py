@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 #
 # Copyright 2021, Heidelberg University Clinic
@@ -35,17 +34,21 @@ Todo:
 """
 
 from ._logger import logger
-logger.debug(f"Loading module {__name__}.")
 
-from typing import Optional
+logger.debug(f'Loading module {__name__}.')
+
+from typing import Union, Literal, Optional
+import os
 
 import bmt
 
+from ._config import _read_yaml, module_data_path
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from ._config import module_data_path
+
+__all__ = ['BiolinkAdapter', 'gen_translate_edges', 'gen_translate_nodes', 'getpath']
 
 
-class BiolinkAdapter(object):
+class BiolinkAdapter:
     """
     Performs various functions to integrate the Biolink ontology.
 
@@ -56,13 +59,28 @@ class BiolinkAdapter(object):
     def __init__(
         self,
         leaves,
-        schema_yaml: Optional[str]= None,
-    ) -> None:
+        schema: Optional[
+            Union[
+                Literal['biocypher', 'biolink'],
+                str,
+                dict,
+            ]
+        ] = None,
+    ):
+        """
+        Args:
+            leaves:
+                I don't know.
+            schema:
+                Either a label referring to a built-in schema, or a path
+                to a YAML file with the schema. If not provided, the default
+                built-in schema will be used.
+        """
 
         self.leaves = leaves
-        self.schema_yaml = schema_yaml
+        self.schema = schema
 
-        logger.debug("Instantiating Biolink Adapter.")
+        logger.debug('Instantiating Biolink Adapter.')
 
         self.main()
 
@@ -81,28 +99,34 @@ class BiolinkAdapter(object):
             'biolink': 'biolink-model',
         }
 
-        self.schema_yaml = self.schema_yaml or 'biocypher'
+        self.schema = self.schema or 'biocypher'
 
-        if self.schema_yaml in schemata_builtin:
-
-            label = schemata_builtin[self.schema_yaml]
-            self.schema_yaml = module_data_path(label)
-
-
-    def init_toolkit(self) -> bmt.Toolkit:
-
-        """
-        TODO explain: isn't schma_yaml automatically at least
-        'biocypher' after running set_schema? How would we get default?
-        """
-        logger.info(
-            'Creating BioLink model toolkit from '
-            f'`{self.schema_yaml or "default BioLink model"}`.'
+        self.schema_name = (
+            self.schema
+                if isinstance(self.schema, str) else
+            'custom'
         )
 
-        return (
-            bmt.Toolkit(self.schema_yaml)
-                if self.schema_yaml else
+        if self.schema in schemata_builtin:
+
+            label = schemata_builtin[self.schema]
+            self.schema = module_data_path(label)
+
+
+    def init_toolkit(self):
+        """
+        """
+
+        # TODO explain: isn't schma_yaml automatically at least
+        # 'biocypher' after running set_schema? How would we get default?
+        # - yes it is, we should default to biocypher, isn't it?
+        logger.info(
+            f'Creating BioLink model toolkit from `{self.schema_name}` model.',
+        )
+
+        self.toolkit = (
+            bmt.Toolkit(self.schema)
+                if self.schema else
             bmt.Toolkit()
         )
 
@@ -115,25 +139,25 @@ class BiolinkAdapter(object):
         each leaf.
         """
 
-        logger.info("Translating BioCypher config leaves to Biolink.")
+        logger.info('Translating BioCypher config leaves to Biolink.')
 
         l = {}
 
-        for entity in leaves.keys():
+        for entity in self.leaves.keys():
 
-            e = t.get_element(entity)  # element name
+            e = self.toolkit.get_element(entity)  # element name
 
             # find element in bmt
             if e is not None:
 
                 # create dict of biolink class definition and biolink
                 # ancestors
-                ancestors = t.get_ancestors(entity, formatted=True)
-                l[entity] = {"class_definition": e, "ancestors": ancestors}
+                ancestors = self.toolkit.get_ancestors(entity, formatted=True)
+                l[entity] = {'class_definition': e, 'ancestors': ancestors}
 
             else:
 
-                logger.info("Entity not found:" + entity[0])
+                logger.info('Entity not found:' + entity[0])
                 l[entity] = None
 
         self.biolink = l
@@ -170,9 +194,9 @@ def gen_translate_nodes(leaves, id_type_tuples):
 
     # biolink = BiolinkAdapter(leaves)
     if isinstance(id_type_tuples, list):
-        logger.info(f"Translating {len(id_type_tuples)} nodes to BioCypher.")
+        logger.info(f'Translating {len(id_type_tuples)} nodes to BioCypher.')
     else:
-        logger.info(f"Translating nodes to BioCypher from generator.")
+        logger.info(f'Translating nodes to BioCypher from generator.')
 
     for id, type, props in id_type_tuples:
         path = getpath(leaves, type)
@@ -182,7 +206,7 @@ def gen_translate_nodes(leaves, id_type_tuples):
             yield BioCypherNode(node_id=id, node_label=bl_type, **props)
 
         else:
-            print("No path for type " + type)
+            print('No path for type ' + type)
 
 
 def gen_translate_edges(leaves, src_tar_type_tuples):
@@ -210,33 +234,33 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
 
     if isinstance(src_tar_type_tuples, list):
         logger.info(
-            f"Translating {len(src_tar_type_tuples)} edges to BioCypher."
+            f'Translating {len(src_tar_type_tuples)} edges to BioCypher.',
         )
     else:
-        logger.info(f"Translating edges to BioCypher from generator.")
+        logger.info(f'Translating edges to BioCypher from generator.')
 
     for src, tar, type, props in src_tar_type_tuples:
         path = getpath(leaves, type)
 
         if path is not None:
             bl_type = path[0]
-            rep = leaves[bl_type]["represented_as"]
+            rep = leaves[bl_type]['represented_as']
 
-            if rep == "node":
+            if rep == 'node':
                 node_id = (
                     str(src)
-                    + "_"
+                    + '_'
                     + str(tar)
-                    + "_"
-                    + "_".join(str(v) for v in props.values())
+                    + '_'
+                    + '_'.join(str(v) for v in props.values())
                 )
                 n = BioCypherNode(node_id=node_id, node_label=bl_type, **props)
                 # directionality check
-                if props.get("directed") == True:
-                    l1 = "IS_SOURCE_OF"
-                    l2 = "IS_TARGET_OF"
+                if props.get('directed') == True:
+                    l1 = 'IS_SOURCE_OF'
+                    l2 = 'IS_TARGET_OF'
                 else:
-                    l1 = l2 = "IS_PART_OF"
+                    l1 = l2 = 'IS_PART_OF'
                 e_s = BioCypherEdge(
                     source_id=src,
                     target_id=node_id,
@@ -252,7 +276,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
                 yield BioCypherRelAsNode(n, e_s, e_t)
 
             else:
-                edge_label = leaves[bl_type]["label_as_edge"]
+                edge_label = leaves[bl_type]['label_as_edge']
                 yield BioCypherEdge(
                     source_id=src,
                     target_id=tar,
@@ -261,7 +285,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
                 )
 
         else:
-            print("No path for type " + type)
+            print('No path for type ' + type)
 
 
 def getpath(nested_dict, value, prepath=()):
@@ -276,7 +300,7 @@ def getpath(nested_dict, value, prepath=()):
         path = prepath + (k,)
         if v == value:  # found value
             return path
-        elif hasattr(v, "items"):  # v is a dict
+        elif hasattr(v, 'items'):  # v is a dict
             p = getpath(v, value, path)  # recursive call
             if p is not None:
                 return p

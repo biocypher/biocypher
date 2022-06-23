@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 #
 # Copyright 2021, Heidelberg University Clinic
@@ -23,11 +22,16 @@ Todo:
 """
 
 from ._logger import logger
-logger.debug(f"Loading module {__name__}.")
 
-from ._create import BioCypherEdge, BioCypherNode
+logger.debug(f'Loading module {__name__}.')
+
 from datetime import datetime
 import os
+
+from . import _config as config
+from ._create import BioCypherEdge, BioCypherNode
+
+__all__ = ['MetaEdge', 'MetaNode', 'VersionNode']
 
 
 class MetaNode(BioCypherNode):
@@ -41,7 +45,7 @@ class MetaNode(BioCypherNode):
     def __init__(
         self,
         node_id,
-        node_label="MetaNode",
+        node_label='MetaNode',
         optional_labels=None,
         **properties,
     ):
@@ -55,7 +59,7 @@ class MetaEdge(BioCypherEdge):
     """
 
     def __init__(
-        self, source_id, target_id, relationship_label="CONTAINS", **properties
+        self, source_id, target_id, relationship_label='CONTAINS', **properties
     ):
         super().__init__(
             source_id, target_id, relationship_label, **properties
@@ -95,7 +99,7 @@ class VersionNode(BioCypherNode):
         self,
         bcy_driver,
         node_id=None,
-        node_label="BioCypher",
+        node_label='BioCypher',
         from_config=False,
         **properties,
     ):
@@ -118,7 +122,7 @@ class VersionNode(BioCypherNode):
         """
 
         now = datetime.now()
-        return now.strftime("v%Y%m%d-%H%M%S")
+        return now.strftime('v%Y%m%d-%H%M%S')
 
     def get_graph_state(self):
         """
@@ -128,23 +132,23 @@ class VersionNode(BioCypherNode):
         and initialise.
         """
 
-        logger.info("Getting graph state.")
+        logger.info('Getting graph state.')
 
         result, summary = self.bcy_driver.query(
-            "MATCH (meta:BioCypher)"
-            "WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)"
-            "RETURN meta"
+            'MATCH (meta:BioCypher)'
+            'WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)'
+            'RETURN meta',
         )
 
         # if result is empty, initialise
         if not result:
-            logger.info("No existing graph found, initialising.")
+            logger.info('No existing graph found, initialising.')
             return None
         # else, pass on graph state
         else:
-            version = result[0]["meta"]["id"]
-            logger.info(f"Found graph state at {version}.")
-            return result[0]["meta"]
+            version = result[0]['meta']['id']
+            logger.info(f'Found graph state at {version}.')
+            return result[0]['meta']
 
     def get_graph_schema(self, from_config):
         """
@@ -158,14 +162,14 @@ class VersionNode(BioCypherNode):
         if self.graph_state and not from_config:
             # TODO do we want information about actual structure here?
             res = self.bcy_driver.query(
-                "MATCH (src:MetaNode) "
+                'MATCH (src:MetaNode) '
                 # "OPTIONAL MATCH (src)-[r]->(tar)"
-                "RETURN src"  # , type(r) AS type, tar"
+                'RETURN src',  # , type(r) AS type, tar"
             )
             gs_dict = {}
             for r in res[0]:
-                src = r["src"]
-                key = src.pop("id")
+                src = r['src']
+                key = src.pop('id')
                 gs_dict[key] = src
 
             return gs_dict
@@ -173,7 +177,7 @@ class VersionNode(BioCypherNode):
         else:
             # load default yaml from module
             # get graph state from config
-            dataMap = config.module_data("schema_config")
+            dataMap = config.module_data('schema_config')
 
             return dataMap
 
@@ -196,7 +200,7 @@ class VersionNode(BioCypherNode):
         while stack:
             key, value = stack.pop()
             if isinstance(value, dict):
-                if "represented_as" not in value.keys():
+                if 'represented_as' not in value.keys():
                     if key not in visited:
                         stack.extend(value.items())
                 else:

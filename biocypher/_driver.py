@@ -34,7 +34,7 @@ import neo4j_utils
 
 from ._check import MetaEdge, MetaNode, VersionNode
 from ._write import BatchWriter
-from ._config import config
+from ._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from ._translate import BiolinkAdapter, gen_translate_edges, gen_translate_nodes
 
@@ -88,10 +88,10 @@ class Driver(neo4j_utils.Driver):
         increment_version=True,
     ):
 
-        db_name = db_name or config('neo4j_db')
-        db_uri = db_uri or config('neo4j_uri')
-        db_user = db_user or config('neo4j_user')
-        db_passwd = db_user or config('neo4j_pw')
+        db_name = db_name or _config('neo4j_db')
+        db_uri = db_uri or _config('neo4j_uri')
+        db_user = db_user or _config('neo4j_user')
+        db_passwd = db_user or _config('neo4j_pw')
 
         neo4j_utils.Driver.__init__(**locals())
 
