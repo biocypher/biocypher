@@ -693,7 +693,7 @@ pytz = "*"
 
 [[package]]
 name = "neo4j-utils"
-version = "0.0.4"
+version = "0.0.5"
 description = ""
 category = "main"
 optional = false
@@ -707,8 +707,10 @@ PyYAML = ">=5.0"
 toml = "*"
 
 [package.source]
-type = "directory"
-url = "../neo4j-utils"
+type = "git"
+url = "https://github.com/saezlab/neo4j-utils.git"
+reference = "master"
+resolved_reference = "616cb4c98b53c33f6ef02c0afdade928139b8ba7"
 
 [[package]]
 name = "nodeenv"
@@ -1493,7 +1495,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "68a53f37fd0da622187cde3ab92ad58c0028a50fd8b75abd6beaa6de74ce6a4b"
+content-hash = "e0b85da60781075c8db10baee35a8b3ba62a1c2e0316166700a3ac6d7ad45184"
 
 [metadata.files]
 alabaster = [
