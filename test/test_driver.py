@@ -1,6 +1,7 @@
 from biocypher._driver import Driver
 from biocypher._create import BioCypherNode, BioCypherEdge, BioCypherRelAsNode
 import pytest
+import neo4j
 
 
 @pytest.fixture
@@ -31,7 +32,7 @@ def test_create_driver():
 
 def test_connect_to_db(driver):
 
-    assert driver.db_exists()
+    assert isinstance(driver.driver, neo4j.Neo4jDriver)
 
 
 def test_explain(driver):

@@ -160,7 +160,7 @@ class BiolinkAdapter:
                 logger.info('Entity not found:' + entity[0])
                 l[entity] = None
 
-        self.biolink = l
+        self.leaves = l
 
 
 """
