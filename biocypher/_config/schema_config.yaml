@@ -65,6 +65,11 @@ Disease:
   represented_as: node
   preferred_id: ICD10
 
+Pathway:
+   represented_as: node
+   preferred_id: [REACT, WIKIPATHWAYS] 
+   label_in_input: [reactome, wikipathways] 
+
 
 # ---
 # Associations

@@ -106,13 +106,13 @@ class VersionNode(BioCypherNode):
 
         super().__init__(node_id, node_label, **properties)
         self.bcy_driver = bcy_driver
-        self.node_id = self.get_current_id()
+        self.node_id = self._get_current_id()
         self.node_label = node_label
-        self.graph_state = self.get_graph_state()
-        self.schema = self.get_graph_schema(from_config=from_config)
-        self.leaves = self.get_leaves(self.schema)
+        self.graph_state = self._get_graph_state()
+        self.schema = self._get_graph_schema(from_config=from_config)
+        self.leaves = self._get_leaves(self.schema)
 
-    def get_current_id(self):
+    def _get_current_id(self):
         """
         Instantiate a version ID for the current session. For now does
         versioning using datetime.
@@ -124,7 +124,7 @@ class VersionNode(BioCypherNode):
         now = datetime.now()
         return now.strftime('v%Y%m%d-%H%M%S')
 
-    def get_graph_state(self):
+    def _get_graph_state(self):
         """
         Check in active DBMS connection for existence of VersionNodes,
         return the most recent VersionNode as representation of the
@@ -150,7 +150,7 @@ class VersionNode(BioCypherNode):
             logger.info(f'Found graph state at {version}.')
             return result[0]['meta']
 
-    def get_graph_schema(self, from_config):
+    def _get_graph_schema(self, from_config):
         """
         Return graph schema information from meta graph if it exists, or
         create new schema information properties from configuration
@@ -181,7 +181,7 @@ class VersionNode(BioCypherNode):
 
             return dataMap
 
-    def get_leaves(self, d):
+    def _get_leaves(self, d):
         """
         Get leaves of the tree hierarchy from the data structure dict
         contained in the `schema_config.yaml`. Serves no purpose
@@ -190,7 +190,6 @@ class VersionNode(BioCypherNode):
         not the complete hierarchy any more; this will be derived from
         the (modified) Biolink model. Now only does filtering of the
         schema for entities that have a "represented_as" property.
-
         Will leave in since the "leaves" are a nice visual cue for the
         hierarchical representation of graph constituents.
         """
@@ -200,10 +199,27 @@ class VersionNode(BioCypherNode):
         while stack:
             key, value = stack.pop()
             if isinstance(value, dict):
-                if 'represented_as' not in value.keys():
+                if "represented_as" not in value.keys():
                     if key not in visited:
                         stack.extend(value.items())
+
                 else:
+                    if "preferred_id" in value.keys():
+                        if isinstance(value["preferred_id"], list):
+                            # create leaves for each preferred id
+                            for pid, label, rep in zip(
+                                value["preferred_id"],
+                                value["label_in_input"],
+                                value["represented_as"],
+                            ):
+                                skey = pid + "." + key
+                                svalue = {
+                                    "preferred_id": pid,
+                                    "label_in_input": label,
+                                    "represented_as": rep,
+                                }
+                                leaves[skey] = svalue
+                    # add parent
                     leaves[key] = value
             visited.add(key)
 
