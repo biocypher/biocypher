@@ -198,15 +198,15 @@ def gen_translate_nodes(leaves, id_type_tuples):
     else:
         logger.info(f'Translating nodes to BioCypher from generator.')
 
-    for id, type, props in id_type_tuples:
-        path = getpath(leaves, type)
+    for _id, _type, _props in id_type_tuples:
+        # find the node in leaves that represents biolink node type
+        bl_type = get_bl_type(leaves, _type)
 
-        if path is not None:
-            bl_type = path[0]
-            yield BioCypherNode(node_id=id, node_label=bl_type, **props)
+        if bl_type is not None:
+            yield BioCypherNode(node_id=_id, node_label=bl_type, **_props)
 
         else:
-            print('No path for type ' + type)
+            print("No Biolink equivalent found for type " + _type)
 
 
 def gen_translate_edges(leaves, src_tar_type_tuples):
@@ -239,36 +239,35 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
     else:
         logger.info(f'Translating edges to BioCypher from generator.')
 
-    for src, tar, type, props in src_tar_type_tuples:
-        path = getpath(leaves, type)
+    for _src, _tar, _type, _props in src_tar_type_tuples:
+        bl_type = get_bl_type(leaves, _type)
 
-        if path is not None:
-            bl_type = path[0]
+        if bl_type is not None:
             rep = leaves[bl_type]['represented_as']
 
             if rep == 'node':
                 node_id = (
-                    str(src)
+                    str(_src)
                     + '_'
-                    + str(tar)
+                    + str(_tar)
                     + '_'
-                    + '_'.join(str(v) for v in props.values())
+                    + '_'.join(str(v) for v in _props.values())
                 )
-                n = BioCypherNode(node_id=node_id, node_label=bl_type, **props)
+                n = BioCypherNode(node_id=node_id, node_label=bl_type, **_props)
                 # directionality check
-                if props.get('directed') == True:
+                if _props.get('directed') == True:
                     l1 = 'IS_SOURCE_OF'
                     l2 = 'IS_TARGET_OF'
                 else:
                     l1 = l2 = 'IS_PART_OF'
                 e_s = BioCypherEdge(
-                    source_id=src,
+                    source_id=_src,
                     target_id=node_id,
                     relationship_label=l1,
                     # additional here
                 )
                 e_t = BioCypherEdge(
-                    source_id=tar,
+                    source_id=_tar,
                     target_id=node_id,
                     relationship_label=l2,
                     # additional here
@@ -278,29 +277,26 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
             else:
                 edge_label = leaves[bl_type]['label_as_edge']
                 yield BioCypherEdge(
-                    source_id=src,
-                    target_id=tar,
+                    source_id=_src,
+                    target_id=_tar,
                     relationship_label=edge_label,
-                    **props,
+                    **_props,
                 )
 
         else:
-            print('No path for type ' + type)
+            print("No Biolink equivalent found for type " + _type)
 
 
-def getpath(nested_dict, value, prepath=()):
+def get_bl_type(dict, value):
     """
-    Get specific value from unknown location in a nested dict.
-
+    For each given input type ("label_in_input"), find the corresponding
+    Biolink type in the leaves dictionary. 
+    
     Args:
-        nested_dict (dict): the dict to search
-        value: the dictionary value to find
+        dict: the dict to search (leaves from `schema_config.yaml`)
+        value: the input type to find (`label_in_input` in `schema_config.yaml`)
     """
-    for k, v in nested_dict.items():
-        path = prepath + (k,)
-        if v == value:  # found value
-            return path
-        elif hasattr(v, 'items'):  # v is a dict
-            p = getpath(v, value, path)  # recursive call
-            if p is not None:
-                return p
+    for k, v in dict.items():
+        if "label_in_input" in v:
+            if v["label_in_input"] == value:
+                return k
