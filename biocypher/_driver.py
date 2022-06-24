@@ -223,7 +223,7 @@ class Driver(neo4j_utils.Driver):
                 - second entry: Neo4j summary.
         """
 
-        bn = gen_translate_nodes(self.db_meta.schema, id_type_tuples)
+        bn = gen_translate_nodes(self.db_meta.leaves, id_type_tuples)
         return self.add_biocypher_nodes(bn)
 
     def add_edges(self, src_tar_type_tuples):
