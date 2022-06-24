@@ -69,7 +69,7 @@ def bw():
     bw = BatchWriter(
         leaves = schema,
         bl_adapter = bl_adapter,
-        path = path,
+        dirname = path,
     )
 
     yield bw

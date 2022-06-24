@@ -118,7 +118,7 @@ class BatchWriter:
         self,
         leaves: dict,
         bl_adapter: 'BiolinkAdapter',
-        path: Optional[str] = None,
+        dirname: Optional[str] = None,
         db_name: str = 'neo4j',
     ):
         """ """
@@ -137,7 +137,7 @@ class BatchWriter:
 
         timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M')
 
-        self.outdir = path or os.path.join(_config['outdir'], timestamp())
+        self.outdir = dirname or os.path.join(_config['outdir'], timestamp())
 
         logger.info(f'Creating output directory `{self.outdir}`.')
         os.makedirs(self.outdir, exist_ok = True)
