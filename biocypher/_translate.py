@@ -38,6 +38,7 @@ from ._logger import logger
 logger.debug(f'Loading module {__name__}.')
 
 from typing import Union, Literal, Optional
+from linkml_runtime.linkml_model.meta import ClassDefinition
 import os
 
 import bmt
@@ -137,6 +138,11 @@ class BiolinkAdapter:
         in the `schema_config.yaml` to Biolink-conforming nomenclature.
         Simultaneously get the structure in the form of the parents of
         each leaf.
+
+        Additionally adds child leaves for each leaf that has multiple
+        identifiers.
+
+        TODO: add class definition id_prefixes check
         """
 
         logger.info('Translating BioCypher config leaves to Biolink.')
@@ -149,15 +155,27 @@ class BiolinkAdapter:
 
             # find element in bmt
             if e is not None:
+                ancestors = self.toolkit.get_ancestors(entity, formatted=True)
+
+                # check for multiple identifiers
+                if isinstance(self.leaves[entity]["preferred_id"], list):
+                    # add child leaves
+                    for id in self.leaves[entity]["preferred_id"]:
+                        name = id + "." + entity
+                        se = ClassDefinition(name)
+                        se.is_a = entity
+                        sancestors = list(ancestors)
+                        sancestors.insert(0, name)
+                        l[name] = {
+                            "class_definition": se,
+                            "ancestors": sancestors,
+                        }
 
                 # create dict of biolink class definition and biolink
                 # ancestors
-                ancestors = self.toolkit.get_ancestors(entity, formatted=True)
-                l[entity] = {'class_definition': e, 'ancestors': ancestors}
-
+                l[entity] = {"class_definition": e, "ancestors": ancestors}
             else:
-
-                logger.info('Entity not found:' + entity[0])
+                logger.info("Entity not found:" + entity[0])
                 l[entity] = None
 
         self.leaves = l

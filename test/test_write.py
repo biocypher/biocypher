@@ -28,6 +28,11 @@ os.makedirs(path, exist_ok = True)
 def bw():
 
     schema = {
+        'Pathway': {
+            'represented_as': 'node',
+            'preferred_id': ['WIKIPATHWAYS', 'REACT'],
+            'label_in_input': ['wikipathways', 'reactome'],
+         },
         'Protein': {
             'represented_as': 'node',
             'preferred_id': 'UniProtKB',
