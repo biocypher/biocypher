@@ -45,7 +45,11 @@
 <li><a class="reference internal" href="#quickstart">Quickstart</a><ul>
 <li><a class="reference internal" href="#the-host-module-adapter">The host module adapter</a></li>
 <li><a class="reference internal" href="#the-schema-configuration-yaml-file">The schema configuration YAML file</a></li>
-<li><a class="reference internal" href="#the-biolink-model-extension">The Biolink model extension</a></li>
+<li><a class="reference internal" href="#the-biolink-model-extension">The Biolink model extension</a><ul>
+<li><a class="reference internal" href="#soft-extensions">Soft extensions</a></li>
+<li><a class="reference internal" href="#hard-wired-extensions">Hard-wired extensions</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#the-host-biocypher-adapter">The Host-BioCypher Adapter</a><ul>
@@ -58,12 +62,12 @@
 </li>
 <li><a class="reference internal" href="#usage-notes">Usage Notes</a></li>
 <li><a class="reference internal" href="#submodule-documentation">Submodule documentation</a><ul>
-<li><a class="reference internal" href="#module-biocypher._driver"><cite>driver.py</cite>: the BioCypher Neo4j Driver</a></li>
-<li><a class="reference internal" href="#module-biocypher._check"><cite>check.py</cite>: BioCypher Format Data Representation and Consistency Checks</a></li>
-<li><a class="reference internal" href="#module-biocypher._create"><cite>create.py</cite>: Base Classes for Node and Edge Representations in BioCypher</a></li>
-<li><a class="reference internal" href="#module-biocypher._translate"><cite>translate.py</cite>: Translation Functionality for Implemented Types of Representation</a></li>
-<li><a class="reference internal" href="#module-biocypher._write"><cite>write.py</cite>: Write the Graph to CSV Files for quick ‘admin import’</a></li>
-<li><a class="reference internal" href="#module-biocypher._logger"><cite>logger.py</cite>: Logging</a></li>
+<li><a class="reference internal" href="#driver-py-the-biocypher-neo4j-driver"><cite>driver.py</cite>: the BioCypher Neo4j Driver</a></li>
+<li><a class="reference internal" href="#check-py-biocypher-format-data-representation-and-consistency-checks"><cite>check.py</cite>: BioCypher Format Data Representation and Consistency Checks</a></li>
+<li><a class="reference internal" href="#create-py-base-classes-for-node-and-edge-representations-in-biocypher"><cite>create.py</cite>: Base Classes for Node and Edge Representations in BioCypher</a></li>
+<li><a class="reference internal" href="#translate-py-translation-functionality-for-implemented-types-of-representation"><cite>translate.py</cite>: Translation Functionality for Implemented Types of Representation</a></li>
+<li><a class="reference internal" href="#write-py-write-the-graph-to-csv-files-for-quick-admin-import"><cite>write.py</cite>: Write the Graph to CSV Files for quick ‘admin import’</a></li>
+<li><a class="reference internal" href="#logger-py-logging"><cite>logger.py</cite>: Logging</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-tables-and-search">Indices, Tables, and Search</a></li>
@@ -137,37 +141,38 @@ should be structured, detailing the names of constituents and how they
 should be connected.</p>
 <section id="the-host-module-adapter">
 <span id="host-module-adapter"></span><h2>The host module adapter<a class="headerlink" href="#the-host-module-adapter" title="Permalink to this heading"></a></h2>
-<p>Currently, BioCypher expects input from the user module via an adapter module.
-Throughout the tutorial, we will exemplarise the use of BioCypher using
-<a class="reference external" href="https://omnipathdb.org">OmniPath</a> (more specifically, its infrastructural
-backend, <a class="reference external" href="https://github.com/saezlab/pypath">PyPath</a>). The adapter
-has the job of piping the data as it is represented in the original database
-into the BioCypher input, for instance as a <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code> object of
-single database entries, whether they be nodes or relationships in the graph
-to be created. For more details, please refer to the example <a class="reference external" href="https://github.com/saezlab/pypath/blob/master/pypath/biocypher/adapter.py">PyPath adapter</a>
+<p>Currently, BioCypher expects input from the user module via an adapter
+module. Throughout the tutorial, we will exemplarise the use of
+BioCypher using <a class="reference external" href="https://omnipathdb.org">OmniPath</a> (more specifically,
+its infrastructural backend, <a class="reference external" href="https://github.com/saezlab/pypath">PyPath</a>). The adapter has the job of
+piping the data as it is represented in the original database into the
+BioCypher input, for instance as a <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code> object of
+single database entries, whether they be nodes or relationships in the
+graph to be created. For more details, please refer to the example
+<a class="reference external" href="https://github.com/saezlab/pypath/blob/master/pypath/biocypher/adapter.py">PyPath adapter</a>
 and the section on <a class="reference internal" href="#adapter"><span class="std std-ref">adapter functions</span></a>.</p>
 </section>
 <section id="the-schema-configuration-yaml-file">
 <span id="schema-config"></span><h2>The schema configuration YAML file<a class="headerlink" href="#the-schema-configuration-yaml-file" title="Permalink to this heading"></a></h2>
-<p>The second important component of translation into a BioCypher-compatible
-property graph is the specification of graph constituents and their mode of
-representation in the graph. For instance, we want to add a representation for
-proteins to the OmniPath graph, and the proteins should be represented as
-nodes. To make this known to the BioCypher module, we use the
-<a class="reference external" href="https://github.com/saezlab/BioCypher/blob/main/config/schema_config.yaml">schema-config.yaml</a>,
-which details <em>only</em> the immediate constituents of the desired graph. The
-naming of these constituents must be equal to the ontological category of
-the entity in the Biolink schema. The ontological category (or class) of
-proteins in Biolink is simply <a class="reference external" href="https://biolink.github.io/biolink-model/docs/Protein.html">Protein</a>.
-However, for more complex concepts, such as - for instance - pairwise
-molecular interactions, the naming must also be consistent; in this case,
+<p>The second important component of translation into a
+BioCypher-compatible property graph is the specification of graph
+constituents and their mode of representation in the graph. For
+instance, we want to add a representation for proteins to the OmniPath
+graph, and the proteins should be represented as nodes. To make this
+known to the BioCypher module, we use the <a class="reference external" href="https://github.com/saezlab/BioCypher/blob/main/config/schema_config.yaml">schema-config.yaml</a>,
+which details <em>only</em> the immediate constituents of the desired graph.
+The naming of these constituents must be equal to the ontological
+category of the entity in the Biolink schema. The ontological category
+(or class) of proteins in Biolink is simply <a class="reference external" href="https://biolink.github.io/biolink-model/docs/Protein.html">Protein</a>. However,
+for more complex concepts, such as - for instance - pairwise molecular
+interactions, the naming must also be consistent; in this case,
 <a class="reference external" href="https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html">PairwiseMolecularInteraction</a>.
-Similarly, if translation functionality between identifiers is desired, the
-identifier used for the class of graph entity must be consistent with the one
-used in the Biolink specification. For proteins, this can be <code class="docutils literal notranslate"><span class="pre">UniProtKB</span></code>
-(but not, for instance, <code class="docutils literal notranslate"><span class="pre">UniProt</span></code> or <code class="docutils literal notranslate"><span class="pre">uniprot</span></code>). For ease of access, we provide
-a standard yaml file with the most common graph constituents and identifiers,
-with the following basic structure:</p>
+Similarly, if translation functionality between identifiers is desired,
+the identifier used for the class of graph entity must be consistent
+with the one used in the Biolink specification. For proteins, this can
+be <code class="docutils literal notranslate"><span class="pre">UniProtKB</span></code> (but not, for instance, <code class="docutils literal notranslate"><span class="pre">UniProt</span></code> or <code class="docutils literal notranslate"><span class="pre">uniprot</span></code>).
+For ease of access, we provide a standard yaml file with the most common
+graph constituents and identifiers, with the following basic structure:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Protein</span><span class="p">:</span>
 
    <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>
@@ -177,23 +182,24 @@ with the following basic structure:</p>
    <span class="n">label_in_input</span><span class="p">:</span> <span class="n">protein</span>
 </pre></div>
 </div>
-<p>In the protein case, we are specifying its representation as a node, that we
-wish to use the UniProt identifier as the main identifier for proteins (the
-Biolink designation for UniProt identifiers is <code class="docutils literal notranslate"><span class="pre">UniProtKB</span></code>), and that proteins
-in the input coming from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> carry the label <code class="docutils literal notranslate"><span class="pre">protein</span></code> (in lower-case).</p>
-<p>The other slots of a graph constituent entry contain information BioCypher
-needs to receive the input data correctly and construct the graph accordingly.
-For “Named Thing” entities such as the protein, this includes the mode of
-representation (YAML entry <code class="docutils literal notranslate"><span class="pre">represented_as</span></code>), which can be <code class="docutils literal notranslate"><span class="pre">node</span></code> or <code class="docutils literal notranslate"><span class="pre">edge</span></code>.
-Proteins can only feasibly represented as nodes, but for other entities, such
-as interactions or aggregates, representation can be both as node or as edge.
-In Biolink, these belong to the super-class
-<a class="reference external" href="https://biolink.github.io/biolink-model/docs/associations.html">Associations</a>.
-For associations, BioCypher additionally requires the specification of the
+<p>In the protein case, we are specifying its representation as a node,
+that we wish to use the UniProt identifier as the main identifier for
+proteins (the Biolink designation for UniProt identifiers is
+<code class="docutils literal notranslate"><span class="pre">UniProtKB</span></code>), and that proteins in the input coming from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code>
+carry the label <code class="docutils literal notranslate"><span class="pre">protein</span></code> (in lower-case).</p>
+<p>The other slots of a graph constituent entry contain information
+BioCypher needs to receive the input data correctly and construct the
+graph accordingly. For “Named Thing” entities such as the protein, this
+includes the mode of representation (YAML entry <code class="docutils literal notranslate"><span class="pre">represented_as</span></code>),
+which can be <code class="docutils literal notranslate"><span class="pre">node</span></code> or <code class="docutils literal notranslate"><span class="pre">edge</span></code>. Proteins can only feasibly
+represented as nodes, but for other entities, such as interactions or
+aggregates, representation can be both as node or as edge. In Biolink,
+these belong to the super-class <a class="reference external" href="https://biolink.github.io/biolink-model/docs/associations.html">Associations</a>. For
+associations, BioCypher additionally requires the specification of the
 source and target of the association; for instance, a post-translational
-interaction occurs between proteins, so the source and target attribute in the
-<code class="docutils literal notranslate"><span class="pre">schema-config.yaml</span></code> will both be <code class="docutils literal notranslate"><span class="pre">Protein</span></code>. Again, these should adhere to the
-naming scheme of Biolink.</p>
+interaction occurs between proteins, so the source and target attribute
+in the <code class="docutils literal notranslate"><span class="pre">schema-config.yaml</span></code> will both be <code class="docutils literal notranslate"><span class="pre">Protein</span></code>. Again, these
+should adhere to the naming scheme of Biolink.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PostTranslationalInteraction</span><span class="p">:</span>
 
    <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>
@@ -210,171 +216,218 @@ naming scheme of Biolink.</p>
 </pre></div>
 </div>
 <p>For the post-translational interaction, which is an association, we are
-specifying representation as a node (prompting BioCypher to create not only
-the node but also two edges connecting to the proteins participating in any
-particular post-translational interaction). In other words, we are reifying
-the post-translational interaction in order to have a node to which other
-nodes can be linked; for instance, we might want to add a publication to a
-particular interaction to serve as source of evidence, which is only possible
-for nodes in a property graph, not for edges.</p>
-<p>Since there are no systematic identifiers for post-translational interactions,
-we concatenate the protein ids and relevant properties of the interaction to a
-new unique id (arbitrarily named <code class="docutils literal notranslate"><span class="pre">concat_ids</span></code>).
-Note that BioCypher accepts non-Biolink IDs since not all possible entries
-possess a systematic identifier system, whereas the entity class (<code class="docutils literal notranslate"><span class="pre">Protein</span></code>,
-<code class="docutils literal notranslate"><span class="pre">PostTranslationalInteraction</span></code>) has to be included in the Biolink schema
-and spelled identically. For this reason, we <a class="reference internal" href="#biolink"><span class="std std-ref">extend the Biolink schema</span></a> in cases where there exists no entry for our entity of choice.</p>
-<p>Further, we are specifying the source and target classes of our association
-(both <code class="docutils literal notranslate"><span class="pre">Protein</span></code>), the label we provide in the input from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code>
-(<code class="docutils literal notranslate"><span class="pre">post_translational</span></code>), and - optionally - the label we would want the edge
-in the graph to carry would the association be represented as an edge. This
-has no bearing on the current example, where we choose representation as a
-node, but is important for edge representation, as by consensus, property
-graph edges are represented in all upper case form and as verbs, to distinguish
-from nodes that are represented in PascalCase and as nouns.</p>
+specifying representation as a node (prompting BioCypher to create not
+only the node but also two edges connecting to the proteins
+participating in any particular post-translational interaction). In
+other words, we are reifying the post-translational interaction in order
+to have a node to which other nodes can be linked; for instance, we
+might want to add a publication to a particular interaction to serve as
+source of evidence, which is only possible for nodes in a property
+graph, not for edges.</p>
+<p>Since there are no systematic identifiers for post-translational
+interactions, we concatenate the protein ids and relevant properties of
+the interaction to a new unique id (arbitrarily named <code class="docutils literal notranslate"><span class="pre">concat_ids</span></code>).
+Note that BioCypher accepts non-Biolink IDs since not all possible
+entries possess a systematic identifier system, whereas the entity class
+(<code class="docutils literal notranslate"><span class="pre">Protein</span></code>, <code class="docutils literal notranslate"><span class="pre">PostTranslationalInteraction</span></code>) has to be included in
+the Biolink schema and spelled identically. For this reason, we
+<a class="reference internal" href="#biolink"><span class="std std-ref">extend the Biolink schema</span></a> in cases where there exists
+no entry for our entity of choice.</p>
+<p>Further, we are specifying the source and target classes of our
+association (both <code class="docutils literal notranslate"><span class="pre">Protein</span></code>), the label we provide in the input from
+<code class="docutils literal notranslate"><span class="pre">PyPath</span></code> (<code class="docutils literal notranslate"><span class="pre">post_translational</span></code>), and - optionally - the label we
+would want the edge in the graph to carry would the association be
+represented as an edge. This has no bearing on the current example,
+where we choose representation as a node, but is important for edge
+representation, as by consensus, property graph edges are represented in
+all upper case form and as verbs, to distinguish from nodes that are
+represented in PascalCase and as nouns.</p>
 </section>
 <section id="the-biolink-model-extension">
 <span id="biolink"></span><h2>The Biolink model extension<a class="headerlink" href="#the-biolink-model-extension" title="Permalink to this heading"></a></h2>
-<p>The post-translational interaction that we would like to model in OmniPath has no
-literal counterpart in the Biolink model, due to its design philosophy.
-The most granular level of interactions as Biolink class is the
-<a class="reference external" href="https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html">PairwiseMolecularInteraction</a>;
-all more granular relationships should be encoded in the properties of the
-class, which has severe performance implications for property graph
-representation, for instance in filtering for specific relationship types.
-Briefly, it is the difference between being able to selectively return only
-relationships of a certain class (eg, post-translational), and having to return
-all relationships to filter for the ones possessing the correct property in a
-second step.</p>
-<p>Therefore, we extend the Biolink model in places where it is necessary for the
-BioCypher translation and integration to work. The extended model is the
-central Biolink YAML file with additions following the same
+<section id="soft-extensions">
+<h3>Soft extensions<a class="headerlink" href="#soft-extensions" title="Permalink to this heading"></a></h3>
+<p>In some cases that are not too complex, the Biolink model can be
+extended using only implicit subclasses given in the BioCypher
+schema_config.yaml file. For instance, Pathway annotations are supplied
+by multiple sources, e.g., <a class="reference external" href="https://www.genome.jp/kegg/pathway.html">KEGG</a> and Reactome, which do not
+allow direct mapping due to their distinct make-up. In this case, we can
+use the schema_config.yaml to implicitly extend the Biolink model by
+specifying more than one preferred_id and label_in_input (in a paired
+manner):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Pathway</span><span class="p">:</span>
+
+   <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>
+
+   <span class="n">preferred_id</span><span class="p">:</span> <span class="p">[</span><span class="n">REACT</span><span class="p">,</span> <span class="n">KEGG</span><span class="p">]</span>
+
+   <span class="n">label_in_input</span><span class="p">:</span> <span class="p">[</span><span class="n">reactome</span><span class="p">,</span> <span class="n">kegg_pathway</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This pattern will be parsed by BioCypher to yield two implicit children
+of the Biolink entity “Pathway” by prepending the preferred ID to the
+label (“REACT.Pathway” and “KEGG.Pathway”). The input labels again are
+arbitrary and can be adjusted to fit the way these pathways are
+represented in the raw data.</p>
+<p>This will allow both datasets to be represented as pathways in the final
+graph with granular access to each one and without information loss, but
+will also enable aggregate query of all pathways by calling the parent
+entity, “Pathway”.</p>
+</section>
+<section id="hard-wired-extensions">
+<h3>Hard-wired extensions<a class="headerlink" href="#hard-wired-extensions" title="Permalink to this heading"></a></h3>
+<p>The post-translational interaction that we would like to model in
+OmniPath has no literal counterpart in the Biolink model, due to
+Biolink’s design philosophy. The most granular level of interactions as
+Biolink class is the <a class="reference external" href="https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html">PairwiseMolecularInteraction</a>;
+all more granular relationships should be encoded in the properties of
+the class, which has severe performance implications for property graph
+representation, for instance in filtering for specific relationship
+types. Briefly, it is the difference between being able to selectively
+return only relationships of a certain class (eg, post-translational),
+and having to return all relationships to filter for the ones possessing
+the correct property in a second step.</p>
+<p>Therefore, we extend the Biolink model in places where it is necessary
+for the BioCypher translation and integration to work. The extended
+model is the central Biolink YAML file with additions following the same
 <a class="reference external" href="https://linkml.io">LinkML</a> syntax as is used in the original model.
 Depending on the extent of the modification, not only new classes are
-introduced, but also new mixin categories (eg, “microRNA or siRNA” to account
-for different types of small noncoding RNA). We provide <a class="reference external" href="https://github.com/saezlab/BioCypher/blob/main/config/biocypher-biolink-model.yaml">our extended version
-of the Biolink model</a>
+introduced, but also new mixin categories (eg, “microRNA or siRNA” to
+account for different types of small noncoding RNA). We provide <a class="reference external" href="https://github.com/saezlab/BioCypher/blob/main/config/biocypher-biolink-model.yaml">our
+extended version of the Biolink model</a>
 with the BioCypher repository.</p>
-<p>Changes or additions desired by the user can be introduced locally in this file
-without having to modify remote contents. Users also have the option to create
-their own modified version of the Biolink YAML file under a different file name
-and specify that path in the <code class="docutils literal notranslate"><span class="pre">custom_yaml_file</span></code> argument of the
+<p>Changes or additions desired by the user can be introduced locally in
+this file without having to modify remote contents. Users also have the
+option to create their own modified version of the Biolink YAML file
+under a different file name and specify that path in the
+<code class="docutils literal notranslate"><span class="pre">custom_yaml_file</span></code> argument of the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.translate.BiolinkAdapter</span></code> class, which handles all
 communication between BioCypher and Biolink.</p>
 </section>
 </section>
+</section>
 <section id="the-host-biocypher-adapter">
 <span id="adapter"></span><h1>The Host-BioCypher Adapter<a class="headerlink" href="#the-host-biocypher-adapter" title="Permalink to this heading"></a></h1>
-<p>The “BioCypher adapter” is a python program (in the case of <code class="docutils literal notranslate"><span class="pre">PyPath</span></code>, a
-submodule) responsible for piping the data that is to be represented in the
-graph into BioCypher in a somewhat arbitrary format.
-It is an expansion tailor-made for the source database as an interface to
-BioCypher; in developing BioCypher, we strive to make its structure as simple
-as possible to facilitate adaptation. Thus, the adapter usually consists of
-only few central functions needed for the transfer of data between the
-arbitrarily ordered source format and the highly “automatically compatible”
-target format of BioCypher.
-In our example, the adapter performs three main functions (with functions 2
-and 3 being mutually optional):</p>
+<p>The “BioCypher adapter” is a python program (in the case of <code class="docutils literal notranslate"><span class="pre">PyPath</span></code>,
+a submodule) responsible for piping the data that is to be represented
+in the graph into BioCypher in a somewhat arbitrary format. It is an
+expansion tailor-made for the source database as an interface to
+BioCypher; in developing BioCypher, we strive to make its structure as
+simple as possible to facilitate adaptation. Thus, the adapter usually
+consists of only few central functions needed for the transfer of data
+between the arbitrarily ordered source format and the highly
+“automatically compatible” target format of BioCypher. In our example,
+the adapter performs three main functions (with functions 2 and 3 being
+mutually optional):</p>
 <ol class="arabic simple">
 <li><p>Load the <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> data python object to be transferred to BioCypher</p></li>
-<li><p>Pass the data to BioCypher as a stream or list to be written to the Neo4j
-database via the python driver (“online”)</p></li>
-<li><p>Pass the data to BioCypher as a stream or list to be written to the Neo4j
-database via admin import (batch import from CSV)</p></li>
+<li><p>Pass the data to BioCypher as a stream or list to be written to the
+Neo4j database via the python driver (“online”)</p></li>
+<li><p>Pass the data to BioCypher as a stream or list to be written to the
+Neo4j database via admin import (batch import from CSV)</p></li>
 </ol>
-<p>While function #2 can be performed at any time with a new or pre-existing
-BioCypher graph, function #3 can only be used to create a fresh database from
-scratch with all the input data. However, since <code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> is very
-fast, it can be used to combine subsets of two databases on the fly, creating
-a new, combined database in the process.</p>
+<p>While function #2 can be performed at any time with a new or
+pre-existing BioCypher graph, function #3 can only be used to create a
+fresh database from scratch with all the input data. However, since
+<code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> is very fast, it can be used to combine subsets
+of two databases on the fly, creating a new, combined database in the
+process.</p>
 <section id="loading-the-data">
 <h2>Loading the Data<a class="headerlink" href="#loading-the-data" title="Permalink to this heading"></a></h2>
 <p>Depending on the data source, it is up to the user to find and define a
-suitable representation to be piped into BioCypher. The way we handle it in
-<code class="docutils literal notranslate"><span class="pre">PyPath</span></code> is only one of many: we load the entire <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> object into memory, to
-be passed to BioCypher using a generator that evaluates each <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> object
-and transforms it to the tuple representation described below. This is made possible
-by the already standardised form in which the data is represented within
-<code class="docutils literal notranslate"><span class="pre">PyPath</span></code>. For more heterogeneous data representations, additional transformations
-may be necessary before piping into BioCypher.</p>
+suitable representation to be piped into BioCypher. The way we handle it
+in <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> is only one of many: we load the entire <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> object
+into memory, to be passed to BioCypher using a generator that evaluates
+each <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> object and transforms it to the tuple representation
+described below. This is made possible by the already standardised form
+in which the data is represented within <code class="docutils literal notranslate"><span class="pre">PyPath</span></code>. For more
+heterogeneous data representations, additional transformations may be
+necessary before piping into BioCypher.</p>
 </section>
 <section id="passing-the-data">
 <h2>Passing the Data<a class="headerlink" href="#passing-the-data" title="Permalink to this heading"></a></h2>
 <p>In the <a class="reference external" href="https://github.com/saezlab/pypath/blob/fc4c959c168ce80427189f8dd237308707594ad0/src/pypath/biocypher/adapter.py#L189">pypath example</a>,
-we are using <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>-type objects to pass an unordered collection
-of <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> contents into BioCypher. For nodes, we are specifying for each object
-an ID and label (corresponding to its unique preferred identifier and its
-ontological class), as well as a dictionary of arbitrary properties, each entry
-as a 3-tuple. For relationships, the same applies, except that we are passing
-two IDs, for source and target entities, which results in a 4-tuple.</p>
+we are using <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>-type objects to pass an unordered
+collection of <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> contents into BioCypher. For nodes, we are
+specifying for each object an ID and label (corresponding to its unique
+preferred identifier and its ontological class), as well as a dictionary
+of arbitrary properties, each entry as a 3-tuple. For relationships, the
+same applies, except that we are passing two IDs, for source and target
+entities, which results in a 4-tuple.</p>
 <p>Currently, there are two modes of interaction with the graph database
-implemented in BioCypher. The first takes place via the Neo4j python driver,
-which is either loaded by BioCypher or passed from the host module. The second
-generates CSV files containing node and edge data in a standardised and
-safety-checked format to be used with the <code class="docutils literal notranslate"><span class="pre">admin</span> <span class="pre">import</span></code> functionality of
-Neo4j. Safety checks are important here because Neo4j does not guarantee
-consistency of the resulting graph when using this feature; on the upside,
-this mode of communication is much faster. However, it can only be used when
-creating a new graph, not for changing an already existing one.</p>
+implemented in BioCypher. The first takes place via the Neo4j python
+driver, which is either loaded by BioCypher or passed from the host
+module. The second generates CSV files containing node and edge data in
+a standardised and safety-checked format to be used with the <code class="docutils literal notranslate"><span class="pre">admin</span>
+<span class="pre">import</span></code> functionality of Neo4j. Safety checks are important here
+because Neo4j does not guarantee consistency of the resulting graph when
+using this feature; on the upside, this mode of communication is much
+faster. However, it can only be used when creating a new graph, not for
+changing an already existing one.</p>
 </section>
 <section id="communication-via-the-neo4j-python-driver">
 <h2>Communication via the Neo4j Python Driver<a class="headerlink" href="#communication-via-the-neo4j-python-driver" title="Permalink to this heading"></a></h2>
-<p>The BioCypher <a class="reference internal" href="#driver"><span class="std std-ref">Driver</span></a> is the main submodule of BioCypher. It
-establishes a connection with a running graph database via the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">neo4j.GraphDatabase.driver</span></code>, integrates the funtions of the other
-submodules, and serves as outside interface of BioCypher. The <code class="docutils literal notranslate"><span class="pre">Driver</span></code> is
-the main class for interacting with BioCypher in the host module’s adapter
-class. It handles authentification and basic database management as well as
-the creation and manipulation of graph entries.</p>
-<p>In our example, it is instantiated in the initialisation of the adapter, and
-then called on for <a class="reference internal" href="#running"><span class="std std-ref">interacting with a running graph</span></a> and for
-exporting a complete database in CSV format for the
-<a class="reference internal" href="#admin-import"><span class="std std-ref">Neo4j admin-import feature</span></a>. Upon instantiation, it
-automatically assesses the graph database it is connected to (specified using
-the <code class="docutils literal notranslate"><span class="pre">db_name</span></code> attribute) regarding whether or not it already contains a
-BioCypher graph, and, if so, what the structure of this graph is.</p>
-<p>If there exists no BioCypher graph in the currently active database, or if the
-user explicitly specifies so using the <code class="docutils literal notranslate"><span class="pre">wipe</span></code> attribute of the driver, a new
-BioCypher database is created using the schema configuration specified in the
-<a class="reference internal" href="#schema-config"><span class="std std-ref">schema-config.yaml</span></a>.</p>
+<p>The BioCypher <a class="reference internal" href="#driver"><span class="std std-ref">Driver</span></a> is the main submodule of BioCypher.
+It establishes a connection with a running graph database via the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">neo4j.GraphDatabase.driver</span></code>, integrates the funtions of the
+other submodules, and serves as outside interface of BioCypher. The
+<code class="docutils literal notranslate"><span class="pre">Driver</span></code> is the main class for interacting with BioCypher in the host
+module’s adapter class. It handles authentification and basic database
+management as well as the creation and manipulation of graph entries.</p>
+<p>In our example, it is instantiated in the initialisation of the adapter,
+and then called on for <a class="reference internal" href="#running"><span class="std std-ref">interacting with a running graph</span></a>
+and for exporting a complete database in CSV format for the <a class="reference internal" href="#admin-import"><span class="std std-ref">Neo4j
+admin-import feature</span></a>. Upon instantiation, it
+automatically assesses the graph database it is connected to (specified
+using the <code class="docutils literal notranslate"><span class="pre">db_name</span></code> attribute) regarding whether or not it already
+contains a BioCypher graph, and, if so, what the structure of this graph
+is.</p>
+<p>If there exists no BioCypher graph in the currently active database, or
+if the user explicitly specifies so using the <code class="docutils literal notranslate"><span class="pre">wipe</span></code> attribute of the
+driver, a new BioCypher database is created using the schema
+configuration specified in the <a class="reference internal" href="#schema-config"><span class="std std-ref">schema-config.yaml</span></a>.</p>
 </section>
 <section id="interacting-with-a-running-neo4j-instance">
 <span id="running"></span><h2>Interacting with a running Neo4j instance<a class="headerlink" href="#interacting-with-a-running-neo4j-instance" title="Permalink to this heading"></a></h2>
-<p>Once instantiated, the BioCypher driver can be used to modify the current
-graph by adding or deleting nodes, edges, properties, constraints, et cetera.
-Most commonly, the methods <code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.Driver.add_nodes()</span></code> and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.Driver.add_edges()</span></code> are used to introduce new entries
-into the graph database.</p>
+<p>Once instantiated, the BioCypher driver can be used to modify the
+current graph by adding or deleting nodes, edges, properties,
+constraints, et cetera. Most commonly, the methods
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.Driver.add_nodes()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.Driver.add_edges()</span></code> are used to introduce new
+entries into the graph database.</p>
 </section>
 <section id="exporting-for-the-neo4j-admin-import-feature">
 <span id="admin-import"></span><h2>Exporting for the <cite>neo4j-admin import</cite> feature<a class="headerlink" href="#exporting-for-the-neo4j-admin-import-feature" title="Permalink to this heading"></a></h2>
-<p>Particularly if the data are very extensive (or performance is of the utmost
-priority), BioCypher can be used to facilitate a speedy and safe import of the
-data using the <code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> console command. <a class="reference external" href="https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/">Admin Import</a>
-is a particularly fast method of writing data to a newly created graph database
-(the database needs to be completely empty) that gains most of its performance
-advantage from turning off safety features regarding input data consistency.
-Therefore, a sound and consistent representation of the nodes and edges in the
-graph is of high importance in this process, which is why the BioCypher export
-functionality has been specifically designed to perform type and content
-checking for all data to be written to the graph.</p>
-<p>Data input from the source database is exactly as in the case of <a class="reference external" href="running">interacting
-with a running database</a>, with the data representation being
-converted to a series of CSV files in a designated output folder (standard
-being <code class="docutils literal notranslate"><span class="pre">out/</span></code> and the current datetime). BioCypher creates separate header and
-data files for all node and edge types to be represented in the graph via the
-driver methods <code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.Driver.write_nodes()</span></code> and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.Driver.write_edges()</span></code>. Additionally, it creates a file
-called <code class="docutils literal notranslate"><span class="pre">neo4j-admin-import-call.txt</span></code> containing the console command for
-creating a new database, which only has to be executed from the directory of
-the currently running Neo4j database.</p>
-<p>The name of the database to be created is given by the <code class="docutils literal notranslate"><span class="pre">db_name</span></code> attribute
-of the driver methods, ie, <code class="docutils literal notranslate"><span class="pre">write_nodes()</span></code> and <code class="docutils literal notranslate"><span class="pre">write_edges()</span></code>, which should
-receive the same name as in the <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> adapter example, and can be
-arbitrary. In case the <code class="docutils literal notranslate"><span class="pre">db_name</span></code> is not the default Neo4j database name,
-<code class="docutils literal notranslate"><span class="pre">neo4j</span></code>, the database needs to be created in Neo4j before or after using
-the <code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> statement. This can be done by executing, in the
+<p>Particularly if the data are very extensive (or performance is of the
+utmost priority), BioCypher can be used to facilitate a speedy and safe
+import of the data using the <code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> console command.
+<a class="reference external" href="https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/">Admin Import</a>
+is a particularly fast method of writing data to a newly created graph
+database (the database needs to be completely empty) that gains most of
+its performance advantage from turning off safety features regarding
+input data consistency. Therefore, a sound and consistent representation
+of the nodes and edges in the graph is of high importance in this
+process, which is why the BioCypher export functionality has been
+specifically designed to perform type and content checking for all data
+to be written to the graph.</p>
+<p>Data input from the source database is exactly as in the case of
+<a class="reference external" href="running">interacting with a running database</a>, with the data
+representation being converted to a series of CSV files in a designated
+output folder (standard being <code class="docutils literal notranslate"><span class="pre">out/</span></code> and the current datetime).
+BioCypher creates separate header and data files for all node and edge
+types to be represented in the graph via the driver methods
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.Driver.write_nodes()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.Driver.write_edges()</span></code>. Additionally, it creates
+a file called <code class="docutils literal notranslate"><span class="pre">neo4j-admin-import-call.txt</span></code> containing the console
+command for creating a new database, which only has to be executed from
+the directory of the currently running Neo4j database.</p>
+<p>The name of the database to be created is given by the <code class="docutils literal notranslate"><span class="pre">db_name</span></code>
+attribute of the driver methods, ie, <code class="docutils literal notranslate"><span class="pre">write_nodes()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">write_edges()</span></code>, which should receive the same name as in the
+<code class="docutils literal notranslate"><span class="pre">PyPath</span></code> adapter example, and can be arbitrary. In case the
+<code class="docutils literal notranslate"><span class="pre">db_name</span></code> is not the default Neo4j database name, <code class="docutils literal notranslate"><span class="pre">neo4j</span></code>, the
+database needs to be created in Neo4j before or after using the
+<code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> statement. This can be done by executing, in the
 running database (<code class="docutils literal notranslate"><span class="pre">&lt;db_name&gt;</span></code> being the name assigned in the method):</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">:use</span> <span class="pre">system</span></code></p></li>
@@ -386,842 +439,58 @@ running database (<code class="docutils literal notranslate"><span class="pre">&
 <section id="usage-notes">
 <h1>Usage Notes<a class="headerlink" href="#usage-notes" title="Permalink to this heading"></a></h1>
 <ul class="simple">
-<li><p>A graph database can be built from any arbitrary collection of biomedical
-data. We here examplarise the building of a biological prior knowledge graph
-from the OmniPath database (Türei et al. 2021), but BioCypher includes the
-extensive translation functionality from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> to accommodate custom
-requirements for graph database contents.</p></li>
-<li><p>A BioCypher graph has to be instantiated as such from the beginning, an
-existing property graph cannot currently be “updated” to conform to the
-BioCypher format.</p></li>
-<li><p>As a first step, an empty Neo4j database has to be created and started; the
-Python database driver can then be established either through BioCypher
-directly or on the user’s end and passed to BioCypher (if there is greater
-need for data security in authentication).</p></li>
-<li><p>After the database driver has been passed to BioCypher, a new database can
-be established given the selected data structure, to be determined in the
-primary configuration file. In this step, all constraints and indices are
-set to conform to the selected database structure. These can also be
-modified afterwards.</p>
+<li><p>A graph database can be built from any arbitrary collection of
+biomedical data. We here examplarise the building of a biological
+prior knowledge graph from the OmniPath database (Türei et al. 2021),
+but BioCypher includes the extensive translation functionality from
+<code class="docutils literal notranslate"><span class="pre">PyPath</span></code> to accommodate custom requirements for graph database
+contents.</p></li>
+<li><p>A BioCypher graph has to be instantiated as such from the beginning,
+an existing property graph cannot currently be “updated” to conform
+to the BioCypher format.</p></li>
+<li><p>As a first step, an empty Neo4j database has to be created and
+started; the Python database driver can then be established either
+through BioCypher directly or on the user’s end and passed to
+BioCypher (if there is greater need for data security in
+authentication).</p></li>
+<li><p>After the database driver has been passed to BioCypher, a new
+database can be established given the selected data structure, to be
+determined in the primary configuration file. In this step, all
+constraints and indices are set to conform to the selected database
+structure. These can also be modified afterwards.</p>
 <ul>
-<li><p>Note: if the database to be created is very extensive, BioCypher offers a
-“secure export” method to create CSV files that can be used to instantiate
-a new graph database very quickly using the <a class="reference external" href="https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/">Admin Import</a>
+<li><p>Note: if the database to be created is very extensive, BioCypher
+offers a “secure export” method to create CSV files that can be
+used to instantiate a new graph database very quickly using the
+<a class="reference external" href="https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/">Admin Import</a>
 feature of Neo4j.</p></li>
 </ul>
 </li>
-<li><p>The database structure and version are recorded in a meta-graph that serves as
-a versioning system and simultaneously as a means of transmitting information
-about the graph structure for the case of re-loading an existing database for
-updating it with new information.</p></li>
+<li><p>The database structure and version are recorded in a meta-graph that
+serves as a versioning system and simultaneously as a means of
+transmitting information about the graph structure for the case of
+re-loading an existing database for updating it with new information.</p></li>
 </ul>
 </section>
 <section id="submodule-documentation">
 <h1>Submodule documentation<a class="headerlink" href="#submodule-documentation" title="Permalink to this heading"></a></h1>
-<section id="module-biocypher._driver">
-<span id="driver-py-the-biocypher-neo4j-driver"></span><span id="driver"></span><h2><cite>driver.py</cite>: the BioCypher Neo4j Driver<a class="headerlink" href="#module-biocypher._driver" title="Permalink to this heading"></a></h2>
-<p>A wrapper around the Neo4j driver which handles the DBMS connection and
-provides basic management methods.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._driver.Driver">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._driver.</span></span><span class="sig-name descname"><span class="pre">Driver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">neo4j.Driver</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_passwd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'neo4j.yaml'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wipe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._driver.Driver" title="Permalink to this definition"></a></dt>
-<dd><p>Manages a connection to a biocypher database.</p>
-<dl class="simple">
-<dt>The connection can be defined in three ways:</dt><dd><ul class="simple">
-<li><p>Providing a ready <code class="docutils literal notranslate"><span class="pre">neo4j.Driver</span></code> instance</p></li>
-<li><p>By URI and authentication data</p></li>
-<li><p>By a YAML config file</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>driver</strong> – A <code class="docutils literal notranslate"><span class="pre">neo4j.Driver</span></code> instance, created by, for example,
-<code class="docutils literal notranslate"><span class="pre">neo4j.GraphDatabase.driver</span></code>.</p></li>
-<li><p><strong>db_name</strong> – Name of the database (Neo4j graph) to use.</p></li>
-<li><p><strong>db_uri</strong> – Protocol, host and port to access the Neo4j server.</p></li>
-<li><p><strong>db_user</strong> – Neo4j user name.</p></li>
-<li><p><strong>db_passwd</strong> – Password of the Neo4j user.</p></li>
-<li><p><strong>fetch_size</strong> – Optional; the fetch size to use in database transactions.</p></li>
-<li><p><strong>config</strong> – Path to a YAML config file which provides the URI, user name
-and password.</p></li>
-<li><p><strong>wipe</strong> – Wipe the database after connection, ensuring the data is
-loaded into an empty database.</p></li>
-<li><p><strong>increment_version</strong> – Whether to increase version number automatically and create a
-new BioCypher version node in the graph.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._driver.Driver.add_biocypher_edges">
-<span class="sig-name descname"><span class="pre">add_biocypher_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._driver.Driver.add_biocypher_edges" title="Permalink to this definition"></a></dt>
-<dd><p>Accepts an edge type handoff class
-(<code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherEdge</span></code>) with source
-and target ids, label, and a dict of properties (passing on the
-type of property, ie, int, string …).</p>
-<p>The individual edge is either passed as a singleton, in the case
-of representation as an edge in the graph, or as a 4-tuple, in
-the case of representation as a node (with two edges connecting
-to interaction partners).</p>
-<p>The dict retrieved by the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.create.BioCypherEdge.get_dict()</span></code> method is
-passed into Neo4j as a map of maps, explicitly encoding source
-and target ids and the relationship label, and adding all edge
-properties from the ‘properties’ key of the dict. The merge is
-performed via APOC, matching only on source and target id to
-prevent duplicates. The same properties are set on match and on
-create, irrespective of the actual event.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>edges</strong> – a list of <code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherEdge</span></code> objects</p></li>
-<li><p><strong>explain</strong> (<em>bool</em>) – whether to call <code class="docutils literal notranslate"><span class="pre">EXPLAIN</span></code> in front of the
-CYPHER query</p></li>
-<li><p><strong>profile</strong> (<em>bool</em>) – whether to call <code class="docutils literal notranslate"><span class="pre">PROFILE</span></code> in front of the
-CYPHER query</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The return value. True for success, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._driver.Driver.add_biocypher_nodes">
-<span class="sig-name descname"><span class="pre">add_biocypher_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._driver.Driver.add_biocypher_nodes" title="Permalink to this definition"></a></dt>
-<dd><p>Accepts a node type handoff class
-(<code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherNode</span></code>) with id,
-label, and a dict of properties (passing on the type of
-property, ie, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, …).</p>
-<p>The dict retrieved by the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.create.BioCypherNode.get_dict()</span></code> method is
-passed into Neo4j as a map of maps, explicitly encoding node id
-and label, and adding all other properties from the ‘properties’
-key of the dict. The merge is performed via APOC, matching only
-on node id to prevent duplicates. The same properties are set on
-match and on create, irrespective of the actual event.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nodes</strong> (<em>iterable of BioCypherNode</em>) – a list of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherNode</span></code> objects</p></li>
-<li><p><strong>explain</strong> (<em>bool</em>) – whether to call <code class="docutils literal notranslate"><span class="pre">EXPLAIN</span></code> in front of the
-CYPHER query</p></li>
-<li><p><strong>profile</strong> (<em>bool</em>) – whether to call <code class="docutils literal notranslate"><span class="pre">PROFILE</span></code> in front of the
-CYPHER query</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The return value. True for success, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._driver.Driver.add_edges">
-<span class="sig-name descname"><span class="pre">add_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_tar_type_tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._driver.Driver.add_edges" title="Permalink to this definition"></a></dt>
-<dd><p>Generic edge adder method to add any kind of input to the
-graph via the <code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherEdge</span></code> class.
-Employs translation functionality and calls the
-<a class="reference internal" href="#biocypher._driver.Driver.add_biocypher_edges" title="biocypher._driver.Driver.add_biocypher_edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_biocypher_edges()</span></code></a> method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>id_type_tuples</strong> (<em>iterable of 4-tuple</em>) – for each edge to add to
-the biocypher graph, a 4-tuple with the following layout:
-first and second, the (unique if constrained) IDs of the
-source and target nodes of the relationship; third, the
-type of the relationship, all caps with underscores and
-in verb form (Neo4j primary label, eg <cite>:IS_TARGET_OF</cite>);
-and fourth, a dictionary of arbitrary properties the edge
-should possess (can be empty).</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>the query result of <a class="reference internal" href="#biocypher._driver.Driver.add_biocypher_edges" title="biocypher._driver.Driver.add_biocypher_edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_biocypher_edges()</span></code></a></dt><dd><ul class="simple">
-<li><p>first entry: data</p></li>
-<li><p>second entry: Neo4j summary.</p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>2-tuple</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._driver.Driver.add_nodes">
-<span class="sig-name descname"><span class="pre">add_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_type_tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._driver.Driver.add_nodes" title="Permalink to this definition"></a></dt>
-<dd><p>Generic node adder method to add any kind of input to the
-graph via the <code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherNode</span></code> class. Employs translation
-functionality and calls the <a class="reference internal" href="#biocypher._driver.Driver.add_biocypher_nodes" title="biocypher._driver.Driver.add_biocypher_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_biocypher_nodes()</span></code></a> method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>id_type_tuples</strong> (<em>iterable of 3-tuple</em>) – for each node to add to
-the biocypher graph, a 3-tuple with the following layout:
-first, the (unique if constrained) ID of the node; second, the
-type of the node, capitalised or PascalCase and in noun form
-(Neo4j primary label, eg <cite>:Protein</cite>); and third, a dictionary
-of arbitrary properties the node should possess (can be empty).</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>the query result of <a class="reference internal" href="#biocypher._driver.Driver.add_biocypher_nodes" title="biocypher._driver.Driver.add_biocypher_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_biocypher_nodes()</span></code></a></dt><dd><ul class="simple">
-<li><p>first entry: data</p></li>
-<li><p>second entry: Neo4j summary.</p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>2-tuple</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._driver.Driver.get_import_call">
-<span class="sig-name descname"><span class="pre">get_import_call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._driver.Driver.get_import_call" title="Permalink to this definition"></a></dt>
-<dd><p>Upon using the batch writer for writing admin import CSV files,
-return a string containing the neo4j admin import call with
-delimiters, database name, and paths of node and edge files.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a neo4j-admin import call</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._driver.Driver.init_db">
-<span class="sig-name descname"><span class="pre">init_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._driver.Driver.init_db" title="Permalink to this definition"></a></dt>
-<dd><p>Used to initialise a property graph database by deleting
-contents and constraints and setting up new constraints.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._driver.Driver.write_edges">
-<span class="sig-name descname"><span class="pre">write_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._driver.Driver.write_edges" title="Permalink to this definition"></a></dt>
-<dd><p>Write BioCypher edges to disk using the <code class="xref py py-mod docutils literal notranslate"><span class="pre">write</span></code> module,
-formatting the CSV to enable Neo4j admin import from the target
-directory.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>edges</strong> (<em>iterable</em>) – collection of edges to be written in
-BioCypher-compatible CSV format; can be any compatible
-(ie, translatable) input format or already as
-<code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherEdge</span></code>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._driver.Driver.write_import_call">
-<span class="sig-name descname"><span class="pre">write_import_call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._driver.Driver.write_import_call" title="Permalink to this definition"></a></dt>
-<dd><p>Upon using the batch writer for writing admin import CSV files,
-write a string containing the neo4j admin import call with
-delimiters, database name, and paths of node and edge files, to
-the export directory.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The return value. True for success, False otherwise.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._driver.Driver.write_nodes">
-<span class="sig-name descname"><span class="pre">write_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._driver.Driver.write_nodes" title="Permalink to this definition"></a></dt>
-<dd><p>Write BioCypher nodes to disk using the <code class="xref py py-mod docutils literal notranslate"><span class="pre">write</span></code> module,
-formatting the CSV to enable Neo4j admin import from the target
-directory.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>nodes</strong> (<em>iterable</em>) – collection of nodes to be written in
-BioCypher-compatible CSV format; can be any compatible
-(ie, translatable) input format or already as
-<code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherNode</span></code>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="driver-py-the-biocypher-neo4j-driver">
+<span id="driver"></span><h2><cite>driver.py</cite>: the BioCypher Neo4j Driver<a class="headerlink" href="#driver-py-the-biocypher-neo4j-driver" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-biocypher._check">
-<span id="check-py-biocypher-format-data-representation-and-consistency-checks"></span><h2><cite>check.py</cite>: BioCypher Format Data Representation and Consistency Checks<a class="headerlink" href="#module-biocypher._check" title="Permalink to this heading"></a></h2>
-<p>Read and write BioCypher config of a Neo4j database instance.
-Each BioCypher database contains a configuration encoded in the graph itself.
-This configuration includes the version of the BioCypher standard, the
-preferred identifier types, etc.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._check.MetaEdge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._check.</span></span><span class="sig-name descname"><span class="pre">MetaEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationship_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CONTAINS'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._check.MetaEdge" title="Permalink to this definition"></a></dt>
-<dd><p>Graph structure information edge in the meta-graph. Inherits from
-BioCypherNode but fixes label to “:CONTAINS”.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._check.MetaNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._check.</span></span><span class="sig-name descname"><span class="pre">MetaNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MetaNode'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._check.MetaNode" title="Permalink to this definition"></a></dt>
-<dd><p>Graph structure information node representing node type entities in
-the BioCypher graph. Inherits from BioCypherNode but fixes label to
-“:MetaNode”. Is connected to VersionNode via “:CONTAINS”
-relationship.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._check.VersionNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._check.</span></span><span class="sig-name descname"><span class="pre">VersionNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bcy_driver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BioCypher'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._check.VersionNode" title="Permalink to this definition"></a></dt>
-<dd><p>Versioning and graph structure information meta node. Inherits from
-BioCypherNode but fixes label to “:BioCypher” and sets version
-by using the current date and time (meaning it overrides both
-mandatory args from BioCypherNode).</p>
-<p>Is created upon establishment of connection with the database and
-remains fixed for each BioCypher “session” (ie, the entire duration
-from starting the connection to the termination of the BioCypher
-adapter instance). Is connected to MetaNodes and MetaEdges via
-“:CONTAINS” relationships.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._check.VersionNode.get_current_id">
-<span class="sig-name descname"><span class="pre">get_current_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._check.VersionNode.get_current_id" title="Permalink to this definition"></a></dt>
-<dd><p>Instantiate a version ID for the current session. For now does
-versioning using datetime.</p>
-<p>Can later implement incremental versioning, versioning from
-config file, or manual specification via argument.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._check.VersionNode.get_graph_schema">
-<span class="sig-name descname"><span class="pre">get_graph_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._check.VersionNode.get_graph_schema" title="Permalink to this definition"></a></dt>
-<dd><p>Return graph schema information from meta graph if it exists, or
-create new schema information properties from configuration
-file.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._check.VersionNode.get_graph_state">
-<span class="sig-name descname"><span class="pre">get_graph_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._check.VersionNode.get_graph_state" title="Permalink to this definition"></a></dt>
-<dd><p>Check in active DBMS connection for existence of VersionNodes,
-return the most recent VersionNode as representation of the
-graph state. If no VersionNode found, assume blank graph state
-and initialise.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._check.VersionNode.get_leaves">
-<span class="sig-name descname"><span class="pre">get_leaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._check.VersionNode.get_leaves" title="Permalink to this definition"></a></dt>
-<dd><p>Get leaves of the tree hierarchy from the data structure dict
-contained in the <cite>schema_config.yaml</cite>. Serves no purpose
-currently since the decision to have the <cite>schema_config.yaml</cite>
-represent only the direct constituents of the desired graph and
-not the complete hierarchy any more; this will be derived from
-the (modified) Biolink model. Now only does filtering of the
-schema for entities that have a “represented_as” property.</p>
-<p>Will leave in since the “leaves” are a nice visual cue for the
-hierarchical representation of graph constituents.</p>
-</dd></dl>
-
-</dd></dl>
-
+<section id="check-py-biocypher-format-data-representation-and-consistency-checks">
+<h2><cite>check.py</cite>: BioCypher Format Data Representation and Consistency Checks<a class="headerlink" href="#check-py-biocypher-format-data-representation-and-consistency-checks" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-biocypher._create">
-<span id="create-py-base-classes-for-node-and-edge-representations-in-biocypher"></span><h2><cite>create.py</cite>: Base Classes for Node and Edge Representations in BioCypher<a class="headerlink" href="#module-biocypher._create" title="Permalink to this heading"></a></h2>
-<p>Create a property graph database for biomedical research applications.
-Transforms ordered collections of biomedical entities and relationships
-to BioCypher objects that represent property graph nodes and edges.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherEdge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationship_label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge" title="Permalink to this definition"></a></dt>
-<dd><p>Handoff class to represent biomedical relationships in Neo4j.</p>
-<p>Has source and target ids, label, property dict; ids and label (in
-the Neo4j sense of a label, ie, the entity descriptor after the
-colon, such as “:TARGETS”) are non-optional and called source_id,
-target_id, and relationship_label to avoid confusion with properties
-called “label”, which usually denotes the human-readable form.
-Relationship labels are written in UPPERCASE and as verbs, as per
-Neo4j consensus.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>source_id</strong> (<em>string</em>) – consensus “best” id for
-biological entity</p></li>
-<li><p><strong>target_id</strong> (<em>string</em>) – consensus “best” id for
-biological entity</p></li>
-<li><p><strong>relationship_label</strong> (<em>string</em>) – type of interaction, UPPERCASE</p></li>
-<li><p><strong>**properties</strong> (<em>kwargs</em>) – collection of all other properties to be
-passed to Neo4j for the respective edge (dict)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherEdge.get_dict">
-<span class="sig-name descname"><span class="pre">get_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_dict" title="Permalink to this definition"></a></dt>
-<dd><p>Convert self to format accepted by Neo4j driver (Python dict -&gt;
-Neo4j Map).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>source_id, target_id and relationship_label as</dt><dd><p>top-level key-value pairs, properties as second-level
-dict.</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherEdge.get_label">
-<span class="sig-name descname"><span class="pre">get_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_label" title="Permalink to this definition"></a></dt>
-<dd><p>Returns relationship label.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>relationship_label</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherEdge.get_properties">
-<span class="sig-name descname"><span class="pre">get_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_properties" title="Permalink to this definition"></a></dt>
-<dd><p>Returns all other relationship properties apart from primary ids
-and label as key-value pairs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>properties</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherEdge.get_source_id">
-<span class="sig-name descname"><span class="pre">get_source_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_source_id" title="Permalink to this definition"></a></dt>
-<dd><p>Returns primary node identifier of relationship source.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>source_id</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherEdge.get_target_id">
-<span class="sig-name descname"><span class="pre">get_target_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_target_id" title="Permalink to this definition"></a></dt>
-<dd><p>Returns primary node identifier of relationship target.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>target_id</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode" title="Permalink to this definition"></a></dt>
-<dd><p>Handoff class to represent biomedical entities as Neo4j nodes.</p>
-<p>Has id, label, property dict; id and label (in the Neo4j sense of a
-label, ie, the entity descriptor after the colon, such as
-“:Protein”) are non-optional and called node_id and node_label to
-avoid confusion with “label” properties. Node labels are written in
-PascalCase and as nouns, as per Neo4j consensus.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>node_id</strong> (<em>string</em>) – consensus “best” id for biological entity</p></li>
-<li><p><strong>node_label</strong> (<em>string</em>) – primary type of entity, capitalised</p></li>
-<li><p><strong>**properties</strong> (<em>kwargs</em>) – collection of all other properties to be
-passed to neo4j for the respective node (dict)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherNode.get_all_labels">
-<span class="sig-name descname"><span class="pre">get_all_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_all_labels" title="Permalink to this definition"></a></dt>
-<dd><p>Returns all labels, primary and optional.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>properties</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherNode.get_dict">
-<span class="sig-name descname"><span class="pre">get_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_dict" title="Permalink to this definition"></a></dt>
-<dd><p>Convert self to format accepted by Neo4j driver (Python dict -&gt;
-Neo4j Map).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>node_id and node_label as top-level key-value pairs,
-properties as second-level dict.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherNode.get_id">
-<span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_id" title="Permalink to this definition"></a></dt>
-<dd><p>Returns primary node identifier.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>node_id</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherNode.get_label">
-<span class="sig-name descname"><span class="pre">get_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_label" title="Permalink to this definition"></a></dt>
-<dd><p>Returns primary node label.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>node_label</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherNode.get_properties">
-<span class="sig-name descname"><span class="pre">get_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_properties" title="Permalink to this definition"></a></dt>
-<dd><p>Returns all other node properties apart from primary id and
-label as key-value pairs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>properties</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherRelAsNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherRelAsNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_edge</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherRelAsNode" title="Permalink to this definition"></a></dt>
-<dd><p>Class to represent relationships as nodes (with in- and outgoing
-edges) as a triplet of a BioCypherNode and two BioCypherEdges. Main
-usage in type checking (instances where the receiving function needs
-to check whether it receives a relationship as a single edge or as
-a triplet).</p>
-</dd></dl>
-
+<section id="create-py-base-classes-for-node-and-edge-representations-in-biocypher">
+<h2><cite>create.py</cite>: Base Classes for Node and Edge Representations in BioCypher<a class="headerlink" href="#create-py-base-classes-for-node-and-edge-representations-in-biocypher" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-biocypher._translate">
-<span id="translate-py-translation-functionality-for-implemented-types-of-representation"></span><h2><cite>translate.py</cite>: Translation Functionality for Implemented Types of Representation<a class="headerlink" href="#module-biocypher._translate" title="Permalink to this heading"></a></h2>
-<p>Lookup and storage of entity IDs that are part of the BioCypher schema.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">BiolinkAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'biocypher'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'biolink'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter" title="Permalink to this definition"></a></dt>
-<dd><p>Performs various functions to integrate the Biolink ontology.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.init_toolkit">
-<span class="sig-name descname"><span class="pre">init_toolkit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.init_toolkit" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.translate">
-<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.translate" title="Permalink to this definition"></a></dt>
-<dd><p>Translates the leaves (direct constituents of the graph) given
-in the <cite>schema_config.yaml</cite> to Biolink-conforming nomenclature.
-Simultaneously get the structure in the form of the parents of
-each leaf.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="biocypher._translate.gen_translate_edges">
-<span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">gen_translate_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_tar_type_tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.gen_translate_edges" title="Permalink to this definition"></a></dt>
-<dd><p>Translates input edge representation to a representation that
-conforms to the schema of the given BioCypher graph. For now
-requires explicit statement of edge type on pass.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>leaves</strong> (<em>dict</em>) – dictionary detailing the leaves of the hierarchy
-tree representing the structure of the graph; the leaves are
-the entities that will be direct components of the graph,
-while the intermediary nodes are additional labels for
-filtering purposes.</p></li>
-<li><p><strong>src_tar_type_tuples</strong> (<em>list of tuples</em>) – collection of tuples
-representing source and target of an interaction via their
-unique ids as well as the type of interaction in the
-original database notation, which is translated to BioCypher
-notation using the <cite>leaves</cite>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="biocypher._translate.gen_translate_nodes">
-<span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">gen_translate_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type_tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.gen_translate_nodes" title="Permalink to this definition"></a></dt>
-<dd><p>Translates input node representation to a representation that
-conforms to the schema of the given BioCypher graph. For now
-requires explicit statement of node type on pass.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>leaves</strong> (<em>dict</em>) – dictionary detailing the leaves of the hierarchy
-tree representing the structure of the graph; the leaves are
-the entities that will be direct components of the graph,
-while the intermediary nodes are additional labels for
-filtering purposes.</p></li>
-<li><p><strong>id_type_tuples</strong> (<em>list of tuples</em>) – collection of tuples
-representing individual nodes by their unique id and a type
-that is translated from the original database notation to
-the corresponding BioCypher notation.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="biocypher._translate.getpath">
-<span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">getpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nested_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.getpath" title="Permalink to this definition"></a></dt>
-<dd><p>Get specific value from unknown location in a nested dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nested_dict</strong> (<em>dict</em>) – the dict to search</p></li>
-<li><p><strong>value</strong> – the dictionary value to find</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="translate-py-translation-functionality-for-implemented-types-of-representation">
+<h2><cite>translate.py</cite>: Translation Functionality for Implemented Types of Representation<a class="headerlink" href="#translate-py-translation-functionality-for-implemented-types-of-representation" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-biocypher._write">
-<span id="write-py-write-the-graph-to-csv-files-for-quick-admin-import"></span><h2><cite>write.py</cite>: Write the Graph to CSV Files for quick ‘admin import’<a class="headerlink" href="#module-biocypher._write" title="Permalink to this heading"></a></h2>
-<p>Export of CSV files for the Neo4J admin import. The admin import is able
-to quickly transfer large amounts of content into an unused database. For more
-explanation, see <a class="reference external" href="https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/">https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/</a>.</p>
-<p>Import like that:
-<a class="reference external" href="https://community.neo4j.com/t/how-can-i-use-a-database-created-with-neo4j-admin-import-in-neo4j-desktop/40594">https://community.neo4j.com/t/how-can-i-use-a-database-created-with-neo4j-admin-import-in-neo4j-desktop/40594</a></p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Can properties the node/relationship does not own be left blank?</p></li>
-</ul>
-</div></blockquote>
-<dl class="simple">
-<dt>Formatting: –delimiter=”;”</dt><dd><p>–array-delimiter=”|”
-–quote=”’”</p>
-</dd>
-</dl>
-<p>The header contains information for each field, for ID and properties
-in the format &lt;name&gt;: &lt;field_type&gt;. E.g.:
-<cite>UniProtKB:ID;genesymbol;entrez_id:int;:LABEL</cite>. Multiple labels can
-be given by separating with the array delimiter.</p>
-<p>There are three mandatory fields for relationship data:
-:START_ID — ID referring to a node.
-:END_ID — ID referring to a node.
-:TYPE — The relationship type.</p>
-<p>E.g.: <cite>:START_ID;relationship_id;residue;:END_ID;:TYPE</cite>.</p>
-<p>Headers would best be separate files, data files with similar name but
-different ending. Example from Neo4j documentation:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bin/neo4j-admin import --database<span class="o">=</span>neo4j
---nodes<span class="o">=</span>import/entities-header.csv,import/entities-part1.csv,
- import/entities-part2.csv
---nodes<span class="o">=</span>import/interactions-header.csv,import/interactions-part1.csv,
- import/interaction-part2.csv
---relationships<span class="o">=</span>import/rels-header.csv,import/rels-part1.csv,
- import/rels-part2.csv
-</pre></div>
-</div>
-<p>Can use regex, e.g., [..] import/rels-part*. In this case, use padding
-for ordering of the earlier part files (“01, 02”).</p>
-<p># How to import:</p>
-<ol class="arabic simple">
-<li><p>stop the db</p></li>
-<li><p>shell command:</p></li>
-</ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bin/neo4j-admin import --database<span class="o">=</span>neo4j
-<span class="c1"># nodes per type, separate header, regex for parts:</span>
---nodes<span class="o">=</span><span class="s2">&quot;&lt;path&gt;/&lt;node_type&gt;-header.csv,&lt;path&gt;/&lt;node_type&gt;-part.*&quot;</span>
-<span class="c1"># edges per type, separate header, regex for parts:</span>
---relationships<span class="o">=</span><span class="s2">&quot;&lt;path&gt;/&lt;edge_type&gt;-header.csv,&lt;path&gt;/&lt;edge_type&gt;-part.*&quot;</span>
-</pre></div>
-</div>
-<ol class="arabic simple" start="3">
-<li><p>start db, test for consistency</p></li>
-</ol>
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._write.BatchWriter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._write.</span></span><span class="sig-name descname"><span class="pre">BatchWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bl_adapter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._translate.BiolinkAdapter" title="biocypher._translate.BiolinkAdapter"><span class="pre">BiolinkAdapter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'neo4j'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.BatchWriter" title="Permalink to this definition"></a></dt>
-<dd><p>Class for writing node and edge representations to disk using the
-format specified by Neo4j for the use of admin import. Each batch
-writer instance has a fixed representation that needs to be passed
-at instantiation via the <code class="xref py py-attr docutils literal notranslate"><span class="pre">schema</span></code> argument. The instance
-also expects a biolink adapter via <code class="xref py py-attr docutils literal notranslate"><span class="pre">bl_adapter</span></code> to be able
-to convert and extend the hierarchy.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>schema</strong> – The BioCypher graph schema (from <code class="xref py py-class docutils literal notranslate"><span class="pre">VersionNode</span></code>).</p></li>
-<li><p><strong>bl_adapter</strong> – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">BiolinkAdapter</span></code> to enable translation and
-ontology queries</p></li>
-<li><p><strong>path</strong> – Path for exporting CSV files.</p></li>
-<li><p><strong>db_name</strong> – Name of the Neo4j database that will be used in the generated
-commands.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._write.BatchWriter.get_import_call">
-<span class="sig-name descname"><span class="pre">get_import_call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._write.BatchWriter.get_import_call" title="Permalink to this definition"></a></dt>
-<dd><p>Function to return the import call detailing folder and
-individual node and edge headers and data files, as well as
-delimiters and database name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a bash command for neo4j-admin import</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._write.BatchWriter.write_edges">
-<span class="sig-name descname"><span class="pre">write_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.BatchWriter.write_edges" title="Permalink to this definition"></a></dt>
-<dd><p>Wrapper for writing edges and their headers.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>edges</strong> (<a class="reference internal" href="#biocypher._create.BioCypherEdge" title="biocypher._create.BioCypherEdge"><em>BioCypherEdge</em></a>) – a list or generator of edges in
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BioCypherEdge</span></code> format</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The return value. True for success, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._write.BatchWriter.write_import_call">
-<span class="sig-name descname"><span class="pre">write_import_call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#biocypher._write.BatchWriter.write_import_call" title="Permalink to this definition"></a></dt>
-<dd><p>Function to write the import call detailing folder and
-individual node and edge headers and data files, as well as
-delimiters and database name, to the export folder as txt.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The return value. True for success, False otherwise.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._write.BatchWriter.write_nodes">
-<span class="sig-name descname"><span class="pre">write_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.BatchWriter.write_nodes" title="Permalink to this definition"></a></dt>
-<dd><p>Wrapper for writing nodes and their headers.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>nodes</strong> (<a class="reference internal" href="#biocypher._create.BioCypherNode" title="biocypher._create.BioCypherNode"><em>BioCypherNode</em></a>) – a list or generator of nodes in
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BioCypherNode</span></code> format</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The return value. True for success, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="write-py-write-the-graph-to-csv-files-for-quick-admin-import">
+<h2><cite>write.py</cite>: Write the Graph to CSV Files for quick ‘admin import’<a class="headerlink" href="#write-py-write-the-graph-to-csv-files-for-quick-admin-import" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-biocypher._logger">
-<span id="logger-py-logging"></span><h2><cite>logger.py</cite>: Logging<a class="headerlink" href="#module-biocypher._logger" title="Permalink to this heading"></a></h2>
-<p>Configuration of the module logger.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="biocypher._logger.get_logger">
-<span class="sig-prename descclassname"><span class="pre">biocypher._logger.</span></span><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'neo4ju'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Logger</span></span></span><a class="headerlink" href="#biocypher._logger.get_logger" title="Permalink to this definition"></a></dt>
-<dd><p>Access the module logger, create a new one if does not exist yet.</p>
-<p>Method providing central logger instance to main module. Is called
-only from main submodule, <code class="xref py py-mod docutils literal notranslate"><span class="pre">biocypher.driver</span></code>. In child modules,
-the standard Python logging facility is called
-(using <code class="docutils literal notranslate"><span class="pre">logging.getLogger(__name__)</span></code>), automatically inheriting
-the handlers from the central logger.</p>
-<p>The file handler creates a log file named after the current date and
-time. Levels to output to file and console can be set here.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> – Name of the logger instance.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>An instance of the Python <code class="xref py py-mod docutils literal notranslate"><span class="pre">logging.Logger</span></code>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="biocypher._logger.log">
-<span class="sig-prename descclassname"><span class="pre">biocypher._logger.</span></span><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._logger.log" title="Permalink to this definition"></a></dt>
-<dd><p>Browse the log file.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="biocypher._logger.logfile">
-<span class="sig-prename descclassname"><span class="pre">biocypher._logger.</span></span><span class="sig-name descname"><span class="pre">logfile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._logger.logfile" title="Permalink to this definition"></a></dt>
-<dd><p>Path to the log file.</p>
-</dd></dl>
-
+<section id="logger-py-logging">
+<h2><cite>logger.py</cite>: Logging<a class="headerlink" href="#logger-py-logging" title="Permalink to this heading"></a></h2>
 </section>
 </section>
 <section id="indices-tables-and-search">
