@@ -67,7 +67,7 @@ def bw():
     }
     bl_adapter = BiolinkAdapter(leaves=schema)
     bw = BatchWriter(
-        schema = schema,
+        leaves = schema,
         bl_adapter = bl_adapter,
         path = path,
     )

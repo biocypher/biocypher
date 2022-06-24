@@ -461,7 +461,7 @@ class Driver(neo4j_utils.Driver):
 
         if not self.batch_writer:
             self.batch_writer = BatchWriter(
-                self.db_meta.schema,
+                self.db_meta.leaves,
                 self.bl_adapter,
                 dirname=dirname,
                 db_name=db_name or self._db_name,

@@ -82,14 +82,14 @@ import os
 
 from more_itertools import peekable
 
-from biocypher import _config
+from biocypher._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 __all__ = ['BatchWriter']
 
 if TYPE_CHECKING:
 
-    from .translate import BiolinkAdapter
+    from ._translate import BiolinkAdapter
 
 
 class BatchWriter:
@@ -116,7 +116,7 @@ class BatchWriter:
 
     def __init__(
         self,
-        schema: dict,
+        leaves: dict,
         bl_adapter: 'BiolinkAdapter',
         path: Optional[str] = None,
         db_name: str = 'neo4j',
@@ -125,7 +125,7 @@ class BatchWriter:
         self.delim = ';'
         self.adelim = '|'
         self.quote = "'"
-        self.schema = schema
+        self.leaves = leaves
         self.bl_adapter = bl_adapter
         self.node_property_dict = None
         self.edge_property_dict = None
@@ -137,7 +137,7 @@ class BatchWriter:
 
         timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M')
 
-        self.outdir = path or os.path.join(config['outdir'], timestamp())
+        self.outdir = path or os.path.join(_config['outdir'], timestamp())
 
         logger.info(f'Creating output directory `{self.outdir}`.')
         os.makedirs(self.outdir, exist_ok = True)
@@ -355,7 +355,7 @@ class BatchWriter:
             # create header CSV with ID, properties, labels
 
             # preferred ID from schema
-            id = self.schema[label]['preferred_id'] + ':ID'
+            id = self.leaves[label]['preferred_id'] + ':ID'
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
