@@ -24,6 +24,12 @@ def driver():
     d.close()
 
 
+def test_wipe():
+    d = Driver(db_name='test', wipe=True)
+    d.close()
+
+    assert True
+
 def test_create_driver():
     d = Driver(increment_version=True)
 
