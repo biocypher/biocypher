@@ -91,7 +91,7 @@ class Driver(neo4j_utils.Driver):
         db_name = db_name or _config('neo4j_db')
         db_uri = db_uri or _config('neo4j_uri')
         db_user = db_user or _config('neo4j_user')
-        db_passwd = db_user or _config('neo4j_pw')
+        db_passwd = _config('neo4j_pw')
 
         neo4j_utils.Driver.__init__(**locals())
 
@@ -121,8 +121,14 @@ class Driver(neo4j_utils.Driver):
         # add version node
         self.add_biocypher_nodes(self.db_meta)
 
+
+        # find current version node
+        db_version = self.query(
+            "MATCH (v) "
+            "RETURN v"
+            )
         # connect version node to previous
-        if self.node_count > 1:
+        if db_version > 1:
             e_meta = BioCypherEdge(
                 self.db_meta.graph_state['id'],
                 self.db_meta.node_id,
