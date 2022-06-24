@@ -26,6 +26,7 @@ from ._logger import logger
 logger.debug(f'Loading module {__name__}.')
 
 from datetime import datetime
+import yaml
 import os
 
 from . import _config as config
@@ -178,6 +179,20 @@ class VersionNode(BioCypherNode):
             # load default yaml from module
             # get graph state from config
             dataMap = config.module_data('schema_config')
+
+            # check for user directory config
+            user_path = (
+                "config/schema_config.yaml"  # TODO: check multiple locations
+            )
+            if os.path.exists(user_path):
+                with open(user_path) as f:
+                    user_config = yaml.safe_load(f)
+
+                # # merge configs?
+                # dataMap.update(user_config)
+
+                # replace config if user config exists
+                dataMap = user_config
 
             return dataMap
 
