@@ -37,6 +37,11 @@ def test_create_driver(driver):
     assert isinstance(driver, Driver)
 
 
+def test_create_offline():
+    d = Driver(offline = True)
+    assert isinstance(d, Driver)
+    d.close()
+
 def test_connect_to_db(driver):
 
     assert isinstance(driver.driver, neo4j.Neo4jDriver)

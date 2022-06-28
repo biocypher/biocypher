@@ -102,6 +102,7 @@ class VersionNode(BioCypherNode):
         node_id=None,
         node_label='BioCypher',
         from_config=False,
+        offline=False,
         **properties,
     ):
 
@@ -109,7 +110,7 @@ class VersionNode(BioCypherNode):
         self.bcy_driver = bcy_driver
         self.node_id = self._get_current_id()
         self.node_label = node_label
-        self.graph_state = self._get_graph_state()
+        self.graph_state = self._get_graph_state() if not offline else None
         self.schema = self._get_graph_schema(from_config=from_config)
         self.leaves = self._get_leaves(self.schema)
 

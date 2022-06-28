@@ -233,7 +233,7 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
 
-        if isinstance(nodes, GeneratorType):
+        if isinstance(nodes, GeneratorType) or isinstance(nodes, peekable):
             logger.info('Writing node CSV from generator.')
 
             bins = defaultdict(list)  # dict to store a list for each
