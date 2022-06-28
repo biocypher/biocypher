@@ -16,8 +16,9 @@ __all__ = ['driver', 'test_adapter', 'test_biolink_yaml_extension', 'test_custom
 
 @pytest.fixture
 def driver():
-    # neo4j database needs to be running!
-    d = Driver(increment_version=False)
+    # neo4j database needs to be running!    
+    # there needs to be a database called "test" in the neo4j instance
+    d = Driver(db_name = "test", increment_version=False)
     yield d
 
     # teardown

@@ -7,7 +7,8 @@ import neo4j
 @pytest.fixture
 def driver():
     # neo4j database needs to be running!
-    d = Driver(increment_version=False)
+    # there needs to be a database called "test" in the neo4j instance
+    d = Driver(db_name = "test", increment_version=False)
     # create single node in case of empty DB for testing?
     # d.add_biocypher_nodes(BioCypherNode("TestID", "Test"))
     yield d
@@ -25,15 +26,15 @@ def driver():
 
 
 def test_wipe():
+    # just convenience function to wipe the database
     d = Driver(db_name='test', wipe=True)
     d.close()
 
     assert True
 
-def test_create_driver():
-    d = Driver(increment_version=True)
+def test_create_driver(driver):
 
-    assert isinstance(d, Driver)
+    assert isinstance(driver, Driver)
 
 
 def test_connect_to_db(driver):
