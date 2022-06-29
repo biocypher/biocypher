@@ -87,9 +87,11 @@ class BiolinkAdapter:
 
 
     def main(self):
-
+        # select with schema to use
         self.set_schema()
+        # initialise biolink toolkit
         self.init_toolkit()
+        # translate leaves
         self.translate()
 
 
