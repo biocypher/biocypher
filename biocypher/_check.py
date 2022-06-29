@@ -209,6 +209,7 @@ class VersionNode(BioCypherNode):
         Will leave in since the "leaves" are a nice visual cue for the
         hierarchical representation of graph constituents.
         """
+        
         leaves = dict()
         stack = list(d.items())
         visited = set()
@@ -220,21 +221,21 @@ class VersionNode(BioCypherNode):
                         stack.extend(value.items())
 
                 else:
-                    if "preferred_id" in value.keys():
-                        if isinstance(value["preferred_id"], list):
-                            # create leaves for each preferred id
-                            for pid, label, rep in zip(
-                                value["preferred_id"],
-                                value["label_in_input"],
-                                value["represented_as"],
-                            ):
-                                skey = pid + "." + key
-                                svalue = {
-                                    "preferred_id": pid,
-                                    "label_in_input": label,
-                                    "represented_as": rep,
-                                }
-                                leaves[skey] = svalue
+                    # if "preferred_id" in value.keys():
+                    #     if isinstance(value["preferred_id"], list):
+                    #         # create leaves for each preferred id
+                    #         for pid, label, rep in zip(
+                    #             value["preferred_id"],
+                    #             value["label_in_input"],
+                    #             value["represented_as"],
+                    #         ):
+                    #             skey = pid + "." + key
+                    #             svalue = {
+                    #                 "preferred_id": pid,
+                    #                 "label_in_input": label,
+                    #                 "represented_as": rep,
+                    #             }
+                    #             leaves[skey] = svalue
                     # add parent
                     leaves[key] = value
             visited.add(key)

@@ -177,7 +177,7 @@ class BiolinkAdapter:
                 # ancestors
                 l[entity] = {"class_definition": e, "ancestors": ancestors}
             else:
-                logger.info("Entity not found:" + entity[0])
+                logger.info("Entity not found in Biolink: " + entity)
                 l[entity] = None
 
         self.leaves = l
