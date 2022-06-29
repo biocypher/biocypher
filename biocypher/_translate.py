@@ -59,7 +59,7 @@ class BiolinkAdapter:
 
     def __init__(
         self,
-        leaves,
+        leaves: dict,
         schema: Optional[
             Union[
                 Literal['biocypher', 'biolink'],
@@ -71,7 +71,9 @@ class BiolinkAdapter:
         """
         Args:
             leaves:
-                I don't know.
+                A dictionary representing the constituents of the graph
+                to be built. These are the "leaves" of the ontology 
+                hierarchy tree.
             schema:
                 Either a label referring to a built-in schema, or a path
                 to a YAML file with the schema. If not provided, the default
@@ -80,6 +82,7 @@ class BiolinkAdapter:
 
         self.leaves = leaves
         self.schema = schema
+        self.biolink_leaves = None
 
         logger.debug('Instantiating Biolink Adapter.')
 
@@ -177,10 +180,16 @@ class BiolinkAdapter:
                 # ancestors
                 l[entity] = {"class_definition": e, "ancestors": ancestors}
             else:
-                logger.info("Entity not found in Biolink: " + entity)
-                l[entity] = None
+                if "virtual" in self.leaves[entity].keys():
+                    logger.info(
+                        f'{entity} is a virtual leaf, but not in the '
+                        f'Biolink model. Skipping.'
+                    )
+                else:
+                    logger.info("Entity not found in Biolink: " + entity)
+                    l[entity] = None
 
-        self.leaves = l
+        self.biolink_leaves = l
 
 
 """

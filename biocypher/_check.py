@@ -221,21 +221,24 @@ class VersionNode(BioCypherNode):
                         stack.extend(value.items())
 
                 else:
-                    # if "preferred_id" in value.keys():
-                    #     if isinstance(value["preferred_id"], list):
-                    #         # create leaves for each preferred id
-                    #         for pid, label, rep in zip(
-                    #             value["preferred_id"],
-                    #             value["label_in_input"],
-                    #             value["represented_as"],
-                    #         ):
-                    #             skey = pid + "." + key
-                    #             svalue = {
-                    #                 "preferred_id": pid,
-                    #                 "label_in_input": label,
-                    #                 "represented_as": rep,
-                    #             }
-                    #             leaves[skey] = svalue
+                    if "preferred_id" in value.keys():
+                        if isinstance(value["preferred_id"], list):
+                            # create "virtual" leaves for each preferred
+                            # id
+                            for pid, label, rep in zip(
+                                value["preferred_id"],
+                                value["label_in_input"],
+                                value["represented_as"],
+                            ):
+                                skey = pid + "." + key
+                                svalue = {
+                                    "preferred_id": pid,
+                                    "label_in_input": label,
+                                    "represented_as": rep,
+                                    # mark as virtual
+                                    "virtual": True,
+                                }
+                                leaves[skey] = svalue
                     # add parent
                     leaves[key] = value
             visited.add(key)
