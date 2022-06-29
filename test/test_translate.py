@@ -88,7 +88,7 @@ def test_adapter(version_node):
     ad = BiolinkAdapter(version_node.leaves, schema='biolink')
 
     assert isinstance(
-        ad.leaves['Protein']['class_definition'], ClassDefinition,
+        ad.biolink_leaves['Protein']['class_definition'], ClassDefinition,
     )
 
 
@@ -96,7 +96,7 @@ def test_custom_bmt_yaml(version_node):
     ad = BiolinkAdapter(
         version_node.leaves, schema=module_data_path('test-biolink-model'),
     )
-    p = ad.leaves['Protein']
+    p = ad.biolink_leaves['Protein']
 
     assert p['class_definition'].description == 'Test'
 
@@ -107,8 +107,8 @@ def test_biolink_yaml_extension(version_node):
         schema='biocypher', # this is the default
         # unstable, move to test yaml
     )
-    p1 = ad.leaves['PostTranslationalInteraction']
-    p2 = ad.leaves['Phosphorylation']
+    p1 = ad.biolink_leaves['PostTranslationalInteraction']
+    p2 = ad.biolink_leaves['Phosphorylation']
 
     assert (
         p1['class_definition'].description
