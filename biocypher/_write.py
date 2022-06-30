@@ -265,7 +265,8 @@ class BatchWriter:
 
                     # get label hierarchy
                     # multiple labels:
-                    all_labels = self.bl_adapter.biolink_leaves[label]['ancestors']
+                    if self.bl_adapter.biolink_leaves[label] is not None:
+                        all_labels = self.bl_adapter.biolink_leaves[label]['ancestors']
 
                     if all_labels:
                         # remove prefix
