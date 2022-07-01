@@ -492,40 +492,48 @@ class BatchWriter:
             # for each label to check for consistency and their type
             # for now, relevant for `int`
             for e in edges:
-                label = e.get_label()
-                if not label in bins.keys():
-                    # start new list
-                    bins[label].append(e)
-                    bin_l[label] = 1
-                    parts[label] = 0
-                    # use first edge to define properties for checking
-                    # could later be by checking all edges but much more
-                    # complicated, particularly involving batch writing
-                    # (would require "do-overs") TODO
-                    d = dict(e.get_properties())
-                    for k, v in d.items():
-                        d[k] = type(v)
-                    props[label] = d
+                if isinstance(e, BioCypherRelAsNode):
+                    # not sure why this can end up here, _translate?
+                    logger.error(
+                        "Edges cannot be of type 'RelAsNode'. "
+                        f"Caused by: {e.get_node().get_id(), e.get_node().get_label()}"
+                    )
 
                 else:
-                    # add to list
-                    bins[label].append(e)
-                    bin_l[label] += 1
-                    if not bin_l[label] < batch_size:
-                        # batch size controlled here
-                        passed = self._write_single_edge_list_to_file(
-                            bins[label],
-                            label,
-                            parts[label],
-                            props[label],
-                        )
+                    label = e.get_label()
+                    if not label in bins.keys():
+                        # start new list
+                        bins[label].append(e)
+                        bin_l[label] = 1
+                        parts[label] = 0
+                        # use first edge to define properties for checking
+                        # could later be by checking all edges but much more
+                        # complicated, particularly involving batch writing
+                        # (would require "do-overs") TODO
+                        d = dict(e.get_properties())
+                        for k, v in d.items():
+                            d[k] = type(v)
+                        props[label] = d
 
-                        if not passed:
-                            return False
+                    else:
+                        # add to list
+                        bins[label].append(e)
+                        bin_l[label] += 1
+                        if not bin_l[label] < batch_size:
+                            # batch size controlled here
+                            passed = self._write_single_edge_list_to_file(
+                                bins[label],
+                                label,
+                                parts[label],
+                                props[label],
+                            )
 
-                        bins[label] = []
-                        bin_l[label] = 0
-                        parts[label] += 1
+                            if not passed:
+                                return False
+
+                            bins[label] = []
+                            bin_l[label] = 0
+                            parts[label] += 1
 
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
