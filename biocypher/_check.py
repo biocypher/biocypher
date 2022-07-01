@@ -102,7 +102,7 @@ class VersionNode(BioCypherNode):
         node_id=None,
         node_label='BioCypher',
         from_config=False,
-        config_file="schema_config",
+        config_file=None,
         offline=False,
         **properties,
     ):
@@ -180,7 +180,11 @@ class VersionNode(BioCypherNode):
         else:
             # load default yaml from module
             # get graph state from config
-            dataMap = config.module_data(config_file)
+            if config_file is not None:
+                with open(config_file, 'r') as f:
+                    dataMap = yaml.safe_load(f)
+            else:
+                dataMap = config.module_data('schema_config')
 
             return dataMap
 

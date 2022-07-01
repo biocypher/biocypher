@@ -20,7 +20,7 @@ __all__ = ['driver', 'test_adapter', 'test_biolink_yaml_extension', 'test_custom
 def version_node():
     return VersionNode(
         from_config=True, 
-        config_file="test_schema_config", 
+        config_file="biocypher/_config/test_schema_config.yaml", 
         offline=True,
     )
 

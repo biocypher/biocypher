@@ -87,6 +87,7 @@ class Driver(neo4j_utils.Driver):
         wipe: bool=False,
         offline: bool=False,
         increment_version=True,
+        user_schema_config_path: Optional[str]=None,
     ):
         if not driver:
             db_name = db_name or _config('neo4j_db')
@@ -99,7 +100,10 @@ class Driver(neo4j_utils.Driver):
             if offline:
                 logger.info('Offline mode: no connection to Neo4j.')
                 self.db_meta = VersionNode(
-                    self, from_config=True, offline=True
+                    self, 
+                    from_config=True, 
+                    config_file=user_schema_config_path,
+                    offline=True,
                 )
                 self._db_config = {
                     'uri': db_uri,
@@ -121,7 +125,11 @@ class Driver(neo4j_utils.Driver):
                     # adapter to BioCypher); checks for existence of graph
                     # representation and returns if found, else creates new
                     # one
-                    self.db_meta = VersionNode(self, from_config=True)
+                    self.db_meta = VersionNode(
+                        self, 
+                        from_config=True, 
+                        config_file=user_schema_config_path,
+                    )
                     self.init_db()
                 else:
                     self.db_meta = VersionNode(self)
