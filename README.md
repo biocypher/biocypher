@@ -24,23 +24,9 @@ between identifier systems.
 
 ## Usage
 
-❗❗❗ The `main` branch is currently non-functional due to refactoring efforts. 
-Please use the branch `revert-until-fix` for the time being.
-
 BioCypher is currently in prototype stage. To use it locally, please clone the
-repository, change to a folder of your choice and then create the conda
-environment using the **_enviroment.yaml_**. This will create a conda
-environment called **_biocypher_**. Finally, the **_biocypher_** environment
-should be activated. The commands for these steps are given below:
-
-```
-git clone https://github.com/saezlab/BioCypher.git
-cd BioCypher
-conda env
-create -f environment.yaml
-conda activate biocypher
-python setup.py install
-```
+repository and use it as a local dependency or as a git submodule of your 
+project. 
 
 Exemplary usage of BioCypher to build a graph database is shown in the
 [PyPath](https://github.com/saezlab/pypath) repository. The example
@@ -53,11 +39,7 @@ The documentation can be found at https://saezlab.github.io/BioCypher/.
 
 ### Note for contributors
 
-The project uses
-[![Code style:black](
-https://img.shields.io/badge/code%20style-black-000000.svg
-)](https://github.com/psf/black) and documentation format
-[Napoleon](
+The project uses documentation format [Napoleon](
 https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
 ) with a [Sphinx](https://www.sphinx-doc.org/en/master/) autodoc GitHub
-Actions workflow.
+Actions workflow. We use poetry for dependency management.
