@@ -367,10 +367,14 @@ class BatchWriter:
             # YAML.
 
             # concatenate key:value in props
-            props_list = [
-                f'{k}:{v.__name__}' if v.__name__ == 'int' else f'{k}'
-                for k, v in props.items()
-            ]
+            props_list = []
+            for k, v in props.items():
+                if v.__name__ == 'int':
+                    props_list.append(f'{k}:int')
+                elif v.__name__ == 'float':
+                    props_list.append(f'{k}:long')
+                else:
+                    props_list.append(f'{k}')
 
             # create list of lists and flatten
             # removes need for empty check of property list
@@ -444,7 +448,7 @@ class BatchWriter:
                 plist = []
                 # make all into strings, put actual strings in quotes
                 for e, t in zip(nprops.values(), prop_dict.values()):
-                    if t == int:
+                    if t == int or t == float:
                         plist.append(str(e))
                     else:
                         plist.append(self.quote + str(e) + self.quote)

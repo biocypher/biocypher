@@ -131,6 +131,37 @@ def test_write_node_data_and_headers(bw):
     )
 
 
+def test_property_types(bw):
+    nodes = []
+    for i in range(4):
+        bnp = BioCypherNode(
+            f'p{i+1}',
+            'Protein',
+            string_property='StringProperty1',
+            float_property=4/(i+1),
+            taxon=9606,
+        )
+        nodes.append(bnp)
+
+    passed = bw.write_nodes(nodes, batch_size=1e6)
+
+    d_csv = os.path.join(path, 'Protein-part000.csv')
+    h_csv = os.path.join(path, 'Protein-header.csv')
+
+
+    with open(d_csv) as f:
+        data = f.read()
+
+    with open(h_csv) as f:
+        header = f.read()
+
+    assert (
+        passed 
+        and header == 'UniProtKB:ID;string_property;float_property:long;taxon:int;:LABEL'
+        and data == "p1;'StringProperty1';4.0;9606;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;'StringProperty1';2.0;9606;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3;'StringProperty1';1.3333333333333333;9606;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4;'StringProperty1';1.0;9606;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+    )
+
+
 def test_write_node_data_from_list(bw):
     nodes = []
     # four proteins, four miRNAs
