@@ -139,7 +139,7 @@ GeneToDiseaseAssociation:
   preferred_id: custom
   source: Protein
   target: Disease
-  label_as_edge: INTERACTS_POST_TRANSCRIPTIONAL
+  label_as_edge: PERTURBED_IN_DISEASE
   label_in_input: [protein_disease, gene_disease]
 
 

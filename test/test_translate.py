@@ -49,7 +49,9 @@ def test_translate_edges(version_node):
         ('G15258', 'MONDO2', 'protein_disease', {}),
     ]
     t = gen_translate_edges(v.leaves, src_tar_type_edge)
-    t = list(t)
+
+    assert type(next(t)) == BioCypherEdge
+    assert next(t).get_label() == 'PERTURBED_IN_DISEASE'
 
     # node type association (defined in `schema_config.yaml`)
     src_tar_type_node = [
