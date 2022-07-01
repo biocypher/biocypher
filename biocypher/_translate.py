@@ -235,7 +235,7 @@ def gen_translate_nodes(leaves, id_type_tuples):
             yield BioCypherNode(node_id=_id, node_label=bl_type, **_props)
 
         else:
-            print("No Biolink equivalent found for type " + _type)
+            logger.warning("No Biolink equivalent found for type " + _type)
 
 
 def gen_translate_edges(leaves, src_tar_type_tuples):
@@ -313,7 +313,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
                 )
 
         else:
-            print("No Biolink equivalent found for type " + _type)
+            logger.warning("No Biolink equivalent found for type " + _type)
 
 
 def get_bl_type(dict, value):
