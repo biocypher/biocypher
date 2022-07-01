@@ -98,10 +98,11 @@ class VersionNode(BioCypherNode):
 
     def __init__(
         self,
-        bcy_driver,
+        bcy_driver=None,
         node_id=None,
         node_label='BioCypher',
         from_config=False,
+        config_file="schema_config",
         offline=False,
         **properties,
     ):
@@ -111,7 +112,7 @@ class VersionNode(BioCypherNode):
         self.node_id = self._get_current_id()
         self.node_label = node_label
         self.graph_state = self._get_graph_state() if not offline else None
-        self.schema = self._get_graph_schema(from_config=from_config)
+        self.schema = self._get_graph_schema(from_config=from_config, config_file=config_file)
         self.leaves = self._get_leaves(self.schema)
 
     def _get_current_id(self):
@@ -152,7 +153,7 @@ class VersionNode(BioCypherNode):
             logger.info(f'Found graph state at {version}.')
             return result[0]['meta']
 
-    def _get_graph_schema(self, from_config):
+    def _get_graph_schema(self, from_config, config_file):
         """
         Return graph schema information from meta graph if it exists, or
         create new schema information properties from configuration
@@ -179,21 +180,7 @@ class VersionNode(BioCypherNode):
         else:
             # load default yaml from module
             # get graph state from config
-            dataMap = config.module_data('schema_config')
-
-            # check for user directory config
-            user_path = (
-                "config/schema_config.yaml"  # TODO: check multiple locations
-            )
-            if os.path.exists(user_path):
-                with open(user_path) as f:
-                    user_config = yaml.safe_load(f)
-
-                # # merge configs?
-                # dataMap.update(user_config)
-
-                # replace config if user config exists
-                dataMap = user_config
+            dataMap = config.module_data(config_file)
 
             return dataMap
 
