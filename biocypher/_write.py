@@ -252,6 +252,7 @@ class BatchWriter:
                 label = n.get_label()
                 if not label in bins.keys():
                     # start new list
+                    all_labels = None
                     bins[label].append(n)
                     bin_l[label] = 1
                     parts[label] = 0
