@@ -14,20 +14,15 @@ from biocypher._translate import (
 __all__ = ['driver', 'test_adapter', 'test_biolink_yaml_extension', 'test_custom_bmt_yaml', 'test_translate_edges', 'test_translate_identifiers', 'test_translate_nodes', 'version_node']
 
 
-@pytest.fixture
-def driver():
-    # neo4j database needs to be running!    
-    # there needs to be a database called "test" in the neo4j instance
-    d = Driver(db_name = "test", increment_version=False)
-    yield d
-
-    # teardown
-    d.close()
 
 
 @pytest.fixture
-def version_node(driver):
-    return VersionNode(driver)
+def version_node():
+    return VersionNode(
+        from_config=True, 
+        config_file="test_schema_config", 
+        offline=True,
+    )
 
 
 def test_translate_nodes(version_node):
@@ -47,12 +42,17 @@ def test_translate_nodes(version_node):
 
 
 def test_translate_edges(version_node):
+    v = version_node
     # edge type association (defined in `schema_config.yaml`)
-    # TODO
+    src_tar_type_edge = [
+        ('G15258', 'MONDO1', 'gene_disease', {}),
+        ('G15258', 'MONDO2', 'protein_disease', {}),
+    ]
+    t = gen_translate_edges(v.leaves, src_tar_type_edge)
+    t = list(t)
 
     # node type association (defined in `schema_config.yaml`)
-    v = version_node
-    src_tar_type = [
+    src_tar_type_node = [
         ('G21058', 'G50127', 'post_translational', {'prop1': 'test'}),
         (
             'G22418',
@@ -67,7 +67,7 @@ def test_translate_edges(version_node):
             {'directed': True, 'effect': -1},
         ),
     ]
-    t = gen_translate_edges(v.leaves, src_tar_type)
+    t = gen_translate_edges(v.leaves, src_tar_type_node)
 
     n = next(t)
     n = next(t)

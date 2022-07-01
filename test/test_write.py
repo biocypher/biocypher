@@ -65,6 +65,13 @@ def bw():
             'preferred_id': 'RNID',
             'label_in_input': 'pm_interaction',
         },
+        'DiseaseToGeneAssociation': {
+            'represented_as': 'edge',
+            'source': 'Disease',
+            'target': 'Protein',
+            'preferred_id': 'DGID',
+            'label_in_input': ['DISEASE_TO_GENE', 'DISEASE_TO_PROTEIN'],
+        },
     }
     bl_adapter = BiolinkAdapter(leaves=schema)
     bw = BatchWriter(

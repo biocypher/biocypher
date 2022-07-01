@@ -327,5 +327,9 @@ def get_bl_type(dict, value):
     """
     for k, v in dict.items():
         if "label_in_input" in v:
-            if v["label_in_input"] == value:
+            l = v["label_in_input"]
+            if isinstance(l, list):
+                if value in l:
+                    return k
+            elif v["label_in_input"] == value:
                 return k
