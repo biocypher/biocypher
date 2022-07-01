@@ -138,6 +138,7 @@ class BatchWriter:
         timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M')
 
         self.outdir = dirname or os.path.join(_config('outdir'), timestamp())
+        self.outdir = os.path.abspath(self.outdir)
 
         logger.info(f'Creating output directory `{self.outdir}`.')
         os.makedirs(self.outdir, exist_ok = True)
