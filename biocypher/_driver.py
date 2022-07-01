@@ -88,51 +88,55 @@ class Driver(neo4j_utils.Driver):
         offline: bool=False,
         increment_version=True,
     ):
+        if not driver:
+            db_name = db_name or _config('neo4j_db')
+            db_uri = db_uri or _config('neo4j_uri')
+            db_user = db_user or _config('neo4j_user')
+            db_passwd = db_passwd or _config('neo4j_pw')
 
-        db_name = db_name or _config('neo4j_db')
-        db_uri = db_uri or _config('neo4j_uri')
-        db_user = db_user or _config('neo4j_user')
-        db_passwd = db_passwd or _config('neo4j_pw')
+            self.offline = offline
 
-        self.offline = offline
+            if offline:
+                logger.info('Offline mode: no connection to Neo4j.')
+                self.db_meta = VersionNode(
+                    self, from_config=True, offline=True
+                )
+                self._db_config = {
+                    'uri': db_uri,
+                    'user': db_user,
+                    'passwd': db_passwd,
+                    'db': db_name,
+                    'fetch_size': fetch_size,
+                }
+                self._db_name = db_name
 
-        if offline:
-            logger.info('Offline mode: no connection to Neo4j.')
-            self.db_meta = VersionNode(
-                self, from_config=True, offline=True
-            )
-            self._db_config = {
-                'uri': db_uri,
-                'user': db_user,
-                'passwd': db_passwd,
-                'db': db_name,
-                'fetch_size': fetch_size,
-            }
-            self._db_name = db_name
-
-        else:
-            neo4j_utils.Driver.__init__(**locals())
-            # if db representation node does not exist or explicitly
-            # asked for wipe, create new graph representation: default
-            # yaml, interactive?
-            if wipe:
-                # get database version node ('check' module) immutable
-                # variable of each instance (ie, each call from the
-                # adapter to BioCypher); checks for existence of graph
-                # representation and returns if found, else creates new
-                # one
-                self.db_meta = VersionNode(self, from_config=True)
-                self.init_db()
             else:
-                self.db_meta = VersionNode(self)
+                neo4j_utils.Driver.__init__(**locals())
+                # if db representation node does not exist or explicitly
+                # asked for wipe, create new graph representation: default
+                # yaml, interactive?
+                if wipe:
+                    # get database version node ('check' module) immutable
+                    # variable of each instance (ie, each call from the
+                    # adapter to BioCypher); checks for existence of graph
+                    # representation and returns if found, else creates new
+                    # one
+                    self.db_meta = VersionNode(self, from_config=True)
+                    self.init_db()
+                else:
+                    self.db_meta = VersionNode(self)
 
-            if increment_version:
-                # set new current version node
-                self.update_meta_graph()
+                if increment_version:
+                    # set new current version node
+                    self.update_meta_graph()
 
+            
+            self.bl_adapter = None
+            self.batch_writer = None
         
-        self.bl_adapter = None
-        self.batch_writer = None
+        else:
+            logger.error('Providing driver instance is not yet implemented.')
+            # TODO: implement passing a driver instance
 
 
     def update_meta_graph(self):

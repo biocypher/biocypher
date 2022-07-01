@@ -14,7 +14,7 @@ from biocypher._translate import (
 __all__ = ['driver', 'test_adapter', 'test_biolink_yaml_extension', 'test_custom_bmt_yaml', 'test_translate_edges', 'test_translate_identifiers', 'test_translate_nodes', 'version_node']
 
 
-
+# TODO config file outside of biocypher package
 
 @pytest.fixture
 def version_node():
