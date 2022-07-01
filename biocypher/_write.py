@@ -372,7 +372,7 @@ class BatchWriter:
                 if v.__name__ == 'int':
                     props_list.append(f'{k}:int')
                 elif v.__name__ == 'float':
-                    props_list.append(f'{k}:long')
+                    props_list.append(f'{k}:double')
                 else:
                     props_list.append(f'{k}')
 
