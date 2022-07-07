@@ -35,7 +35,7 @@ Todo:
 
 from ._logger import logger
 
-logger.debug(f'Loading module {__name__}.')
+logger.debug(f"Loading module {__name__}.")
 
 from typing import Union, Literal, Optional
 from linkml_runtime.linkml_model.meta import ClassDefinition
@@ -46,7 +46,12 @@ import bmt
 from ._config import _read_yaml, module_data_path
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
-__all__ = ['BiolinkAdapter', 'gen_translate_edges', 'gen_translate_nodes', 'getpath']
+__all__ = [
+    "BiolinkAdapter",
+    "gen_translate_edges",
+    "gen_translate_nodes",
+    "getpath",
+]
 
 
 class BiolinkAdapter:
@@ -62,7 +67,7 @@ class BiolinkAdapter:
         leaves: dict,
         schema: Optional[
             Union[
-                Literal['biocypher', 'biolink'],
+                Literal["biocypher", "biolink"],
                 str,
                 dict,
             ]
@@ -72,7 +77,7 @@ class BiolinkAdapter:
         Args:
             leaves:
                 A dictionary representing the constituents of the graph
-                to be built. These are the "leaves" of the ontology 
+                to be built. These are the "leaves" of the ontology
                 hierarchy tree.
             schema:
                 Either a label referring to a built-in schema, or a path
@@ -84,10 +89,9 @@ class BiolinkAdapter:
         self.schema = schema
         self.biolink_leaves = None
 
-        logger.debug('Instantiating Biolink Adapter.')
+        logger.debug("Instantiating Biolink Adapter.")
 
         self.main()
-
 
     def main(self):
         # select with schema to use
@@ -97,20 +101,17 @@ class BiolinkAdapter:
         # translate leaves
         self.translate()
 
-
     def set_schema(self):
 
         schemata_builtin = {
-            'biocypher': 'biocypher-biolink-model',
-            'biolink': 'biolink-model',
+            "biocypher": "biocypher-biolink-model",
+            "biolink": "biolink-model",
         }
 
-        self.schema = self.schema or 'biocypher'
+        self.schema = self.schema or "biocypher"
 
         self.schema_name = (
-            self.schema
-                if isinstance(self.schema, str) else
-            'custom'
+            self.schema if isinstance(self.schema, str) else "custom"
         )
 
         if self.schema in schemata_builtin:
@@ -118,24 +119,19 @@ class BiolinkAdapter:
             label = schemata_builtin[self.schema]
             self.schema = module_data_path(label)
 
-
     def init_toolkit(self):
-        """
-        """
+        """ """
 
         # TODO explain: isn't schma_yaml automatically at least
         # 'biocypher' after running set_schema? How would we get default?
         # - yes it is, we should default to biocypher, isn't it?
         logger.info(
-            f'Creating BioLink model toolkit from `{self.schema_name}` model.',
+            f"Creating BioLink model toolkit from `{self.schema_name}` model.",
         )
 
         self.toolkit = (
-            bmt.Toolkit(self.schema)
-                if self.schema else
-            bmt.Toolkit()
+            bmt.Toolkit(self.schema) if self.schema else bmt.Toolkit()
         )
-
 
     def translate(self):
         """
@@ -150,7 +146,7 @@ class BiolinkAdapter:
         TODO: add class definition id_prefixes check
         """
 
-        logger.info('Translating BioCypher config leaves to Biolink.')
+        logger.info("Translating BioCypher config leaves to Biolink.")
 
         l = {}
 
@@ -182,8 +178,8 @@ class BiolinkAdapter:
             else:
                 if "virtual" in self.leaves[entity].keys():
                     logger.info(
-                        f'{entity} is a virtual leaf, but not in the '
-                        f'Biolink model. Skipping.'
+                        f"{entity} is a virtual leaf, but not in the "
+                        f"Biolink model. Skipping."
                     )
                 else:
                     logger.info("Entity not found in Biolink: " + entity)
@@ -223,9 +219,9 @@ def gen_translate_nodes(leaves, id_type_tuples):
 
     # biolink = BiolinkAdapter(leaves)
     if isinstance(id_type_tuples, list):
-        logger.info(f'Translating {len(id_type_tuples)} nodes to BioCypher.')
+        logger.info(f"Translating {len(id_type_tuples)} nodes to BioCypher.")
     else:
-        logger.info(f'Translating nodes to BioCypher from generator.')
+        logger.info(f"Translating nodes to BioCypher from generator.")
 
     for _id, _type, _props in id_type_tuples:
         # find the node in leaves that represents biolink node type
@@ -263,32 +259,34 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
 
     if isinstance(src_tar_type_tuples, list):
         logger.info(
-            f'Translating {len(src_tar_type_tuples)} edges to BioCypher.',
+            f"Translating {len(src_tar_type_tuples)} edges to BioCypher.",
         )
     else:
-        logger.info(f'Translating edges to BioCypher from generator.')
+        logger.info(f"Translating edges to BioCypher from generator.")
 
     for _src, _tar, _type, _props in src_tar_type_tuples:
         bl_type = get_bl_type(leaves, _type)
 
         if bl_type is not None:
-            rep = leaves[bl_type]['represented_as']
+            rep = leaves[bl_type]["represented_as"]
 
-            if rep == 'node':
+            if rep == "node":
                 node_id = (
                     str(_src)
-                    + '_'
+                    + "_"
                     + str(_tar)
-                    + '_'
-                    + '_'.join(str(v) for v in _props.values())
+                    + "_"
+                    + "_".join(str(v) for v in _props.values())
                 )
-                n = BioCypherNode(node_id=node_id, node_label=bl_type, **_props)
+                n = BioCypherNode(
+                    node_id=node_id, node_label=bl_type, **_props
+                )
                 # directionality check
-                if _props.get('directed') == True:
-                    l1 = 'IS_SOURCE_OF'
-                    l2 = 'IS_TARGET_OF'
+                if _props.get("directed") == True:
+                    l1 = "IS_SOURCE_OF"
+                    l2 = "IS_TARGET_OF"
                 else:
-                    l1 = l2 = 'IS_PART_OF'
+                    l1 = l2 = "IS_PART_OF"
                 e_s = BioCypherEdge(
                     source_id=_src,
                     target_id=node_id,
@@ -304,7 +302,14 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
                 yield BioCypherRelAsNode(n, e_s, e_t)
 
             else:
-                edge_label = leaves[bl_type]['label_as_edge']
+                try:
+                    edge_label = leaves[bl_type]["label_as_edge"]
+                except KeyError:
+                    logger.error(
+                        f"No edge label found for {bl_type}, "
+                        "please provide 'label_as_edge' in the "
+                        "schema_config.yaml file."
+                    )
                 yield BioCypherEdge(
                     source_id=_src,
                     target_id=_tar,
@@ -319,8 +324,8 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
 def get_bl_type(dict, value):
     """
     For each given input type ("label_in_input"), find the corresponding
-    Biolink type in the leaves dictionary. 
-    
+    Biolink type in the leaves dictionary.
+
     Args:
         dict: the dict to search (leaves from `schema_config.yaml`)
         value: the input type to find (`label_in_input` in `schema_config.yaml`)
