@@ -253,8 +253,11 @@ class BatchWriter:
             # already been written; to remove duplicates
             for node in nodes:
                 _id = node.get_id()
-                if not _id in seen_ids:
+                # check if node has already been written, if so skip
+                if _id in seen_ids:
+                    logger.warning(f"Duplicate node id: {_id}")
                     continue
+
                 label = node.get_label()
                 if not label in bins.keys():
                     # start new list
@@ -312,6 +315,8 @@ class BatchWriter:
                         bins[label] = []
                         bin_l[label] = 0
                         parts[label] += 1
+
+                seen_ids.add(_id)
 
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
