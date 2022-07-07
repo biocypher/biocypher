@@ -99,7 +99,7 @@ class BiolinkAdapter:
         # initialise biolink toolkit
         self.init_toolkit()
         # translate leaves
-        self.translate()
+        self.translate_leaves_to_biolink()
 
     def set_schema(self):
 
@@ -133,7 +133,7 @@ class BiolinkAdapter:
             bmt.Toolkit(self.schema) if self.schema else bmt.Toolkit()
         )
 
-    def translate(self):
+    def translate_leaves_to_biolink(self):
         """
         Translates the leaves (direct constituents of the graph) given
         in the `schema_config.yaml` to Biolink-conforming nomenclature.

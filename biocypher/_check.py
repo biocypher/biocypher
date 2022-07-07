@@ -193,14 +193,9 @@ class VersionNode(BioCypherNode):
     def _get_leaves(self, d):
         """
         Get leaves of the tree hierarchy from the data structure dict
-        contained in the `schema_config.yaml`. Serves no purpose
-        currently since the decision to have the `schema_config.yaml`
-        represent only the direct constituents of the desired graph and
-        not the complete hierarchy any more; this will be derived from
-        the (modified) Biolink model. Now only does filtering of the
-        schema for entities that have a "represented_as" property.
-        Will leave in since the "leaves" are a nice visual cue for the
-        hierarchical representation of graph constituents.
+        contained in the `schema_config.yaml`. Creates virtual leaves
+        (as children) from entries that provide more than one preferred
+        id type (and corresponding inputs).
         """
 
         leaves = dict()
