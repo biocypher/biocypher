@@ -196,6 +196,13 @@ class VersionNode(BioCypherNode):
         contained in the `schema_config.yaml`. Creates virtual leaves
         (as children) from entries that provide more than one preferred
         id type (and corresponding inputs).
+
+        Args:
+            d (dict): data structure dict from yaml file
+
+        TODO: allow multiple leaves with same Biolink name but different
+        specs? (eg ProteinToDiseaseAssociation from two different
+        entries in CKG, DETECTED_IN_PATHOLOGY_SAMPLE and ASSOCIATED_WITH)
         """
 
         leaves = dict()

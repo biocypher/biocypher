@@ -72,7 +72,7 @@ for ordering of the earlier part files ("01, 02").
 
 from ._logger import logger
 
-logger.debug(f'Loading module {__name__}.')
+logger.debug(f"Loading module {__name__}.")
 
 from types import GeneratorType
 from typing import TYPE_CHECKING, Optional, Union
@@ -84,7 +84,7 @@ import os
 from biocypher._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
-__all__ = ['BatchWriter']
+__all__ = ["BatchWriter"]
 
 if TYPE_CHECKING:
 
@@ -116,31 +116,31 @@ class BatchWriter:
     def __init__(
         self,
         leaves: dict,
-        bl_adapter: 'BiolinkAdapter',
+        bl_adapter: "BiolinkAdapter",
         dirname: Optional[str] = None,
-        db_name: str = 'neo4j',
+        db_name: str = "neo4j",
     ):
         """ """
-        self.delim = ';'
-        self.adelim = '|'
+        self.delim = ","
+        self.adelim = "|"
         self.quote = "'"
         self.leaves = leaves
         self.bl_adapter = bl_adapter
         self.node_property_dict = None
         self.edge_property_dict = None
         self.import_call = (
-            f'bin/neo4j-admin import --database={db_name} '
+            f"bin/neo4j-admin import --database={db_name} "
             f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
             '--quote="\'" '
         )
 
-        timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M')
+        timestamp = lambda: datetime.now().strftime("%Y%m%d%H%M")
 
-        self.outdir = dirname or os.path.join(_config('outdir'), timestamp())
+        self.outdir = dirname or os.path.join(_config("outdir"), timestamp())
         self.outdir = os.path.abspath(self.outdir)
 
-        logger.info(f'Creating output directory `{self.outdir}`.')
-        os.makedirs(self.outdir, exist_ok = True)
+        logger.info(f"Creating output directory `{self.outdir}`.")
+        os.makedirs(self.outdir, exist_ok=True)
 
     def write_nodes(self, nodes, batch_size=int(1e6)):
         """
@@ -158,20 +158,18 @@ class BatchWriter:
         # write node data
         passed = self._write_node_data(nodes, batch_size)
         if not passed:
-            logger.error('Error while writing node data.')
+            logger.error("Error while writing node data.")
             return False
         # pass property data to header writer per node type written
         passed = self._write_node_headers()
         if not passed:
-            logger.error('Error while writing node headers.')
+            logger.error("Error while writing node headers.")
             return False
 
         return True
 
     def write_edges(
-        self, 
-        edges: Union[list, GeneratorType], 
-        batch_size=int(1e6)
+        self, edges: Union[list, GeneratorType], batch_size=int(1e6)
     ) -> bool:
         """
         Wrapper for writing edges and their headers.
@@ -203,18 +201,19 @@ class BatchWriter:
 
         if nod and edg:
             passed = self.write_nodes(nod) and self._write_edge_data(
-                edg, batch_size,
+                edg,
+                batch_size,
             )
         else:
             passed = self._write_edge_data(edg, batch_size)
 
         if not passed:
-            logger.error('Error while writing edge data.')
+            logger.error("Error while writing edge data.")
             return False
         # pass property data to header writer per edge type written
         passed = self._write_edge_headers()
         if not passed:
-            logger.error('Error while writing edge headers.')
+            logger.error("Error while writing edge headers.")
             return False
 
         return True
@@ -237,7 +236,7 @@ class BatchWriter:
         """
 
         if isinstance(nodes, GeneratorType) or isinstance(nodes, peekable):
-            logger.info('Writing node CSV from generator.')
+            logger.info("Writing node CSV from generator.")
 
             bins = defaultdict(list)  # dict to store a list for each
             # label that is passed in
@@ -250,19 +249,24 @@ class BatchWriter:
             # for now, relevant for `int`
             labels = {}  # dict to store the additional labels for each
             # primary graph constituent from biolink hierarchy
-            for n in nodes:
-                label = n.get_label()
+            seen_ids = set()  # set to store the ids of nodes that have
+            # already been written; to remove duplicates
+            for node in nodes:
+                _id = node.get_id()
+                if not _id in seen_ids:
+                    continue
+                label = node.get_label()
                 if not label in bins.keys():
                     # start new list
                     all_labels = None
-                    bins[label].append(n)
+                    bins[label].append(node)
                     bin_l[label] = 1
                     parts[label] = 0
                     # use first node to define properties for checking
                     # could later be by checking all nodes but much more
                     # complicated, particularly involving batch writing
                     # (would require "do-overs") TODO
-                    d = dict(n.get_properties())
+                    d = dict(node.get_properties())
                     for k, v in d.items():
                         d[k] = type(v)
                     props[label] = d
@@ -270,12 +274,14 @@ class BatchWriter:
                     # get label hierarchy
                     # multiple labels:
                     if self.bl_adapter.biolink_leaves[label] is not None:
-                        all_labels = self.bl_adapter.biolink_leaves[label]['ancestors']
+                        all_labels = self.bl_adapter.biolink_leaves[label][
+                            "ancestors"
+                        ]
 
                     if all_labels:
                         # remove prefix
                         all_labels = [
-                            l.replace('biolink:', '') for l in all_labels
+                            l.replace("biolink:", "") for l in all_labels
                         ]
                         # remove duplicates
                         all_labels = list(OrderedDict.fromkeys(all_labels))
@@ -288,7 +294,7 @@ class BatchWriter:
 
                 else:
                     # add to list
-                    bins[label].append(n)
+                    bins[label].append(node)
                     bin_l[label] += 1
                     if not bin_l[label] < batch_size:
                         # batch size controlled here
@@ -331,7 +337,7 @@ class BatchWriter:
             return True
         else:
             if type(nodes) is not list:
-                logger.error('Nodes must be passed as list or generator.')
+                logger.error("Nodes must be passed as list or generator.")
                 return False
             else:
 
@@ -352,7 +358,7 @@ class BatchWriter:
         # load headers from data parse
         if not self.node_property_dict:
             logger.error(
-                'Header information not found. Was the data parsed first?',
+                "Header information not found. Was the data parsed first?",
             )
             return False
 
@@ -360,7 +366,7 @@ class BatchWriter:
             # create header CSV with ID, properties, labels
 
             # preferred ID from schema
-            id = self.leaves[label]['preferred_id'] + ':ID'
+            id = self.leaves[label]["preferred_id"] + ":ID"
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
@@ -372,35 +378,39 @@ class BatchWriter:
             # concatenate key:value in props
             props_list = []
             for k, v in props.items():
-                if v.__name__ == 'int':
-                    props_list.append(f'{k}:int')
-                elif v.__name__ == 'float':
-                    props_list.append(f'{k}:double')
+                if v.__name__ == "int":
+                    props_list.append(f"{k}:int")
+                elif v.__name__ == "float":
+                    props_list.append(f"{k}:double")
                 else:
-                    props_list.append(f'{k}')
+                    props_list.append(f"{k}")
 
             # create list of lists and flatten
             # removes need for empty check of property list
-            out_list = [[id], props_list, [':LABEL']]
+            out_list = [[id], props_list, [":LABEL"]]
             out_list = [val for sublist in out_list for val in sublist]
 
-            file_path = os.path.join(self.outdir, f'{label}-header.csv')
-            parts_path = os.path.join(self.outdir, f'{label}-part.*')
+            file_path = os.path.join(self.outdir, f"{label}-header.csv")
+            parts_path = os.path.join(self.outdir, f"{label}-part.*")
 
-            with open(file_path, 'w') as f:
+            with open(file_path, "w") as f:
 
                 # concatenate with delimiter
                 row = self.delim.join(out_list)
                 f.write(row)
 
             # add file path to neo4 admin import statement
-            self.import_call += \
-                f'--nodes="{file_path},{parts_path}" '
+            self.import_call += f'--nodes="{file_path},{parts_path}" '
 
         return True
 
     def _write_single_node_list_to_file(
-        self, node_list, label, part, prop_dict, labels,
+        self,
+        node_list,
+        label,
+        part,
+        prop_dict,
+        labels,
     ):
         """
         This function takes one list of biocypher nodes and writes them
@@ -420,7 +430,7 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
         if not all(isinstance(n, BioCypherNode) for n in node_list):
-            logger.error('Nodes must be passed as type BioCypherNode.')
+            logger.error("Nodes must be passed as type BioCypherNode.")
             return False
 
         # from list of nodes to list of strings
@@ -437,10 +447,10 @@ class BatchWriter:
                 oprop1 = set(hprops).difference(keys)
                 oprop2 = set(keys).difference(hprops)
                 logger.error(
-                    f'At least one node of the class {n.get_label()} '
-                    f'has more or fewer properties than the others. '
-                    f'Offending node: {onode!r}, offending property: '
-                    f'{max([oprop1, oprop2])}.',
+                    f"At least one node of the class {n.get_label()} "
+                    f"has more or fewer properties than the others. "
+                    f"Offending node: {onode!r}, offending property: "
+                    f"{max([oprop1, oprop2])}.",
                 )
                 return False
 
@@ -458,12 +468,12 @@ class BatchWriter:
                 line.append(self.delim.join(plist))
             line.append(labels)
 
-            lines.append(self.delim.join(line) + '\n')
+            lines.append(self.delim.join(line) + "\n")
 
         padded_part = str(part).zfill(3)
-        file_path = os.path.join(self.outdir, f'{label}-part{padded_part}.csv')
+        file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
 
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
 
             # concatenate with delimiter
             f.writelines(lines)
@@ -488,7 +498,7 @@ class BatchWriter:
         """
 
         if isinstance(edges, GeneratorType):
-            logger.info('Writing edge CSV from generator.')
+            logger.info("Writing edge CSV from generator.")
 
             bins = defaultdict(list)  # dict to store a list for each
             # label that is passed in
@@ -567,7 +577,7 @@ class BatchWriter:
             return True
         else:
             if type(edges) is not list:
-                logger.error('Edges must be passed as list or generator.')
+                logger.error("Edges must be passed as list or generator.")
                 return False
             else:
 
@@ -588,7 +598,7 @@ class BatchWriter:
         # load headers from data parse
         if not self.edge_property_dict:
             logger.error(
-                'Header information not found. Was the data parsed first?',
+                "Header information not found. Was the data parsed first?",
             )
             return False
 
@@ -600,19 +610,19 @@ class BatchWriter:
 
             # concatenate key:value in props
             props_list = [
-                f'{k}:{v.__name__}' if v.__name__ == 'int' else f'{k}'
+                f"{k}:{v.__name__}" if v.__name__ == "int" else f"{k}"
                 for k, v in props.items()
             ]
 
             # create list of lists and flatten
             # removes need for empty check of property list
-            out_list = [[':START_ID'], props_list, [':END_ID'], [':TYPE']]
+            out_list = [[":START_ID"], props_list, [":END_ID"], [":TYPE"]]
             out_list = [val for sublist in out_list for val in sublist]
 
-            file_path = os.path.join(self.outdir, f'{label}-header.csv')
-            parts_path = os.path.join(self.outdir, f'{label}-part.*')
+            file_path = os.path.join(self.outdir, f"{label}-header.csv")
+            parts_path = os.path.join(self.outdir, f"{label}-part.*")
 
-            with open(file_path, 'w') as f:
+            with open(file_path, "w") as f:
 
                 # concatenate with delimiter
                 row = self.delim.join(out_list)
@@ -623,9 +633,12 @@ class BatchWriter:
 
         return True
 
-
     def _write_single_edge_list_to_file(
-        self, edge_list, label, part, prop_dict,
+        self,
+        edge_list,
+        label,
+        part,
+        prop_dict,
     ):
         """
         This function takes one list of biocypher edges and writes them
@@ -646,7 +659,7 @@ class BatchWriter:
 
         if not all(isinstance(n, BioCypherEdge) for n in edge_list):
 
-            logger.error('Edges must be passed as type BioCypherEdge.')
+            logger.error("Edges must be passed as type BioCypherEdge.")
             return False
 
         # from list of edges to list of strings
@@ -657,14 +670,14 @@ class BatchWriter:
             hprops = list(prop_dict.keys())
             keys = list(eprops.keys())
             if not keys == hprops:
-                oedge = f'{e.get_source_id()}-{e.get_target_id()}'
+                oedge = f"{e.get_source_id()}-{e.get_target_id()}"
                 oprop1 = set(hprops).difference(keys)
                 oprop2 = set(keys).difference(hprops)
                 logger.error(
-                    f'At least one edge of the class {e.get_label()} '
-                    f'has more or fewer properties than the others. '
-                    f'Offending edge: {oedge!r}, offending property: '
-                    f'{max([oprop1, oprop2])}.',
+                    f"At least one edge of the class {e.get_label()} "
+                    f"has more or fewer properties than the others. "
+                    f"Offending edge: {oedge!r}, offending property: "
+                    f"{max([oprop1, oprop2])}.",
                 )
                 return False
             if hprops:
@@ -686,7 +699,7 @@ class BatchWriter:
                             e.get_label(),
                         ],
                     )
-                    + '\n',
+                    + "\n",
                 )
             else:
                 lines.append(
@@ -697,17 +710,16 @@ class BatchWriter:
                             e.get_label(),
                         ],
                     )
-                    + '\n',
+                    + "\n",
                 )
         padded_part = str(part).zfill(3)
-        file_path = os.path.join(self.outdir, f'{label}-part{padded_part}.csv')
+        file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
 
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
             # concatenate with delimiter
             f.writelines(lines)
 
         return True
-
 
     def get_import_call(self) -> str:
         """
@@ -721,7 +733,6 @@ class BatchWriter:
 
         return self.import_call
 
-
     def write_import_call(self) -> bool:
         """
         Function to write the import call detailing folder and
@@ -732,10 +743,10 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
 
-        file_path = os.path.join(self.outdir, 'neo4j-admin-import-call.sh')
-        logger.info(f'Writing neo4j-admin import call to `{file_path}`.')
+        file_path = os.path.join(self.outdir, "neo4j-admin-import-call.sh")
+        logger.info(f"Writing neo4j-admin import call to `{file_path}`.")
 
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
 
             f.write(self.import_call)
 
