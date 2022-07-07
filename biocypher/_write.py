@@ -75,12 +75,11 @@ from ._logger import logger
 logger.debug(f'Loading module {__name__}.')
 
 from types import GeneratorType
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
+from more_itertools import peekable
 from datetime import datetime
 from collections import OrderedDict, defaultdict
 import os
-
-from more_itertools import peekable
 
 from biocypher._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
@@ -169,42 +168,45 @@ class BatchWriter:
 
         return True
 
-    def write_edges(self, edges, batch_size=int(1e6)):
+    def write_edges(
+        self, 
+        edges: Union[list, GeneratorType], 
+        batch_size=int(1e6)
+    ) -> bool:
         """
         Wrapper for writing edges and their headers.
 
         Args:
             edges (BioCypherEdge): a list or generator of edges in
-                :py:class:`BioCypherEdge` format
+                :py:class:`BioCypherEdge` or :py:class:`BioCypherRelAsNode`
+                format
 
         Returns:
             bool: The return value. True for success, False otherwise.
         """
         passed = False
-        edges = peekable(edges)
-        if isinstance(edges.peek(), BioCypherRelAsNode):
-            # unwrap generator in one step
-            z = zip(
-                *(
-                    (
-                        e.get_node(),
-                        [e.get_source_edge(), e.get_target_edge()],
-                    )
-                    if isinstance(e, BioCypherRelAsNode)
-                    else (None, [e])
-                    for e in edges
+        # unwrap generator in one step
+        z = zip(
+            *(
+                (
+                    e.get_node(),
+                    [e.get_source_edge(), e.get_target_edge()],
                 )
+                if isinstance(e, BioCypherRelAsNode)
+                else (None, [e])
+                for e in edges
             )
-            nod, edg = (list(a) for a in z)
-            nod = [n for n in nod if n]
-            edg = [val for sublist in edg for val in sublist]  # flatten
+        )
+        nod, edg = (list(a) for a in z)
+        nod = [n for n in nod if n]
+        edg = [val for sublist in edg for val in sublist]  # flatten
 
+        if nod and edg:
             passed = self.write_nodes(nod) and self._write_edge_data(
                 edg, batch_size,
             )
-
-        elif isinstance(edges.peek(), BioCypherEdge):
-            passed = self._write_edge_data(edges, batch_size)
+        else:
+            passed = self._write_edge_data(edg, batch_size)
 
         if not passed:
             logger.error('Error while writing edge data.')
@@ -485,7 +487,7 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
 
-        if isinstance(edges, GeneratorType) or isinstance(edges, peekable):
+        if isinstance(edges, GeneratorType):
             logger.info('Writing edge CSV from generator.')
 
             bins = defaultdict(list)  # dict to store a list for each
@@ -499,7 +501,7 @@ class BatchWriter:
             # for now, relevant for `int`
             for e in edges:
                 if isinstance(e, BioCypherRelAsNode):
-                    # not sure why this can end up here, _translate?
+                    # shouldn't happen any more
                     logger.error(
                         "Edges cannot be of type 'RelAsNode'. "
                         f"Caused by: {e.get_node().get_id(), e.get_node().get_label()}"

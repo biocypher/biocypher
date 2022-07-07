@@ -157,7 +157,7 @@ def test_property_types(bw):
 
     assert (
         passed 
-        and header == 'UniProtKB:ID;string_property;float_property:long;taxon:int;:LABEL'
+        and header == 'UniProtKB:ID;string_property;float_property:double;taxon:int;:LABEL'
         and data == "p1;'StringProperty1';4.0;9606;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;'StringProperty1';2.0;9606;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3;'StringProperty1';1.3333333333333333;9606;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4;'StringProperty1';1.0;9606;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
     )
 
@@ -716,6 +716,13 @@ def test_write_mixed_edges(bw):
     mixed = []
     le = 4
     for i in range(le):
+        e3 = BioCypherEdge(
+            source_id=f'p{i+1}',
+            target_id=f'p{i+1}',
+            relationship_label='INTERACTS_POST_TRANSLATIONAL',
+        )
+        mixed.append(e3)
+
         n = BioCypherNode(
             f'i{i+1}',
             'PairwiseMolecularInteraction',
@@ -732,12 +739,6 @@ def test_write_mixed_edges(bw):
         )
         mixed.append(BioCypherRelAsNode(n, e1, e2))
 
-        e3 = BioCypherEdge(
-            source_id=f'p{i+1}',
-            target_id=f'p{i+1}',
-            relationship_label='INTERACTS_POST_TRANSLATIONAL',
-        )
-        mixed.append(e3)
 
     def gen(lis):
         yield from lis
