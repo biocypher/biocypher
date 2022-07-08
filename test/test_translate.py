@@ -136,9 +136,10 @@ def test_merge_multiple_inputs_node(version_node):
 
 
 def test_merge_multiple_inputs_edge(biolink_adapter):
-    pass # _translate
+    pass
 
-
+def test_ad_hoc_children_node(biolink_adapter):
+    
     se = biolink_adapter.biolink_leaves['SideEffect']
 
     assert "PhenotypicFeature" in se['ancestors']
