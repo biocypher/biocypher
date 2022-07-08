@@ -282,10 +282,6 @@ class BatchWriter:
                         ]
 
                     if all_labels:
-                        # remove prefix
-                        all_labels = [
-                            l.replace("biolink:", "") for l in all_labels
-                        ]
                         # remove duplicates
                         all_labels = list(OrderedDict.fromkeys(all_labels))
                         # concatenate with array delimiter

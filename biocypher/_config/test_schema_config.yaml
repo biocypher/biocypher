@@ -22,54 +22,40 @@ Title: BioCypher graph schema configuration file
 # for instance in the case of functional protein complexes. These are represented
 # by so-called "mixins", which are not officially part of the hierarchy.
 
-Protein: # this is the Biolink entity name and will be used as the node label
-         # do not modify or else the Biolink translation will fail
+# regular node
+Protein:
   represented_as: node
-  preferred_id: UniProtKB # this is the Biolink spelling of the identifier used
-  # it represents a CURIE URI prefix
-  label_in_input: protein # modify this to allow translation
-  # this is the entity name (ie, type) in the input database
-  
-Drug:
-  represented_as: node
-  preferred_id: PUBCHEM
-  label_in_input: drug
+  preferred_id: UniProtKB 
+  label_in_input: protein 
 
 microRNA:
   represented_as: node
-  preferred_id: MIR
-  label_in_input: mirna
-    
+  preferred_id: MIMAT 
+  label_in_input: mirna 
+
 MacromolecularComplexMixin:
   represented_as: node
-  preferred_id: CPX
-  label_in_input: complex
+  preferred_id: custom 
+  label_in_input: complex 
 
-OrganismTaxon:
-  represented_as: node
-  preferred_id: NCBITaxon
-  label_in_input: taxon
-
-Publication:
-  represented_as: node
-  preferred_id: NLMID
-ConfidenceLevel:
-  represented_as: node
-  preferred_id: None
-
-Cell:
-  represented_as: node
-  preferred_id: CL
-
-Disease:
-  represented_as: node
-  preferred_id: ICD10
-
+# virtual leaves for multiple inputs
 Pathway:
-   represented_as: node
-   preferred_id: [REACT, WIKIPATHWAYS] 
-   label_in_input: [reactome, wikipathways] 
+  represented_as: node
+  preferred_id: [REACT, WIKIPATHWAYS] 
+  label_in_input: [reactome, wikipathways] 
 
+# merge muliple inputs
+Gene:
+  represented_as: node
+  preferred_id: HGNC
+  label_in_input: [hgnc, uniprot] 
+
+# ad hoc child
+SideEffect:
+  is_a: PhenotypicFeature
+  represented_as: node
+  preferred_id: HGNC
+  label_in_input: [hgnc, uniprot] 
 
 # ---
 # Associations
@@ -87,52 +73,34 @@ Pathway:
 # targeting, etc. Biolink proposes to use interaction identifiers from 
 # ontologies, such as https://www.ebi.ac.uk/ols/ontologies/mi/.
 
-PairwiseMolecularInteraction:
-  represented_as: node
-  preferred_id: EBI
-
+# regular edge
 DiseaseToEntityAssociationMixin:
   represented_as: edge
   preferred_id: tbd
   source: Disease
   target: Protein
-EntityToDiseaseAssociationMixin:
-  represented_as: edge
-  preferred_id: tbd
-  source: Protein
-  target: Disease
+
+# edge as node
+PairwiseMolecularInteraction:
+  represented_as: node
+  preferred_id: EBI
 
 
-# below not in biolink
-# will insert into custom biolink yaml, get hierarchy from there
+# added to custom biolink
 PostTranslationalInteraction:
   represented_as: node
   preferred_id: concat_ids
   source: Protein 
-  # optional other sources/targets?
-  # source and target need to adhere to Biolink naming, otherwise the
-  # meta-graph will not work
   target: Protein
   label_in_input: post_translational
   label_as_edge: INTERACTS_POST_TRANSLATIONAL
+
 Phosphorylation:
   represented_as: edge
   preferred_id: tbd
   source: Protein
   target: Protein
-Acetylation:
-  represented_as: edge
-  preferred_id: tbd
-  source: Protein
-  target: Protein
-      
-PostTranscriptionalInteraction:
-  represented_as: node
-  preferred_id: concat_ids
-  source: microRNA
-  target: Protein
-  label_in_input: post_transcriptional
-  label_as_edge: INTERACTS_POST_TRANSCRIPTIONAL
+
       
 GeneToDiseaseAssociation:
   represented_as: edge
@@ -141,65 +109,3 @@ GeneToDiseaseAssociation:
   target: Disease
   label_as_edge: PERTURBED_IN_DISEASE
   label_in_input: [protein_disease, gene_disease]
-
-
-
-## CROssBAR list of source database attributes
-# UniProtKB (related MongoDB collections: Proteins):
-# accession(protein,UniProt)
-# ec
-# fullName
-# gene(symbol)
-# go
-# interpro
-# omim
-# orphanet
-# pfam
-# reactome
-# taxId
-
-# IntAct (related MongoDB collections: Intact):
-# accession(protein,UniProt)
-# confidence
-# gene(symbol)
-
-# EFO (related MongoDB collections: EFO disease terms):
-# doid
-# label
-# mesh
-# oboId
-# omimId
-# synonym
-
-# HPO (related MongoDB collections: HPO):
-# genesymbol
-# hpotermname
-# synonym
-
-# ChEMBL (related MongoDB collections: Molecules, Targets, Assays, Activities):
-# assayChemblId
-# assayType
-# assayOrganism
-# moleculeChemblId
-# canonicalSmiles
-# inchiKey
-# pchemblValue
-# targetChemblId
-# accession(protein,UniProt)
-# targetIds
-# DrugBank (related MongoDB collections: Drugs):
-# accession(target protein,UniProt)
-# chemblId
-# identifier
-# name
-# pubchemCid
-
-# PubChem (related MongoDB collections: PubChem Bioassay Sids, PubChem Biossays, PubChem Compounds, PubChem Substances):
-# canonicalSmiles
-# cid
-# inchiKey
-# accession(target protein,UniProt)
-# assayPubchemId
-# ncbiProteinId
-# sids
-# outcome

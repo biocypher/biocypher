@@ -4,23 +4,19 @@ from biocypher._driver import Driver
 
 
 @pytest.fixture
-def driver():
-    # neo4j database needs to be running!
-    d = Driver(increment_version=False)
-    yield d
-
-    # teardown
-    d.close()
-
-
-def test_version_node(driver):
-    v = VersionNode(driver, from_config=True)
-    assert v.get_label() == "BioCypher"
+def version_node():
+    yield VersionNode(
+        offline=True,
+        from_config=True, 
+        config_file="biocypher/_config/test_schema_config.yaml"
+    )
 
 
-def test_multiple_ids(driver):
-    v = VersionNode(driver, from_config=True)
+def test_version_node(version_node):
+    assert version_node.get_label() == "BioCypher"
 
-    leaves = v.leaves
+def test_virtual_leaves_node(version_node):
+    assert "WIKIPATHWAYS.Pathway" in version_node.leaves
 
-    assert "WIKIPATHWAYS.Pathway" in leaves
+def test_virtual_leaves_edge(version_node):
+    pass

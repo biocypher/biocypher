@@ -156,7 +156,9 @@ class BiolinkAdapter:
 
             # find element in bmt
             if e is not None:
-                ancestors = self.toolkit.get_ancestors(entity, formatted=True)
+                ancestors = trim_biolink_ancestry(
+                    self.toolkit.get_ancestors(entity, formatted=True)
+                ) 
 
                 # check for multiple identifiers
                 if isinstance(self.leaves[entity]["preferred_id"], list):
@@ -181,12 +183,40 @@ class BiolinkAdapter:
                         f"{entity} is a virtual leaf, but not in the "
                         f"Biolink model. Skipping."
                     )
+                elif "is_a" in self.leaves[entity].keys():
+                    parent = self.leaves[entity]["is_a"]
+                    logger.info(
+                        f"Received ad hoc inheritance information for;"
+                        f"updating pseudo-Biolink entry by setting {entity} "
+                        f"as a child of {parent}."
+                    )
+                    ancestors = trim_biolink_ancestry(
+                        self.toolkit.get_ancestors(
+                            parent, 
+                            formatted=True
+                        )
+                    ) 
+                    se = ClassDefinition(entity)
+                    se.is_a = parent
+                    sancestors = list(ancestors)
+                    sancestors.insert(0, entity)
+                    l[entity] = {
+                        "class_definition": se,
+                        "ancestors": sancestors,
+                    }
                 else:
                     logger.info("Entity not found in Biolink: " + entity)
                     l[entity] = None
 
         self.biolink_leaves = l
 
+def trim_biolink_ancestry(ancestry: list):
+    """
+    Trims "biolink:" prefix from Biolink ancestry elements.
+    """
+
+    # replace 'biolink:' with ''
+    return [a.replace("biolink:", "") for a in ancestry]
 
 """
 Biolink toolkit wiki:

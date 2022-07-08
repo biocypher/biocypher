@@ -22,6 +22,14 @@ def version_node():
         offline=True,
     )
 
+@pytest.fixture
+def biolink_adapter(version_node):
+    return BiolinkAdapter(
+        version_node.leaves,
+        schema='biocypher', # this is the default
+        # unstable, move to test yaml
+    )
+
 
 def test_translate_nodes(version_node):
     id_type = [
@@ -101,24 +109,19 @@ def test_custom_bmt_yaml(version_node):
     assert p['class_definition'].description == 'Test'
 
 
-def test_biolink_yaml_extension(version_node):
-    ad = BiolinkAdapter(
-        version_node.leaves,
-        schema='biocypher', # this is the default
-        # unstable, move to test yaml
-    )
-    p1 = ad.biolink_leaves['PostTranslationalInteraction']
-    p2 = ad.biolink_leaves['Phosphorylation']
+def test_biolink_yaml_extension(biolink_adapter):
+    p1 = biolink_adapter.biolink_leaves['PostTranslationalInteraction']
+    p2 = biolink_adapter.biolink_leaves['Phosphorylation']
 
     assert (
         p1['class_definition'].description
         == 'A pairwise interaction between two proteins'
-        and 'biolink:PairwiseMolecularInteraction' in p1['ancestors']
-        and 'biolink:Entity' in p1['ancestors']
+        and 'PairwiseMolecularInteraction' in p1['ancestors']
+        and 'Entity' in p1['ancestors']
         and p2['class_definition'].description
         == 'The action of one protein phosphorylating another protein'
-        and 'biolink:PostTranslationalInteraction' in p2['ancestors']
-        and 'biolink:Entity' in p2['ancestors']
+        and 'PostTranslationalInteraction' in p2['ancestors']
+        and 'Entity' in p2['ancestors']
     )
 
 
@@ -126,3 +129,21 @@ def test_translate_identifiers(version_node):
     # representation of a different schema
     # host and guest db (which to translate)
     pass
+
+
+def test_merge_multiple_inputs_node(version_node):
+    pass # _translate
+
+
+def test_merge_multiple_inputs_edge(biolink_adapter):
+    pass # _translate
+
+
+    se = biolink_adapter.biolink_leaves['SideEffect']
+
+    assert "PhenotypicFeature" in se['ancestors']
+
+
+def test_ad_hoc_children_edge(version_node):
+    pass # _translate
+
