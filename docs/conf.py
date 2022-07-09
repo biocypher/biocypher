@@ -50,7 +50,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "biocypher-log/"]
 
 # -- Autodoc configuration ---------------------------------------------------
 
-autodoc_mock_imports = ["bmt"]
+autodoc_mock_imports = ["bmt", "neo4j-utils"]
 
 # -- Options for HTML output -------------------------------------------------
 
