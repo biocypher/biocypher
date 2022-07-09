@@ -90,6 +90,10 @@ if TYPE_CHECKING:
 
     from ._translate import BiolinkAdapter
 
+# TODO global variable for collecting all ids to avoid duplicates?
+
+# TODO retrospective check of written csvs?
+
 
 class BatchWriter:
     """
