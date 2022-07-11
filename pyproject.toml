@@ -35,6 +35,7 @@ appdirs = "*"
 neo4j-utils = { git = "https://github.com/saezlab/neo4j-utils.git" }
 # for local development one can switch to local path:
 # neo4j-utils = { path = "../neo4j-utils/", develop = true }
+myst-parser = "^0.18.0"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=6.0"

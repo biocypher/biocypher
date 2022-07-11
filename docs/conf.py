@@ -29,6 +29,10 @@ copyright = f"2021-{datetime.now():%Y}, BioCypher developers"
 
 # -- General configuration ---------------------------------------------------
 
+# TOC only in sidebar
+master_doc = "contents"
+html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html'] }
+
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
@@ -36,6 +40,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",  # not for output but to remove warnings
+    "myst_parser",
     "sphinx_rtd_theme",
 ]
 
