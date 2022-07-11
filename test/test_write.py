@@ -97,10 +97,10 @@ def test_writer_and_output_dir(bw):
     )
 
 
-def test_write_node_data_and_headers(bw):
+def test_write_node_data_headers_import_call(bw):
     nodes = []
     # four proteins, four miRNAs
-    for i in range(4):
+    for i in range(8):
         bnp = BioCypherNode(
             f'p{i+1}',
             'Protein',
@@ -116,7 +116,8 @@ def test_write_node_data_and_headers(bw):
         )
         nodes.append(bnm)
 
-    passed = bw.write_nodes(nodes)
+    passed = bw.write_nodes(nodes[:4])
+    passed = bw.write_nodes(nodes[4:])
 
     p_csv = os.path.join(path, 'Protein-header.csv')
     m_csv = os.path.join(path, 'microRNA-header.csv')
@@ -130,6 +131,7 @@ def test_write_node_data_and_headers(bw):
         passed
         and p == ('UniProtKB:ID;string_property;taxon:int;:LABEL')
         and m == ('MIR:ID;string_property;taxon:int;:LABEL')
+        and bw.import_call == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/microRNA-header.csv,{path}/microRNA-part.*" '
     )
 
 

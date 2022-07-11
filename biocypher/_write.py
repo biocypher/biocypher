@@ -384,32 +384,35 @@ class BatchWriter:
             # the user. TODO provide option to fix desired properties in
             # YAML.
 
-            # concatenate key:value in props
-            props_list = []
-            for k, v in props.items():
-                if v.__name__ == "int":
-                    props_list.append(f"{k}:int")
-                elif v.__name__ == "float":
-                    props_list.append(f"{k}:double")
-                else:
-                    props_list.append(f"{k}")
-
-            # create list of lists and flatten
-            # removes need for empty check of property list
-            out_list = [[id], props_list, [":LABEL"]]
-            out_list = [val for sublist in out_list for val in sublist]
-
-            file_path = os.path.join(self.outdir, f"{label}-header.csv")
+            header_path = os.path.join(self.outdir, f"{label}-header.csv")
             parts_path = os.path.join(self.outdir, f"{label}-part.*")
 
-            with open(file_path, "w") as f:
+            # check if file already exists
+            if not os.path.exists(header_path):
 
-                # concatenate with delimiter
-                row = self.delim.join(out_list)
-                f.write(row)
+                # concatenate key:value in props
+                props_list = []
+                for k, v in props.items():
+                    if v.__name__ == "int":
+                        props_list.append(f"{k}:int")
+                    elif v.__name__ == "float":
+                        props_list.append(f"{k}:double")
+                    else:
+                        props_list.append(f"{k}")
 
-            # add file path to neo4 admin import statement
-            self.import_call += f'--nodes="{file_path},{parts_path}" '
+                # create list of lists and flatten
+                # removes need for empty check of property list
+                out_list = [[id], props_list, [":LABEL"]]
+                out_list = [val for sublist in out_list for val in sublist]
+
+                with open(header_path, "w") as f:
+
+                    # concatenate with delimiter
+                    row = self.delim.join(out_list)
+                    f.write(row)
+
+                # add file path to neo4 admin import statement
+                self.import_call += f'--nodes="{header_path},{parts_path}" '
 
         return True
 
@@ -642,7 +645,9 @@ class BatchWriter:
                     f.write(row)
 
                 # add file path to neo4 admin import statement
-                self.import_call += f'--relationships="{header_path},{parts_path}" '
+                self.import_call += (
+                    f'--relationships="{header_path},{parts_path}" '
+                )
 
         return True
 
