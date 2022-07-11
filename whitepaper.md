@@ -1,4 +1,4 @@
-# A unified language of biological property graph database systems
+# A unified language of biological knowledge graph database systems
 
 ### Working title: BioCypher
 
