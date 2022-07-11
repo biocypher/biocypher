@@ -1,3 +1,4 @@
+from genericpath import isfile
 import os
 import random
 import string
@@ -715,7 +716,40 @@ def test_BioCypherRelAsNode_implementation(bw):
 def test_RelAsNode_overwrite_behaviour(bw):
     # if rel as node is called from successive write calls, SOURCE_OF, 
     # TARGET_OF, and PART_OF should be continued, not overwritten
-    pass
+    trips = []
+    le = 8
+    for i in range(le):
+        n = BioCypherNode(
+            f'i{i+1}',
+            'PairwiseMolecularInteraction',
+            directed=True,
+            effect=-1,
+        )
+        e1 = BioCypherEdge(
+            source_id=f'i{i+1}',
+            target_id=f'p{i+1}',
+            relationship_label='IS_SOURCE_OF',
+        )
+        e2 = BioCypherEdge(
+            source_id=f'i{i}',
+            target_id=f'p{i + 2}',
+            relationship_label='IS_TARGET_OF',
+        )
+        trips.append(BioCypherRelAsNode(n, e1, e2))
+
+    def gen1(lis):
+        yield from lis[:5]
+    def gen2(lis):
+        yield from lis[5:]
+
+    passed1 = bw.write_edges(gen1(trips))
+    passed2 = bw.write_edges(gen2(trips))
+
+    iso_csv = os.path.join(path, 'IS_SOURCE_OF-part001.csv')
+
+    assert passed1 and passed2 and isfile(iso_csv)
+
+
 
 def test_write_mixed_edges(bw):
     mixed = []

@@ -70,6 +70,7 @@ for ordering of the earlier part files ("01, 02").
 3. start db, test for consistency
 """
 
+import glob
 from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
@@ -721,8 +722,20 @@ class BatchWriter:
                     + "\n",
                 )
 
-        # TODO check if file exists and append to it or create next part
-        padded_part = str(part).zfill(3)
+        # list files in self.outdir
+        files = glob.glob(os.path.join(self.outdir, f"{label}-part*.csv"))
+        # find file with highest part number
+        if files:
+            next_part = max(
+                [
+                    int(f.split(".")[-2].split("-")[-1].replace("part", "")) 
+                    for f in files
+                ]
+            ) + 1
+        else:
+            next_part = 0
+
+        padded_part = str(next_part).zfill(3)
         file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
 
         with open(file_path, "w") as f:
