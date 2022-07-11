@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Introduction &mdash; BioCypher  documentation</title>
+  <title>Usage Notes &mdash; BioCypher  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Quickstart" href="quickstart.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="contents.html" /> 
+    <link rel="next" title="Submodule documentation" href="submodule.html" />
+    <link rel="prev" title="The Host-BioCypher Adapter" href="adapter.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,10 +43,10 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapter.html">The Host-BioCypher Adapter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage Notes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
 </ul>
 
@@ -64,9 +64,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="contents.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Introduction</li>
+      <li>Usage Notes</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/usage.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -74,41 +74,50 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <img alt="_images/biocypher-open-graph.png" src="_images/biocypher-open-graph.png" />
-<section id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h1>
-<p>BioCypher (<a class="reference external" href="https://github.com/saezlab/BioCypher">GitHub</a>) is designed
-to serve as guideline and translation mechanism for both the creation of
-biomedical property graph databases from primary data as well as for the
-seamless integration, optimisation, and querying of these databases. The
-purpose is to combine the computational power of graph databases with
-the search for answers of our most pressing biological questions and
-facilitate interfacing with cutting edge developments in the areas of
-causal reasoning, representation learning, and natural language
-processing, all of which depend on having a consistent descriptive
-vocabulary. To achieve meaningful automatic representations in the
-biomedical language space, we include the <a class="reference external" href="https://biolink.github.io/biolink-model/">Biolink model</a> as underlying hierarchical
-ontology, supplying identification, filtering, and mapping capabilities.
-We are also keeping an open mind about adding alternative ontological
-systems using an opt-in philosophy. Side objectives are the creation of
-human-readable graph syntax and facilitating ultra-rapid graph creation
-through the Neo4j admin-import feature.</p>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>BioCypher is currently in prototype state; we are working on a
-full-featured implementation for the migration of OmniPath at the
-moment. Functionality regarding the translation between different
-database formats and identifiers therefore is rudimentary or
-non-existent as of now.</p>
-</div>
+  <section id="usage-notes">
+<h1>Usage Notes<a class="headerlink" href="#usage-notes" title="Permalink to this heading"></a></h1>
+<ul class="simple">
+<li><p>A graph database can be built from any arbitrary collection of
+biomedical data. We here examplarise the building of a biological
+prior knowledge graph from the OmniPath database (<a class="reference external" href="https://www.embopress.org/doi/full/10.15252/msb.20209923">Türei et al.
+2021</a>), but
+BioCypher includes the extensive translation functionality from
+<code class="docutils literal notranslate"><span class="pre">PyPath</span></code> to accommodate custom requirements for graph database
+contents.</p></li>
+<li><p>A BioCypher graph has to be instantiated as such from the beginning,
+an existing property graph cannot currently be “updated” to conform
+to the BioCypher format.</p></li>
+<li><p>As a first step, an empty Neo4j database has to be created and
+started; the Python database driver can then be established either
+through BioCypher directly or on the user’s end and passed to
+BioCypher (if there is greater need for data security in
+authentication).</p></li>
+<li><p>After the database driver has been passed to BioCypher, a new
+database can be established given the selected data structure, to be
+determined in the primary configuration file. In this step, all
+constraints and indices are set to conform to the selected database
+structure. These can also be modified afterwards.</p>
+<ul>
+<li><p>Note: if the database to be created is very extensive, BioCypher
+offers a “secure export” method to create CSV files that can be
+used to instantiate a new graph database very quickly using the
+<a class="reference external" href="https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/">Admin Import</a>
+feature of Neo4j.</p></li>
+</ul>
+</li>
+<li><p>The database structure and version are recorded in a meta-graph that
+serves as a versioning system and simultaneously as a means of
+transmitting information about the graph structure for the case of
+re-loading an existing database for updating it with new information.</p></li>
+</ul>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="contents.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="quickstart.html" class="btn btn-neutral float-right" title="Quickstart" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="adapter.html" class="btn btn-neutral float-left" title="The Host-BioCypher Adapter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="submodule.html" class="btn btn-neutral float-right" title="Submodule documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

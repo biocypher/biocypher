@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quickstart &mdash; BioCypher  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Host-BioCypher Adapter" href="adapter.html" />
+    <link rel="prev" title="Introduction" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="contents.html" class="icon icon-home"> BioCypher
+          </a>
+              <div class="version">
+                0.1.5
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-host-module-adapter">The host module adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-schema-configuration-yaml-file">The schema configuration YAML file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-biolink-model-extension">The Biolink model extension</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="adapter.html">The Host-BioCypher Adapter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="contents.html">BioCypher</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="contents.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Quickstart</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/quickstart.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading"></a></h1>
+<p>The main interface for interacting with the BioCypher module to create
+your own property graph consists of two components:</p>
+<ol class="arabic simple">
+<li><p>the <a class="reference internal" href="#host-module-adapter"><span class="std std-ref">host module adapter</span></a>, a python
+program, and</p></li>
+<li><p>the <a class="reference internal" href="#schema-config"><span class="std std-ref">schema configuration file</span></a>, a YAML file.</p></li>
+</ol>
+<p>The adapter serves as a data interface between the source and BioCypher,
+piping the “raw” data into BioCypher for the creation of the property
+graph, while the schema configuration tells BioCypher how the graph
+should be structured, detailing the names of constituents and how they
+should be connected.</p>
+<section id="the-host-module-adapter">
+<span id="host-module-adapter"></span><h2>The host module adapter<a class="headerlink" href="#the-host-module-adapter" title="Permalink to this heading"></a></h2>
+<p>Currently, BioCypher expects input from the user module via an adapter
+module. Throughout the tutorial, we will exemplarise the use of
+BioCypher using <a class="reference external" href="https://omnipathdb.org">OmniPath</a> (more specifically,
+its infrastructural backend,
+<a class="reference external" href="https://github.com/saezlab/pypath">PyPath</a>). The adapter has the job of
+piping the data as it is represented in the original database into the
+BioCypher input, for instance as a <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code> object of
+single database entries, whether they be nodes or relationships in the
+graph to be created. For more details, please refer to the example
+<a class="reference external" href="https://github.com/saezlab/pypath/blob/master/pypath/biocypher/adapter.py">PyPath adapter</a>
+and the section on <a class="reference internal" href="adapter.html#adapter-functions"><span class="std std-ref">adapter functions</span></a>.</p>
+</section>
+<section id="the-schema-configuration-yaml-file">
+<span id="schema-config"></span><h2>The schema configuration YAML file<a class="headerlink" href="#the-schema-configuration-yaml-file" title="Permalink to this heading"></a></h2>
+<p>The second important component of translation into a
+BioCypher-compatible property graph is the specification of graph
+constituents and their mode of representation in the graph. For
+instance, we want to add a representation for proteins to the OmniPath
+graph, and the proteins should be represented as nodes. To make this
+known to the BioCypher module, we use the
+<a class="reference external" href="https://github.com/saezlab/BioCypher/blob/main/biocypher/_config/schema_config.yaml">schema-config.yaml</a>,
+which details <em>only</em> the immediate constituents of the desired graph.
+The naming of these constituents must be equal to the ontological
+category of the entity in the Biolink schema. The ontological category
+(or class) of proteins in Biolink is simply
+<a class="reference external" href="https://biolink.github.io/biolink-model/docs/Protein.html">Protein</a>.
+However, for more complex concepts, such as - for instance - pairwise
+molecular interactions, the naming must also be consistent; in this
+case, <a class="reference external" href="https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html">PairwiseMolecularInteraction</a>.
+Similarly, if translation functionality between identifiers is desired,
+the identifier used for the class of graph entity must be consistent
+with the one used in the Biolink specification. For proteins, this can
+be <code class="docutils literal notranslate"><span class="pre">UniProtKB</span></code> (but not, for instance, <code class="docutils literal notranslate"><span class="pre">UniProt</span></code> or <code class="docutils literal notranslate"><span class="pre">uniprot</span></code>).
+For ease of access, we provide a standard yaml file with the most common
+graph constituents and identifiers, with the following basic structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Protein</span><span class="p">:</span>
+  <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span> 
+  <span class="n">preferred_id</span><span class="p">:</span> <span class="n">UniProtKB</span>  
+  <span class="n">label_in_input</span><span class="p">:</span> <span class="n">protein</span>  
+</pre></div>
+</div>
+<p>In the protein case, we are specifying its representation as a node,
+that we wish to use the UniProt identifier as the main identifier for
+proteins (the Biolink designation for UniProt identifiers is
+<code class="docutils literal notranslate"><span class="pre">UniProtKB</span></code>), and that proteins in the input coming from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code>
+carry the label <code class="docutils literal notranslate"><span class="pre">protein</span></code> (in lower-case).</p>
+<p>The other slots of a graph constituent entry contain information
+BioCypher needs to receive the input data correctly and construct the
+graph accordingly. For “Named Thing” entities such as the protein, this
+includes the mode of representation (YAML entry <code class="docutils literal notranslate"><span class="pre">represented_as</span></code>),
+which can be <code class="docutils literal notranslate"><span class="pre">node</span></code> or <code class="docutils literal notranslate"><span class="pre">edge</span></code>. Proteins can only feasibly
+represented as nodes, but for other entities, such as interactions or
+aggregates, representation can be both as node or as edge. In Biolink,
+these belong to the super-class
+<a class="reference external" href="https://biolink.github.io/biolink-model/docs/associations.html">Associations</a>.
+For associations, BioCypher additionally requires the specification of
+the source and target of the association; for instance, a
+post-translational interaction occurs between proteins, so the source
+and target attribute in the <code class="docutils literal notranslate"><span class="pre">schema-config.yaml</span></code> will both be
+<code class="docutils literal notranslate"><span class="pre">Protein</span></code>. Again, these should adhere to the naming scheme of Biolink.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PostTranslationalInteraction</span><span class="p">:</span>
+  <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>
+  <span class="n">preferred_id</span><span class="p">:</span> <span class="n">concat_ids</span>
+  <span class="n">source</span><span class="p">:</span> <span class="n">Protein</span> 
+  <span class="n">target</span><span class="p">:</span> <span class="n">Protein</span> 
+  <span class="n">label_in_input</span><span class="p">:</span> <span class="n">post_translational</span> 
+</pre></div>
+</div>
+<p>For the post-translational interaction, which is an association, we are
+specifying representation as a node (prompting BioCypher to create not
+only the node but also two edges connecting to the proteins
+participating in any particular post-translational interaction). In
+other words, we are reifying the post-translational interaction in order
+to have a node to which other nodes can be linked; for instance, we
+might want to add a publication to a particular interaction to serve as
+source of evidence, which is only possible for nodes in a property
+graph, not for edges.</p>
+<p>Since there are no systematic identifiers for post-translational
+interactions, we concatenate the protein ids and relevant properties of
+the interaction to a new unique id (arbitrarily named <code class="docutils literal notranslate"><span class="pre">concat_ids</span></code>).
+Note that BioCypher accepts non-Biolink IDs since not all possible
+entries possess a systematic identifier system, whereas the entity class
+(<code class="docutils literal notranslate"><span class="pre">Protein</span></code>, <code class="docutils literal notranslate"><span class="pre">PostTranslationalInteraction</span></code>) has to be included in
+the Biolink schema and spelled identically. For this reason, we <a class="reference internal" href="#biolink"><span class="std std-ref">extend
+the Biolink schema</span></a> in cases where there exists no entry for
+our entity of choice. Further, we are specifying the source and target
+classes of our association (both <code class="docutils literal notranslate"><span class="pre">Protein</span></code>), the label we provide in
+the input from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> (<code class="docutils literal notranslate"><span class="pre">post_translational</span></code>).</p>
+<p>If we wanted the interaction to be represented in the graph as an edge,
+we would also need to supply an additional - arbitrary - property,
+<code class="docutils literal notranslate"><span class="pre">label_as_edge</span></code>, which would be used as the relationship type; this
+could for instance be <code class="docutils literal notranslate"><span class="pre">INTERACTS_POST_TRANSLATIONALLY</span></code>, following the
+property graph database consensus that property graph edges are
+represented in all upper case form and as verbs, to distinguish from
+nodes that are represented in PascalCase and as nouns. This would modify
+the above example to the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PostTranslationalInteraction</span><span class="p">:</span>
+  <span class="n">represented_as</span><span class="p">:</span> <span class="n">edge</span>
+  <span class="n">preferred_id</span><span class="p">:</span> <span class="n">concat_ids</span>
+  <span class="n">source</span><span class="p">:</span> <span class="n">Protein</span> 
+  <span class="n">target</span><span class="p">:</span> <span class="n">Protein</span> 
+  <span class="n">label_in_input</span><span class="p">:</span> <span class="n">post_translational</span> 
+  <span class="n">label_as_edge</span><span class="p">:</span> <span class="n">INTERACTS_POST_TRANSLATIONALLY</span>
+</pre></div>
+</div>
+</section>
+<section id="the-biolink-model-extension">
+<span id="biolink"></span><h2>The Biolink model extension<a class="headerlink" href="#the-biolink-model-extension" title="Permalink to this heading"></a></h2>
+<section id="soft-extensions">
+<h3>Soft extensions<a class="headerlink" href="#soft-extensions" title="Permalink to this heading"></a></h3>
+<p>In some cases that are not too complex, the Biolink model can be
+extended using only implicit subclasses given in the BioCypher
+schema_config.yaml file. Soft extensions can be achieved in two ways:</p>
+<ul class="simple">
+<li><p>via <a class="reference internal" href="#implicit"><span class="std std-ref">implicit subclasses</span></a> of existing Biolink classes by supplying
+multiple preferred ids and input labels in the <code class="docutils literal notranslate"><span class="pre">schema_config.yaml</span></code></p></li>
+<li><p>via <a class="reference internal" href="#explicit"><span class="std std-ref">explicit subclasses</span></a> of existing Biolink classes by supplying an
+<code class="docutils literal notranslate"><span class="pre">is_a</span></code> parameter to any non-biolink class, referring to an existing
+one</p></li>
+</ul>
+<section id="implicit-subclasses">
+<span id="implicit"></span><h4>Implicit subclasses<a class="headerlink" href="#implicit-subclasses" title="Permalink to this heading"></a></h4>
+<p>For instance, Pathway annotations are supplied by multiple sources,
+e.g., <a class="reference external" href="https://www.genome.jp/kegg/pathway.html">KEGG</a> and
+<a class="reference external" href="https://reactome.org/">Reactome</a>, which do not allow direct mapping due
+to their distinct make-up. In this case, we can use the
+schema_config.yaml to implicitly extend the Biolink model by specifying
+more than one preferred_id and label_in_input (in a paired manner):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Pathway</span><span class="p">:</span>
+  <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>
+  <span class="n">preferred_id</span><span class="p">:</span> <span class="p">[</span><span class="n">REACT</span><span class="p">,</span> <span class="n">KEGG</span><span class="p">]</span> 
+  <span class="n">label_in_input</span><span class="p">:</span> <span class="p">[</span><span class="n">reactome</span><span class="p">,</span> <span class="n">kegg_pathway</span><span class="p">]</span> 
+</pre></div>
+</div>
+<p>This pattern will be parsed by BioCypher to yield two implicit children
+of the Biolink entity “Pathway” by prepending the preferred ID to the
+label (“REACT.Pathway” and “KEGG.Pathway”). The input labels again are
+arbitrary and can be adjusted to fit the way these pathways are
+represented in the raw data.</p>
+<p>This will allow both datasets to be represented as pathways in the final
+graph with granular access to each one and without information loss, but
+will also enable aggregate query of all pathways by calling the parent
+entity, “Pathway”.</p>
+</section>
+<section id="explicit-subclasses">
+<span id="explicit"></span><h4>Explicit subclasses<a class="headerlink" href="#explicit-subclasses" title="Permalink to this heading"></a></h4>
+<p>For example, adding the child <code class="docutils literal notranslate"><span class="pre">Tissue</span></code> to the existing Biolink class
+<code class="docutils literal notranslate"><span class="pre">GrossAnatomicalStructure</span></code> as a specification:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tissue</span><span class="p">:</span>
+  <span class="n">is_a</span><span class="p">:</span> <span class="n">GrossAnatomicalStructure</span>
+  <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>
+  <span class="n">preferred_id</span><span class="p">:</span> <span class="n">UBERON</span>
+  <span class="n">label_in_input</span><span class="p">:</span> <span class="n">tissue</span>
+</pre></div>
+</div>
+<p>This will create a “faux” Biolink class at BioCypher runtime, extending
+the hierarchical tree to include <code class="docutils literal notranslate"><span class="pre">Tissue</span></code> as a
+<code class="docutils literal notranslate"><span class="pre">GrossAnatomicalStructure</span></code>, preserving the entire inheritance of the
+parent class.</p>
+</section>
+</section>
+<section id="hard-wired-extensions">
+<h3>Hard-wired extensions<a class="headerlink" href="#hard-wired-extensions" title="Permalink to this heading"></a></h3>
+<p>The post-translational interaction that we would like to model in
+OmniPath has no literal counterpart in the Biolink model, due to
+Biolink’s design philosophy. The most granular level of interactions as
+Biolink class is the
+<a class="reference external" href="https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html">PairwiseMolecularInteraction</a>;
+all more granular relationships should be encoded in the properties of
+the class, which has severe performance implications for property graph
+representation, for instance in filtering for specific relationship
+types. Briefly, it is the difference between being able to selectively
+return only relationships of a certain class (eg, post-translational),
+and having to return all relationships to filter for the ones possessing
+the correct property in a second step.</p>
+<p>Therefore, we extend the Biolink model in places where it is necessary
+for the BioCypher translation and integration to work. The extended
+model is the central Biolink YAML file with additions following the same
+<a class="reference external" href="https://linkml.io">LinkML</a> syntax as is used in the original model.
+Depending on the extent of the modification, not only new classes are
+introduced, but also new mixin categories (eg, “microRNA or siRNA” to
+account for different types of small noncoding RNA). We provide <a class="reference external" href="https://github.com/saezlab/BioCypher/blob/main/biocypher/_config/biocypher-biolink-model.yaml">our
+extended version of the Biolink
+model</a>
+with the BioCypher repository.</p>
+<p>Changes or additions desired by the user can be introduced locally in
+this file without having to modify remote contents. Users also have the
+option to create their own modified version of the Biolink YAML file
+under a different file name and specify that path in the
+<code class="docutils literal notranslate"><span class="pre">custom_yaml_file</span></code> argument of the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.translate.BiolinkAdapter</span></code> class, which handles all
+communication between BioCypher and Biolink.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="adapter.html" class="btn btn-neutral float-right" title="The Host-BioCypher Adapter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, BioCypher developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
