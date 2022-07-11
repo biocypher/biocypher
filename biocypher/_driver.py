@@ -88,12 +88,19 @@ class Driver(neo4j_utils.Driver):
         offline: bool=False,
         increment_version=True,
         user_schema_config_path: Optional[str]=None,
+        delimiter: Optional[str]=None,
+        array_delimiter: Optional[str]=None,
+        quote_char: Optional[str]=None,
     ):
         if not driver:
             db_name = db_name or _config('neo4j_db')
             db_uri = db_uri or _config('neo4j_uri')
             db_user = db_user or _config('neo4j_user')
             db_passwd = db_passwd or _config('neo4j_pw')
+
+            self.db_delim = delimiter or _config('neo4j_delimiter')
+            self.db_adelim = array_delimiter or _config('neo4j_array_delimiter')
+            self.db_quote = quote_char or _config('neo4j_quote_char')
 
             self.offline = offline
 
@@ -487,16 +494,9 @@ class Driver(neo4j_utils.Driver):
 
         # instantiate adapter on demand because it takes time to load
         # the biolink model toolkit
-        if not self.bl_adapter:
-            self.bl_adapter = BiolinkAdapter(self.db_meta.leaves)
+        self.start_bl_adapter()
 
-        if not self.batch_writer:
-            self.batch_writer = BatchWriter(
-                self.db_meta.leaves,
-                self.bl_adapter,
-                dirname=dirname,
-                db_name=db_name or self._db_name,
-            )
+        self.start_batch_writer(dirname, db_name)
 
         nodes = peekable(nodes)
         if not isinstance(nodes.peek(), BioCypherNode):
@@ -506,7 +506,46 @@ class Driver(neo4j_utils.Driver):
         # write node files
         return self.batch_writer.write_nodes(tnodes)
 
-    def write_edges(self, edges, dirname=None, db_name=None):
+    def start_batch_writer(
+        self, 
+        dirname: str, 
+        db_name: str,
+        delimiter: Optional[str],
+        array_delimiter: Optional[str],
+        quote: Optional[str],
+    ) -> None:
+        """
+        Instantiate the batch writer if it does not exist.
+
+        Args:
+            dirname (str): the directory to write the files to
+            db_name (str): the name of the database to write the files to
+        """
+        if not self.batch_writer:
+            self.batch_writer = BatchWriter(
+                self.db_meta.leaves,
+                self.bl_adapter,
+                dirname=dirname,
+                db_name=db_name or self._db_name,
+                delimiter=delimiter or self.db_delim,
+                array_delimiter=array_delimiter or self.db_adelim,
+                quote=quote or self.db_quote,
+            )
+
+    def start_bl_adapter(self) -> None:
+        """
+        Instantiate the :class:`biocypher.adapter.BioLinkAdapter` if not
+        existing.
+        """
+        if not self.bl_adapter:
+            self.bl_adapter = BiolinkAdapter(self.db_meta.leaves)
+
+    def write_edges(
+        self, 
+        edges, 
+        dirname: Optional[str], 
+        db_name: Optional[str],
+    ) -> None:
         """
         Write BioCypher edges to disk using the :mod:`write` module,
         formatting the CSV to enable Neo4j admin import from the target
@@ -521,16 +560,9 @@ class Driver(neo4j_utils.Driver):
 
         # instantiate adapter on demand because it takes time to load
         # the biolink model toolkit
-        if not self.bl_adapter:
-            self.bl_adapter = BiolinkAdapter(self.db_meta.leaves)
+        self.start_bl_adapter()
 
-        if not self.batch_writer:
-            self.batch_writer = BatchWriter(
-                self.db_meta.schema,
-                self.bl_adapter,
-                dirname=dirname,
-                db_name=db_name or self._db_name,
-            )
+        self.start_batch_writer(dirname, db_name)
 
         edges = peekable(edges)
         if not isinstance(edges.peek(), BioCypherEdge):

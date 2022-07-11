@@ -123,11 +123,14 @@ class BatchWriter:
         bl_adapter: "BiolinkAdapter",
         dirname: Optional[str] = None,
         db_name: str = "neo4j",
+        delimiter: str = ",",
+        array_delimiter: str = "|",
+        quote: str = "'",
     ):
         """ """
-        self.delim = ","
-        self.adelim = "|"
-        self.quote = "'"
+        self.delim = delimiter
+        self.adelim = array_delimiter
+        self.quote = quote
         self.leaves = leaves
         self.bl_adapter = bl_adapter
         self.node_property_dict = None
@@ -717,6 +720,8 @@ class BatchWriter:
                     )
                     + "\n",
                 )
+
+        # TODO check if file exists and append to it or create next part
         padded_part = str(part).zfill(3)
         file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
 
