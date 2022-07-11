@@ -543,8 +543,8 @@ class Driver(neo4j_utils.Driver):
     def write_edges(
         self,
         edges,
-        dirname: Optional[str],
-        db_name: Optional[str],
+        db_name: str,
+        dirname: str = None,
     ) -> None:
         """
         Write BioCypher edges to disk using the :mod:`write` module,

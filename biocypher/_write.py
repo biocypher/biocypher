@@ -726,18 +726,25 @@ class BatchWriter:
         files = glob.glob(os.path.join(self.outdir, f"{label}-part*.csv"))
         # find file with highest part number
         if files:
-            next_part = max(
-                [
-                    int(f.split(".")[-2].split("-")[-1].replace("part", "")) 
-                    for f in files
-                ]
-            ) + 1
+            next_part = (
+                max(
+                    [
+                        int(
+                            f.split(".")[-2].split("-")[-1].replace("part", "")
+                        )
+                        for f in files
+                    ]
+                )
+                + 1
+            )
         else:
             next_part = 0
 
         # write to file
-        logger.debug(f"Writing {len(lines)} edges to {label}-part{next_part}.csv")
         padded_part = str(next_part).zfill(3)
+        logger.debug(
+            f"Writing {len(lines)} edges to {label}-part{padded_part}.csv"
+        )
         file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
 
         with open(file_path, "w") as f:
