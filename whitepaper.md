@@ -9,6 +9,8 @@ biological entities. The following outlines a unified language that can aid in
 large collaboration efforts based on the creation and analysis of biological
 property graphs.
 
+![Process](BioCypher.png)
+
 Any biological entity that can be queried is assigned a unique consensus ID
 (using the system with least data loss, ie, highest coverage) and a fixed type
 (corresponding to the "label" in the Neo4j system, ie, the node type indicated

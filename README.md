@@ -20,7 +20,7 @@ be implemented as a python module, enforcing consensus nomenclature and graph
 structure in creation of databases while providing translation facilities
 between identifier systems.
 
-![BioCypher](BioCypher.png)
+![BioCypher](fig_1_draft.png)
 
 ## Usage
 
