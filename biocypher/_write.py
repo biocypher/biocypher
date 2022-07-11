@@ -722,34 +722,41 @@ class BatchWriter:
                     + "\n",
                 )
 
-        # list files in self.outdir
-        files = glob.glob(os.path.join(self.outdir, f"{label}-part*.csv"))
-        # find file with highest part number
-        if files:
-            next_part = (
-                max(
-                    [
-                        int(
-                            f.split(".")[-2].split("-")[-1].replace("part", "")
-                        )
-                        for f in files
-                    ]
+        # avoid writing empty files
+        if lines:
+
+            # list files in self.outdir
+            files = glob.glob(os.path.join(self.outdir, f"{label}-part*.csv"))
+            # find file with highest part number
+            if files:
+                next_part = (
+                    max(
+                        [
+                            int(
+                                f.split(".")[-2]
+                                .split("-")[-1]
+                                .replace("part", "")
+                            )
+                            for f in files
+                        ]
+                    )
+                    + 1
                 )
-                + 1
+            else:
+                next_part = 0
+
+            # write to file
+            padded_part = str(next_part).zfill(3)
+            logger.debug(
+                f"Writing {len(lines)} edges to {label}-part{padded_part}.csv"
             )
-        else:
-            next_part = 0
+            file_path = os.path.join(
+                self.outdir, f"{label}-part{padded_part}.csv"
+            )
 
-        # write to file
-        padded_part = str(next_part).zfill(3)
-        logger.debug(
-            f"Writing {len(lines)} edges to {label}-part{padded_part}.csv"
-        )
-        file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
-
-        with open(file_path, "w") as f:
-            # concatenate with delimiter
-            f.writelines(lines)
+            with open(file_path, "w") as f:
+                # concatenate with delimiter
+                f.writelines(lines)
 
         return True
 
