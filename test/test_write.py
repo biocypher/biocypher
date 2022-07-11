@@ -118,20 +118,24 @@ def test_write_node_data_headers_import_call(bw):
 
     passed = bw.write_nodes(nodes[:4])
     passed = bw.write_nodes(nodes[4:])
+    bw.write_import_call()
 
     p_csv = os.path.join(path, 'Protein-header.csv')
     m_csv = os.path.join(path, 'microRNA-header.csv')
+    call = os.path.join(path, 'neo4j-admin-import-call.sh')
 
     with open(p_csv) as f:
         p = f.read()
     with open(m_csv) as f:
         m = f.read()
+    with open(call) as f:
+        c = f.read()
 
     assert (
         passed
         and p == ('UniProtKB:ID;string_property;taxon:int;:LABEL')
         and m == ('MIR:ID;string_property;taxon:int;:LABEL')
-        and bw.import_call == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/microRNA-header.csv,{path}/microRNA-part.*" '
+        and c == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/microRNA-header.csv,{path}/microRNA-part.*" '
     )
 
 
@@ -643,28 +647,53 @@ def test_write_edge_data_headers_import_call(bw):
         )
         edges.append(e2)
 
+    nodes = []
+    # four proteins, four miRNAs
+    for i in range(4):
+        bnp = BioCypherNode(
+            f'p{i+1}',
+            'Protein',
+            string_property='StringProperty1',
+            taxon=9606,
+        )
+        nodes.append(bnp)
+        bnm = BioCypherNode(
+            f'm{i+1}',
+            'microRNA',
+            string_property='StringProperty1',
+            taxon=9606,
+        )
+        nodes.append(bnm)
+
+
     def edge_gen1(edges):
         yield from edges[:4]
 
     def edge_gen2(edges):
         yield from edges[4:]
 
-    passed = bw.write_edges(edge_gen1(edges), batch_size=int(1e4))
-    passed = bw.write_edges(edge_gen2(edges), batch_size=int(1e4))
+    passed = bw.write_edges(edge_gen1(edges))
+    passed = bw.write_edges(edge_gen2(edges))
+    passed = bw.write_nodes(nodes)
+
+    bw.write_import_call()
 
     ptl_csv = os.path.join(path, 'INTERACTS_POST_TRANSLATIONAL-header.csv')
     pts_csv = os.path.join(path, 'INHIBITS_POST_TRANSCRIPTIONAL-header.csv')
+    call_csv = os.path.join(path, 'neo4j-admin-import-call.sh')
 
     with open(ptl_csv) as f:
         l = f.read()
     with open(pts_csv) as f:
         c = f.read()
+    with open(call_csv) as f:
+        call = f.read()
 
     assert (
         passed
         and l == ':START_ID;residue;level:int;:END_ID;:TYPE'
         and c == ':START_ID;site;confidence:int;:END_ID;:TYPE'
-        and bw.import_call == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --relationships="{path}/INTERACTS_POST_TRANSLATIONAL-header.csv,{path}/INTERACTS_POST_TRANSLATIONAL-part.*" --relationships="{path}/INHIBITS_POST_TRANSCRIPTIONAL-header.csv,{path}/INHIBITS_POST_TRANSCRIPTIONAL-part.*" '
+        and call == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/microRNA-header.csv,{path}/microRNA-part.*" --relationships="{path}/INTERACTS_POST_TRANSLATIONAL-header.csv,{path}/INTERACTS_POST_TRANSLATIONAL-part.*" --relationships="{path}/INHIBITS_POST_TRANSCRIPTIONAL-header.csv,{path}/INHIBITS_POST_TRANSCRIPTIONAL-part.*" '
     )
 
 
@@ -882,12 +911,13 @@ def test_write_offline():
     with open(m_csv) as f:
         mi = f.read()
 
+    # nolint
     assert (
         passed
         and pr
-        == "p1,'StringProperty1',9606,Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2,'StringProperty1',9606,Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3,'StringProperty1',9606,Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4,'StringProperty1',9606,Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+        == 'p1,"StringProperty1",9606,Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2,"StringProperty1",9606,Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3,"StringProperty1",9606,Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4,"StringProperty1",9606,Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n'
         and mi
-        == "m1,'StringProperty1',9606,MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm2,'StringProperty1',9606,MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm3,'StringProperty1',9606,MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm4,'StringProperty1',9606,MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+        == 'm1,"StringProperty1",9606,MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm2,"StringProperty1",9606,MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm3,"StringProperty1",9606,MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm4,"StringProperty1",9606,MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\n'
     )
 
 # TODO extend tests to "raw" input (not biocypher nodes)

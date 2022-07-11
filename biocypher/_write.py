@@ -136,11 +136,14 @@ class BatchWriter:
         self.bl_adapter = bl_adapter
         self.node_property_dict = None
         self.edge_property_dict = None
-        self.import_call = (
+        self.import_call_base = (
             f"bin/neo4j-admin import --database={db_name} "
             f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
             '--quote="\'" '
         )
+        self.import_call_nodes = ""
+        self.import_call_edges = ""
+        self.import_call = ""
 
         timestamp = lambda: datetime.now().strftime("%Y%m%d%H%M")
 
@@ -412,7 +415,7 @@ class BatchWriter:
                     f.write(row)
 
                 # add file path to neo4 admin import statement
-                self.import_call += f'--nodes="{header_path},{parts_path}" '
+                self.import_call_nodes += f'--nodes="{header_path},{parts_path}" '
 
         return True
 
@@ -645,7 +648,7 @@ class BatchWriter:
                     f.write(row)
 
                 # add file path to neo4 admin import statement
-                self.import_call += (
+                self.import_call_edges += (
                     f'--relationships="{header_path},{parts_path}" '
                 )
 
@@ -779,7 +782,7 @@ class BatchWriter:
             str: a bash command for neo4j-admin import
         """
 
-        return self.import_call
+        return self.construct_import_call()
 
     def write_import_call(self) -> bool:
         """
@@ -796,6 +799,26 @@ class BatchWriter:
 
         with open(file_path, "w") as f:
 
-            f.write(self.import_call)
+            f.write(self.construct_import_call())
 
         return True
+
+    def construct_import_call(self) -> str:
+        """
+        Function to construct the import call detailing folder and
+        individual node and edge headers and data files, as well as
+        delimiters and database name. Built after all data has been
+        processed to ensure that nodes are called before any edges.
+
+        Returns:
+            str: a bash command for neo4j-admin import
+        """
+
+        # append node and edge import calls
+        self.import_call = (
+            self.import_call_base + 
+            self.import_call_nodes + 
+            self.import_call_edges
+        )
+
+        return self.import_call
