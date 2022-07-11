@@ -16,7 +16,7 @@ provides basic management methods.
 
 from ._logger import logger
 
-logger.debug(f'Loading module {__name__}.')
+logger.debug(f"Loading module {__name__}.")
 
 from types import GeneratorType
 from typing import TYPE_CHECKING, List, Optional
@@ -36,9 +36,13 @@ from ._check import MetaEdge, MetaNode, VersionNode
 from ._write import BatchWriter
 from ._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from ._translate import BiolinkAdapter, gen_translate_edges, gen_translate_nodes
+from ._translate import (
+    BiolinkAdapter,
+    gen_translate_edges,
+    gen_translate_nodes,
+)
 
-__all__ = ['Driver']
+__all__ = ["Driver"]
 
 
 class Driver(neo4j_utils.Driver):
@@ -77,47 +81,49 @@ class Driver(neo4j_utils.Driver):
 
     def __init__(
         self,
-        driver: Optional['neo4j.Driver']=None,
-        db_name: Optional[str]=None,
-        db_uri: Optional[str]=None,
-        db_user: Optional[str]=None,
-        db_passwd: Optional[str]=None,
-        config: Optional[str]='neo4j.yaml',
-        fetch_size: int=1000,
-        wipe: bool=False,
-        offline: bool=False,
+        driver: Optional["neo4j.Driver"] = None,
+        db_name: Optional[str] = None,
+        db_uri: Optional[str] = None,
+        db_user: Optional[str] = None,
+        db_passwd: Optional[str] = None,
+        config: Optional[str] = "neo4j.yaml",
+        fetch_size: int = 1000,
+        wipe: bool = False,
+        offline: bool = False,
         increment_version=True,
-        user_schema_config_path: Optional[str]=None,
-        delimiter: Optional[str]=None,
-        array_delimiter: Optional[str]=None,
-        quote_char: Optional[str]=None,
+        user_schema_config_path: Optional[str] = None,
+        delimiter: Optional[str] = None,
+        array_delimiter: Optional[str] = None,
+        quote_char: Optional[str] = None,
     ):
         if not driver:
-            db_name = db_name or _config('neo4j_db')
-            db_uri = db_uri or _config('neo4j_uri')
-            db_user = db_user or _config('neo4j_user')
-            db_passwd = db_passwd or _config('neo4j_pw')
+            db_name = db_name or _config("neo4j_db")
+            db_uri = db_uri or _config("neo4j_uri")
+            db_user = db_user or _config("neo4j_user")
+            db_passwd = db_passwd or _config("neo4j_pw")
 
-            self.db_delim = delimiter or _config('neo4j_delimiter')
-            self.db_adelim = array_delimiter or _config('neo4j_array_delimiter')
-            self.db_quote = quote_char or _config('neo4j_quote_char')
+            self.db_delim = delimiter or _config("neo4j_delimiter")
+            self.db_adelim = array_delimiter or _config(
+                "neo4j_array_delimiter"
+            )
+            self.db_quote = quote_char or _config("neo4j_quote_char")
 
             self.offline = offline
 
             if offline:
-                logger.info('Offline mode: no connection to Neo4j.')
+                logger.info("Offline mode: no connection to Neo4j.")
                 self.db_meta = VersionNode(
-                    self, 
-                    from_config=True, 
+                    self,
+                    from_config=True,
                     config_file=user_schema_config_path,
                     offline=True,
                 )
                 self._db_config = {
-                    'uri': db_uri,
-                    'user': db_user,
-                    'passwd': db_passwd,
-                    'db': db_name,
-                    'fetch_size': fetch_size,
+                    "uri": db_uri,
+                    "user": db_user,
+                    "passwd": db_passwd,
+                    "db": db_name,
+                    "fetch_size": fetch_size,
                 }
                 self._db_name = db_name
 
@@ -133,8 +139,8 @@ class Driver(neo4j_utils.Driver):
                     # representation and returns if found, else creates new
                     # one
                     self.db_meta = VersionNode(
-                        self, 
-                        from_config=True, 
+                        self,
+                        from_config=True,
                         config_file=user_schema_config_path,
                     )
                     self.init_db()
@@ -145,33 +151,28 @@ class Driver(neo4j_utils.Driver):
                     # set new current version node
                     self.update_meta_graph()
 
-            
             self.bl_adapter = None
             self.batch_writer = None
-        
+
         else:
-            logger.error('Providing driver instance is not yet implemented.')
+            logger.error("Providing driver instance is not yet implemented.")
             # TODO: implement passing a driver instance
 
-
     def update_meta_graph(self):
-        logger.info('Updating Neo4j meta graph.')
+        logger.info("Updating Neo4j meta graph.")
         # add version node
         self.add_biocypher_nodes(self.db_meta)
 
-
         # find current version node
         db_version = self.query(
-            'MATCH (v:BioCypher) '
-            'WHERE NOT (v)-[:PRECEDES]->() '
-            'RETURN v'
-            )
+            "MATCH (v:BioCypher) " "WHERE NOT (v)-[:PRECEDES]->() " "RETURN v"
+        )
         # connect version node to previous
         if db_version[0] is not None:
             e_meta = BioCypherEdge(
-                self.db_meta.graph_state['id'],
+                self.db_meta.graph_state["id"],
                 self.db_meta.node_id,
-                'PRECEDES',
+                "PRECEDES",
             )
             self.add_biocypher_edges(e_meta)
 
@@ -184,24 +185,24 @@ class Driver(neo4j_utils.Driver):
 
         # remove connection of structure nodes from previous version
         # node(s)
-        self.query('MATCH ()-[r:CONTAINS]-()' 'DELETE r')
+        self.query("MATCH ()-[r:CONTAINS]-()" "DELETE r")
 
         # connect structure nodes to version node
         ed_v = []
         current_version = self.db_meta.get_id()
         for entity in self.db_meta.leaves.keys():
-            ed_v.append(MetaEdge(current_version, entity, 'CONTAINS'))
+            ed_v.append(MetaEdge(current_version, entity, "CONTAINS"))
         self.add_biocypher_edges(ed_v)
 
         # add graph structure between MetaNodes
         ed = []
         for no in no_l:
             id = no.get_id()
-            src = no.get_properties().get('source')
-            tar = no.get_properties().get('target')
+            src = no.get_properties().get("source")
+            tar = no.get_properties().get("target")
             if not None in [id, src, tar]:
-                ed.append(BioCypherEdge(id, src, 'IS_SOURCE_OF'))
-                ed.append(BioCypherEdge(id, tar, 'IS_TARGET_OF'))
+                ed.append(BioCypherEdge(id, src, "IS_SOURCE_OF"))
+                ed.append(BioCypherEdge(id, tar, "IS_TARGET_OF"))
         self.add_biocypher_edges(ed)
 
     def init_db(self):
@@ -216,7 +217,7 @@ class Driver(neo4j_utils.Driver):
 
         self.wipe_db()
         self._create_constraints()
-        logger.info('Initialising database.')
+        logger.info("Initialising database.")
 
     def _create_constraints(self):
         """
@@ -227,17 +228,17 @@ class Driver(neo4j_utils.Driver):
         constraints on the id of all entities represented as nodes.
         """
 
-        logger.info(f'Creating constraints for node types in config.')
+        logger.info(f"Creating constraints for node types in config.")
 
         # get structure
         for leaf in self.db_meta.leaves.items():
             label = leaf[0]
-            if leaf[1]['represented_as'] == 'node':
+            if leaf[1]["represented_as"] == "node":
 
                 s = (
-                    f'CREATE CONSTRAINT {label}_id '
-                    f'IF NOT EXISTS ON (n:{label}) '
-                    'ASSERT n.id IS UNIQUE'
+                    f"CREATE CONSTRAINT {label}_id "
+                    f"IF NOT EXISTS ON (n:{label}) "
+                    "ASSERT n.id IS UNIQUE"
                 )
                 self.query(s)
 
@@ -325,45 +326,47 @@ class Driver(neo4j_utils.Driver):
             nodes = peekable(nodes)
             if not isinstance(nodes.peek(), BioCypherNode):
                 logger.warn(
-                    'It appears that the first node is not a BioCypherNode. '
-                    'Nodes must be passed as type BioCypherNode. '
-                    'Please use the generic add_edges() method.',
+                    "It appears that the first node is not a BioCypherNode. "
+                    "Nodes must be passed as type BioCypherNode. "
+                    "Please use the generic add_edges() method.",
                 )
                 return (False, False)
             else:
-                logger.info('Merging nodes from generator.')
+                logger.info("Merging nodes from generator.")
 
         # receive single nodes or node lists
         else:
             if type(nodes) is not list:
                 nodes = [nodes]
             if not all(isinstance(n, BioCypherNode) for n in nodes):
-                logger.error('Nodes must be passed as type BioCypherNode.')
+                logger.error("Nodes must be passed as type BioCypherNode.")
                 return (False, False)
             else:
-                logger.info(f'Merging {len(nodes)} nodes.')
+                logger.info(f"Merging {len(nodes)} nodes.")
 
         entities = [node.get_dict() for node in nodes]
 
         entity_query = (
-            'UNWIND $entities AS ent '
-            'CALL apoc.merge.node([ent.node_label], '
-            '{id: ent.node_id}, ent.properties, ent.properties) '
-            'YIELD node '
-            'RETURN node'
+            "UNWIND $entities AS ent "
+            "CALL apoc.merge.node([ent.node_label], "
+            "{id: ent.node_id}, ent.properties, ent.properties) "
+            "YIELD node "
+            "RETURN node"
         )
 
         if explain:
             return self.explain(
-                entity_query, parameters={'entities': entities},
+                entity_query,
+                parameters={"entities": entities},
             )
         elif profile:
             return self.profile(
-                entity_query, parameters={'entities': entities},
+                entity_query,
+                parameters={"entities": entities},
             )
         else:
-            res = self.query(entity_query, parameters={'entities': entities})
-            logger.info('Finished merging nodes.')
+            res = self.query(entity_query, parameters={"entities": entities})
+            logger.info("Finished merging nodes.")
             return res
 
     def add_biocypher_edges(self, edges, explain=False, profile=False):
@@ -410,7 +413,7 @@ class Driver(neo4j_utils.Driver):
             if isinstance(edges.peek(), BioCypherRelAsNode):
                 # create one node and two edges
                 rel_as_node = True
-                logger.info('Merging nodes and edges from generator.')
+                logger.info("Merging nodes and edges from generator.")
 
         # receive single edges or edge lists
         else:
@@ -424,10 +427,10 @@ class Driver(neo4j_utils.Driver):
             if isinstance(edges[0], BioCypherRelAsNode):
                 rel_as_node = True
             elif not all(isinstance(e, BioCypherEdge) for e in edges):
-                logger.error('Nodes must be passed as type BioCypherEdge.')
+                logger.error("Nodes must be passed as type BioCypherEdge.")
                 return (False, False)
 
-            logger.info('Merging %s edges.' % len(edges))
+            logger.info("Merging %s edges." % len(edges))
 
         if rel_as_node:
             # split up tuples in nodes and edges if detected
@@ -452,31 +455,31 @@ class Driver(neo4j_utils.Driver):
             # properties on match and on create;
             # TODO add node labels?
             node_query = (
-                'UNWIND $rels AS r '
-                'MERGE (src {id: r.source_id}) '
-                'MERGE (tar {id: r.target_id}) '
+                "UNWIND $rels AS r "
+                "MERGE (src {id: r.source_id}) "
+                "MERGE (tar {id: r.target_id}) "
             )
-            self.query(node_query, parameters={'rels': rels})
+            self.query(node_query, parameters={"rels": rels})
 
             edge_query = (
-                'UNWIND $rels AS r '
-                'MATCH (src {id: r.source_id}) '
-                'MATCH (tar {id: r.target_id}) '
-                'WITH src, tar, r '
-                'CALL apoc.merge.relationship'
-                '(src, r.relationship_label, NULL, '
-                'r.properties, tar, r.properties) '
-                'YIELD rel '
-                'RETURN rel'
+                "UNWIND $rels AS r "
+                "MATCH (src {id: r.source_id}) "
+                "MATCH (tar {id: r.target_id}) "
+                "WITH src, tar, r "
+                "CALL apoc.merge.relationship"
+                "(src, r.relationship_label, NULL, "
+                "r.properties, tar, r.properties) "
+                "YIELD rel "
+                "RETURN rel"
             )
 
             if explain:
-                return self.explain(edge_query, parameters={'rels': rels})
+                return self.explain(edge_query, parameters={"rels": rels})
             elif profile:
-                return self.profile(edge_query, parameters={'rels': rels})
+                return self.profile(edge_query, parameters={"rels": rels})
             else:
-                res = self.query(edge_query, parameters={'rels': rels})
-                logger.info('Finished merging edges.')
+                res = self.query(edge_query, parameters={"rels": rels})
+                logger.info("Finished merging edges.")
                 return res
 
     def write_nodes(self, nodes, dirname=None, db_name=None):
@@ -507,12 +510,9 @@ class Driver(neo4j_utils.Driver):
         return self.batch_writer.write_nodes(tnodes)
 
     def start_batch_writer(
-        self, 
-        dirname: str, 
+        self,
+        dirname: str,
         db_name: str,
-        delimiter: Optional[str],
-        array_delimiter: Optional[str],
-        quote: Optional[str],
     ) -> None:
         """
         Instantiate the batch writer if it does not exist.
@@ -527,9 +527,9 @@ class Driver(neo4j_utils.Driver):
                 self.bl_adapter,
                 dirname=dirname,
                 db_name=db_name or self._db_name,
-                delimiter=delimiter or self.db_delim,
-                array_delimiter=array_delimiter or self.db_adelim,
-                quote=quote or self.db_quote,
+                delimiter=self.db_delim,
+                array_delimiter=self.db_adelim,
+                quote=self.db_quote,
             )
 
     def start_bl_adapter(self) -> None:
@@ -541,9 +541,9 @@ class Driver(neo4j_utils.Driver):
             self.bl_adapter = BiolinkAdapter(self.db_meta.leaves)
 
     def write_edges(
-        self, 
-        edges, 
-        dirname: Optional[str], 
+        self,
+        edges,
+        dirname: Optional[str],
         db_name: Optional[str],
     ) -> None:
         """
