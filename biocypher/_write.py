@@ -617,28 +617,32 @@ class BatchWriter:
 
             # TODO provide option to fix desired properties in YAML.
 
-            # concatenate key:value in props
-            props_list = [
-                f"{k}:{v.__name__}" if v.__name__ == "int" else f"{k}"
-                for k, v in props.items()
-            ]
-
-            # create list of lists and flatten
-            # removes need for empty check of property list
-            out_list = [[":START_ID"], props_list, [":END_ID"], [":TYPE"]]
-            out_list = [val for sublist in out_list for val in sublist]
-
-            file_path = os.path.join(self.outdir, f"{label}-header.csv")
+            # paths
+            header_path = os.path.join(self.outdir, f"{label}-header.csv")
             parts_path = os.path.join(self.outdir, f"{label}-part.*")
 
-            with open(file_path, "w") as f:
+            # check for file exists
+            if not os.path.exists(header_path):
 
-                # concatenate with delimiter
-                row = self.delim.join(out_list)
-                f.write(row)
+                # concatenate key:value in props
+                props_list = [
+                    f"{k}:{v.__name__}" if v.__name__ == "int" else f"{k}"
+                    for k, v in props.items()
+                ]
 
-            # add file path to neo4 admin import statement
-            self.import_call += f'--relationships="{file_path},{parts_path}" '
+                # create list of lists and flatten
+                # removes need for empty check of property list
+                out_list = [[":START_ID"], props_list, [":END_ID"], [":TYPE"]]
+                out_list = [val for sublist in out_list for val in sublist]
+
+                with open(header_path, "w") as f:
+
+                    # concatenate with delimiter
+                    row = self.delim.join(out_list)
+                    f.write(row)
+
+                # add file path to neo4 admin import statement
+                self.import_call += f'--relationships="{header_path},{parts_path}" '
 
         return True
 

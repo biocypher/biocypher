@@ -616,8 +616,8 @@ def test_write_edge_data_from_list_no_props(bw):
     )
 
 
-def test_write_edge_data_and_headers(bw):
-    le = 4
+def test_write_edge_data_headers_import_call(bw):
+    le = 8
     edges = []
     for i in range(le):
         e1 = BioCypherEdge(
@@ -641,10 +641,14 @@ def test_write_edge_data_and_headers(bw):
         )
         edges.append(e2)
 
-    def edge_gen(edges):
-        yield from edges
+    def edge_gen1(edges):
+        yield from edges[:4]
 
-    passed = bw.write_edges(edge_gen(edges), batch_size=int(1e4))
+    def edge_gen2(edges):
+        yield from edges[4:]
+
+    passed = bw.write_edges(edge_gen1(edges), batch_size=int(1e4))
+    passed = bw.write_edges(edge_gen2(edges), batch_size=int(1e4))
 
     ptl_csv = os.path.join(path, 'INTERACTS_POST_TRANSLATIONAL-header.csv')
     pts_csv = os.path.join(path, 'INHIBITS_POST_TRANSCRIPTIONAL-header.csv')
@@ -658,6 +662,7 @@ def test_write_edge_data_and_headers(bw):
         passed
         and l == ':START_ID;residue;level:int;:END_ID;:TYPE'
         and c == ':START_ID;site;confidence:int;:END_ID;:TYPE'
+        and bw.import_call == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --relationships="{path}/INTERACTS_POST_TRANSLATIONAL-header.csv,{path}/INTERACTS_POST_TRANSLATIONAL-part.*" --relationships="{path}/INHIBITS_POST_TRANSCRIPTIONAL-header.csv,{path}/INHIBITS_POST_TRANSCRIPTIONAL-part.*" '
     )
 
 
