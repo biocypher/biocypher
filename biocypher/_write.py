@@ -735,6 +735,8 @@ class BatchWriter:
         else:
             next_part = 0
 
+        # write to file
+        logger.debug(f"Writing {len(lines)} edges to {label}-part{next_part}.csv")
         padded_part = str(next_part).zfill(3)
         file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
 
