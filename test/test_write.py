@@ -10,6 +10,7 @@ from biocypher._driver import Driver
 from biocypher._write import BatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._translate import BiolinkAdapter
+from biocypher._check import VersionNode
 
 __all__ = ['bw', 'get_random_string', 'test_BioCypherRelAsNode_implementation', 'test_accidental_exact_batch_size', 'test_create_import_call', 'test_inconsistent_properties', 'test_write_edge_data_and_headers', 'test_write_edge_data_from_gen', 'test_write_edge_data_from_large_gen', 'test_write_edge_data_from_list', 'test_write_edge_data_from_list_no_props', 'test_write_mixed_edges', 'test_write_node_data_and_headers', 'test_write_node_data_from_gen', 'test_write_node_data_from_gen_no_props', 'test_write_node_data_from_large_gen', 'test_write_node_data_from_list', 'test_writer_and_output_dir']
 
@@ -27,56 +28,19 @@ path = os.path.join(
 os.makedirs(path, exist_ok = True)
 
 @pytest.fixture
-def bw():
+def version_node():
+    return VersionNode(
+        from_config=True, 
+        config_file="biocypher/_config/test_schema_config.yaml", 
+        offline=True,
+    )
 
-    schema = {
-        'Pathway': {
-            'represented_as': 'node',
-            'preferred_id': ['WIKIPATHWAYS', 'REACT'],
-            'label_in_input': ['wikipathways', 'reactome'],
-         },
-        'Protein': {
-            'represented_as': 'node',
-            'preferred_id': 'UniProtKB',
-            'label_in_input': 'protein',
-        },
-        'microRNA': {
-            'represented_as': 'node',
-            'preferred_id': 'MIR',
-            'label_in_input': 'miRNA',
-        },
-        'PostTranslationalInteraction': {
-            'represented_as': 'edge',
-            'source': 'Protein',
-            'target': 'Protein',
-            'preferred_id': 'PLID',
-            'label_in_input': 'POST_TRANSLATIONAL',
-        },
-        'PostTranscriptionalInteraction': {
-            'represented_as': 'edge',
-            'source': 'microRNA',
-            'target': 'Transcript',
-            'preferred_id': 'PCID',
-            'label_in_input': 'POST_TRANSCRIPTIONAL',
-        },
-        'PairwiseMolecularInteraction': {
-            'represented_as': 'node',
-            'source': 'Protein',
-            'target': 'Protein',
-            'preferred_id': 'RNID',
-            'label_in_input': 'pm_interaction',
-        },
-        'DiseaseToGeneAssociation': {
-            'represented_as': 'edge',
-            'source': 'Disease',
-            'target': 'Protein',
-            'preferred_id': 'DGID',
-            'label_in_input': ['DISEASE_TO_GENE', 'DISEASE_TO_PROTEIN'],
-        },
-    }
-    bl_adapter = BiolinkAdapter(leaves=schema)
+@pytest.fixture
+def bw(version_node):
+
+    bl_adapter = BiolinkAdapter(leaves=version_node.leaves)
     bw = BatchWriter(
-        leaves = schema,
+        leaves = version_node.leaves,
         bl_adapter = bl_adapter,
         dirname = path,
         delimiter=";",
@@ -334,9 +298,9 @@ def test_write_node_data_from_large_gen(bw):
     )
 
 
-def test_inconsistent_properties(bw):
+def test_too_many_properties(bw):
     nodes = []
-    le = 4
+    le = 1
     for i in range(le):
         bnp = BioCypherNode(
             f'p{i+1}',
@@ -372,13 +336,34 @@ def test_inconsistent_properties(bw):
 
     assert not passed
 
-    del nodes[-1]
-    bn2 = BioCypherNode(
+def test_not_enough_properties(bw):
+    nodes = []
+    le = 1
+    for i in range(le):
+        bnp = BioCypherNode(
+            f'p{i+1}',
+            'Protein',
+            p1=get_random_string(4),
+            p2=get_random_string(8),
+        )
+        nodes.append(bnp)
+        bnm = BioCypherNode(
+            f'm{i+1}',
+            'microRNA',
+            p1=get_random_string(4),
+            p2=get_random_string(8),
+        )
+        nodes.append(bnm)
+
+    bn1 = BioCypherNode(
         'p0',
         'Protein',
         p1=get_random_string(4),
     )
-    nodes.append(bn2)
+    nodes.append(bn1)
+
+    def node_gen(nodes):
+        yield from nodes
 
     passed = bw._write_node_data(
         node_gen(nodes), batch_size=int(1e4),
@@ -917,10 +902,3 @@ def test_write_offline():
         and mi
         == 'm1,"StringProperty1",9606,MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm2,"StringProperty1",9606,MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm3,"StringProperty1",9606,MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm4,"StringProperty1",9606,MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\n'
     )
-
-# TODO extend tests to "raw" input (not biocypher nodes)
-# where? translate? is not "unit" test
-
-# TODO possible overwrite? eg IS_SOURCE_OF or IS_TARGET_OF gets called
-# more than one time? what if write function called multiple times with
-# different properties on the same node or edge types?

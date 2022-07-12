@@ -27,10 +27,13 @@ Protein:
   represented_as: node
   preferred_id: UniProtKB 
   label_in_input: protein 
+  properties:
+    - name
+    - taxon
 
 microRNA:
   represented_as: node
-  preferred_id: MIMAT 
+  preferred_id: MIR 
   label_in_input: mirna 
 
 MacromolecularComplexMixin:

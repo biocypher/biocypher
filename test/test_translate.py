@@ -147,4 +147,3 @@ def test_ad_hoc_children_node(biolink_adapter):
 
 def test_ad_hoc_children_edge(version_node):
     pass # _translate
-
