@@ -153,6 +153,9 @@ class BatchWriter:
         logger.info(f"Creating output directory `{self.outdir}`.")
         os.makedirs(self.outdir, exist_ok=True)
 
+        self.seen_node_ids = set()  # set to store the ids of nodes that have
+        # already been written; to avoid duplicates
+
     def write_nodes(self, nodes, batch_size=int(1e6)):
         """
         Wrapper for writing nodes and their headers.
@@ -258,12 +261,10 @@ class BatchWriter:
             # for now, relevant for `int`
             labels = {}  # dict to store the additional labels for each
             # primary graph constituent from biolink hierarchy
-            seen_ids = set()  # set to store the ids of nodes that have
-            # already been written; to remove duplicates
             for node in nodes:
                 _id = node.get_id()
                 # check if node has already been written, if so skip
-                if _id in seen_ids:
+                if _id in self.seen_node_ids:
                     logger.info(f"Duplicate node id: {_id}")
                     continue
 
@@ -318,7 +319,7 @@ class BatchWriter:
                         bins[label] = []
                         bin_l[label] = 0
 
-                seen_ids.add(_id)
+                self.seen_node_ids.add(_id)
 
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
