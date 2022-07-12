@@ -145,5 +145,16 @@ def test_ad_hoc_children_node(biolink_adapter):
     assert "PhenotypicFeature" in se['ancestors']
 
 
-def test_ad_hoc_children_edge(version_node):
-    pass # _translate
+def test_properties_from_config(version_node):
+    id_type = [
+        ('G49205', 'protein', {'taxon': 9606, 'name': 'test'}),
+        ('G92035', 'protein', {'taxon': 9606}),
+        ('G92205', 'protein', {'taxon': 9606, 'name': 'test2', 'test': 'should_not_be_returned'}),
+    ]
+    t = gen_translate_nodes(version_node.leaves, id_type)
+
+    r = list(t)
+    assert (
+        'name' in r[0].get_properties().keys() and
+        'test' not in r[2].get_properties().keys()
+    )

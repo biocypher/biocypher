@@ -255,14 +255,30 @@ def gen_translate_nodes(leaves, id_type_tuples):
 
     for _id, _type, _props in id_type_tuples:
         # find the node in leaves that represents biolink node type
-        bl_type = get_bl_type(leaves, _type)
+        _bl_type = _get_bl_type(leaves, _type)
 
-        if bl_type is not None:
-            yield BioCypherNode(node_id=_id, node_label=bl_type, **_props)
+        if _bl_type is not None:
+            # filter properties for those specified in schema_config if any
+            _filtered_props = _filter_props(leaves, _bl_type, _props)
+
+            yield BioCypherNode(node_id=_id, node_label=_bl_type, **_filtered_props)
 
         else:
             logger.warning("No Biolink equivalent found for type " + _type)
 
+
+def _filter_props(leaves: dict, bl_type: str, props: dict):
+    """
+    Filters properties for those specified in schema_config if any.
+    """
+    filt = leaves[bl_type].get("properties")
+    if filt:
+        props = {
+            k: v
+            for k, v in props.items()
+            if k in filt
+        }
+    return props
 
 def gen_translate_edges(leaves, src_tar_type_tuples):
     """
@@ -295,7 +311,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
         logger.info(f"Translating edges to BioCypher from generator.")
 
     for _src, _tar, _type, _props in src_tar_type_tuples:
-        bl_type = get_bl_type(leaves, _type)
+        bl_type = _get_bl_type(leaves, _type)
 
         if bl_type is not None:
             rep = leaves[bl_type]["represented_as"]
@@ -351,7 +367,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
             logger.warning("No Biolink equivalent found for type " + _type)
 
 
-def get_bl_type(dict, value):
+def _get_bl_type(dict, value):
     """
     For each given input type ("label_in_input"), find the corresponding
     Biolink type in the leaves dictionary.
