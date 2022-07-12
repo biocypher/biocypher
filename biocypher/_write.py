@@ -256,7 +256,9 @@ class BatchWriter:
             # label that is passed in
             bin_l = {}  # dict to store the length of each list for
             # batching cutoff
-            props = defaultdict(dict)  # dict to store a dict of properties
+            reference_props = defaultdict(
+                dict
+            )  # dict to store a dict of properties
             # for each label to check for consistency and their type
             # for now, relevant for `int`
             labels = {}  # dict to store the additional labels for each
@@ -274,14 +276,27 @@ class BatchWriter:
                     all_labels = None
                     bins[label].append(node)
                     bin_l[label] = 1
-                    # use first node to define properties for checking
-                    # could later be by checking all nodes but much more
-                    # complicated, particularly involving batch writing
-                    # (would require "do-overs") TODO
-                    d = dict(node.get_properties())
-                    for k, v in d.items():
-                        d[k] = type(v)
-                    props[label] = d
+
+                    # TODO get properties from config if present
+                    cprops = self.leaves.get(label).get("properties")
+                    if cprops:
+                        d = cprops
+                    else:
+                        d = dict(node.get_properties())
+                        # encode property type
+                        for k, v in d.items():
+                            if d[k] is not None:
+                                d[k] = type(v).__name__
+                    # else use first encountered node to define
+                    # properties for checking; could later be by
+                    # checking all nodes but much more complicated,
+                    # particularly involving batch writing (would
+                    # require "do-overs"). for now, we output a warning
+                    # if node properties diverge from reference
+                    # properties (in write_single_node_list_to_file)
+                    # TODO
+
+                    reference_props[label] = d
 
                     # get label hierarchy
                     # multiple labels:
@@ -309,7 +324,7 @@ class BatchWriter:
                         passed = self._write_single_node_list_to_file(
                             bins[label],
                             label,
-                            props[label],
+                            reference_props[label],
                             labels[label],
                         )
 
@@ -326,7 +341,7 @@ class BatchWriter:
                 passed = self._write_single_node_list_to_file(
                     nl,
                     label,
-                    props[label],
+                    reference_props[label],
                     labels[label],
                 )
 
@@ -338,8 +353,8 @@ class BatchWriter:
             # (ie missingness), we'd need to collect all possible
             # properties in the generator pass
 
-            # save first-node properties to instance attribute
-            self.node_property_dict = props
+            # save config or first-node properties to instance attribute
+            self.node_property_dict = reference_props
 
             return True
         else:
@@ -391,9 +406,9 @@ class BatchWriter:
                 # concatenate key:value in props
                 props_list = []
                 for k, v in props.items():
-                    if v.__name__ == "int":
+                    if v == "int":
                         props_list.append(f"{k}:int")
-                    elif v.__name__ == "float":
+                    elif v == "float":
                         props_list.append(f"{k}:double")
                     else:
                         props_list.append(f"{k}")
@@ -474,7 +489,7 @@ class BatchWriter:
                     p = nprops.get(k)
                     if p is None:
                         plist.append("")
-                    elif v == int or v == float:
+                    elif v == "int" or v == "float":
                         plist.append(str(p))
                     else:
                         plist.append(self.quote + str(p) + self.quote)

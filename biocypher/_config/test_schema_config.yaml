@@ -28,8 +28,9 @@ Protein:
   preferred_id: UniProtKB 
   label_in_input: protein 
   properties:
-    - name
-    - taxon
+    name: str
+    score: float
+    taxon: int
 
 microRNA:
   represented_as: node

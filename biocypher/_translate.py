@@ -274,9 +274,9 @@ def _filter_props(leaves: dict, bl_type: str, props: dict):
     """
     filter_props = leaves[bl_type].get("properties")
     if filter_props:
-        filtered_props = {k: v for k, v in props.items() if k in filter_props}
+        filtered_props = {k: v for k, v in props.items() if k in filter_props.keys()}
         missing_props = [
-            k for k in filter_props if k not in filtered_props.keys()
+            k for k in filter_props.keys() if k not in filtered_props.keys()
         ]
         if missing_props:
             # add missing properties with default values
