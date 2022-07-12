@@ -158,7 +158,7 @@ class BiolinkAdapter:
             if e is not None:
                 ancestors = trim_biolink_ancestry(
                     self.toolkit.get_ancestors(entity, formatted=True)
-                ) 
+                )
 
                 # check for multiple identifiers
                 if isinstance(self.leaves[entity]["preferred_id"], list):
@@ -191,11 +191,8 @@ class BiolinkAdapter:
                         f"as a child of {parent}."
                     )
                     ancestors = trim_biolink_ancestry(
-                        self.toolkit.get_ancestors(
-                            parent, 
-                            formatted=True
-                        )
-                    ) 
+                        self.toolkit.get_ancestors(parent, formatted=True)
+                    )
                     se = ClassDefinition(entity)
                     se.is_a = parent
                     sancestors = list(ancestors)
@@ -210,6 +207,7 @@ class BiolinkAdapter:
 
         self.biolink_leaves = l
 
+
 def trim_biolink_ancestry(ancestry: list):
     """
     Trims "biolink:" prefix from Biolink ancestry elements.
@@ -217,6 +215,7 @@ def trim_biolink_ancestry(ancestry: list):
 
     # replace 'biolink:' with ''
     return [a.replace("biolink:", "") for a in ancestry]
+
 
 """
 Biolink toolkit wiki:
@@ -261,7 +260,9 @@ def gen_translate_nodes(leaves, id_type_tuples):
             # filter properties for those specified in schema_config if any
             _filtered_props = _filter_props(leaves, _bl_type, _props)
 
-            yield BioCypherNode(node_id=_id, node_label=_bl_type, **_filtered_props)
+            yield BioCypherNode(
+                node_id=_id, node_label=_bl_type, **_filtered_props
+            )
 
         else:
             logger.warning("No Biolink equivalent found for type " + _type)
@@ -271,14 +272,20 @@ def _filter_props(leaves: dict, bl_type: str, props: dict):
     """
     Filters properties for those specified in schema_config if any.
     """
-    filt = leaves[bl_type].get("properties")
-    if filt:
-        props = {
-            k: v
-            for k, v in props.items()
-            if k in filt
-        }
-    return props
+    filter_props = leaves[bl_type].get("properties")
+    if filter_props:
+        filtered_props = {k: v for k, v in props.items() if k in filter_props}
+        missing_props = [
+            k for k in filter_props if k not in filtered_props.keys()
+        ]
+        if missing_props:
+            # add missing properties with default values
+            for k in missing_props:
+                filtered_props[k] = None
+        return filtered_props
+    else:
+        return props
+
 
 def gen_translate_edges(leaves, src_tar_type_tuples):
     """

@@ -155,6 +155,7 @@ def test_properties_from_config(version_node):
 
     r = list(t)
     assert (
-        'name' in r[0].get_properties().keys() and
-        'test' not in r[2].get_properties().keys()
+        'name' in r[0].get_properties().keys() 
+        and 'name' in r[1].get_properties().keys()
+        and 'test' not in r[2].get_properties().keys()
     )
