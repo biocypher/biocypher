@@ -451,7 +451,8 @@ class BatchWriter:
             nprops = n.get_properties()
             hprops = list(prop_dict.keys())
             keys = list(nprops.keys())
-            if not keys == hprops:
+            # compare lists order invariant
+            if not set(hprops) == set(keys):
                 onode = n.get_id()
                 oprop1 = set(hprops).difference(keys)
                 oprop2 = set(keys).difference(hprops)
@@ -469,11 +470,15 @@ class BatchWriter:
 
                 plist = []
                 # make all into strings, put actual strings in quotes
-                for e, t in zip(nprops.values(), prop_dict.values()):
-                    if t == int or t == float:
-                        plist.append(str(e))
+                for k, v in prop_dict.items():
+                    p = nprops.get(k)
+                    if p is None:
+                        plist.append("")
+                    elif v == int or v == float:
+                        plist.append(str(p))
                     else:
-                        plist.append(self.quote + str(e) + self.quote)
+                        plist.append(self.quote + str(p) + self.quote)
+
                 line.append(self.delim.join(plist))
             line.append(labels)
 

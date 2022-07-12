@@ -372,6 +372,43 @@ def test_not_enough_properties(bw):
     assert not passed
 
 
+def test_write_none_type_property_and_order_invariance(bw):
+    # as introduced by translation using defined properties in
+    # schema_config.yaml
+    nodes = []
+    
+    bnp1 = BioCypherNode(
+        f'p1',
+        'Protein',
+        taxid=9606,
+        name=None,
+    )
+    bnp2 = BioCypherNode(
+        f'p2',
+        'Protein',
+        name=None,
+        taxid=9606,
+    )
+    nodes.append(bnp1)
+    nodes.append(bnp2)
+
+    def node_gen(nodes):
+        yield from nodes
+
+    passed = bw._write_node_data(
+        node_gen(nodes), batch_size=int(1e4),
+    )  # reduce test time
+
+    p0_csv = os.path.join(path, 'Protein-part000.csv')
+    with open(p0_csv) as f:
+        p = f.read()
+
+    assert (
+        passed
+        and p == "p1;9606;;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;9606;;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+    ) 
+
+
 def test_accidental_exact_batch_size(bw):
     nodes = []
     le = int(1e4)
