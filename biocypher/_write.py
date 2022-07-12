@@ -277,8 +277,10 @@ class BatchWriter:
                     bins[label].append(node)
                     bin_l[label] = 1
 
-                    # TODO get properties from config if present
-                    cprops = self.leaves.get(label).get("properties")
+                    # get properties from config if present
+                    cprops = self.bl_adapter.leaves.get(label).get(
+                        "properties"
+                    )
                     if cprops:
                         d = cprops
                     else:

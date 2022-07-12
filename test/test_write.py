@@ -68,6 +68,7 @@ def test_write_node_data_headers_import_call(bw):
         bnp = BioCypherNode(
             f'p{i+1}',
             'Protein',
+            score=4/(i+1),
             name='StringProperty1',
             taxon=9606,
         )
@@ -97,7 +98,7 @@ def test_write_node_data_headers_import_call(bw):
 
     assert (
         passed
-        and p == ('UniProtKB:ID;name;taxon:int;:LABEL')
+        and p == ('UniProtKB:ID;name;score:double;taxon:int;:LABEL')
         and m == ('MIR:ID;name;taxon:int;:LABEL')
         and c == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/microRNA-header.csv,{path}/microRNA-part.*" '
     )
@@ -387,12 +388,14 @@ def test_write_none_type_property_and_order_invariance(bw):
         f'p1',
         'Protein',
         taxon=9606,
+        score=1,
         name=None,
     )
     bnp2 = BioCypherNode(
         f'p2',
         'Protein',
         name=None,
+        score=2,
         taxon=9606,
     )
     bnm = BioCypherNode(
@@ -418,7 +421,7 @@ def test_write_none_type_property_and_order_invariance(bw):
 
     assert (
         passed
-        and p == "p1;;9606;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;;9606;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+        and p == 'p1;;1;9606;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;;2;9606;Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n'
     ) 
 
 

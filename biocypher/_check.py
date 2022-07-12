@@ -248,6 +248,9 @@ class VersionNode(BioCypherNode):
                                     # mark as virtual
                                     "virtual": True,
                                 }
+                                # inherit properties if exist
+                                if value.get("properties"):
+                                    svalue["properties"] = value["properties"]
                                 leaves[skey] = svalue
                     # add parent
                     leaves[key] = value
