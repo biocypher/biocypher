@@ -253,8 +253,6 @@ class BatchWriter:
             # label that is passed in
             bin_l = {}  # dict to store the length of each list for
             # batching cutoff
-            parts = {}  # dict to store the number of parts of each label
-            # for file naming
             props = defaultdict(dict)  # dict to store a dict of properties
             # for each label to check for consistency and their type
             # for now, relevant for `int`
@@ -275,7 +273,6 @@ class BatchWriter:
                     all_labels = None
                     bins[label].append(node)
                     bin_l[label] = 1
-                    parts[label] = 0
                     # use first node to define properties for checking
                     # could later be by checking all nodes but much more
                     # complicated, particularly involving batch writing
@@ -311,7 +308,6 @@ class BatchWriter:
                         passed = self._write_single_node_list_to_file(
                             bins[label],
                             label,
-                            parts[label],
                             props[label],
                             labels[label],
                         )
@@ -321,7 +317,6 @@ class BatchWriter:
 
                         bins[label] = []
                         bin_l[label] = 0
-                        parts[label] += 1
 
                 seen_ids.add(_id)
 
@@ -330,7 +325,6 @@ class BatchWriter:
                 passed = self._write_single_node_list_to_file(
                     nl,
                     label,
-                    parts[label],
                     props[label],
                     labels[label],
                 )
@@ -415,17 +409,18 @@ class BatchWriter:
                     f.write(row)
 
                 # add file path to neo4 admin import statement
-                self.import_call_nodes += f'--nodes="{header_path},{parts_path}" '
+                self.import_call_nodes += (
+                    f'--nodes="{header_path},{parts_path}" '
+                )
 
         return True
 
     def _write_single_node_list_to_file(
         self,
-        node_list,
-        label,
-        part,
-        prop_dict,
-        labels,
+        node_list: list,
+        label: str,
+        prop_dict: dict,
+        labels: str,
     ):
         """
         This function takes one list of biocypher nodes and writes them
@@ -434,8 +429,6 @@ class BatchWriter:
         Args:
             node_list (list): list of BioCypherNodes to be written
             label (str): the primary label of the node
-            part (int): for large amounts of data, import is done in
-                parts denoted by a suffix in the CSV file name
             prop_dict (dict): properties of node class passed from parsing
                 function and their types
             labels (str): string of one or several concatenated labels
@@ -485,13 +478,9 @@ class BatchWriter:
 
             lines.append(self.delim.join(line) + "\n")
 
-        padded_part = str(part).zfill(3)
-        file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
-
-        with open(file_path, "w") as f:
-
-            # concatenate with delimiter
-            f.writelines(lines)
+        # avoid writing empty files
+        if lines:
+            self._write_next_part(label, lines)
 
         return True
 
@@ -519,8 +508,6 @@ class BatchWriter:
             # label that is passed in
             bin_l = {}  # dict to store the length of each list for
             # batching cutoff
-            parts = {}  # dict to store the number of parts of each label
-            # for file naming
             props = defaultdict(dict)  # dict to store a dict of properties
             # for each label to check for consistency and their type
             # for now, relevant for `int`
@@ -538,7 +525,6 @@ class BatchWriter:
                         # start new list
                         bins[label].append(e)
                         bin_l[label] = 1
-                        parts[label] = 0
                         # use first edge to define properties for checking
                         # could later be by checking all edges but much more
                         # complicated, particularly involving batch writing
@@ -557,7 +543,6 @@ class BatchWriter:
                             passed = self._write_single_edge_list_to_file(
                                 bins[label],
                                 label,
-                                parts[label],
                                 props[label],
                             )
 
@@ -566,7 +551,6 @@ class BatchWriter:
 
                             bins[label] = []
                             bin_l[label] = 0
-                            parts[label] += 1
 
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
@@ -574,7 +558,6 @@ class BatchWriter:
                 passed = self._write_single_edge_list_to_file(
                     nl,
                     label,
-                    parts[label],
                     props[label],
                 )
 
@@ -656,10 +639,9 @@ class BatchWriter:
 
     def _write_single_edge_list_to_file(
         self,
-        edge_list,
-        label,
-        part,
-        prop_dict,
+        edge_list: list,
+        label: str,
+        prop_dict: dict,
     ):
         """
         This function takes one list of biocypher edges and writes them
@@ -669,8 +651,6 @@ class BatchWriter:
             edge_list (list): list of BioCypherEdges to be written
             label (str): the label (type) of the edge; verb form, all
                 capital with underscores
-            part (int): for large amounts of data, import is done in
-                parts denoted by a suffix in the CSV file name
             prop_dict (dict): properties of node class passed from parsing
                 function and their types
 
@@ -736,41 +716,39 @@ class BatchWriter:
 
         # avoid writing empty files
         if lines:
-
-            # list files in self.outdir
-            files = glob.glob(os.path.join(self.outdir, f"{label}-part*.csv"))
-            # find file with highest part number
-            if files:
-                next_part = (
-                    max(
-                        [
-                            int(
-                                f.split(".")[-2]
-                                .split("-")[-1]
-                                .replace("part", "")
-                            )
-                            for f in files
-                        ]
-                    )
-                    + 1
-                )
-            else:
-                next_part = 0
-
-            # write to file
-            padded_part = str(next_part).zfill(3)
-            logger.debug(
-                f"Writing {len(lines)} edges to {label}-part{padded_part}.csv"
-            )
-            file_path = os.path.join(
-                self.outdir, f"{label}-part{padded_part}.csv"
-            )
-
-            with open(file_path, "w") as f:
-                # concatenate with delimiter
-                f.writelines(lines)
+            self._write_next_part(label, lines)
 
         return True
+
+    def _write_next_part(self, label: str, lines: list):
+        # list files in self.outdir
+        files = glob.glob(os.path.join(self.outdir, f"{label}-part*.csv"))
+        # find file with highest part number
+        if files:
+            next_part = (
+                max(
+                    [
+                        int(
+                            f.split(".")[-2].split("-")[-1].replace("part", "")
+                        )
+                        for f in files
+                    ]
+                )
+                + 1
+            )
+        else:
+            next_part = 0
+
+            # write to file
+        padded_part = str(next_part).zfill(3)
+        logger.debug(
+            f"Writing {len(lines)} entries to {label}-part{padded_part}.csv"
+        )
+        file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
+
+        with open(file_path, "w") as f:
+            # concatenate with delimiter
+            f.writelines(lines)
 
     def get_import_call(self) -> str:
         """
@@ -782,7 +760,7 @@ class BatchWriter:
             str: a bash command for neo4j-admin import
         """
 
-        return self.construct_import_call()
+        return self._construct_import_call()
 
     def write_import_call(self) -> bool:
         """
@@ -799,11 +777,11 @@ class BatchWriter:
 
         with open(file_path, "w") as f:
 
-            f.write(self.construct_import_call())
+            f.write(self._construct_import_call())
 
         return True
 
-    def construct_import_call(self) -> str:
+    def _construct_import_call(self) -> str:
         """
         Function to construct the import call detailing folder and
         individual node and edge headers and data files, as well as
@@ -816,9 +794,9 @@ class BatchWriter:
 
         # append node and edge import calls
         self.import_call = (
-            self.import_call_base + 
-            self.import_call_nodes + 
-            self.import_call_edges
+            self.import_call_base
+            + self.import_call_nodes
+            + self.import_call_edges
         )
 
         return self.import_call

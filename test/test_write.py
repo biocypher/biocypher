@@ -420,8 +420,6 @@ def test_accidental_exact_batch_size(bw):
 
     pr_lines = sum(1 for _ in open(p0_csv))
     mi_lines = sum(1 for _ in open(m0_csv))
-    pr_lines1 = sum(1 for _ in open(p1_csv))
-    mi_lines1 = sum(1 for _ in open(m1_csv))
 
     ph_csv = os.path.join(path, 'Protein-header.csv')
     mh_csv = os.path.join(path, 'microRNA-header.csv')
@@ -435,8 +433,8 @@ def test_accidental_exact_batch_size(bw):
         passed
         and pr_lines == 1e4
         and mi_lines == 1e4
-        and pr_lines1 == 0
-        and mi_lines1 == 0
+        and not isfile(p1_csv)
+        and not isfile(m1_csv)
         and p == 'UniProtKB:ID;p1;taxon:int;:LABEL'
         and m == 'MIR:ID;p1;taxon:int;:LABEL'
     )
