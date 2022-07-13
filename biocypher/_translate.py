@@ -185,22 +185,59 @@ class BiolinkAdapter:
                     )
                 elif "is_a" in self.leaves[entity].keys():
                     parent = self.leaves[entity]["is_a"]
-                    logger.info(
-                        f"Received ad hoc inheritance information; "
-                        f"updating pseudo-Biolink entry by setting {entity} "
-                        f"as a child of {parent}."
-                    )
-                    ancestors = trim_biolink_ancestry(
-                        self.toolkit.get_ancestors(parent, formatted=True)
-                    )
-                    se = ClassDefinition(entity)
-                    se.is_a = parent
-                    sancestors = list(ancestors)
-                    sancestors.insert(0, entity)
-                    l[entity] = {
-                        "class_definition": se,
-                        "ancestors": sancestors,
-                    }
+                    if isinstance(parent, list):
+                        logger.info(
+                            f"Received ad hoc multiple inheritance information; "
+                            f"updating pseudo-Biolink entry by setting {entity} "
+                            f"as a child of {parent}."
+                        )
+                        # assume biolink entity is last in list
+                        bl_parent = parent.pop()
+                        ancestors = trim_biolink_ancestry(
+                            self.toolkit.get_ancestors(bl_parent, formatted=True)
+                        )
+                        while parent:
+                            # create class definitions for all ancestors
+                            # in reverse order
+                            child = parent.pop()
+                            se = ClassDefinition(child)
+                            se.is_a = parent
+                            ancestors = list(ancestors)
+                            ancestors.insert(0, child)
+                            l[child] = {
+                                "class_definition": se,
+                                "ancestors": ancestors,
+                            }
+                        
+                        # finally top-level class definition
+                        se = ClassDefinition(entity)
+                        se.is_a = parent
+                        ancestors = list(ancestors)
+                        ancestors.insert(0, entity)
+                        l[entity] = {
+                            "class_definition": se,
+                            "ancestors": ancestors,
+                        }
+
+
+
+                    else:
+                        logger.info(
+                            f"Received ad hoc inheritance information; "
+                            f"updating pseudo-Biolink entry by setting {entity} "
+                            f"as a child of {parent}."
+                        )
+                        ancestors = trim_biolink_ancestry(
+                            self.toolkit.get_ancestors(parent, formatted=True)
+                        )
+                        se = ClassDefinition(entity)
+                        se.is_a = parent
+                        sancestors = list(ancestors)
+                        sancestors.insert(0, entity)
+                        l[entity] = {
+                            "class_definition": se,
+                            "ancestors": sancestors,
+                        }
                 else:
                     logger.info("Entity not found in Biolink: " + entity)
                     l[entity] = None

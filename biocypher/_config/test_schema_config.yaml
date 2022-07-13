@@ -105,7 +105,6 @@ Phosphorylation:
   source: Protein
   target: Protein
 
-      
 GeneToDiseaseAssociation:
   represented_as: edge
   preferred_id: custom
@@ -113,3 +112,13 @@ GeneToDiseaseAssociation:
   target: Disease
   label_as_edge: PERTURBED_IN_DISEASE
   label_in_input: [protein_disease, gene_disease]
+
+# multiple inheritance
+MutationToTissueAssociation:
+  is_a: [GenotypeToTissueAssociation, EntityToTissueAssociation, Association]
+  represented_as: edge
+  label_as_edge: Is_Mutated_In
+  preferred_id: custom
+  source: Gene
+  target: Tissue
+  label_in_input: Gene_Is_Mutated_In_Cell_Tissue

@@ -144,6 +144,24 @@ def test_ad_hoc_children_node(biolink_adapter):
 
     assert "PhenotypicFeature" in se['ancestors']
 
+def test_multiple_inheritance(biolink_adapter):
+    
+    mta = biolink_adapter.biolink_leaves.get('MutationToTissueAssociation')
+    gta = biolink_adapter.biolink_leaves.get('GenotypeToTissueAssociation')
+    eta = biolink_adapter.biolink_leaves.get('EntityToTissueAssociation')
+
+    assert ("MutationToTissueAssociation" in mta['ancestors']
+        and "GenotypeToTissueAssociation" in mta['ancestors']
+        and "EntityToTissueAssociation" in mta['ancestors']
+        and "Association" in mta['ancestors']
+        and "GenotypeToTissueAssociation" in gta['ancestors']
+        and "EntityToTissueAssociation" in gta['ancestors']
+        and "Association" in gta['ancestors']
+        and "EntityToTissueAssociation" in eta['ancestors']
+        and "Association" in eta['ancestors']
+    )
+
+
 
 def test_properties_from_config(version_node):
     id_type = [
