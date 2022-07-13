@@ -19,12 +19,12 @@ __all__ = [
     '__author__',
     'module_data',
     'config',
-    'Driver',
     'logfile',
     'log',
+    'Driver',
 ]
 
 from ._metadata import __version__, __author__
 from ._config import module_data, config
-from ._driver import Driver
 from ._logger import logfile, log
+from ._driver import Driver

@@ -186,7 +186,7 @@ class BiolinkAdapter:
                 elif "is_a" in self.leaves[entity].keys():
                     parent = self.leaves[entity]["is_a"]
                     logger.info(
-                        f"Received ad hoc inheritance information for;"
+                        f"Received ad hoc inheritance information; "
                         f"updating pseudo-Biolink entry by setting {entity} "
                         f"as a child of {parent}."
                     )
@@ -274,7 +274,9 @@ def _filter_props(leaves: dict, bl_type: str, props: dict):
     """
     filter_props = leaves[bl_type].get("properties")
     if filter_props:
-        filtered_props = {k: v for k, v in props.items() if k in filter_props.keys()}
+        filtered_props = {
+            k: v for k, v in props.items() if k in filter_props.keys()
+        }
         missing_props = [
             k for k in filter_props.keys() if k not in filtered_props.keys()
         ]

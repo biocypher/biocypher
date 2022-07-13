@@ -20,9 +20,8 @@ import os
 import pydoc
 import logging
 
-import yaml
-
-from biocypher import _config, __version__
+from biocypher import _config
+from biocypher._metadata import __version__
 
 
 def get_logger(name: str = "biocypher") -> logging.Logger:
