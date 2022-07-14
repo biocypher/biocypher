@@ -87,6 +87,7 @@ PostTranslationalInteraction:
   target: Protein
   label_in_input: post_translational
 
+# auto label as edge
 Phosphorylation:
   represented_as: edge
   preferred_id: custom

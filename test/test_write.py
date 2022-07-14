@@ -824,6 +824,9 @@ def test_RelAsNode_overwrite_behaviour(bw):
     assert passed1 and passed2 and isfile(iso_csv)
 
 
+def test_multi_source_rel_as_node(bw):
+    pass
+
 
 def test_write_mixed_edges(bw):
     mixed = []

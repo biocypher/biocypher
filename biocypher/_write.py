@@ -91,8 +91,6 @@ if TYPE_CHECKING:
 
     from ._translate import BiolinkAdapter
 
-# TODO global variable for collecting all ids to avoid duplicates?
-
 # TODO retrospective check of written csvs?
 
 
@@ -250,7 +248,7 @@ class BatchWriter:
         """
 
         if isinstance(nodes, GeneratorType) or isinstance(nodes, peekable):
-            logger.info("Writing node CSV from generator.")
+            logger.debug("Writing node CSV from generator.")
 
             bins = defaultdict(list)  # dict to store a list for each
             # label that is passed in
@@ -764,7 +762,7 @@ class BatchWriter:
 
             # write to file
         padded_part = str(next_part).zfill(3)
-        logger.debug(
+        logger.info(
             f"Writing {len(lines)} entries to {label}-part{padded_part}.csv"
         )
         file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")

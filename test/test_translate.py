@@ -53,11 +53,13 @@ def test_translate_edges(version_node):
     src_tar_type_edge = [
         ('G15258', 'MONDO1', 'gene_disease', {}),
         ('G15258', 'MONDO2', 'protein_disease', {}),
+        ('G15258', 'G15242', 'phosphorylation', {}),
     ]
     t = gen_translate_edges(v.leaves, src_tar_type_edge)
 
     assert type(next(t)) == BioCypherEdge
     assert next(t).get_label() == 'PERTURBED_IN_DISEASE'
+    assert next(t).get_label() == 'Phosphorylation'
 
     # node type association (defined in `schema_config.yaml`)
     src_tar_type_node = [
@@ -90,7 +92,6 @@ def test_translate_edges(version_node):
     assert n.get_node().get_id() == 'G15258_G16347_True_-1'
     assert n.get_source_edge().get_source_id() == 'G15258'
     assert n.get_target_edge().get_label() == 'IS_TARGET_OF'
-
 
 def test_adapter(version_node):
     ad = BiolinkAdapter(version_node.leaves, schema='biolink')

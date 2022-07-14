@@ -165,20 +165,22 @@ class BiolinkAdapter:
                 #   - multiple inputs and multiple identifiers
                 # - edges
                 #   - multiple inputs and multiple sources
-                #   - multiple inputs and multiple targets? 
+                #   - multiple inputs and multiple targets?
 
                 # TODO can there be virtual leaves without multiple
-                # inputs? 
+                # inputs?
 
                 # TODO does it even play a role whether they are
                 # represented as nodes vs edges?
                 if isinstance(self.leaves[entity]["label_in_input"], list):
                     # check for type of element
                     if self.leaves[entity]["represented_as"] == "node":
-                    # add child leaves for node or rel as node
+                        # add child leaves for node or rel as node
                         if self.leaves[entity].get("source"):
                             # add child leaves for rel as node
-                            if isinstance(self.leaves[entity].get("source"), list):
+                            if isinstance(
+                                self.leaves[entity].get("source"), list
+                            ):
                                 # add child leaves for multiple sources
                                 for source in self.leaves[entity]["source"]:
                                     name = source + "." + entity
@@ -190,9 +192,13 @@ class BiolinkAdapter:
                                         "class_definition": se,
                                         "ancestors": sancestors,
                                     }
-                                    
-                            elif isinstance(self.leaves[entity].get("target"), list):
-                                logger.error("Multiple targets not implemented yet.")
+
+                            elif isinstance(
+                                self.leaves[entity].get("target"), list
+                            ):
+                                logger.error(
+                                    "Multiple targets not implemented yet."
+                                )
                         else:
                             # add child leaves for node
                             for id in self.leaves[entity]["preferred_id"]:
@@ -207,7 +213,9 @@ class BiolinkAdapter:
                                 }
                     else:
                         # add child leaves for edge
-                        logger.error("Edge virtual leaves not implemented yet.")
+                        logger.error(
+                            "Edge virtual leaves not implemented yet."
+                        )
 
                 # create dict of biolink class definition and biolink
                 # ancestors
@@ -229,7 +237,9 @@ class BiolinkAdapter:
                         # assume biolink entity is last in list
                         bl_parent = parent.pop()
                         ancestors = trim_biolink_ancestry(
-                            self.toolkit.get_ancestors(bl_parent, formatted=True)
+                            self.toolkit.get_ancestors(
+                                bl_parent, formatted=True
+                            )
                         )
                         while parent:
                             # create class definitions for all ancestors
@@ -243,7 +253,7 @@ class BiolinkAdapter:
                                 "class_definition": se,
                                 "ancestors": ancestors,
                             }
-                        
+
                         # finally top-level class definition
                         se = ClassDefinition(entity)
                         se.is_a = parent
@@ -253,8 +263,6 @@ class BiolinkAdapter:
                             "class_definition": se,
                             "ancestors": ancestors,
                         }
-
-
 
                     else:
                         logger.info(
@@ -322,7 +330,7 @@ def gen_translate_nodes(leaves, id_type_tuples):
     if isinstance(id_type_tuples, list):
         logger.info(f"Translating {len(id_type_tuples)} nodes to BioCypher.")
     else:
-        logger.info(f"Translating nodes to BioCypher from generator.")
+        logger.debug(f"Translating nodes to BioCypher from generator.")
 
     for _id, _type, _props in id_type_tuples:
         # find the node in leaves that represents biolink node type
@@ -429,14 +437,9 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
                 yield BioCypherRelAsNode(n, e_s, e_t)
 
             else:
-                try:
-                    edge_label = leaves[bl_type]["label_as_edge"]
-                except KeyError:
-                    logger.error(
-                        f"No edge label found for {bl_type}, "
-                        "please provide 'label_as_edge' in the "
-                        "schema_config.yaml file."
-                    )
+                edge_label = leaves[bl_type].get("label_as_edge")
+                if edge_label is None:
+                    edge_label = bl_type
                 yield BioCypherEdge(
                     source_id=_src,
                     target_id=_tar,
