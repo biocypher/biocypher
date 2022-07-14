@@ -273,7 +273,8 @@ class BatchWriter:
                     if not label in self.duplicate_types:
                         self.duplicate_types.add(label)
                         logger.warning(
-                            f"Duplicate nodes found in type {label}."
+                            f"Duplicate nodes found in type {label}. "
+                            "More info can be found in the log file."
                         )
                     continue
 
