@@ -282,7 +282,7 @@ class BiolinkAdapter:
                             "ancestors": sancestors,
                         }
                 else:
-                    logger.info("Entity not found in Biolink: " + entity)
+                    logger.warning("Entity not found in Biolink: " + entity)
                     l[entity] = None
 
         self.biolink_leaves = l
@@ -328,7 +328,7 @@ def gen_translate_nodes(leaves, id_type_tuples):
 
     # biolink = BiolinkAdapter(leaves)
     if isinstance(id_type_tuples, list):
-        logger.info(f"Translating {len(id_type_tuples)} nodes to BioCypher.")
+        logger.debug(f"Translating {len(id_type_tuples)} nodes to BioCypher.")
     else:
         logger.debug(f"Translating nodes to BioCypher from generator.")
 
@@ -393,11 +393,11 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
     """
 
     if isinstance(src_tar_type_tuples, list):
-        logger.info(
+        logger.debug(
             f"Translating {len(src_tar_type_tuples)} edges to BioCypher.",
         )
     else:
-        logger.info(f"Translating edges to BioCypher from generator.")
+        logger.debug(f"Translating edges to BioCypher from generator.")
 
     for _src, _tar, _type, _props in src_tar_type_tuples:
         bl_type = _get_bl_type(leaves, _type)

@@ -265,7 +265,7 @@ class BatchWriter:
                 _id = node.get_id()
                 # check if node has already been written, if so skip
                 if _id in self.seen_node_ids:
-                    logger.info(f"Duplicate node id: {_id}")
+                    logger.warning(f"Duplicate node id: {_id}")
                     continue
 
                 label = node.get_label()
@@ -523,7 +523,7 @@ class BatchWriter:
         """
 
         if isinstance(edges, GeneratorType):
-            logger.info("Writing edge CSV from generator.")
+            logger.debug("Writing edge CSV from generator.")
 
             bins = defaultdict(list)  # dict to store a list for each
             # label that is passed in
