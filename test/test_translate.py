@@ -138,6 +138,18 @@ def test_merge_multiple_inputs_node(version_node):
 def test_merge_multiple_inputs_edge(biolink_adapter):
     pass
 
+def test_multiple_inputs_multiple_virtual_leaves_rel_as_node(biolink_adapter):
+    vtg = biolink_adapter.biolink_leaves['VariantToGeneAssociation']
+    kvtg = biolink_adapter.biolink_leaves['Known.SequenceVariant.VariantToGeneAssociation']
+    svtg = biolink_adapter.biolink_leaves['Known.SequenceVariant.VariantToGeneAssociation']
+
+    assert (
+        isinstance(vtg['class_definition'], ClassDefinition)
+        and "VariantToGeneAssociation" in kvtg["ancestors"] 
+        and "VariantToGeneAssociation" in svtg["ancestors"] 
+    )
+
+
 def test_ad_hoc_children_node(biolink_adapter):
     
     se = biolink_adapter.biolink_leaves['SideEffect']

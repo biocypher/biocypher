@@ -77,40 +77,30 @@ SideEffect:
 # targeting, etc. Biolink proposes to use interaction identifiers from 
 # ontologies, such as https://www.ebi.ac.uk/ols/ontologies/mi/.
 
-# regular edge
-DiseaseToEntityAssociationMixin:
-  represented_as: edge
-  preferred_id: tbd
-  source: Disease
-  target: Protein
-
-# edge as node
-PairwiseMolecularInteraction:
-  represented_as: node
-  preferred_id: EBI
-
 
 # added to custom biolink
 PostTranslationalInteraction:
   represented_as: node
-  preferred_id: concat_ids
+  label_as_edge: INTERACTS_POST_TRANSLATIONAL
+  preferred_id: custom
   source: Protein 
   target: Protein
   label_in_input: post_translational
-  label_as_edge: INTERACTS_POST_TRANSLATIONAL
 
 Phosphorylation:
   represented_as: edge
-  preferred_id: tbd
+  preferred_id: custom
   source: Protein
   target: Protein
+  label_in_input: phosphorylation
 
+# merge edges
 GeneToDiseaseAssociation:
   represented_as: edge
+  label_as_edge: PERTURBED_IN_DISEASE
   preferred_id: custom
   source: Protein
   target: Disease
-  label_as_edge: PERTURBED_IN_DISEASE
   label_in_input: [protein_disease, gene_disease]
 
 # multiple inheritance
@@ -122,3 +112,15 @@ MutationToTissueAssociation:
   source: Gene
   target: Tissue
   label_in_input: Gene_Is_Mutated_In_Cell_Tissue
+
+
+# multiple input to multiple virtual leaves
+VariantToGeneAssociation: # -> Known.Variant... and Somatic.Variant...
+  represented_as: node
+  preferred_id: custom
+  source: [Known.SequenceVariant, Somatic.SequenceVariant]
+  target: Gene
+  label_in_input: [
+    VARIANT_FOUND_IN_GENE_Known_variant_Gene,
+    VARIANT_FOUND_IN_GENE_Somatic_mutation_Gene
+  ]

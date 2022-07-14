@@ -160,19 +160,54 @@ class BiolinkAdapter:
                     self.toolkit.get_ancestors(entity, formatted=True)
                 )
 
-                # check for multiple identifiers
-                if isinstance(self.leaves[entity]["preferred_id"], list):
-                    # add child leaves
-                    for id in self.leaves[entity]["preferred_id"]:
-                        name = id + "." + entity
-                        se = ClassDefinition(name)
-                        se.is_a = entity
-                        sancestors = list(ancestors)
-                        sancestors.insert(0, name)
-                        l[name] = {
-                            "class_definition": se,
-                            "ancestors": sancestors,
-                        }
+                # check for signs of virtual leaves:
+                # - nodes
+                #   - multiple inputs and multiple identifiers
+                # - edges
+                #   - multiple inputs and multiple sources
+                #   - multiple inputs and multiple targets? 
+
+                # TODO can there be virtual leaves without multiple
+                # inputs? 
+
+                # TODO does it even play a role whether they are
+                # represented as nodes vs edges?
+                if isinstance(self.leaves[entity]["label_in_input"], list):
+                    # check for type of element
+                    if self.leaves[entity]["represented_as"] == "node":
+                    # add child leaves for node or rel as node
+                        if self.leaves[entity].get("source"):
+                            # add child leaves for rel as node
+                            if isinstance(self.leaves[entity].get("source"), list):
+                                # add child leaves for multiple sources
+                                for source in self.leaves[entity]["source"]:
+                                    name = source + "." + entity
+                                    se = ClassDefinition(name)
+                                    se.is_a = entity
+                                    sancestors = list(ancestors)
+                                    sancestors.insert(0, name)
+                                    l[name] = {
+                                        "class_definition": se,
+                                        "ancestors": sancestors,
+                                    }
+                                    
+                            elif isinstance(self.leaves[entity].get("target"), list):
+                                logger.error("Multiple targets not implemented yet.")
+                        else:
+                            # add child leaves for node
+                            for id in self.leaves[entity]["preferred_id"]:
+                                name = id + "." + entity
+                                se = ClassDefinition(name)
+                                se.is_a = entity
+                                sancestors = list(ancestors)
+                                sancestors.insert(0, name)
+                                l[name] = {
+                                    "class_definition": se,
+                                    "ancestors": sancestors,
+                                }
+                    else:
+                        # add child leaves for edge
+                        logger.error("Edge virtual leaves not implemented yet.")
 
                 # create dict of biolink class definition and biolink
                 # ancestors
