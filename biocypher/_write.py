@@ -153,6 +153,8 @@ class BatchWriter:
 
         self.seen_node_ids = set()  # set to store the ids of nodes that have
         # already been written; to avoid duplicates
+        self.duplicate_types = set()  # set to store the types of nodes that
+        # have been found to have duplicates
 
     def write_nodes(self, nodes, batch_size=int(1e6)):
         """
@@ -263,12 +265,18 @@ class BatchWriter:
             # primary graph constituent from biolink hierarchy
             for node in nodes:
                 _id = node.get_id()
+                label = node.get_label()
+
                 # check if node has already been written, if so skip
                 if _id in self.seen_node_ids:
-                    logger.warning(f"Duplicate node id: {_id}")
+                    logger.debug(f"Duplicate node id: {_id}")
+                    if not label in self.duplicate_types:
+                        self.duplicate_types.add(label)
+                        logger.warning(
+                            f"Duplicate nodes found in type {label}"
+                        )
                     continue
 
-                label = node.get_label()
                 if not label in bins.keys():
                     # start new list
                     all_labels = None
