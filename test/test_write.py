@@ -958,6 +958,10 @@ def test_write_offline():
 
 def test_duplicate_id(bw):
     nodes = []
+    csv = os.path.join(path, 'Protein-part000.csv')
+    # remove csv file in path
+    if os.path.exists(csv):
+        os.remove(csv)
     # four proteins, four miRNAs
     for _ in range(2):
         bnp = BioCypherNode(
@@ -971,7 +975,6 @@ def test_duplicate_id(bw):
 
     passed = bw.write_nodes(nodes)
 
-    csv = os.path.join(path, 'Protein-part000.csv')
 
     l_lines0 = sum(1 for _ in open(csv))
 
