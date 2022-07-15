@@ -172,7 +172,8 @@ class BiolinkAdapter:
 
                 # TODO does it even play a role whether they are
                 # represented as nodes vs edges?
-                if isinstance(self.leaves[entity]["label_in_input"], list):
+                input_label = self.leaves[entity].get("label_in_input")
+                if isinstance(input_label, list):
                     # check for type of element
                     if self.leaves[entity]["represented_as"] == "node":
                         # add child leaves for node or rel as node
@@ -307,7 +308,7 @@ https://biolink.github.io/biolink-model-toolkit/example_usage.html
 # -------------------------------------------
 
 
-def gen_translate_nodes(leaves, id_type_tuples):
+def gen_translate_nodes(leaves, id_type_prop_tuples):
     """
     Translates input node representation to a representation that
     conforms to the schema of the given BioCypher graph. For now
@@ -327,12 +328,12 @@ def gen_translate_nodes(leaves, id_type_tuples):
     """
 
     # biolink = BiolinkAdapter(leaves)
-    if isinstance(id_type_tuples, list):
-        logger.debug(f"Translating {len(id_type_tuples)} nodes to BioCypher.")
+    if isinstance(id_type_prop_tuples, list):
+        logger.debug(f"Translating {len(id_type_prop_tuples)} nodes to BioCypher.")
     else:
         logger.debug(f"Translating nodes to BioCypher from generator.")
 
-    for _id, _type, _props in id_type_tuples:
+    for _id, _type, _props in id_type_prop_tuples:
         # find the node in leaves that represents biolink node type
         _bl_type = _get_bl_type(leaves, _type)
 
@@ -341,7 +342,7 @@ def gen_translate_nodes(leaves, id_type_tuples):
             _filtered_props = _filter_props(leaves, _bl_type, _props)
 
             yield BioCypherNode(
-                node_id=_id, node_label=_bl_type, **_filtered_props
+                node_id=_id, node_label=_bl_type, properties=_filtered_props
             )
 
         else:
@@ -369,7 +370,7 @@ def _filter_props(leaves: dict, bl_type: str, props: dict):
         return props
 
 
-def gen_translate_edges(leaves, src_tar_type_tuples):
+def gen_translate_edges(leaves, src_tar_type_prop_tuples):
     """
     Translates input edge representation to a representation that
     conforms to the schema of the given BioCypher graph. For now
@@ -392,14 +393,14 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
             - do we even need one?
     """
 
-    if isinstance(src_tar_type_tuples, list):
+    if isinstance(src_tar_type_prop_tuples, list):
         logger.debug(
-            f"Translating {len(src_tar_type_tuples)} edges to BioCypher.",
+            f"Translating {len(src_tar_type_prop_tuples)} edges to BioCypher.",
         )
     else:
         logger.debug(f"Translating edges to BioCypher from generator.")
 
-    for _src, _tar, _type, _props in src_tar_type_tuples:
+    for _src, _tar, _type, _props in src_tar_type_prop_tuples:
         bl_type = _get_bl_type(leaves, _type)
 
         if bl_type is not None:
@@ -414,7 +415,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
                     + "_".join(str(v) for v in _props.values())
                 )
                 n = BioCypherNode(
-                    node_id=node_id, node_label=bl_type, **_props
+                    node_id=node_id, node_label=bl_type, properties=_props
                 )
                 # directionality check
                 if _props.get("directed") == True:
@@ -444,7 +445,7 @@ def gen_translate_edges(leaves, src_tar_type_tuples):
                     source_id=_src,
                     target_id=_tar,
                     relationship_label=edge_label,
-                    **_props,
+                    properties=_props,
                 )
 
         else:

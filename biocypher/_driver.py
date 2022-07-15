@@ -32,10 +32,9 @@ if TYPE_CHECKING:
 
 import neo4j_utils
 
-from ._check import MetaEdge, MetaNode, VersionNode
 from ._write import BatchWriter
 from ._config import config as _config
-from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode, VersionNode
 from ._translate import (
     BiolinkAdapter,
     gen_translate_edges,
@@ -113,10 +112,10 @@ class Driver(neo4j_utils.Driver):
             if offline:
                 logger.info("Offline mode: no connection to Neo4j.")
                 self.db_meta = VersionNode(
-                    self,
                     from_config=True,
                     config_file=user_schema_config_path,
                     offline=True,
+                    bcy_driver=self,
                 )
                 self._db_config = {
                     "uri": db_uri,
@@ -139,9 +138,9 @@ class Driver(neo4j_utils.Driver):
                     # representation and returns if found, else creates new
                     # one
                     self.db_meta = VersionNode(
-                        self,
                         from_config=True,
                         config_file=user_schema_config_path,
+                        bcy_driver=self,
                     )
                     self.init_db()
                 else:
@@ -168,7 +167,7 @@ class Driver(neo4j_utils.Driver):
             "MATCH (v:BioCypher) " "WHERE NOT (v)-[:PRECEDES]->() " "RETURN v"
         )
         # connect version node to previous
-        if db_version[0] is not None:
+        if db_version[0]:
             e_meta = BioCypherEdge(
                 self.db_meta.graph_state["id"],
                 self.db_meta.node_id,
@@ -180,7 +179,11 @@ class Driver(neo4j_utils.Driver):
         no_l = []
         # leaves of the hierarchy specified in schema yaml
         for entity, params in self.db_meta.leaves.items():
-            no_l.append(MetaNode(entity, **params))
+            no_l.append(BioCypherNode(
+                node_id=entity, 
+                node_label="MetaNode", 
+                properties=params
+            ))
         self.add_biocypher_nodes(no_l)
 
         # remove connection of structure nodes from previous version
@@ -191,7 +194,11 @@ class Driver(neo4j_utils.Driver):
         ed_v = []
         current_version = self.db_meta.get_id()
         for entity in self.db_meta.leaves.keys():
-            ed_v.append(MetaEdge(current_version, entity, "CONTAINS"))
+            ed_v.append(BioCypherEdge(
+                source_id=current_version, 
+                target_id=entity, 
+                relationship_label="CONTAINS"
+            ))
         self.add_biocypher_edges(ed_v)
 
         # add graph structure between MetaNodes

@@ -1,10 +1,8 @@
 from linkml_runtime.linkml_model.meta import ClassDefinition
 import pytest
 
-from biocypher._check import VersionNode
 from biocypher._config import module_data_path
-from biocypher._create import BioCypherEdge, BioCypherNode
-from biocypher._driver import Driver
+from biocypher._create import BioCypherEdge, BioCypherNode, VersionNode
 from biocypher._translate import (
     BiolinkAdapter,
     gen_translate_edges,
