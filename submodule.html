@@ -48,7 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Submodule documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-biocypher._driver"><cite>_driver.py</cite>: the BioCypher Neo4j Driver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._check"><cite>_check.py</cite>: BioCypher Format Data Representation and Consistency Checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#check-py-biocypher-format-data-representation-and-consistency-checks"><cite>_check.py</cite>: BioCypher Format Data Representation and Consistency Checks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-biocypher._create"><cite>_create.py</cite>: Base Classes for Node and Edge Representations in BioCypher</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-biocypher._translate"><cite>_translate.py</cite>: Translation Functionality for Implemented Types of Representation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-biocypher._write"><cite>_write.py</cite>: Write the Graph to CSV Files for quick ‘admin import’</a></li>
@@ -351,42 +351,8 @@ BioCypher-compatible CSV format; can be any compatible
 </dd></dl>
 
 </section>
-<section id="module-biocypher._check">
-<span id="check-py-biocypher-format-data-representation-and-consistency-checks"></span><h2><cite>_check.py</cite>: BioCypher Format Data Representation and Consistency Checks<a class="headerlink" href="#module-biocypher._check" title="Permalink to this heading"></a></h2>
-<p>Read and write BioCypher config of a Neo4j database instance.
-Each BioCypher database contains a configuration encoded in the graph itself.
-This configuration includes the version of the BioCypher standard, the
-preferred identifier types, etc.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._check.MetaEdge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._check.</span></span><span class="sig-name descname"><span class="pre">MetaEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationship_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CONTAINS'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._check.MetaEdge" title="Permalink to this definition"></a></dt>
-<dd><p>Graph structure information edge in the meta-graph. Inherits from
-BioCypherNode but fixes label to “:CONTAINS”.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._check.MetaNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._check.</span></span><span class="sig-name descname"><span class="pre">MetaNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MetaNode'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._check.MetaNode" title="Permalink to this definition"></a></dt>
-<dd><p>Graph structure information node representing node type entities in
-the BioCypher graph. Inherits from BioCypherNode but fixes label to
-“:MetaNode”. Is connected to VersionNode via “:CONTAINS”
-relationship.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._check.VersionNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._check.</span></span><span class="sig-name descname"><span class="pre">VersionNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bcy_driver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BioCypher'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._check.VersionNode" title="Permalink to this definition"></a></dt>
-<dd><p>Versioning and graph structure information meta node. Inherits from
-BioCypherNode but fixes label to “:BioCypher” and sets version
-by using the current date and time (meaning it overrides both
-mandatory args from BioCypherNode).</p>
-<p>Is created upon establishment of connection with the database and
-remains fixed for each BioCypher “session” (ie, the entire duration
-from starting the connection to the termination of the BioCypher
-adapter instance). Is connected to MetaNodes and MetaEdges via
-“:CONTAINS” relationships.</p>
-</dd></dl>
-
+<section id="check-py-biocypher-format-data-representation-and-consistency-checks">
+<h2><cite>_check.py</cite>: BioCypher Format Data Representation and Consistency Checks<a class="headerlink" href="#check-py-biocypher-format-data-representation-and-consistency-checks" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-biocypher._create">
 <span id="create-py-base-classes-for-node-and-edge-representations-in-biocypher"></span><h2><cite>_create.py</cite>: Base Classes for Node and Edge Representations in BioCypher<a class="headerlink" href="#module-biocypher._create" title="Permalink to this heading"></a></h2>
@@ -395,7 +361,7 @@ Transforms ordered collections of biomedical entities and relationships
 to BioCypher objects that represent property graph nodes and edges.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherEdge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationship_label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationship_label:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties:</span> <span class="pre">dict</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge" title="Permalink to this definition"></a></dt>
 <dd><p>Handoff class to represent biomedical relationships in Neo4j.</p>
 <p>Has source and target ids, label, property dict; ids and label (in
 the Neo4j sense of a label, ie, the entity descriptor after the
@@ -407,21 +373,18 @@ Neo4j consensus.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>source_id</strong> (<em>string</em>) – consensus “best” id for
-biological entity</p></li>
-<li><p><strong>target_id</strong> (<em>string</em>) – consensus “best” id for
-biological entity</p></li>
+<li><p><strong>source_id</strong> (<em>string</em>) – consensus “best” id for biological entity</p></li>
+<li><p><strong>target_id</strong> (<em>string</em>) – consensus “best” id for biological entity</p></li>
 <li><p><strong>relationship_label</strong> (<em>string</em>) – type of interaction, UPPERCASE</p></li>
-<li><p><strong>**properties</strong> (<em>kwargs</em>) – collection of all other properties to be
-passed to Neo4j for the respective edge (dict)</p></li>
+<li><p><strong>properties</strong> (<em>dict</em>) – collection of all other properties of the</p></li>
+<li><p><strong>edge</strong> (<em>respective</em>) – </p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherEdge.get_dict">
-<span class="sig-name descname"><span class="pre">get_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_dict" title="Permalink to this definition"></a></dt>
-<dd><p>Convert self to format accepted by Neo4j driver (Python dict -&gt;
-Neo4j Map).</p>
+<span class="sig-name descname"><span class="pre">get_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Return dict of ids, label, and properties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><dl class="simple">
@@ -439,7 +402,7 @@ dict.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherEdge.get_label">
-<span class="sig-name descname"><span class="pre">get_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_label" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_label" title="Permalink to this definition"></a></dt>
 <dd><p>Returns relationship label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -453,7 +416,7 @@ dict.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherEdge.get_properties">
-<span class="sig-name descname"><span class="pre">get_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_properties" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_properties" title="Permalink to this definition"></a></dt>
 <dd><p>Returns all other relationship properties apart from primary ids
 and label as key-value pairs.</p>
 <dl class="field-list simple">
@@ -468,7 +431,7 @@ and label as key-value pairs.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherEdge.get_source_id">
-<span class="sig-name descname"><span class="pre">get_source_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_source_id" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_source_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_source_id" title="Permalink to this definition"></a></dt>
 <dd><p>Returns primary node identifier of relationship source.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -482,7 +445,7 @@ and label as key-value pairs.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherEdge.get_target_id">
-<span class="sig-name descname"><span class="pre">get_target_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_target_id" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_target_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_target_id" title="Permalink to this definition"></a></dt>
 <dd><p>Returns primary node identifier of relationship target.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -498,7 +461,7 @@ and label as key-value pairs.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties:</span> <span class="pre">dict</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode" title="Permalink to this definition"></a></dt>
 <dd><p>Handoff class to represent biomedical entities as Neo4j nodes.</p>
 <p>Has id, label, property dict; id and label (in the Neo4j sense of a
 label, ie, the entity descriptor after the colon, such as
@@ -516,24 +479,9 @@ passed to neo4j for the respective node (dict)</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="biocypher._create.BioCypherNode.get_all_labels">
-<span class="sig-name descname"><span class="pre">get_all_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_all_labels" title="Permalink to this definition"></a></dt>
-<dd><p>Returns all labels, primary and optional.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>properties</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherNode.get_dict">
-<span class="sig-name descname"><span class="pre">get_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_dict" title="Permalink to this definition"></a></dt>
-<dd><p>Convert self to format accepted by Neo4j driver (Python dict -&gt;
-Neo4j Map).</p>
+<span class="sig-name descname"><span class="pre">get_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Return dict of id, labels, and properties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>node_id and node_label as top-level key-value pairs,
@@ -547,7 +495,7 @@ properties as second-level dict.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherNode.get_id">
-<span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_id" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_id" title="Permalink to this definition"></a></dt>
 <dd><p>Returns primary node identifier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -561,7 +509,7 @@ properties as second-level dict.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherNode.get_label">
-<span class="sig-name descname"><span class="pre">get_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_label" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_label" title="Permalink to this definition"></a></dt>
 <dd><p>Returns primary node label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -575,7 +523,7 @@ properties as second-level dict.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherNode.get_properties">
-<span class="sig-name descname"><span class="pre">get_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_properties" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#biocypher._create.BioCypherNode.get_properties" title="Permalink to this definition"></a></dt>
 <dd><p>Returns all other node properties apart from primary id and
 label as key-value pairs.</p>
 <dl class="field-list simple">
@@ -592,12 +540,65 @@ label as key-value pairs.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherRelAsNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherRelAsNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_edge</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherRelAsNode" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherRelAsNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._create.BioCypherNode" title="biocypher._create.BioCypherNode"><span class="pre">BioCypherNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._create.BioCypherEdge" title="biocypher._create.BioCypherEdge"><span class="pre">BioCypherEdge</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._create.BioCypherEdge" title="biocypher._create.BioCypherEdge"><span class="pre">BioCypherEdge</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherRelAsNode" title="Permalink to this definition"></a></dt>
 <dd><p>Class to represent relationships as nodes (with in- and outgoing
 edges) as a triplet of a BioCypherNode and two BioCypherEdges. Main
 usage in type checking (instances where the receiving function needs
 to check whether it receives a relationship as a single edge or as
 a triplet).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<a class="reference internal" href="#biocypher._create.BioCypherNode" title="biocypher._create.BioCypherNode"><em>BioCypherNode</em></a>) – node representing the relationship</p></li>
+<li><p><strong>source_edge</strong> (<a class="reference internal" href="#biocypher._create.BioCypherEdge" title="biocypher._create.BioCypherEdge"><em>BioCypherEdge</em></a>) – edge representing the source of the
+relationship</p></li>
+<li><p><strong>target_edge</strong> (<a class="reference internal" href="#biocypher._create.BioCypherEdge" title="biocypher._create.BioCypherEdge"><em>BioCypherEdge</em></a>) – edge representing the target of the
+relationship</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher._create.VersionNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">VersionNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'BioCypher'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bcy_driver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.VersionNode" title="Permalink to this definition"></a></dt>
+<dd><p>Versioning and graph structure information meta node. Inherits from
+BioCypherNode but fixes label to “:BioCypher” and sets version
+by using the current date and time (meaning it overrides both
+mandatory args from BioCypherNode).</p>
+<p>Is created upon establishment of connection with the database and
+remains fixed for each BioCypher “session” (ie, the entire duration
+from starting the connection to the termination of the BioCypher
+adapter instance). Is connected to MetaNodes and MetaEdges via
+“:CONTAINS” relationships.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._create.VersionNode.get_id">
+<span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._create.VersionNode.get_id" title="Permalink to this definition"></a></dt>
+<dd><p>Returns primary node identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>node_id</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._create.VersionNode.get_label">
+<span class="sig-name descname"><span class="pre">get_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._create.VersionNode.get_label" title="Permalink to this definition"></a></dt>
+<dd><p>Returns primary node label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>node_label</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -624,7 +625,7 @@ identifiers.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="biocypher._translate.gen_translate_edges">
-<span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">gen_translate_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_tar_type_tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.gen_translate_edges" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">gen_translate_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_tar_type_prop_tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.gen_translate_edges" title="Permalink to this definition"></a></dt>
 <dd><p>Translates input edge representation to a representation that
 conforms to the schema of the given BioCypher graph. For now
 requires explicit statement of edge type on pass.</p>
@@ -648,7 +649,7 @@ notation using the <cite>leaves</cite>.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="biocypher._translate.gen_translate_nodes">
-<span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">gen_translate_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type_tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.gen_translate_nodes" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">gen_translate_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type_prop_tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.gen_translate_nodes" title="Permalink to this definition"></a></dt>
 <dd><p>Translates input node representation to a representation that
 conforms to the schema of the given BioCypher graph. For now
 requires explicit statement of node type on pass.</p>
