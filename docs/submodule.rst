@@ -9,11 +9,6 @@ Submodule documentation
 .. automodule:: biocypher._driver
    :members: 
 
-`_check.py`: BioCypher Format Data Representation and Consistency Checks
-========================================================================
-.. automodule:: biocypher._check
-   :members:
-
 `_create.py`: Base Classes for Node and Edge Representations in BioCypher
 =========================================================================
 .. automodule:: biocypher._create
