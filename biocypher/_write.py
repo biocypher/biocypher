@@ -419,6 +419,8 @@ class BatchWriter:
                         props_list.append(f"{k}:long")
                     elif v in ["float", "double"]:
                         props_list.append(f"{k}:double")
+                    elif v in ["bool"]:
+                        props_list.append(f"{k}:bool")
                     else:
                         props_list.append(f"{k}")
 
@@ -498,7 +500,7 @@ class BatchWriter:
                     p = nprops.get(k)
                     if p is None:
                         plist.append("")
-                    elif v == "int" or v == "float":
+                    elif v in ["int", "long", "float", "double", "bool"]:
                         plist.append(str(p))
                     else:
                         plist.append(self.quote + str(p) + self.quote)
