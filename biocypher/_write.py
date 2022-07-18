@@ -415,9 +415,9 @@ class BatchWriter:
                 # concatenate key:value in props
                 props_list = []
                 for k, v in props.items():
-                    if v == "int":
-                        props_list.append(f"{k}:int")
-                    elif v == "float":
+                    if v in ["int", "long"]:
+                        props_list.append(f"{k}:long")
+                    elif v in ["float", "double"]:
                         props_list.append(f"{k}:double")
                     else:
                         props_list.append(f"{k}")
