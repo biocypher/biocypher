@@ -253,7 +253,20 @@ entity, “Pathway”.</p>
 <p>This will create a “faux” Biolink class at BioCypher runtime, extending
 the hierarchical tree to include <code class="docutils literal notranslate"><span class="pre">Tissue</span></code> as a
 <code class="docutils literal notranslate"><span class="pre">GrossAnatomicalStructure</span></code>, preserving the entire inheritance of the
-parent class.</p>
+parent class. BioCypher can create arbitrarily long inheritance
+structures by accepting lists as input to the <code class="docutils literal notranslate"><span class="pre">is_a</span></code> field, as long as
+the final entry in the list is an existant Biolink entity. All entities
+along the list will be established as virtual children of the Biolink
+parent node. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MutationToTissueAssociation</span><span class="p">:</span>
+  <span class="n">is_a</span><span class="p">:</span> <span class="p">[</span><span class="n">GenotypeToTissueAssociation</span><span class="p">,</span> <span class="n">EntityToTissueAssociation</span><span class="p">,</span> <span class="n">Association</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Where only <code class="docutils literal notranslate"><span class="pre">Association</span></code> is an existent class in the Biolink model.
+Generally, it is preferable to add extensions to the Biolink model to
+the original repository via a pull request to ensure compatibility with
+other DBs. Creating a hard-wired extension as described in the next
+section can be a first step towards a pull request to the Biolink repo.</p>
 </section>
 </section>
 <section id="hard-wired-extensions">

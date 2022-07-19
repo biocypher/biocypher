@@ -190,7 +190,22 @@ Tissue:
 This will create a "faux" Biolink class at BioCypher runtime, extending
 the hierarchical tree to include `Tissue` as a
 `GrossAnatomicalStructure`, preserving the entire inheritance of the
-parent class.
+parent class. BioCypher can create arbitrarily long inheritance
+structures by accepting lists as input to the `is_a` field, as long as
+the final entry in the list is an existant Biolink entity. All entities
+along the list will be established as virtual children of the Biolink 
+parent node. For example:
+
+```
+MutationToTissueAssociation:
+  is_a: [GenotypeToTissueAssociation, EntityToTissueAssociation, Association]
+```
+
+Where only `Association` is an existent class in the Biolink model.
+Generally, it is preferable to add extensions to the Biolink model to
+the original repository via a pull request to ensure compatibility with
+other DBs. Creating a hard-wired extension as described in the next
+section can be a first step towards a pull request to the Biolink repo.
 
 ### Hard-wired extensions
 
