@@ -88,21 +88,8 @@ def test_writer_and_output_dir(bw):
 
 
 def test_write_node_data_headers_import_call(bw):
-    nodes = []
     # four proteins, four miRNAs
-    for i in range(8):
-        bnp = BioCypherNode(
-            f"p{i+1}",
-            "Protein",
-            {"score": 4 / (i + 1), "name": "StringProperty1", "taxon": 9606},
-        )
-        nodes.append(bnp)
-        bnm = BioCypherNode(
-            f"m{i+1}",
-            "microRNA",
-            {"name": "StringProperty1", "taxon": 9606},
-        )
-        nodes.append(bnm)
+    nodes = _get_nodes(8)
 
     passed = bw.write_nodes(nodes[:4])
     passed = bw.write_nodes(nodes[4:])
@@ -126,6 +113,25 @@ def test_write_node_data_headers_import_call(bw):
         and c
         == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/microRNA-header.csv,{path}/microRNA-part.*" '
     )
+
+
+def _get_nodes(l: int) -> list:
+    nodes = []
+    for i in range(l):
+        bnp = BioCypherNode(
+            f"p{i+1}",
+            "Protein",
+            {"score": 4 / (i + 1), "name": "StringProperty1", "taxon": 9606},
+        )
+        nodes.append(bnp)
+        bnm = BioCypherNode(
+            f"m{i+1}",
+            "microRNA",
+            {"name": "StringProperty1", "taxon": 9606},
+        )
+        nodes.append(bnm)
+
+    return nodes
 
 
 def test_property_types(bw):
@@ -158,21 +164,7 @@ def test_property_types(bw):
 
 
 def test_write_node_data_from_list(bw):
-    nodes = []
-    # four proteins, four miRNAs
-    for i in range(4):
-        bnp = BioCypherNode(
-            f"p{i+1}",
-            "Protein",
-            {"score": 4 / (i + 1), "name": "StringProperty1", "taxon": 9606},
-        )
-        nodes.append(bnp)
-        bnm = BioCypherNode(
-            f"m{i+1}",
-            "microRNA",
-            {"name": "StringProperty1", "taxon": 9606},
-        )
-        nodes.append(bnm)
+    nodes = _get_nodes(4)
 
     passed = bw._write_node_data(nodes, batch_size=1e6)
 
@@ -195,21 +187,7 @@ def test_write_node_data_from_list(bw):
 
 
 def test_write_node_data_from_gen(bw):
-    nodes = []
-    le = 4
-    for i in range(le):
-        bnp = BioCypherNode(
-            f"p{i+1}",
-            "Protein",
-            {"score": 4 / (i + 1), "name": "StringProperty1", "taxon": 9606},
-        )
-        nodes.append(bnp)
-        bnm = BioCypherNode(
-            f"m{i+1}",
-            "microRNA",
-            {"name": "StringProperty1", "taxon": 9606},
-        )
-        nodes.append(bnm)
+    nodes = _get_nodes(4)
 
     def node_gen(nodes):
         yield from nodes
@@ -274,25 +252,7 @@ def test_write_node_data_from_gen_no_props(bw):
 
 
 def test_write_node_data_from_large_gen(bw):
-    nodes = []
-    le = int(1e4 + 4)
-    for i in range(le):
-        bnp = BioCypherNode(
-            f"p{i+1}",
-            "Protein",
-            {
-                "name": get_random_string(4),
-                "score": 4 / (i + 1),
-                "taxon": get_random_string(8),
-            },
-        )
-        nodes.append(bnp)
-        bnm = BioCypherNode(
-            f"m{i+1}",
-            "microRNA",
-            {"p1": get_random_string(4), "p2": get_random_string(8)},
-        )
-        nodes.append(bnm)
+    nodes = _get_nodes(int(1e4 + 4))
 
     def node_gen(nodes):
         yield from nodes
@@ -322,21 +282,7 @@ def test_write_node_data_from_large_gen(bw):
 
 
 def test_too_many_properties(bw):
-    nodes = []
-    le = 1
-    for i in range(le):
-        bnp = BioCypherNode(
-            f"p{i+1}",
-            "Protein",
-            {"p1": get_random_string(4), "p2": get_random_string(8)},
-        )
-        nodes.append(bnp)
-        bnm = BioCypherNode(
-            f"m{i+1}",
-            "microRNA",
-            {"p1": get_random_string(4), "p2": get_random_string(8)},
-        )
-        nodes.append(bnm)
+    nodes = _get_nodes(1)
 
     bn1 = BioCypherNode(
         "p0",
@@ -362,21 +308,7 @@ def test_too_many_properties(bw):
 
 
 def test_not_enough_properties(bw):
-    nodes = []
-    le = 1
-    for i in range(le):
-        bnp = BioCypherNode(
-            f"p{i+1}",
-            "Protein",
-            {"p1": get_random_string(4), "p2": get_random_string(8)},
-        )
-        nodes.append(bnp)
-        bnm = BioCypherNode(
-            f"m{i+1}",
-            "microRNA",
-            {"p1": get_random_string(4), "p2": get_random_string(8)},
-        )
-        nodes.append(bnm)
+    nodes = _get_nodes(1)
 
     bn1 = BioCypherNode(
         "p0",
@@ -441,25 +373,7 @@ def test_write_none_type_property_and_order_invariance(bw):
 
 
 def test_accidental_exact_batch_size(bw):
-    nodes = []
-    le = int(1e4)
-    for i in range(le):
-        bnp = BioCypherNode(
-            f"p{i+1}",
-            "Protein",
-            {
-                "name": get_random_string(4),
-                "score": 4 / (i + 1),
-                "taxon": 9606,
-            },
-        )
-        nodes.append(bnp)
-        bnm = BioCypherNode(
-            f"m{i+1}",
-            "microRNA",
-            {"p1": get_random_string(4), "taxon": 9606},
-        )
-        nodes.append(bnm)
+    nodes = _get_nodes(int(1e4))
 
     def node_gen(nodes):
         yield from nodes
@@ -492,32 +406,12 @@ def test_accidental_exact_batch_size(bw):
         and not isfile(p1_csv)
         and not isfile(m1_csv)
         and p == "UniProtKB:ID;name;score:double;taxon:long;:LABEL"
-        and m == "MIR:ID;p1;taxon:long;:LABEL"
+        and m == "MIR:ID;name;taxon:long;:LABEL"
     )
 
 
 def test_write_edge_data_from_gen(bw):
-    le = 4
-    edges = []
-    for i in range(le):
-        e1 = BioCypherEdge(
-            source_id=f"p{i}",
-            target_id=f"p{i + 1}",
-            relationship_label="PERTURBED_IN_DISEASE",
-            properties={"residue": "T253", "level": 4},
-            # we suppose the verb-form relationship label is created by
-            # translation functionality in translate.py
-        )
-        edges.append(e1)
-        e2 = BioCypherEdge(
-            source_id=f"m{i}",
-            target_id=f"p{i + 1}",
-            relationship_label="Is_Mutated_In",
-            properties={"site": "3-UTR", "confidence": 1},
-            # we suppose the verb-form relationship label is created by
-            # translation functionality in translate.py
-        )
-        edges.append(e2)
+    edges = _get_edges(4)
 
     def edge_gen(edges):
         yield from edges
@@ -541,9 +435,33 @@ def test_write_edge_data_from_gen(bw):
     )
 
 
+def _get_edges(l):
+    edges = []
+    for i in range(l):
+        e1 = BioCypherEdge(
+            source_id=f"p{i}",
+            target_id=f"p{i + 1}",
+            relationship_label="PERTURBED_IN_DISEASE",
+            properties={"residue": "T253", "level": 4},
+            # we suppose the verb-form relationship label is created by
+            # translation functionality in translate.py
+        )
+        edges.append(e1)
+        e2 = BioCypherEdge(
+            source_id=f"m{i}",
+            target_id=f"p{i + 1}",
+            relationship_label="Is_Mutated_In",
+            properties={"site": "3-UTR", "confidence": 1},
+            # we suppose the verb-form relationship label is created by
+            # translation functionality in translate.py
+        )
+        edges.append(e2)
+    return edges
+
+
 def test_write_edge_data_from_large_gen(bw):
 
-    edges = create_edges(int(1e4 + 4))
+    edges = _get_edges(int(1e4 + 4))
 
     def edge_gen(edges):
         yield from edges
@@ -569,32 +487,8 @@ def test_write_edge_data_from_large_gen(bw):
     )
 
 
-def create_edges(le):
-    edges = []
-    for i in range(le):
-        e1 = BioCypherEdge(
-            source_id=f"p{i}",
-            target_id=f"p{i + 1}",
-            relationship_label="PERTURBED_IN_DISEASE",
-            properties={"residue": "T253", "level": 4},
-            # we suppose the verb-form relationship label is created by
-            # translation functionality in translate.py
-        )
-        edges.append(e1)
-        e2 = BioCypherEdge(
-            source_id=f"m{i}",
-            target_id=f"p{i + 1}",
-            relationship_label="Is_Mutated_In",
-            properties={"site": "3-UTR", "confidence": 1},
-            # we suppose the verb-form relationship label is created by
-            # translation functionality in translate.py
-        )
-        edges.append(e2)
-    return edges
-
-
 def test_write_edge_data_from_list(bw):
-    edges = create_edges(4)
+    edges = _get_edges(4)
 
     passed = bw._write_edge_data(edges, batch_size=int(1e4))
 
@@ -652,39 +546,9 @@ def test_write_edge_data_from_list_no_props(bw):
 
 
 def test_write_edge_data_headers_import_call(bw):
-    le = 8
-    edges = []
-    for i in range(le):
-        e1 = BioCypherEdge(
-            source_id=f"p{i}",
-            target_id=f"p{i + 1}",
-            relationship_label="PERTURBED_IN_DISEASE",
-            properties={"residue": "T253", "level": 4},
-        )
-        edges.append(e1)
-        e2 = BioCypherEdge(
-            source_id=f"m{i}",
-            target_id=f"p{i + 1}",
-            relationship_label="Is_Mutated_In",
-            properties={"site": "3-UTR", "confidence": 1},
-        )
-        edges.append(e2)
+    edges = _get_edges(8)
 
-    nodes = []
-    # four proteins, four miRNAs
-    for i in range(4):
-        bnp = BioCypherNode(
-            f"p{i+1}",
-            "Protein",
-            {"score": 4 / (i + 1), "name": "StringProperty1", "taxon": 9606},
-        )
-        nodes.append(bnp)
-        bnm = BioCypherNode(
-            f"m{i+1}",
-            "microRNA",
-            {"name": "StringProperty1", "taxon": 9606},
-        )
-        nodes.append(bnm)
+    nodes = _get_nodes(8)
 
     def edge_gen1(edges):
         yield from edges[:4]
@@ -719,25 +583,7 @@ def test_write_edge_data_headers_import_call(bw):
 
 
 def test_BioCypherRelAsNode_implementation(bw):
-    trips = []
-    le = 4
-    for i in range(le):
-        n = BioCypherNode(
-            f"i{i+1}",
-            "PostTranslationalInteraction",
-            {"directed": True, "effect": -1},
-        )
-        e1 = BioCypherEdge(
-            source_id=f"i{i+1}",
-            target_id=f"p{i+1}",
-            relationship_label="IS_SOURCE_OF",
-        )
-        e2 = BioCypherEdge(
-            source_id=f"i{i}",
-            target_id=f"p{i + 2}",
-            relationship_label="IS_TARGET_OF",
-        )
-        trips.append(BioCypherRelAsNode(n, e1, e2))
+    trips = _get_rel_as_nodes(4)
 
     def gen(lis):
         yield from lis
@@ -766,12 +612,9 @@ def test_BioCypherRelAsNode_implementation(bw):
     )
 
 
-def test_RelAsNode_overwrite_behaviour(bw):
-    # if rel as node is called from successive write calls, SOURCE_OF,
-    # TARGET_OF, and PART_OF should be continued, not overwritten
-    trips = []
-    le = 8
-    for i in range(le):
+def _get_rel_as_nodes(l):
+    rels = []
+    for i in range(l):
         n = BioCypherNode(
             f"i{i+1}",
             "PostTranslationalInteraction",
@@ -787,7 +630,14 @@ def test_RelAsNode_overwrite_behaviour(bw):
             target_id=f"p{i + 2}",
             relationship_label="IS_TARGET_OF",
         )
-        trips.append(BioCypherRelAsNode(n, e1, e2))
+        rels.append(BioCypherRelAsNode(n, e1, e2))
+    return rels
+
+
+def test_RelAsNode_overwrite_behaviour(bw):
+    # if rel as node is called from successive write calls, SOURCE_OF,
+    # TARGET_OF, and PART_OF should be continued, not overwritten
+    trips = _get_rel_as_nodes(8)
 
     def gen1(lis):
         yield from lis[:5]
@@ -900,21 +750,7 @@ def test_write_offline():
         user_schema_config_path="biocypher/_config/test_schema_config.yaml",
     )
 
-    nodes = []
-    # four proteins, four miRNAs
-    for i in range(4):
-        bnp = BioCypherNode(
-            f"p{i+1}",
-            "Protein",
-            {"score": 4 / (i + 1), "name": "StringProperty1", "taxon": 9606},
-        )
-        nodes.append(bnp)
-        bnm = BioCypherNode(
-            f"m{i+1}",
-            "microRNA",
-            {"name": "StringProperty1", "taxon": 9606},
-        )
-        nodes.append(bnm)
+    nodes = _get_nodes(4)
 
     passed = d.write_nodes(nodes, dirname=path)
 
@@ -957,3 +793,22 @@ def test_duplicate_id(bw):
     l_lines0 = sum(1 for _ in open(csv))
 
     assert passed and l_lines0 == 1
+
+
+def test_generic_id_flag(bw):
+    nodes = _get_nodes(4)
+
+    bw.generic_ids = True
+
+    passed = bw.write_nodes(nodes)
+
+    p_csv = os.path.join(path, "Protein-header.csv")
+    m_csv = os.path.join(path, "microRNA-header.csv")
+
+    with open(p_csv) as f:
+        pr = f.read()
+
+    with open(m_csv) as f:
+        mi = f.read()
+
+    assert passed and pr.startswith(":ID") and mi.startswith(":ID")

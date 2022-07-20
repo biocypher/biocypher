@@ -125,6 +125,7 @@ class BatchWriter:
         delimiter: str = ",",
         array_delimiter: str = "|",
         quote: str = "'",
+        generic_ids: bool = False,
     ):
         """ """
         self.delim = delimiter
@@ -142,6 +143,8 @@ class BatchWriter:
         self.import_call_nodes = ""
         self.import_call_edges = ""
         self.import_call = ""
+
+        self.generic_ids = generic_ids
 
         timestamp = lambda: datetime.now().strftime("%Y%m%d%H%M")
 
@@ -397,7 +400,10 @@ class BatchWriter:
             # create header CSV with ID, properties, labels
 
             # preferred ID from schema
-            id = self.leaves[label]["preferred_id"] + ":ID"
+            if not self.generic_ids:
+                id = self.leaves[label]["preferred_id"] + ":ID"
+            else:
+                id = ":ID"
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
