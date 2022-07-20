@@ -44,6 +44,7 @@ def test_translate_nodes(version_node):
         ("G9205", "protein", {"taxon": 9606}),
         ("hsa-miR-132-3p", "mirna", {"taxon": 9606}),
         ("ASDB_OSBS", "complex", {"taxon": 9606}),
+        ("REACT:25520", "reactome", {}),
     ]
     t = gen_translate_nodes(version_node.leaves, id_type)
 
@@ -53,6 +54,21 @@ def test_translate_nodes(version_node):
     assert next(t).get_label() == "Protein"
     assert next(t).get_label() == "microRNA"
     assert next(t).get_label() == "MacromolecularComplexMixin"
+
+
+def test_specific_and_generic_ids(version_node):
+    id_type = [
+        ("CHAT", "hgnc", {"taxon": 9606}),
+        ("REACT:25520", "reactome", {}),
+    ]
+    t = list(gen_translate_nodes(version_node.leaves, id_type))
+
+    assert (
+        t[0].get_id() == "CHAT"
+        and t[0].get_properties().get("HGNC") == "CHAT"
+        and t[1].get_id() == "REACT:25520"
+        and t[1].get_properties().get("REACT") == "REACT:25520"
+    )
 
 
 def test_translate_edges(version_node):

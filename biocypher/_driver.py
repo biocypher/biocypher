@@ -34,7 +34,12 @@ import neo4j_utils
 
 from ._write import BatchWriter
 from ._config import config as _config
-from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode, VersionNode
+from ._create import (
+    BioCypherEdge,
+    BioCypherNode,
+    BioCypherRelAsNode,
+    VersionNode,
+)
 from ._translate import (
     BiolinkAdapter,
     gen_translate_edges,
@@ -179,11 +184,11 @@ class Driver(neo4j_utils.Driver):
         no_l = []
         # leaves of the hierarchy specified in schema yaml
         for entity, params in self.db_meta.leaves.items():
-            no_l.append(BioCypherNode(
-                node_id=entity, 
-                node_label="MetaNode", 
-                properties=params
-            ))
+            no_l.append(
+                BioCypherNode(
+                    node_id=entity, node_label="MetaNode", properties=params
+                )
+            )
         self.add_biocypher_nodes(no_l)
 
         # remove connection of structure nodes from previous version
@@ -194,11 +199,13 @@ class Driver(neo4j_utils.Driver):
         ed_v = []
         current_version = self.db_meta.get_id()
         for entity in self.db_meta.leaves.keys():
-            ed_v.append(BioCypherEdge(
-                source_id=current_version, 
-                target_id=entity, 
-                relationship_label="CONTAINS"
-            ))
+            ed_v.append(
+                BioCypherEdge(
+                    source_id=current_version,
+                    target_id=entity,
+                    relationship_label="CONTAINS",
+                )
+            )
         self.add_biocypher_edges(ed_v)
 
         # add graph structure between MetaNodes

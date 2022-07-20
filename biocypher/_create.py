@@ -86,7 +86,15 @@ class BioCypherNode:
 
     node_id: str
     node_label: str
+    preferred_id: str = "id"
     properties: dict = field(default_factory=dict)
+
+    def __post_init__(self):
+        """
+        Check for preferred id and add to properties if present.
+        """
+        if not self.preferred_id == "id":
+            self.properties[self.preferred_id] = self.node_id
 
     def get_id(self) -> str:
         """

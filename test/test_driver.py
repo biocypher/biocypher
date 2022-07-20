@@ -8,7 +8,7 @@ import neo4j
 def driver():
     # neo4j database needs to be running!
     # there needs to be a database called "test" in the neo4j instance
-    d = Driver(db_name = "test", increment_version=False)
+    d = Driver(db_name="test", wipe=True, increment_version=False)
     # create single node in case of empty DB for testing?
     # d.add_biocypher_nodes(BioCypherNode("TestID", "Test"))
     yield d
@@ -26,11 +26,12 @@ def driver():
 
 
 def test_wipe():
-    # just convenience function to wipe the database
-    d = Driver(db_name='test', wipe=True)
+    # just convenience function to wipe the database in testing env
+    d = Driver(db_name="test", wipe=True)
     d.close()
 
     assert True
+
 
 def test_create_driver(driver):
 
@@ -38,9 +39,10 @@ def test_create_driver(driver):
 
 
 def test_create_offline():
-    d = Driver(offline = True)
+    d = Driver(offline=True)
     assert isinstance(d, Driver)
     d.close()
+
 
 def test_connect_to_db(driver):
 
@@ -90,7 +92,7 @@ def test_add_biocypher_node_list(driver):
     r, summary = driver.query(
         "MATCH (n:Test) " "WITH n, n.id AS id " "RETURN id "
     )
-    assert r[0]["id"] == "test_id1" and r[1]["id"] == "test_id2"
+    assert set([r[0]["id"], r[1]["id"]]) == set(["test_id1", "test_id2"])
 
 
 def test_add_biocypher_node_generator(driver):
@@ -107,6 +109,24 @@ def test_add_biocypher_node_generator(driver):
         "MATCH (n:Test) " "WITH n, n.id AS id " "RETURN id "
     )
     assert r[0]["id"] == "test_id1" and r[1]["id"] == "test_id2"
+
+
+def test_add_specific_id_node(driver):
+    n = BioCypherNode(node_id="CHAT", node_label="Gene", preferred_id="HGNC")
+    driver.add_biocypher_nodes(n)
+
+    r, summary = driver.query("MATCH (n:Gene) " "RETURN n")
+
+    assert r[0]["n"].get("HGNC") is not None
+
+
+def test_add_generic_id_node(driver):
+    n = BioCypherNode(node_id="CHAT", node_label="Gene", preferred_id="HGNC")
+    driver.add_biocypher_nodes(n)
+
+    r, summary = driver.query("MATCH (n:Gene) " "RETURN n")
+
+    assert r[0]["n"].get("id") is not None
 
 
 def test_add_invalid_biocypher_edge(driver):

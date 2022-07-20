@@ -357,12 +357,32 @@ def gen_translate_nodes(leaves, id_type_prop_tuples):
             # filter properties for those specified in schema_config if any
             _filtered_props = _filter_props(leaves, _bl_type, _props)
 
+            # preferred id
+            _preferred_id = _get_preferred_id(leaves, _bl_type)
+
             yield BioCypherNode(
-                node_id=_id, node_label=_bl_type, properties=_filtered_props
+                node_id=_id,
+                node_label=_bl_type,
+                preferred_id=_preferred_id,
+                properties=_filtered_props,
             )
 
         else:
             logger.warning("No Biolink equivalent found for type " + _type)
+
+
+def _get_preferred_id(leaves, _bl_type):
+    """
+    Returns the preferred id for the given Biolink type.
+    """
+
+    if _bl_type in leaves.keys():
+        if "preferred_id" in leaves[_bl_type].keys():
+            return leaves[_bl_type]["preferred_id"]
+        else:
+            return "id"
+    else:
+        return "id"
 
 
 def _filter_props(leaves: dict, bl_type: str, props: dict):
