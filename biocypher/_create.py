@@ -48,7 +48,9 @@ from datetime import datetime
 import yaml
 from . import _config as config
 from ._logger import logger
+
 logger.debug(f"Loading module {__name__}.")
+
 
 @dataclass(frozen=True)
 class BioCypherNode:
@@ -81,6 +83,7 @@ class BioCypherNode:
             hierarchical labels? if so, how do we implement optional
             secondary labels?
     """
+
     node_id: str
     node_label: str
     properties: dict = field(default_factory=dict)
@@ -127,6 +130,7 @@ class BioCypherNode:
             "properties": self.properties,
         }
 
+
 @dataclass(frozen=True)
 class BioCypherEdge:
     """
@@ -147,11 +151,12 @@ class BioCypherEdge:
         target_id (string): consensus "best" id for biological entity
 
         relationship_label (string): type of interaction, UPPERCASE
-        
+
         properties (dict): collection of all other properties of the
         respective edge
 
     """
+
     source_id: str
     target_id: str
     relationship_label: str
@@ -210,6 +215,7 @@ class BioCypherEdge:
             "properties": self.properties,
         }
 
+
 @dataclass(frozen=True)
 class BioCypherRelAsNode:
     """
@@ -222,7 +228,7 @@ class BioCypherRelAsNode:
     Args:
 
         node (BioCypherNode): node representing the relationship
-        
+
         source_edge (BioCypherEdge): edge representing the source of the
             relationship
 
@@ -241,7 +247,7 @@ class BioCypherRelAsNode:
                 f"BioCypherRelAsNode.node must be a BioCypherNode, "
                 f"not {type(self.node)}."
             )
-        
+
         if not isinstance(self.source_edge, BioCypherEdge):
             raise TypeError(
                 f"BioCypherRelAsNode.source_edge must be a BioCypherEdge, "
@@ -263,6 +269,7 @@ class BioCypherRelAsNode:
     def get_target_edge(self) -> BioCypherEdge:
         return self.target_edge
 
+
 class VersionNode:
     """
     Versioning and graph structure information meta node. Inherits from
@@ -278,12 +285,12 @@ class VersionNode:
     """
 
     def __init__(
-        self, 
+        self,
         offline: bool = False,
         from_config: bool = False,
         config_file: str = None,
         node_label: str = "BioCypher",
-        bcy_driver = None,
+        bcy_driver=None,
     ):
 
         self.offline = offline
@@ -293,7 +300,9 @@ class VersionNode:
         self.bcy_driver = bcy_driver
 
         self.node_id = self._get_current_id()
-        self.graph_state = self._get_graph_state() if not self.offline else None
+        self.graph_state = (
+            self._get_graph_state() if not self.offline else None
+        )
         self.schema = self._get_graph_schema(
             from_config=self.from_config, config_file=self.config_file
         )
@@ -411,48 +420,67 @@ class VersionNode:
         while stack:
             key, value = stack.pop()
             if isinstance(value, dict):
+                # using `represented_as` as a marker for an entity
+                # TODO find something better
                 if "represented_as" not in value.keys():
                     if key not in visited:
                         stack.extend(value.items())
 
                 else:
-                    if "preferred_id" in value.keys():
-                        if isinstance(value["preferred_id"], list):
-                            # create "virtual" leaves for each preferred
-                            # id
 
-                            # adjust lengths (if representation and/or id are
-                            # not given as lists but inputs are multiple)
-                            l = len(value["label_in_input"])
-                            # adjust pid length if necessary
-                            if isinstance(value["preferred_id"], str):
-                                pids = [value["preferred_id"]] * l
-                            else:
-                                pids = value["preferred_id"]
-                            # adjust rep length if necessary
-                            if isinstance(value["represented_as"], str):
-                                reps = [value["represented_as"]] * l
-                            else:
-                                reps = value["represented_as"]
+                    # create virtual leaves for multiple preferred id types
+                    if isinstance(value.get("preferred_id"), list):
+                        # create "virtual" leaves for each preferred
+                        # id
 
-                            for pid, label, rep in zip(
-                                pids,
-                                value["label_in_input"],
-                                reps,
-                            ):
-                                skey = pid + "." + key
-                                svalue = {
-                                    "preferred_id": pid,
-                                    "label_in_input": label,
-                                    "represented_as": rep,
-                                    # mark as virtual
-                                    "virtual": True,
-                                }
-                                # inherit properties if exist
-                                if value.get("properties"):
-                                    svalue["properties"] = value["properties"]
-                                leaves[skey] = svalue
-                    # add parent
+                        # adjust lengths (if representation and/or id are
+                        # not given as lists but inputs are multiple)
+                        l = len(value["label_in_input"])
+                        # adjust pid length if necessary
+                        if isinstance(value["preferred_id"], str):
+                            pids = [value["preferred_id"]] * l
+                        else:
+                            pids = value["preferred_id"]
+                        # adjust rep length if necessary
+                        if isinstance(value["represented_as"], str):
+                            reps = [value["represented_as"]] * l
+                        else:
+                            reps = value["represented_as"]
+
+                        for pid, label, rep in zip(
+                            pids,
+                            value["label_in_input"],
+                            reps,
+                        ):
+                            skey = pid + "." + key
+                            svalue = {
+                                "preferred_id": pid,
+                                "label_in_input": label,
+                                "represented_as": rep,
+                                # mark as virtual
+                                "virtual": True,
+                            }
+                            # inherit properties if exist
+                            if value.get("properties"):
+                                svalue["properties"] = value["properties"]
+                            leaves[skey] = svalue
+
+                    # create virtual leaves for multiple sources
+                    elif isinstance(value.get("source"), list):
+                        # create "virtual" leaves for each source
+                        for source in value["source"]:
+                            skey = source + "." + key
+                            svalue = {
+                                "source": source,
+                                # mark as virtual
+                                "virtual": True,
+                            }
+                            # inherit properties if exist
+                            if value.get("properties"):
+                                svalue["properties"] = value["properties"]
+                            leaves[skey] = svalue
+
+                    # finally, add parent
                     leaves[key] = value
             visited.add(key)
 

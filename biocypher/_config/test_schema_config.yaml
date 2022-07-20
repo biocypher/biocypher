@@ -52,14 +52,14 @@ Pathway:
 Gene:
   represented_as: node
   preferred_id: HGNC
-  label_in_input: [hgnc, uniprot] 
+  label_in_input: [hgnc, ensg] 
 
 # ad hoc child
 SideEffect:
   is_a: PhenotypicFeature
   represented_as: node
-  preferred_id: HGNC
-  label_in_input: [hgnc, uniprot] 
+  preferred_id: SIDER
+  label_in_input: sider
 
 # ---
 # Associations
