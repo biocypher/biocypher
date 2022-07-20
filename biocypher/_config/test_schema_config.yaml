@@ -116,7 +116,7 @@ MutationToTissueAssociation:
 
 
 # multiple input to multiple virtual leaves
-VariantToGeneAssociation: # -> Known.Variant... and Somatic.Variant...
+VariantToGeneAssociation: # -> Known.... and Somatic....
   represented_as: node
   preferred_id: custom
   source: [Known.SequenceVariant, Somatic.SequenceVariant]

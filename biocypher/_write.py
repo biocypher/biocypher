@@ -474,14 +474,17 @@ class BatchWriter:
         for n in node_list:
 
             # check for deviations in properties
-            nprops = n.get_properties()
-            hprops = list(prop_dict.keys())
-            keys = list(nprops.keys())
+            # node properties
+            n_props = n.get_properties()
+            n_keys = list(n_props.keys())
+            # reference properties
+            ref_props = list(prop_dict.keys())
+
             # compare lists order invariant
-            if not set(hprops) == set(keys):
+            if not set(ref_props) == set(n_keys):
                 onode = n.get_id()
-                oprop1 = set(hprops).difference(keys)
-                oprop2 = set(keys).difference(hprops)
+                oprop1 = set(ref_props).difference(n_keys)
+                oprop2 = set(n_keys).difference(ref_props)
                 logger.error(
                     f"At least one node of the class {n.get_label()} "
                     f"has more or fewer properties than the others. "
@@ -492,13 +495,13 @@ class BatchWriter:
 
             line = [n.get_id()]
 
-            if hprops:
+            if ref_props:
 
                 plist = []
                 # make all into strings, put actual strings in quotes
                 for k, v in prop_dict.items():
-                    p = nprops.get(k)
-                    if p is None:
+                    p = n_props.get(k)
+                    if p is None:  # TODO make field empty instead of ""?
                         plist.append("")
                     elif v in ["int", "long", "float", "double", "bool"]:
                         plist.append(str(p))
@@ -540,7 +543,9 @@ class BatchWriter:
             # label that is passed in
             bin_l = {}  # dict to store the length of each list for
             # batching cutoff
-            props = defaultdict(dict)  # dict to store a dict of properties
+            reference_props = defaultdict(
+                dict
+            )  # dict to store a dict of properties
             # for each label to check for consistency and their type
             # for now, relevant for `int`
             for e in edges:
@@ -552,19 +557,48 @@ class BatchWriter:
                     )
 
                 else:
+                    # TODO duplicate rel checking?
                     label = e.get_label()
                     if not label in bins.keys():
                         # start new list
                         bins[label].append(e)
                         bin_l[label] = 1
-                        # use first edge to define properties for checking
-                        # could later be by checking all edges but much more
-                        # complicated, particularly involving batch writing
-                        # (would require "do-overs") TODO
-                        d = dict(e.get_properties())
-                        for k, v in d.items():
-                            d[k] = type(v)
-                        props[label] = d
+
+                        # get properties from config if present
+
+                        # check whether label is in bl_adapter.leaves
+                        # (may not be if it is an edge that carries the
+                        # "label_as_edge" property)
+                        cprops = None
+                        if label in self.bl_adapter.leaves:
+                            cprops = self.bl_adapter.leaves.get(label).get(
+                                "properties"
+                            )
+                        else:
+                            # try via "label_as_edge"
+                            for k, v in self.bl_adapter.leaves.items():
+                                if isinstance(v, dict):
+                                    if v.get("label_as_edge") == label:
+                                        cprops = v.get("properties")
+                                        break
+                        if cprops:
+                            d = cprops
+                        else:
+                            d = dict(e.get_properties())
+                            # encode property type
+                            for k, v in d.items():
+                                if d[k] is not None:
+                                    d[k] = type(v).__name__
+                        # else use first encountered edge to define
+                        # properties for checking; could later be by
+                        # checking all edges but much more complicated,
+                        # particularly involving batch writing (would
+                        # require "do-overs"). for now, we output a warning
+                        # if edge properties diverge from reference
+                        # properties (in write_single_edge_list_to_file)
+                        # TODO
+
+                        reference_props[label] = d
 
                     else:
                         # add to list
@@ -575,7 +609,7 @@ class BatchWriter:
                             passed = self._write_single_edge_list_to_file(
                                 bins[label],
                                 label,
-                                props[label],
+                                reference_props[label],
                             )
 
                             if not passed:
@@ -590,7 +624,7 @@ class BatchWriter:
                 passed = self._write_single_edge_list_to_file(
                     nl,
                     label,
-                    props[label],
+                    reference_props[label],
                 )
 
                 if not passed:
@@ -602,7 +636,7 @@ class BatchWriter:
             # properties in the generator pass
 
             # save first-edge properties to instance attribute
-            self.edge_property_dict = props
+            self.edge_property_dict = reference_props
 
             return True
         else:
@@ -646,10 +680,16 @@ class BatchWriter:
             if not os.path.exists(header_path):
 
                 # concatenate key:value in props
-                props_list = [
-                    f"{k}:{v.__name__}" if v.__name__ == "int" else f"{k}"
-                    for k, v in props.items()
-                ]
+                props_list = []
+                for k, v in props.items():
+                    if v in ["int", "long"]:
+                        props_list.append(f"{k}:long")
+                    elif v in ["float", "double"]:
+                        props_list.append(f"{k}:double")
+                    elif v in ["bool"]:
+                        props_list.append(f"{k}:bool")
+                    else:
+                        props_list.append(f"{k}")
 
                 # create list of lists and flatten
                 # removes need for empty check of property list
@@ -699,13 +739,16 @@ class BatchWriter:
         lines = []
         for e in edge_list:
             # check for deviations in properties
-            eprops = e.get_properties()
-            hprops = list(prop_dict.keys())
-            keys = list(eprops.keys())
-            if not keys == hprops:
+            # edge properties
+            e_props = e.get_properties()
+            e_keys = list(e_props.keys())
+            ref_props = list(prop_dict.keys())
+
+            # compare list order invariant
+            if not set(ref_props) == set(e_keys):
                 oedge = f"{e.get_source_id()}-{e.get_target_id()}"
-                oprop1 = set(hprops).difference(keys)
-                oprop2 = set(keys).difference(hprops)
+                oprop1 = set(ref_props).difference(e_keys)
+                oprop2 = set(e_keys).difference(ref_props)
                 logger.error(
                     f"At least one edge of the class {e.get_label()} "
                     f"has more or fewer properties than the others. "
@@ -713,14 +756,20 @@ class BatchWriter:
                     f"{max([oprop1, oprop2])}.",
                 )
                 return False
-            if hprops:
+
+            if ref_props:
+
                 plist = []
-                for ev, tv in zip(eprops.values(), prop_dict.values()):
-                    if tv == int:
-                        plist.append(str(ev))
-                    else:
-                        plist.append(self.quote + str(ev) + self.quote)
                 # make all into strings, put actual strings in quotes
+                for k, v in prop_dict.items():
+                    p = e_props.get(k)
+                    if p is None:  # TODO make field empty instead of ""?
+                        plist.append("")
+                    elif v in ["int", "long", "float", "double", "bool"]:
+                        plist.append(str(p))
+                    else:
+                        plist.append(self.quote + str(p) + self.quote)
+
                 lines.append(
                     self.delim.join(
                         [

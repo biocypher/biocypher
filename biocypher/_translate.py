@@ -173,15 +173,23 @@ class BiolinkAdapter:
                 # TODO does it even play a role whether they are
                 # represented as nodes vs edges?
                 input_label = self.leaves[entity].get("label_in_input")
+
+                # check for multiple inputs as well as multiple
+                # identifiers or multiple sources: otherwise, no virtual
+                # leaves necessary
                 if isinstance(input_label, list):
-                    # check for type of element
+
+                    # if entity is node
                     if self.leaves[entity]["represented_as"] == "node":
-                        # add child leaves for node or rel as node
+
+                        # if node is rel as node
                         if self.leaves[entity].get("source"):
+
                             # add child leaves for rel as node
                             if isinstance(
                                 self.leaves[entity].get("source"), list
                             ):
+
                                 # add child leaves for multiple sources
                                 for source in self.leaves[entity]["source"]:
                                     name = source + "." + entity
@@ -200,7 +208,11 @@ class BiolinkAdapter:
                                 logger.error(
                                     "Multiple targets not implemented yet."
                                 )
-                        else:
+
+                        # "named thing" node (not rel as node)
+                        elif isinstance(
+                            self.leaves[entity].get("preferred_id"), list
+                        ):
                             # add child leaves for node
                             for id in self.leaves[entity]["preferred_id"]:
                                 name = id + "." + entity
@@ -212,6 +224,8 @@ class BiolinkAdapter:
                                     "class_definition": se,
                                     "ancestors": sancestors,
                                 }
+
+                    # if entity is edge
                     else:
                         # add child leaves for edge
                         logger.error(
@@ -329,7 +343,9 @@ def gen_translate_nodes(leaves, id_type_prop_tuples):
 
     # biolink = BiolinkAdapter(leaves)
     if isinstance(id_type_prop_tuples, list):
-        logger.debug(f"Translating {len(id_type_prop_tuples)} nodes to BioCypher.")
+        logger.debug(
+            f"Translating {len(id_type_prop_tuples)} nodes to BioCypher."
+        )
     else:
         logger.debug(f"Translating nodes to BioCypher from generator.")
 
