@@ -114,6 +114,15 @@ class BioCypherNode:
         """
         return self.node_label
 
+    def get_preferred_id(self) -> str:
+        """
+        Returns preferred id.
+
+        Returns:
+            str: preferred_id
+        """
+        return self.preferred_id
+
     def get_properties(self) -> dict:
         """
         Returns all other node properties apart from primary id and

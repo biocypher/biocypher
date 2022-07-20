@@ -125,7 +125,6 @@ class BatchWriter:
         delimiter: str = ",",
         array_delimiter: str = "|",
         quote: str = "'",
-        generic_ids: bool = False,
     ):
         """ """
         self.delim = delimiter
@@ -143,8 +142,6 @@ class BatchWriter:
         self.import_call_nodes = ""
         self.import_call_edges = ""
         self.import_call = ""
-
-        self.generic_ids = generic_ids
 
         timestamp = lambda: datetime.now().strftime("%Y%m%d%H%M")
 
@@ -293,6 +290,10 @@ class BatchWriter:
                     )
                     if cprops:
                         d = cprops
+
+                        # preferred id field
+                        if not node.get_preferred_id() == "id":
+                            d[node.get_preferred_id()] = node.get_id()
                     else:
                         d = dict(node.get_properties())
                         # encode property type
@@ -399,11 +400,7 @@ class BatchWriter:
         for label, props in self.node_property_dict.items():
             # create header CSV with ID, properties, labels
 
-            # preferred ID from schema
-            if not self.generic_ids:
-                id = self.leaves[label]["preferred_id"] + ":ID"
-            else:
-                id = ":ID"
+            id = ":ID"
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
