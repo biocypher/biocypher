@@ -87,9 +87,20 @@ class BioCypherNode:
     def __post_init__(self):
         """
         Check for preferred id and add to properties if present.
+
+        Check for reserved keywords.
         """
         if not self.preferred_id == "id":
             self.properties[self.preferred_id] = self.node_id
+
+        if ":TYPE" in self.properties.keys():
+            logger.warning(
+                "Keyword ':TYPE' is reserved for Neo4j. "
+                "Removing from properties."
+                # "Renaming to 'type'."
+            )
+            # self.properties["type"] = self.properties[":TYPE"]
+            del self.properties[":TYPE"]
 
     def get_id(self) -> str:
         """
@@ -173,6 +184,20 @@ class BioCypherEdge:
     target_id: str
     relationship_label: str
     properties: dict = field(default_factory=dict)
+
+    def __post_init__(self):
+        """
+        Check for reserved keywords.
+        """
+
+        if ":TYPE" in self.properties.keys():
+            logger.debug(
+                "Keyword ':TYPE' is reserved for Neo4j. "
+                "Removing from properties."
+                # "Renaming to 'type'."
+            )
+            # self.properties["type"] = self.properties[":TYPE"]
+            del self.properties[":TYPE"]
 
     def get_source_id(self) -> str:
         """
