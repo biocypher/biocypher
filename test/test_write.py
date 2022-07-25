@@ -70,6 +70,8 @@ def bw(version_node):
         bl_adapter=bl_adapter,
         dirname=path,
         delimiter=";",
+        array_delimiter="|",
+        quote="'",
     )
 
     yield bw
@@ -762,6 +764,8 @@ def test_write_offline():
     d = Driver(
         offline=True,
         user_schema_config_path="biocypher/_config/test_schema_config.yaml",
+        delimiter=",",
+        array_delimiter="|",
     )
 
     nodes = _get_nodes(4)
