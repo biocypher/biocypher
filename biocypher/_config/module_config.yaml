@@ -10,7 +10,7 @@ neo4j_pw: your_password_here # password
 # Neo4j admin import batch writer settings
 neo4j_delimiter: '¦'
 neo4j_array_delimiter: '|'
-neo4j_quote_char: "'"
+neo4j_quote_char: '"'
 
 # Path to the log directory
 logdir: biocypher-log

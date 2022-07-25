@@ -18,11 +18,9 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
+import importlib as imp
 from types import GeneratorType
 from typing import TYPE_CHECKING, List, Optional
-import os
-import re
-import importlib as imp
 
 from more_itertools import peekable
 
@@ -32,19 +30,12 @@ if TYPE_CHECKING:
 
 import neo4j_utils
 
-from ._write import BatchWriter
 from ._config import config as _config
-from ._create import (
-    BioCypherEdge,
-    BioCypherNode,
-    BioCypherRelAsNode,
-    VersionNode,
-)
-from ._translate import (
-    BiolinkAdapter,
-    gen_translate_edges,
-    gen_translate_nodes,
-)
+from ._create import (BioCypherEdge, BioCypherNode, BioCypherRelAsNode,
+                      VersionNode)
+from ._translate import (BiolinkAdapter, gen_translate_edges,
+                         gen_translate_nodes)
+from ._write import BatchWriter
 
 __all__ = ["Driver"]
 
@@ -305,7 +296,9 @@ class Driver(neo4j_utils.Driver):
         bn = gen_translate_edges(self.db_meta.schema, src_tar_type_tuples)
         return self.add_biocypher_edges(bn)
 
-    def add_biocypher_nodes(self, nodes, explain=False, profile=False):
+    def add_biocypher_nodes(
+        self, nodes, explain: bool = False, profile: bool = False
+    ):
         """
         Accepts a node type handoff class
         (:class:`biocypher.create.BioCypherNode`) with id,
@@ -383,7 +376,9 @@ class Driver(neo4j_utils.Driver):
             logger.info("Finished merging nodes.")
             return res
 
-    def add_biocypher_edges(self, edges, explain=False, profile=False):
+    def add_biocypher_edges(
+        self, edges, explain: bool = False, profile: bool = False
+    ):
         """
         Accepts an edge type handoff class
         (:class:`biocypher.create.BioCypherEdge`) with source
@@ -496,7 +491,7 @@ class Driver(neo4j_utils.Driver):
                 logger.info("Finished merging edges.")
                 return res
 
-    def write_nodes(self, nodes, dirname=None, db_name=None):
+    def write_nodes(self, nodes, dirname: str = None, db_name: str = None):
         """
         Write BioCypher nodes to disk using the :mod:`write` module,
         formatting the CSV to enable Neo4j admin import from the target
@@ -557,7 +552,7 @@ class Driver(neo4j_utils.Driver):
     def write_edges(
         self,
         edges,
-        db_name: str,
+        db_name: str = None,
         dirname: str = None,
     ) -> None:
         """

@@ -71,18 +71,20 @@ for ordering of the earlier part files ("01, 02").
 """
 
 import glob
+
 from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
+import os
+from collections import OrderedDict, defaultdict
+from datetime import datetime
 from types import GeneratorType
 from typing import TYPE_CHECKING, Optional, Union
-from more_itertools import peekable
-from datetime import datetime
-from collections import OrderedDict, defaultdict
-import os
 
 from biocypher._config import config as _config
+from more_itertools import peekable
+
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 __all__ = ["BatchWriter"]
@@ -120,28 +122,28 @@ class BatchWriter:
         self,
         leaves: dict,
         bl_adapter: "BiolinkAdapter",
+        delimiter: str,
+        array_delimiter: str,
+        quote: str,
         dirname: Optional[str] = None,
         db_name: str = "neo4j",
-        delimiter: str = ",",
-        array_delimiter: str = "|",
-        quote: str = "'",
+        skip_bad_relationships: bool = False,
+        skip_duplicate_nodes: bool = False,
     ):
-        """ """
+        self.db_name = db_name
+
         self.delim = delimiter
         self.adelim = array_delimiter
         self.quote = quote
+        self.skip_bad_relationships = skip_bad_relationships
+        self.skip_duplicate_nodes = skip_duplicate_nodes
+
         self.leaves = leaves
         self.bl_adapter = bl_adapter
-        self.node_property_dict = None
-        self.edge_property_dict = None
-        self.import_call_base = (
-            f"bin/neo4j-admin import --database={db_name} "
-            f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
-            '--quote="\'" '
-        )
+        self.node_property_dict = {}
+        self.edge_property_dict = {}
         self.import_call_nodes = ""
         self.import_call_edges = ""
-        self.import_call = ""
 
         timestamp = lambda: datetime.now().strftime("%Y%m%d%H%M")
 
@@ -367,7 +369,8 @@ class BatchWriter:
             # properties in the generator pass
 
             # save config or first-node properties to instance attribute
-            self.node_property_dict = reference_props
+            for label in reference_props.keys():
+                self.node_property_dict[label] = reference_props[label]
 
             return True
         else:
@@ -527,8 +530,8 @@ class BatchWriter:
         Writes biocypher edges to CSV conforming to the headers created
         with `_write_edge_headers()`, and is actually required to be run
         before calling `_write_node_headers()` to set the
-        :py:attr:`self.edge_property_dict` for passing the edge properties
-        to the instance. Expects list or generator of edges
+        :py:attr:`self.edge_property_dict` for passing the edge
+        properties to the instance. Expects list or generator of edges
         from the :py:class:`BioCypherEdge` class.
 
         Args:
@@ -537,6 +540,10 @@ class BatchWriter:
 
         Returns:
             bool: The return value. True for success, False otherwise.
+
+        Todo:
+            - currently works for mixed edges but in practice often is
+              called on one iterable containing one type of edge only
         """
 
         if isinstance(edges, GeneratorType):
@@ -639,7 +646,8 @@ class BatchWriter:
             # properties in the generator pass
 
             # save first-edge properties to instance attribute
-            self.edge_property_dict = reference_props
+            for label in reference_props.keys():
+                self.edge_property_dict[label] = reference_props[label]
 
             return True
         else:
@@ -689,7 +697,7 @@ class BatchWriter:
                         props_list.append(f"{k}:long")
                     elif v in ["float", "double"]:
                         props_list.append(f"{k}:double")
-                    elif v in ["bool"]:
+                    elif v in ["bool"]:  # TODO does Neo4j support bool?
                         props_list.append(f"{k}:bool")
                     else:
                         props_list.append(f"{k}")
@@ -876,11 +884,22 @@ class BatchWriter:
             str: a bash command for neo4j-admin import
         """
 
-        # append node and edge import calls
-        self.import_call = (
-            self.import_call_base
-            + self.import_call_nodes
-            + self.import_call_edges
+        import_call = (
+            f"bin/neo4j-admin import --database={self.db_name} "
+            f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
         )
+        if not self.quote == '"':
+            import_call += f'--quote="{self.quote}" '
+        else:
+            import_call += f"--quote='{self.quote}' "
 
-        return self.import_call
+        if self.skip_bad_relationships:
+            import_call += "--skip-bad-relationships=true "
+        if self.skip_duplicate_nodes:
+            import_call += "--skip-duplicate-nodes=true "
+
+        # append node and edge import calls
+        import_call += self.import_call_nodes
+        import_call += self.import_call_edges
+
+        return import_call
