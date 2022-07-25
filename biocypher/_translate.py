@@ -38,9 +38,9 @@ from ._logger import logger
 logger.debug(f"Loading module {__name__}.")
 
 from typing import Union, Literal, Optional
-from linkml_runtime.linkml_model.meta import ClassDefinition
 import os
 
+from linkml_runtime.linkml_model.meta import ClassDefinition
 import bmt
 
 from ._config import _read_yaml, module_data_path
@@ -437,9 +437,13 @@ def gen_translate_edges(leaves, src_tar_type_prop_tuples):
         logger.debug(f"Translating edges to BioCypher from generator.")
 
     for _src, _tar, _type, _props in src_tar_type_prop_tuples:
+        # match the input label (_type) to a Biolink label from schema_config
         bl_type = _get_bl_type(leaves, _type)
 
         if bl_type is not None:
+            # filter properties for those specified in schema_config if any
+            _filtered_props = _filter_props(leaves, bl_type, _props)
+
             rep = leaves[bl_type]["represented_as"]
 
             if rep == "node":
@@ -448,13 +452,17 @@ def gen_translate_edges(leaves, src_tar_type_prop_tuples):
                     + "_"
                     + str(_tar)
                     + "_"
-                    + "_".join(str(v) for v in _props.values())
+                    + "_".join(str(v) for v in _filtered_props.values())
                 )
                 n = BioCypherNode(
-                    node_id=node_id, node_label=bl_type, properties=_props
+                    node_id=node_id,
+                    node_label=bl_type,
+                    properties=_filtered_props,
                 )
-                # directionality check
-                if _props.get("directed") == True:
+                # directionality check TODO generalise to account for
+                # different descriptions of directionality or find a
+                # more consistent solution for indicating directionality
+                if _filtered_props.get("directed") == True:
                     l1 = "IS_SOURCE_OF"
                     l2 = "IS_TARGET_OF"
                 else:
@@ -481,7 +489,7 @@ def gen_translate_edges(leaves, src_tar_type_prop_tuples):
                     source_id=_src,
                     target_id=_tar,
                     relationship_label=edge_label,
-                    properties=_props,
+                    properties=_filtered_props,
                 )
 
         else:

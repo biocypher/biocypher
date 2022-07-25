@@ -270,3 +270,38 @@ def test_properties_from_config(version_node):
         and "name" in r[1].get_properties().keys()
         and "test" not in r[2].get_properties().keys()
     )
+
+    src_tar_type = [
+        (
+            "G49205",
+            "AD",
+            "gene_gene",
+            {
+                "directional": True,
+                "score": 0.5,
+            },
+        ),
+        (
+            "G92035",
+            "AD",
+            "gene_gene",
+            {
+                "directional": False,
+                "curated": True,
+                "score": 0.5,
+                "test": "should_not_be_returned",
+            },
+        ),
+    ]
+
+    t = gen_translate_edges(version_node.leaves, src_tar_type)
+
+    r = list(t)
+    assert (
+        "directional" in r[0].get_properties().keys()
+        and "directional" in r[1].get_properties().keys()
+        and "curated" in r[1].get_properties().keys()
+        and "score" in r[0].get_properties().keys()
+        and "score" in r[1].get_properties().keys()
+        and "test" not in r[1].get_properties().keys()
+    )

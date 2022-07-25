@@ -125,3 +125,15 @@ VariantToGeneAssociation: # -> Known.... and Somatic....
     VARIANT_FOUND_IN_GENE_Known_variant_Gene,
     VARIANT_FOUND_IN_GENE_Somatic_mutation_Gene
   ]
+
+# property filter
+GeneToGeneAssociation:
+  represented_as: edge
+  preferred_id: custom
+  source: Gene
+  target: Gene
+  label_in_input: gene_gene
+  properties:
+    directional: bool
+    curated: bool
+    score: float
