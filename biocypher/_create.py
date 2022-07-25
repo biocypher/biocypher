@@ -43,9 +43,11 @@ Todo:
           interoperability)
 """
 
-from dataclasses import dataclass, field
 from datetime import datetime
+from dataclasses import field, dataclass
+
 import yaml
+
 from . import _config as config
 from ._logger import logger
 
@@ -70,18 +72,11 @@ class BioCypherNode:
             passed to neo4j for the respective node (dict)
 
     Todo:
-        - "allowed list" of property names
-        - account for all properties automatically
-        - input of properties explicit via kwargs, or require user to
-            pass dicts directly?
         - check and correct small inconsistencies such as capitalisation
             of ID names ("uniprot" vs "UniProt")
         - check for correct ID patterns (eg "ENSG" + string of numbers,
             uniprot length)
         - ID conversion using pypath translation facilities for now
-        - one label is required as a minimum, but do we want multiple
-            hierarchical labels? if so, how do we implement optional
-            secondary labels?
     """
 
     node_id: str
