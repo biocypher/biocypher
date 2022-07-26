@@ -18,9 +18,9 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
-import importlib as imp
 from types import GeneratorType
 from typing import TYPE_CHECKING, List, Optional
+import importlib as imp
 
 from more_itertools import peekable
 
@@ -30,12 +30,19 @@ if TYPE_CHECKING:
 
 import neo4j_utils
 
-from ._config import config as _config
-from ._create import (BioCypherEdge, BioCypherNode, BioCypherRelAsNode,
-                      VersionNode)
-from ._translate import (BiolinkAdapter, gen_translate_edges,
-                         gen_translate_nodes)
 from ._write import BatchWriter
+from ._config import config as _config
+from ._create import (
+    VersionNode,
+    BioCypherEdge,
+    BioCypherNode,
+    BioCypherRelAsNode,
+)
+from ._translate import (
+    BiolinkAdapter,
+    gen_translate_edges,
+    gen_translate_nodes,
+)
 
 __all__ = ["Driver"]
 
@@ -323,9 +330,6 @@ class Driver(neo4j_utils.Driver):
 
         Returns:
             bool: The return value. True for success, False otherwise.
-
-        Todo:
-            - use return nodes to implement test?
         """
 
         # receive generator objects

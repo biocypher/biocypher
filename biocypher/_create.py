@@ -27,20 +27,9 @@ Todo:
 
     - establish a dictionary lookup with the id types to be used / basic
       type checking of the input
+      
     - translation of id types using pypath translation facilities (to be
       later externalised)
-    - provide options to the user:
-
-        - primary id type(s) of their liking (critical, does not
-          guarantee interoperability: do we want this?)
-
-            - there could be multiple "standard cases" of graph, and
-              upon choosing or detecting one of these, BioCypher could
-              translate
-
-        - granularity: the ability to opt out (!) of the more detailed
-          structural components (opt in would again not guarantee
-          interoperability)
 """
 
 from datetime import datetime

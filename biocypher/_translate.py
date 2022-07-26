@@ -28,7 +28,8 @@ Todo:
           implemented by assigning source nomenclature explicitly in
           the schema_config.yaml file ("label_in_input").
 
-    - type checking
+    - type checking: use biolink classes for typing directly?
+    
     - import ID types from pypath dictionary (later, externalised
       dictionary)? biolink?
 """
@@ -170,8 +171,6 @@ class BiolinkAdapter:
                 # TODO can there be virtual leaves without multiple
                 # inputs?
 
-                # TODO does it even play a role whether they are
-                # represented as nodes vs edges?
                 input_label = self.leaves[entity].get("label_in_input")
 
                 # check for multiple inputs as well as multiple

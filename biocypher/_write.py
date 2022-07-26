@@ -407,10 +407,8 @@ class BatchWriter:
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
-            # alternatively, desired properties could also be provided
-            # via the schema_config.yaml, but that is more effort for
-            # the user. TODO provide option to fix desired properties in
-            # YAML.
+            # alternatively, desired properties can also be provided
+            # via the schema_config.yaml.
 
             header_path = os.path.join(self.outdir, f"{label}-header.csv")
             parts_path = os.path.join(self.outdir, f"{label}-part.*")
@@ -680,8 +678,6 @@ class BatchWriter:
         for label, props in self.edge_property_dict.items():
             # create header CSV with :START_ID, (optional) properties,
             # :END_ID, :TYPE
-
-            # TODO provide option to fix desired properties in YAML.
 
             # paths
             header_path = os.path.join(self.outdir, f"{label}-header.csv")
