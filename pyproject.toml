@@ -37,6 +37,7 @@ neo4j-utils = { git = "https://github.com/saezlab/neo4j-utils.git" }
 # neo4j-utils = { path = "../neo4j-utils/", develop = true }
 myst-parser = "^0.18.0"
 black = "^22.6.0"
+matplotlib = "^3.5.2"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=6.0"
