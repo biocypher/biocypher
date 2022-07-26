@@ -1,9 +1,14 @@
+import io
+import pickle
+import pstats
+import random
+import timeit
+import cProfile
+
+from neo4j_utils._print import bcolors
+
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._driver import Driver
-from biocypher._utils import bcolors
-import random
-import cProfile, pstats, io
-import timeit, pickle
 
 
 def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
@@ -124,8 +129,9 @@ def create_networks():
 
 
 def visualise_benchmark():
-    import matplotlib.pyplot as plt
     import pickle
+
+    import matplotlib.pyplot as plt
 
     with open("benchmark.pickle", "rb") as f:
         res = pickle.load(f)
