@@ -278,6 +278,18 @@ contents and constraints and setting up new constraints.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="biocypher._driver.Driver.reverse_translate_query">
+<span class="sig-name descname"><span class="pre">reverse_translate_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._driver.Driver.reverse_translate_query" title="Permalink to this definition"></a></dt>
+<dd><p>Reverse translate a query from its BioCypher equivalent.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._driver.Driver.reverse_translate_term">
+<span class="sig-name descname"><span class="pre">reverse_translate_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._driver.Driver.reverse_translate_term" title="Permalink to this definition"></a></dt>
+<dd><p>Reverse translate a term from its BioCypher equivalent.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="biocypher._driver.Driver.start_batch_writer">
 <span class="sig-name descname"><span class="pre">start_batch_writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#biocypher._driver.Driver.start_batch_writer" title="Permalink to this definition"></a></dt>
 <dd><p>Instantiate the batch writer if it does not exist.</p>
@@ -296,6 +308,18 @@ contents and constraints and setting up new constraints.</p>
 <span class="sig-name descname"><span class="pre">start_bl_adapter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#biocypher._driver.Driver.start_bl_adapter" title="Permalink to this definition"></a></dt>
 <dd><p>Instantiate the <code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.adapter.BioLinkAdapter</span></code> if not
 existing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._driver.Driver.translate_query">
+<span class="sig-name descname"><span class="pre">translate_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._driver.Driver.translate_query" title="Permalink to this definition"></a></dt>
+<dd><p>Translate a query to its BioCypher equivalent.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._driver.Driver.translate_term">
+<span class="sig-name descname"><span class="pre">translate_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._driver.Driver.translate_term" title="Permalink to this definition"></a></dt>
+<dd><p>Translate a term to its BioCypher equivalent.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -619,6 +643,27 @@ adapter instance). Is connected to MetaNodes and MetaEdges via
 <dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">BiolinkAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'biocypher'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'biolink'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter" title="Permalink to this definition"></a></dt>
 <dd><p>Performs various functions to integrate the Biolink ontology.</p>
+<p>Stores schema mappings to allow (reverse) translation of terms and
+queries.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.reverse_translate">
+<span class="sig-name descname"><span class="pre">reverse_translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.reverse_translate" title="Permalink to this definition"></a></dt>
+<dd><p>Reverse translate a cypher query. Only translates labels as of
+now.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.reverse_translate_term">
+<span class="sig-name descname"><span class="pre">reverse_translate_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.reverse_translate_term" title="Permalink to this definition"></a></dt>
+<dd><p>Reverse translate a single term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.translate" title="Permalink to this definition"></a></dt>
+<dd><p>Translate a cypher query. Only translates labels as of now.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.translate_leaves_to_biolink">
 <span class="sig-name descname"><span class="pre">translate_leaves_to_biolink</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.translate_leaves_to_biolink" title="Permalink to this definition"></a></dt>
@@ -629,6 +674,12 @@ each leaf.</p>
 <p>Additionally adds child leaves for each leaf that has multiple
 identifiers.</p>
 <p>TODO: add class definition id_prefixes check</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.translate_term">
+<span class="sig-name descname"><span class="pre">translate_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.translate_term" title="Permalink to this definition"></a></dt>
+<dd><p>Translate a single term.</p>
 </dd></dl>
 
 </dd></dl>

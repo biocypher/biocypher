@@ -51,6 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#communication-via-the-neo4j-python-driver">Communication via the Neo4j Python Driver</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#interacting-with-a-running-neo4j-instance">Interacting with a running Neo4j instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exporting-for-the-neo4j-admin-import-feature">Exporting for the <code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> feature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#translating-between-original-and-biocypher-vocabulary">Translating between original and BioCypher vocabulary</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
@@ -107,6 +108,11 @@ fresh database from scratch with all the input data. However, since
 <code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> is very fast, it can be used to combine subsets
 of two databases on the fly, creating a new, combined database in the
 process.</p>
+<p>To facilitate transition to the new schema, we also supply functions to
+translate and reverse translate terms and queries between original and
+BioCypher vocabulary. The mappings are stored in the adapter upon
+creation and can be retrieved through the <a class="reference internal" href="#translation"><span class="std std-ref">driver translation
+functions</span></a>.</p>
 <section id="loading-the-data">
 <h2>Loading the Data<a class="headerlink" href="#loading-the-data" title="Permalink to this heading"></a></h2>
 <p>Depending on the data source, it is up to the user to find and define a
@@ -210,6 +216,33 @@ running database (<code class="docutils literal notranslate"><span class="pre">&
 <li><p><code class="docutils literal notranslate"><span class="pre">create</span> <span class="pre">database</span> <span class="pre">&lt;db_name&gt;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">:use</span> <span class="pre">&lt;db_name&gt;</span></code></p></li>
 </ol>
+</section>
+<section id="translating-between-original-and-biocypher-vocabulary">
+<span id="translation"></span><h2>Translating between original and BioCypher vocabulary<a class="headerlink" href="#translating-between-original-and-biocypher-vocabulary" title="Permalink to this heading"></a></h2>
+<p>For quickly transitioning to BioCypher, single terms or entire queries
+can be translated using the information provided in the
+<code class="docutils literal notranslate"><span class="pre">schema_config.yaml</span></code>. The translation functionality can be accessed
+through the driver methods <code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.translate_term()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.reverse_translate_term()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.translate_query()</span></code>, and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.reverse_translate_query()</span></code>. For instance, to
+find out the designation of “gene_gene” relationships in BioCypher, one
+can call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span><span class="o">.</span><span class="n">translate_term</span><span class="p">(</span><span class="s2">&quot;gene_gene&quot;</span><span class="p">)</span>
+<span class="c1"># &#39;GeneToGeneAssociation&#39;</span>
+</pre></div>
+</div>
+<p>Similarly, to discover the original naming of
+“PostTranslationalInteraction” relationships, one can call the reverse
+function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span><span class="o">.</span><span class="n">reverse_translate_term</span><span class="p">(</span><span class="s2">&quot;PostTranslationalInteraction&quot;</span><span class="p">)</span>
+<span class="c1"># &#39;post_translational&#39;</span>
+</pre></div>
+</div>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.translate_query()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.reverse_translate_query()</span></code> replace all label
+designations (following a “:”) in entire CYPHER query strings with the
+BioCypher or original versions, respectively.</p>
 </section>
 </section>
 

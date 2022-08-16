@@ -26,6 +26,12 @@ fresh database from scratch with all the input data. However, since
 of two databases on the fly, creating a new, combined database in the
 process.
 
+To facilitate transition to the new schema, we also supply functions to
+translate and reverse translate terms and queries between original and
+BioCypher vocabulary. The mappings are stored in the adapter upon
+creation and can be retrieved through the [driver translation
+functions](translation).
+
 ## Loading the Data
 
 Depending on the data source, it is up to the user to find and define a
@@ -136,3 +142,34 @@ running database (``<db_name>`` being the name assigned in the method):
 1. ``:use system``
 2. ``create database <db_name>``
 3. ``:use <db_name>``
+
+(translation)=
+## Translating between original and BioCypher vocabulary
+For quickly transitioning to BioCypher, single terms or entire queries
+can be translated using the information provided in the
+`schema_config.yaml`. The translation functionality can be accessed
+through the driver methods {py:meth}`biocypher.driver.translate_term()`,
+{py:meth}`biocypher.driver.reverse_translate_term()`,
+{py:meth}`biocypher.driver.translate_query()`, and
+{py:meth}`biocypher.driver.reverse_translate_query()`. For instance, to
+find out the designation of "gene_gene" relationships in BioCypher, one
+can call:
+
+```
+driver.translate_term("gene_gene")
+# 'GeneToGeneAssociation'
+```
+
+Similarly, to discover the original naming of
+"PostTranslationalInteraction" relationships, one can call the reverse
+function:
+
+```
+driver.reverse_translate_term("PostTranslationalInteraction")
+# 'post_translational'
+```
+
+{py:meth}`biocypher.driver.translate_query()` and
+{py:meth}`biocypher.driver.reverse_translate_query()` replace all label
+designations (following a ":") in entire CYPHER query strings with the
+BioCypher or original versions, respectively.
