@@ -489,21 +489,51 @@ class VersionNode:
                             # inherit properties if exist
                             if value.get("properties"):
                                 svalue["properties"] = value["properties"]
+                            # inherit edge label if exists
+                            if value.get("label_as_edge"):
+                                svalue["label_as_edge"] = value[
+                                    "label_as_edge"
+                                ]
                             leaves[skey] = svalue
 
                     # create virtual leaves for multiple sources
                     elif isinstance(value.get("source"), list):
                         # create "virtual" leaves for each source
-                        for source in value["source"]:
+
+                        # adjust lengths (if representation and/or id are
+                        # not given as lists but inputs are multiple)
+                        l = len(value["source"])
+
+                        # adjust label length if necessary
+                        if isinstance(value["label_in_input"], str):
+                            labels = [value["label_in_input"]] * l
+                        else:
+                            labels = value["label_in_input"]
+                        # adjust rep length if necessary
+                        if isinstance(value["represented_as"], str):
+                            reps = [value["represented_as"]] * l
+                        else:
+                            reps = value["represented_as"]
+
+                        for source, label, rep in zip(
+                            value["source"], labels, reps
+                        ):
                             skey = source + "." + key
                             svalue = {
                                 "source": source,
+                                "label_in_input": label,
+                                "represented_as": rep,
                                 # mark as virtual
                                 "virtual": True,
                             }
                             # inherit properties if exist
                             if value.get("properties"):
                                 svalue["properties"] = value["properties"]
+                            # inherit edge label if exists
+                            if value.get("label_as_edge"):
+                                svalue["label_as_edge"] = value[
+                                    "label_as_edge"
+                                ]
                             leaves[skey] = svalue
 
                     # finally, add parent

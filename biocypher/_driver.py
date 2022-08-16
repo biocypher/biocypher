@@ -607,3 +607,15 @@ class Driver(neo4j_utils.Driver):
             bool: The return value. True for success, False otherwise.
         """
         return self.batch_writer.write_import_call()
+
+    ### TRANSLATION METHODS ###
+
+    def translate_term(self, term: str) -> str:
+        """
+        Translate a term to its BioCypher equivalent.
+        """
+
+        # instantiate adapter if not exists
+        self.start_bl_adapter()
+
+        return self.bl_adapter.translate_term(term)

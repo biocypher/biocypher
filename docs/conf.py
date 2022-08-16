@@ -6,32 +6,40 @@
 
 # -- Path setup --------------------------------------------------------------
 
+from datetime import datetime
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
 import sys
 import pathlib
-from datetime import datetime
+
+import biocypher  # noqa: E402
 
 here = pathlib.Path(__file__).parent
 sys.path.insert(0, str(here.parent))
 
-import biocypher  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 
 project = "BioCypher"
 version = biocypher.__version__
-author = ', '.join(biocypher.__author__)
+author = ", ".join(biocypher.__author__)
 copyright = f"2021-{datetime.now():%Y}, BioCypher developers"
 
 # -- General configuration ---------------------------------------------------
 
 # TOC only in sidebar
 master_doc = "contents"
-html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html'] }
+html_sidebars = {
+    "**": [
+        "globaltoc.html",
+        "relations.html",
+        "sourcelink.html",
+        "searchbox.html",
+    ]
+}
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom

@@ -59,6 +59,9 @@ class BiolinkAdapter:
     """
     Performs various functions to integrate the Biolink ontology.
 
+    Stores schema mappings to allow (reverse) translation of terms and
+    queries.
+
     Todo:
         - refer to pythonised biolink model from YAML
     """
@@ -88,7 +91,12 @@ class BiolinkAdapter:
 
         self.leaves = leaves
         self.schema = schema
+        self.schema_name = None
         self.biolink_leaves = None
+
+        # mapping functionality for translating terms and queries
+        self.mappings = {}
+        self.reverse_mappings = {}
 
         logger.debug("Instantiating Biolink Adapter.")
 
@@ -190,7 +198,10 @@ class BiolinkAdapter:
                             ):
 
                                 # add child leaves for multiple sources
-                                for source in self.leaves[entity]["source"]:
+                                # input label to identifier is one to one
+                                for label, source in zip(
+                                    input_label, self.leaves[entity]["source"]
+                                ):
                                     name = source + "." + entity
                                     se = ClassDefinition(name)
                                     se.is_a = entity
@@ -201,6 +212,9 @@ class BiolinkAdapter:
                                         "ancestors": sancestors,
                                     }
 
+                                    # add translation mappings
+                                    self._add_translation_mappings(label, name)
+
                             elif isinstance(
                                 self.leaves[entity].get("target"), list
                             ):
@@ -209,11 +223,15 @@ class BiolinkAdapter:
                                 )
 
                         # "named thing" node (not rel as node)
+                        # input label to identifier is one to one
                         elif isinstance(
                             self.leaves[entity].get("preferred_id"), list
                         ):
                             # add child leaves for node
-                            for id in self.leaves[entity]["preferred_id"]:
+                            for label, id in zip(
+                                input_label,
+                                self.leaves[entity]["preferred_id"],
+                            ):
                                 name = id + "." + entity
                                 se = ClassDefinition(name)
                                 se.is_a = entity
@@ -224,22 +242,97 @@ class BiolinkAdapter:
                                     "ancestors": sancestors,
                                 }
 
+                                # add translation mappings
+                                self.mappings[label] = name
+                                self.reverse_mappings[name] = label
+
+                        # just multiple input labels
+                        # input label to identifier is many to one
+                        else:
+                            for label in input_label:
+                                # add translation mappings
+                                self.mappings[label] = entity
+
+                            self.reverse_mappings[entity] = input_label
+
                     # if entity is edge
                     else:
                         # add child leaves for edge
-                        logger.error(
-                            "Edge virtual leaves not implemented yet."
-                        )
+                        if isinstance(self.leaves[entity].get("source"), list):
+
+                            # add child leaves for multiple sources
+                            # input label to identifier is one to one
+                            for label, source in zip(
+                                input_label, self.leaves[entity]["source"]
+                            ):
+                                name = source + "." + entity
+                                se = ClassDefinition(name)
+                                se.is_a = entity
+                                sancestors = list(ancestors)
+                                sancestors.insert(0, name)
+                                l[name] = {
+                                    "class_definition": se,
+                                    "ancestors": sancestors,
+                                }
+
+                                # add translation mappings
+                                self._add_translation_mappings(label, name)
+
+                        elif isinstance(
+                            self.leaves[entity].get("target"), list
+                        ):
+                            logger.error(
+                                "Multiple targets not implemented yet."
+                            )
+
+                        else:
+                            # simple multiple inputs
+                            # input label to identifier is many to one
+                            for label in input_label:
+                                # add translation mappings
+                                self.mappings[label] = self.leaves[entity].get(
+                                    "label_as_edge", entity
+                                )
+                            self.reverse_mappings[
+                                self.leaves[entity].get(
+                                    "label_as_edge", entity
+                                )
+                            ] = input_label
+
+                else:
+                    # add translation mappings
+                    self._add_translation_mappings(
+                        input_label,
+                        self.leaves[entity].get("label_as_edge", entity),
+                    )
 
                 # create dict of biolink class definition and biolink
                 # ancestors
                 l[entity] = {"class_definition": e, "ancestors": ancestors}
+
             else:
                 if "virtual" in self.leaves[entity].keys():
                     logger.info(
                         f"{entity} is a virtual leaf, but not in the "
                         f"Biolink model. Skipping."
                     )
+
+                    # add translation mappings
+                    if isinstance(
+                        self.leaves[entity].get("label_in_input"), list
+                    ):
+                        for label in self.leaves[entity]["label_in_input"]:
+                            self._add_translation_mappings(
+                                label,
+                                self.leaves[entity].get(
+                                    "label_as_edge", entity
+                                ),
+                            )
+                    else:
+                        self._add_translation_mappings(
+                            self.leaves[entity].get("label_in_input"),
+                            self.leaves[entity].get("label_as_edge", entity),
+                        )
                 elif "is_a" in self.leaves[entity].keys():
                     parent = self.leaves[entity]["is_a"]
                     if isinstance(parent, list):
@@ -301,6 +394,54 @@ class BiolinkAdapter:
 
         self.biolink_leaves = l
 
+    def translate_term(self, term):
+        """
+        Translate a single term.
+        """
+
+        return self.mappings.get(term, None)
+
+    def reverse_translate_term(self, term):
+        """
+        Reverse translate a single term.
+        """
+
+        return self.reverse_mappings.get(term, None)
+
+    def translate(self, query):
+        """
+        Translate a cypher query. Only translates labels as of now.
+        """
+        for key in self.mappings:
+            query = query.replace(":" + key, ":" + self.mappings[key])
+        return query
+
+    def reverse_translate(self, query):
+        """
+        Reverse translate a cypher query. Only translates labels as of
+        now.
+        """
+        for key in self.reverse_mappings:
+            if ":" + key in query:
+                if isinstance(self.reverse_mappings[key], list):
+                    raise NotImplementedError(
+                        "Reverse translation of multiple inputs not implemented yet. "
+                        "Many-to-one mappings are not reversible. "
+                        f"({key} -> {self.reverse_mappings[key]})"
+                    )
+                else:
+                    query = query.replace(
+                        ":" + key, ":" + self.reverse_mappings[key]
+                    )
+        return query
+
+    def _add_translation_mappings(self, original_name, biocypher_name):
+        """
+        Add translation mappings for a label and name.
+        """
+        self.mappings[original_name] = biocypher_name
+        self.reverse_mappings[biocypher_name] = original_name
+
 
 def trim_biolink_ancestry(ancestry: list):
     """
@@ -315,6 +456,7 @@ def trim_biolink_ancestry(ancestry: list):
 Biolink toolkit wiki:
 https://biolink.github.io/biolink-model-toolkit/example_usage.html
 """
+
 
 # -------------------------------------------
 # Create nodes and edges from separate inputs

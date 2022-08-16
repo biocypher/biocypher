@@ -54,12 +54,27 @@ Gene:
   preferred_id: HGNC
   label_in_input: [hgnc, ensg] 
 
+Disease:
+  represented_as: node
+  preferred_id: DOID
+  label_in_input: Disease
+
 # ad hoc child
 SideEffect:
   is_a: PhenotypicFeature
   represented_as: node
   preferred_id: SIDER
   label_in_input: sider
+
+SequenceVariant:
+  represented_as: node
+  preferred_id: [ClinicallyRelevant, Known, Somatic]
+  label_in_input: [Clinically_relevant_variant, Known_variant, Somatic_mutation]
+  properties:
+    source: str
+    original_source: str
+    effect: str
+    biotype: str
 
 # ---
 # Associations
@@ -117,7 +132,7 @@ MutationToTissueAssociation:
 
 # multiple input to multiple virtual leaves
 VariantToGeneAssociation: # -> Known.... and Somatic....
-  represented_as: node
+  represented_as: edge
   preferred_id: custom
   source: [Known.SequenceVariant, Somatic.SequenceVariant]
   target: Gene

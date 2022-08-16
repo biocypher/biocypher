@@ -2,7 +2,7 @@ from linkml_runtime.linkml_model.meta import ClassDefinition
 import pytest
 
 from biocypher._config import module_data_path
-from biocypher._create import BioCypherEdge, BioCypherNode, VersionNode
+from biocypher._create import VersionNode, BioCypherEdge, BioCypherNode
 from biocypher._translate import (
     BiolinkAdapter,
     gen_translate_edges,
@@ -304,4 +304,39 @@ def test_properties_from_config(version_node):
         and "score" in r[0].get_properties().keys()
         and "score" in r[1].get_properties().keys()
         and "test" not in r[1].get_properties().keys()
+    )
+
+
+def test_translate_term(biolink_adapter):
+    assert biolink_adapter.translate_term("hgnc") == "Gene"
+    assert (
+        biolink_adapter.translate_term("protein_disease")
+        == "PERTURBED_IN_DISEASE"
+    )
+
+
+def test_reverse_translate_term(biolink_adapter):
+    assert "hgnc" in biolink_adapter.reverse_translate_term("Gene")
+    assert "protein_disease" in biolink_adapter.reverse_translate_term(
+        "PERTURBED_IN_DISEASE"
+    )
+
+
+def test_translate_query(biolink_adapter):
+    query = "MATCH (n:hgnc)-[r:gene_disease]->(d:Disease) RETURN n"
+    assert (
+        biolink_adapter.translate(query)
+        == "MATCH (n:Gene)-[r:PERTURBED_IN_DISEASE]->(d:Disease) RETURN n"
+    )
+
+
+def test_reverse_translate_query(biolink_adapter):
+    query = "MATCH (n:Known.SequenceVariant)-[r:Known.SequenceVariant.VariantToGeneAssociation]->(g:Gene) RETURN n"
+    with pytest.raises(NotImplementedError):
+        biolink_adapter.reverse_translate(query)
+
+    query = "MATCH (n:Known.SequenceVariant)-[r:Known.SequenceVariant.VariantToGeneAssociation]->(g:Protein) RETURN n"
+    assert (
+        biolink_adapter.reverse_translate(query)
+        == "MATCH (n:Known_variant)-[r:VARIANT_FOUND_IN_GENE_Known_variant_Gene]->(g:protein) RETURN n"
     )
