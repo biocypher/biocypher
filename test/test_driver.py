@@ -1,14 +1,20 @@
-from biocypher._driver import Driver
-from biocypher._create import BioCypherNode, BioCypherEdge, BioCypherRelAsNode
-import pytest
 import neo4j
+import pytest
+
+from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from biocypher._driver import Driver
 
 
 @pytest.fixture
 def driver():
     # neo4j database needs to be running!
     # there needs to be a database called "test" in the neo4j instance
-    d = Driver(db_name="test", wipe=True, increment_version=False)
+    d = Driver(
+        db_name="test",
+        wipe=True,
+        increment_version=False,
+        user_schema_config_path="biocypher/_config/test_schema_config.yaml",
+    )
     # create single node in case of empty DB for testing?
     # d.add_biocypher_nodes(BioCypherNode("TestID", "Test"))
     yield d
@@ -325,3 +331,21 @@ def test_pretty_explain(driver):
     )
 
     assert "args" in plan and "ProduceResults" in printout[0]
+
+
+def test_access_translate(driver):
+    assert driver.translate_term("mirna") == "microRNA"
+    assert (
+        driver.reverse_translate_term("MacromolecularComplexMixin")
+        == "complex"
+    )
+    assert (
+        driver.translate_query("MATCH (n:reactome) RETURN n")
+        == "MATCH (n:REACT.Pathway) RETURN n"
+    )
+    assert (
+        driver.reverse_translate_query(
+            "MATCH (n:WIKIPATHWAYS.Pathway) RETURN n"
+        )
+        == "MATCH (n:wikipathways) RETURN n"
+    )

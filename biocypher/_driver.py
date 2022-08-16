@@ -619,3 +619,33 @@ class Driver(neo4j_utils.Driver):
         self.start_bl_adapter()
 
         return self.bl_adapter.translate_term(term)
+
+    def reverse_translate_term(self, term: str) -> str:
+        """
+        Reverse translate a term from its BioCypher equivalent.
+        """
+
+        # instantiate adapter if not exists
+        self.start_bl_adapter()
+
+        return self.bl_adapter.reverse_translate_term(term)
+
+    def translate_query(self, query: str) -> str:
+        """
+        Translate a query to its BioCypher equivalent.
+        """
+
+        # instantiate adapter if not exists
+        self.start_bl_adapter()
+
+        return self.bl_adapter.translate(query)
+
+    def reverse_translate_query(self, query: str) -> str:
+        """
+        Reverse translate a query from its BioCypher equivalent.
+        """
+
+        # instantiate adapter if not exists
+        self.start_bl_adapter()
+
+        return self.bl_adapter.reverse_translate(query)
