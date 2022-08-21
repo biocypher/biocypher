@@ -19,7 +19,7 @@ from ._logger import logger
 logger.debug(f"Loading module {__name__}.")
 
 from types import GeneratorType
-from typing import TYPE_CHECKING, List, Optional
+from typing import Iterable, List, Optional, TYPE_CHECKING
 import importlib as imp
 
 from more_itertools import peekable
@@ -40,8 +40,7 @@ from ._create import (
 )
 from ._translate import (
     BiolinkAdapter,
-    gen_translate_edges,
-    gen_translate_nodes,
+    Translator,
 )
 
 __all__ = ["Driver"]
@@ -156,6 +155,8 @@ class Driver(neo4j_utils.Driver):
             self.bl_adapter = None
             self.batch_writer = None
 
+            self._update_translator()
+
         else:
             logger.error("Providing driver instance is not yet implemented.")
             # TODO: implement passing a driver instance
@@ -217,6 +218,11 @@ class Driver(neo4j_utils.Driver):
                 ed.append(BioCypherEdge(id, tar, "IS_TARGET_OF"))
         self.add_biocypher_edges(ed)
 
+
+    def _update_translator(self):
+
+        self.translator = Translator(leaves = self.db_meta.leaves)
+
     def init_db(self):
         """
         Used to initialise a property graph database by deleting
@@ -254,7 +260,7 @@ class Driver(neo4j_utils.Driver):
                 )
                 self.query(s)
 
-    def add_nodes(self, id_type_tuples):
+    def add_nodes(self, id_type_tuples: Iterable[tuple]) -> tuple:
         """
         Generic node adder method to add any kind of input to the
         graph via the :class:`biocypher.create.BioCypherNode` class. Employs translation
@@ -274,7 +280,7 @@ class Driver(neo4j_utils.Driver):
                 - second entry: Neo4j summary.
         """
 
-        bn = gen_translate_nodes(self.db_meta.leaves, id_type_tuples)
+        bn = self.translator.translate_nodes(id_type_tuples)
         return self.add_biocypher_nodes(bn)
 
     def add_edges(self, src_tar_type_tuples):
@@ -300,7 +306,7 @@ class Driver(neo4j_utils.Driver):
                 - second entry: Neo4j summary.
         """
 
-        bn = gen_translate_edges(self.db_meta.schema, src_tar_type_tuples)
+        bn = self.translator.translate_edges(src_tar_type_tuples)
         return self.add_biocypher_edges(bn)
 
     def add_biocypher_nodes(
@@ -516,7 +522,7 @@ class Driver(neo4j_utils.Driver):
 
         nodes = peekable(nodes)
         if not isinstance(nodes.peek(), BioCypherNode):
-            tnodes = gen_translate_nodes(self.db_meta.leaves, nodes)
+            tnodes = self.translator.translate_nodes(nodes)
         else:
             tnodes = nodes
         # write node files
@@ -551,7 +557,7 @@ class Driver(neo4j_utils.Driver):
         existing.
         """
         if not self.bl_adapter:
-            self.bl_adapter = BiolinkAdapter(self.db_meta.leaves)
+            self.bl_adapter = BiolinkAdapter(leaves = self.db_meta.leaves)
 
     def write_edges(
         self,
@@ -579,7 +585,7 @@ class Driver(neo4j_utils.Driver):
 
         edges = peekable(edges)
         if not isinstance(edges.peek(), BioCypherEdge):
-            tedges = gen_translate_edges(self.db_meta.leaves, edges)
+            tedges = self.translator.translate_edges(edges)
         else:
             tedges = edges
         # write edge files

@@ -50,8 +50,7 @@ from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 __all__ = [
     "BiolinkAdapter",
-    "gen_translate_edges",
-    "gen_translate_nodes",
+    "Translator",
     "getpath",
 ]
 
@@ -482,7 +481,7 @@ class Translator:
         self._update_bl_types()
 
 
-    def gen_translate_nodes(
+    def translate_nodes(
             self,
             id_type_prop_tuples: Iterable,
         ) -> Generator[BioCypherNode]:
@@ -573,7 +572,7 @@ class Translator:
             return props
 
 
-    def gen_translate_edges(
+    def translate_edges(
             self,
             src_tar_type_prop_tuples: Iterable,
         ) -> Generator[Union[BioCypherEdge, BioCypherRelAsNode]]:
