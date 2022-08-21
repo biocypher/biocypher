@@ -462,7 +462,6 @@ https://biolink.github.io/biolink-model-toolkit/example_usage.html
 # Create nodes and edges from separate inputs
 # -------------------------------------------
 
-
 def gen_translate_nodes(leaves, id_type_prop_tuples):
     """
     Translates input node representation to a representation that
@@ -483,7 +482,7 @@ def gen_translate_nodes(leaves, id_type_prop_tuples):
     """
 
     # biolink = BiolinkAdapter(leaves)
-    if isinstance(id_type_prop_tuples, list):
+    if hasattr(id_type_prop_tuples, '__len__'):
         logger.debug(
             f"Translating {len(id_type_prop_tuples)} nodes to BioCypher."
         )
@@ -637,14 +636,16 @@ def gen_translate_edges(leaves, src_tar_type_prop_tuples):
             logger.warning("No Biolink equivalent found for type " + _type)
 
 
-def _get_bl_type(dict, value):
+def _get_bl_type(schema, value):
     """
     For each given input type ("label_in_input"), find the corresponding
     Biolink type in the leaves dictionary.
 
     Args:
-        dict: the dict to search (leaves from `schema_config.yaml`)
-        value: the input type to find (`label_in_input` in `schema_config.yaml`)
+        schema:
+            Leaves from `schema_config.yaml`.
+        value:
+            The input type to find (`label_in_input` in `schema_config.yaml`)
     """
     for k, v in dict.items():
         if "label_in_input" in v:
