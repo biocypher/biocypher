@@ -66,12 +66,12 @@ def read_config() -> dict:
     """
 
     defaults = module_data('module_config')
-    local = _read_yaml('biocypher.yaml') or {}
     user_confdir = appdirs.user_config_dir('biocypher', 'saezlab')
     user = _read_yaml(os.path.join(user_confdir, 'conf.yaml')) or {}
+    local = _read_yaml('biocypher.yaml') or {}
 
-    defaults.update(local)
     defaults.update(user)
+    defaults.update(local)
 
     return defaults
 
