@@ -27,16 +27,18 @@ Todo:
 
     - establish a dictionary lookup with the id types to be used / basic
       type checking of the input
-      
+
     - translation of id types using pypath translation facilities (to be
       later externalised)
 """
 
+from typing import Optional
 from datetime import datetime
 from dataclasses import field, dataclass
 
 import yaml
 
+from . import _misc
 from . import _config as config
 from ._logger import logger
 
@@ -299,6 +301,8 @@ class BioCypherRelAsNode:
 class VersionNode:
     """
     Versioning and graph structure information meta node. Inherits from
+    # TODO: it doesn't inherit from BCNode
+    # and the label comes from the argument
     BioCypherNode but fixes label to ":BioCypher" and sets version
     by using the current date and time (meaning it overrides both
     mandatory args from BioCypherNode).
@@ -319,7 +323,8 @@ class VersionNode:
         bcy_driver=None,
     ):
 
-        self.offline = offline
+        # if we do not have a driver, then likely we are offline, right?
+        self.offline = offline or getattr(bcy_driver, "offline", True)
         self.from_config = from_config
         self.config_file = config_file
         self.node_label = node_label
@@ -329,10 +334,14 @@ class VersionNode:
         self.graph_state = (
             self._get_graph_state() if not self.offline else None
         )
-        self.schema = self._get_graph_schema(
-            from_config=self.from_config, config_file=self.config_file
-        )
-        self.leaves = self._get_leaves(self.schema)
+        self.schema = self._get_graph_schema()
+        self.leaves = self._get_leaves()
+
+        self.properties = {
+            "graph_state": self.graph_state,
+            "schema": self.schema,
+            "leaves": self.leaves,
+        }
 
     def get_id(self) -> str:
         """
@@ -351,6 +360,20 @@ class VersionNode:
             str: node_label
         """
         return self.node_label
+
+    def get_dict(self) -> dict:
+        """
+        Return dict of id, labels, and properties.
+
+        Returns:
+            dict: node_id and node_label as top-level key-value pairs,
+            properties as second-level dict.
+        """
+        return {
+            "node_id": self.node_id,
+            "node_label": self.node_label,
+            "properties": self.properties,
+        }
 
     def _get_current_id(self):
         """
@@ -390,7 +413,11 @@ class VersionNode:
             logger.info(f"Found graph state at {version}.")
             return result[0]["meta"]
 
-    def _get_graph_schema(self, from_config, config_file):
+    def _get_graph_schema(
+        self,
+        from_config: Optional[bool] = None,
+        config_file: Optional[str] = None,
+    ) -> dict:
         """
         Return graph schema information from meta graph if it exists, or
         create new schema information properties from configuration
@@ -399,6 +426,10 @@ class VersionNode:
         Todo:
             - get schema from meta graph
         """
+
+        from_config = self.from_config if from_config is None else from_config
+        config_file = config_file or self.config_file
+
         if self.graph_state and not from_config:
             # TODO do we want information about actual structure here?
             res = self.bcy_driver.query(
@@ -425,7 +456,7 @@ class VersionNode:
 
             return dataMap
 
-    def _get_leaves(self, d):
+    def _get_leaves(self, d: Optional[dict] = None) -> dict:
         """
         Get leaves of the tree hierarchy from the data structure dict
         contained in the `schema_config.yaml`. Creates virtual leaves
@@ -433,18 +464,24 @@ class VersionNode:
         id type (and corresponding inputs).
 
         Args:
-            d (dict): data structure dict from yaml file
+            d:
+                Data structure dict from yaml file.
 
         TODO: allow multiple leaves with same Biolink name but different
         specs? (eg ProteinToDiseaseAssociation from two different
         entries in CKG, DETECTED_IN_PATHOLOGY_SAMPLE and ASSOCIATED_WITH)
         """
 
+        d = d or self.schema
+
         leaves = dict()
         stack = list(d.items())
         visited = set()
+
         while stack:
+
             key, value = stack.pop()
+
             if isinstance(value, dict):
                 # using `represented_as` as a marker for an entity
                 # TODO find something better
@@ -461,7 +498,7 @@ class VersionNode:
 
                         # adjust lengths (if representation and/or id are
                         # not given as lists but inputs are multiple)
-                        l = len(value["label_in_input"])
+                        l = len(_misc.to_list(value["label_in_input"]))
                         # adjust pid length if necessary
                         if isinstance(value["preferred_id"], str):
                             pids = [value["preferred_id"]] * l
@@ -538,6 +575,7 @@ class VersionNode:
 
                     # finally, add parent
                     leaves[key] = value
+
             visited.add(key)
 
         return leaves

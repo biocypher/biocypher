@@ -3,22 +3,7 @@ import pytest
 
 from biocypher._config import module_data_path
 from biocypher._create import VersionNode, BioCypherEdge, BioCypherNode
-from biocypher._translate import (
-    BiolinkAdapter,
-    gen_translate_edges,
-    gen_translate_nodes,
-)
-
-__all__ = [
-    "driver",
-    "test_adapter",
-    "test_biolink_yaml_extension",
-    "test_custom_bmt_yaml",
-    "test_translate_edges",
-    "test_translate_identifiers",
-    "test_translate_nodes",
-    "version_node",
-]
+from biocypher._translate import Translator, BiolinkAdapter
 
 
 @pytest.fixture
@@ -31,6 +16,11 @@ def version_node():
 
 
 @pytest.fixture
+def translator(version_node):
+    return Translator(version_node.leaves)
+
+
+@pytest.fixture
 def biolink_adapter(version_node):
     return BiolinkAdapter(
         version_node.leaves,
@@ -39,29 +29,29 @@ def biolink_adapter(version_node):
     )
 
 
-def test_translate_nodes(version_node):
+def test_translate_nodes(translator):
     id_type = [
         ("G9205", "protein", {"taxon": 9606}),
         ("hsa-miR-132-3p", "mirna", {"taxon": 9606}),
         ("ASDB_OSBS", "complex", {"taxon": 9606}),
         ("REACT:25520", "reactome", {}),
     ]
-    t = gen_translate_nodes(version_node.leaves, id_type)
+    t = translator.translate_nodes(id_type)
 
     assert all(type(n) == BioCypherNode for n in t)
 
-    t = gen_translate_nodes(version_node.leaves, id_type)
+    t = translator.translate_nodes(id_type)
     assert next(t).get_label() == "Protein"
     assert next(t).get_label() == "microRNA"
     assert next(t).get_label() == "MacromolecularComplexMixin"
 
 
-def test_specific_and_generic_ids(version_node):
+def test_specific_and_generic_ids(translator):
     id_type = [
         ("CHAT", "hgnc", {"taxon": 9606}),
         ("REACT:25520", "reactome", {}),
     ]
-    t = list(gen_translate_nodes(version_node.leaves, id_type))
+    t = list(translator.translate_nodes(id_type))
 
     assert (
         t[0].get_id() == "CHAT"
@@ -71,15 +61,14 @@ def test_specific_and_generic_ids(version_node):
     )
 
 
-def test_translate_edges(version_node):
-    v = version_node
+def test_translate_edges(translator):
     # edge type association (defined in `schema_config.yaml`)
     src_tar_type_edge = [
         ("G15258", "MONDO1", "gene_disease", {}),
         ("G15258", "MONDO2", "protein_disease", {}),
         ("G15258", "G15242", "phosphorylation", {}),
     ]
-    t = gen_translate_edges(v.leaves, src_tar_type_edge)
+    t = translator.translate_edges(src_tar_type_edge)
 
     assert type(next(t)) == BioCypherEdge
     assert next(t).get_label() == "PERTURBED_IN_DISEASE"
@@ -101,7 +90,7 @@ def test_translate_edges(version_node):
             {"directed": True, "effect": -1},
         ),
     ]
-    t = gen_translate_edges(v.leaves, src_tar_type_node)
+    t = translator.translate_edges(src_tar_type_node)
 
     n = next(t)
     n = next(t)
@@ -153,13 +142,14 @@ def test_biolink_yaml_extension(biolink_adapter):
     )
 
 
-def test_translate_identifiers(version_node):
+def test_translate_identifiers(translator):
     # representation of a different schema
     # host and guest db (which to translate)
+    # TODO
     pass
 
 
-def test_merge_multiple_inputs_node(version_node):
+def test_merge_multiple_inputs_node(version_node, translator):
     # Gene has two input labels and one preferred ID
     # no virtual leaves should be created
     # both inputs should lead to creation of the same node type
@@ -169,18 +159,18 @@ def test_merge_multiple_inputs_node(version_node):
         ("CHAT", "hgnc", {"taxon": 9606}),
         ("CHRNA4", "ensg", {"taxon": 9606}),
     ]
-    t = list(gen_translate_nodes(version_node.leaves, id_type))
+    t = list(translator.translate_nodes(id_type))
 
     # check unique node type
     assert not any([s for s in version_node.leaves.keys() if ".Gene" in s])
     assert any([s for s in version_node.leaves.keys() if ".Pathway" in s])
 
-    # check gen_translate_nodes for unique return type
+    # check translator.translate_nodes for unique return type
     assert all([type(n) == BioCypherNode for n in t])
     assert all([n.get_label() == "Gene" for n in t])
 
 
-def test_merge_multiple_inputs_edge(version_node):
+def test_merge_multiple_inputs_edge(version_node, translator):
     # GeneToDiseaseAssociation has two input labels and one preferred ID
     # no virtual leaves should be created
     # both inputs should lead to creation of the same node type
@@ -191,7 +181,7 @@ def test_merge_multiple_inputs_edge(version_node):
         ("CHAT", "AD", "gene_disease", {"taxon": 9606}),
         ("CHRNA4", "AD", "protein_disease", {"taxon": 9606}),
     ]
-    t = list(gen_translate_edges(version_node.leaves, src_tar_type))
+    t = list(translator.translate_edges(src_tar_type))
 
     # check unique edge type
     assert not any(
@@ -205,7 +195,7 @@ def test_merge_multiple_inputs_edge(version_node):
         [s for s in version_node.leaves.keys() if ".SequenceVariant" in s]
     )
 
-    # check gen_translate_nodes for unique return type
+    # check translator.translate_nodes for unique return type
     assert all([type(e) == BioCypherEdge for e in t])
     assert all([e.get_label() == "PERTURBED_IN_DISEASE" for e in t])
 
@@ -252,7 +242,7 @@ def test_multiple_inheritance(biolink_adapter):
     )
 
 
-def test_properties_from_config(version_node):
+def test_properties_from_config(version_node, translator):
     id_type = [
         ("G49205", "protein", {"taxon": 9606, "name": "test"}),
         ("G92035", "protein", {"taxon": 9606}),
@@ -262,7 +252,7 @@ def test_properties_from_config(version_node):
             {"taxon": 9606, "name": "test2", "test": "should_not_be_returned"},
         ),
     ]
-    t = gen_translate_nodes(version_node.leaves, id_type)
+    t = translator.translate_nodes(id_type)
 
     r = list(t)
     assert (
@@ -294,7 +284,7 @@ def test_properties_from_config(version_node):
         ),
     ]
 
-    t = gen_translate_edges(version_node.leaves, src_tar_type)
+    t = translator.translate_edges(src_tar_type)
 
     r = list(t)
     assert (

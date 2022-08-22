@@ -4,8 +4,10 @@ Title: BioCypher python module configuration file
 neo4j_uri: neo4j://localhost:7687
 neo4j_db: neo4j # DB name
 neo4j_user: neo4j # user name
-neo4j_pw: your_password_here # password
+neo4j_pw: neo4j # password
 # TODO Neo4j desktop does not allow setting 'neo4j' as a password!
+# -- 'neo4j' is the default password, hence the most convenient
+# for quick start, though no one uses that in production
 
 # Neo4j admin import batch writer settings
 neo4j_delimiter: '¦'
