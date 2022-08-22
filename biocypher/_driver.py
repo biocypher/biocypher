@@ -18,9 +18,9 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
-from types import GeneratorType
-from typing import Iterable, List, Optional, TYPE_CHECKING
+from typing import Generator, Iterable, List, Optional, TYPE_CHECKING
 import importlib as imp
+import itertools
 
 from more_itertools import peekable
 
@@ -396,12 +396,16 @@ class Driver(neo4j_utils.Driver):
             "RETURN node"
         )
 
-        method = 'explain' if explain else 'profile' if profile else 'query'
+        method = "explain" if explain else "profile" if profile else "query"
 
-        return getattr(self, method)(
+        result = getattr(self, method)(
             entity_query,
             parameters = {"entities": entities},
         )
+
+        logger.info("Finished merging nodes.")
+
+        return result
 
 
     def add_biocypher_edges(
@@ -442,86 +446,101 @@ class Driver(neo4j_utils.Driver):
             `True` for success, `False` otherwise.
         """
 
-        rel_as_node = False
+        #
+        # TODO: I would remove the part below, simpler solution is possible
+        #
 
-        # receive generator objects
-        if isinstance(edges, GeneratorType):
-            # itertools solution is kind of slow and cumbersome
-            # however, needs to detect tuples...
+        #rel_as_node = False
 
-            edges = peekable(edges)
+        ## receive generator objects
+        #if isinstance(edges, Generator):
+            ## itertools solution is kind of slow and cumbersome
+            ## however, needs to detect tuples...
 
-            if isinstance(edges.peek(), BioCypherRelAsNode):
-                # create one node and two edges
-                rel_as_node = True
-                logger.info("Merging nodes and edges from generator.")
+            #edges = peekable(edges)
 
-        # receive single edges or edge lists
-        else:
-            if type(edges) is not list:
-                edges = [edges]
+            #if isinstance(edges.peek(), BioCypherRelAsNode):
+                ## create one node and two edges
+                #rel_as_node = True
+                #logger.info("Merging nodes and edges from generator.")
 
-            # flatten
-            if any(isinstance(i, list) for i in edges):
-                edges = [item for sublist in edges for item in sublist]
+        ## receive single edges or edge lists
+        #else:
+            #if type(edges) is not list:
+                #edges = [edges]
 
-            if isinstance(edges[0], BioCypherRelAsNode):
-                rel_as_node = True
-            elif not all(isinstance(e, BioCypherEdge) for e in edges):
-                logger.error("Nodes must be passed as type BioCypherEdge.")
-                return (False, False)
+            ## flatten
+            #if any(isinstance(i, list) for i in edges):
+                #edges = [item for sublist in edges for item in sublist]
 
-            logger.info("Merging %s edges." % len(edges))
+            #if isinstance(edges[0], BioCypherRelAsNode):
+                #rel_as_node = True
+            #elif not all(isinstance(e, BioCypherEdge) for e in edges):
+                #logger.error("Nodes must be passed as type BioCypherEdge.")
+                #return (False, False)
 
-        if rel_as_node:
-            # split up tuples in nodes and edges if detected
-            z = zip(
-                *(
-                    (
-                        e.get_node(),
-                        [e.get_source_edge(), e.get_target_edge()],
-                    )
-                    for e in edges
-                )
-            )
-            nod, edg = (list(a) for a in z)
-            self.add_biocypher_nodes(nod)
-            self.add_biocypher_edges(edg)
+        edges = itertools.chain(*_misc.ensure_iterable(i) for i in edges)
+
+        nodes = []
+        rels = []
+
+        try:
+
+            for e in edges:
+
+                if hasattr(e, 'get_node'):
+
+                    nodes.append(e.get_node())
+                    rels.append(e.get_source_edge().get_dict())
+                    rels.append(e.get_target_edge().get_dict())
+
+                else:
+
+                    rels.append(e.get_dict())
+
+        except AttributeError:
+
+            msg = "Edges and nodes must have a `get_dict` method."
+            logger.error(msg)
+
+            raise ValueError(msg)
+
+        self.add_biocypher_nodes(the_nodes)
+        logger.info(f"Merging {len(the_edges)} edges.")
 
         # cypher query
-        else:
-            rels = [edge.get_dict() for edge in edges]
 
-            # merging only on the ids of the entities, passing the
-            # properties on match and on create;
-            # TODO add node labels?
-            node_query = (
-                "UNWIND $rels AS r "
-                "MERGE (src {id: r.source_id}) "
-                "MERGE (tar {id: r.target_id}) "
-            )
-            self.query(node_query, parameters={"rels": rels})
+        # merging only on the ids of the entities, passing the
+        # properties on match and on create;
+        # TODO add node labels?
+        node_query = (
+            "UNWIND $rels AS r "
+            "MERGE (src {id: r.source_id}) "
+            "MERGE (tar {id: r.target_id}) "
+        )
 
-            edge_query = (
-                "UNWIND $rels AS r "
-                "MATCH (src {id: r.source_id}) "
-                "MATCH (tar {id: r.target_id}) "
-                "WITH src, tar, r "
-                "CALL apoc.merge.relationship"
-                "(src, r.relationship_label, NULL, "
-                "r.properties, tar, r.properties) "
-                "YIELD rel "
-                "RETURN rel"
-            )
+        self.query(node_query, parameters={"rels": rels})
 
-            if explain:
-                return self.explain(edge_query, parameters={"rels": rels})
-            elif profile:
-                return self.profile(edge_query, parameters={"rels": rels})
-            else:
-                res = self.query(edge_query, parameters={"rels": rels})
-                logger.info("Finished merging edges.")
-                return res
+        edge_query = (
+            "UNWIND $rels AS r "
+            "MATCH (src {id: r.source_id}) "
+            "MATCH (tar {id: r.target_id}) "
+            "WITH src, tar, r "
+            "CALL apoc.merge.relationship"
+            "(src, r.relationship_label, NULL, "
+            "r.properties, tar, r.properties) "
+            "YIELD rel "
+            "RETURN rel"
+        )
+
+        method = "explain" if explain else "profile" if profile else "query"
+
+        result = getattr(self, method)(edge_query, parameters = {"rels": rels})
+
+        logger.info("Finished merging edges.")
+
+        return result
+
 
     def write_nodes(self, nodes, dirname: str = None, db_name: str = None):
         """
