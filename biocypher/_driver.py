@@ -18,7 +18,7 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
-from typing import Generator, Iterable, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Iterable, Optional, Generator
 import importlib as imp
 import itertools
 
@@ -30,6 +30,7 @@ if TYPE_CHECKING:
 
 import neo4j_utils
 
+from . import _misc
 from ._write import BatchWriter
 from ._config import config as _config
 from ._create import (
@@ -38,11 +39,7 @@ from ._create import (
     BioCypherNode,
     BioCypherRelAsNode,
 )
-from ._translate import (
-    BiolinkAdapter,
-    Translator,
-)
-from . import _misc
+from ._translate import Translator, BiolinkAdapter
 
 __all__ = ["Driver"]
 

@@ -3,7 +3,7 @@ import pytest
 
 from biocypher._config import module_data_path
 from biocypher._create import VersionNode, BioCypherEdge, BioCypherNode
-from biocypher._translate import BiolinkAdapter, Translator
+from biocypher._translate import Translator, BiolinkAdapter
 
 
 @pytest.fixture

@@ -1,11 +1,10 @@
-
 from typing import (
     Any,
-    Generator,
-    ItemsView,
+    Mapping,
     Iterable,
     KeysView,
-    Mapping,
+    Generator,
+    ItemsView,
     ValuesView,
 )
 
@@ -51,8 +50,4 @@ def ensure_iterable(value: Any) -> Iterable:
     Returns iterables, except strings, wraps simple types into tuple.
     """
 
-    return (
-        value
-            if isinstance(value, LIST_LIKE) else
-        (value,)
-    )
+    return value if isinstance(value, LIST_LIKE) else (value,)

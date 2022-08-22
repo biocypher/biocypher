@@ -33,15 +33,14 @@ Todo:
 """
 
 from typing import Optional
-
 from datetime import datetime
 from dataclasses import field, dataclass
 
 import yaml
 
+from . import _misc
 from . import _config as config
 from ._logger import logger
-from . import _misc
 
 logger.debug(f"Loading module {__name__}.")
 

@@ -76,15 +76,15 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
-import os
-from collections import OrderedDict, defaultdict
-from datetime import datetime
 from types import GeneratorType
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Union, Optional
+from datetime import datetime
+from collections import OrderedDict, defaultdict
+import os
 
-from biocypher._config import config as _config
 from more_itertools import peekable
 
+from biocypher._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 __all__ = ["BatchWriter"]

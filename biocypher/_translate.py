@@ -38,16 +38,16 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
-from typing import Any, Generator, Iterable, Literal, Optional, Union
+from typing import Any, Union, Literal, Iterable, Optional, Generator
 import os
 import re
 
 from linkml_runtime.linkml_model.meta import ClassDefinition
 import bmt
 
+from . import _misc
 from ._config import _read_yaml, module_data_path
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from . import _misc
 
 __all__ = [
     "BiolinkAdapter",

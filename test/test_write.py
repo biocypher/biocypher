@@ -1,19 +1,19 @@
-from genericpath import isfile
 import os
 import random
 import string
 import tempfile
 
+from genericpath import isfile
 import pytest
 
-from biocypher._driver import Driver
 from biocypher._write import BatchWriter
 from biocypher._create import (
+    VersionNode,
     BioCypherEdge,
     BioCypherNode,
     BioCypherRelAsNode,
-    VersionNode,
 )
+from biocypher._driver import Driver
 from biocypher._translate import BiolinkAdapter
 
 __all__ = [
