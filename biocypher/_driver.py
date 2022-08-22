@@ -97,7 +97,7 @@ class Driver(neo4j_utils.Driver):
         wipe: bool = False,
         offline: bool = False,
         increment_version=True,
-        schema_config: Optional[str] = None,
+        user_schema_config_path: Optional[str] = None,
         delimiter: Optional[str] = None,
         array_delimiter: Optional[str] = None,
         quote_char: Optional[str] = None,
@@ -145,7 +145,7 @@ class Driver(neo4j_utils.Driver):
         # one
         self.db_meta = VersionNode(
             from_config=offline or wipe,
-            config_file=schema_config,
+            config_file=user_schema_config_path,
             bcy_driver=self,
         )
 
@@ -161,10 +161,10 @@ class Driver(neo4j_utils.Driver):
         # TODO: implement passing a driver instance
         # I am not sure, but seems like it should work from driver
 
-
     def update_meta_graph(self):
 
-        if self.offline: return
+        if self.offline:
+            return
 
         logger.info("Updating Neo4j meta graph.")
         # add version node
@@ -222,10 +222,9 @@ class Driver(neo4j_utils.Driver):
                 ed.append(BioCypherEdge(id, tar, "IS_TARGET_OF"))
         self.add_biocypher_edges(ed)
 
-
     def _update_translator(self):
 
-        self.translator = Translator(leaves = self.db_meta.leaves)
+        self.translator = Translator(leaves=self.db_meta.leaves)
 
     def init_db(self):
         """
@@ -314,11 +313,11 @@ class Driver(neo4j_utils.Driver):
         return self.add_biocypher_edges(bn)
 
     def add_biocypher_nodes(
-            self,
-            nodes: Iterable[BioCypherNode],
-            explain: bool = False,
-            profile: bool = False,
-        ) -> bool:
+        self,
+        nodes: Iterable[BioCypherNode],
+        explain: bool = False,
+        profile: bool = False,
+    ) -> bool:
         """
         Accepts a node type handoff class
         (:class:`biocypher.create.BioCypherNode`) with id,
@@ -348,8 +347,7 @@ class Driver(neo4j_utils.Driver):
         try:
 
             entities = [
-                node.get_dict()
-                for node in _misc.ensure_iterable(nodes)
+                node.get_dict() for node in _misc.ensure_iterable(nodes)
             ]
 
         except AttributeError:
@@ -373,20 +371,19 @@ class Driver(neo4j_utils.Driver):
 
         result = getattr(self, method)(
             entity_query,
-            parameters = {"entities": entities},
+            parameters={"entities": entities},
         )
 
         logger.info("Finished merging nodes.")
 
         return result
 
-
     def add_biocypher_edges(
-            self,
-            edges: Iterable[BioCypherEdge],
-            explain: bool = False,
-            profile: bool = False,
-        ) -> bool:
+        self,
+        edges: Iterable[BioCypherEdge],
+        explain: bool = False,
+        profile: bool = False,
+    ) -> bool:
         """
         Accepts an edge type handoff class
         (:class:`biocypher.create.BioCypherEdge`) with source
@@ -428,7 +425,7 @@ class Driver(neo4j_utils.Driver):
 
             for e in edges:
 
-                if hasattr(e, 'get_node'):
+                if hasattr(e, "get_node"):
 
                     nodes.append(e.get_node())
                     rels.append(e.get_source_edge().get_dict())
@@ -475,12 +472,11 @@ class Driver(neo4j_utils.Driver):
 
         method = "explain" if explain else "profile" if profile else "query"
 
-        result = getattr(self, method)(edge_query, parameters = {"rels": rels})
+        result = getattr(self, method)(edge_query, parameters={"rels": rels})
 
         logger.info("Finished merging edges.")
 
         return result
-
 
     def write_nodes(self, nodes, dirname: str = None, db_name: str = None):
         """
@@ -538,7 +534,7 @@ class Driver(neo4j_utils.Driver):
         existing.
         """
         if not self.bl_adapter:
-            self.bl_adapter = BiolinkAdapter(leaves = self.db_meta.leaves)
+            self.bl_adapter = BiolinkAdapter(leaves=self.db_meta.leaves)
 
     def write_edges(
         self,
@@ -639,4 +635,4 @@ class Driver(neo4j_utils.Driver):
 
     def __repr__(self):
 
-        return f'<BioCypher {neo4j_utils.Driver.__repr__(self)[1:]}'
+        return f"<BioCypher {neo4j_utils.Driver.__repr__(self)[1:]}"
