@@ -324,7 +324,8 @@ class VersionNode:
         bcy_driver=None,
     ):
 
-        self.offline = offline
+        # if we do not have a driver, then likely we are offline, right?
+        self.offline = offline or getattr(bcy_driver, 'offline', True)
         self.from_config = from_config
         self.config_file = config_file
         self.node_label = node_label

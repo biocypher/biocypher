@@ -115,13 +115,6 @@ class Driver(neo4j_utils.Driver):
 
             logger.info("Offline mode: no connection to Neo4j.")
 
-            self.db_meta = VersionNode(
-                from_config=True,
-                config_file=schema_config,
-                offline=True,
-                bcy_driver=self,
-            )
-
             self._db_config = {
                 "uri": db_uri,
                 "user": db_user,
@@ -141,37 +134,35 @@ class Driver(neo4j_utils.Driver):
             # yaml, interactive?
             if wipe:
 
-                # get database version node ('check' module) immutable
-                # variable of each instance (ie, each call from the
-                # adapter to BioCypher); checks for existence of graph
-                # representation and returns if found, else creates new
-                # one
-                self.db_meta = VersionNode(
-                    from_config=True,
-                    config_file=schema_config,
-                    bcy_driver=self,
-                )
-
                 self.init_db()
 
-            else:
+        # get database version node ('check' module) immutable
+        # variable of each instance (ie, each call from the
+        # adapter to BioCypher); checks for existence of graph
+        # representation and returns if found, else creates new
+        # one
+        self.db_meta = VersionNode(
+            from_config=offline or wipe,
+            config_file=schema_config,
+            bcy_driver=self,
+        )
 
-                self.db_meta = VersionNode(bcy_driver = self)
+        if increment_version:
 
-                if increment_version:
-
-                    # set new current version node
-                    self.update_meta_graph()
+            # set new current version node
+            self.update_meta_graph()
 
         self.bl_adapter = None
         self.batch_writer = None
         self._update_translator()
 
         # TODO: implement passing a driver instance
-        # I am not sure, but seems like it should work fine
+        # I am not sure, but seems like it should work from driver
 
 
     def update_meta_graph(self):
+
+        if self.offline: return
 
         logger.info("Updating Neo4j meta graph.")
         # add version node
