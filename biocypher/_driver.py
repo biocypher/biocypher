@@ -428,6 +428,11 @@ class Driver(neo4j_utils.Driver):
             `True` for success, `False` otherwise.
         """
 
+        # edge case: single edge throws "non iterable" error
+        # TODO this is a hack, fix this
+        if isinstance(edges, BioCypherEdge):
+            edges = [edges]
+
         edges = itertools.chain(*(_misc.ensure_iterable(i) for i in edges))
 
         nodes = []

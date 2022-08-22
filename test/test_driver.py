@@ -11,6 +11,7 @@ def driver():
     # there needs to be a database called "test" in the neo4j instance
     d = Driver(
         db_name="test",
+        db_passwd="your_password_here",
         wipe=True,
         increment_version=False,
         user_schema_config_path="biocypher/_config/test_schema_config.yaml",
@@ -74,10 +75,11 @@ def test_profile(driver):
 def test_add_invalid_biocypher_node(driver):
     # neo4j database needs to be running!
 
-    r1, r2 = driver.add_biocypher_nodes(1)
-    r3, r4 = driver.add_biocypher_nodes("String")
+    with pytest.raises(ValueError):
+        driver.add_biocypher_nodes(1)
 
-    assert not r1 and not r2 and not r3 and not r4
+    with pytest.raises(ValueError):
+        driver.add_biocypher_nodes("String")
 
 
 def test_add_single_biocypher_node(driver):
@@ -137,10 +139,8 @@ def test_add_generic_id_node(driver):
 
 def test_add_invalid_biocypher_edge(driver):
     # neo4j database needs to be running!
-    r1, r2 = driver.add_biocypher_edges(1)
-    r3, r4 = driver.add_biocypher_edges("String")
-
-    assert not r1 and not r2 and not r3 and not r4
+    with pytest.raises(ValueError):
+        driver.add_biocypher_edges([1, 2, 3])
 
 
 def test_add_single_biocypher_edge_explicit_node_creation(driver):
