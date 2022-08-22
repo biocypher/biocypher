@@ -47,6 +47,7 @@ import bmt
 
 from ._config import _read_yaml, module_data_path
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from . import _misc
 
 __all__ = [
     "BiolinkAdapter",
@@ -484,7 +485,7 @@ class Translator:
     def translate_nodes(
             self,
             id_type_prop_tuples: Iterable,
-        ) -> Generator[BioCypherNode]:
+        ) -> Generator[BioCypherNode, None, None]:
         """
         Translates input node representation to a representation that
         conforms to the schema of the given BioCypher graph. For now
@@ -575,7 +576,7 @@ class Translator:
     def translate_edges(
             self,
             src_tar_type_prop_tuples: Iterable,
-        ) -> Generator[Union[BioCypherEdge, BioCypherRelAsNode]]:
+        ) -> Generator[Union[BioCypherEdge, BioCypherRelAsNode], None, None]:
         """
         Translates input edge representation to a representation that
         conforms to the schema of the given BioCypher graph. For now
