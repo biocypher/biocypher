@@ -419,7 +419,7 @@ class Driver(neo4j_utils.Driver):
             `True` for success, `False` otherwise.
         """
 
-        edges = itertools.chain(*_misc.ensure_iterable(i) for i in edges)
+        edges = itertools.chain(*(_misc.ensure_iterable(i) for i in edges))
 
         nodes = []
         rels = []
