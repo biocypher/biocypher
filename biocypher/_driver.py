@@ -445,8 +445,8 @@ class Driver(neo4j_utils.Driver):
 
             raise ValueError(msg)
 
-        self.add_biocypher_nodes(the_nodes)
-        logger.info(f"Merging {len(the_edges)} edges.")
+        self.add_biocypher_nodes(nodes)
+        logger.info(f"Merging {len(rels)} edges.")
 
         # cypher query
 
