@@ -28,6 +28,17 @@ graph to be created. For more details, please refer to the example
 [PyPath adapter](https://github.com/saezlab/pypath/blob/master/pypath/biocypher/adapter.py)
 and the section on [adapter functions](adapter_functions).
 
+The recommended mode of access into BioCypher functionality is via the
+{py:class}``biocypher._driver.Driver`` class. It can be called either
+starting in "offline mode" using `offline = True`, i.e., without
+connection to a running Neo4j instance, or by providing authentication
+details via arguments or configuration file:
+
+```
+import biocypher
+d = biocypher.Driver(<args>)
+```
+
 (schema-config)=
 ## The schema configuration YAML file
 

@@ -69,20 +69,38 @@ changing an already existing one.
 
 ## Communication via the Neo4j Python Driver
 
-The BioCypher [Driver](driver) is the main submodule of BioCypher.
-It establishes a connection with a running graph database via the
+The BioCypher [Driver](driver) is the main submodule of BioCypher. It
+establishes a connection with a running graph database via the
 {py:class}`neo4j.GraphDatabase.driver`, integrates the funtions of the
 other submodules, and serves as outside interface of BioCypher. The
 ``Driver`` is the main class for interacting with BioCypher in the host
 module's adapter class. It handles authentification and basic database
-management as well as the creation and manipulation of graph entries.
+management as well as the creation and manipulation of graph entries. It
+can be instantiated and accessed like this:
+
+```
+import biocypher
+
+# offline mode
+d = biocypher.Driver(
+   db_name = "neo4j", 
+   offline = True
+)
+
+# online mode
+d = biocypher.Driver(
+   db_name = "neo4j", 
+   db_user = "neo4j", 
+   db_passwd = "neo4j"
+)
+```
 
 In our example, it is instantiated in the initialisation of the adapter,
 and then called on for [interacting with a running graph](running) and
 for exporting a complete database in CSV format for the [Neo4j
 admin-import feature](admin_import). Upon instantiation, it
 automatically assesses the graph database it is connected to (specified
-using the ``db_name`` attribute) regarding whether or not it already
+using the ``db_name`` argument) regarding whether or not it already
 contains a BioCypher graph, and, if so, what the structure of this graph
 is.
 

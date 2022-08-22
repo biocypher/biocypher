@@ -106,6 +106,15 @@ single database entries, whether they be nodes or relationships in the
 graph to be created. For more details, please refer to the example
 <a class="reference external" href="https://github.com/saezlab/pypath/blob/master/pypath/biocypher/adapter.py">PyPath adapter</a>
 and the section on <a class="reference internal" href="adapter.html#adapter-functions"><span class="std std-ref">adapter functions</span></a>.</p>
+<p>The recommended mode of access into BioCypher functionality is via the
+<a class="reference internal" href="submodule.html#biocypher._driver.Driver" title="biocypher._driver.Driver"><code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher._driver.Driver</span></code></a> class. It can be called either
+starting in “offline mode” using <code class="docutils literal notranslate"><span class="pre">offline</span> <span class="pre">=</span> <span class="pre">True</span></code>, i.e., without
+connection to a running Neo4j instance, or by providing authentication
+details via arguments or configuration file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">biocypher</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span><span class="o">&lt;</span><span class="n">args</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="the-schema-configuration-yaml-file">
 <span id="schema-config"></span><h2>The schema configuration YAML file<a class="headerlink" href="#the-schema-configuration-yaml-file" title="Permalink to this heading"></a></h2>
