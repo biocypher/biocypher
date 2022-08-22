@@ -48,10 +48,8 @@ def to_list(value: Any) -> list:
 
 def ensure_iterable(value: Any) -> Iterable:
     """
-
+    Returns iterables, except strings, wraps simple types into tuple.
     """
-
-    if isinstance(value, LIST_LIKE):
 
     return (
         value
