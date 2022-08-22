@@ -444,7 +444,6 @@ class BiolinkAdapter:
         self.mappings[original_name] = biocypher_name
         self.reverse_mappings[biocypher_name] = original_name
 
-
     @staticmethod
     def trim_biolink_ancestry(ancestry: list[str]) -> list[str]:
         """
@@ -465,8 +464,8 @@ https://biolink.github.io/biolink-model-toolkit/example_usage.html
 # Create nodes and edges from separate inputs
 # -------------------------------------------
 
-class Translator:
 
+class Translator:
     def __init__(self, leaves: dict[str, dict]):
         """
         Args:
@@ -481,11 +480,10 @@ class Translator:
         self.leaves = leaves
         self._update_bl_types()
 
-
     def translate_nodes(
-            self,
-            id_type_prop_tuples: Iterable,
-        ) -> Generator[BioCypherNode, None, None]:
+        self,
+        id_type_prop_tuples: Iterable,
+    ) -> Generator[BioCypherNode, None, None]:
         """
         Translates input node representation to a representation that
         conforms to the schema of the given BioCypher graph. For now
@@ -527,7 +525,6 @@ class Translator:
 
         self._log_finish_translate("nodes")
 
-
     def _get_preferred_id(self, _bl_type: str) -> str:
         """
         Returns the preferred id for the given Biolink type.
@@ -535,10 +532,9 @@ class Translator:
 
         return (
             self.leaves[_bl_type]["preferred_id"]
-                if "preferred_id" in self.leaves.get(_bl_type, {}) else
-            "id"
+            if "preferred_id" in self.leaves.get(_bl_type, {})
+            else "id"
         )
-
 
     def _filter_props(self, bl_type: str, props: dict) -> dict:
         """
@@ -550,9 +546,7 @@ class Translator:
         if filter_props:
 
             filtered_props = {
-                k: v
-                for k, v in props.items()
-                if k in filter_props.keys()
+                k: v for k, v in props.items() if k in filter_props.keys()
             }
 
             missing_props = [
@@ -572,11 +566,10 @@ class Translator:
 
             return props
 
-
     def translate_edges(
-            self,
-            src_tar_type_prop_tuples: Iterable,
-        ) -> Generator[Union[BioCypherEdge, BioCypherRelAsNode], None, None]:
+        self,
+        src_tar_type_prop_tuples: Iterable,
+    ) -> Generator[Union[BioCypherEdge, BioCypherRelAsNode], None, None]:
         """
         Translates input edge representation to a representation that
         conforms to the schema of the given BioCypher graph. For now
@@ -673,29 +666,25 @@ class Translator:
 
         self._log_finish_translate("edges")
 
-
     @staticmethod
     def _error_no_type(_type: Any):
 
         msg = f"No Biolink type defined for `{_type}`."
-        logger.error(msg)
+        logger.warning(msg)
 
-        raise ValueError(msg)
-
+        # raise ValueError(msg)
 
     @staticmethod
     def _log_begin_translate(_input: Iterable, what: str):
 
-        n = f"{len(_input)} " if hasattr(_input, '__len__') else ""
+        n = f"{len(_input)} " if hasattr(_input, "__len__") else ""
 
         logger.debug(f"Translating {n}{what} to BioCypher")
-
 
     @staticmethod
     def _log_finish_translate(what: str):
 
         logger.debug(f"Finished translating {what} to BioCypher.")
-
 
     def _update_bl_types(self):
 
@@ -704,7 +693,6 @@ class Translator:
             for bcy_type, schema_def in self.leaves.items()
             for label in _misc.to_list(schema_def.get("label_in_input", ()))
         )
-
 
     def _get_bl_type(self, label: str) -> Optional[str]:
         """
