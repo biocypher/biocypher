@@ -345,33 +345,6 @@ class Driver(neo4j_utils.Driver):
             True for success, False otherwise.
         """
 
-        #
-        # TODO: I would remove the part below, simpler solution is possible
-        #
-
-        # receive generator objects
-        #if isinstance(nodes, GeneratorType):
-            #nodes = peekable(nodes)
-            #if not isinstance(nodes.peek(), BioCypherNode):
-                #logger.warn(
-                    #"It appears that the first node is not a BioCypherNode. "
-                    #"Nodes must be passed as type BioCypherNode. "
-                    #"Please use the generic add_edges() method.",
-                #)
-                #return (False, False)
-            #else:
-                #logger.info("Merging nodes from generator.")
-
-        ## receive single nodes or node lists
-        #else:
-            #if type(nodes) is not list:
-                #nodes = [nodes]
-            #if not all(isinstance(n, BioCypherNode) for n in nodes):
-                #logger.error("Nodes must be passed as type BioCypherNode.")
-                #return (False, False)
-            #else:
-                #logger.info(f"Merging {len(nodes)} nodes.")
-
         try:
 
             entities = [
@@ -445,39 +418,6 @@ class Driver(neo4j_utils.Driver):
         Returns:
             `True` for success, `False` otherwise.
         """
-
-        #
-        # TODO: I would remove the part below, simpler solution is possible
-        #
-
-        #rel_as_node = False
-
-        ## receive generator objects
-        #if isinstance(edges, Generator):
-            ## itertools solution is kind of slow and cumbersome
-            ## however, needs to detect tuples...
-
-            #edges = peekable(edges)
-
-            #if isinstance(edges.peek(), BioCypherRelAsNode):
-                ## create one node and two edges
-                #rel_as_node = True
-                #logger.info("Merging nodes and edges from generator.")
-
-        ## receive single edges or edge lists
-        #else:
-            #if type(edges) is not list:
-                #edges = [edges]
-
-            ## flatten
-            #if any(isinstance(i, list) for i in edges):
-                #edges = [item for sublist in edges for item in sublist]
-
-            #if isinstance(edges[0], BioCypherRelAsNode):
-                #rel_as_node = True
-            #elif not all(isinstance(e, BioCypherEdge) for e in edges):
-                #logger.error("Nodes must be passed as type BioCypherEdge.")
-                #return (False, False)
 
         edges = itertools.chain(*_misc.ensure_iterable(i) for i in edges)
 
