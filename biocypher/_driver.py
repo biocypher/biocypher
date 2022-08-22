@@ -116,6 +116,13 @@ class Driver(neo4j_utils.Driver):
 
             logger.info("Offline mode: no connection to Neo4j.")
 
+            self.db_meta = VersionNode(
+                from_config=True,
+                config_file=user_schema_config_path,
+                offline=True,
+                bcy_driver=self,
+            )
+
             self._db_config = {
                 "uri": db_uri,
                 "user": db_user,
@@ -136,18 +143,23 @@ class Driver(neo4j_utils.Driver):
             # yaml, interactive?
             if wipe:
 
+                # get database version node ('check' module) immutable
+                # variable of each instance (ie, each call from the
+                # adapter to BioCypher); checks for existence of graph
+                # representation and returns if found, else creates new
+                # one
+                self.db_meta = VersionNode(
+                    from_config=offline or wipe,
+                    config_file=user_schema_config_path,
+                    bcy_driver=self,
+                )
+
+                # init requires db_meta to be set
                 self.init_db()
 
-        # get database version node ('check' module) immutable
-        # variable of each instance (ie, each call from the
-        # adapter to BioCypher); checks for existence of graph
-        # representation and returns if found, else creates new
-        # one
-        self.db_meta = VersionNode(
-            from_config=offline or wipe,
-            config_file=user_schema_config_path,
-            bcy_driver=self,
-        )
+            else:
+
+                self.db_meta = VersionNode(self)
 
         if increment_version:
 

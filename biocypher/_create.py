@@ -325,7 +325,7 @@ class VersionNode:
     ):
 
         # if we do not have a driver, then likely we are offline, right?
-        self.offline = offline or getattr(bcy_driver, 'offline', True)
+        self.offline = offline or getattr(bcy_driver, "offline", True)
         self.from_config = from_config
         self.config_file = config_file
         self.node_label = node_label
@@ -337,6 +337,12 @@ class VersionNode:
         )
         self.schema = self._get_graph_schema()
         self.leaves = self._get_leaves()
+
+        self.properties = {
+            "graph_state": self.graph_state,
+            "schema": self.schema,
+            "leaves": self.leaves,
+        }
 
     def get_id(self) -> str:
         """
@@ -355,6 +361,20 @@ class VersionNode:
             str: node_label
         """
         return self.node_label
+
+    def get_dict(self) -> dict:
+        """
+        Return dict of id, labels, and properties.
+
+        Returns:
+            dict: node_id and node_label as top-level key-value pairs,
+            properties as second-level dict.
+        """
+        return {
+            "node_id": self.node_id,
+            "node_label": self.node_label,
+            "properties": self.properties,
+        }
 
     def _get_current_id(self):
         """
@@ -395,10 +415,10 @@ class VersionNode:
             return result[0]["meta"]
 
     def _get_graph_schema(
-            self,
-            from_config: Optional[bool] = None,
-            config_file: Optional[str] = None,
-        ) -> dict:
+        self,
+        from_config: Optional[bool] = None,
+        config_file: Optional[str] = None,
+    ) -> dict:
         """
         Return graph schema information from meta graph if it exists, or
         create new schema information properties from configuration

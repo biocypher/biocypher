@@ -33,7 +33,7 @@ def driver():
 
 def test_wipe():
     # just convenience function to wipe the database in testing env
-    d = Driver(db_name="test", wipe=True)
+    d = Driver(db_name="test", db_passwd="your_password_here", wipe=True)
     d.close()
 
     assert True
