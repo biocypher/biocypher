@@ -16,17 +16,17 @@ def version_node():
 
 
 @pytest.fixture
+def translator(version_node):
+    return Translator(version_node.leaves)
+
+
+@pytest.fixture
 def biolink_adapter(version_node):
     return BiolinkAdapter(
         version_node.leaves,
         schema="biocypher",  # this is the default
         # unstable, move to test yaml
     )
-
-
-@pytest.fixture
-def translator(biolink_adapter):
-    return Translator(biolink_adapter.leaves)
 
 
 def test_translate_nodes(translator):
@@ -46,14 +46,12 @@ def test_translate_nodes(translator):
     assert next(t).get_label() == "MacromolecularComplexMixin"
 
 
-def test_specific_and_generic_ids(version_node, translator):
+def test_specific_and_generic_ids(translator):
     id_type = [
         ("CHAT", "hgnc", {"taxon": 9606}),
         ("REACT:25520", "reactome", {}),
     ]
-    t = list(
-        translator.translate_nodes(version_node, translator.leaves, id_type)
-    )
+    t = list(translator.translate_nodes(id_type))
 
     assert (
         t[0].get_id() == "CHAT"
@@ -63,15 +61,14 @@ def test_specific_and_generic_ids(version_node, translator):
     )
 
 
-def test_translate_edges(version_node, translator):
-    v = version_node, translator
+def test_translate_edges(translator):
     # edge type association (defined in `schema_config.yaml`)
     src_tar_type_edge = [
         ("G15258", "MONDO1", "gene_disease", {}),
         ("G15258", "MONDO2", "protein_disease", {}),
         ("G15258", "G15242", "phosphorylation", {}),
     ]
-    t = translator.translate_edges(v.leaves, src_tar_type_edge)
+    t = translator.translate_edges(src_tar_type_edge)
 
     assert type(next(t)) == BioCypherEdge
     assert next(t).get_label() == "PERTURBED_IN_DISEASE"
@@ -93,7 +90,7 @@ def test_translate_edges(version_node, translator):
             {"directed": True, "effect": -1},
         ),
     ]
-    t = translator.translate_edges(v.leaves, src_tar_type_node)
+    t = translator.translate_edges(src_tar_type_node)
 
     n = next(t)
     n = next(t)
@@ -110,8 +107,8 @@ def test_translate_edges(version_node, translator):
     assert n.get_target_edge().get_label() == "IS_TARGET_OF"
 
 
-def test_adapter(version_node, translator):
-    ad = BiolinkAdapter(version_node, translator.leaves, schema="biolink")
+def test_adapter(version_node):
+    ad = BiolinkAdapter(version_node.leaves, schema="biolink")
 
     assert isinstance(
         ad.biolink_leaves["Protein"]["class_definition"],
@@ -119,10 +116,9 @@ def test_adapter(version_node, translator):
     )
 
 
-def test_custom_bmt_yaml(version_node, translator):
+def test_custom_bmt_yaml(version_node):
     ad = BiolinkAdapter(
-        version_node,
-        translator.leaves,
+        version_node.leaves,
         schema=module_data_path("test-biolink-model"),
     )
     p = ad.biolink_leaves["Protein"]
@@ -146,9 +142,10 @@ def test_biolink_yaml_extension(biolink_adapter):
     )
 
 
-def test_translate_identifiers(version_node, translator):
+def test_translate_identifiers(translator):
     # representation of a different schema
     # host and guest db (which to translate)
+    # TODO
     pass
 
 
@@ -184,11 +181,7 @@ def test_merge_multiple_inputs_edge(version_node, translator):
         ("CHAT", "AD", "gene_disease", {"taxon": 9606}),
         ("CHRNA4", "AD", "protein_disease", {"taxon": 9606}),
     ]
-    t = list(
-        translator.translate_edges(
-            version_node, translator.leaves, src_tar_type
-        )
-    )
+    t = list(translator.translate_edges(src_tar_type))
 
     # check unique edge type
     assert not any(
@@ -259,7 +252,7 @@ def test_properties_from_config(version_node, translator):
             {"taxon": 9606, "name": "test2", "test": "should_not_be_returned"},
         ),
     ]
-    t = translator.translate_nodes(version_node, translator.leaves, id_type)
+    t = translator.translate_nodes(id_type)
 
     r = list(t)
     assert (
@@ -291,9 +284,7 @@ def test_properties_from_config(version_node, translator):
         ),
     ]
 
-    t = translator.translate_edges(
-        version_node, translator.leaves, src_tar_type
-    )
+    t = translator.translate_edges(src_tar_type)
 
     r = list(t)
     assert (
