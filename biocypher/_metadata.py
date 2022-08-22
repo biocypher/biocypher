@@ -54,7 +54,13 @@ def get_metadata():
 
     if not meta:
 
-        meta = dict(importlib.metadata.metadata(here.name).items())
+        try:
+
+            meta = dict(importlib.metadata.metadata(here.name).items())
+
+        except importlib.metadata.PackageNotFoundError:
+
+            pass
 
     return meta
 
