@@ -478,9 +478,7 @@ class Translator:
         """
 
         self.leaves = leaves
-
-        # commented out until behaviour is fixed
-        # self._update_bl_types()
+        self._update_bl_types()
 
     def translate_nodes(
         self,
@@ -689,16 +687,15 @@ class Translator:
         logger.debug(f"Finished translating {what} to BioCypher.")
 
     def _update_bl_types(self):
-        # TODO:
-        # - not documented
-        # - does not account for virtual nodes (returns list of
-        #   identifiers for Pathway, even though calling REACT.Pathway
-        #   specifically)
+        """
+        Creates a dictionary to translate from input labels to Biolink labels.
+        """
+
 
         self._bl_types = dict(
-            (label, bcy_type)
+            (schema_def["label_in_input"], bcy_type)
             for bcy_type, schema_def in self.leaves.items()
-            for label in _misc.to_list(schema_def.get("label_in_input", ()))
+            if isinstance(schema_def.get("label_in_input", None), str)
         )
 
     def _get_bl_type(self, label: str) -> Optional[str]:
@@ -712,14 +709,4 @@ class Translator:
                 `schema_config.yaml`).
         """
 
-        # commented out until behaviour of _update_bl_types is fixed
-        # return self._bl_types.get(label, None)
-
-        for k, v in self.leaves.items():
-            if "label_in_input" in v:
-                l = v["label_in_input"]
-                if isinstance(l, list):
-                    if label in l:
-                        return k
-                elif v["label_in_input"] == label:
-                    return k
+        return self._bl_types.get(label, None)
