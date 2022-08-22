@@ -425,6 +425,7 @@ class Driver(neo4j_utils.Driver):
             `True` for success, `False` otherwise.
         """
 
+        edges = _misc.ensure_iterable(edges)
         edges = itertools.chain(*(_misc.ensure_iterable(i) for i in edges))
 
         nodes = []
