@@ -604,9 +604,9 @@ class Translator:
             if bl_type:
 
                 # filter properties for those specified in schema_config if any
-                _filtered_props = _filter_props(bl_type, _props)
+                _filtered_props = self._filter_props(bl_type, _props)
 
-                rep = leaves[bl_type]["represented_as"]
+                rep = self.leaves[bl_type]["represented_as"]
 
                 if rep == "node":
 
