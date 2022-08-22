@@ -42,6 +42,7 @@ from ._translate import (
     BiolinkAdapter,
     Translator,
 )
+from . import _misc
 
 __all__ = ["Driver"]
 
@@ -344,30 +345,48 @@ class Driver(neo4j_utils.Driver):
             True for success, False otherwise.
         """
 
+        #
+        # TODO: I would remove the part below, simpler solution is possible
+        #
+
         # receive generator objects
-        if isinstance(nodes, GeneratorType):
-            nodes = peekable(nodes)
-            if not isinstance(nodes.peek(), BioCypherNode):
-                logger.warn(
-                    "It appears that the first node is not a BioCypherNode. "
-                    "Nodes must be passed as type BioCypherNode. "
-                    "Please use the generic add_edges() method.",
-                )
-                return (False, False)
-            else:
-                logger.info("Merging nodes from generator.")
+        #if isinstance(nodes, GeneratorType):
+            #nodes = peekable(nodes)
+            #if not isinstance(nodes.peek(), BioCypherNode):
+                #logger.warn(
+                    #"It appears that the first node is not a BioCypherNode. "
+                    #"Nodes must be passed as type BioCypherNode. "
+                    #"Please use the generic add_edges() method.",
+                #)
+                #return (False, False)
+            #else:
+                #logger.info("Merging nodes from generator.")
 
-        # receive single nodes or node lists
-        else:
-            if type(nodes) is not list:
-                nodes = [nodes]
-            if not all(isinstance(n, BioCypherNode) for n in nodes):
-                logger.error("Nodes must be passed as type BioCypherNode.")
-                return (False, False)
-            else:
-                logger.info(f"Merging {len(nodes)} nodes.")
+        ## receive single nodes or node lists
+        #else:
+            #if type(nodes) is not list:
+                #nodes = [nodes]
+            #if not all(isinstance(n, BioCypherNode) for n in nodes):
+                #logger.error("Nodes must be passed as type BioCypherNode.")
+                #return (False, False)
+            #else:
+                #logger.info(f"Merging {len(nodes)} nodes.")
 
-        entities = [node.get_dict() for node in nodes]
+        try:
+
+            entities = [
+                node.get_dict()
+                for node in _misc.ensure_iterable(nodes)
+            ]
+
+        except AttributeError:
+
+            msg = "Nodes must have a `get_dict` method."
+            logger.error(msg)
+
+            raise ValueError(msg)
+
+        logger.info(f"Merging {len(entities)} nodes.")
 
         entity_query = (
             "UNWIND $entities AS ent "
@@ -377,20 +396,13 @@ class Driver(neo4j_utils.Driver):
             "RETURN node"
         )
 
-        if explain:
-            return self.explain(
-                entity_query,
-                parameters={"entities": entities},
-            )
-        elif profile:
-            return self.profile(
-                entity_query,
-                parameters={"entities": entities},
-            )
-        else:
-            res = self.query(entity_query, parameters={"entities": entities})
-            logger.info("Finished merging nodes.")
-            return res
+        method = 'explain' if explain else 'profile' if profile else 'query'
+
+        return getattr(self, method)(
+            entity_query,
+            parameters = {"entities": entities},
+        )
+
 
     def add_biocypher_edges(
             self,
