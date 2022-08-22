@@ -123,6 +123,7 @@ class Driver(neo4j_utils.Driver):
                 "fetch_size": fetch_size,
             }
 
+            self.driver = None
             self._db_name = db_name
 
         else:
@@ -664,3 +665,7 @@ class Driver(neo4j_utils.Driver):
         self.start_bl_adapter()
 
         return self.bl_adapter.reverse_translate(query)
+
+    def __repr__(self):
+
+        return f'<BioCypher {neo4j_utils.Driver.__repr__(self)[1:]}'
