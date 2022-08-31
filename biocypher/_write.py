@@ -291,11 +291,14 @@ class BatchWriter:
                         "properties"
                     )
                     if cprops:
-                        d = cprops
+                        d = dict(cprops)
 
                         # preferred id field
+                        # this duplicates the "id" field of each node
                         if not node.get_preferred_id() == "id":
-                            d[node.get_preferred_id()] = node.get_id()
+                            d[node.get_preferred_id()] = type(
+                                node.get_id()
+                            ).__name__
                     else:
                         d = dict(node.get_properties())
                         # encode property type
