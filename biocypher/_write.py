@@ -269,6 +269,11 @@ class BatchWriter:
                 _id = node.get_id()
                 label = node.get_label()
 
+                # check for non-id
+                if not _id:
+                    logger.warning(f"Node {label} has no id; skipping.")
+                    continue
+
                 # check if node has already been written, if so skip
                 if _id in self.seen_node_ids:
                     logger.debug(f"Duplicate node id: {_id}")
