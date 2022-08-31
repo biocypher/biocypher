@@ -161,6 +161,8 @@ def test_merge_multiple_inputs_node(version_node, translator):
     ]
     t = list(translator.translate_nodes(id_type))
 
+    assert t
+
     # check unique node type
     assert not any([s for s in version_node.leaves.keys() if ".Gene" in s])
     assert any([s for s in version_node.leaves.keys() if ".Pathway" in s])
@@ -173,7 +175,7 @@ def test_merge_multiple_inputs_node(version_node, translator):
 def test_merge_multiple_inputs_edge(version_node, translator):
     # GeneToDiseaseAssociation has two input labels and one preferred ID
     # no virtual leaves should be created
-    # both inputs should lead to creation of the same node type
+    # both inputs should lead to creation of the same edge type
     # intersects with driver/writer function
 
     # define nodes

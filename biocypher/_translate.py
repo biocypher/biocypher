@@ -698,6 +698,10 @@ class Translator:
     def _update_bl_types(self):
         """
         Creates a dictionary to translate from input labels to Biolink labels.
+
+        Todo: we need to process input label lists; otherwise merging through
+        input definition will not work. See test_merge_multiple_inputs_node()
+        and test_specific_and_generic_ids().
         """
 
         self._bl_types = dict(
@@ -717,4 +721,14 @@ class Translator:
                 `schema_config.yaml`).
         """
 
-        return self._bl_types.get(label, None)
+        # commented out until behaviour of _update_bl_types is fixed
+        # return self._bl_types.get(label, None)
+
+        for k, v in self.leaves.items():
+            if "label_in_input" in v:
+                l = v["label_in_input"]
+                if isinstance(l, list):
+                    if label in l:
+                        return k
+                elif v["label_in_input"] == label:
+                    return k
