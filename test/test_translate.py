@@ -216,11 +216,27 @@ def test_multiple_inputs_multiple_virtual_leaves_rel_as_node(biolink_adapter):
     )
 
 
+def test_virtual_leaves_inherit_is_a(version_node):
+
+    snrna = version_node.leaves.get("intact.snRNASequence")
+
+    assert "is_a" in snrna.keys()
+    assert snrna["is_a"] == ["snRNASequence", "NucleicAcidEntity"]
+
+
 def test_ad_hoc_children_node(biolink_adapter):
 
     se = biolink_adapter.biolink_leaves["SideEffect"]
 
     assert "PhenotypicFeature" in se["ancestors"]
+
+
+def test_leaves_of_ad_hoc_child(biolink_adapter):
+
+    snrna = biolink_adapter.biolink_leaves.get("intact.snRNASequence")
+
+    assert snrna
+    assert "snRNASequence" in snrna["ancestors"]
 
 
 def test_multiple_inheritance(biolink_adapter):

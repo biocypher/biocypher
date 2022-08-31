@@ -76,6 +76,18 @@ SequenceVariant:
     effect: str
     biotype: str
 
+# virtual leaves of ad hoc child
+snRNASequence:
+  is_a: NucleicAcidEntity
+  represented_as: node
+  preferred_id: [intact, rnacentral]
+  label_in_input: [intact_snrna, rnacentral_snrna]
+  properties:
+    ac: str
+    fullName: str
+    shortName: str
+    preferredName: str
+
 # ---
 # Associations
 # ---

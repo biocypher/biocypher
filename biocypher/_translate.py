@@ -312,29 +312,10 @@ class BiolinkAdapter:
                 l[entity] = {"class_definition": e, "ancestors": ancestors}
 
             else:
-                if "virtual" in self.leaves[entity].keys():
-                    logger.info(
-                        f"{entity} is a virtual leaf, but not in the "
-                        f"Biolink model. Skipping."
-                    )
 
-                    # add translation mappings
-                    if isinstance(
-                        self.leaves[entity].get("label_in_input"), list
-                    ):
-                        for label in self.leaves[entity]["label_in_input"]:
-                            self._add_translation_mappings(
-                                label,
-                                self.leaves[entity].get(
-                                    "label_as_edge", entity
-                                ),
-                            )
-                    else:
-                        self._add_translation_mappings(
-                            self.leaves[entity].get("label_in_input"),
-                            self.leaves[entity].get("label_as_edge", entity),
-                        )
-                elif "is_a" in self.leaves[entity].keys():
+                # check for ad hoc inheritance and create leaves accordingly
+
+                if "is_a" in self.leaves[entity].keys():
                     parent = self.leaves[entity]["is_a"]
                     if isinstance(parent, list):
                         logger.info(
@@ -352,6 +333,8 @@ class BiolinkAdapter:
                         while parent:
                             # create class definitions for all ancestors
                             # in reverse order
+                            # TODO will create same virtual leaf multiple
+                            # times for ad hoc inheritance
                             child = parent.pop()
                             se = ClassDefinition(child)
                             se.is_a = parent
@@ -389,6 +372,32 @@ class BiolinkAdapter:
                             "class_definition": se,
                             "ancestors": sancestors,
                         }
+
+                elif "virtual" in self.leaves[entity].keys():
+                    # finally skip virtual nodes but add translation mappings
+
+                    logger.info(
+                        f"{entity} is a virtual leaf, but not in the "
+                        f"Biolink model. Skipping."
+                    )
+
+                    # add translation mappings
+                    if isinstance(
+                        self.leaves[entity].get("label_in_input"), list
+                    ):
+                        for label in self.leaves[entity]["label_in_input"]:
+                            self._add_translation_mappings(
+                                label,
+                                self.leaves[entity].get(
+                                    "label_as_edge", entity
+                                ),
+                            )
+                    else:
+                        self._add_translation_mappings(
+                            self.leaves[entity].get("label_in_input"),
+                            self.leaves[entity].get("label_as_edge", entity),
+                        )
+
                 else:
                     logger.warning("Entity not found in Biolink: " + entity)
                     l[entity] = None
@@ -690,7 +699,6 @@ class Translator:
         """
         Creates a dictionary to translate from input labels to Biolink labels.
         """
-
 
         self._bl_types = dict(
             (schema_def["label_in_input"], bcy_type)

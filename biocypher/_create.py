@@ -523,6 +523,10 @@ class VersionNode:
                                 # mark as virtual
                                 "virtual": True,
                             }
+                            # inherit is_a if exists
+                            if "is_a" in value.keys():
+                                # treat as multiple inheritance
+                                svalue["is_a"] = [key, value["is_a"]]
                             # inherit properties if exist
                             if value.get("properties"):
                                 svalue["properties"] = value["properties"]
@@ -563,6 +567,10 @@ class VersionNode:
                                 # mark as virtual
                                 "virtual": True,
                             }
+                            # inherit is_a if exists
+                            if "is_a" in value.keys():
+                                # treat as multiple inheritance
+                                svalue["is_a"] = [key, value["is_a"]]
                             # inherit properties if exist
                             if value.get("properties"):
                                 svalue["properties"] = value["properties"]
@@ -572,7 +580,6 @@ class VersionNode:
                                     "label_as_edge"
                                 ]
                             leaves[skey] = svalue
-
                     # finally, add parent
                     leaves[key] = value
 
