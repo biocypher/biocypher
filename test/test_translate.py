@@ -225,6 +225,14 @@ def test_virtual_leaves_inherit_is_a(version_node):
     assert "is_a" in snrna.keys()
     assert snrna["is_a"] == ["snRNASequence", "NucleicAcidEntity"]
 
+    dsdna = version_node.leaves.get("intact.dsDNASequence")
+
+    assert dsdna["is_a"] == [
+        "dsDNASequence",
+        "DNASequence",
+        "NucleicAcidEntity",
+    ]
+
 
 def test_ad_hoc_children_node(biolink_adapter):
 
@@ -239,6 +247,14 @@ def test_leaves_of_ad_hoc_child(biolink_adapter):
 
     assert snrna
     assert "snRNASequence" in snrna["ancestors"]
+
+    dsdna = biolink_adapter.biolink_leaves.get("intact.dsDNASequence")
+
+    assert dsdna["ancestors"][1:4] == [
+        "dsDNASequence",
+        "DNASequence",
+        "NucleicAcidEntity",
+    ]
 
 
 def test_multiple_inheritance(biolink_adapter):

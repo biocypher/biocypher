@@ -88,6 +88,20 @@ snRNASequence:
     shortName: str
     preferredName: str
 
+# virtual leaves of ad hoc multiple inheritance
+dsDNASequence:
+  is_a: [DNASequence, NucleicAcidEntity]
+  represented_as: node
+  preferred_id: [intact, uniparc]
+  label_in_input: [intact_dsdna, uniprot_archive_dsdna]
+  properties:
+    ac: str
+    fullName: str
+    shortName: str
+    preferredName: str
+    sequence: str
+
+
 # ---
 # Associations
 # ---

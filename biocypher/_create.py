@@ -526,7 +526,12 @@ class VersionNode:
                             # inherit is_a if exists
                             if "is_a" in value.keys():
                                 # treat as multiple inheritance
-                                svalue["is_a"] = [key, value["is_a"]]
+                                if isinstance(value["is_a"], list):
+                                    v = list(value["is_a"])
+                                    v.insert(0, key)
+                                    svalue["is_a"] = v
+                                else:
+                                    svalue["is_a"] = [key, value["is_a"]]
                             # inherit properties if exist
                             if value.get("properties"):
                                 svalue["properties"] = value["properties"]
@@ -570,7 +575,12 @@ class VersionNode:
                             # inherit is_a if exists
                             if "is_a" in value.keys():
                                 # treat as multiple inheritance
-                                svalue["is_a"] = [key, value["is_a"]]
+                                if isinstance(value["is_a"], list):
+                                    v = list(value["is_a"])
+                                    v.insert(0, key)
+                                    svalue["is_a"] = v
+                                else:
+                                    svalue["is_a"] = [key, value["is_a"]]
                             # inherit properties if exist
                             if value.get("properties"):
                                 svalue["properties"] = value["properties"]
