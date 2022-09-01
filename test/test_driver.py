@@ -341,11 +341,11 @@ def test_access_translate(driver):
     )
     assert (
         driver.translate_query("MATCH (n:reactome) RETURN n")
-        == "MATCH (n:REACT.Pathway) RETURN n"
+        == "MATCH (n:reactome.Pathway) RETURN n"
     )
     assert (
         driver.reverse_translate_query(
-            "MATCH (n:WIKIPATHWAYS.Pathway) RETURN n"
+            "MATCH (n:wikipathways.Pathway) RETURN n"
         )
         == "MATCH (n:wikipathways) RETURN n"
     )

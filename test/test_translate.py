@@ -55,9 +55,9 @@ def test_specific_and_generic_ids(translator):
 
     assert (
         t[0].get_id() == "CHAT"
-        and t[0].get_properties().get("HGNC") == "CHAT"
+        and t[0].get_properties().get("hgnc") == "CHAT"
         and t[1].get_id() == "REACT:25520"
-        and t[1].get_properties().get("REACT") == "REACT:25520"
+        and t[1].get_properties().get("reactome") == "REACT:25520"
     )
 
 

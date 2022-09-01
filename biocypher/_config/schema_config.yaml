@@ -25,49 +25,49 @@ Title: BioCypher graph schema configuration file
 Protein: # this is the Biolink entity name and will be used as the node label
          # do not modify or else the Biolink translation will fail
   represented_as: node
-  preferred_id: UniProtKB # this is the Biolink spelling of the identifier used
-  # it represents a CURIE URI prefix
+  preferred_id: uniprot # this is the CURIE URI prefix as given by Bioregistry
   label_in_input: protein # modify this to allow translation
   # this is the entity name (ie, type) in the input database
   
 Drug:
   represented_as: node
-  preferred_id: PUBCHEM
+  preferred_id: pubchem.compound
   label_in_input: drug
 
 microRNA:
   represented_as: node
-  preferred_id: MIR
+  preferred_id: mirbase.mature
   label_in_input: mirna
     
 MacromolecularComplexMixin:
   represented_as: node
-  preferred_id: CPX
+  preferred_id: complexportal
   label_in_input: complex
 
 OrganismTaxon:
   represented_as: node
-  preferred_id: NCBITaxon
+  preferred_id: ncbitaxon
   label_in_input: taxon
 
 Publication:
   represented_as: node
-  preferred_id: NLMID
+  preferred_id: pubmed
+
 ConfidenceLevel:
   represented_as: node
-  preferred_id: None
+  preferred_id: id
 
 Cell:
   represented_as: node
-  preferred_id: CL
+  preferred_id: cl
 
 Disease:
   represented_as: node
-  preferred_id: ICD10
+  preferred_id: icd10
 
 Pathway:
    represented_as: node
-   preferred_id: [REACT, WIKIPATHWAYS] 
+   preferred_id: [reactome, wikipathways] 
    label_in_input: [reactome, wikipathways] 
 
 
@@ -89,16 +89,17 @@ Pathway:
 
 PairwiseMolecularInteraction:
   represented_as: node
-  preferred_id: EBI
+  preferred_id: intact
 
 DiseaseToEntityAssociationMixin:
   represented_as: edge
-  preferred_id: tbd
+  preferred_id: id
   source: Disease
   target: Protein
+
 EntityToDiseaseAssociationMixin:
   represented_as: edge
-  preferred_id: tbd
+  preferred_id: id
   source: Protein
   target: Disease
 
@@ -107,7 +108,7 @@ EntityToDiseaseAssociationMixin:
 # will insert into custom biolink yaml, get hierarchy from there
 PostTranslationalInteraction:
   represented_as: node
-  preferred_id: concat_ids
+  preferred_id: id
   source: Protein 
   # optional other sources/targets?
   # source and target need to adhere to Biolink naming, otherwise the
@@ -117,18 +118,18 @@ PostTranslationalInteraction:
   label_as_edge: INTERACTS_POST_TRANSLATIONAL
 Phosphorylation:
   represented_as: edge
-  preferred_id: tbd
+  preferred_id: id
   source: Protein
   target: Protein
 Acetylation:
   represented_as: edge
-  preferred_id: tbd
+  preferred_id: id
   source: Protein
   target: Protein
       
 PostTranscriptionalInteraction:
   represented_as: node
-  preferred_id: concat_ids
+  preferred_id: id
   source: microRNA
   target: Protein
   label_in_input: post_transcriptional

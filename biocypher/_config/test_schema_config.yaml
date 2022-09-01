@@ -25,7 +25,7 @@ Title: BioCypher graph schema configuration file
 # regular node
 Protein:
   represented_as: node
-  preferred_id: UniProtKB 
+  preferred_id: uniprot 
   label_in_input: protein 
   properties:
     name: str
@@ -34,36 +34,36 @@ Protein:
 
 microRNA:
   represented_as: node
-  preferred_id: MIR 
+  preferred_id: mirbase.mature 
   label_in_input: mirna 
 
 MacromolecularComplexMixin:
   represented_as: node
-  preferred_id: custom 
+  preferred_id: complexportal
   label_in_input: complex 
 
 # virtual leaves for multiple inputs
 Pathway:
   represented_as: node
-  preferred_id: [REACT, WIKIPATHWAYS] 
+  preferred_id: [reactome, wikipathways] 
   label_in_input: [reactome, wikipathways] 
 
 # merge muliple inputs
 Gene:
   represented_as: node
-  preferred_id: HGNC
+  preferred_id: hgnc
   label_in_input: [hgnc, ensg] 
 
 Disease:
   represented_as: node
-  preferred_id: DOID
+  preferred_id: doid
   label_in_input: Disease
 
 # ad hoc child
 SideEffect:
   is_a: PhenotypicFeature
   represented_as: node
-  preferred_id: SIDER
+  preferred_id: sider.effect
   label_in_input: sider
 
 SequenceVariant:
@@ -123,7 +123,7 @@ dsDNASequence:
 PostTranslationalInteraction:
   represented_as: node
   label_as_edge: INTERACTS_POST_TRANSLATIONAL
-  preferred_id: custom
+  preferred_id: id
   source: Protein 
   target: Protein
   label_in_input: post_translational
@@ -131,7 +131,7 @@ PostTranslationalInteraction:
 # auto label as edge
 Phosphorylation:
   represented_as: edge
-  preferred_id: custom
+  preferred_id: id
   source: Protein
   target: Protein
   label_in_input: phosphorylation
@@ -140,7 +140,7 @@ Phosphorylation:
 GeneToDiseaseAssociation:
   represented_as: edge
   label_as_edge: PERTURBED_IN_DISEASE
-  preferred_id: custom
+  preferred_id: id
   source: Protein
   target: Disease
   label_in_input: [protein_disease, gene_disease]
@@ -150,7 +150,7 @@ MutationToTissueAssociation:
   is_a: [GenotypeToTissueAssociation, EntityToTissueAssociation, Association]
   represented_as: edge
   label_as_edge: Is_Mutated_In
-  preferred_id: custom
+  preferred_id: id
   source: Gene
   target: Tissue
   label_in_input: Gene_Is_Mutated_In_Cell_Tissue
@@ -159,7 +159,7 @@ MutationToTissueAssociation:
 # multiple input to multiple virtual leaves
 VariantToGeneAssociation: # -> Known.... and Somatic....
   represented_as: edge
-  preferred_id: custom
+  preferred_id: id
   source: [Known.SequenceVariant, Somatic.SequenceVariant]
   target: Gene
   label_in_input: [
@@ -170,7 +170,7 @@ VariantToGeneAssociation: # -> Known.... and Somatic....
 # property filter
 GeneToGeneAssociation:
   represented_as: edge
-  preferred_id: custom
+  preferred_id: id
   source: Gene
   target: Gene
   label_in_input: gene_gene

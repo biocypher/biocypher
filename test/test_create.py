@@ -24,7 +24,7 @@ def test_version_node(version_node):
 
 
 def test_virtual_leaves_node(version_node):
-    assert "WIKIPATHWAYS.Pathway" in version_node.leaves
+    assert "wikipathways.Pathway" in version_node.leaves
 
 
 def test_getting_properties_via_config(version_node):
