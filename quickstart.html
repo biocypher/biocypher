@@ -126,30 +126,35 @@ graph, and the proteins should be represented as nodes. To make this
 known to the BioCypher module, we use the
 <a class="reference external" href="https://github.com/saezlab/BioCypher/blob/main/biocypher/_config/schema_config.yaml">schema-config.yaml</a>,
 which details <em>only</em> the immediate constituents of the desired graph.
-The naming of these constituents must be equal to the ontological
-category of the entity in the Biolink schema. The ontological category
-(or class) of proteins in Biolink is simply
-<a class="reference external" href="https://biolink.github.io/biolink-model/docs/Protein.html">Protein</a>.
-However, for more complex concepts, such as - for instance - pairwise
-molecular interactions, the naming must also be consistent; in this
-case, <a class="reference external" href="https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html">PairwiseMolecularInteraction</a>.
-Similarly, if translation functionality between identifiers is desired,
-the identifier used for the class of graph entity must be consistent
-with the one used in the Biolink specification. For proteins, this can
-be <code class="docutils literal notranslate"><span class="pre">UniProtKB</span></code> (but not, for instance, <code class="docutils literal notranslate"><span class="pre">UniProt</span></code> or <code class="docutils literal notranslate"><span class="pre">uniprot</span></code>).
-For ease of access, we provide a standard yaml file with the most common
-graph constituents and identifiers, with the following basic structure:</p>
+Since the identifier systems in the Biolink schema are not comprehensive
+and offer many alternatives, we currently use the CURIE prefixes
+directly as given by <a class="reference external" href="https://bioregistry.io">Bioregistry</a>. For
+instance, a protein could be represented, for instance, by a UniProt
+identifier, the corresponding ENSEMBL identifier, or an HGNC gene
+symbol. The CURIE prefix for “Uniprot Protein” is <code class="docutils literal notranslate"><span class="pre">uniprot</span></code>, so a
+consistent protein schema definition would be:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Protein</span><span class="p">:</span>
   <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span> 
-  <span class="n">preferred_id</span><span class="p">:</span> <span class="n">UniProtKB</span>  
+  <span class="n">preferred_id</span><span class="p">:</span> <span class="n">uniprot</span>  
   <span class="n">label_in_input</span><span class="p">:</span> <span class="n">protein</span>  
 </pre></div>
 </div>
 <p>In the protein case, we are specifying its representation as a node,
 that we wish to use the UniProt identifier as the main identifier for
-proteins (the Biolink designation for UniProt identifiers is
-<code class="docutils literal notranslate"><span class="pre">UniProtKB</span></code>), and that proteins in the input coming from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code>
-carry the label <code class="docutils literal notranslate"><span class="pre">protein</span></code> (in lower-case).</p>
+proteins, and that proteins in the input coming from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> carry
+the label <code class="docutils literal notranslate"><span class="pre">protein</span></code> (in lowercase). Should one wish to use ENSEMBL
+notation instead of UniProt, the corresponding CURIE prefix, in this
+case, <code class="docutils literal notranslate"><span class="pre">ensembl</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Protein</span><span class="p">:</span>
+  <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span> 
+  <span class="n">preferred_id</span><span class="p">:</span> <span class="n">ensembl</span>  
+  <span class="n">label_in_input</span><span class="p">:</span> <span class="n">protein</span>  
+</pre></div>
+</div>
+<p>If there exists no identifier system that is suitable for coverage of
+the data, the standard field <code class="docutils literal notranslate"><span class="pre">id</span></code> can be used; this will not result in
+the creation of a named property that reflects the identifier of each
+node. See below for an example.</p>
 <p>The other slots of a graph constituent entry contain information
 BioCypher needs to receive the input data correctly and construct the
 graph accordingly. For “Named Thing” entities such as the protein, this
@@ -166,7 +171,7 @@ and target attribute in the <code class="docutils literal notranslate"><span cla
 <code class="docutils literal notranslate"><span class="pre">Protein</span></code>. Again, these should adhere to the naming scheme of Biolink.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PostTranslationalInteraction</span><span class="p">:</span>
   <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>
-  <span class="n">preferred_id</span><span class="p">:</span> <span class="n">concat_ids</span>
+  <span class="n">preferred_id</span><span class="p">:</span> <span class="nb">id</span>
   <span class="n">source</span><span class="p">:</span> <span class="n">Protein</span> 
   <span class="n">target</span><span class="p">:</span> <span class="n">Protein</span> 
   <span class="n">label_in_input</span><span class="p">:</span> <span class="n">post_translational</span> 
@@ -183,15 +188,20 @@ source of evidence, which is only possible for nodes in a property
 graph, not for edges.</p>
 <p>Since there are no systematic identifiers for post-translational
 interactions, we concatenate the protein ids and relevant properties of
-the interaction to a new unique id (arbitrarily named <code class="docutils literal notranslate"><span class="pre">concat_ids</span></code>).
-Note that BioCypher accepts non-Biolink IDs since not all possible
-entries possess a systematic identifier system, whereas the entity class
-(<code class="docutils literal notranslate"><span class="pre">Protein</span></code>, <code class="docutils literal notranslate"><span class="pre">PostTranslationalInteraction</span></code>) has to be included in
-the Biolink schema and spelled identically. For this reason, we <a class="reference internal" href="#biolink"><span class="std std-ref">extend
-the Biolink schema</span></a> in cases where there exists no entry for
-our entity of choice. Further, we are specifying the source and target
-classes of our association (both <code class="docutils literal notranslate"><span class="pre">Protein</span></code>), the label we provide in
-the input from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> (<code class="docutils literal notranslate"><span class="pre">post_translational</span></code>).</p>
+the interaction to a new unique id. We prevent creation of a specific
+named property by specifying <code class="docutils literal notranslate"><span class="pre">id</span></code> as the identifier system in this case.
+If a specific property name (in addition to the generic <code class="docutils literal notranslate"><span class="pre">id</span></code> field) is
+desired, one can use any arbitrary string as a designation for this
+identifier, which will then be a named property on the
+<code class="docutils literal notranslate"><span class="pre">PostTranslationalInteraction</span></code> nodes.</p>
+<p>Note that BioCypher accepts non-Biolink IDs since not all
+possible entries possess a systematic identifier system, whereas the
+entity class (<code class="docutils literal notranslate"><span class="pre">Protein</span></code>, <code class="docutils literal notranslate"><span class="pre">PostTranslationalInteraction</span></code>) has to be
+included in the Biolink schema and spelled identically. For this reason,
+we <a class="reference internal" href="#biolink"><span class="std std-ref">extend the Biolink schema</span></a> in cases where there exists no
+entry for our entity of choice. Further, we are specifying the source
+and target classes of our association (both <code class="docutils literal notranslate"><span class="pre">Protein</span></code>), the label we
+provide in the input from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> (<code class="docutils literal notranslate"><span class="pre">post_translational</span></code>).</p>
 <p>If we wanted the interaction to be represented in the graph as an edge,
 we would also need to supply an additional - arbitrary - property,
 <code class="docutils literal notranslate"><span class="pre">label_as_edge</span></code>, which would be used as the relationship type; this
