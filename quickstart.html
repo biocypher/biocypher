@@ -115,6 +115,40 @@ details via arguments or configuration file:</p>
 <span class="n">d</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span><span class="o">&lt;</span><span class="n">args</span><span class="o">&gt;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>The main function of the adapter is to pass data into BioCypher, usually
+as some form of iterable (commonly a list or generator of items). As a
+minimal example, we load a list of proteins with identifiers, trivial
+names, and molecular masses from a (fictional) CSV:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># read into data frame</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;file.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+  <span class="n">proteins</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># yield proteins from data frame</span>
+<span class="k">def</span> <span class="nf">node_generator</span><span class="p">():</span>
+  <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
+    <span class="n">_id</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;uniprot_id&quot;</span><span class="p">]</span>
+    <span class="n">_type</span> <span class="o">=</span> <span class="s2">&quot;protein&quot;</span>
+    <span class="n">_props</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;trivial_name&quot;</span><span class="p">]</span>
+      <span class="s2">&quot;mm&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;molecular_mass&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="k">yield</span> <span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">_props</span><span class="p">)</span>
+
+<span class="c1"># write biocypher nodes</span>
+<span class="n">d</span><span class="o">.</span><span class="n">write_nodes</span><span class="p">(</span><span class="n">node_generator</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>For nodes, BioCypher expects a tuple containing three entries; the
+preferred identifier of the node, the type of entity, and a dictionary
+containing all other properties. What BioCypher does with the received
+information is determined largely by the schema configuration detailed
+below.</p>
+<p>For advanced usage, the type of node or edge can be determined
+programatically. Properties do not need to be explicitly called one by
+one; they can be passed in as a complete dictionary of all entries and
+filtered inside BioCypher by detailing the desired properties per node
+type in the schema configuration file.</p>
 </section>
 <section id="the-schema-configuration-yaml-file">
 <span id="schema-config"></span><h2>The schema configuration YAML file<a class="headerlink" href="#the-schema-configuration-yaml-file" title="Permalink to this heading"></a></h2>
@@ -144,7 +178,7 @@ that we wish to use the UniProt identifier as the main identifier for
 proteins, and that proteins in the input coming from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> carry
 the label <code class="docutils literal notranslate"><span class="pre">protein</span></code> (in lowercase). Should one wish to use ENSEMBL
 notation instead of UniProt, the corresponding CURIE prefix, in this
-case, <code class="docutils literal notranslate"><span class="pre">ensembl</span></code>.</p>
+case, <code class="docutils literal notranslate"><span class="pre">ensembl</span></code>, can be substituted.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Protein</span><span class="p">:</span>
   <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span> 
   <span class="n">preferred_id</span><span class="p">:</span> <span class="n">ensembl</span>  
