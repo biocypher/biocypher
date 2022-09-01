@@ -50,32 +50,39 @@ graph, and the proteins should be represented as nodes. To make this
 known to the BioCypher module, we use the
 [schema-config.yaml](https://github.com/saezlab/BioCypher/blob/main/biocypher/_config/schema_config.yaml),
 which details *only* the immediate constituents of the desired graph.
-The naming of these constituents must be equal to the ontological
-category of the entity in the Biolink schema. The ontological category
-(or class) of proteins in Biolink is simply
-[Protein](https://biolink.github.io/biolink-model/docs/Protein.html).
-However, for more complex concepts, such as - for instance - pairwise
-molecular interactions, the naming must also be consistent; in this
-case, [PairwiseMolecularInteraction](https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html).
-Similarly, if translation functionality between identifiers is desired,
-the identifier used for the class of graph entity must be consistent
-with the one used in the Biolink specification. For proteins, this can
-be ``UniProtKB`` (but not, for instance, ``UniProt`` or ``uniprot``).
-For ease of access, we provide a standard yaml file with the most common
-graph constituents and identifiers, with the following basic structure:
+Since the identifier systems in the Biolink schema are not comprehensive
+and offer many alternatives, we currently use the CURIE prefixes
+directly as given by [Bioregistry](https://bioregistry.io). For
+instance, a protein could be represented, for instance, by a UniProt
+identifier, the corresponding ENSEMBL identifier, or an HGNC gene
+symbol. The CURIE prefix for "Uniprot Protein" is `uniprot`, so a
+consistent protein schema definition would be:
 
 ```
 Protein:
   represented_as: node 
-  preferred_id: UniProtKB  
+  preferred_id: uniprot  
   label_in_input: protein  
 ```
 
 In the protein case, we are specifying its representation as a node,
 that we wish to use the UniProt identifier as the main identifier for
-proteins (the Biolink designation for UniProt identifiers is
-``UniProtKB``), and that proteins in the input coming from ``PyPath``
-carry the label ``protein`` (in lower-case).
+proteins, and that proteins in the input coming from ``PyPath`` carry
+the label ``protein`` (in lowercase). Should one wish to use ENSEMBL
+notation instead of UniProt, the corresponding CURIE prefix, in this
+case, `ensembl`.
+
+```
+Protein:
+  represented_as: node 
+  preferred_id: ensembl  
+  label_in_input: protein  
+```
+
+If there exists no identifier system that is suitable for coverage of
+the data, the standard field `id` can be used; this will not result in
+the creation of a named property that reflects the identifier of each
+node. See below for an example.
 
 The other slots of a graph constituent entry contain information
 BioCypher needs to receive the input data correctly and construct the
@@ -95,7 +102,7 @@ and target attribute in the ``schema-config.yaml`` will both be
 ```
 PostTranslationalInteraction:
   represented_as: node
-  preferred_id: concat_ids
+  preferred_id: id
   source: Protein 
   target: Protein 
   label_in_input: post_translational 
@@ -113,15 +120,21 @@ graph, not for edges.
 
 Since there are no systematic identifiers for post-translational
 interactions, we concatenate the protein ids and relevant properties of
-the interaction to a new unique id (arbitrarily named ``concat_ids``).
-Note that BioCypher accepts non-Biolink IDs since not all possible
-entries possess a systematic identifier system, whereas the entity class
-(``Protein``, ``PostTranslationalInteraction``) has to be included in
-the Biolink schema and spelled identically. For this reason, we [extend
-the Biolink schema](biolink) in cases where there exists no entry for
-our entity of choice. Further, we are specifying the source and target
-classes of our association (both ``Protein``), the label we provide in
-the input from ``PyPath`` (``post_translational``). 
+the interaction to a new unique id. We prevent creation of a specific
+named property by specifying `id` as the identifier system in this case.
+If a specific property name (in addition to the generic `id` field) is
+desired, one can use any arbitrary string as a designation for this
+identifier, which will then be a named property on the
+``PostTranslationalInteraction`` nodes.
+
+Note that BioCypher accepts non-Biolink IDs since not all
+possible entries possess a systematic identifier system, whereas the
+entity class (``Protein``, ``PostTranslationalInteraction``) has to be
+included in the Biolink schema and spelled identically. For this reason,
+we [extend the Biolink schema](biolink) in cases where there exists no
+entry for our entity of choice. Further, we are specifying the source
+and target classes of our association (both ``Protein``), the label we
+provide in the input from ``PyPath`` (``post_translational``). 
 
 If we wanted the interaction to be represented in the graph as an edge,
 we would also need to supply an additional - arbitrary - property,
