@@ -39,6 +39,44 @@ import biocypher
 d = biocypher.Driver(<args>)
 ```
 
+The main function of the adapter is to pass data into BioCypher, usually
+as some form of iterable (commonly a list or generator of items). As a
+minimal example, we load a list of proteins with identifiers, trivial
+names, and molecular masses from a (fictional) CSV:
+
+```
+# read into data frame
+with open("file.csv", "r") as f:
+  proteins = pd.read_csv(f)
+
+# yield proteins from data frame
+def node_generator():
+  for p in proteins:
+    _id = p["uniprot_id"]
+    _type = "protein"
+    _props = {
+      "name": p["trivial_name"]
+      "mm": p["molecular_mass"]
+    }
+
+    yield (_id, _type, _props)
+
+# write biocypher nodes
+d.write_nodes(node_generator())
+```
+
+For nodes, BioCypher expects a tuple containing three entries; the
+preferred identifier of the node, the type of entity, and a dictionary
+containing all other properties. What BioCypher does with the received
+information is determined largely by the schema configuration detailed
+below.
+
+For advanced usage, the type of node or edge can be determined
+programatically. Properties do not need to be explicitly called one by
+one; they can be passed in as a complete dictionary of all entries and
+filtered inside BioCypher by detailing the desired properties per node
+type in the schema configuration file.
+
 (schema-config)=
 ## The schema configuration YAML file
 
@@ -70,7 +108,7 @@ that we wish to use the UniProt identifier as the main identifier for
 proteins, and that proteins in the input coming from ``PyPath`` carry
 the label ``protein`` (in lowercase). Should one wish to use ENSEMBL
 notation instead of UniProt, the corresponding CURIE prefix, in this
-case, `ensembl`.
+case, `ensembl`, can be substituted.
 
 ```
 Protein:
