@@ -349,3 +349,13 @@ def test_access_translate(driver):
         )
         == "MATCH (n:wikipathways) RETURN n"
     )
+
+
+def test_log_missing_bl_types(driver):
+    driver.translator.notype = {}
+    assert driver.log_missing_bl_types() == None
+
+    driver.translator.notype = {"a": 1, "b": 2}
+    mt = driver.log_missing_bl_types()
+
+    assert mt.get("a") == 1 and mt.get("b") == 2

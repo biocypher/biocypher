@@ -487,7 +487,10 @@ class Translator:
         """
 
         self.leaves = leaves
-        self._update_bl_types()
+        # self._update_bl_types()
+
+        # record nodes without biolink type configured in schema_config.yaml
+        self.notype = {}
 
     def translate_nodes(
         self,
@@ -530,7 +533,7 @@ class Translator:
 
             else:
 
-                self._error_no_type(_type)
+                self._record_no_type(_type)
 
         self._log_finish_translate("nodes")
 
@@ -671,17 +674,33 @@ class Translator:
 
             else:
 
-                self._error_no_type(_type)
+                self._record_no_type(_type)
 
         self._log_finish_translate("edges")
 
-    @staticmethod
-    def _error_no_type(_type: Any):
+    def _record_no_type(self, _type: Any):
+        """
+        Records the type of a node or edge that is not represented in the
+        schema_config.
+        """
 
-        msg = f"No Biolink type defined for `{_type}`."
-        logger.warning(msg)
+        logger.debug(f"No Biolink type defined for `{_type}`.")
 
-        # raise ValueError(msg)
+        if self.notype.get(_type, None):
+
+            self.notype[_type] += 1
+
+        else:
+
+            self.notype[_type] = 1
+
+    def get_missing_bl_types(self) -> dict:
+        """
+        Returns a dictionary of types that were not represented in the
+        schema_config.
+        """
+
+        return self.notype
 
     @staticmethod
     def _log_begin_translate(_input: Iterable, what: str):

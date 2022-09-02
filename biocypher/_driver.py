@@ -601,6 +601,32 @@ class Driver(neo4j_utils.Driver):
         """
         return self.batch_writer.write_import_call()
 
+    def log_missing_bl_types(self):
+        """
+        Get the set of Biolink types encountered without an entry in
+        the `schema_config.yaml` and print them to the logger.
+
+        Returns:
+            set: a set of missing Biolink types
+        """
+
+        mt = self.translator.get_missing_bl_types()
+
+        if mt:
+            msg = (
+                "Input entities not accounted for due to them not being "
+                "present in the `schema_config.yaml` configuration file: \n"
+            )
+            for k, v in mt.items():
+                msg += f"    {k}: {v} \n"
+
+            logger.warning(msg)
+            return mt
+
+        else:
+            logger.info("No missing Biolink types in input.")
+            return None
+
     ### TRANSLATION METHODS ###
 
     def translate_term(self, term: str) -> str:

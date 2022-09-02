@@ -364,3 +364,19 @@ def test_reverse_translate_query(biolink_adapter):
         biolink_adapter.reverse_translate(query)
         == "MATCH (n:Known_variant)-[r:VARIANT_FOUND_IN_GENE_Known_variant_Gene]->(g:protein) RETURN n"
     )
+
+
+def test_log_missing_nodes(translator):
+    tn = translator.translate_nodes(
+        [
+            ("G49205", "missing_protein", {"taxon": 9606}),
+            ("G92035", "missing_protein", {}),
+            ("REACT:25520", "missing_pathway", {}),
+        ]
+    )
+
+    tn = list(tn)
+
+    m = translator.get_missing_bl_types()
+    assert m.get("missing_protein") == 2
+    assert m.get("missing_pathway") == 1
