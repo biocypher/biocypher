@@ -18,4 +18,4 @@ dist/*
 *.pye
 *.pyc
 *.kate-swp
-.hypothesis
+.hypothesis/
