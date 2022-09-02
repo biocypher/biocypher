@@ -32,7 +32,7 @@ Todo:
       later externalised)
 """
 
-from typing import Optional
+from typing import Optional, Union
 from datetime import datetime
 from dataclasses import field, dataclass
 
@@ -174,6 +174,7 @@ class BioCypherEdge:
     source_id: str
     target_id: str
     relationship_label: str
+    id: str = None
     properties: dict = field(default_factory=dict)
 
     def __post_init__(self):
@@ -189,6 +190,16 @@ class BioCypherEdge:
             )
             # self.properties["type"] = self.properties[":TYPE"]
             del self.properties[":TYPE"]
+
+    def get_id(self) -> Union[str, None]:
+        """
+        Returns primary node identifier or None.
+
+        Returns:
+            str: node_id
+        """
+
+        return self.id
 
     def get_source_id(self) -> str:
         """
