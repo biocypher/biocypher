@@ -615,7 +615,8 @@ class Driver(neo4j_utils.Driver):
         if mt:
             msg = (
                 "Input entities not accounted for due to them not being "
-                "present in the `schema_config.yaml` configuration file: \n"
+                "present in the `schema_config.yaml` configuration file "
+                "(see log for details): \n"
             )
             for k, v in mt.items():
                 msg += f"    {k}: {v} \n"
