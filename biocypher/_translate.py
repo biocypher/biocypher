@@ -561,6 +561,11 @@ class Translator:
                 k: v for k, v in props.items() if k in filter_props.keys()
             }
 
+            # remove newline characters from properties
+            for k, v in filtered_props.items():
+                if isinstance(v, str):
+                    filtered_props[k] = v.replace(os.linesep, "")
+
             missing_props = [
                 k
                 for k in filter_props.keys()
