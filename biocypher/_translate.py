@@ -533,7 +533,7 @@ class Translator:
 
             else:
 
-                self._record_no_type(_type)
+                self._record_no_type(_type, _id)
 
         self._log_finish_translate("nodes")
 
@@ -674,17 +674,17 @@ class Translator:
 
             else:
 
-                self._record_no_type(_type)
+                self._record_no_type(_type, (_src, _tar))
 
         self._log_finish_translate("edges")
 
-    def _record_no_type(self, _type: Any):
+    def _record_no_type(self, _type: Any, what: Any) -> None:
         """
         Records the type of a node or edge that is not represented in the
         schema_config.
         """
 
-        logger.debug(f"No Biolink type defined for `{_type}`.")
+        logger.debug(f"No Biolink type defined for `{_type}`: {what}")
 
         if self.notype.get(_type, None):
 
