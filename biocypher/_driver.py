@@ -295,30 +295,36 @@ class Driver(neo4j_utils.Driver):
         bn = self.translator.translate_nodes(id_type_tuples)
         return self.add_biocypher_nodes(bn)
 
-    def add_edges(self, src_tar_type_tuples: Iterable[tuple]) -> tuple:
+    def add_edges(self, id_src_tar_type_tuples: Iterable[tuple]) -> tuple:
         """
-        Generic edge adder method to add any kind of input to the
-        graph via the :class:`biocypher.create.BioCypherEdge` class.
-        Employs translation functionality and calls the
+        Generic edge adder method to add any kind of input to the graph
+        via the :class:`biocypher.create.BioCypherEdge` class. Employs
+        translation functionality and calls the
         :meth:`add_biocypher_edges()` method.
 
         Args:
-            id_type_tuples (iterable of 4-tuple): for each edge to add to
-                the biocypher graph, a 4-tuple with the following layout:
-                first and second, the (unique if constrained) IDs of the
-                source and target nodes of the relationship; third, the
-                type of the relationship, all caps with underscores and
-                in verb form (Neo4j primary label, eg `:IS_TARGET_OF`);
-                and fourth, a dictionary of arbitrary properties the edge
-                should possess (can be empty).
+
+            id_src_tar_type_tuples (iterable of 5-tuple):
+
+                for each edge to add to the biocypher graph, a 5-tuple
+                with the following layout: first, the optional unique ID
+                of the interaction. This can be `None` if there is no
+                systematic identifier (which for many interactions is
+                the case). Second and third, the (unique if constrained)
+                IDs of the source and target nodes of the relationship;
+                fourth, the type of the relationship; and fifth, a
+                dictionary of arbitrary properties the edge should
+                possess (can be empty).
 
         Returns:
+
             2-tuple: the query result of :meth:`add_biocypher_edges()`
+
                 - first entry: data
                 - second entry: Neo4j summary.
         """
 
-        bn = self.translator.translate_edges(src_tar_type_tuples)
+        bn = self.translator.translate_edges(id_src_tar_type_tuples)
         return self.add_biocypher_edges(bn)
 
     def add_biocypher_nodes(

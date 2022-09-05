@@ -68,7 +68,11 @@ def test_translate_edges(translator):
         ("G15258", "MONDO2", "protein_disease", {}),
         ("G15258", "G15242", "phosphorylation", {}),
     ]
-    t = translator.translate_edges(src_tar_type_edge)
+
+    def gen_edges():
+        yield from src_tar_type_edge
+
+    t = translator.translate_edges(gen_edges())
 
     assert type(next(t)) == BioCypherEdge
     assert next(t).get_label() == "PERTURBED_IN_DISEASE"

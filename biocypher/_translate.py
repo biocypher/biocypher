@@ -34,6 +34,7 @@ Todo:
       dictionary)? biolink?
 """
 
+
 from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
@@ -42,6 +43,7 @@ from typing import Any, Union, Literal, Iterable, Optional, Generator
 import os
 import re
 
+from more_itertools import peekable
 from linkml_runtime.linkml_model.meta import ClassDefinition
 import bmt
 
@@ -585,7 +587,7 @@ class Translator:
 
     def translate_edges(
         self,
-        src_tar_type_prop_tuples: Iterable,
+        id_src_tar_type_prop_tuples: Iterable,
     ) -> Generator[Union[BioCypherEdge, BioCypherRelAsNode], None, None]:
         """
         Translates input edge representation to a representation that
@@ -593,19 +595,31 @@ class Translator:
         requires explicit statement of edge type on pass.
 
         Args:
-            src_tar_type_tuples (list of tuples): collection of tuples
-                representing source and target of an interaction via their
-                unique ids as well as the type of interaction in the
-                original database notation, which is translated to BioCypher
-                notation using the `leaves`.
+
+            id_src_tar_type_prop_tuples (list of tuples):
+
+                collection of tuples representing source and target of
+                an interaction via their unique ids as well as the type
+                of interaction in the original database notation, which
+                is translated to BioCypher notation using the `leaves`.
+                Can optionally possess its own ID.
         """
         # TODO:
         #    - id of interactions (now simple concat with "_")
         #    - do we even need one?
 
-        self._log_begin_translate(src_tar_type_prop_tuples, "edges")
+        self._log_begin_translate(id_src_tar_type_prop_tuples, "edges")
 
-        for _src, _tar, _type, _props in src_tar_type_prop_tuples:
+        # legacy: deal with 4-tuples (no edge id)
+        # TODO remove for performance reasons once safe
+        id_src_tar_type_prop_tuples = peekable(id_src_tar_type_prop_tuples)
+        if len(id_src_tar_type_prop_tuples.peek()) == 4:
+            id_src_tar_type_prop_tuples = [
+                (None, src, tar, typ, props)
+                for src, tar, typ, props in id_src_tar_type_prop_tuples
+            ]
+
+        for _id, _src, _tar, _type, _props in id_src_tar_type_prop_tuples:
 
             # match the input label (_type) to
             # a Biolink label from schema_config
@@ -620,13 +634,21 @@ class Translator:
 
                 if rep == "node":
 
-                    node_id = (
-                        str(_src)
-                        + "_"
-                        + str(_tar)
-                        + "_"
-                        + "_".join(str(v) for v in _filtered_props.values())
-                    )
+                    if _id:
+                        # if it brings its own ID, use it
+                        node_id = _id
+
+                    else:
+                        # source target concat
+                        node_id = (
+                            str(_src)
+                            + "_"
+                            + str(_tar)
+                            + "_"
+                            + "_".join(
+                                str(v) for v in _filtered_props.values()
+                            )
+                        )
 
                     n = BioCypherNode(
                         node_id=node_id,
