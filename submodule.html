@@ -182,30 +182,31 @@ match and on create, irrespective of the actual event.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._driver.Driver.add_edges">
-<span class="sig-name descname"><span class="pre">add_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_tar_type_tuples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#biocypher._driver.Driver.add_edges" title="Permalink to this definition"></a></dt>
-<dd><p>Generic edge adder method to add any kind of input to the
-graph via the <code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherEdge</span></code> class.
-Employs translation functionality and calls the
+<span class="sig-name descname"><span class="pre">add_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_src_tar_type_tuples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#biocypher._driver.Driver.add_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Generic edge adder method to add any kind of input to the graph
+via the <code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.create.BioCypherEdge</span></code> class. Employs
+translation functionality and calls the
 <a class="reference internal" href="#biocypher._driver.Driver.add_biocypher_edges" title="biocypher._driver.Driver.add_biocypher_edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_biocypher_edges()</span></code></a> method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>id_type_tuples</strong> (<em>iterable of 4-tuple</em>) – for each edge to add to
-the biocypher graph, a 4-tuple with the following layout:
-first and second, the (unique if constrained) IDs of the
-source and target nodes of the relationship; third, the
-type of the relationship, all caps with underscores and
-in verb form (Neo4j primary label, eg <cite>:IS_TARGET_OF</cite>);
-and fourth, a dictionary of arbitrary properties the edge
-should possess (can be empty).</p>
+<dd class="field-odd"><p><strong>id_src_tar_type_tuples</strong> (<em>iterable of 5-tuple</em>) – for each edge to add to the biocypher graph, a 5-tuple
+with the following layout: first, the optional unique ID
+of the interaction. This can be <cite>None</cite> if there is no
+systematic identifier (which for many interactions is
+the case). Second and third, the (unique if constrained)
+IDs of the source and target nodes of the relationship;
+fourth, the type of the relationship; and fifth, a
+dictionary of arbitrary properties the edge should
+possess (can be empty).</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>the query result of <a class="reference internal" href="#biocypher._driver.Driver.add_biocypher_edges" title="biocypher._driver.Driver.add_biocypher_edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_biocypher_edges()</span></code></a></dt><dd><ul class="simple">
+<dd class="field-even"><p><p>the query result of <a class="reference internal" href="#biocypher._driver.Driver.add_biocypher_edges" title="biocypher._driver.Driver.add_biocypher_edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_biocypher_edges()</span></code></a></p>
+<blockquote>
+<div><ul class="simple">
 <li><p>first entry: data</p></li>
 <li><p>second entry: Neo4j summary.</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
@@ -387,7 +388,7 @@ Transforms ordered collections of biomedical entities and relationships
 to BioCypher objects that represent property graph nodes and edges.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherEdge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationship_label:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties:</span> <span class="pre">dict</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationship_label:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties:</span> <span class="pre">dict</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge" title="Permalink to this definition"></a></dt>
 <dd><p>Handoff class to represent biomedical relationships in Neo4j.</p>
 <p>Has source and target ids, label, property dict; ids and label (in
 the Neo4j sense of a label, ie, the entity descriptor after the
@@ -422,6 +423,20 @@ dict.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._create.BioCypherEdge.get_id">
+<span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#biocypher._create.BioCypherEdge.get_id" title="Permalink to this definition"></a></dt>
+<dd><p>Returns primary node identifier or None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>node_id</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
