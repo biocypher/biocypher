@@ -336,7 +336,7 @@ class BiolinkAdapter:
                         logger.info(
                             "Received ad hoc multiple inheritance "
                             "information; updating pseudo-Biolink entry "
-                            f"by setting {entity} as a child of {parent}."
+                            f"by setting `{entity}` as a child of `{parent}`."
                         )
                         # assume biolink entity is last in list
                         bl_parent = parent.pop()
@@ -378,7 +378,7 @@ class BiolinkAdapter:
                         logger.info(
                             "Received ad hoc inheritance information; "
                             "updating pseudo-Biolink entry by setting "
-                            f"{entity} as a child of {parent}."
+                            f"`{entity}` as a child of `{parent}`."
                         )
                         ancestors = self.trim_biolink_ancestry(
                             self.toolkit.get_ancestors(parent, formatted=True)
@@ -398,7 +398,7 @@ class BiolinkAdapter:
                     # finally skip virtual nodes but add translation mappings
 
                     logger.info(
-                        f"{entity} is a virtual leaf, but not in the "
+                        f"`{entity}` is a virtual leaf, but not in the "
                         f"Biolink model. Skipping."
                     )
 
@@ -420,7 +420,7 @@ class BiolinkAdapter:
                         )
 
                 else:
-                    logger.warning("Entity not found in Biolink: " + entity)
+                    logger.warning(f"Entity not found in Biolink: `{entity}`")
                     l[entity] = None
 
         self.biolink_leaves = l
