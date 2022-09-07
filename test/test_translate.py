@@ -41,9 +41,9 @@ def test_translate_nodes(translator):
     assert all(type(n) == BioCypherNode for n in t)
 
     t = translator.translate_nodes(id_type)
-    assert next(t).get_label() == "Protein"
+    assert next(t).get_label() == "protein"
     assert next(t).get_label() == "microRNA"
-    assert next(t).get_label() == "MacromolecularComplexMixin"
+    assert next(t).get_label() == "macromolecular complex mixin"
 
 
 def test_specific_and_generic_ids(translator):
@@ -76,7 +76,7 @@ def test_translate_edges(translator):
 
     assert type(next(t)) == BioCypherEdge
     assert next(t).get_label() == "PERTURBED_IN_DISEASE"
-    assert next(t).get_label() == "Phosphorylation"
+    assert next(t).get_label() == "phosphorylation"
 
     # node type association (defined in `schema_config.yaml`)
     src_tar_type_node = [
@@ -115,7 +115,7 @@ def test_adapter(version_node):
     ad = BiolinkAdapter(version_node.leaves, schema="biolink")
 
     assert isinstance(
-        ad.biolink_leaves["Protein"]["class_definition"],
+        ad.biolink_leaves["protein"]["class_definition"],
         ClassDefinition,
     )
 
@@ -125,14 +125,14 @@ def test_custom_bmt_yaml(version_node):
         version_node.leaves,
         schema=module_data_path("test-biolink-model"),
     )
-    p = ad.biolink_leaves["Protein"]
+    p = ad.biolink_leaves["protein"]
 
     assert p["class_definition"].description == "Test"
 
 
 def test_biolink_yaml_extension(biolink_adapter):
-    p1 = biolink_adapter.biolink_leaves["PostTranslationalInteraction"]
-    p2 = biolink_adapter.biolink_leaves["Phosphorylation"]
+    p1 = biolink_adapter.biolink_leaves["post translational interaction"]
+    p2 = biolink_adapter.biolink_leaves["phosphorylation"]
 
     assert (
         p1["class_definition"].description
@@ -168,12 +168,12 @@ def test_merge_multiple_inputs_node(version_node, translator):
     assert t
 
     # check unique node type
-    assert not any([s for s in version_node.leaves.keys() if ".Gene" in s])
-    assert any([s for s in version_node.leaves.keys() if ".Pathway" in s])
+    assert not any([s for s in version_node.leaves.keys() if ".gene" in s])
+    assert any([s for s in version_node.leaves.keys() if ".pathway" in s])
 
     # check translator.translate_nodes for unique return type
     assert all([type(n) == BioCypherNode for n in t])
-    assert all([n.get_label() == "Gene" for n in t])
+    assert all([n.get_label() == "gene" for n in t])
 
 
 def test_merge_multiple_inputs_edge(version_node, translator):
@@ -194,11 +194,11 @@ def test_merge_multiple_inputs_edge(version_node, translator):
         [
             s
             for s in version_node.leaves.keys()
-            if ".GeneToDiseaseAssociation" in s
+            if ".gene to disease association" in s
         ]
     )
     assert any(
-        [s for s in version_node.leaves.keys() if ".SequenceVariant" in s]
+        [s for s in version_node.leaves.keys() if ".sequence variant" in s]
     )
 
     # check translator.translate_nodes for unique return type
@@ -207,12 +207,12 @@ def test_merge_multiple_inputs_edge(version_node, translator):
 
 
 def test_multiple_inputs_multiple_virtual_leaves_rel_as_node(biolink_adapter):
-    vtg = biolink_adapter.biolink_leaves["VariantToGeneAssociation"]
+    vtg = biolink_adapter.biolink_leaves["variant to gene association"]
     kvtg = biolink_adapter.biolink_leaves[
-        "Known.SequenceVariant.VariantToGeneAssociation"
+        "known.sequence variant.variant to gene association"
     ]
     svtg = biolink_adapter.biolink_leaves[
-        "Known.SequenceVariant.VariantToGeneAssociation"
+        "known.sequence variant.variant to gene association"
     ]
 
     assert (
@@ -224,38 +224,38 @@ def test_multiple_inputs_multiple_virtual_leaves_rel_as_node(biolink_adapter):
 
 def test_virtual_leaves_inherit_is_a(version_node):
 
-    snrna = version_node.leaves.get("intact.snRNASequence")
+    snrna = version_node.leaves.get("intact.snRNA sequence")
 
     assert "is_a" in snrna.keys()
-    assert snrna["is_a"] == ["snRNASequence", "NucleicAcidEntity"]
+    assert snrna["is_a"] == ["snRNA sequence", "nucleic acid entity"]
 
-    dsdna = version_node.leaves.get("intact.dsDNASequence")
+    dsdna = version_node.leaves.get("intact.dsDNA sequence")
 
     assert dsdna["is_a"] == [
-        "dsDNASequence",
-        "DNASequence",
-        "NucleicAcidEntity",
+        "dsDNA sequence",
+        "DNA sequence",
+        "nucleic acid entity",
     ]
 
 
 def test_ad_hoc_children_node(biolink_adapter):
 
-    se = biolink_adapter.biolink_leaves["SideEffect"]
+    se = biolink_adapter.biolink_leaves["side effect"]
 
     assert "PhenotypicFeature" in se["ancestors"]
 
 
 def test_leaves_of_ad_hoc_child(biolink_adapter):
 
-    snrna = biolink_adapter.biolink_leaves.get("intact.snRNASequence")
+    snrna = biolink_adapter.biolink_leaves.get("intact.snRNA sequence")
 
     assert snrna
-    assert "snRNASequence" in snrna["ancestors"]
+    assert "SnRNASequence" in snrna["ancestors"]
 
-    dsdna = biolink_adapter.biolink_leaves.get("intact.dsDNASequence")
+    dsdna = biolink_adapter.biolink_leaves.get("intact.dsDNA sequence")
 
     assert dsdna["ancestors"][1:4] == [
-        "dsDNASequence",
+        "DsDNASequence",
         "DNASequence",
         "NucleicAcidEntity",
     ]
@@ -263,9 +263,9 @@ def test_leaves_of_ad_hoc_child(biolink_adapter):
 
 def test_multiple_inheritance(biolink_adapter):
 
-    mta = biolink_adapter.biolink_leaves.get("MutationToTissueAssociation")
-    gta = biolink_adapter.biolink_leaves.get("GenotypeToTissueAssociation")
-    eta = biolink_adapter.biolink_leaves.get("EntityToTissueAssociation")
+    mta = biolink_adapter.biolink_leaves.get("mutation to tissue association")
+    gta = biolink_adapter.biolink_leaves.get("genotype to tissue association")
+    eta = biolink_adapter.biolink_leaves.get("entity to tissue association")
 
     assert (
         "MutationToTissueAssociation" in mta["ancestors"]
@@ -351,6 +351,8 @@ def test_reverse_translate_term(biolink_adapter):
 
 
 def test_translate_query(biolink_adapter):
+    # we translate to PascalCase for cypher queries, not to internal
+    # sentence case
     query = "MATCH (n:hgnc)-[r:gene_disease]->(d:Disease) RETURN n"
     assert (
         biolink_adapter.translate(query)
@@ -359,6 +361,8 @@ def test_translate_query(biolink_adapter):
 
 
 def test_reverse_translate_query(biolink_adapter):
+    # TODO cannot use sentence case in this context. include sentence to
+    # pascal case and back in translation?
     query = "MATCH (n:Known.SequenceVariant)-[r:Known.SequenceVariant.VariantToGeneAssociation]->(g:Gene) RETURN n"
     with pytest.raises(NotImplementedError):
         biolink_adapter.reverse_translate(query)

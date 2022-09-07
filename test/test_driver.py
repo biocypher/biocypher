@@ -334,18 +334,18 @@ def test_pretty_explain(driver):
 
 
 def test_access_translate(driver):
-    assert driver.translate_term("mirna") == "microRNA"
+    assert driver.translate_term("mirna") == "MicroRNA"
     assert (
         driver.reverse_translate_term("MacromolecularComplexMixin")
         == "complex"
     )
     assert (
         driver.translate_query("MATCH (n:reactome) RETURN n")
-        == "MATCH (n:reactome.Pathway) RETURN n"
+        == "MATCH (n:Reactome.Pathway) RETURN n"
     )
     assert (
         driver.reverse_translate_query(
-            "MATCH (n:wikipathways.Pathway) RETURN n"
+            "MATCH (n:Wikipathways.Pathway) RETURN n"
         )
         == "MATCH (n:wikipathways) RETURN n"
     )

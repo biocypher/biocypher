@@ -43,6 +43,7 @@ from typing import Any, Union, Literal, Iterable, Optional, Generator
 import os
 import re
 
+from bmt.utils import sentencecase_to_camelcase
 from more_itertools import peekable
 from linkml_runtime.linkml_model.meta import ClassDefinition
 import bmt
@@ -168,6 +169,13 @@ class BiolinkAdapter:
 
             # find element in bmt
             if e is not None:
+                # find ancestors of biolink type - they are returned in
+                # PascalCase, which is useful for using as labels in
+                # cypher, where we cannot use spaces.
+
+                # TODO: where do we use sentence case, which is the
+                # official internal biolink representation, and where do
+                # we switch to pascal case?
                 ancestors = self.trim_biolink_ancestry(
                     self.toolkit.get_ancestors(entity, formatted=True)
                 )
@@ -187,6 +195,8 @@ class BiolinkAdapter:
                 # check for multiple inputs as well as multiple
                 # identifiers or multiple sources: otherwise, no virtual
                 # leaves necessary
+
+                # TODO refactor this into flatter structure
                 if isinstance(input_label, list):
 
                     # if entity is node
@@ -209,7 +219,10 @@ class BiolinkAdapter:
                                     se = ClassDefinition(name)
                                     se.is_a = entity
                                     sancestors = list(ancestors)
-                                    sancestors.insert(0, name)
+
+                                    sancestors.insert(
+                                        0, self.name_sentence_to_pascal(name)
+                                    )
                                     l[name] = {
                                         "class_definition": se,
                                         "ancestors": sancestors,
@@ -239,24 +252,22 @@ class BiolinkAdapter:
                                 se = ClassDefinition(name)
                                 se.is_a = entity
                                 sancestors = list(ancestors)
-                                sancestors.insert(0, name)
+                                sancestors.insert(
+                                    0, self.name_sentence_to_pascal(name)
+                                )
                                 l[name] = {
                                     "class_definition": se,
                                     "ancestors": sancestors,
                                 }
 
                                 # add translation mappings
-                                self.mappings[label] = name
-                                self.reverse_mappings[name] = label
+                                self._add_translation_mappings(label, name)
 
                         # just multiple input labels
                         # input label to identifier is many to one
                         else:
-                            for label in input_label:
-                                # add translation mappings
-                                self.mappings[label] = entity
-
-                            self.reverse_mappings[entity] = input_label
+                            labels = [label for label in input_label]
+                            self._add_translation_mappings(labels, entity)
 
                     # if entity is edge
                     else:
@@ -272,7 +283,9 @@ class BiolinkAdapter:
                                 se = ClassDefinition(name)
                                 se.is_a = entity
                                 sancestors = list(ancestors)
-                                sancestors.insert(0, name)
+                                sancestors.insert(
+                                    0, self.name_sentence_to_pascal(name)
+                                )
                                 l[name] = {
                                     "class_definition": se,
                                     "ancestors": sancestors,
@@ -341,7 +354,9 @@ class BiolinkAdapter:
                             se = ClassDefinition(child)
                             se.is_a = parent
                             ancestors = list(ancestors)
-                            ancestors.insert(0, child)
+                            ancestors.insert(
+                                0, self.name_sentence_to_pascal(child)
+                            )
                             l[child] = {
                                 "class_definition": se,
                                 "ancestors": ancestors,
@@ -351,7 +366,9 @@ class BiolinkAdapter:
                         se = ClassDefinition(entity)
                         se.is_a = parent
                         ancestors = list(ancestors)
-                        ancestors.insert(0, entity)
+                        ancestors.insert(
+                            0, self.name_sentence_to_pascal(entity)
+                        )
                         l[entity] = {
                             "class_definition": se,
                             "ancestors": ancestors,
@@ -369,7 +386,9 @@ class BiolinkAdapter:
                         se = ClassDefinition(entity)
                         se.is_a = parent
                         sancestors = list(ancestors)
-                        sancestors.insert(0, entity)
+                        sancestors.insert(
+                            0, self.name_sentence_to_pascal(entity)
+                        )
                         l[entity] = {
                             "class_definition": se,
                             "ancestors": sancestors,
@@ -450,10 +469,29 @@ class BiolinkAdapter:
 
     def _add_translation_mappings(self, original_name, biocypher_name):
         """
-        Add translation mappings for a label and name.
+        Add translation mappings for a label and name. We use here the
+        PascalCase version of the BioCypher name, since sentence case is
+        not useful for Cypher queries.
         """
-        self.mappings[original_name] = biocypher_name
-        self.reverse_mappings[biocypher_name] = original_name
+        if isinstance(original_name, list):
+            for on in original_name:
+                self.mappings[on] = self.name_sentence_to_pascal(
+                    biocypher_name
+                )
+        else:
+            self.mappings[original_name] = self.name_sentence_to_pascal(
+                biocypher_name
+            )
+
+        if isinstance(biocypher_name, list):
+            for bn in biocypher_name:
+                self.reverse_mappings[
+                    self.name_sentence_to_pascal(bn)
+                ] = original_name
+        else:
+            self.reverse_mappings[
+                self.name_sentence_to_pascal(biocypher_name)
+            ] = original_name
 
     @staticmethod
     def trim_biolink_ancestry(ancestry: list[str]) -> list[str]:
@@ -463,6 +501,19 @@ class BiolinkAdapter:
 
         # replace 'biolink:' with ''
         return [re.sub("^biolink:", "", a) for a in ancestry]
+
+    @staticmethod
+    def name_sentence_to_pascal(name: str) -> str:
+        """
+        Converts a name in sentence case to pascal case.
+        """
+        # split on dots if dot is present
+        if "." in name:
+            return ".".join(
+                [sentencecase_to_camelcase(n) for n in name.split(".")]
+            )
+        else:
+            return sentencecase_to_camelcase(name)
 
 
 """

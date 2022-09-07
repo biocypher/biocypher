@@ -98,7 +98,7 @@ def test_write_node_data_headers_import_call(bw):
     bw.write_import_call()
 
     p_csv = os.path.join(path, "Protein-header.csv")
-    m_csv = os.path.join(path, "microRNA-header.csv")
+    m_csv = os.path.join(path, "MicroRNA-header.csv")
     call = os.path.join(path, "neo4j-admin-import-call.sh")
 
     with open(p_csv) as f:
@@ -110,10 +110,10 @@ def test_write_node_data_headers_import_call(bw):
 
     assert (
         passed
-        and p == ":ID;name;score:double;taxon:long;UniProtKB;:LABEL"
-        and m == ":ID;name;taxon:long;MIR;:LABEL"
+        and p == ":ID;name;score:double;taxon:long;uniprot;:LABEL"
+        and m == ":ID;name;taxon:long;mirbase;:LABEL"
         and c
-        == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/microRNA-header.csv,{path}/microRNA-part.*" '
+        == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
     )
 
 
@@ -122,8 +122,8 @@ def _get_nodes(l: int) -> list:
     for i in range(l):
         bnp = BioCypherNode(
             node_id=f"p{i+1}",
-            node_label="Protein",
-            preferred_id="UniProtKB",
+            node_label="protein",
+            preferred_id="uniprot",
             properties={
                 "score": 4 / (i + 1),
                 "name": "StringProperty1",
@@ -134,7 +134,7 @@ def _get_nodes(l: int) -> list:
         bnm = BioCypherNode(
             node_id=f"m{i+1}",
             node_label="microRNA",
-            preferred_id="MIR",
+            preferred_id="mirbase",
             properties={"name": "StringProperty1", "taxon": 9606},
         )
         nodes.append(bnm)
@@ -147,7 +147,7 @@ def test_property_types(bw):
     for i in range(4):
         bnp = BioCypherNode(
             node_id=f"p{i+1}",
-            node_label="Protein",
+            node_label="protein",
             properties={
                 "score": 4 / (i + 1),
                 "name": "StringProperty1",
@@ -181,7 +181,7 @@ def test_write_node_data_from_list(bw):
     passed = bw._write_node_data(nodes, batch_size=1e6)
 
     p_csv = os.path.join(path, "Protein-part000.csv")
-    m_csv = os.path.join(path, "microRNA-part000.csv")
+    m_csv = os.path.join(path, "MicroRNA-part000.csv")
 
     with open(p_csv) as f:
         pr = f.read()
@@ -207,7 +207,7 @@ def test_write_node_data_from_gen(bw):
     passed = bw._write_node_data(node_gen(nodes), batch_size=1e6)
 
     p_csv = os.path.join(path, "Protein-part000.csv")
-    m_csv = os.path.join(path, "microRNA-part000.csv")
+    m_csv = os.path.join(path, "MicroRNA-part000.csv")
 
     with open(p_csv) as f:
         pr = f.read()
@@ -230,7 +230,7 @@ def test_write_node_data_from_gen_no_props(bw):
     for i in range(le):
         bnp = BioCypherNode(
             node_id=f"p{i+1}",
-            node_label="Protein",
+            node_label="protein",
             properties={
                 "score": 4 / (i + 1),
                 "name": "StringProperty1",
@@ -279,9 +279,9 @@ def test_write_node_data_from_large_gen(bw):
     )  # reduce test time
 
     p0_csv = os.path.join(path, "Protein-part000.csv")
-    m0_csv = os.path.join(path, "microRNA-part000.csv")
+    m0_csv = os.path.join(path, "MicroRNA-part000.csv")
     p1_csv = os.path.join(path, "Protein-part001.csv")
-    m1_csv = os.path.join(path, "microRNA-part001.csv")
+    m1_csv = os.path.join(path, "MicroRNA-part001.csv")
 
     pr_lines = sum(1 for _ in open(p0_csv))
     mi_lines = sum(1 for _ in open(m0_csv))
@@ -302,7 +302,7 @@ def test_too_many_properties(bw):
 
     bn1 = BioCypherNode(
         node_id="p0",
-        node_label="Protein",
+        node_label="protein",
         properties={
             "p1": get_random_string(4),
             "p2": get_random_string(8),
@@ -328,7 +328,7 @@ def test_not_enough_properties(bw):
 
     bn1 = BioCypherNode(
         node_id="p0",
-        node_label="Protein",
+        node_label="protein",
         properties={"p1": get_random_string(4)},
     )
     nodes.append(bn1)
@@ -352,12 +352,12 @@ def test_write_none_type_property_and_order_invariance(bw):
 
     bnp1 = BioCypherNode(
         node_id=f"p1",
-        node_label="Protein",
+        node_label="protein",
         properties={"taxon": 9606, "score": 1, "name": None},
     )
     bnp2 = BioCypherNode(
         node_id=f"p2",
-        node_label="Protein",
+        node_label="protein",
         properties={"name": None, "score": 2, "taxon": 9606},
     )
     bnm = BioCypherNode(
@@ -400,15 +400,15 @@ def test_accidental_exact_batch_size(bw):
     )  # reduce test time
 
     p0_csv = os.path.join(path, "Protein-part000.csv")
-    m0_csv = os.path.join(path, "microRNA-part000.csv")
+    m0_csv = os.path.join(path, "MicroRNA-part000.csv")
     p1_csv = os.path.join(path, "Protein-part001.csv")
-    m1_csv = os.path.join(path, "microRNA-part001.csv")
+    m1_csv = os.path.join(path, "MicroRNA-part001.csv")
 
     pr_lines = sum(1 for _ in open(p0_csv))
     mi_lines = sum(1 for _ in open(m0_csv))
 
     ph_csv = os.path.join(path, "Protein-header.csv")
-    mh_csv = os.path.join(path, "microRNA-header.csv")
+    mh_csv = os.path.join(path, "MicroRNA-header.csv")
 
     with open(ph_csv) as f:
         p = f.read()
@@ -421,8 +421,8 @@ def test_accidental_exact_batch_size(bw):
         and mi_lines == 1e4
         and not isfile(p1_csv)
         and not isfile(m1_csv)
-        and p == ":ID;name;score:double;taxon:long;UniProtKB;:LABEL"
-        and m == ":ID;name;taxon:long;MIR;:LABEL"
+        and p == ":ID;name;score:double;taxon:long;uniprot;:LABEL"
+        and m == ":ID;name;taxon:long;mirbase;:LABEL"
     )
 
 
@@ -594,7 +594,7 @@ def test_write_edge_data_headers_import_call(bw):
         and l == ":START_ID;residue;level:long;:END_ID;:TYPE"
         and c == ":START_ID;site;confidence:long;:END_ID;:TYPE"
         and call
-        == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/microRNA-header.csv,{path}/microRNA-part.*" --relationships="{path}/PERTURBED_IN_DISEASE-header.csv,{path}/PERTURBED_IN_DISEASE-part.*" --relationships="{path}/Is_Mutated_In-header.csv,{path}/Is_Mutated_In-part.*" '
+        == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" --relationships="{path}/PERTURBED_IN_DISEASE-header.csv,{path}/PERTURBED_IN_DISEASE-part.*" --relationships="{path}/Is_Mutated_In-header.csv,{path}/Is_Mutated_In-part.*" '
     )
 
 
@@ -633,7 +633,7 @@ def _get_rel_as_nodes(l):
     for i in range(l):
         n = BioCypherNode(
             node_id=f"i{i+1}",
-            node_label="PostTranslationalInteraction",
+            node_label="post translational interaction",
             properties={"directed": True, "effect": -1},
         )
         e1 = BioCypherEdge(
@@ -682,7 +682,7 @@ def test_write_mixed_edges(bw):
 
         n = BioCypherNode(
             f"i{i+1}",
-            "PostTranslationalInteraction",
+            "post translational interaction",
         )
         e1 = BioCypherEdge(
             source_id=f"i{i+1}",
@@ -721,7 +721,7 @@ def test_create_import_call(bw):
     for i in range(le):
         n = BioCypherNode(
             f"i{i+1}",
-            "PostTranslationalInteraction",
+            "post translational interaction",
         )
         e1 = BioCypherEdge(
             source_id=f"i{i+1}",
@@ -773,7 +773,7 @@ def test_write_offline():
     passed = d.write_nodes(nodes, dirname=path)
 
     p_csv = os.path.join(path, "Protein-part000.csv")
-    m_csv = os.path.join(path, "microRNA-part000.csv")
+    m_csv = os.path.join(path, "MicroRNA-part000.csv")
 
     with open(p_csv) as f:
         pr = f.read()
@@ -800,7 +800,7 @@ def test_duplicate_id(bw):
     for _ in range(2):
         bnp = BioCypherNode(
             node_id=f"p1",
-            node_label="Protein",
+            node_label="protein",
             properties={
                 "name": "StringProperty1",
                 "score": 4.32,

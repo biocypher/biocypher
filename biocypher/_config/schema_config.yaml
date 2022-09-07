@@ -22,14 +22,14 @@ Title: BioCypher graph schema configuration file
 # for instance in the case of functional protein complexes. These are represented
 # by so-called "mixins", which are not officially part of the hierarchy.
 
-Protein: # this is the Biolink entity name and will be used as the node label
+protein: # this is the Biolink entity name and will be used as the node label
          # do not modify or else the Biolink translation will fail
   represented_as: node
   preferred_id: uniprot # this is the CURIE URI prefix as given by Bioregistry
   label_in_input: protein # modify this to allow translation
   # this is the entity name (ie, type) in the input database
   
-Drug:
+drug:
   represented_as: node
   preferred_id: pubchem.compound
   label_in_input: drug
@@ -39,33 +39,33 @@ microRNA:
   preferred_id: mirbase.mature
   label_in_input: mirna
     
-MacromolecularComplexMixin:
+macromolecular complex mixin:
   represented_as: node
   preferred_id: complexportal
   label_in_input: complex
 
-OrganismTaxon:
+organism taxon:
   represented_as: node
   preferred_id: ncbitaxon
   label_in_input: taxon
 
-Publication:
+publication:
   represented_as: node
   preferred_id: pubmed
 
-ConfidenceLevel:
+confidence level:
   represented_as: node
   preferred_id: id
 
-Cell:
+cell:
   represented_as: node
   preferred_id: cl
 
-Disease:
+disease:
   represented_as: node
   preferred_id: icd10
 
-Pathway:
+pathway:
    represented_as: node
    preferred_id: [reactome, wikipathways] 
    label_in_input: [reactome, wikipathways] 
@@ -87,17 +87,17 @@ Pathway:
 # targeting, etc. Biolink proposes to use interaction identifiers from 
 # ontologies, such as https://www.ebi.ac.uk/ols/ontologies/mi/.
 
-PairwiseMolecularInteraction:
+pairwise molecular interaction:
   represented_as: node
   preferred_id: intact
 
-DiseaseToEntityAssociationMixin:
+disease to entity association mixin:
   represented_as: edge
   preferred_id: id
   source: Disease
   target: Protein
 
-EntityToDiseaseAssociationMixin:
+entity to disease association mixin:
   represented_as: edge
   preferred_id: id
   source: Protein
@@ -106,7 +106,7 @@ EntityToDiseaseAssociationMixin:
 
 # below not in biolink
 # will insert into custom biolink yaml, get hierarchy from there
-PostTranslationalInteraction:
+post translational interaction:
   represented_as: node
   preferred_id: id
   source: Protein 
@@ -116,18 +116,18 @@ PostTranslationalInteraction:
   target: Protein
   label_in_input: post_translational
   label_as_edge: INTERACTS_POST_TRANSLATIONAL
-Phosphorylation:
+phosphorylation:
   represented_as: edge
   preferred_id: id
   source: Protein
   target: Protein
-Acetylation:
+acetylation:
   represented_as: edge
   preferred_id: id
   source: Protein
   target: Protein
       
-PostTranscriptionalInteraction:
+post transcriptional interaction:
   represented_as: node
   preferred_id: id
   source: microRNA

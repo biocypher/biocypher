@@ -82,6 +82,7 @@ from datetime import datetime
 from collections import OrderedDict, defaultdict
 import os
 
+from bmt.utils import sentencecase_to_camelcase
 from more_itertools import peekable
 
 from biocypher._config import config as _config
@@ -418,8 +419,13 @@ class BatchWriter:
             # alternatively, desired properties can also be provided
             # via the schema_config.yaml.
 
-            header_path = os.path.join(self.outdir, f"{label}-header.csv")
-            parts_path = os.path.join(self.outdir, f"{label}-part.*")
+            # translate label to PascalCase
+            pascal_label = sentencecase_to_camelcase(label)
+
+            header_path = os.path.join(
+                self.outdir, f"{pascal_label}-header.csv"
+            )
+            parts_path = os.path.join(self.outdir, f"{pascal_label}-part.*")
 
             # check if file already exists
             if not os.path.exists(header_path):
@@ -432,6 +438,7 @@ class BatchWriter:
                     elif v in ["float", "double"]:
                         props_list.append(f"{k}:double")
                     elif v in ["bool"]:
+                        # TODO Neo4j boolean support / spelling?
                         props_list.append(f"{k}:bool")
                     else:
                         props_list.append(f"{k}")
@@ -687,9 +694,14 @@ class BatchWriter:
             # create header CSV with :START_ID, (optional) properties,
             # :END_ID, :TYPE
 
+            # translate label to PascalCase
+            pascal_label = sentencecase_to_camelcase(label)
+
             # paths
-            header_path = os.path.join(self.outdir, f"{label}-header.csv")
-            parts_path = os.path.join(self.outdir, f"{label}-part.*")
+            header_path = os.path.join(
+                self.outdir, f"{pascal_label}-header.csv"
+            )
+            parts_path = os.path.join(self.outdir, f"{pascal_label}-part.*")
 
             # check for file exists
             if not os.path.exists(header_path):
@@ -753,6 +765,10 @@ class BatchWriter:
         # from list of edges to list of strings
         lines = []
         for e in edge_list:
+            if not e.get_source_id():
+                # shouldn't happen, TODO find reason
+                logger.warning(f"Edge source ID not found: {e}")
+                continue
             # check for deviations in properties
             # edge properties
             e_props = e.get_properties()
@@ -817,6 +833,22 @@ class BatchWriter:
         return True
 
     def _write_next_part(self, label: str, lines: list):
+        """
+        This function writes a list of strings to a new part file.
+
+        Args:
+            label (str): the label (type) of the edge; internal
+            representation sentence case -> needs to become PascalCase
+            for disk representation
+
+            lines (list): list of strings to be written
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        # translate label to PascalCase
+        label = sentencecase_to_camelcase(label)
+
         # list files in self.outdir
         files = glob.glob(os.path.join(self.outdir, f"{label}-part*.csv"))
         # find file with highest part number
@@ -835,7 +867,7 @@ class BatchWriter:
         else:
             next_part = 0
 
-            # write to file
+        # write to file
         padded_part = str(next_part).zfill(3)
         logger.info(
             f"Writing {len(lines)} entries to {label}-part{padded_part}.csv"

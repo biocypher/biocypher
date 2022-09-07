@@ -25,11 +25,11 @@ def test_version_node(version_node):
 
 
 def test_virtual_leaves_node(version_node):
-    assert "wikipathways.Pathway" in version_node.leaves
+    assert "wikipathways.pathway" in version_node.leaves
 
 
 def test_getting_properties_via_config(version_node):
-    assert "name" in version_node.leaves["Protein"].get("properties").keys()
+    assert "name" in version_node.leaves["protein"].get("properties").keys()
 
 
 @given(st.builds(BioCypherNode))
