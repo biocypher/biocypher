@@ -82,7 +82,6 @@ from datetime import datetime
 from collections import OrderedDict, defaultdict
 import os
 
-from bmt.utils import sentencecase_to_camelcase
 from more_itertools import peekable
 
 from biocypher._config import config as _config
@@ -420,7 +419,7 @@ class BatchWriter:
             # via the schema_config.yaml.
 
             # translate label to PascalCase
-            pascal_label = sentencecase_to_camelcase(label)
+            pascal_label = self.bl_adapter.name_sentence_to_pascal(label)
 
             header_path = os.path.join(
                 self.outdir, f"{pascal_label}-header.csv"
@@ -695,7 +694,7 @@ class BatchWriter:
             # :END_ID, :TYPE
 
             # translate label to PascalCase
-            pascal_label = sentencecase_to_camelcase(label)
+            pascal_label = self.bl_adapter.name_sentence_to_pascal(label)
 
             # paths
             header_path = os.path.join(
@@ -847,7 +846,7 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
         # translate label to PascalCase
-        label = sentencecase_to_camelcase(label)
+        label = self.bl_adapter.name_sentence_to_pascal(label)
 
         # list files in self.outdir
         files = glob.glob(os.path.join(self.outdir, f"{label}-part*.csv"))
