@@ -676,6 +676,9 @@ class Translator:
             # a Biolink label from schema_config
             bl_type = self._get_bl_type(_type)
 
+            # TODO if no bl_types are found, returns an empty list; how
+            # do we handle this edge case which leads to a failure in
+            # the zip function in _write._write_edges()?
             if bl_type:
 
                 # filter properties for those specified in schema_config if any

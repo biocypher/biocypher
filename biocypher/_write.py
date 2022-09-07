@@ -185,7 +185,7 @@ class BatchWriter:
         return True
 
     def write_edges(
-        self, edges: Union[list, GeneratorType], batch_size=int(1e6)
+        self, edges: Union[list, GeneratorType], batch_size: int = int(1e6)
     ) -> bool:
         """
         Wrapper for writing edges and their headers.
@@ -200,28 +200,38 @@ class BatchWriter:
         """
         passed = False
         # unwrap generator in one step
-        z = zip(
-            *(
-                (
-                    e.get_node(),
-                    [e.get_source_edge(), e.get_target_edge()],
+        edges = list(edges)  # force evaluation to handle empty generator
+        if edges:
+            z = zip(
+                *(
+                    (
+                        e.get_node(),
+                        [e.get_source_edge(), e.get_target_edge()],
+                    )
+                    if isinstance(e, BioCypherRelAsNode)
+                    else (None, [e])
+                    for e in edges
                 )
-                if isinstance(e, BioCypherRelAsNode)
-                else (None, [e])
-                for e in edges
             )
-        )
-        nod, edg = (list(a) for a in z)
-        nod = [n for n in nod if n]
-        edg = [val for sublist in edg for val in sublist]  # flatten
+            nod, edg = (list(a) for a in z)
+            nod = [n for n in nod if n]
+            edg = [val for sublist in edg for val in sublist]  # flatten
 
-        if nod and edg:
-            passed = self.write_nodes(nod) and self._write_edge_data(
-                edg,
-                batch_size,
-            )
+            if nod and edg:
+                passed = self.write_nodes(nod) and self._write_edge_data(
+                    edg,
+                    batch_size,
+                )
+            else:
+                passed = self._write_edge_data(edg, batch_size)
+
         else:
-            passed = self._write_edge_data(edg, batch_size)
+            # is this a problem? if the generator or list is empty, we
+            # don't write anything.
+            logger.debug(
+                "No edges to write, possibly due to no matched Biolink classes."
+            )
+            pass
 
         if not passed:
             logger.error("Error while writing edge data.")
