@@ -18,9 +18,9 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
-from typing import TYPE_CHECKING, List, Iterable, Optional, Generator
 import importlib as imp
 import itertools
+from typing import TYPE_CHECKING, Generator, Iterable, List, Optional
 
 from more_itertools import peekable
 
@@ -31,15 +31,14 @@ if TYPE_CHECKING:
 import neo4j_utils
 
 from . import _misc
-from ._write import BatchWriter
 from ._config import config as _config
 from ._create import (
-    VersionNode,
     BioCypherEdge,
     BioCypherNode,
-    BioCypherRelAsNode,
+    VersionNode,
 )
-from ._translate import Translator, BiolinkAdapter
+from ._translate import BiolinkAdapter, Translator
+from ._write import BatchWriter
 
 __all__ = ["Driver"]
 
@@ -85,7 +84,7 @@ class Driver(neo4j_utils.Driver):
 
     def __init__(
         self,
-        driver: Optional["neo4j.Driver"] = None,
+        driver: Optional["neo4j.Driver"] = None,  # TODO unused
         db_name: Optional[str] = None,
         db_uri: Optional[str] = None,
         db_user: Optional[str] = None,
@@ -98,6 +97,8 @@ class Driver(neo4j_utils.Driver):
         delimiter: Optional[str] = None,
         array_delimiter: Optional[str] = None,
         quote_char: Optional[str] = None,
+        skip_bad_relationships: bool = False,
+        skip_duplicate_nodes: bool = False,
     ):
 
         db_name = db_name or _config("neo4j_db")
@@ -107,6 +108,10 @@ class Driver(neo4j_utils.Driver):
         self.db_delim = delimiter or _config("neo4j_delimiter")
         self.db_adelim = array_delimiter or _config("neo4j_array_delimiter")
         self.db_quote = quote_char or _config("neo4j_quote_char")
+
+        self.skip_bad_relationships = skip_bad_relationships
+        self.skip_duplicate_nodes = skip_duplicate_nodes
+        # TODO: bools in config?
         self.offline = offline
 
         if offline:
@@ -535,13 +540,15 @@ class Driver(neo4j_utils.Driver):
         """
         if not self.batch_writer:
             self.batch_writer = BatchWriter(
-                self.db_meta.leaves,
-                self.bl_adapter,
-                dirname=dirname,
-                db_name=db_name or self._db_name,
+                leaves=self.db_meta.leaves,
+                bl_adapter=self.bl_adapter,
                 delimiter=self.db_delim,
                 array_delimiter=self.db_adelim,
                 quote=self.db_quote,
+                dirname=dirname,
+                db_name=db_name or self._db_name,
+                skip_bad_relationships=self.skip_bad_relationships,
+                skip_duplicate_nodes=self.skip_duplicate_nodes,
             )
 
     def start_bl_adapter(self) -> None:
