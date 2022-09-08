@@ -615,9 +615,22 @@ class Translator:
             }
 
             # remove newline characters from properties
+            # replace double quotes in string fields?
+            # TODO move to dataclass for validation
             for k, v in filtered_props.items():
                 if isinstance(v, str):
-                    filtered_props[k] = v.replace(os.linesep, "")
+                    tmp = (
+                        str(v)
+                        .replace(os.linesep, " ")
+                        .replace("\n", " ")
+                        .replace("\r", " ")
+                        .replace('"', "'")
+                    )
+                    filtered_props[k] = tmp
+
+                elif isinstance(v, list):
+                    tmp = ", ".join(v)
+                    filtered_props[k] = tmp
 
             missing_props = [
                 k
