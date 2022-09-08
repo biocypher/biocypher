@@ -619,18 +619,20 @@ class Translator:
             # TODO move to dataclass for validation
             for k, v in filtered_props.items():
                 if isinstance(v, str):
-                    tmp = (
-                        str(v)
-                        .replace(os.linesep, " ")
+                    filtered_props[k] = (
+                        v.replace(os.linesep, " ")
                         .replace("\n", " ")
                         .replace("\r", " ")
                         .replace('"', "'")
                     )
-                    filtered_props[k] = tmp
 
                 elif isinstance(v, list):
-                    tmp = ", ".join(v)
-                    filtered_props[k] = tmp
+                    filtered_props[k] = (
+                        ", ".join(v)
+                        .replace(os.linesep, " ")
+                        .replace("\n", " ")
+                        .replace("\r", " ")
+                    )
 
             missing_props = [
                 k
