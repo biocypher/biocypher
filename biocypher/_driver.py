@@ -84,7 +84,7 @@ class Driver(neo4j_utils.Driver):
 
     def __init__(
         self,
-        driver: Optional["neo4j.Driver"] = None,  # TODO unused
+        driver: Optional["neo4j.Driver"] = None,
         db_name: Optional[str] = None,
         db_uri: Optional[str] = None,
         db_user: Optional[str] = None,
