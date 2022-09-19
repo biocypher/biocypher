@@ -757,8 +757,9 @@ class BatchWriter:
 
         Args:
             edge_list (list): list of BioCypherEdges to be written
-            label (str): the label (type) of the edge; verb form, all
-                capital with underscores
+
+            label (str): the label (type) of the edge
+
             prop_dict (dict): properties of node class passed from parsing
                 function and their types
 
@@ -818,7 +819,9 @@ class BatchWriter:
                             # the same order as in the header
                             self.delim.join(plist),
                             e.get_target_id(),
-                            e.get_label(),
+                            self.bl_adapter.name_sentence_to_pascal(
+                                e.get_label()
+                            ),
                         ],
                     )
                     + "\n",
@@ -829,7 +832,9 @@ class BatchWriter:
                         [
                             e.get_source_id(),
                             e.get_target_id(),
-                            e.get_label(),
+                            self.bl_adapter.name_sentence_to_pascal(
+                                e.get_label()
+                            ),
                         ],
                     )
                     + "\n",
