@@ -568,6 +568,12 @@ class BatchWriter:
               called on one iterable containing one type of edge only
         """
 
+        self.seen_edges = set()  # set to store the set of edges that
+        # have already been written; to avoid duplicates; per edge type
+
+        # TODO not memory efficient, but should be fine for most cases; is
+        # there a more elegant solution?
+
         if isinstance(edges, GeneratorType):
             logger.debug("Writing edge CSV from generator.")
 
@@ -585,70 +591,93 @@ class BatchWriter:
                     # shouldn't happen any more
                     logger.error(
                         "Edges cannot be of type 'RelAsNode'. "
-                        f"Caused by: {e.get_node().get_id(), e.get_node().get_label()}"
+                        f"Caused by: {e}"
                     )
+                    return False
+
+                if not (e.get_source_id() and e.get_target_id()):
+                    logger.error(
+                        "Edge must have source and target node. "
+                        f"Caused by: {e}"
+                    )
+                    continue
+
+                label = e.get_label()
+
+                src_tar_type = "_".join([e.get_source_id(), e.get_target_id()])
+
+                # check for duplicates
+                if src_tar_type in self.seen_edges:
+                    logger.debug(f"Duplicate relationship: {e}")
+                    if not label in self.duplicate_types:
+                        self.duplicate_types.add(label)
+                        logger.warning(
+                            f"Duplicate nodes found in type {label}. "
+                            "More info can be found in the log file."
+                        )
+                    continue
 
                 else:
-                    # TODO duplicate rel checking?
-                    label = e.get_label()
-                    if not label in bins.keys():
-                        # start new list
-                        bins[label].append(e)
-                        bin_l[label] = 1
+                    self.seen_edges.add(src_tar_type)
 
-                        # get properties from config if present
+                if not label in bins.keys():
+                    # start new list
+                    bins[label].append(e)
+                    bin_l[label] = 1
 
-                        # check whether label is in bl_adapter.leaves
-                        # (may not be if it is an edge that carries the
-                        # "label_as_edge" property)
-                        cprops = None
-                        if label in self.bl_adapter.leaves:
-                            cprops = self.bl_adapter.leaves.get(label).get(
-                                "properties"
-                            )
-                        else:
-                            # try via "label_as_edge"
-                            for k, v in self.bl_adapter.leaves.items():
-                                if isinstance(v, dict):
-                                    if v.get("label_as_edge") == label:
-                                        cprops = v.get("properties")
-                                        break
-                        if cprops:
-                            d = cprops
-                        else:
-                            d = dict(e.get_properties())
-                            # encode property type
-                            for k, v in d.items():
-                                if d[k] is not None:
-                                    d[k] = type(v).__name__
-                        # else use first encountered edge to define
-                        # properties for checking; could later be by
-                        # checking all edges but much more complicated,
-                        # particularly involving batch writing (would
-                        # require "do-overs"). for now, we output a warning
-                        # if edge properties diverge from reference
-                        # properties (in write_single_edge_list_to_file)
-                        # TODO
+                    # get properties from config if present
 
-                        reference_props[label] = d
-
+                    # check whether label is in bl_adapter.leaves
+                    # (may not be if it is an edge that carries the
+                    # "label_as_edge" property)
+                    cprops = None
+                    if label in self.bl_adapter.leaves:
+                        cprops = self.bl_adapter.leaves.get(label).get(
+                            "properties"
+                        )
                     else:
-                        # add to list
-                        bins[label].append(e)
-                        bin_l[label] += 1
-                        if not bin_l[label] < batch_size:
-                            # batch size controlled here
-                            passed = self._write_single_edge_list_to_file(
-                                bins[label],
-                                label,
-                                reference_props[label],
-                            )
+                        # try via "label_as_edge"
+                        for k, v in self.bl_adapter.leaves.items():
+                            if isinstance(v, dict):
+                                if v.get("label_as_edge") == label:
+                                    cprops = v.get("properties")
+                                    break
+                    if cprops:
+                        d = cprops
+                    else:
+                        d = dict(e.get_properties())
+                        # encode property type
+                        for k, v in d.items():
+                            if d[k] is not None:
+                                d[k] = type(v).__name__
+                    # else use first encountered edge to define
+                    # properties for checking; could later be by
+                    # checking all edges but much more complicated,
+                    # particularly involving batch writing (would
+                    # require "do-overs"). for now, we output a warning
+                    # if edge properties diverge from reference
+                    # properties (in write_single_edge_list_to_file)
+                    # TODO
 
-                            if not passed:
-                                return False
+                    reference_props[label] = d
 
-                            bins[label] = []
-                            bin_l[label] = 0
+                else:
+                    # add to list
+                    bins[label].append(e)
+                    bin_l[label] += 1
+                    if not bin_l[label] < batch_size:
+                        # batch size controlled here
+                        passed = self._write_single_edge_list_to_file(
+                            bins[label],
+                            label,
+                            reference_props[label],
+                        )
+
+                        if not passed:
+                            return False
+
+                        bins[label] = []
+                        bin_l[label] = 0
 
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
@@ -723,7 +752,7 @@ class BatchWriter:
                     elif v in ["float", "double"]:
                         props_list.append(f"{k}:double")
                     elif v in ["bool"]:  # TODO does Neo4j support bool?
-                        props_list.append(f"{k}:bool")
+                        props_list.append(f"{k}:boolean")
                     else:
                         props_list.append(f"{k}")
 
@@ -775,14 +804,6 @@ class BatchWriter:
         # from list of edges to list of strings
         lines = []
         for e in edge_list:
-            if not e.get_source_id():
-                # shouldn't happen, TODO find reason
-                logger.warning(f"Edge source ID not found: {e}")
-                continue
-            if not e.get_target_id():
-                # shouldn't happen, TODO find reason
-                logger.warning(f"Edge target ID not found: {e}")
-                continue
             # check for deviations in properties
             # edge properties
             e_props = e.get_properties()

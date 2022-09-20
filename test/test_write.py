@@ -598,6 +598,21 @@ def test_write_edge_data_headers_import_call(bw):
     )
 
 
+def test_write_duplicate_edges(bw):
+    edges = _get_edges(4)
+    edges.append(edges[0])
+
+    passed = bw.write_edges(edges)
+
+    ptl_csv = os.path.join(path, "PERTURBED_IN_DISEASE-part000.csv")
+    pts_csv = os.path.join(path, "Is_Mutated_In-part000.csv")
+
+    l = sum(1 for _ in open(ptl_csv))
+    c = sum(1 for _ in open(pts_csv))
+
+    assert passed and l == 4 and c == 4
+
+
 def test_BioCypherRelAsNode_implementation(bw):
     trips = _get_rel_as_nodes(4)
 

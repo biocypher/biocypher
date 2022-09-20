@@ -29,6 +29,7 @@ neo4j = ">=4.4.0"
 PyYAML = ">=5.0"
 click = ">=7.0"
 bmt = "*"
+# bmt = { path = "../biolink-model-toolkit/", develop = true }
 more_itertools = "*"
 toml = "*"
 appdirs = "*"
