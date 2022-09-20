@@ -779,6 +779,10 @@ class BatchWriter:
                 # shouldn't happen, TODO find reason
                 logger.warning(f"Edge source ID not found: {e}")
                 continue
+            if not e.get_target_id():
+                # shouldn't happen, TODO find reason
+                logger.warning(f"Edge target ID not found: {e}")
+                continue
             # check for deviations in properties
             # edge properties
             e_props = e.get_properties()
