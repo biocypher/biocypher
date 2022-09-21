@@ -32,7 +32,7 @@ Todo:
       later externalised)
 """
 
-from typing import Optional, Union
+from typing import Union, Optional
 from datetime import datetime
 from dataclasses import field, dataclass
 
@@ -77,10 +77,12 @@ class BioCypherNode:
 
     def __post_init__(self):
         """
-        Check for preferred id and add to properties if present.
+        Add id field to properties.
+        Check for preferred id (CURIE prefix) and add to properties if present.
 
         Check for reserved keywords.
         """
+        self.properties["id"] = self.node_id
         if not self.preferred_id == "id":
             self.properties[self.preferred_id] = self.node_id
 
@@ -311,18 +313,15 @@ class BioCypherRelAsNode:
 
 class VersionNode:
     """
-    Versioning and graph structure information meta node. Inherits from
-    # TODO: it doesn't inherit from BCNode
-    # and the label comes from the argument
-    BioCypherNode but fixes label to ":BioCypher" and sets version
-    by using the current date and time (meaning it overrides both
-    mandatory args from BioCypherNode).
+    Versioning and graph structure information meta node. Similar to
+    BioCypherNode but fixes label to ":BioCypher" and sets version by using the
+    current date and time (meaning it overrides both mandatory args from
+    BioCypherNode).
 
-    Is created upon establishment of connection with the database and
-    remains fixed for each BioCypher "session" (ie, the entire duration
-    from starting the connection to the termination of the BioCypher
-    adapter instance). Is connected to MetaNodes and MetaEdges via
-    ":CONTAINS" relationships.
+    Is created upon establishment of connection with the database and remains
+    fixed for each BioCypher "session" (ie, the entire duration from starting
+    the connection to the termination of the BioCypher adapter instance). Is
+    connected to MetaNodes and MetaEdges via ":CONTAINS" relationships.
     """
 
     def __init__(
@@ -478,9 +477,6 @@ class VersionNode:
             d:
                 Data structure dict from yaml file.
 
-        TODO: allow multiple leaves with same Biolink name but different
-        specs? (eg ProteinToDiseaseAssociation from two different
-        entries in CKG, DETECTED_IN_PATHOLOGY_SAMPLE and ASSOCIATED_WITH)
         """
 
         d = d or self.schema

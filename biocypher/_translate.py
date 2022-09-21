@@ -155,8 +155,6 @@ class BiolinkAdapter:
 
         Additionally adds child leaves for each leaf that has multiple
         identifiers.
-
-        TODO: add class definition id_prefixes check
         """
 
         logger.info("Translating BioCypher config leaves to Biolink.")
