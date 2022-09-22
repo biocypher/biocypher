@@ -88,6 +88,7 @@ snRNA sequence:
     fullName: str
     shortName: str
     preferredName: str
+  exclude_properties: sequence
 
 # virtual leaves of ad hoc multiple inheritance
 dsDNA sequence:

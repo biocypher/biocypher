@@ -240,6 +240,14 @@ def test_virtual_leaves_inherit_is_a(version_node):
     ]
 
 
+def test_virtual_leaves_inherit_properties(version_node):
+
+    snrna = version_node.leaves.get("intact.snRNA sequence")
+
+    assert "properties" in snrna.keys()
+    assert "exclude_properties" in snrna.keys()
+
+
 def test_ad_hoc_children_node(biolink_adapter):
 
     se = biolink_adapter.biolink_leaves["side effect"]

@@ -562,6 +562,11 @@ class VersionNode:
                             # inherit properties if exist
                             if value.get("properties"):
                                 svalue["properties"] = value["properties"]
+                            # inherit excluded properties if exist
+                            if value.get("exclude_properties"):
+                                svalue["exclude_properties"] = value[
+                                    "exclude_properties"
+                                ]
                             # inherit edge label if exists
                             if value.get("label_as_edge"):
                                 svalue["label_as_edge"] = value[
@@ -611,6 +616,11 @@ class VersionNode:
                             # inherit properties if exist
                             if value.get("properties"):
                                 svalue["properties"] = value["properties"]
+                            # inherit excluded properties if exist
+                            if value.get("exclude_properties"):
+                                svalue["exclude_properties"] = value[
+                                    "exclude_properties"
+                                ]
                             # inherit edge label if exists
                             if value.get("label_as_edge"):
                                 svalue["label_as_edge"] = value[
