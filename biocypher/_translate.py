@@ -155,273 +155,62 @@ class BiolinkAdapter:
 
         Additionally adds child leaves for each leaf that has multiple
         identifiers.
+
+        TODO: where do we use sentence case, which is the
+        official internal biolink representation, and where do
+        we switch to pascal case?
         """
 
         logger.info("Translating BioCypher config leaves to Biolink.")
 
-        l = {}
+        self.biolink_leaves = {}
 
-        for entity in self.leaves.keys():
+        # ontology parents first
+        for entity, values in self.leaves.items():
 
-            e = self.toolkit.get_element(entity)  # element name
+            entity_biolink_class = self.toolkit.get_element(
+                entity
+            )  # element name
 
-            # find element in bmt
-            if e is not None:
-                # find ancestors of biolink type - they are returned in
-                # PascalCase, which is useful for using as labels in
-                # cypher, where we cannot use spaces.
+            if entity_biolink_class:
 
-                # TODO: where do we use sentence case, which is the
-                # official internal biolink representation, and where do
-                # we switch to pascal case?
+                # find ancestors of biolink type in PascalCase
                 ancestors = self.trim_biolink_ancestry(
                     self.toolkit.get_ancestors(entity, formatted=True)
                 )
 
-                # check for signs of virtual leaves:
-                # - nodes
-                #   - multiple inputs and multiple identifiers
-                # - edges
-                #   - multiple inputs and multiple sources
-                #   - multiple inputs and multiple targets?
+                input_label = values.get("label_in_input")
 
-                # TODO can there be virtual leaves without multiple
-                # inputs?
-
-                input_label = self.leaves[entity].get("label_in_input")
-
-                # check for multiple inputs as well as multiple
-                # identifiers or multiple sources: otherwise, no virtual
-                # leaves necessary
-
-                # TODO refactor this into flatter structure
-                if isinstance(input_label, list):
-
-                    # if entity is node
-                    if self.leaves[entity]["represented_as"] == "node":
-
-                        # if node is rel as node
-                        if self.leaves[entity].get("source"):
-
-                            # add child leaves for rel as node
-                            if isinstance(
-                                self.leaves[entity].get("source"), list
-                            ):
-
-                                # add child leaves for multiple sources
-                                # input label to identifier is one to one
-                                for label, source in zip(
-                                    input_label, self.leaves[entity]["source"]
-                                ):
-                                    name = source + "." + entity
-                                    se = ClassDefinition(name)
-                                    se.is_a = entity
-                                    sancestors = list(ancestors)
-
-                                    sancestors.insert(
-                                        0, self.name_sentence_to_pascal(name)
-                                    )
-                                    l[name] = {
-                                        "class_definition": se,
-                                        "ancestors": sancestors,
-                                    }
-
-                                    # add translation mappings
-                                    self._add_translation_mappings(label, name)
-
-                            elif isinstance(
-                                self.leaves[entity].get("target"), list
-                            ):
-                                logger.error(
-                                    "Multiple targets not implemented yet."
-                                )
-
-                        # "named thing" node (not rel as node)
-                        # input label to identifier is one to one
-                        elif isinstance(
-                            self.leaves[entity].get("preferred_id"), list
-                        ):
-                            # add child leaves for node
-                            for label, id in zip(
-                                input_label,
-                                self.leaves[entity]["preferred_id"],
-                            ):
-                                name = id + "." + entity
-                                se = ClassDefinition(name)
-                                se.is_a = entity
-                                sancestors = list(ancestors)
-                                sancestors.insert(
-                                    0, self.name_sentence_to_pascal(name)
-                                )
-                                l[name] = {
-                                    "class_definition": se,
-                                    "ancestors": sancestors,
-                                }
-
-                                # add translation mappings
-                                self._add_translation_mappings(label, name)
-
-                        # just multiple input labels
-                        # input label to identifier is many to one
-                        else:
-                            labels = [label for label in input_label]
-                            self._add_translation_mappings(labels, entity)
-
-                    # if entity is edge
-                    else:
-                        # add child leaves for edge
-                        if isinstance(self.leaves[entity].get("source"), list):
-
-                            # add child leaves for multiple sources
-                            # input label to identifier is one to one
-                            for label, source in zip(
-                                input_label, self.leaves[entity]["source"]
-                            ):
-                                name = source + "." + entity
-                                se = ClassDefinition(name)
-                                se.is_a = entity
-                                sancestors = list(ancestors)
-                                sancestors.insert(
-                                    0, self.name_sentence_to_pascal(name)
-                                )
-                                l[name] = {
-                                    "class_definition": se,
-                                    "ancestors": sancestors,
-                                }
-
-                                # add translation mappings
-                                self._add_translation_mappings(label, name)
-
-                        elif isinstance(
-                            self.leaves[entity].get("target"), list
-                        ):
-                            logger.error(
-                                "Multiple targets not implemented yet."
-                            )
-
-                        else:
-                            # simple multiple inputs
-                            # input label to identifier is many to one
-                            for label in input_label:
-                                # add translation mappings
-                                self.mappings[label] = self.leaves[entity].get(
-                                    "label_as_edge", entity
-                                )
-                            self.reverse_mappings[
-                                self.leaves[entity].get(
-                                    "label_as_edge", entity
-                                )
-                            ] = input_label
-
-                else:
-                    # add translation mappings
-                    self._add_translation_mappings(
-                        input_label,
-                        self.leaves[entity].get("label_as_edge", entity),
-                    )
+                # add translation mappings
+                bc_name = (
+                    values.get("label_as_edge")
+                    if values.get("label_as_edge")
+                    else entity
+                )
+                self._add_translation_mappings(input_label, bc_name)
 
                 # create dict of biolink class definition and biolink
-                # ancestors
-                l[entity] = {"class_definition": e, "ancestors": ancestors}
+                # ancestors, add to biolink leaves
+                self.biolink_leaves[entity] = {
+                    "class_definition": entity_biolink_class,
+                    "ancestors": ancestors,
+                }
 
-            else:
+        # secondly check explicit children
+        for entity, values in self.leaves.items():
 
-                # check for ad hoc inheritance and create leaves accordingly
+            if values.get("is_a") and not values.get("virtual"):
 
-                if "is_a" in self.leaves[entity].keys():
-                    parent = self.leaves[entity]["is_a"]
-                    if isinstance(parent, list):
-                        logger.info(
-                            "Received ad hoc multiple inheritance "
-                            "information; updating pseudo-Biolink entry "
-                            f"by setting `{entity}` as a child of `{parent}`."
-                        )
-                        # assume biolink entity is last in list
-                        bl_parent = parent.pop()
-                        ancestors = self.trim_biolink_ancestry(
-                            self.toolkit.get_ancestors(
-                                bl_parent, formatted=True
-                            )
-                        )
-                        while parent:
-                            # create class definitions for all ancestors
-                            # in reverse order
-                            # TODO will create same virtual leaf multiple
-                            # times for ad hoc inheritance
-                            child = parent.pop()
-                            se = ClassDefinition(child)
-                            se.is_a = parent
-                            ancestors = list(ancestors)
-                            ancestors.insert(
-                                0, self.name_sentence_to_pascal(child)
-                            )
-                            l[child] = {
-                                "class_definition": se,
-                                "ancestors": ancestors,
-                            }
+                # build class definition for explicit child
+                self._build_biolink_class(entity, values)
 
-                        # finally top-level class definition
-                        se = ClassDefinition(entity)
-                        se.is_a = parent
-                        ancestors = list(ancestors)
-                        ancestors.insert(
-                            0, self.name_sentence_to_pascal(entity)
-                        )
-                        l[entity] = {
-                            "class_definition": se,
-                            "ancestors": ancestors,
-                        }
+        # lastly check virtual leaves (implicit children)
+        for entity, values in self.leaves.items():
 
-                    else:
-                        logger.info(
-                            "Received ad hoc inheritance information; "
-                            "updating pseudo-Biolink entry by setting "
-                            f"`{entity}` as a child of `{parent}`."
-                        )
-                        ancestors = self.trim_biolink_ancestry(
-                            self.toolkit.get_ancestors(parent, formatted=True)
-                        )
-                        se = ClassDefinition(entity)
-                        se.is_a = parent
-                        sancestors = list(ancestors)
-                        sancestors.insert(
-                            0, self.name_sentence_to_pascal(entity)
-                        )
-                        l[entity] = {
-                            "class_definition": se,
-                            "ancestors": sancestors,
-                        }
+            if values.get("virtual"):
 
-                elif "virtual" in self.leaves[entity].keys():
-                    # finally skip virtual nodes but add translation mappings
-
-                    logger.info(
-                        f"`{entity}` is a virtual leaf, but not in the "
-                        f"Biolink model. Skipping."
-                    )
-
-                    # add translation mappings
-                    if isinstance(
-                        self.leaves[entity].get("label_in_input"), list
-                    ):
-                        for label in self.leaves[entity]["label_in_input"]:
-                            self._add_translation_mappings(
-                                label,
-                                self.leaves[entity].get(
-                                    "label_as_edge", entity
-                                ),
-                            )
-                    else:
-                        self._add_translation_mappings(
-                            self.leaves[entity].get("label_in_input"),
-                            self.leaves[entity].get("label_as_edge", entity),
-                        )
-
-                else:
-                    logger.warning(f"Entity not found in Biolink: `{entity}`")
-                    l[entity] = None
-
-        self.biolink_leaves = l
+                # build class definition for virtual leaf
+                self._build_biolink_class(entity, values)
 
     def translate_term(self, term):
         """
@@ -451,7 +240,11 @@ class BiolinkAdapter:
         now.
         """
         for key in self.reverse_mappings:
-            if ":" + key in query:
+
+            a = ":" + key + ")"
+            b = ":" + key + "]"
+            # TODO this conditional probably does not cover all cases
+            if a in query or b in query:
                 if isinstance(self.reverse_mappings[key], list):
                     raise NotImplementedError(
                         "Reverse translation of multiple inputs not "
@@ -461,8 +254,8 @@ class BiolinkAdapter:
                     )
                 else:
                     query = query.replace(
-                        ":" + key, ":" + self.reverse_mappings[key]
-                    )
+                        a, ":" + self.reverse_mappings[key] + ")"
+                    ).replace(b, ":" + self.reverse_mappings[key] + "]")
         return query
 
     def _add_translation_mappings(self, original_name, biocypher_name):
@@ -490,6 +283,123 @@ class BiolinkAdapter:
             self.reverse_mappings[
                 self.name_sentence_to_pascal(biocypher_name)
             ] = original_name
+
+    def _build_biolink_class(self, entity, values):
+        """
+        Build a Biolink class definition from a Biolink entity name and
+        property dict.
+        """
+        if values.get("represented_as") == "node":
+            return self._build_biolink_node_class(entity, values)
+        else:
+            return self._build_biolink_edge_class(entity, values)
+
+    def _build_biolink_node_class(self, entity: str, values: dict) -> None:
+        """
+        Build a Biolink node class definition from a Biolink entity name
+        and property dict.
+        """
+
+        input_label = values.get("label_in_input")
+        parents = _misc.to_list(values.get("is_a"))
+        ancestors = []
+
+        logger.info(
+            "Received ad hoc multiple inheritance "
+            "information; updating pseudo-Biolink node "
+            f"by setting `{entity}` as a child of `{parents[0]}`."
+        )
+
+        while parents:
+            parent = parents.pop(0)
+            if self.biolink_leaves.get(parent):
+                ancestors += self.biolink_leaves.get(parent).get("ancestors")
+                break
+            elif self.toolkit.get_ancestors(parent):
+                bla = _misc.to_list(
+                    self.trim_biolink_ancestry(
+                        self.toolkit.get_ancestors(parent, formatted=True)
+                    )
+                )
+                ancestors += bla
+                break
+            else:
+                ancestors += [self.name_sentence_to_pascal(parent)]
+
+        if ancestors:
+            ancestors.insert(0, self.name_sentence_to_pascal(entity))
+        else:
+            raise ValueError(
+                f"Parent `{parent}` of `{entity}` not found in Biolink "
+                "model."
+            )
+
+        # create class definition
+        se = ClassDefinition(entity)
+        se.is_a = parent
+        self.biolink_leaves[entity] = {
+            "class_definition": se,
+            "ancestors": ancestors,
+        }
+
+        # add translation mappings
+        self._add_translation_mappings(input_label, entity)
+
+    def _build_biolink_edge_class(self, entity: str, values: dict) -> None:
+        """
+        Build a Biolink edge class definition from a Biolink entity name
+        and property dict.
+        """
+
+        input_label = values.get("label_in_input")
+        parents = _misc.to_list(values.get("is_a"))
+        ancestors = []
+
+        logger.info(
+            "Received ad hoc multiple inheritance "
+            "information; updating pseudo-Biolink edge "
+            f"by setting `{entity}` as a child of `{parents[0]}`."
+        )
+
+        while parents:
+            parent = parents.pop(0)
+            if self.biolink_leaves.get(parent):
+                ancestors += self.biolink_leaves.get(parent).get("ancestors")
+                break
+            elif self.toolkit.get_ancestors(parent):
+                bla = _misc.to_list(
+                    self.trim_biolink_ancestry(
+                        self.toolkit.get_ancestors(parent, formatted=True)
+                    )
+                )
+                ancestors += bla
+                break
+            else:
+                ancestors += [self.name_sentence_to_pascal(parent)]
+
+        if ancestors:
+            ancestors.insert(0, self.name_sentence_to_pascal(entity))
+        else:
+            raise ValueError(
+                f"Parent `{parent}` of `{entity}` not found in Biolink "
+                "model."
+            )
+
+        # create class definition
+        se = ClassDefinition(entity)
+        se.is_a = parent
+        self.biolink_leaves[entity] = {
+            "class_definition": se,
+            "ancestors": ancestors,
+        }
+
+        # add translation mappings
+        bc_name = (
+            values.get("label_as_edge")
+            if values.get("label_as_edge")
+            else entity
+        )
+        self._add_translation_mappings(input_label, bc_name)
 
     @staticmethod
     def trim_biolink_ancestry(ancestry: list[str]) -> list[str]:
@@ -538,7 +448,7 @@ class Translator:
         """
 
         self.leaves = leaves
-        # self._update_bl_types()
+        self._update_bl_types()
 
         # record nodes without biolink type configured in schema_config.yaml
         self.notype = {}
@@ -811,16 +721,19 @@ class Translator:
         """
         Creates a dictionary to translate from input labels to Biolink labels.
 
-        Todo: we need to process input label lists; otherwise merging through
-        input definition will not work. See test_merge_multiple_inputs_node()
-        and test_specific_and_generic_ids().
+        If multiple input labels, creates mapping for each.
         """
 
-        self._bl_types = dict(
-            (schema_def["label_in_input"], bcy_type)
-            for bcy_type, schema_def in self.leaves.items()
-            if isinstance(schema_def.get("label_in_input", None), str)
-        )
+        self._bl_types = {}
+
+        for key, value in self.leaves.items():
+
+            if isinstance(value.get("label_in_input"), str):
+                self._bl_types[value.get("label_in_input")] = key
+
+            elif isinstance(value.get("label_in_input"), list):
+                for label in value["label_in_input"]:
+                    self._bl_types[label] = key
 
     def _get_bl_type(self, label: str) -> Optional[str]:
         """
@@ -834,13 +747,4 @@ class Translator:
         """
 
         # commented out until behaviour of _update_bl_types is fixed
-        # return self._bl_types.get(label, None)
-
-        for k, v in self.leaves.items():
-            if "label_in_input" in v:
-                l = v["label_in_input"]
-                if isinstance(l, list):
-                    if label in l:
-                        return k
-                elif v["label_in_input"] == label:
-                    return k
+        return self._bl_types.get(label, None)

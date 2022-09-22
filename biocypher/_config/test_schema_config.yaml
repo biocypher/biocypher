@@ -90,18 +90,25 @@ snRNA sequence:
     preferredName: str
   exclude_properties: sequence
 
-# virtual leaves of ad hoc multiple inheritance
-dsDNA sequence:
-  is_a: [DNA sequence, nucleic acid entity]
+DNA sequence:
+  is_a: nucleic acid entity
   represented_as: node
-  preferred_id: [intact, uniparc]
-  label_in_input: [intact_dsdna, uniprot_archive_dsdna]
+  preferred_id: ensembl
+  label_in_input: dna
   properties:
     ac: str
     fullName: str
     shortName: str
     preferredName: str
     sequence: str
+
+# virtual leaves of ad hoc multiple inheritance
+dsDNA sequence:
+  is_a: [DNA sequence, nucleic acid entity]
+  inherit_properties: True
+  represented_as: node
+  preferred_id: [intact, uniparc]
+  label_in_input: [intact_dsdna, uniprot_archive_dsdna]
 
 
 # ---

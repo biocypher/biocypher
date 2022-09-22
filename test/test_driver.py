@@ -120,12 +120,13 @@ def test_add_biocypher_node_generator(driver):
 
 
 def test_add_specific_id_node(driver):
-    n = BioCypherNode(node_id="CHAT", node_label="Gene", preferred_id="HGNC")
+    n = BioCypherNode(node_id="CHAT", node_label="Gene", preferred_id="hgnc")
     driver.add_biocypher_nodes(n)
 
     r, summary = driver.query("MATCH (n:Gene) " "RETURN n")
 
-    assert r[0]["n"].get("HGNC") is not None
+    assert r[0]["n"].get("id") == "CHAT"
+    assert r[0]["n"].get("preferred_id") == "hgnc"
 
 
 def test_add_generic_id_node(driver):

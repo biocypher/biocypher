@@ -502,134 +502,224 @@ class VersionNode:
         d = d or self.schema
 
         leaves = dict()
-        stack = list(d.items())
-        visited = set()
+        max_depth = 0  # TODO needed?
 
-        while stack:
+        # first pass: get parent leaves with direct representation in ontology
+        for k, v in d.items():
 
-            key, value = stack.pop()
+            # k is not an entity
+            if not "represented_as" in v:
+                continue
 
-            if isinstance(value, dict):
-                # using `represented_as` as a marker for an entity
-                # TODO find something better
-                if "represented_as" not in value.keys():
-                    if key not in visited:
-                        stack.extend(value.items())
+            # k is an entity that is present in the ontology
+            if not "is_a" in v:
+                leaves[k] = v
+
+            # find max depth of children
+            else:
+                lst = v["is_a"] if isinstance(v["is_a"], list) else [v["is_a"]]
+                max_depth = max(max_depth, len(lst))
+
+        # second pass: "vertical" inheritance
+        d = self._vertical_property_inheritance(d)
+        # create leaves for all straight descendants (no multiple identifiers
+        # or sources) -> explicit children
+        # TODO do we need to order children by depth from real leaves?
+        leaves.update({k: v for k, v in d.items() if "is_a" in v})
+
+        # "horizontal" inheritance: create siblings for multiple identifiers or
+        # sources -> virtual leaves or implicit children
+        mi_leaves = {}
+        ms_leaves = {}
+        for k, v in d.items():
+
+            # k is not an entity
+            if not "represented_as" in v:
+                continue
+
+            if isinstance(v.get("preferred_id"), list):
+                mi_leaves = self._horizontal_inheritance_pid(k, v)
+                leaves.update(mi_leaves)
+
+            elif isinstance(v.get("source"), list):
+                ms_leaves = self._horizontal_inheritance_source(k, v)
+                leaves.update(ms_leaves)
+
+        return leaves
+
+    def _vertical_property_inheritance(self, d):
+        """
+        Inherit properties from parents to children and update `d` accordingly.
+        """
+        for k, v in d.items():
+
+            # k is not an entity
+            if not "represented_as" in v:
+                continue
+
+            # k is an entity that is present in the ontology
+            if not "is_a" in v:
+                continue
+
+            # "horizontal" inheritance: inherit properties from parent
+            if v.get("inherit_properties", False):
+
+                # get direct ancestor
+                parent = v["is_a"][0]
+
+                # update properties of child
+                if self.schema[parent].get("properties"):
+                    v["properties"] = self.schema[parent]["properties"]
+                if self.schema[parent].get("exclude_properties"):
+                    v["exclude_properties"] = self.schema[parent][
+                        "exclude_properties"
+                    ]
+
+                # update schema (d)
+                d[k] = v
+
+        return d
+
+    def _horizontal_inheritance_pid(self, key, value):
+        """
+        Create virtual leaves for multiple preferred id types or sources.
+
+        If we create virtual leaves, label_in_input always has to be a list.
+        """
+
+        leaves = {}
+
+        preferred_id = value["preferred_id"]
+        label_in_input = value["label_in_input"]
+        represented_as = value["represented_as"]
+
+        # adjust lengths
+        l = max(
+            [
+                len(_misc.to_list(preferred_id)),
+                len(_misc.to_list(label_in_input)),
+                len(_misc.to_list(represented_as)),
+            ]
+        )
+
+        # adjust pid length if necessary
+        if isinstance(preferred_id, str):
+            pids = [preferred_id] * l
+        else:
+            pids = preferred_id
+
+        # adjust rep length if necessary
+        if isinstance(represented_as, str):
+            reps = [represented_as] * l
+        else:
+            reps = represented_as
+
+        for pid, lab, rep in zip(pids, label_in_input, reps):
+
+            skey = pid + "." + key
+            svalue = {
+                "preferred_id": pid,
+                "label_in_input": lab,
+                "represented_as": rep,
+                # mark as virtual
+                "virtual": True,
+            }
+
+            # inherit is_a if exists
+            if "is_a" in value.keys():
+
+                # treat as multiple inheritance
+                if isinstance(value["is_a"], list):
+                    v = list(value["is_a"])
+                    v.insert(0, key)
+                    svalue["is_a"] = v
 
                 else:
+                    svalue["is_a"] = [key, value["is_a"]]
 
-                    # create virtual leaves for multiple preferred id types
-                    if isinstance(value.get("preferred_id"), list):
-                        # create "virtual" leaves for each preferred
-                        # id
+            else:
+                # set parent as is_a
+                svalue["is_a"] = key
 
-                        # adjust lengths (if representation and/or id are
-                        # not given as lists but inputs are multiple)
-                        l = len(_misc.to_list(value["label_in_input"]))
-                        # adjust pid length if necessary
-                        if isinstance(value["preferred_id"], str):
-                            pids = [value["preferred_id"]] * l
-                        else:
-                            pids = value["preferred_id"]
-                        # adjust rep length if necessary
-                        if isinstance(value["represented_as"], str):
-                            reps = [value["represented_as"]] * l
-                        else:
-                            reps = value["represented_as"]
+            # inherit everything except core attributes
+            for k, v in value.items():
+                if k not in [
+                    "is_a",
+                    "preferred_id",
+                    "label_in_input",
+                    "represented_as",
+                ]:
+                    svalue[k] = v
 
-                        for pid, label, rep in zip(
-                            pids,
-                            value["label_in_input"],
-                            reps,
-                        ):
-                            skey = pid + "." + key
-                            svalue = {
-                                "preferred_id": pid,
-                                "label_in_input": label,
-                                "represented_as": rep,
-                                # mark as virtual
-                                "virtual": True,
-                            }
-                            # inherit is_a if exists
-                            if "is_a" in value.keys():
-                                # treat as multiple inheritance
-                                if isinstance(value["is_a"], list):
-                                    v = list(value["is_a"])
-                                    v.insert(0, key)
-                                    svalue["is_a"] = v
-                                else:
-                                    svalue["is_a"] = [key, value["is_a"]]
-                            # inherit properties if exist
-                            if value.get("properties"):
-                                svalue["properties"] = value["properties"]
-                            # inherit excluded properties if exist
-                            if value.get("exclude_properties"):
-                                svalue["exclude_properties"] = value[
-                                    "exclude_properties"
-                                ]
-                            # inherit edge label if exists
-                            if value.get("label_as_edge"):
-                                svalue["label_as_edge"] = value[
-                                    "label_as_edge"
-                                ]
-                            leaves[skey] = svalue
+            leaves[skey] = svalue
 
-                    # create virtual leaves for multiple sources
-                    elif isinstance(value.get("source"), list):
-                        # create "virtual" leaves for each source
+        return leaves
 
-                        # adjust lengths (if representation and/or id are
-                        # not given as lists but inputs are multiple)
-                        l = len(value["source"])
+    def _horizontal_inheritance_source(self, key, value):
+        """
+        Create virtual leaves for multiple sources.
 
-                        # adjust label length if necessary
-                        if isinstance(value["label_in_input"], str):
-                            labels = [value["label_in_input"]] * l
-                        else:
-                            labels = value["label_in_input"]
-                        # adjust rep length if necessary
-                        if isinstance(value["represented_as"], str):
-                            reps = [value["represented_as"]] * l
-                        else:
-                            reps = value["represented_as"]
+        If we create virtual leaves, label_in_input always has to be a list.
+        """
 
-                        for source, label, rep in zip(
-                            value["source"], labels, reps
-                        ):
-                            skey = source + "." + key
-                            svalue = {
-                                "source": source,
-                                "label_in_input": label,
-                                "represented_as": rep,
-                                # mark as virtual
-                                "virtual": True,
-                            }
-                            # inherit is_a if exists
-                            if "is_a" in value.keys():
-                                # treat as multiple inheritance
-                                if isinstance(value["is_a"], list):
-                                    v = list(value["is_a"])
-                                    v.insert(0, key)
-                                    svalue["is_a"] = v
-                                else:
-                                    svalue["is_a"] = [key, value["is_a"]]
-                            # inherit properties if exist
-                            if value.get("properties"):
-                                svalue["properties"] = value["properties"]
-                            # inherit excluded properties if exist
-                            if value.get("exclude_properties"):
-                                svalue["exclude_properties"] = value[
-                                    "exclude_properties"
-                                ]
-                            # inherit edge label if exists
-                            if value.get("label_as_edge"):
-                                svalue["label_as_edge"] = value[
-                                    "label_as_edge"
-                                ]
-                            leaves[skey] = svalue
-                    # finally, add parent
-                    leaves[key] = value
+        leaves = {}
 
-            visited.add(key)
+        source = value["source"]
+        label_in_input = value["label_in_input"]
+        represented_as = value["represented_as"]
+
+        # adjust lengths
+        l = len(source)
+
+        # adjust label length if necessary
+        if isinstance(label_in_input, str):
+            labels = [label_in_input] * l
+        else:
+            labels = label_in_input
+
+        # adjust rep length if necessary
+        if isinstance(represented_as, str):
+            reps = [represented_as] * l
+        else:
+            reps = represented_as
+
+        for src, lab, rep in zip(source, labels, reps):
+
+            skey = src + "." + key
+            svalue = {
+                "source": src,
+                "label_in_input": lab,
+                "represented_as": rep,
+                # mark as virtual
+                "virtual": True,
+            }
+
+            # inherit is_a if exists
+            if "is_a" in value.keys():
+
+                # treat as multiple inheritance
+                if isinstance(value["is_a"], list):
+                    v = list(value["is_a"])
+                    v.insert(0, key)
+                    svalue["is_a"] = v
+
+                else:
+                    svalue["is_a"] = [key, value["is_a"]]
+
+            else:
+                # set parent as is_a
+                svalue["is_a"] = key
+
+            # inherit everything except core attributes
+            for k, v in value.items():
+                if k not in [
+                    "is_a",
+                    "source",
+                    "label_in_input",
+                    "represented_as",
+                ]:
+                    svalue[k] = v
+
+            leaves[skey] = svalue
 
         return leaves

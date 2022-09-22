@@ -53,14 +53,12 @@ def test_specific_and_generic_ids(translator):
     ]
     t = list(translator.translate_nodes(id_type))
 
-    assert (
-        t[0].get_id() == "CHAT"
-        and t[0].get_properties().get("preferred_id") == "hgnc"
-        and t[0].get_properties().get("id") == "CHAT"
-        and t[1].get_id() == "REACT:25520"
-        and t[1].get_properties().get("preferred_id") == "reactome"
-        and t[1].get_properties().get("id") == "REACT:25520"
-    )
+    assert t[0].get_id() == "CHAT"
+    assert t[0].get_properties().get("preferred_id") == "hgnc"
+    assert t[0].get_properties().get("id") == "CHAT"
+    assert t[1].get_id() == "REACT:25520"
+    assert t[1].get_properties().get("preferred_id") == "reactome"
+    assert t[1].get_properties().get("id") == "REACT:25520"
 
 
 def test_translate_edges(translator):
@@ -229,12 +227,11 @@ def test_virtual_leaves_inherit_is_a(version_node):
     snrna = version_node.leaves.get("intact.snRNA sequence")
 
     assert "is_a" in snrna.keys()
-    assert snrna["is_a"] == ["snRNA sequence", "nucleic acid entity"]
+    assert snrna["is_a"] == "nucleic acid entity"
 
     dsdna = version_node.leaves.get("intact.dsDNA sequence")
 
     assert dsdna["is_a"] == [
-        "dsDNA sequence",
         "DNA sequence",
         "nucleic acid entity",
     ]
@@ -271,23 +268,22 @@ def test_leaves_of_ad_hoc_child(biolink_adapter):
     ]
 
 
+def test_inherit_properties(version_node):
+
+    dsdna = version_node.leaves.get("intact.dsDNA sequence")
+
+    assert "properties" in dsdna.keys()
+    assert "sequence" in dsdna["properties"]
+
+
 def test_multiple_inheritance(biolink_adapter):
 
     mta = biolink_adapter.biolink_leaves.get("mutation to tissue association")
-    gta = biolink_adapter.biolink_leaves.get("genotype to tissue association")
-    eta = biolink_adapter.biolink_leaves.get("entity to tissue association")
 
-    assert (
-        "MutationToTissueAssociation" in mta["ancestors"]
-        and "GenotypeToTissueAssociation" in mta["ancestors"]
-        and "EntityToTissueAssociation" in mta["ancestors"]
-        and "Association" in mta["ancestors"]
-        and "GenotypeToTissueAssociation" in gta["ancestors"]
-        and "EntityToTissueAssociation" in gta["ancestors"]
-        and "Association" in gta["ancestors"]
-        and "EntityToTissueAssociation" in eta["ancestors"]
-        and "Association" in eta["ancestors"]
-    )
+    assert "MutationToTissueAssociation" in mta["ancestors"]
+    assert "GenotypeToTissueAssociation" in mta["ancestors"]
+    assert "EntityToTissueAssociation" in mta["ancestors"]
+    assert "Association" in mta["ancestors"]
 
 
 def test_properties_from_config(version_node, translator):
