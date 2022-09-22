@@ -604,50 +604,45 @@ class Translator:
         Filters properties for those specified in schema_config if any.
         """
 
-        filter_props = self.leaves[bl_type].get("properties", None)
+        filter_props = self.leaves[bl_type].get("properties", {})
 
-        if filter_props:
+        exclude_props = self.leaves[bl_type].get("exclude_properties", [])
+        if isinstance(exclude_props, str):
+            exclude_props = [exclude_props]
+
+        if filter_props and exclude_props:
+
+            filtered_props = {
+                k: v
+                for k, v in props.items()
+                if (k in filter_props.keys() and k not in exclude_props)
+            }
+
+        elif filter_props:
 
             filtered_props = {
                 k: v for k, v in props.items() if k in filter_props.keys()
             }
 
-            # remove newline characters from properties
-            # replace double quotes in string fields?
-            # TODO move to dataclass for validation
-            for k, v in filtered_props.items():
-                if isinstance(v, str):
-                    filtered_props[k] = (
-                        v.replace(os.linesep, " ")
-                        .replace("\n", " ")
-                        .replace("\r", " ")
-                        .replace('"', "'")
-                    )
+        elif exclude_props:
 
-                elif isinstance(v, list):
-                    filtered_props[k] = (
-                        ", ".join(v)
-                        .replace(os.linesep, " ")
-                        .replace("\n", " ")
-                        .replace("\r", " ")
-                    )
-
-            missing_props = [
-                k
-                for k in filter_props.keys()
-                if k not in filtered_props.keys()
-            ]
-
-            # add missing properties with default values
-            for k in missing_props:
-
-                filtered_props[k] = None
-
-            return filtered_props
+            filtered_props = {
+                k: v for k, v in props.items() if k not in exclude_props
+            }
 
         else:
 
             return props
+
+        missing_props = [
+            k for k in filter_props.keys() if k not in filtered_props.keys()
+        ]
+        # add missing properties with default values
+        for k in missing_props:
+
+            filtered_props[k] = None
+
+        return filtered_props
 
     def translate_edges(
         self,

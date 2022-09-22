@@ -35,6 +35,7 @@ Todo:
 from typing import Union, Optional
 from datetime import datetime
 from dataclasses import field, dataclass
+import os
 
 import yaml
 
@@ -78,13 +79,15 @@ class BioCypherNode:
     def __post_init__(self):
         """
         Add id field to properties.
-        Check for preferred id (CURIE prefix) and add to properties if present.
 
         Check for reserved keywords.
+
+        Replace unwanted characters in properties.
         """
         self.properties["id"] = self.node_id
-        if not self.preferred_id == "id":
-            self.properties[self.preferred_id] = self.node_id
+        self.properties["preferred_id"] = self.preferred_id or None
+        # TODO actually make None possible here; as is, "id" is the default in
+        # the dataclass as well as in the configuration file
 
         if ":TYPE" in self.properties.keys():
             logger.warning(
@@ -94,6 +97,23 @@ class BioCypherNode:
             )
             # self.properties["type"] = self.properties[":TYPE"]
             del self.properties[":TYPE"]
+
+        for k, v in self.properties.items():
+            if isinstance(v, str):
+                self.properties[k] = (
+                    v.replace(os.linesep, " ")
+                    .replace("\n", " ")
+                    .replace("\r", " ")
+                    .replace('"', "'")
+                )
+
+            elif isinstance(v, list):
+                self.properties[k] = (
+                    ", ".join(v)
+                    .replace(os.linesep, " ")
+                    .replace("\n", " ")
+                    .replace("\r", " ")
+                )
 
     def get_id(self) -> str:
         """

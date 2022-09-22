@@ -55,9 +55,11 @@ def test_specific_and_generic_ids(translator):
 
     assert (
         t[0].get_id() == "CHAT"
-        and t[0].get_properties().get("hgnc") == "CHAT"
+        and t[0].get_properties().get("preferred_id") == "hgnc"
+        and t[0].get_properties().get("id") == "CHAT"
         and t[1].get_id() == "REACT:25520"
-        and t[1].get_properties().get("reactome") == "REACT:25520"
+        and t[1].get_properties().get("preferred_id") == "reactome"
+        and t[1].get_properties().get("id") == "REACT:25520"
     )
 
 
@@ -332,6 +334,58 @@ def test_properties_from_config(version_node, translator):
         and "score" in r[0].get_properties().keys()
         and "score" in r[1].get_properties().keys()
         and "test" not in r[1].get_properties().keys()
+    )
+
+
+def test_exclude_properties(translator):
+    id_type = [
+        (
+            "CHAT",
+            "ensg",
+            {"taxon": 9606, "accession": "should_not_be_returned"},
+        ),
+        ("ACHE", "ensg", {"taxon": 9606}),
+    ]
+    t = translator.translate_nodes(id_type)
+
+    r = list(t)
+    assert (
+        "taxon" in r[0].get_properties().keys()
+        and "taxon" in r[1].get_properties().keys()
+        and "accession" not in r[0].get_properties().keys()
+    )
+
+    src_tar_type = [
+        (
+            "G49205",
+            "AD",
+            "gene_disease",
+            {
+                "directional": True,
+                "score": 0.5,
+            },
+        ),
+        (
+            "G92035",
+            "AD",
+            "gene_disease",
+            {
+                "directional": False,
+                "score": 0.5,
+                "accession": "should_not_be_returned",
+            },
+        ),
+    ]
+
+    t = translator.translate_edges(src_tar_type)
+
+    r = list(t)
+    assert (
+        "directional" in r[0].get_properties().keys()
+        and "directional" in r[1].get_properties().keys()
+        and "score" in r[0].get_properties().keys()
+        and "score" in r[1].get_properties().keys()
+        and "accession" not in r[1].get_properties().keys()
     )
 
 

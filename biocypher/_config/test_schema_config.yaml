@@ -53,6 +53,7 @@ gene:
   represented_as: node
   preferred_id: hgnc
   label_in_input: [hgnc, ensg] 
+  exclude_properties: accession
 
 disease:
   represented_as: node
@@ -144,6 +145,7 @@ gene to disease association:
   source: Protein
   target: Disease
   label_in_input: [protein_disease, gene_disease]
+  exclude_properties: accession
 
 # multiple inheritance
 mutation to tissue association:

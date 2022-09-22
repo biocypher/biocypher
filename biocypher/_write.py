@@ -308,26 +308,24 @@ class BatchWriter:
                     if cprops:
                         d = dict(cprops)
 
-                        # preferred id field
-                        # this duplicates the "id" field of each node
-                        if not node.get_preferred_id() == "id":
-                            d[node.get_preferred_id()] = type(
-                                node.get_id()
-                            ).__name__
+                        # add id and preferred id to properties; these are
+                        # created in node creation (`_create.BioCypherNode`)
+                        d["id"] = "str"
+                        d["preferred_id"] = "str"
+
                     else:
                         d = dict(node.get_properties())
                         # encode property type
                         for k, v in d.items():
                             if d[k] is not None:
                                 d[k] = type(v).__name__
-                    # else use first encountered node to define
-                    # properties for checking; could later be by
-                    # checking all nodes but much more complicated,
-                    # particularly involving batch writing (would
-                    # require "do-overs"). for now, we output a warning
-                    # if node properties diverge from reference
-                    # properties (in write_single_node_list_to_file)
-                    # TODO
+                    # else use first encountered node to define properties for
+                    # checking; could later be by checking all nodes but much
+                    # more complicated, particularly involving batch writing
+                    # (would require "do-overs"). for now, we output a warning
+                    # if node properties diverge from reference properties (in
+                    # write_single_node_list_to_file) TODO if it occurs, ask
+                    # user to select desired properties and restart the process
 
                     reference_props[label] = d
 
@@ -517,7 +515,9 @@ class BatchWriter:
                     f"At least one node of the class {n.get_label()} "
                     f"has more or fewer properties than the others. "
                     f"Offending node: {onode!r}, offending property: "
-                    f"{max([oprop1, oprop2])}.",
+                    f"{max([oprop1, oprop2])}. "
+                    f"All reference properties: {ref_props}, "
+                    f"All edge properties: {n_keys}."
                 )
                 return False
 
@@ -817,9 +817,11 @@ class BatchWriter:
                 oprop2 = set(e_keys).difference(ref_props)
                 logger.error(
                     f"At least one edge of the class {e.get_label()} "
-                    f"has more or fewer properties than the others. "
+                    f"has more or fewer properties than another. "
                     f"Offending edge: {oedge!r}, offending property: "
-                    f"{max([oprop1, oprop2])}.",
+                    f"{max([oprop1, oprop2])}. "
+                    f"All reference properties: {ref_props}, "
+                    f"All edge properties: {e_keys}."
                 )
                 return False
 

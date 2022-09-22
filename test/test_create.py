@@ -39,6 +39,8 @@ def test_node(node):
     assert isinstance(node.get_properties(), dict)
     assert isinstance(node.get_dict(), dict)
 
+    assert "id" in node.get_properties().keys()
+
 
 @given(st.builds(BioCypherEdge))
 def test_edge(edge):
