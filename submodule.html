@@ -617,17 +617,14 @@ relationship</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._create.VersionNode">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">VersionNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'BioCypher'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bcy_driver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.VersionNode" title="Permalink to this definition"></a></dt>
-<dd><p>Versioning and graph structure information meta node. Inherits from
-# TODO: it doesn’t inherit from BCNode
-# and the label comes from the argument
-BioCypherNode but fixes label to “:BioCypher” and sets version
-by using the current date and time (meaning it overrides both
-mandatory args from BioCypherNode).</p>
-<p>Is created upon establishment of connection with the database and
-remains fixed for each BioCypher “session” (ie, the entire duration
-from starting the connection to the termination of the BioCypher
-adapter instance). Is connected to MetaNodes and MetaEdges via
-“:CONTAINS” relationships.</p>
+<dd><p>Versioning and graph structure information meta node. Similar to
+BioCypherNode but fixes label to “:BioCypher” and sets version by using the
+current date and time (meaning it overrides both mandatory args from
+BioCypherNode).</p>
+<p>Is created upon establishment of connection with the database and remains
+fixed for each BioCypher “session” (ie, the entire duration from starting
+the connection to the termination of the BioCypher adapter instance). Is
+connected to MetaNodes and MetaEdges via “:CONTAINS” relationships.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._create.VersionNode.get_dict">
 <span class="sig-name descname"><span class="pre">get_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#biocypher._create.VersionNode.get_dict" title="Permalink to this definition"></a></dt>
@@ -717,7 +714,9 @@ Simultaneously get the structure in the form of the parents of
 each leaf.</p>
 <p>Additionally adds child leaves for each leaf that has multiple
 identifiers.</p>
-<p>TODO: add class definition id_prefixes check</p>
+<p>TODO: where do we use sentence case, which is the
+official internal biolink representation, and where do
+we switch to pascal case?</p>
 </dd></dl>
 
 <dl class="py method">
