@@ -513,11 +513,11 @@ class BatchWriter:
                 oprop2 = set(n_keys).difference(ref_props)
                 logger.error(
                     f"At least one node of the class {n.get_label()} "
-                    f"has more or fewer properties than the others. "
+                    f"has more or fewer properties than another. "
                     f"Offending node: {onode!r}, offending property: "
                     f"{max([oprop1, oprop2])}. "
                     f"All reference properties: {ref_props}, "
-                    f"All edge properties: {n_keys}."
+                    f"All node properties: {n_keys}."
                 )
                 return False
 
