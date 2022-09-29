@@ -442,11 +442,11 @@ class BatchWriter:
                 for k, v in props.items():
                     if v in ["int", "long"]:
                         props_list.append(f"{k}:long")
-                    elif v in ["float", "double"]:
+                    elif v in ["float", "double", "dbl"]:
                         props_list.append(f"{k}:double")
-                    elif v in ["bool"]:
+                    elif v in ["bool", "boolean"]:
                         # TODO Neo4j boolean support / spelling?
-                        props_list.append(f"{k}:bool")
+                        props_list.append(f"{k}:boolean")
                     else:
                         props_list.append(f"{k}")
 
@@ -531,7 +531,15 @@ class BatchWriter:
                     p = n_props.get(k)
                     if p is None:  # TODO make field empty instead of ""?
                         plist.append("")
-                    elif v in ["int", "long", "float", "double", "bool"]:
+                    elif v in [
+                        "int",
+                        "long",
+                        "float",
+                        "double",
+                        "dbl",
+                        "bool",
+                        "boolean",
+                    ]:
                         plist.append(str(p))
                     else:
                         plist.append(self.quote + str(p) + self.quote)
@@ -751,7 +759,10 @@ class BatchWriter:
                         props_list.append(f"{k}:long")
                     elif v in ["float", "double"]:
                         props_list.append(f"{k}:double")
-                    elif v in ["bool"]:  # TODO does Neo4j support bool?
+                    elif v in [
+                        "bool",
+                        "boolean",
+                    ]:  # TODO does Neo4j support bool?
                         props_list.append(f"{k}:boolean")
                     else:
                         props_list.append(f"{k}")
@@ -833,7 +844,15 @@ class BatchWriter:
                     p = e_props.get(k)
                     if p is None:  # TODO make field empty instead of ""?
                         plist.append("")
-                    elif v in ["int", "long", "float", "double", "bool"]:
+                    elif v in [
+                        "int",
+                        "long",
+                        "float",
+                        "double",
+                        "dbl",
+                        "bool",
+                        "boolean",
+                    ]:
                         plist.append(str(p))
                     else:
                         plist.append(self.quote + str(p) + self.quote)
