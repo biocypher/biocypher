@@ -455,7 +455,7 @@ class BatchWriter:
                 out_list = [[id], props_list, [":LABEL"]]
                 out_list = [val for sublist in out_list for val in sublist]
 
-                with open(header_path, "w") as f:
+                with open(header_path, "w", encoding="utf-8") as f:
 
                     # concatenate with delimiter
                     row = self.delim.join(out_list)
@@ -772,7 +772,7 @@ class BatchWriter:
                 out_list = [[":START_ID"], props_list, [":END_ID"], [":TYPE"]]
                 out_list = [val for sublist in out_list for val in sublist]
 
-                with open(header_path, "w") as f:
+                with open(header_path, "w", encoding="utf-8") as f:
 
                     # concatenate with delimiter
                     row = self.delim.join(out_list)
@@ -934,7 +934,7 @@ class BatchWriter:
         )
         file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
 
-        with open(file_path, "w") as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             # concatenate with delimiter
             f.writelines(lines)
 
@@ -963,7 +963,7 @@ class BatchWriter:
         file_path = os.path.join(self.outdir, "neo4j-admin-import-call.sh")
         logger.info(f"Writing neo4j-admin import call to `{file_path}`.")
 
-        with open(file_path, "w") as f:
+        with open(file_path, "w", encoding="utf-8") as f:
 
             f.write(self._construct_import_call())
 
