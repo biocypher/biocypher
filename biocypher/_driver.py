@@ -108,7 +108,8 @@ class Driver(neo4j_utils.Driver):
         self.db_delim = delimiter or _config("neo4j_delimiter")
         self.db_adelim = array_delimiter or _config("neo4j_array_delimiter")
         self.db_quote = quote_char or _config("neo4j_quote_char")
-
+        
+        self.wipe = wipe
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
         # TODO: bools in config?
@@ -549,6 +550,7 @@ class Driver(neo4j_utils.Driver):
                 db_name=db_name or self._db_name,
                 skip_bad_relationships=self.skip_bad_relationships,
                 skip_duplicate_nodes=self.skip_duplicate_nodes,
+                wipe=self.wipe,
             )
 
     def start_bl_adapter(self) -> None:
