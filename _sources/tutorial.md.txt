@@ -22,7 +22,7 @@ components: an input stream of data (which we call adapter) and a configuration
 for the resulting desired output (the schema configuration). The former will be
 simulated by calling the `Protein` class of our data generator 10 times. 
 
-```{python}
+```{code-block} python
 from data_generator import Protein
 proteins = [Protein() for _ in range(10)]
 ```
@@ -40,7 +40,7 @@ through our simulated input data and, for each entity, forms the corresponding
 tuple. The use of a generator allows for efficient streaming of larger datasets
 where required.
 
-```{python}
+```{code-block} python
 def node_generator():
     for protein in proteins:
         yield (protein.id, protein.label, protein.properties)
@@ -72,7 +72,7 @@ the schema configuration *and* is present in the input data stream, it will be
 part of our knowledge graph. In our case, since we only import proteins, we
 only require few lines of configuration:
 
-```{yaml}
+```{code-block} yaml
 protein:                            # mapping
   represented_as: node              # schema configuration
   preferred_id: uniprot             # uniqueness
@@ -132,7 +132,7 @@ not require setting up a graph database instance. The following code will use
 the data stream and configuration set up above to write the files for knowledge
 graph creation:
 
-```{python}
+```{code-block} python
 import biocypher
 driver = biocypher.Driver(
     offline=True,
@@ -152,7 +152,7 @@ tool. This is not necessary if the graph is created in online mode. For
 convenience, BioCypher provides the command line call required to import the
 data into Neo4j:
 
-```{python}
+```{code-block} python
 driver.write_import_call()
 ```
 
@@ -176,7 +176,7 @@ add the new label to the schema configuration (the new label being
 `entrez_protein`). In this case, we would add the following to the schema
 configuration:
 
-```{yaml}
+```{code-block} yaml
 protein:
   represented_as: node
   preferred_id: uniprot
@@ -201,7 +201,7 @@ can merge datasets into the same ontological class by creating *ad hoc*
 subclasses implicitly through BioCypher, by providing multiple preferred
 identifiers. In our case, we update our schema configuration as follows:
 
-```{yaml}
+```{code-block} yaml
 protein:
   represented_as: node
   preferred_id: [uniprot, entrez]
