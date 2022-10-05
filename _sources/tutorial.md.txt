@@ -1,4 +1,4 @@
-# BioCypher Tutorial
+# BioCypher Tutorial - Basics
 The main purpose of BioCypher is to facilitate the pre-processing of biomedical
 data to save development time in the maintainance of curated knowledge graphs
 and to allow the simple and efficient creation of task-specific lightweight
@@ -12,7 +12,7 @@ interface - are represented by simulated data containing some examples of
 differently formatted biomedical entities such as proteins and their
 interactions.
 
-## Section 1: Basics - Adding data
+## Section 1: Adding data
 The code for this tutorial can be found at `tutorial/01_basic_import.py`. Data
 generation happens in `tutorial/data_generator.py`.
 
@@ -22,8 +22,7 @@ components: an input stream of data (which we call adapter) and a configuration
 for the resulting desired output (the schema configuration). The former will be
 simulated by calling the `Protein` class of our data generator 10 times. 
 
-```{code-block}
-:class: python
+```{python}
 from data_generator import Protein
 proteins = [Protein() for _ in range(10)]
 ```
@@ -41,7 +40,7 @@ through our simulated input data and, for each entity, forms the corresponding
 tuple. The use of a generator allows for efficient streaming of larger datasets
 where required.
 
-```{code-block} python
+```{python}
 def node_generator():
     for protein in proteins:
         yield (protein.id, protein.label, protein.properties)
@@ -56,7 +55,8 @@ label, and a property dictionary, while edges possess an (optional) ID, two
 mandatory IDs for source and target, a mandatory label, and a property
 dictionary. How these entities are mapped to the ontological hierarchy
 underlying a BioCypher graph is determined by their mandatory labels, which
-connect the input data stream to the schema configuration.
+connect the input data stream to the schema configuration. This we will see in
+the following section.
 
 <!-- Figure for ID, label, prop of nodes and edges? -->
 
@@ -80,18 +80,19 @@ protein:                            # mapping
 ```
 
 The first line (`protein`) identifies our entity and connects to the
-ontological backbone (we define a class to be represented in the graph). In the
-configuration YAML, we represent entities - similar to the internal
-representation of Biolink - in lower sentence case (e.g., "small molecule").
-This is opposed to the use as class names, or in file names and property graph
-labels, which use PascalCase instead (e.g., "SmallMolecule"). The
-transformation is done by BioCypher internally. Following this first line are
-three indented values of the protein class. BioCypher does not strictly enforce
-the entities allowed in this class definition; in fact, we provide several
-methods of extending the existing ontological backbone *ad hoc* by providing
-custom inheritance or hybridising ontologies. However, every entity should at
-some point be connected to the underlying ontology, otherwise the multiple
-hierarchical labels will not be populated.
+ontological backbone; here we define the first class to be represented in the
+graph. In the configuration YAML, we represent entities - similar to the
+internal representation of Biolink - in lower sentence case (e.g., "small
+molecule"). Conversely, for class names, in file names, and property graph
+labels, which use PascalCase instead (e.g., "SmallMolecule") to avoid issues
+with handling spaces. The transformation is done by BioCypher internally.
+Following this first line are three indented values of the protein class.
+BioCypher does not strictly enforce the entities allowed in this class
+definition; in fact, we provide several methods of extending the existing
+ontological backbone *ad hoc* by providing custom inheritance or hybridising
+ontologies. However, every entity should at some point be connected to the
+underlying ontology, otherwise the multiple hierarchical labels will not be
+populated.
 
 <!-- TODO link to ontology manipulation -->
 
@@ -151,7 +152,7 @@ tool. This is not necessary if the graph is created in online mode. For
 convenience, BioCypher provides the command line call required to import the
 data into Neo4j:
 
-```
+```{python}
 driver.write_import_call()
 ```
 
@@ -200,7 +201,7 @@ can merge datasets into the same ontological class by creating *ad hoc*
 subclasses implicitly through BioCypher, by providing multiple preferred
 identifiers. In our case, we update our schema configuration as follows:
 
-```{code-block} yaml
+```{yaml}
 protein:
   represented_as: node
   preferred_id: [uniprot, entrez]
@@ -216,9 +217,11 @@ by any queries for the generic `protein` class, while still carrying
 information about their namespace and avoiding identifier conflicts.
 
 ```{note}
-The only change affected upon the code from the previous section is the
+The only change affected upon the code from the previous section is the 
 referral to the updated schema configuration file.
 ```
 
-Also note that, in the output, we now generate two separate files for the
-`protein` class, one for each subclass (with names in PascalCase). 
+```{note}
+In the output, we now generate two separate files for the `protein` class, one 
+for each subclass (with names in PascalCase). 
+```

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BioCypher Tutorial &mdash; BioCypher  documentation</title>
+  <title>BioCypher Tutorial - Basics &mdash; BioCypher  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -45,8 +45,8 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#section-1-basics-adding-data">Section 1: Basics - Adding data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher Tutorial - Basics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#section-1-adding-data">Section 1: Adding data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#section-2-merging-data">Section 2: Merging data</a></li>
 </ul>
 </li>
@@ -69,7 +69,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="contents.html" class="icon icon-home"></a> &raquo;</li>
-      <li>BioCypher Tutorial</li>
+      <li>BioCypher Tutorial - Basics</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/tutorial.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -79,8 +79,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="biocypher-tutorial">
-<h1>BioCypher Tutorial<a class="headerlink" href="#biocypher-tutorial" title="Permalink to this heading"></a></h1>
+  <section id="biocypher-tutorial-basics">
+<h1>BioCypher Tutorial - Basics<a class="headerlink" href="#biocypher-tutorial-basics" title="Permalink to this heading"></a></h1>
 <p>The main purpose of BioCypher is to facilitate the pre-processing of biomedical
 data to save development time in the maintainance of curated knowledge graphs
 and to allow the simple and efficient creation of task-specific lightweight
@@ -92,8 +92,8 @@ input data - which in the real-world use case could come from any type of
 interface - are represented by simulated data containing some examples of
 differently formatted biomedical entities such as proteins and their
 interactions.</p>
-<section id="section-1-basics-adding-data">
-<h2>Section 1: Basics - Adding data<a class="headerlink" href="#section-1-basics-adding-data" title="Permalink to this heading"></a></h2>
+<section id="section-1-adding-data">
+<h2>Section 1: Adding data<a class="headerlink" href="#section-1-adding-data" title="Permalink to this heading"></a></h2>
 <p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/01_basic_import.py</span></code>. Data
 generation happens in <code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
 <section id="input-data-stream-adapter">
@@ -102,10 +102,6 @@ generation happens in <code class="docutils literal notranslate"><span class="pr
 components: an input stream of data (which we call adapter) and a configuration
 for the resulting desired output (the schema configuration). The former will be
 simulated by calling the <code class="docutils literal notranslate"><span class="pre">Protein</span></code> class of our data generator 10 times.</p>
-<div class="python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">Protein</span>
-<span class="n">proteins</span> <span class="o">=</span> <span class="p">[</span><span class="n">Protein</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
-</pre></div>
-</div>
 <p>Each protein in our simulated data has a UniProt ID, a label
 (“uniprot_protein”), and a dictionary of properties describing it. This is -
 purely by coincidence - very close to the input BioCypher expects (for nodes):</p>
@@ -119,11 +115,6 @@ achieve this representation, we can use a generator function that iterates
 through our simulated input data and, for each entity, forms the corresponding
 tuple. The use of a generator allows for efficient streaming of larger datasets
 where required.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_generator</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="p">(</span><span class="n">protein</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">protein</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">protein</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
-</pre></div>
-</div>
 <p>The concept of an adapter can become arbitrarily complex and involve
 programmatic access to databases, API requests, asynchronous queries, context
 managers, and other complicating factors. However, it always boils down to
@@ -133,7 +124,8 @@ label, and a property dictionary, while edges possess an (optional) ID, two
 mandatory IDs for source and target, a mandatory label, and a property
 dictionary. How these entities are mapped to the ontological hierarchy
 underlying a BioCypher graph is determined by their mandatory labels, which
-connect the input data stream to the schema configuration.</p>
+connect the input data stream to the schema configuration. This we will see in
+the following section.</p>
 <!-- Figure for ID, label, prop of nodes and edges? -->
 </section>
 <section id="schema-configuration">
@@ -149,18 +141,19 @@ the schema configuration <em>and</em> is present in the input data stream, it wi
 part of our knowledge graph. In our case, since we only import proteins, we
 only require few lines of configuration:</p>
 <p>The first line (<code class="docutils literal notranslate"><span class="pre">protein</span></code>) identifies our entity and connects to the
-ontological backbone (we define a class to be represented in the graph). In the
-configuration YAML, we represent entities - similar to the internal
-representation of Biolink - in lower sentence case (e.g., “small molecule”).
-This is opposed to the use as class names, or in file names and property graph
-labels, which use PascalCase instead (e.g., “SmallMolecule”). The
-transformation is done by BioCypher internally. Following this first line are
-three indented values of the protein class. BioCypher does not strictly enforce
-the entities allowed in this class definition; in fact, we provide several
-methods of extending the existing ontological backbone <em>ad hoc</em> by providing
-custom inheritance or hybridising ontologies. However, every entity should at
-some point be connected to the underlying ontology, otherwise the multiple
-hierarchical labels will not be populated.</p>
+ontological backbone; here we define the first class to be represented in the
+graph. In the configuration YAML, we represent entities - similar to the
+internal representation of Biolink - in lower sentence case (e.g., “small
+molecule”). Conversely, for class names, in file names, and property graph
+labels, which use PascalCase instead (e.g., “SmallMolecule”) to avoid issues
+with handling spaces. The transformation is done by BioCypher internally.
+Following this first line are three indented values of the protein class.
+BioCypher does not strictly enforce the entities allowed in this class
+definition; in fact, we provide several methods of extending the existing
+ontological backbone <em>ad hoc</em> by providing custom inheritance or hybridising
+ontologies. However, every entity should at some point be connected to the
+underlying ontology, otherwise the multiple hierarchical labels will not be
+populated.</p>
 <!-- TODO link to ontology manipulation -->
 <p>The second line (<code class="docutils literal notranslate"><span class="pre">represented_as</span></code>) tells BioCypher in which way each entity
 should be represented in the graph; the only options are <code class="docutils literal notranslate"><span class="pre">node</span></code> and <code class="docutils literal notranslate"><span class="pre">edge</span></code>.
@@ -207,9 +200,6 @@ creating a subfolder with the current datetime for each driver instance.</p>
 tool. This is not necessary if the graph is created in online mode. For
 convenience, BioCypher provides the command line call required to import the
 data into Neo4j:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span><span class="o">.</span><span class="n">write_import_call</span><span class="p">()</span>
-</pre></div>
-</div>
 <p>This creates an executable shell script in the output directory that can be
 executed from the location of the database folder to import the graph into
 Neo4j (or copied into the Neo4j terminal). Since BioCypher creates separate
@@ -249,12 +239,6 @@ one-to-one mapping between different data sources. Thus, if we so desire, we
 can merge datasets into the same ontological class by creating <em>ad hoc</em>
 subclasses implicitly through BioCypher, by providing multiple preferred
 identifiers. In our case, we update our schema configuration as follows:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span><span class="w"></span>
-</pre></div>
-</div>
 <p>This will “implicitly” create two subclasses of the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class, which will
 inherit the entire hierarchy of the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class. The two subclasses will be
 named using a combination of their preferred namespace and the name of the
@@ -267,8 +251,11 @@ information about their namespace and avoiding identifier conflicts.</p>
 <p>The only change affected upon the code from the previous section is the
 referral to the updated schema configuration file.</p>
 </div>
-<p>Also note that, in the output, we now generate two separate files for the
-<code class="docutils literal notranslate"><span class="pre">protein</span></code> class, one for each subclass (with names in PascalCase).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the output, we now generate two separate files for the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class, one
+for each subclass (with names in PascalCase).</p>
+</div>
 </section>
 </section>
 </section>
