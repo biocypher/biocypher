@@ -17,6 +17,9 @@ class Protein:
         self.properties = self._generate_properties()
 
     def _generate_id(self):
+        """
+        Generate a random UniProt-style id.
+        """
         lets = [random.choice(string.ascii_uppercase) for _ in range(3)]
         nums = [random.choice(string.digits) for _ in range(3)]
 
@@ -44,3 +47,20 @@ class Protein:
         properties["taxon"] = "9606"
 
         return properties
+
+
+class EntrezProtein(Protein):
+    """
+    Generates instances of proteins with Entrez IDs.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.id = self._generate_id()
+        self.label = "entrez_protein"
+
+    def _generate_id(self):
+        """
+        Generate a random Entrez-style ID.
+        """
+        return str(random.randint(1, 1000000))

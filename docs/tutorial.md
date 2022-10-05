@@ -42,8 +42,8 @@ where required.
 
 ```
 def node_generator():
-        for protein in proteins:
-            yield (protein.id, protein.label, protein.properties)
+    for protein in proteins:
+        yield (protein.id, protein.label, protein.properties)
 ```
 
 The concept of an adapter can become arbitrarily complex and involve
@@ -88,7 +88,9 @@ transformation is done by BioCypher internally. Following this first line are
 three indented values of the protein class. BioCypher does not strictly enforce
 the entities allowed in this class definition; in fact, we provide several
 methods of extending the existing ontological backbone *ad hoc* by providing
-custom inheritance or hybridising ontologies.
+custom inheritance or hybridising ontologies. However, every entity should at
+some point be connected to the underlying ontology, otherwise the multiple
+hierarchical labels will not be populated.
 
 <!-- TODO link to ontology manipulation -->
 
@@ -158,3 +160,63 @@ Neo4j (or copied into the Neo4j terminal). Since BioCypher creates separate
 header and data files for each entity type, the import call conveniently
 aggregates this information into one command, detailing the location of all
 files on disk, so no data need to be copied around.
+
+## Section 2: Merging data
+The code for this tutorial can be found at `tutorial/02_merge.py` and
+`tutorial/03_implicit_subclass.py`. Data generation happens in
+`tutorial/data_generator.py`.
+
+### Plain merge
+Using the workflow described above with minor changes, we can merge data from
+different input streams. If we do not want to introduce additional ontological
+subcategories, we can simply add the new input stream to the existing one and
+add the new label to the schema configuration (the new label being
+`entrez_protein`). In this case, we would add the following to the schema
+configuration:
+
+```
+protein:
+  represented_as: node
+  preferred_id: uniprot
+  label_in_input: [uniprot_protein, entrez_protein]
+```
+
+However, we are generating our `entrez` proteins as having entrez IDs, which 
+could result in problems in querying. This issue could be resolved by mapping
+the entrez IDs to uniprot IDs, but we will instead use the opportunity to
+demonstrate how to merge data from different sources into the same ontological
+class using *ad hoc* subclasses.
+
+### Ad hoc subclassing
+In the previous section, we saw how to merge data from different sources into
+the same ontological class. However, we did not resolve the issue of the
+`entrez` proteins living in a different namespace than the `uniprot` proteins,
+which could result in problems in querying. In proteins, it would probably be
+more appropriate to solve this problem using identifier mapping, but in other
+categories, e.g., pathways, this may not be possible because of a lack of
+one-to-one mapping between different data sources. Thus, if we so desire, we
+can merge datasets into the same ontological class by creating *ad hoc*
+subclasses implicitly through BioCypher, by providing multiple preferred
+identifiers. In our case, we update our schema configuration as follows:
+
+```
+protein:
+  represented_as: node
+  preferred_id: [uniprot, entrez]
+  label_in_input: [uniprot_protein, entrez_protein]
+```
+
+This will "implicitly" create two subclasses of the `protein` class, which will
+inherit the entire hierarchy of the `protein` class. The two subclasses will be
+named using a combination of their preferred namespace and the name of the
+parent class, separated by a dot, i.e., `uniprot.protein` and `entrez.protein`.
+In this manner, they can be identified as proteins regardless of their sources
+by any queries for the generic `protein` class, while still carrying
+information about their namespace and avoiding identifier conflicts.
+
+.. Note::
+   The only change affected upon the code from the previous section is the
+   referral to the updated schema configuration file.
+
+Also note that, in the output, we now generate two separate files for the
+`protein` class, one for each subclass (with names in PascalCase). 
