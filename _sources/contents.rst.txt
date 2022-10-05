@@ -4,8 +4,7 @@
 
    index
    quickstart
-   tutorial_intro
-   tutorial_1
+   tutorial
    adapter
    usage
    submodule
