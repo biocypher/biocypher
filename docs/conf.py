@@ -48,7 +48,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",  # not for output but to remove warnings
-    "myst_parser",
+    "myst_parser",  # markdown support
     "sphinx_rtd_theme",
 ]
 

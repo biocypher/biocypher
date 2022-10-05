@@ -214,9 +214,10 @@ In this manner, they can be identified as proteins regardless of their sources
 by any queries for the generic `protein` class, while still carrying
 information about their namespace and avoiding identifier conflicts.
 
-.. Note::
-   The only change affected upon the code from the previous section is the
-   referral to the updated schema configuration file.
+```{note}
+The only change affected upon the code from the previous section is the
+referral to the updated schema configuration file.
+```
 
 Also note that, in the output, we now generate two separate files for the
 `protein` class, one for each subclass (with names in PascalCase). 
