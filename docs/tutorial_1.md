@@ -1,17 +1,3 @@
-# BioCypher tutorial
-The main purpose of BioCypher is to facilitate the pre-processing of biomedical
-data to save development time in the maintainance of curated knowledge graphs
-and to allow the simple and efficient creation of task-specific lightweight
-knowledge graphs in a user-friendly and biology-centric fashion.
-
-We are going to use a toy example to familiarise the user with the basic
-functionality of BioCypher. One central task of BioCypher is the harmonisation
-of dissimilar datasets describing the same entities. Thus, in this example, the
-input data - which in the real-world use case could come from any type of
-interface - is represented by simulated data containing some examples of
-differently formatted biomedical entities such as proteins and their
-interactions.
-
 ## Section 1: Basics - Adding data
 The code for this tutorial can be found at `tutorial/01_basic_import.py`. Data
 generation happens in `tutorial/data_generator.py`.
@@ -28,15 +14,18 @@ proteins = [Protein() for _ in range(10)]
 ```
 
 Each protein in our simulated data has a UniProt ID, a label
-("uniprot_protein"), and a dictionary of properties describing it. This is
-already very close to the input BioCypher expects: for nodes, we require a
-unique identifier, an input label (to allow mapping to the ontology, see the
-second step below), and a dictionary of further properties (which can be
-empty). These should be presented to the BioCypher driver in the form of a
-tuple. To achieve this representation, we can use a generator function that
-iterates through our simulated input data and, for each entity, forms the
-corresponding tuple. The use of a generator allows for efficient streaming of
-larger datasets where required.
+("uniprot_protein"), and a dictionary of properties describing it. This is -
+purely by coincidence - already very close to the input BioCypher expects (for
+nodes): 
+- a unique identifier 
+- an input label (to allow mapping to the ontology, see the second step below)
+- a dictionary of further properties (which can be empty)
+
+These should be presented to the BioCypher driver in the form of a tuple. To
+achieve this representation, we can use a generator function that iterates
+through our simulated input data and, for each entity, forms the corresponding
+tuple. The use of a generator allows for efficient streaming of larger datasets
+where required.
 
 ```
 def node_generator():
@@ -55,15 +44,19 @@ dictionary. How these entities are mapped to the ontological hierarchy
 underlying a BioCypher graph is determined by their mandatory labels, which
 connect the input data stream to the schema configuration.
 
+<!-- Figure for ID, label, prop of nodes and edges? -->
+
 ### Schema configuration
 How each BioCypher graph is structured is determined by the schema
 configuration YAML file that is given to the driver. This also serves to ground
-the entities in the graph in the biomedical realm by using an ontological
+the entities of the graph in the biomedical realm by using an ontological
 hierarchy. In this tutorial, we refer to the Biolink model as the general
 backbone of our ontological hierarchy. The basic premise of the schema
 configuration YAML file is that each component of the desired knowledge graph
-output should be configured here. In our case, since we only import proteins,
-we only require few lines of configuration:
+output should be configured here; if (and only if) an entity is represented in
+the schema configuration *and* is present in the input data stream, it will be
+part of our knowledge graph. In our case, since we only import proteins, we
+only require few lines of configuration:
 
 ```
 protein:                            # mapping
@@ -83,6 +76,8 @@ three indented values of the protein class. BioCypher does not strictly enforce
 the entities allowed in this class definition; in fact, we provide several
 methods of extending the existing ontological backbone *ad hoc* by providing
 custom inheritance or hybridising ontologies.
+
+<!-- TODO link to ontology manipulation -->
 
 The second line (`represented_as`) tells BioCypher in which way each entity
 should be represented in the graph; the only options are `node` and `edge`.
