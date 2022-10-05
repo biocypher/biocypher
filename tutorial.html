@@ -94,8 +94,9 @@ differently formatted biomedical entities such as proteins and their
 interactions.</p>
 <section id="section-1-adding-data">
 <h2>Section 1: Adding data<a class="headerlink" href="#section-1-adding-data" title="Permalink to this heading"></a></h2>
-<p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/01_basic_import.py</span></code>. Data
-generation happens in <code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
+<p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/01_basic_import.py</span></code>. The
+schema is at <code class="docutils literal notranslate"><span class="pre">tutorial/01_schema_config.yaml</span></code>. Data generation happens in
+<code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
 <section id="input-data-stream-adapter">
 <h3>Input data stream (“adapter”)<a class="headerlink" href="#input-data-stream-adapter" title="Permalink to this heading"></a></h3>
 <p>The basic operation of adding data to the knowledge graph requires two
@@ -160,15 +161,14 @@ ontological backbone; here we define the first class to be represented in the
 graph. In the configuration YAML, we represent entities - similar to the
 internal representation of Biolink - in lower sentence case (e.g., “small
 molecule”). Conversely, for class names, in file names, and property graph
-labels, which use PascalCase instead (e.g., “SmallMolecule”) to avoid issues
-with handling spaces. The transformation is done by BioCypher internally.
-Following this first line are three indented values of the protein class.
-BioCypher does not strictly enforce the entities allowed in this class
-definition; in fact, we provide several methods of extending the existing
-ontological backbone <em>ad hoc</em> by providing custom inheritance or hybridising
-ontologies. However, every entity should at some point be connected to the
-underlying ontology, otherwise the multiple hierarchical labels will not be
-populated.</p>
+labels, we use PascalCase instead (e.g., “SmallMolecule”) to avoid issues with
+handling spaces. The transformation is done by BioCypher internally. BioCypher
+does not strictly enforce the entities allowed in this class definition; in
+fact, we provide several methods of extending the existing ontological backbone
+<em>ad hoc</em> by providing custom inheritance or hybridising ontologies. However,
+every entity should at some point be connected to the underlying ontology,
+otherwise the multiple hierarchical labels will not be populated. Following
+this first line are three indented values of the protein class.</p>
 <!-- TODO link to ontology manipulation -->
 <p>The second line (<code class="docutils literal notranslate"><span class="pre">represented_as</span></code>) tells BioCypher in which way each entity
 should be represented in the graph; the only options are <code class="docutils literal notranslate"><span class="pre">node</span></code> and <code class="docutils literal notranslate"><span class="pre">edge</span></code>.
@@ -237,8 +237,9 @@ files on disk, so no data need to be copied around.</p>
 <section id="section-2-merging-data">
 <h2>Section 2: Merging data<a class="headerlink" href="#section-2-merging-data" title="Permalink to this heading"></a></h2>
 <p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/02_merge.py</span></code> and
-<code class="docutils literal notranslate"><span class="pre">tutorial/03_implicit_subclass.py</span></code>. Data generation happens in
-<code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">tutorial/03_implicit_subclass.py</span></code>. Schema files are at
+<code class="docutils literal notranslate"><span class="pre">tutorial/02_schema_config.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">tutorial/03_schema_config.yaml</span></code>. Data
+generation happens in <code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
 <section id="plain-merge">
 <h3>Plain merge<a class="headerlink" href="#plain-merge" title="Permalink to this heading"></a></h3>
 <p>Using the workflow described above with minor changes, we can merge data from
@@ -253,14 +254,19 @@ configuration:</p>
 <span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
 </div>
-<p>However, we are generating our <code class="docutils literal notranslate"><span class="pre">entrez</span></code> proteins as having entrez IDs, which
-could result in problems in querying. This issue could be resolved by mapping
-the entrez IDs to uniprot IDs, but we will instead use the opportunity to
-demonstrate how to merge data from different sources into the same ontological
-class using <em>ad hoc</em> subclasses.</p>
+<p>This again creates a single output file, now for both protein types, including
+both input streams, and the graph can be created as before using the command
+line call created by BioCypher. However, we are generating our <code class="docutils literal notranslate"><span class="pre">entrez</span></code>
+proteins as having entrez IDs, which could result in problems in querying.
+Additionally, a strict import mode including regex pattern matching of
+identifiers will fail at this point due to the difference in pattern of UniProt
+vs. Enrez IDs. This issue could be resolved by mapping the Entrez IDs to
+UniProt IDs, but we will instead use the opportunity to demonstrate how to
+merge data from different sources into the same ontological class using <em>ad
+hoc</em> subclasses.</p>
 </section>
 <section id="ad-hoc-subclassing">
-<h3>Ad hoc subclassing<a class="headerlink" href="#ad-hoc-subclassing" title="Permalink to this heading"></a></h3>
+<h3><em>Ad hoc</em> subclassing<a class="headerlink" href="#ad-hoc-subclassing" title="Permalink to this heading"></a></h3>
 <p>In the previous section, we saw how to merge data from different sources into
 the same ontological class. However, we did not resolve the issue of the
 <code class="docutils literal notranslate"><span class="pre">entrez</span></code> proteins living in a different namespace than the <code class="docutils literal notranslate"><span class="pre">uniprot</span></code> proteins,
