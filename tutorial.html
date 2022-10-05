@@ -102,7 +102,7 @@ generation happens in <code class="docutils literal notranslate"><span class="pr
 components: an input stream of data (which we call adapter) and a configuration
 for the resulting desired output (the schema configuration). The former will be
 simulated by calling the <code class="docutils literal notranslate"><span class="pre">Protein</span></code> class of our data generator 10 times.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">Protein</span>
+<div class="python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">Protein</span>
 <span class="n">proteins</span> <span class="o">=</span> <span class="p">[</span><span class="n">Protein</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 </pre></div>
 </div>
@@ -119,7 +119,7 @@ achieve this representation, we can use a generator function that iterates
 through our simulated input data and, for each entity, forms the corresponding
 tuple. The use of a generator allows for efficient streaming of larger datasets
 where required.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_generator</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_generator</span><span class="p">():</span>
     <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
         <span class="k">yield</span> <span class="p">(</span><span class="n">protein</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">protein</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">protein</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
 </pre></div>
@@ -148,12 +148,6 @@ output should be configured here; if (and only if) an entity is represented in
 the schema configuration <em>and</em> is present in the input data stream, it will be
 part of our knowledge graph. In our case, since we only import proteins, we
 only require few lines of configuration:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">protein</span><span class="p">:</span>                            <span class="c1"># mapping</span>
-  <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>              <span class="c1"># schema configuration</span>
-  <span class="n">preferred_id</span><span class="p">:</span> <span class="n">uniprot</span>             <span class="c1"># uniqueness</span>
-  <span class="n">label_in_input</span><span class="p">:</span> <span class="n">uniprot_protein</span>   <span class="c1"># connection to input stream</span>
-</pre></div>
-</div>
 <p>The first line (<code class="docutils literal notranslate"><span class="pre">protein</span></code>) identifies our entity and connects to the
 ontological backbone (we define a class to be represented in the graph). In the
 configuration YAML, we represent entities - similar to the internal
@@ -202,14 +196,6 @@ instance, we will in this example use the offline mode of BioCypher, which does
 not require setting up a graph database instance. The following code will use
 the data stream and configuration set up above to write the files for knowledge
 graph creation:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">biocypher</span>
-<span class="n">driver</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span>
-    <span class="n">offline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">user_schema_config_path</span><span class="o">=</span><span class="s2">&quot;tutorial/01_schema_config.yaml&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">driver</span><span class="o">.</span><span class="n">write_nodes</span><span class="p">(</span><span class="n">node_generator</span><span class="p">())</span>
-</pre></div>
-</div>
 <p>We pass our configuration file at driver instantiation, and we pass the data
 stream to the <code class="docutils literal notranslate"><span class="pre">write_nodes</span></code> function. The driver will then create the graph and
 write it to the output directory, which is set to <code class="docutils literal notranslate"><span class="pre">biocypher-out/</span></code> by default,
@@ -245,12 +231,6 @@ subcategories, we can simply add the new input stream to the existing one and
 add the new label to the schema configuration (the new label being
 <code class="docutils literal notranslate"><span class="pre">entrez_protein</span></code>). In this case, we would add the following to the schema
 configuration:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">protein</span><span class="p">:</span>
-  <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>
-  <span class="n">preferred_id</span><span class="p">:</span> <span class="n">uniprot</span>
-  <span class="n">label_in_input</span><span class="p">:</span> <span class="p">[</span><span class="n">uniprot_protein</span><span class="p">,</span> <span class="n">entrez_protein</span><span class="p">]</span>
-</pre></div>
-</div>
 <p>However, we are generating our <code class="docutils literal notranslate"><span class="pre">entrez</span></code> proteins as having entrez IDs, which
 could result in problems in querying. This issue could be resolved by mapping
 the entrez IDs to uniprot IDs, but we will instead use the opportunity to
@@ -269,10 +249,10 @@ one-to-one mapping between different data sources. Thus, if we so desire, we
 can merge datasets into the same ontological class by creating <em>ad hoc</em>
 subclasses implicitly through BioCypher, by providing multiple preferred
 identifiers. In our case, we update our schema configuration as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">protein</span><span class="p">:</span>
-  <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>
-  <span class="n">preferred_id</span><span class="p">:</span> <span class="p">[</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">entrez</span><span class="p">]</span>
-  <span class="n">label_in_input</span><span class="p">:</span> <span class="p">[</span><span class="n">uniprot_protein</span><span class="p">,</span> <span class="n">entrez_protein</span><span class="p">]</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This will “implicitly” create two subclasses of the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class, which will
