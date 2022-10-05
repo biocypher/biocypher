@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BioCypher tutorial &mdash; BioCypher  documentation</title>
+  <title>Section 1: Basics - Adding data &mdash; BioCypher  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="The Host-BioCypher Adapter" href="adapter.html" />
-    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
+    <link rel="prev" title="BioCypher Tutorial" href="tutorial_intro.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,8 +45,12 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#section-1-basics-adding-data">Section 1: Basics - Adding data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_intro.html">BioCypher Tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Section 1: Basics - Adding data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#input-data-stream-adapter">Input data stream (“adapter”)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#schema-configuration">Schema configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-the-graph-using-the-biocypher-driver">Creating the graph (using the BioCypher driver)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#importing-data-into-neo4j">Importing data into Neo4j</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="adapter.html">The Host-BioCypher Adapter</a></li>
@@ -68,9 +72,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="contents.html" class="icon icon-home"></a> &raquo;</li>
-      <li>BioCypher tutorial</li>
+      <li>Section 1: Basics - Adding data</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/tutorial.md.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/tutorial_1.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -78,25 +82,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="biocypher-tutorial">
-<h1>BioCypher tutorial<a class="headerlink" href="#biocypher-tutorial" title="Permalink to this heading"></a></h1>
-<p>The main purpose of BioCypher is to facilitate the pre-processing of biomedical
-data to save development time in the maintainance of curated knowledge graphs
-and to allow the simple and efficient creation of task-specific lightweight
-knowledge graphs in a user-friendly and biology-centric fashion.</p>
-<p>We are going to use a toy example to familiarise the user with the basic
-functionality of BioCypher. One central task of BioCypher is the harmonisation
-of dissimilar datasets describing the same entities. Thus, in this example, the
-input data - which in the real-world use case could come from any type of
-interface - is represented by simulated data containing some examples of
-differently formatted biomedical entities such as proteins and their
-interactions.</p>
-<section id="section-1-basics-adding-data">
-<h2>Section 1: Basics - Adding data<a class="headerlink" href="#section-1-basics-adding-data" title="Permalink to this heading"></a></h2>
+  <section id="section-1-basics-adding-data">
+<h1>Section 1: Basics - Adding data<a class="headerlink" href="#section-1-basics-adding-data" title="Permalink to this heading"></a></h1>
 <p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/01_basic_import.py</span></code>. Data
 generation happens in <code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
 <section id="input-data-stream-adapter">
-<h3>Input data stream (“adapter”)<a class="headerlink" href="#input-data-stream-adapter" title="Permalink to this heading"></a></h3>
+<h2>Input data stream (“adapter”)<a class="headerlink" href="#input-data-stream-adapter" title="Permalink to this heading"></a></h2>
 <p>The basic operation of adding data to the knowledge graph requires two
 components: an input stream of data (which we call adapter) and a configuration
 for the resulting desired output (the schema configuration). The former will be
@@ -106,15 +97,19 @@ simulated by calling the <code class="docutils literal notranslate"><span class=
 </pre></div>
 </div>
 <p>Each protein in our simulated data has a UniProt ID, a label
-(“uniprot_protein”), and a dictionary of properties describing it. This is
-already very close to the input BioCypher expects: for nodes, we require a
-unique identifier, an input label (to allow mapping to the ontology, see the
-second step below), and a dictionary of further properties (which can be
-empty). These should be presented to the BioCypher driver in the form of a
-tuple. To achieve this representation, we can use a generator function that
-iterates through our simulated input data and, for each entity, forms the
-corresponding tuple. The use of a generator allows for efficient streaming of
-larger datasets where required.</p>
+(“uniprot_protein”), and a dictionary of properties describing it. This is -
+purely by coincidence - already very close to the input BioCypher expects (for
+nodes):</p>
+<ul class="simple">
+<li><p>a unique identifier</p></li>
+<li><p>an input label (to allow mapping to the ontology, see the second step below)</p></li>
+<li><p>a dictionary of further properties (which can be empty)</p></li>
+</ul>
+<p>These should be presented to the BioCypher driver in the form of a tuple. To
+achieve this representation, we can use a generator function that iterates
+through our simulated input data and, for each entity, forms the corresponding
+tuple. The use of a generator allows for efficient streaming of larger datasets
+where required.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_generator</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
             <span class="k">yield</span> <span class="p">(</span><span class="n">protein</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">protein</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">protein</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
@@ -130,17 +125,20 @@ mandatory IDs for source and target, a mandatory label, and a property
 dictionary. How these entities are mapped to the ontological hierarchy
 underlying a BioCypher graph is determined by their mandatory labels, which
 connect the input data stream to the schema configuration.</p>
+<!-- Figure for ID, label, prop of nodes and edges? -->
 </section>
 <section id="schema-configuration">
-<h3>Schema configuration<a class="headerlink" href="#schema-configuration" title="Permalink to this heading"></a></h3>
+<h2>Schema configuration<a class="headerlink" href="#schema-configuration" title="Permalink to this heading"></a></h2>
 <p>How each BioCypher graph is structured is determined by the schema
 configuration YAML file that is given to the driver. This also serves to ground
-the entities in the graph in the biomedical realm by using an ontological
+the entities of the graph in the biomedical realm by using an ontological
 hierarchy. In this tutorial, we refer to the Biolink model as the general
 backbone of our ontological hierarchy. The basic premise of the schema
 configuration YAML file is that each component of the desired knowledge graph
-output should be configured here. In our case, since we only import proteins,
-we only require few lines of configuration:</p>
+output should be configured here; if (and only if) an entity is represented in
+the schema configuration <em>and</em> is present in the input data stream, it will be
+part of our knowledge graph. In our case, since we only import proteins, we
+only require few lines of configuration:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">protein</span><span class="p">:</span>                            <span class="c1"># mapping</span>
   <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>              <span class="c1"># schema configuration</span>
   <span class="n">preferred_id</span><span class="p">:</span> <span class="n">uniprot</span>             <span class="c1"># uniqueness</span>
@@ -158,6 +156,7 @@ three indented values of the protein class. BioCypher does not strictly enforce
 the entities allowed in this class definition; in fact, we provide several
 methods of extending the existing ontological backbone <em>ad hoc</em> by providing
 custom inheritance or hybridising ontologies.</p>
+<!-- TODO link to ontology manipulation -->
 <p>The second line (<code class="docutils literal notranslate"><span class="pre">represented_as</span></code>) tells BioCypher in which way each entity
 should be represented in the graph; the only options are <code class="docutils literal notranslate"><span class="pre">node</span></code> and <code class="docutils literal notranslate"><span class="pre">edge</span></code>.
 Representation as an edge is only possible when source and target IDs are
@@ -184,7 +183,7 @@ do not carry this label are ignored as long as they are not in the schema
 configuration.</p>
 </section>
 <section id="creating-the-graph-using-the-biocypher-driver">
-<h3>Creating the graph (using the BioCypher driver)<a class="headerlink" href="#creating-the-graph-using-the-biocypher-driver" title="Permalink to this heading"></a></h3>
+<h2>Creating the graph (using the BioCypher driver)<a class="headerlink" href="#creating-the-graph-using-the-biocypher-driver" title="Permalink to this heading"></a></h2>
 <p>All that remains to be done now is to instantiate the BioCypher driver (as the
 main means of communicating with BioCypher) and call the function to create the
 graph. While this can be done “online”, i.e., by connecting to a running Neo4j
@@ -206,7 +205,7 @@ write it to the output directory, which is set to <code class="docutils literal 
 creating a subfolder with the current datetime for each driver instance.</p>
 </section>
 <section id="importing-data-into-neo4j">
-<h3>Importing data into Neo4j<a class="headerlink" href="#importing-data-into-neo4j" title="Permalink to this heading"></a></h3>
+<h2>Importing data into Neo4j<a class="headerlink" href="#importing-data-into-neo4j" title="Permalink to this heading"></a></h2>
 <p>The graph can now be imported into Neo4j using the <code class="docutils literal notranslate"><span class="pre">neo4j-admin</span></code> command line
 tool. This is not necessary if the graph is created in online mode. For
 convenience, BioCypher provides the command line call required to import the
@@ -222,13 +221,12 @@ aggregates this information into one command, detailing the location of all
 files on disk, so no data need to be copied around.</p>
 </section>
 </section>
-</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial_intro.html" class="btn btn-neutral float-left" title="BioCypher Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="adapter.html" class="btn btn-neutral float-right" title="The Host-BioCypher Adapter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Introduction &mdash; BioCypher  documentation</title>
+  <title>BioCypher Tutorial &mdash; BioCypher  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Quickstart" href="quickstart.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="contents.html" /> 
+    <link rel="next" title="Section 1: Basics - Adding data" href="tutorial_1.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,9 +43,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_intro.html">BioCypher Tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_1.html">Section 1: Basics - Adding data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapter.html">The Host-BioCypher Adapter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
@@ -66,9 +66,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="contents.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Introduction</li>
+      <li>BioCypher Tutorial</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/tutorial_intro.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -76,41 +76,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <img alt="_images/biocypher-open-graph.png" src="_images/biocypher-open-graph.png" />
-<section id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h1>
-<p>BioCypher (<a class="reference external" href="https://github.com/saezlab/BioCypher">GitHub</a>) is designed
-to serve as guideline and translation mechanism for both the creation of
-biomedical property graph databases from primary data as well as for the
-seamless integration, optimisation, and querying of these databases. The
-purpose is to combine the computational power of graph databases with
-the search for answers of our most pressing biological questions and
-facilitate interfacing with cutting edge developments in the areas of
-causal reasoning, representation learning, and natural language
-processing, all of which depend on having a consistent descriptive
-vocabulary. To achieve meaningful automatic representations in the
-biomedical language space, we include the <a class="reference external" href="https://biolink.github.io/biolink-model/">Biolink model</a> as underlying hierarchical
-ontology, supplying identification, filtering, and mapping capabilities.
-We are also keeping an open mind about adding alternative ontological
-systems using an opt-in philosophy. Side objectives are the creation of
-human-readable graph syntax and facilitating ultra-rapid graph creation
-through the Neo4j admin-import feature.</p>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>BioCypher is currently in prototype state; we are working on a
-full-featured implementation for the migration of OmniPath at the
-moment. Functionality regarding the translation between different
-database formats and identifiers therefore is rudimentary or
-non-existent as of now.</p>
-</div>
+  <section id="biocypher-tutorial">
+<h1>BioCypher Tutorial<a class="headerlink" href="#biocypher-tutorial" title="Permalink to this heading"></a></h1>
+<p>The main purpose of BioCypher is to facilitate the pre-processing of biomedical
+data to save development time in the maintainance of curated knowledge graphs
+and to allow the simple and efficient creation of task-specific lightweight
+knowledge graphs in a user-friendly and biology-centric fashion.</p>
+<p>We are going to use a toy example to familiarise the user with the basic
+functionality of BioCypher. One central task of BioCypher is the harmonisation
+of dissimilar datasets describing the same entities. Thus, in this example, the
+input data - which in the real-world use case could come from any type of
+interface - are represented by simulated data containing some examples of
+differently formatted biomedical entities such as proteins and their
+interactions.</p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="contents.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="quickstart.html" class="btn btn-neutral float-right" title="Quickstart" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial_1.html" class="btn btn-neutral float-right" title="Section 1: Basics - Adding data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
