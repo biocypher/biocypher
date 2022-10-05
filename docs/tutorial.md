@@ -13,8 +13,9 @@ differently formatted biomedical entities such as proteins and their
 interactions.
 
 ## Section 1: Adding data
-The code for this tutorial can be found at `tutorial/01_basic_import.py`. Data
-generation happens in `tutorial/data_generator.py`.
+The code for this tutorial can be found at `tutorial/01_basic_import.py`. The
+schema is at `tutorial/01_schema_config.yaml`. Data generation happens in
+`tutorial/data_generator.py`.
 
 ### Input data stream ("adapter")
 The basic operation of adding data to the knowledge graph requires two
@@ -84,15 +85,14 @@ ontological backbone; here we define the first class to be represented in the
 graph. In the configuration YAML, we represent entities - similar to the
 internal representation of Biolink - in lower sentence case (e.g., "small
 molecule"). Conversely, for class names, in file names, and property graph
-labels, which use PascalCase instead (e.g., "SmallMolecule") to avoid issues
-with handling spaces. The transformation is done by BioCypher internally.
-Following this first line are three indented values of the protein class.
-BioCypher does not strictly enforce the entities allowed in this class
-definition; in fact, we provide several methods of extending the existing
-ontological backbone *ad hoc* by providing custom inheritance or hybridising
-ontologies. However, every entity should at some point be connected to the
-underlying ontology, otherwise the multiple hierarchical labels will not be
-populated.
+labels, we use PascalCase instead (e.g., "SmallMolecule") to avoid issues with
+handling spaces. The transformation is done by BioCypher internally. BioCypher
+does not strictly enforce the entities allowed in this class definition; in
+fact, we provide several methods of extending the existing ontological backbone
+*ad hoc* by providing custom inheritance or hybridising ontologies. However,
+every entity should at some point be connected to the underlying ontology,
+otherwise the multiple hierarchical labels will not be populated. Following
+this first line are three indented values of the protein class.
 
 <!-- TODO link to ontology manipulation -->
 
@@ -165,8 +165,9 @@ files on disk, so no data need to be copied around.
 
 ## Section 2: Merging data
 The code for this tutorial can be found at `tutorial/02_merge.py` and
-`tutorial/03_implicit_subclass.py`. Data generation happens in
-`tutorial/data_generator.py`.
+`tutorial/03_implicit_subclass.py`. Schema files are at
+`tutorial/02_schema_config.yaml` and `tutorial/03_schema_config.yaml`. Data
+generation happens in `tutorial/data_generator.py`.
 
 ### Plain merge
 Using the workflow described above with minor changes, we can merge data from
@@ -183,13 +184,18 @@ protein:
   label_in_input: [uniprot_protein, entrez_protein]
 ```
 
-However, we are generating our `entrez` proteins as having entrez IDs, which 
-could result in problems in querying. This issue could be resolved by mapping
-the entrez IDs to uniprot IDs, but we will instead use the opportunity to
-demonstrate how to merge data from different sources into the same ontological
-class using *ad hoc* subclasses.
+This again creates a single output file, now for both protein types, including
+both input streams, and the graph can be created as before using the command
+line call created by BioCypher. However, we are generating our `entrez`
+proteins as having entrez IDs, which could result in problems in querying.
+Additionally, a strict import mode including regex pattern matching of
+identifiers will fail at this point due to the difference in pattern of UniProt
+vs. Enrez IDs. This issue could be resolved by mapping the Entrez IDs to
+UniProt IDs, but we will instead use the opportunity to demonstrate how to
+merge data from different sources into the same ontological class using *ad
+hoc* subclasses.
 
-### Ad hoc subclassing
+### *Ad hoc* subclassing
 In the previous section, we saw how to merge data from different sources into
 the same ontological class. However, we did not resolve the issue of the
 `entrez` proteins living in a different namespace than the `uniprot` proteins,
