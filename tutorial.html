@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#section-1-basics-adding-data">Section 1: Basics - Adding data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#section-2-merging-data">Section 2: Merging data</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="adapter.html">The Host-BioCypher Adapter</a></li>
@@ -119,8 +120,8 @@ through our simulated input data and, for each entity, forms the corresponding
 tuple. The use of a generator allows for efficient streaming of larger datasets
 where required.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_generator</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="p">(</span><span class="n">protein</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">protein</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">protein</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">protein</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">protein</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">protein</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The concept of an adapter can become arbitrarily complex and involve
@@ -163,7 +164,9 @@ transformation is done by BioCypher internally. Following this first line are
 three indented values of the protein class. BioCypher does not strictly enforce
 the entities allowed in this class definition; in fact, we provide several
 methods of extending the existing ontological backbone <em>ad hoc</em> by providing
-custom inheritance or hybridising ontologies.</p>
+custom inheritance or hybridising ontologies. However, every entity should at
+some point be connected to the underlying ontology, otherwise the multiple
+hierarchical labels will not be populated.</p>
 <!-- TODO link to ontology manipulation -->
 <p>The second line (<code class="docutils literal notranslate"><span class="pre">represented_as</span></code>) tells BioCypher in which way each entity
 should be represented in the graph; the only options are <code class="docutils literal notranslate"><span class="pre">node</span></code> and <code class="docutils literal notranslate"><span class="pre">edge</span></code>.
@@ -227,6 +230,63 @@ Neo4j (or copied into the Neo4j terminal). Since BioCypher creates separate
 header and data files for each entity type, the import call conveniently
 aggregates this information into one command, detailing the location of all
 files on disk, so no data need to be copied around.</p>
+</section>
+</section>
+<section id="section-2-merging-data">
+<h2>Section 2: Merging data<a class="headerlink" href="#section-2-merging-data" title="Permalink to this heading"></a></h2>
+<p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/02_merge.py</span></code> and
+<code class="docutils literal notranslate"><span class="pre">tutorial/03_implicit_subclass.py</span></code>. Data generation happens in
+<code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
+<section id="plain-merge">
+<h3>Plain merge<a class="headerlink" href="#plain-merge" title="Permalink to this heading"></a></h3>
+<p>Using the workflow described above with minor changes, we can merge data from
+different input streams. If we do not want to introduce additional ontological
+subcategories, we can simply add the new input stream to the existing one and
+add the new label to the schema configuration (the new label being
+<code class="docutils literal notranslate"><span class="pre">entrez_protein</span></code>). In this case, we would add the following to the schema
+configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">protein</span><span class="p">:</span>
+  <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>
+  <span class="n">preferred_id</span><span class="p">:</span> <span class="n">uniprot</span>
+  <span class="n">label_in_input</span><span class="p">:</span> <span class="p">[</span><span class="n">uniprot_protein</span><span class="p">,</span> <span class="n">entrez_protein</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>However, we are generating our <code class="docutils literal notranslate"><span class="pre">entrez</span></code> proteins as having entrez IDs, which
+could result in problems in querying. This issue could be resolved by mapping
+the entrez IDs to uniprot IDs, but we will instead use the opportunity to
+demonstrate how to merge data from different sources into the same ontological
+class using <em>ad hoc</em> subclasses.</p>
+</section>
+<section id="ad-hoc-subclassing">
+<h3>Ad hoc subclassing<a class="headerlink" href="#ad-hoc-subclassing" title="Permalink to this heading"></a></h3>
+<p>In the previous section, we saw how to merge data from different sources into
+the same ontological class. However, we did not resolve the issue of the
+<code class="docutils literal notranslate"><span class="pre">entrez</span></code> proteins living in a different namespace than the <code class="docutils literal notranslate"><span class="pre">uniprot</span></code> proteins,
+which could result in problems in querying. In proteins, it would probably be
+more appropriate to solve this problem using identifier mapping, but in other
+categories, e.g., pathways, this may not be possible because of a lack of
+one-to-one mapping between different data sources. Thus, if we so desire, we
+can merge datasets into the same ontological class by creating <em>ad hoc</em>
+subclasses implicitly through BioCypher, by providing multiple preferred
+identifiers. In our case, we update our schema configuration as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">protein</span><span class="p">:</span>
+  <span class="n">represented_as</span><span class="p">:</span> <span class="n">node</span>
+  <span class="n">preferred_id</span><span class="p">:</span> <span class="p">[</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">entrez</span><span class="p">]</span>
+  <span class="n">label_in_input</span><span class="p">:</span> <span class="p">[</span><span class="n">uniprot_protein</span><span class="p">,</span> <span class="n">entrez_protein</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This will “implicitly” create two subclasses of the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class, which will
+inherit the entire hierarchy of the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class. The two subclasses will be
+named using a combination of their preferred namespace and the name of the
+parent class, separated by a dot, i.e., <code class="docutils literal notranslate"><span class="pre">uniprot.protein</span></code> and <code class="docutils literal notranslate"><span class="pre">entrez.protein</span></code>.
+In this manner, they can be identified as proteins regardless of their sources
+by any queries for the generic <code class="docutils literal notranslate"><span class="pre">protein</span></code> class, while still carrying
+information about their namespace and avoiding identifier conflicts.</p>
+<p>.. Note::
+The only change affected upon the code from the previous section is the
+referral to the updated schema configuration file.</p>
+<p>Also note that, in the output, we now generate two separate files for the
+<code class="docutils literal notranslate"><span class="pre">protein</span></code> class, one for each subclass (with names in PascalCase).</p>
 </section>
 </section>
 </section>
