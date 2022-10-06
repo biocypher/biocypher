@@ -79,8 +79,10 @@
   <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
 <p>BioCypher is in development; if you want to use it, please clone the repository
-and install the dependencies using Poetry. We will provide a pip package in the
-future.</p>
+and install the dependencies using Poetry. If you don’t have Poetry installed,
+you can get instructions for your system
+<a class="reference external" href="https://python-poetry.org/docs/#installation">here</a>. We will provide a pip
+package in the future.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Execute in bash</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/saezlab/BioCypher
@@ -89,6 +91,11 @@ poetry install
 </pre></div>
 </div>
 </div>
+<p>Poetry creates a virtual environment for you (starting with <code class="docutils literal notranslate"><span class="pre">biocypher-</span></code>;
+alternatively you can name it yourself) and installs all dependencies. You can
+activate the virtual environment by running <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">shell</span></code> and then run the
+tests by running <code class="docutils literal notranslate"><span class="pre">pytest</span></code> in the root directory of the repository. Note that
+the <code class="docutils literal notranslate"><span class="pre">driver</span></code> tests require a running Neo4j instance with a DB named <code class="docutils literal notranslate"><span class="pre">test</span></code>.</p>
 </section>
 
 
