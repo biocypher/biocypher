@@ -227,11 +227,12 @@ def test_virtual_leaves_inherit_is_a(version_node):
     snrna = version_node.leaves.get("intact.snRNA sequence")
 
     assert "is_a" in snrna.keys()
-    assert snrna["is_a"] == "nucleic acid entity"
+    assert snrna["is_a"] == ["snRNA sequence", "nucleic acid entity"]
 
     dsdna = version_node.leaves.get("intact.dsDNA sequence")
 
     assert dsdna["is_a"] == [
+        "dsDNA sequence",
         "DNA sequence",
         "nucleic acid entity",
     ]
