@@ -4,7 +4,8 @@ and install the dependencies using Poetry. We will provide a pip package in the
 future.
 
 ```{code-block} bash
-$ git clone https://github.com/saezlab/BioCypher
-$ cd BioCypher
-$ poetry install
+:caption: Execute in bash
+git clone https://github.com/saezlab/BioCypher
+cd BioCypher
+poetry install
 ```
