@@ -178,9 +178,6 @@ add the new label to the schema configuration (the new label being
 configuration:
 
 ```{code-block} yaml
----
-emphasize-lines: 4
----
 protein:
   represented_as: node
   preferred_id: uniprot
@@ -211,9 +208,6 @@ subclasses implicitly through BioCypher, by providing multiple preferred
 identifiers. In our case, we update our schema configuration as follows:
 
 ```{code-block} yaml
----
-emphasize-lines: 3
----
 protein:
   represented_as: node
   preferred_id: [uniprot, entrez]
@@ -245,12 +239,12 @@ files are at `tutorial/04_schema_config.yaml`. Data generation happens in
 
 While ID and label are mandatory components of our knowledge graph, properties
 are optional and can include different types of information on the entities. In
-source data, properties are represented in arbitrary ways, designations rarely
-overlap even for the most trivial of cases (spelling differences, formatting,
-etc). Additionally, some data sources contain a large wealth of information
-about entities, most of which may not be needed for the given task. Thus, it is
-often desirable to filter out properties that are not needed to save time, disk
-space, and memory.
+source data, properties are represented in arbitrary ways, and designations
+rarely overlap even for the most trivial of cases (spelling differences,
+formatting, etc). Additionally, some data sources contain a large wealth of
+information about entities, most of which may not be needed for the given task.
+Thus, it is often desirable to filter out properties that are not needed to
+save time, disk space, and memory.
 
 ```{note}
 Maintaining consistent properties per entity type is particularly important 
@@ -280,9 +274,6 @@ If we want to include the mass value on all proteins, we can add the following
 to our schema configuration:
 
 ```{code-block} yaml
----
-emphasize-lines: 5, 6, 7, 8, 9
----
 protein:
   represented_as: node
   preferred_id: [uniprot, entrez]
