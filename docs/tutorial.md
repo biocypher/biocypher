@@ -178,6 +178,9 @@ add the new label to the schema configuration (the new label being
 configuration:
 
 ```{code-block} yaml
+---
+emphasize-lines: 4
+---
 protein:
   represented_as: node
   preferred_id: uniprot
@@ -208,6 +211,9 @@ subclasses implicitly through BioCypher, by providing multiple preferred
 identifiers. In our case, we update our schema configuration as follows:
 
 ```{code-block} yaml
+---
+emphasize-lines: 3
+---
 protein:
   represented_as: node
   preferred_id: [uniprot, entrez]
@@ -227,7 +233,7 @@ The only change affected upon the code from the previous section is the
 referral to the updated schema configuration file.
 ```
 
-```{note}
+```{hint}
 In the output, we now generate two separate files for the `protein` class, one 
 for each subclass (with names in PascalCase). 
 ```
@@ -274,6 +280,9 @@ If we want to include the mass value on all proteins, we can add the following
 to our schema configuration:
 
 ```{code-block} yaml
+---
+emphasize-lines: 5, 6, 7, 8, 9
+---
 protein:
   represented_as: node
   preferred_id: [uniprot, entrez]
