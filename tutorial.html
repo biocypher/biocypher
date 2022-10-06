@@ -306,9 +306,12 @@ for each subclass (with names in PascalCase).</p>
 </section>
 <section id="section-3-handling-properties">
 <h2>Section 3: Handling properties<a class="headerlink" href="#section-3-handling-properties" title="Permalink to this heading"></a></h2>
+<div class="note admonition">
+<p class="admonition-title">Tutorial files</p>
 <p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/04_properties.py</span></code>. Schema
 files are at <code class="docutils literal notranslate"><span class="pre">tutorial/04_schema_config.yaml</span></code>. Data generation happens in
 <code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
+</div>
 <p>While ID and label are mandatory components of our knowledge graph, properties
 are optional and can include different types of information on the entities. In
 source data, properties are represented in arbitrary ways, and designations
@@ -368,6 +371,40 @@ remove the <code class="docutils literal notranslate"><span class="pre">mass</sp
 <p>BioCypher provides feedback about property conflicts; try running the code
 for this example (<code class="docutils literal notranslate"><span class="pre">04_properties.py</span></code>) with the schema configuration of the
 previous section (<code class="docutils literal notranslate"><span class="pre">03_schema_config.yaml</span></code>) and see what happens.</p>
+</div>
+</section>
+<section id="inheriting-properties">
+<h3>Inheriting properties<a class="headerlink" href="#inheriting-properties" title="Permalink to this heading"></a></h3>
+<div class="note admonition">
+<p class="admonition-title">Tutorial files</p>
+<p>The code for this tutorial can be found at
+<code class="docutils literal notranslate"><span class="pre">tutorial/05_property_inheritance.py</span></code>. Schema files are at
+<code class="docutils literal notranslate"><span class="pre">tutorial/05_schema_config.yaml</span></code>. Data generation happens in
+<code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
+</div>
+<p>Sometimes, explicit designation of properties requires a lot of maintenance
+work, particularly for classes with many properties. In these cases, it may be
+more convenient to inherit properties from a parent class. This is done by
+adding a <code class="docutils literal notranslate"><span class="pre">properties</span></code> key to a suitable parent class configuration, and then
+defining inheritance via the <code class="docutils literal notranslate"><span class="pre">is_a</span></code> key in the child class configuration and
+setting the <code class="docutils literal notranslate"><span class="pre">inherit_properties</span></code> key to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<p>Let’s say we have an additional <code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">isoform</span></code> class, which can reasonably
+inherit from <code class="docutils literal notranslate"><span class="pre">protein</span></code> and should carry the same properties as the parent. We
+can add the following to our schema configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein isoform</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"></span>
+<span class="w">  </span><span class="nt">inherit_properties</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot_isoform</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This allows maintenance of property lists for many classes at once.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We now create three separate data files, all of which are children of the
+<code class="docutils literal notranslate"><span class="pre">protein</span></code> class; two implicit children (<code class="docutils literal notranslate"><span class="pre">uniprot.protein</span></code> and <code class="docutils literal notranslate"><span class="pre">entrez.protein</span></code>)
+and one explicit child (<code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">isoform</span></code>).</p>
 </div>
 </section>
 </section>
