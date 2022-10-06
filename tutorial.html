@@ -44,6 +44,7 @@
               <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher Tutorial - Basics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#section-1-adding-data">Section 1: Adding data</a></li>
@@ -252,8 +253,8 @@ configuration:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
 <span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span><span class="w"></span>
-<span class="hll"><span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span><span class="w"></span>
-</span></pre></div>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span><span class="w"></span>
+</pre></div>
 </div>
 <p>This again creates a single output file, now for both protein types, including
 both input streams, and the graph can be created as before using the command
@@ -280,8 +281,8 @@ subclasses implicitly through BioCypher, by providing multiple preferred
 identifiers. In our case, we update our schema configuration as follows:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
-<span class="hll"><span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span><span class="w"></span>
-</span><span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This will “implicitly” create two subclasses of the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class, which will
@@ -310,12 +311,12 @@ files are at <code class="docutils literal notranslate"><span class="pre">tutori
 <code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
 <p>While ID and label are mandatory components of our knowledge graph, properties
 are optional and can include different types of information on the entities. In
-source data, properties are represented in arbitrary ways, designations rarely
-overlap even for the most trivial of cases (spelling differences, formatting,
-etc). Additionally, some data sources contain a large wealth of information
-about entities, most of which may not be needed for the given task. Thus, it is
-often desirable to filter out properties that are not needed to save time, disk
-space, and memory.</p>
+source data, properties are represented in arbitrary ways, and designations
+rarely overlap even for the most trivial of cases (spelling differences,
+formatting, etc). Additionally, some data sources contain a large wealth of
+information about entities, most of which may not be needed for the given task.
+Thus, it is often desirable to filter out properties that are not needed to
+save time, disk space, and memory.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Maintaining consistent properties per entity type is particularly important
@@ -345,12 +346,12 @@ to our schema configuration:</p>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
 <span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span><span class="w"></span>
 <span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="hll"><span class="w">  </span><span class="nt">properties</span><span class="p">:</span><span class="w"></span>
-</span><span class="hll"><span class="w">    </span><span class="nt">sequence</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
-</span><span class="hll"><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
-</span><span class="hll"><span class="w">    </span><span class="nt">taxon</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
-</span><span class="hll"><span class="w">    </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"></span>
-</span></pre></div>
+<span class="w">  </span><span class="nt">properties</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">sequence</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">taxon</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"></span>
+</pre></div>
 </div>
 <p>This will add the <code class="docutils literal notranslate"><span class="pre">mass</span></code> property to all proteins (in addition to the three we
 had before); if not encountered, the column will be empty. Implicit subclasses

@@ -3,6 +3,7 @@
    :caption: Table of Contents
 
    index
+   installation
    quickstart
    tutorial
    adapter
