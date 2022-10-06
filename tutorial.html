@@ -96,9 +96,12 @@ differently formatted biomedical entities such as proteins and their
 interactions.</p>
 <section id="section-1-adding-data">
 <h2>Section 1: Adding data<a class="headerlink" href="#section-1-adding-data" title="Permalink to this heading"></a></h2>
+<div class="note admonition">
+<p class="admonition-title">Tutorial files</p>
 <p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/01_basic_import.py</span></code>. The
 schema is at <code class="docutils literal notranslate"><span class="pre">tutorial/01_schema_config.yaml</span></code>. Data generation happens in
 <code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
+</div>
 <section id="input-data-stream-adapter">
 <h3>Input data stream (“adapter”)<a class="headerlink" href="#input-data-stream-adapter" title="Permalink to this heading"></a></h3>
 <p>The basic operation of adding data to the knowledge graph requires two
@@ -238,12 +241,14 @@ files on disk, so no data need to be copied around.</p>
 </section>
 <section id="section-2-merging-data">
 <h2>Section 2: Merging data<a class="headerlink" href="#section-2-merging-data" title="Permalink to this heading"></a></h2>
-<p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/02_merge.py</span></code> and
-<code class="docutils literal notranslate"><span class="pre">tutorial/03_implicit_subclass.py</span></code>. Schema files are at
-<code class="docutils literal notranslate"><span class="pre">tutorial/02_schema_config.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">tutorial/03_schema_config.yaml</span></code>. Data
-generation happens in <code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
 <section id="plain-merge">
 <h3>Plain merge<a class="headerlink" href="#plain-merge" title="Permalink to this heading"></a></h3>
+<div class="note admonition">
+<p class="admonition-title">Tutorial files</p>
+<p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/02_merge.py</span></code>.
+Schema files are at <code class="docutils literal notranslate"><span class="pre">tutorial/02_schema_config.yaml</span></code>. Data generation happens
+in <code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
+</div>
 <p>Using the workflow described above with minor changes, we can merge data from
 different input streams. If we do not want to introduce additional ontological
 subcategories, we can simply add the new input stream to the existing one and
@@ -269,6 +274,11 @@ hoc</em> subclasses.</p>
 </section>
 <section id="ad-hoc-subclassing">
 <h3><em>Ad hoc</em> subclassing<a class="headerlink" href="#ad-hoc-subclassing" title="Permalink to this heading"></a></h3>
+<div class="note admonition">
+<p class="admonition-title">Tutorial files</p>
+<p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/03_implicit_subclass.py</span></code>.
+Schema files are a<code class="docutils literal notranslate"> </code>tutorial/03_schema_config.yaml<code class="docutils literal notranslate"><span class="pre">.</span> <span class="pre">Data</span> <span class="pre">generation</span> <span class="pre">happens</span> <span class="pre">in</span> </code>tutorial/data_generator.py`.</p>
+</div>
 <p>In the previous section, we saw how to merge data from different sources into
 the same ontological class. However, we did not resolve the issue of the
 <code class="docutils literal notranslate"><span class="pre">entrez</span></code> proteins living in a different namespace than the <code class="docutils literal notranslate"><span class="pre">uniprot</span></code> proteins,
@@ -306,12 +316,6 @@ for each subclass (with names in PascalCase).</p>
 </section>
 <section id="section-3-handling-properties">
 <h2>Section 3: Handling properties<a class="headerlink" href="#section-3-handling-properties" title="Permalink to this heading"></a></h2>
-<div class="note admonition">
-<p class="admonition-title">Tutorial files</p>
-<p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/04_properties.py</span></code>. Schema
-files are at <code class="docutils literal notranslate"><span class="pre">tutorial/04_schema_config.yaml</span></code>. Data generation happens in
-<code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
-</div>
 <p>While ID and label are mandatory components of our knowledge graph, properties
 are optional and can include different types of information on the entities. In
 source data, properties are represented in arbitrary ways, and designations
@@ -332,6 +336,12 @@ some of the rows will lead to column misalignment and import failure. In
 way that is flexible and easy to maintain.</p>
 <section id="designated-properties">
 <h3>Designated properties<a class="headerlink" href="#designated-properties" title="Permalink to this heading"></a></h3>
+<div class="note admonition">
+<p class="admonition-title">Tutorial files</p>
+<p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/04_properties.py</span></code>. Schema
+files are at <code class="docutils literal notranslate"><span class="pre">tutorial/04_schema_config.yaml</span></code>. Data generation happens in
+<code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
+</div>
 <p>The simplest and most straightforward way to ensure that properties are
 consistent for each entity type is to designate them explicitly in the schema
 configuration. This is done by adding a <code class="docutils literal notranslate"><span class="pre">properties</span></code> key to the entity type
