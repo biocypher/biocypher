@@ -233,9 +233,12 @@ for each subclass (with names in PascalCase).
 ```
 
 ## Section 3: Handling properties
+```{admonition} Tutorial files
+:class: note
 The code for this tutorial can be found at `tutorial/04_properties.py`. Schema
 files are at `tutorial/04_schema_config.yaml`. Data generation happens in
 `tutorial/data_generator.py`.
+```
 
 While ID and label are mandatory components of our knowledge graph, properties
 are optional and can include different types of information on the entities. In
@@ -300,4 +303,41 @@ remove the `mass` key from the `properties` dictionary.
 BioCypher provides feedback about property conflicts; try running the code
 for this example (`04_properties.py`) with the schema configuration of the 
 previous section (`03_schema_config.yaml`) and see what happens.
+```
+
+### Inheriting properties
+```{admonition} Tutorial files
+:class: note
+The code for this tutorial can be found at
+`tutorial/05_property_inheritance.py`. Schema files are at
+`tutorial/05_schema_config.yaml`. Data generation happens in
+`tutorial/data_generator.py`.
+```
+
+Sometimes, explicit designation of properties requires a lot of maintenance
+work, particularly for classes with many properties. In these cases, it may be
+more convenient to inherit properties from a parent class. This is done by
+adding a `properties` key to a suitable parent class configuration, and then
+defining inheritance via the `is_a` key in the child class configuration and 
+setting the `inherit_properties` key to `true`.
+
+Let's say we have an additional `protein isoform` class, which can reasonably 
+inherit from `protein` and should carry the same properties as the parent. We
+can add the following to our schema configuration:
+
+```{code-block} yaml
+protein isoform:
+  is_a: protein
+  inherit_properties: true
+  represented_as: node
+  preferred_id: uniprot
+  label_in_input: uniprot_isoform
+```
+
+This allows maintenance of property lists for many classes at once.
+
+```{note}
+We now create three separate data files, all of which are children of the 
+`protein` class; two implicit children (`uniprot.protein` and `entrez.protein`)
+and one explicit child (`protein isoform`).
 ```

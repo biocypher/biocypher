@@ -81,6 +81,16 @@ class RandomPropertyProtein(Protein):
         return properties
 
 
+class RandomPropertyProteinIsoform(RandomPropertyProtein):
+    """
+    Generates instances of protein isoforms with random properties.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.label = "uniprot_isoform"
+
+
 class EntrezProtein(Protein):
     """
     Generates instances of proteins with Entrez IDs.

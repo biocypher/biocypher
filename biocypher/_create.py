@@ -561,11 +561,14 @@ class VersionNode:
             if not "is_a" in v:
                 continue
 
-            # "horizontal" inheritance: inherit properties from parent
+            # "vertical" inheritance: inherit properties from parent
             if v.get("inherit_properties", False):
 
                 # get direct ancestor
-                parent = v["is_a"][0]
+                if isinstance(v["is_a"], list):
+                    parent = v["is_a"][0]
+                else:
+                    parent = v["is_a"]
 
                 # update properties of child
                 if self.schema[parent].get("properties"):

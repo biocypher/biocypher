@@ -1,4 +1,8 @@
-from data_generator import EntrezProtein, RandomPropertyProtein
+from data_generator import (
+    EntrezProtein,
+    RandomPropertyProtein,
+    RandomPropertyProteinIsoform,
+)
 
 import biocypher
 
@@ -9,6 +13,7 @@ def main():
         p
         for sublist in zip(
             [RandomPropertyProtein() for _ in range(10)],
+            [RandomPropertyProteinIsoform() for _ in range(10)],
             [EntrezProtein() for _ in range(10)],
         )
         for p in sublist
@@ -23,8 +28,8 @@ def main():
     # Create BioCypher driver
     driver = biocypher.Driver(
         offline=True,
-        db_name="implicit_subclass",
-        user_schema_config_path="tutorial/04_schema_config.yaml",
+        db_name="property_inheritance",
+        user_schema_config_path="tutorial/05_schema_config.yaml",
     )
     # Run the import
     driver.write_nodes(node_generator())
