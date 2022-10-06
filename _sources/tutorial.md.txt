@@ -337,6 +337,12 @@ protein isoform:
 This allows maintenance of property lists for many classes at once.
 
 ```{note}
+Again, apart from adding the protein isoforms to the input stream, the code
+for this example is identical to the previous one except for the reference to
+the updated schema configuration.
+```
+
+```{hint}
 We now create three separate data files, all of which are children of the 
 `protein` class; two implicit children (`uniprot.protein` and `entrez.protein`)
 and one explicit child (`protein isoform`).
