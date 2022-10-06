@@ -18,7 +18,6 @@ def main():
         )
         for p in sublist
     ]
-    proteins = list(proteins)
 
     # Extract id, label, and property dictionary
     def node_generator():
@@ -27,8 +26,8 @@ def main():
 
     # Create BioCypher driver
     driver = biocypher.Driver(
-        offline=True,
-        db_name="property_inheritance",
+        offline=True,  # start without connecting to Neo4j instance
+        db_name="property_inheritance",  # name of database for import call
         user_schema_config_path="tutorial/05_schema_config.yaml",
     )
     # Run the import
