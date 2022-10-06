@@ -205,7 +205,7 @@ hoc* subclasses.
 ```{admonition} Tutorial files
 :class: note
 The code for this tutorial can be found at `tutorial/03_implicit_subclass.py`.
-Schema files are a` `tutorial/03_schema_config.yaml`. Data generation happens
+Schema files are at `tutorial/03_schema_config.yaml`. Data generation happens
 in `tutorial/data_generator.py`.
 ```
 
