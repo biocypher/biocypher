@@ -104,7 +104,7 @@ protein:
 
 ```{note}
 For BioCypher classes, similar to the internal representation in the Biolink
-model, we use lower sentece-case notation, e.g., `protein` and `small 
+model, we use lower sentence-case notation, e.g., `protein` and `small 
 molecule`. For file names and Neo4j labels, these are converted to PascalCase.
 ```
 
@@ -146,8 +146,8 @@ and target attribute in the ``schema-config.yaml`` will both be
 post translational interaction:
   represented_as: node
   preferred_id: id
-  source: Protein 
-  target: Protein 
+  source: protein 
+  target: protein 
   label_in_input: post_translational 
 ```
 
@@ -170,14 +170,15 @@ desired, one can use any arbitrary string as a designation for this
 identifier, which will then be a named property on the
 ``PostTranslationalInteraction`` nodes.
 
-Note that BioCypher accepts non-Biolink IDs since not all
-possible entries possess a systematic identifier system, whereas the
-entity class (``Protein``, ``PostTranslationalInteraction``) has to be
-included in the Biolink schema and spelled identically. For this reason,
-we [extend the Biolink schema](biolink) in cases where there exists no
-entry for our entity of choice. Further, we are specifying the source
-and target classes of our association (both ``Protein``), the label we
-provide in the input from ``PyPath`` (``post_translational``). 
+```{note}
+BioCypher accepts non-Biolink IDs since not all possible entries possess a
+systematic identifier system, whereas the entity class (``protein``,
+``post translational interaction``) has to be included in the Biolink schema and
+spelled identically. For this reason, we [extend the Biolink schema](biolink)
+in cases where there exists no entry for our entity of choice. Further, we are
+specifying the source and target classes of our association (both ``protein``),
+the label we provide in the input from ``PyPath`` (``post_translational``). 
+```
 
 If we wanted the interaction to be represented in the graph as an edge,
 we would also need to supply an additional - arbitrary - property,
@@ -222,7 +223,7 @@ to their distinct make-up. In this case, we can use the
 schema_config.yaml to implicitly extend the Biolink model by specifying
 more than one preferred_id and label_in_input (in a paired manner):
 
-```
+```{code-block} yaml
 pathway:
   represented_as: node
   preferred_id: [reactome, kegg] 
