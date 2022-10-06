@@ -49,6 +49,38 @@ class Protein:
         return properties
 
 
+class RandomPropertyProtein(Protein):
+    """
+    Generates instances of proteins with random properties.
+    """
+
+    def _generate_properties(self):
+        properties = {}
+
+        ## random amino acid sequence
+
+        # random int between 50 and 250
+        l = random.randint(50, 250)
+
+        properties["sequence"] = "".join(
+            [random.choice("ACDEFGHIKLMNPQRSTVWY") for _ in range(l)]
+        )
+
+        ## random description
+        properties["description"] = " ".join(
+            [random.choice(string.ascii_lowercase) for _ in range(10)]
+        )
+
+        ## random taxon
+        properties["taxon"] = str(random.randint(0, 10000))
+
+        ## randomly add 'mass'
+        if random.random() > 0.5:
+            properties["mass"] = random.randint(0, 10000)
+
+        return properties
+
+
 class EntrezProtein(Protein):
     """
     Generates instances of proteins with Entrez IDs.
