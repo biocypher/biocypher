@@ -231,3 +231,73 @@ referral to the updated schema configuration file.
 In the output, we now generate two separate files for the `protein` class, one 
 for each subclass (with names in PascalCase). 
 ```
+
+## Section 3: Handling properties
+The code for this tutorial can be found at `tutorial/04_properties.py`. Schema
+files are at `tutorial/04_schema_config.yaml`. Data generation happens in
+`tutorial/data_generator.py`.
+
+While ID and label are mandatory components of our knowledge graph, properties
+are optional and can include different types of information on the entities. In
+source data, properties are represented in arbitrary ways, designations rarely
+overlap even for the most trivial of cases (spelling differences, formatting,
+etc). Additionally, some data sources contain a large wealth of information
+about entities, most of which may not be needed for the given task. Thus, it is
+often desirable to filter out properties that are not needed to save time, disk
+space, and memory.
+
+```{note}
+Maintaining consistent properties per entity type is particularly important 
+when using the admin import feature of Neo4j, which requires consistency 
+between the header and data files. Properties that are introduced into only
+some of the rows will lead to column misalignment and import failure. In 
+"online mode", this is not an issue.
+```
+
+We will take a look at how to handle property selection in BioCypher in a
+way that is flexible and easy to maintain.
+
+### Designated properties
+The simplest and most straightforward way to ensure that properties are
+consistent for each entity type is to designate them explicitly in the schema
+configuration. This is done by adding a `properties` key to the entity type
+configuration. The value of this key is another dictionary, where in the
+standard case the keys are the names of the properties that the entity type
+should possess, and the values give the type of the property (`int`, `str`,
+`bool`). In the case of properties that are not present in (some of) the source
+data, BioCypher will add them to the output with a default value of `None`.
+Additional properties in the input, that are not represented in these
+designated property names, will be ignored.
+
+Let's imagine that some, but not all, of our protein nodes have a `mass` value.
+If we want to include the mass value on all proteins, we can add the following
+to our schema configuration:
+
+```{code-block} yaml
+protein:
+  represented_as: node
+  preferred_id: [uniprot, entrez]
+  label_in_input: [uniprot_protein, entrez_protein]
+  properties:
+    sequence: str
+    description: str
+    taxon: str
+    mass: int
+```
+
+This will add the `mass` property to all proteins (in addition to the three we
+had before); if not encountered, the column will be empty. Implicit subclasses
+will automatically inherit the property configuration; in this case, both
+`uniprot.protein` and `entrez.protein` will have the `mass` property, even
+though the `entrez` proteins do not have a `mass` value in the input data.
+
+```{note}
+If we wanted to ignore the mass value for all properties, we could simply
+remove the `mass` key from the `properties` dictionary.
+```
+
+```{tip}
+BioCypher provides feedback about property conflicts; try running the code
+for this example (`04_properties.py`) with the schema configuration of the 
+previous section (`03_schema_config.yaml`) and see what happens.
+```

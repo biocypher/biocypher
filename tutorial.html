@@ -48,6 +48,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher Tutorial - Basics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#section-1-adding-data">Section 1: Adding data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#section-2-merging-data">Section 2: Merging data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#section-3-handling-properties">Section 3: Handling properties</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="adapter.html">The Host-BioCypher Adapter</a></li>
@@ -299,6 +300,73 @@ referral to the updated schema configuration file.</p>
 <p class="admonition-title">Note</p>
 <p>In the output, we now generate two separate files for the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class, one
 for each subclass (with names in PascalCase).</p>
+</div>
+</section>
+</section>
+<section id="section-3-handling-properties">
+<h2>Section 3: Handling properties<a class="headerlink" href="#section-3-handling-properties" title="Permalink to this heading"></a></h2>
+<p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/04_properties.py</span></code>. Schema
+files are at <code class="docutils literal notranslate"><span class="pre">tutorial/04_schema_config.yaml</span></code>. Data generation happens in
+<code class="docutils literal notranslate"><span class="pre">tutorial/data_generator.py</span></code>.</p>
+<p>While ID and label are mandatory components of our knowledge graph, properties
+are optional and can include different types of information on the entities. In
+source data, properties are represented in arbitrary ways, designations rarely
+overlap even for the most trivial of cases (spelling differences, formatting,
+etc). Additionally, some data sources contain a large wealth of information
+about entities, most of which may not be needed for the given task. Thus, it is
+often desirable to filter out properties that are not needed to save time, disk
+space, and memory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Maintaining consistent properties per entity type is particularly important
+when using the admin import feature of Neo4j, which requires consistency
+between the header and data files. Properties that are introduced into only
+some of the rows will lead to column misalignment and import failure. In
+“online mode”, this is not an issue.</p>
+</div>
+<p>We will take a look at how to handle property selection in BioCypher in a
+way that is flexible and easy to maintain.</p>
+<section id="designated-properties">
+<h3>Designated properties<a class="headerlink" href="#designated-properties" title="Permalink to this heading"></a></h3>
+<p>The simplest and most straightforward way to ensure that properties are
+consistent for each entity type is to designate them explicitly in the schema
+configuration. This is done by adding a <code class="docutils literal notranslate"><span class="pre">properties</span></code> key to the entity type
+configuration. The value of this key is another dictionary, where in the
+standard case the keys are the names of the properties that the entity type
+should possess, and the values give the type of the property (<code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>,
+<code class="docutils literal notranslate"><span class="pre">bool</span></code>). In the case of properties that are not present in (some of) the source
+data, BioCypher will add them to the output with a default value of <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Additional properties in the input, that are not represented in these
+designated property names, will be ignored.</p>
+<p>Let’s imagine that some, but not all, of our protein nodes have a <code class="docutils literal notranslate"><span class="pre">mass</span></code> value.
+If we want to include the mass value on all proteins, we can add the following
+to our schema configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">properties</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">sequence</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">taxon</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This will add the <code class="docutils literal notranslate"><span class="pre">mass</span></code> property to all proteins (in addition to the three we
+had before); if not encountered, the column will be empty. Implicit subclasses
+will automatically inherit the property configuration; in this case, both
+<code class="docutils literal notranslate"><span class="pre">uniprot.protein</span></code> and <code class="docutils literal notranslate"><span class="pre">entrez.protein</span></code> will have the <code class="docutils literal notranslate"><span class="pre">mass</span></code> property, even
+though the <code class="docutils literal notranslate"><span class="pre">entrez</span></code> proteins do not have a <code class="docutils literal notranslate"><span class="pre">mass</span></code> value in the input data.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If we wanted to ignore the mass value for all properties, we could simply
+remove the <code class="docutils literal notranslate"><span class="pre">mass</span></code> key from the <code class="docutils literal notranslate"><span class="pre">properties</span></code> dictionary.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>BioCypher provides feedback about property conflicts; try running the code
+for this example (<code class="docutils literal notranslate"><span class="pre">04_properties.py</span></code>) with the schema configuration of the
+previous section (<code class="docutils literal notranslate"><span class="pre">03_schema_config.yaml</span></code>) and see what happens.</p>
 </div>
 </section>
 </section>
