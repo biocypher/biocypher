@@ -13,9 +13,12 @@ differently formatted biomedical entities such as proteins and their
 interactions.
 
 ## Section 1: Adding data
+```{admonition} Tutorial files
+:class: note
 The code for this tutorial can be found at `tutorial/01_basic_import.py`. The
 schema is at `tutorial/01_schema_config.yaml`. Data generation happens in
 `tutorial/data_generator.py`.
+```
 
 ### Input data stream ("adapter")
 The basic operation of adding data to the knowledge graph requires two
@@ -164,12 +167,15 @@ aggregates this information into one command, detailing the location of all
 files on disk, so no data need to be copied around.
 
 ## Section 2: Merging data
-The code for this tutorial can be found at `tutorial/02_merge.py` and
-`tutorial/03_implicit_subclass.py`. Schema files are at
-`tutorial/02_schema_config.yaml` and `tutorial/03_schema_config.yaml`. Data
-generation happens in `tutorial/data_generator.py`.
 
 ### Plain merge
+```{admonition} Tutorial files
+:class: note
+The code for this tutorial can be found at `tutorial/02_merge.py`.
+Schema files are at `tutorial/02_schema_config.yaml`. Data generation happens
+in `tutorial/data_generator.py`.
+```
+
 Using the workflow described above with minor changes, we can merge data from
 different input streams. If we do not want to introduce additional ontological
 subcategories, we can simply add the new input stream to the existing one and
@@ -196,6 +202,13 @@ merge data from different sources into the same ontological class using *ad
 hoc* subclasses.
 
 ### *Ad hoc* subclassing
+```{admonition} Tutorial files
+:class: note
+The code for this tutorial can be found at `tutorial/03_implicit_subclass.py`.
+Schema files are a` `tutorial/03_schema_config.yaml`. Data generation happens
+in `tutorial/data_generator.py`.
+```
+
 In the previous section, we saw how to merge data from different sources into
 the same ontological class. However, we did not resolve the issue of the
 `entrez` proteins living in a different namespace than the `uniprot` proteins,
@@ -233,13 +246,6 @@ for each subclass (with names in PascalCase).
 ```
 
 ## Section 3: Handling properties
-```{admonition} Tutorial files
-:class: note
-The code for this tutorial can be found at `tutorial/04_properties.py`. Schema
-files are at `tutorial/04_schema_config.yaml`. Data generation happens in
-`tutorial/data_generator.py`.
-```
-
 While ID and label are mandatory components of our knowledge graph, properties
 are optional and can include different types of information on the entities. In
 source data, properties are represented in arbitrary ways, and designations
@@ -261,6 +267,13 @@ We will take a look at how to handle property selection in BioCypher in a
 way that is flexible and easy to maintain.
 
 ### Designated properties
+```{admonition} Tutorial files
+:class: note
+The code for this tutorial can be found at `tutorial/04_properties.py`. Schema
+files are at `tutorial/04_schema_config.yaml`. Data generation happens in
+`tutorial/data_generator.py`.
+```
+
 The simplest and most straightforward way to ensure that properties are
 consistent for each entity type is to designate them explicitly in the schema
 configuration. This is done by adding a `properties` key to the entity type
