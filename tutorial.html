@@ -448,7 +448,24 @@ either <code class="docutils literal notranslate"><span class="pre">node</span><
 in order to be able to connect it to other nodes in the graph. In addition to
 the configuration of nodes, relationships also have fields for the <code class="docutils literal notranslate"><span class="pre">source</span></code> and
 <code class="docutils literal notranslate"><span class="pre">target</span></code> node types, which refer to the ontological classes of the respective
-nodes.</p>
+nodes, and are currently optional.</p>
+<p>To add protein-protein interactions to our graph, we can add the following to
+the schema configuration above:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein protein interaction</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pairwise molecular interaction</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">intact</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">interacts_with</span><span class="w"></span>
+<span class="w">  </span><span class="nt">properties</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Here, we use explicit subclassing to define the protein-protein interaction,
+which is not represented in the basic Biolink model, as a direct child of the
+Biolink “pairwise molecular interaction” class. We also reify this relationship
+by representing it as a node. This allows us to connect it to other nodes in
+the graph, for example to evidences for each interaction.</p>
 </section>
 </section>
 

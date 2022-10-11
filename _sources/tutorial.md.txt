@@ -384,4 +384,24 @@ either `node` or `edge`. The `node` option is used to "reify" the relationship
 in order to be able to connect it to other nodes in the graph. In addition to
 the configuration of nodes, relationships also have fields for the `source` and
 `target` node types, which refer to the ontological classes of the respective
-nodes.
+nodes, and are currently optional.
+
+To add protein-protein interactions to our graph, we can add the following to
+the schema configuration above:
+
+```{code-block} yaml
+protein protein interaction:
+  is_a: pairwise molecular interaction
+  represented_as: node
+  preferred_id: intact
+  label_in_input: interacts_with
+  properties:
+    method: str
+    source: str
+```
+
+Here, we use explicit subclassing to define the protein-protein interaction,
+which is not represented in the basic Biolink model, as a direct child of the
+Biolink "pairwise molecular interaction" class. We also reify this relationship
+by representing it as a node. This allows us to connect it to other nodes in
+the graph, for example to evidences for each interaction.
