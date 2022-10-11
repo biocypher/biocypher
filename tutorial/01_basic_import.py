@@ -10,12 +10,16 @@ def main():
     # Extract id, label, and property dictionary
     def node_generator():
         for protein in proteins:
-            yield (protein.id, protein.label, protein.properties)
+            yield (
+                protein.get_id(),
+                protein.get_label(),
+                protein.get_properties(),
+            )
 
     # Create BioCypher driver
     driver = biocypher.Driver(
         offline=True,  # start without connecting to Neo4j instance
-        db_name="basic_import",  # name of database for import call
+        db_name="basicimport",  # name of database for import call
         user_schema_config_path="tutorial/01_schema_config.yaml",
     )
     # Run the import

@@ -6,7 +6,36 @@ import random
 import string
 
 
-class Protein:
+class Node:
+    """
+    Base class for nodes.
+    """
+
+    def __init__(self):
+        self.id = None
+        self.label = None
+        self.properties = {}
+
+    def get_id(self):
+        """
+        Returns the node id.
+        """
+        return self.id
+
+    def get_label(self):
+        """
+        Returns the node label.
+        """
+        return self.label
+
+    def get_properties(self):
+        """
+        Returns the node properties.
+        """
+        return self.properties
+
+
+class Protein(Node):
     """
     Generates instances of proteins.
     """
@@ -106,3 +135,115 @@ class EntrezProtein(Protein):
         Generate a random Entrez-style ID.
         """
         return str(random.randint(1, 1000000))
+
+
+class Interaction:
+    """
+    Base class for interactions.
+    """
+
+    def __init__(self):
+        self.id = None
+        self.source_id = None
+        self.target_id = None
+        self.label = None
+        self.properties = {}
+
+    def get_id(self):
+        """
+        Returns the relationship id.
+        """
+        return self.id
+
+    def get_source_id(self):
+        """
+        Returns the source id.
+        """
+        return self.source_id
+
+    def get_target_id(self):
+        """
+        Returns the target id.
+        """
+        return self.target_id
+
+    def get_label(self):
+        """
+        Returns the node label.
+        """
+        return self.label
+
+    def get_properties(self):
+        """
+        Returns the node properties.
+        """
+        return self.properties
+
+
+class ProteinProteinInteraction(Interaction):
+    """
+    Simulates interactions between proteins given a source and target protein
+    IDs. Occasionally generates an ID for the interaction itself.
+    """
+
+    def __init__(self, source, target):
+        super().__init__()
+        self.id = self._generate_id()
+        self.source_id = source
+        self.target_id = target
+        self.label = "interacts_with"
+        self.properties = self._generate_properties()
+
+    def _generate_id(self):
+        """
+        Generate a random ID for the interaction.
+        """
+        if random.random() > 0.5:
+            return None
+        else:
+            return "intact" + str(random.randint(1, 1000000))
+
+    def _generate_properties(self):
+        properties = {}
+
+        ## randomly add 'source'
+        if random.random() > 0.5:
+            properties["source"] = random.choice(["intact", "signor"])
+
+        ## randomly add 'method'
+        if random.random() > 0.5:
+            properties["method"] = " ".join(
+                [random.choice(string.ascii_lowercase) for _ in range(10)]
+            )
+
+        return properties
+
+
+class InteractionGenerator:
+    """
+    Simulates interactions given a list of potential interactors based on an
+    interaction probability or probability distribution.
+    """
+
+    def __init__(self, interactors: list, interaction_probability: float):
+        self.interactors = interactors
+        self.interaction_probability = interaction_probability
+
+    def generate_interactions(self) -> list:
+        """
+        Generates interactions between interactors. Flat probability of
+        interaction.
+        """
+        interactions = []
+
+        for source in self.interactors:
+            for target in self.interactors:
+                if source == target:
+                    continue
+
+                if random.random() < self.interaction_probability:
+                    interactions.append(
+                        ProteinProteinInteraction(source, target)
+                    )
+
+        return interactions

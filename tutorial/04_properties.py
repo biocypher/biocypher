@@ -17,7 +17,11 @@ def main():
     # Extract id, label, and property dictionary
     def node_generator():
         for protein in proteins:
-            yield (protein.id, protein.label, protein.properties)
+            yield (
+                protein.get_id(),
+                protein.get_label(),
+                protein.get_properties(),
+            )
 
     # Create BioCypher driver
     driver = biocypher.Driver(

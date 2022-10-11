@@ -360,3 +360,28 @@ We now create three separate data files, all of which are children of the
 `protein` class; two implicit children (`uniprot.protein` and `entrez.protein`)
 and one explicit child (`protein isoform`).
 ```
+
+## Section 4: Handling relationships
+```{admonition} Tutorial files
+:class: note
+The code for this tutorial can be found at `tutorial/06_relationships.py`.
+Schema files are at `tutorial/06_schema_config.yaml`. Data generation happens
+in `tutorial/data_generator.py`.
+```
+
+Naturally, we do not only want nodes in our knowledge graph, but also edges. In
+BioCypher, the configuration of relationships is very similar to that of nodes,
+with some key differences. First the similarities: the top-level class
+configuration of edges is the same; class names refer to ontological classes or
+are an extension thereof. Similarly, the `is_a` key is used to define
+inheritance, and the `inherit_properties` key is used to inherit properties
+from a parent class. Relationships also possess a `preferred_id` key, a
+`label_in_input` key, and a `properties` key, which work in the same way as for
+nodes. 
+
+Relationships also have a `represented_as` key, which in this case can be
+either `node` or `edge`. The `node` option is used to "reify" the relationship
+in order to be able to connect it to other nodes in the graph. In addition to
+the configuration of nodes, relationships also have fields for the `source` and
+`target` node types, which refer to the ontological classes of the respective
+nodes.
