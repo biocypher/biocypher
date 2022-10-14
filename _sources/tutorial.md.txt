@@ -404,4 +404,5 @@ Here, we use explicit subclassing to define the protein-protein interaction,
 which is not represented in the basic Biolink model, as a direct child of the
 Biolink "pairwise molecular interaction" class. We also reify this relationship
 by representing it as a node. This allows us to connect it to other nodes in
-the graph, for example to evidences for each interaction.
+the graph, for example to evidences for each interaction. If we do not want to
+reify the relationship, we can set `represented_as` to `edge` instead.
