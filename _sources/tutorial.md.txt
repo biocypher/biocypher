@@ -47,7 +47,11 @@ where required.
 ```{code-block} python
 def node_generator():
     for protein in proteins:
-        yield (protein.id, protein.label, protein.properties)
+        yield (
+          protein.get_id(), 
+          protein.get_label(), 
+          protein.get_properties()
+        )
 ```
 
 The concept of an adapter can become arbitrarily complex and involve
