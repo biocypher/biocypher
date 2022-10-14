@@ -95,11 +95,12 @@ molecule"). Conversely, for class names, in file names, and property graph
 labels, we use PascalCase instead (e.g., "SmallMolecule") to avoid issues with
 handling spaces. The transformation is done by BioCypher internally. BioCypher
 does not strictly enforce the entities allowed in this class definition; in
-fact, we provide several methods of extending the existing ontological backbone
-*ad hoc* by providing custom inheritance or hybridising ontologies. However,
-every entity should at some point be connected to the underlying ontology,
-otherwise the multiple hierarchical labels will not be populated. Following
-this first line are three indented values of the protein class.
+fact, we provide [several methods of extending the existing ontological
+backbone *ad hoc* by providing custom inheritance or hybridising
+ontologies](biolink). However, every entity should at some point be connected
+to the underlying ontology, otherwise the multiple hierarchical labels will not
+be populated. Following this first line are three indented values of the
+protein class.
 
 <!-- TODO link to ontology manipulation -->
 
