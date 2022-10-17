@@ -165,8 +165,8 @@ driver.write_import_call()
 ```
 
 This creates an executable shell script in the output directory that can be
-executed from the location of the database folder to import the graph into
-Neo4j (or copied into the Neo4j terminal). Since BioCypher creates separate
+executed from the location of the database folder (or copied into the Neo4j
+terminal) to import the graph into Neo4j. Since BioCypher creates separate
 header and data files for each entity type, the import call conveniently
 aggregates this information into one command, detailing the location of all
 files on disk, so no data need to be copied around.
