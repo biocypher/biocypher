@@ -1,7 +1,9 @@
 from typing import Any, Mapping, KeysView, Generator, ItemsView, ValuesView
 from collections.abc import Iterable
 
-__all__ = ['LIST_LIKE', 'SIMPLE_TYPES', 'ensure_iterable', 'if_none', 'to_list']
+from neo4j_utils._misc import if_none  # noqa: F401
+
+__all__ = ['LIST_LIKE', 'SIMPLE_TYPES', 'ensure_iterable', 'to_list']
 
 SIMPLE_TYPES = (
     bytes,
@@ -46,11 +48,3 @@ def ensure_iterable(value: Any) -> Iterable:
     """
 
     return value if isinstance(value, LIST_LIKE) else (value,)
-
-
-def if_none(value: Any, fallback: Any) -> Any:
-    """
-    Use ``value`` unless it's ``None``, then use ``fallback`` instead.
-    """
-
-    return fallback if value is None else value
