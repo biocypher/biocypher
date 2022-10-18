@@ -98,7 +98,11 @@ indent = "    "
 profile = "black"
 
 [tool.flake8]
-ignore = ["D200", "D202", "D401", "D105", "W504"]
+ignore = [
+  "D200", "D202", "D401", "D105",
+  "E402",
+  "W504"
+]
 per-file-ignores = [
     "docs/source/conf.py:D100",
     "tests/*:D100,D101,D102",

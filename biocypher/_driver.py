@@ -10,17 +10,17 @@
 #
 
 """
-A wrapper around the Neo4j driver which handles the DBMS connection and
-provides basic management methods.
+Biocypher specific database management and access methods.
 """
+from collections.abc import Iterable
 
 from ._logger import logger
 
-logger.debug(f"Loading module {__name__}.")
+logger.debug(f'Loading module {__name__}.')
 
-import importlib as imp
+from typing import TYPE_CHECKING, Any, Optional
+import inspect
 import itertools
-from typing import TYPE_CHECKING, Generator, Iterable, List, Optional
 
 from more_itertools import peekable
 
@@ -31,65 +31,28 @@ if TYPE_CHECKING:
 import neo4j_utils
 
 from . import _misc
-from ._config import config as _config
-from ._create import (
-    BioCypherEdge,
-    BioCypherNode,
-    VersionNode,
-)
-from ._translate import BiolinkAdapter, Translator
 from ._write import BatchWriter
+from ._config import config as _config
+from ._create import VersionNode, BioCypherEdge, BioCypherNode
+from ._translate import Translator, BiolinkAdapter
 
-__all__ = ["Driver"]
+__all__ = ['Driver']
 
 
 class Driver(neo4j_utils.Driver):
     """
     Manages a connection to a biocypher database.
-
-    The connection can be defined in three ways:
-        * Providing a ready ``neo4j.Driver`` instance
-        * By URI and authentication data
-        * By a YAML config file
-
-    Args:
-        driver:
-            A ``neo4j.Driver`` instance, created by, for example,
-            ``neo4j.GraphDatabase.driver``.
-        db_name:
-            Name of the database (Neo4j graph) to use.
-        db_uri:
-            Protocol, host and port to access the Neo4j server.
-        db_user:
-            Neo4j user name.
-        db_passwd:
-            Password of the Neo4j user.
-        fetch_size:
-            Optional; the fetch size to use in database transactions.
-        wipe:
-            Wipe the database after connection, ensuring the data is
-            loaded into an empty database.
-        increment_version:
-            Whether to increase version number automatically and create a
-            new BioCypher version node in the graph.
-        schema_config:
-            Path to a custom database schema configuration file.
-        delimiter:
-            Delimiter for CSV export.
-        quote_char:
-            String quotation character for CSV export.
-        array_delimiter:
-            Array delimiter for CSV exported contents.
     """
 
     def __init__(
         self,
-        driver: Optional["neo4j.Driver"] = None,
+        driver: Optional['neo4j.Driver'] = None,
         db_name: Optional[str] = None,
         db_uri: Optional[str] = None,
         db_user: Optional[str] = None,
         db_passwd: Optional[str] = None,
         fetch_size: int = 1000,
+        raise_errors: Optional[bool] = None,
         wipe: bool = False,
         offline: bool = False,
         increment_version=True,
@@ -100,14 +63,52 @@ class Driver(neo4j_utils.Driver):
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
     ):
+        """
+        Set up a BioCypher database connection.
 
-        db_name = db_name or _config("neo4j_db")
-        db_uri = db_uri or _config("neo4j_uri")
-        db_user = db_user or _config("neo4j_user")
-        db_passwd = db_passwd or _config("neo4j_pw")
-        self.db_delim = delimiter or _config("neo4j_delimiter")
-        self.db_adelim = array_delimiter or _config("neo4j_array_delimiter")
-        self.db_quote = quote_char or _config("neo4j_quote_char")
+        The connection can be defined in three ways:
+        * Providing a ready ``neo4j.Driver`` instance
+        * By URI and authentication data
+        * By a YAML config file
+
+        Args:
+            driver:
+                A ``neo4j.Driver`` instance, created by, for example,
+                ``neo4j.GraphDatabase.driver``.
+            db_name:
+                Name of the database (Neo4j graph) to use.
+            db_uri:
+                Protocol, host and port to access the Neo4j server.
+            db_user:
+                Neo4j user name.
+            db_passwd:
+                Password of the Neo4j user.
+            fetch_size:
+                Optional; the fetch size to use in database transactions.
+            wipe:
+                Wipe the database after connection, ensuring the data is
+                loaded into an empty database.
+            increment_version:
+                Whether to increase version number automatically and create a
+                new BioCypher version node in the graph.
+            schema_config:
+                Path to a custom database schema configuration file.
+            delimiter:
+                Delimiter for CSV export.
+            quote_char:
+                String quotation character for CSV export.
+            array_delimiter:
+                Array delimiter for CSV exported contents.
+        """
+
+        driver_args = {
+            arg: _misc.if_none(locals().get(arg, None), _config(arg))
+            for arg in inspect.signature(neo4j_utils.Driver).keys()
+        }
+
+        self.db_delim = delimiter or _config('neo4j_delimiter')
+        self.db_adelim = array_delimiter or _config('neo4j_array_delimiter')
+        self.db_quote = quote_char or _config('neo4j_quote_char')
 
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
@@ -116,7 +117,7 @@ class Driver(neo4j_utils.Driver):
 
         if offline:
 
-            logger.info("Offline mode: no connection to Neo4j.")
+            logger.info('Offline mode: no connection to Neo4j.')
 
             self.db_meta = VersionNode(
                 from_config=True,
@@ -126,11 +127,11 @@ class Driver(neo4j_utils.Driver):
             )
 
             self._db_config = {
-                "uri": db_uri,
-                "user": db_user,
-                "passwd": db_passwd,
-                "db": db_name,
-                "fetch_size": fetch_size,
+                'uri': driver_args['db_uri'],
+                'user': driver_args['db_user'],
+                'passwd': driver_args['db_passwd'],
+                'db': driver_args['db_name'],
+                'fetch_size': driver_args['fetch_size'],
             }
 
             self.driver = None
@@ -138,7 +139,7 @@ class Driver(neo4j_utils.Driver):
 
         else:
 
-            neo4j_utils.Driver.__init__(**locals())
+            neo4j_utils.Driver.__init__(**driver_args)
 
             # if db representation node does not exist or explicitly
             # asked for wipe, create new graph representation: default
@@ -176,24 +177,31 @@ class Driver(neo4j_utils.Driver):
         # I am not sure, but seems like it should work from driver
 
     def update_meta_graph(self):
+        """
+        Write the current schema and config state into the database.
+
+        The meta graph harbors the config parameters, the schema and the
+        history of the database.
+        """
 
         if self.offline:
             return
 
-        logger.info("Updating Neo4j meta graph.")
+        logger.info('Updating Neo4j meta graph.')
         # add version node
         self.add_biocypher_nodes(self.db_meta)
 
         # find current version node
         db_version = self.query(
-            "MATCH (v:BioCypher) " "WHERE NOT (v)-[:PRECEDES]->() " "RETURN v"
+            'MATCH (v:BioCypher) ' 'WHERE NOT (v)-[:PRECEDES]->() ' 'RETURN v',
         )
         # connect version node to previous
         if db_version[0]:
+
             e_meta = BioCypherEdge(
-                self.db_meta.graph_state["id"],
+                self.db_meta.graph_state['id'],
                 self.db_meta.node_id,
-                "PRECEDES",
+                'PRECEDES',
             )
             self.add_biocypher_edges(e_meta)
 
@@ -201,39 +209,47 @@ class Driver(neo4j_utils.Driver):
         no_l = []
         # leaves of the hierarchy specified in schema yaml
         for entity, params in self.db_meta.leaves.items():
+
             no_l.append(
                 BioCypherNode(
-                    node_id=entity, node_label="MetaNode", properties=params
-                )
+                    node_id=entity, node_label='MetaNode', properties=params,
+                ),
             )
+
         self.add_biocypher_nodes(no_l)
 
         # remove connection of structure nodes from previous version
         # node(s)
-        self.query("MATCH ()-[r:CONTAINS]-()" "DELETE r")
+        self.query('MATCH ()-[r:CONTAINS]-()' 'DELETE r')
 
         # connect structure nodes to version node
         ed_v = []
         current_version = self.db_meta.get_id()
         for entity in self.db_meta.leaves.keys():
+
             ed_v.append(
                 BioCypherEdge(
                     source_id=current_version,
                     target_id=entity,
-                    relationship_label="CONTAINS",
-                )
+                    relationship_label='CONTAINS',
+                ),
             )
+
         self.add_biocypher_edges(ed_v)
 
         # add graph structure between MetaNodes
         ed = []
         for no in no_l:
-            id = no.get_id()
-            src = no.get_properties().get("source")
-            tar = no.get_properties().get("target")
-            if not None in [id, src, tar]:
-                ed.append(BioCypherEdge(id, src, "IS_SOURCE_OF"))
-                ed.append(BioCypherEdge(id, tar, "IS_TARGET_OF"))
+
+            _id = no.get_id()
+            src = no.get_properties().get('source')
+            tar = no.get_properties().get('target')
+
+            if not any(x is None for x in (_id, src, tar)):
+
+                ed.append(BioCypherEdge(_id, src, 'IS_SOURCE_OF'))
+                ed.append(BioCypherEdge(_id, tar, 'IS_TARGET_OF'))
+
         self.add_biocypher_edges(ed)
 
     def _update_translator(self):
@@ -242,103 +258,132 @@ class Driver(neo4j_utils.Driver):
 
     def init_db(self):
         """
+        Wipes the database and creates constraints.
+
         Used to initialise a property graph database by deleting
         contents and constraints and setting up new constraints.
 
         Todo:
-            - set up constraint creation interactively depending on the
-                need of the database
+            - Set up constraint creation interactively depending on the
+              need of the database
         """
 
         self.wipe_db()
         self._create_constraints()
-        logger.info("Initialising database.")
+        logger.info('Initialising database.')
 
     def _create_constraints(self):
         """
-        Creates constraints on node types in the graph. Used for
-        initial setup.
+        Creates constraints on node types in the graph.
 
-        Grabs leaves of the ``schema_config.yaml`` file and creates
-        constraints on the id of all entities represented as nodes.
+        Used for initial setup. Grabs leaves of the ``schema_config.yaml``
+        file and creates constraints on the id of all entities represented as
+        nodes.
         """
 
-        logger.info(f"Creating constraints for node types in config.")
+        logger.info('Creating constraints for node types in config.')
 
         # get structure
         for leaf in self.db_meta.leaves.items():
             label = leaf[0]
-            if leaf[1]["represented_as"] == "node":
+            if leaf[1]['represented_as'] == 'node':
 
                 s = (
-                    f"CREATE CONSTRAINT {label}_id "
-                    f"IF NOT EXISTS ON (n:{label}) "
-                    "ASSERT n.id IS UNIQUE"
+                    f'CREATE CONSTRAINT {label}_id '
+                    f'IF NOT EXISTS ON (n:{label}) '
+                    'ASSERT n.id IS UNIQUE'
                 )
                 self.query(s)
 
-    def add_nodes(self, id_type_tuples: Iterable[tuple]) -> tuple:
+    def add_nodes(
+            self,
+            id_type_tuples: Iterable[
+                tuple[
+                    str,
+                    str,
+                    dict[str, Any],
+                ]
+            ],
+    ) -> tuple:
         """
+        Translate nodes and write them into the database.
+
         Generic node adder method to add any kind of input to the
-        graph via the :class:`biocypher.create.BioCypherNode` class. Employs translation
-        functionality and calls the :meth:`add_biocypher_nodes()` method.
+        graph via the :class:`biocypher.create.BioCypherNode` class. Employs
+        translation functionality and calls the :meth:`add_biocypher_nodes()`
+        method.
 
         Args:
-            id_type_tuples (iterable of 3-tuple): for each node to add to
-                the biocypher graph, a 3-tuple with the following layout:
-                first, the (unique if constrained) ID of the node; second, the
-                type of the node, capitalised or PascalCase and in noun form
-                (Neo4j primary label, eg `:Protein`); and third, a dictionary
-                of arbitrary properties the node should possess (can be empty).
+            id_type_tuples:
+                For each node to add to the biocypher graph, a 3-tuple with
+                the following layout:
+                * The (unique if constrained) ID of the node.
+                * The type of the node, capitalised or PascalCase and in noun
+                  form (Neo4j primary label, eg `:Protein`).
+                * A dictionary of arbitrary properties the node should
+                  possess (can be empty).
 
         Returns:
             2-tuple: the query result of :meth:`add_biocypher_nodes()`
-                - first entry: data
-                - second entry: Neo4j summary.
+            - first entry: data
+            - second entry: Neo4j summary.
         """
 
         bn = self.translator.translate_nodes(id_type_tuples)
         return self.add_biocypher_nodes(bn)
 
-    def add_edges(self, id_src_tar_type_tuples: Iterable[tuple]) -> tuple:
+    def add_edges(
+            self,
+            id_src_tar_type_tuples: Iterable[
+                tuple[
+                    Optional[str],
+                    str,
+                    str,
+                    str,
+                    dict[str, Any],
+                ]
+            ],
+    ) -> tuple:
         """
+        Translate edges and write them into the database.
+
         Generic edge adder method to add any kind of input to the graph
         via the :class:`biocypher.create.BioCypherEdge` class. Employs
         translation functionality and calls the
         :meth:`add_biocypher_edges()` method.
 
         Args:
-
             id_src_tar_type_tuples (iterable of 5-tuple):
-
-                for each edge to add to the biocypher graph, a 5-tuple
-                with the following layout: first, the optional unique ID
-                of the interaction. This can be `None` if there is no
-                systematic identifier (which for many interactions is
-                the case). Second and third, the (unique if constrained)
-                IDs of the source and target nodes of the relationship;
-                fourth, the type of the relationship; and fifth, a
-                dictionary of arbitrary properties the edge should
-                possess (can be empty).
+                For each edge to add to the biocypher graph, a 5-tuple
+                with the following layout:
+                * The optional unique ID of the interaction. This can be
+                  `None` if there is no systematic identifier (which for
+                  many interactions is the case).
+                * The (unique if constrained) ID of the source node of the
+                  relationship.
+                * Same for the target node.
+                * The type of the relationship.
+                * A dictionary of arbitrary properties the edge should
+                  possess (can be empty).
 
         Returns:
-
             2-tuple: the query result of :meth:`add_biocypher_edges()`
-
-                - first entry: data
-                - second entry: Neo4j summary.
+            - first entry: data
+            - second entry: Neo4j summary.
         """
 
         bn = self.translator.translate_edges(id_src_tar_type_tuples)
         return self.add_biocypher_edges(bn)
 
     def add_biocypher_nodes(
-        self,
-        nodes: Iterable[BioCypherNode],
-        explain: bool = False,
-        profile: bool = False,
+            self,
+            nodes: Iterable[BioCypherNode],
+            explain: bool = False,
+            profile: bool = False,
     ) -> bool:
         """
+        Write nodes into the database.
+
         Accepts a node type handoff class
         (:class:`biocypher.create.BioCypherNode`) with id,
         label, and a dict of properties (passing on the type of
@@ -361,7 +406,7 @@ class Driver(neo4j_utils.Driver):
                 Do profiling on the CYPHER query.
 
         Returns:
-            True for success, False otherwise.
+            `True` for success, `False` otherwise.
         """
 
         try:
@@ -372,39 +417,41 @@ class Driver(neo4j_utils.Driver):
 
         except AttributeError:
 
-            msg = "Nodes must have a `get_dict` method."
+            msg = 'Nodes must have a `get_dict` method.'
             logger.error(msg)
 
             raise ValueError(msg)
 
-        logger.info(f"Merging {len(entities)} nodes.")
+        logger.info(f'Merging {len(entities)} nodes.')
 
         entity_query = (
-            "UNWIND $entities AS ent "
-            "CALL apoc.merge.node([ent.node_label], "
-            "{id: ent.node_id}, ent.properties, ent.properties) "
-            "YIELD node "
-            "RETURN node"
+            'UNWIND $entities AS ent '
+            'CALL apoc.merge.node([ent.node_label], '
+            '{id: ent.node_id}, ent.properties, ent.properties) '
+            'YIELD node '
+            'RETURN node'
         )
 
-        method = "explain" if explain else "profile" if profile else "query"
+        method = 'explain' if explain else 'profile' if profile else 'query'
 
         result = getattr(self, method)(
             entity_query,
-            parameters={"entities": entities},
+            parameters={'entities': entities},
         )
 
-        logger.info("Finished merging nodes.")
+        logger.info('Finished merging nodes.')
 
         return result
 
     def add_biocypher_edges(
-        self,
-        edges: Iterable[BioCypherEdge],
-        explain: bool = False,
-        profile: bool = False,
+            self,
+            edges: Iterable[BioCypherEdge],
+            explain: bool = False,
+            profile: bool = False,
     ) -> bool:
         """
+        Write edges into the database.
+
         Accepts an edge type handoff class
         (:class:`biocypher.create.BioCypherEdge`) with source
         and target ids, label, and a dict of properties (passing on the
@@ -446,7 +493,7 @@ class Driver(neo4j_utils.Driver):
 
             for e in edges:
 
-                if hasattr(e, "get_node"):
+                if hasattr(e, 'get_node'):
 
                     nodes.append(e.get_node())
                     rels.append(e.get_source_edge().get_dict())
@@ -458,13 +505,13 @@ class Driver(neo4j_utils.Driver):
 
         except AttributeError:
 
-            msg = "Edges and nodes must have a `get_dict` method."
+            msg = 'Edges and nodes must have a `get_dict` method.'
             logger.error(msg)
 
             raise ValueError(msg)
 
         self.add_biocypher_nodes(nodes)
-        logger.info(f"Merging {len(rels)} edges.")
+        logger.info(f'Merging {len(rels)} edges.')
 
         # cypher query
 
@@ -472,44 +519,56 @@ class Driver(neo4j_utils.Driver):
         # properties on match and on create;
         # TODO add node labels?
         node_query = (
-            "UNWIND $rels AS r "
-            "MERGE (src {id: r.source_id}) "
-            "MERGE (tar {id: r.target_id}) "
+            'UNWIND $rels AS r '
+            'MERGE (src {id: r.source_id}) '
+            'MERGE (tar {id: r.target_id}) '
         )
 
-        self.query(node_query, parameters={"rels": rels})
+        self.query(node_query, parameters={'rels': rels})
 
         edge_query = (
-            "UNWIND $rels AS r "
-            "MATCH (src {id: r.source_id}) "
-            "MATCH (tar {id: r.target_id}) "
-            "WITH src, tar, r "
-            "CALL apoc.merge.relationship"
-            "(src, r.relationship_label, NULL, "
-            "r.properties, tar, r.properties) "
-            "YIELD rel "
-            "RETURN rel"
+            'UNWIND $rels AS r '
+            'MATCH (src {id: r.source_id}) '
+            'MATCH (tar {id: r.target_id}) '
+            'WITH src, tar, r '
+            'CALL apoc.merge.relationship'
+            '(src, r.relationship_label, NULL, '
+            'r.properties, tar, r.properties) '
+            'YIELD rel '
+            'RETURN rel'
         )
 
-        method = "explain" if explain else "profile" if profile else "query"
+        method = 'explain' if explain else 'profile' if profile else 'query'
 
-        result = getattr(self, method)(edge_query, parameters={"rels": rels})
+        result = getattr(self, method)(edge_query, parameters={'rels': rels})
 
-        logger.info("Finished merging edges.")
+        logger.info('Finished merging edges.')
 
         return result
 
-    def write_nodes(self, nodes, dirname: str = None, db_name: str = None):
+    def write_nodes(
+            self,
+            nodes: Iterable[BioCypherNode],
+            dirname: Optional[str] = None,
+            db_name: Optional[str] = None,
+
+    ) -> bool:
         """
+        Write the nodes into CSV file.
+
         Write BioCypher nodes to disk using the :mod:`write` module,
         formatting the CSV to enable Neo4j admin import from the target
         directory.
 
         Args:
-            nodes (iterable): collection of nodes to be written in
+            nodes:
+                Collection of nodes to be written in
                 BioCypher-compatible CSV format; can be any compatible
                 (ie, translatable) input format or already as
                 :class:`biocypher.create.BioCypherNode`.
+
+        Returns:
+            Whether the write was successful.
         """
 
         # instantiate adapter on demand because it takes time to load
@@ -535,8 +594,10 @@ class Driver(neo4j_utils.Driver):
         Instantiate the batch writer if it does not exist.
 
         Args:
-            dirname (str): the directory to write the files to
-            db_name (str): the name of the database to write the files to
+            dirname:
+                The directory to write the files to.
+            db_name:
+                The name of the database to write the files to.
         """
         if not self.batch_writer:
             self.batch_writer = BatchWriter(
@@ -551,30 +612,41 @@ class Driver(neo4j_utils.Driver):
                 skip_duplicate_nodes=self.skip_duplicate_nodes,
             )
 
-    def start_bl_adapter(self) -> None:
+    def start_bl_adapter(self):
         """
+        Makes sure a Biolink adapter is available.
+
         Instantiate the :class:`biocypher.adapter.BioLinkAdapter` if not
         existing.
+
+        Attributes:
+            bl_adapter:
+                An instance of :class:`biocypher.adapter.BioLinkAdapter`.
         """
         if not self.bl_adapter:
             self.bl_adapter = BiolinkAdapter(leaves=self.db_meta.leaves)
 
     def write_edges(
-        self,
-        edges,
-        db_name: str = None,
-        dirname: str = None,
-    ) -> None:
+            self,
+            edges: Iterable[BioCypherEdge],
+            db_name: str = None,
+            dirname: str = None,
+    ) -> bool:
         """
+        Write the edges to CSV file.
+
         Write BioCypher edges to disk using the :mod:`write` module,
         formatting the CSV to enable Neo4j admin import from the target
         directory.
 
         Args:
-            edges (iterable): collection of edges to be written in
-                BioCypher-compatible CSV format; can be any compatible
-                (ie, translatable) input format or already as
-                :class:`biocypher.create.BioCypherEdge`.
+            edges:
+                Collection of edges to be written in BioCypher-compatible
+                CSV format; can be any compatible (ie, translatable) input
+                format or already as :class:`biocypher.create.BioCypherEdge`.
+
+        Returns:
+            Whether the write was successful.
         """
 
         # instantiate adapter on demand because it takes time to load
@@ -589,59 +661,65 @@ class Driver(neo4j_utils.Driver):
         else:
             tedges = edges
         # write edge files
-        self.batch_writer.write_edges(tedges)
+        return self.batch_writer.write_edges(tedges)
 
-    def get_import_call(self):
+    def get_import_call(self) -> str:
         """
+        Create a *neo4j-admin* CLI call that imports the generated CSV files.
+
         Upon using the batch writer for writing admin import CSV files,
         return a string containing the neo4j admin import call with
         delimiters, database name, and paths of node and edge files.
 
         Returns:
-            str: a neo4j-admin import call
+            A *neo4j-admin* import call.
         """
         return self.batch_writer.get_import_call()
 
-    def write_import_call(self):
+    def write_import_call(self) -> bool:
         """
+        Write the *neo4j-admin* CLI call into a file.
+
         Upon using the batch writer for writing admin import CSV files,
         write a string containing the neo4j admin import call with
         delimiters, database name, and paths of node and edge files, to
         the export directory.
 
         Returns:
-            bool: The return value. True for success, False otherwise.
+            The write was successful.
         """
         return self.batch_writer.write_import_call()
 
-    def log_missing_bl_types(self):
+    def log_missing_bl_types(self) -> Optional[set[str]]:
         """
+        Send log message about Biolink types missing from the schema config.
+
         Get the set of Biolink types encountered without an entry in
         the `schema_config.yaml` and print them to the logger.
 
         Returns:
-            set: a set of missing Biolink types
+            A set of missing Biolink types
         """
 
         mt = self.translator.get_missing_bl_types()
 
         if mt:
             msg = (
-                "Input entities not accounted for due to them not being "
-                "present in the `schema_config.yaml` configuration file "
-                "(see log for details): \n"
+                'Input entities not accounted for due to them not being '
+                'present in the `schema_config.yaml` configuration file '
+                '(see log for details): \n'
             )
             for k, v in mt.items():
-                msg += f"    {k}: {v} \n"
+                msg += f'    {k}: {v} \n'
 
             logger.warning(msg)
             return mt
 
         else:
-            logger.info("No missing Biolink types in input.")
+            logger.info('No missing Biolink types in input.')
             return None
 
-    ### TRANSLATION METHODS ###
+    # TRANSLATION METHODS #
 
     def translate_term(self, term: str) -> str:
         """
@@ -685,4 +763,4 @@ class Driver(neo4j_utils.Driver):
 
     def __repr__(self):
 
-        return f"<BioCypher {neo4j_utils.Driver.__repr__(self)[1:]}"
+        return f'<BioCypher {neo4j_utils.Driver.__repr__(self)[1:]}'
