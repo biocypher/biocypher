@@ -126,17 +126,6 @@ class Driver(neo4j_utils.Driver):
                 bcy_driver=self,
             )
 
-            self._db_config = {
-                'uri': driver_args['db_uri'],
-                'user': driver_args['db_user'],
-                'passwd': driver_args['db_passwd'],
-                'db': driver_args['db_name'],
-                'fetch_size': driver_args['fetch_size'],
-            }
-
-            self.driver = None
-            self._db_name = db_name
-
         else:
 
             neo4j_utils.Driver.__init__(**driver_args)
@@ -607,7 +596,7 @@ class Driver(neo4j_utils.Driver):
                 array_delimiter=self.db_adelim,
                 quote=self.db_quote,
                 dirname=dirname,
-                db_name=db_name or self._db_name,
+                db_name=db_name or self.current_db,
                 skip_bad_relationships=self.skip_bad_relationships,
                 skip_duplicate_nodes=self.skip_duplicate_nodes,
             )
