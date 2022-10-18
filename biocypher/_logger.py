@@ -13,7 +13,7 @@
 Configuration of the module logger.
 """
 
-__all__ = ["get_logger", "log", "logfile"]
+__all__ = ['get_logger', 'log', 'logfile']
 
 from datetime import datetime
 import os
@@ -24,7 +24,7 @@ from biocypher import _config
 from biocypher._metadata import __version__
 
 
-def get_logger(name: str = "biocypher") -> logging.Logger:
+def get_logger(name: str = 'biocypher') -> logging.Logger:
     """
     Access the module logger, create a new one if does not exist yet.
 
@@ -54,17 +54,17 @@ def get_logger(name: str = "biocypher") -> logging.Logger:
 
         # formatting
         file_formatter = logging.Formatter(
-            "%(asctime)s\t%(levelname)s\tmodule:%(module)s\n%(message)s",
+            '%(asctime)s\t%(levelname)s\tmodule:%(module)s\n%(message)s',
         )
-        stdout_formatter = logging.Formatter("%(levelname)s -- %(message)s")
+        stdout_formatter = logging.Formatter('%(levelname)s -- %(message)s')
 
         # file name and creation
         now = datetime.now()
-        date_time = now.strftime("%Y%m%d-%H%M%S")
+        date_time = now.strftime('%Y%m%d-%H%M%S')
 
-        logdir = _config.config("logdir")
+        logdir = _config.config('logdir')
         os.makedirs(logdir, exist_ok=True)
-        logfile = os.path.join(logdir, f"biocypher-{date_time}.log")
+        logfile = os.path.join(logdir, f'biocypher-{date_time}.log')
 
         # handlers
         # stream handler
@@ -75,7 +75,7 @@ def get_logger(name: str = "biocypher") -> logging.Logger:
         # file handler
         file_handler = logging.FileHandler(logfile)
 
-        if _config.config("debug"):
+        if _config.config('debug'):
             file_handler.setLevel(logging.DEBUG)
         else:
             file_handler.setLevel(logging.INFO)
@@ -87,8 +87,8 @@ def get_logger(name: str = "biocypher") -> logging.Logger:
         logger.addHandler(stdout_handler)
 
         # startup message
-        logger.info(f"This is BioCypher v{__version__}.")
-        logger.info(f"Logging into `{logfile}`.")
+        logger.info(f'This is BioCypher version `{__version__}`.')
+        logger.info(f'Logging into `{logfile}`.')
 
     return logging.getLogger(name)
 
