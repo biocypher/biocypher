@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 #
 # Copyright 2021, Heidelberg University Clinic
@@ -12,11 +11,11 @@
 
 """
 Create a property graph database for biomedical research applications.
+
 Transforms ordered collections of biomedical entities and relationships
 to BioCypher objects that represent property graph nodes and edges.
 
 Todo:
-
     - Calls to the classes are independent, so there is no way to
       check directly; nodes can be created at any point in time
       previous to edge creation. We could require a pass of all
@@ -24,15 +23,13 @@ Todo:
       also allow a check whether the existing graph adheres to
       BioCypher, at least in the node domain. If it doesn't,
       the call does not make much sense.
-
     - establish a dictionary lookup with the id types to be used / basic
       type checking of the input
-
     - translation of id types using pypath translation facilities (to be
       later externalised)
 """
 
-from typing import Union, Optional
+from typing import TYPE_CHECKING, Union, Optional
 from datetime import datetime
 from dataclasses import field, dataclass
 import os
@@ -43,7 +40,18 @@ from . import _misc
 from . import _config as config
 from ._logger import logger
 
-logger.debug(f"Loading module {__name__}.")
+if TYPE_CHECKING:
+
+    import biocypher
+
+__all__ = [
+    'BioCypherEdge',
+    'BioCypherNode',
+    'BioCypherRelAsNode',
+    'VersionNode',
+]
+
+logger.debug(f'Loading module {__name__}.')
 
 
 @dataclass(frozen=True)
@@ -73,7 +81,7 @@ class BioCypherNode:
 
     node_id: str
     node_label: str
-    preferred_id: str = "id"
+    preferred_id: str = 'id'
     properties: dict = field(default_factory=dict)
 
     def __post_init__(self):
@@ -84,35 +92,35 @@ class BioCypherNode:
 
         Replace unwanted characters in properties.
         """
-        self.properties["id"] = self.node_id
-        self.properties["preferred_id"] = self.preferred_id or None
+        self.properties['id'] = self.node_id
+        self.properties['preferred_id'] = self.preferred_id or None
         # TODO actually make None possible here; as is, "id" is the default in
         # the dataclass as well as in the configuration file
 
-        if ":TYPE" in self.properties.keys():
+        if ':TYPE' in self.properties.keys():
             logger.warning(
                 "Keyword ':TYPE' is reserved for Neo4j. "
-                "Removing from properties."
+                'Removing from properties.',
                 # "Renaming to 'type'."
             )
             # self.properties["type"] = self.properties[":TYPE"]
-            del self.properties[":TYPE"]
+            del self.properties[':TYPE']
 
         for k, v in self.properties.items():
             if isinstance(v, str):
                 self.properties[k] = (
-                    v.replace(os.linesep, " ")
-                    .replace("\n", " ")
-                    .replace("\r", " ")
+                    v.replace(os.linesep, ' ')
+                    .replace('\n', ' ')
+                    .replace('\r', ' ')
                     .replace('"', "'")
                 )
 
             elif isinstance(v, list):
                 self.properties[k] = (
-                    ", ".join(v)
-                    .replace(os.linesep, " ")
-                    .replace("\n", " ")
-                    .replace("\r", " ")
+                    ', '.join(v)
+                    .replace(os.linesep, ' ')
+                    .replace('\n', ' ')
+                    .replace('\r', ' ')
                 )
 
     def get_id(self) -> str:
@@ -120,35 +128,34 @@ class BioCypherNode:
         Returns primary node identifier.
 
         Returns:
-            str: node_id
+            The node identifier.
         """
         return self.node_id
 
     def get_label(self) -> str:
         """
-        Returns primary node label.
+        Primary node label.
 
         Returns:
-            str: node_label
+            The label of the node.
         """
         return self.node_label
 
     def get_preferred_id(self) -> str:
         """
-        Returns preferred id.
+        The preferred identifier.
 
         Returns:
-            str: preferred_id
+            The preferred ID of the node.
         """
         return self.preferred_id
 
     def get_properties(self) -> dict:
         """
-        Returns all other node properties apart from primary id and
-        label as key-value pairs.
+        Properties of the node.
 
         Returns:
-            dict: properties
+            Node properties apart from primary id and label as key-value pairs.
         """
         return self.properties
 
@@ -161,9 +168,9 @@ class BioCypherNode:
             properties as second-level dict.
         """
         return {
-            "node_id": self.node_id,
-            "node_label": self.node_label,
-            "properties": self.properties,
+            'node_id': self.node_id,
+            'node_label': self.node_label,
+            'properties': self.properties,
         }
 
 
@@ -181,16 +188,14 @@ class BioCypherEdge:
     Neo4j consensus.
 
     Args:
-
-        source_id (string): consensus "best" id for biological entity
-
-        target_id (string): consensus "best" id for biological entity
-
-        relationship_label (string): type of interaction, UPPERCASE
-
-        properties (dict): collection of all other properties of the
-        respective edge
-
+        source_id:
+            Consensus "best" id for biological entity.
+        target_id:
+            Consensus "best" id for biological entity.
+        relationship_label:
+            Type of interaction, UPPERCASE.
+        properties:
+            Collection of all other properties of the respective edge.
     """
 
     source_id: str
@@ -204,14 +209,14 @@ class BioCypherEdge:
         Check for reserved keywords.
         """
 
-        if ":TYPE" in self.properties.keys():
+        if ':TYPE' in self.properties.keys():
             logger.debug(
                 "Keyword ':TYPE' is reserved for Neo4j. "
-                "Removing from properties."
+                'Removing from properties.',
                 # "Renaming to 'type'."
             )
             # self.properties["type"] = self.properties[":TYPE"]
-            del self.properties[":TYPE"]
+            del self.properties[':TYPE']
 
     def get_id(self) -> Union[str, None]:
         """
@@ -225,25 +230,25 @@ class BioCypherEdge:
 
     def get_source_id(self) -> str:
         """
-        Returns primary node identifier of relationship source.
+        Primary node identifier of the relationship source.
 
         Returns:
-            str: source_id
+            A node identifier.
         """
         return self.source_id
 
     def get_target_id(self) -> str:
         """
-        Returns primary node identifier of relationship target.
+        Primary node identifier of the relationship target.
 
         Returns:
-            str: target_id
+            A node identifier.
         """
         return self.target_id
 
     def get_label(self) -> str:
         """
-        Returns relationship label.
+        Label of the relationship.
 
         Returns:
             str: relationship_label
@@ -252,11 +257,11 @@ class BioCypherEdge:
 
     def get_properties(self) -> dict:
         """
-        Returns all other relationship properties apart from primary ids
-        and label as key-value pairs.
+        Properties of the relationship.
 
         Returns:
-            dict: properties
+            All relationship properties apart from primary ids and label
+            as key-value pairs.
         """
         return self.properties
 
@@ -270,32 +275,31 @@ class BioCypherEdge:
                 dict.
         """
         return {
-            "source_id": self.source_id,
-            "target_id": self.target_id,
-            "relationship_label": self.relationship_label,
-            "properties": self.properties,
+            'source_id': self.source_id,
+            'target_id': self.target_id,
+            'relationship_label': self.relationship_label,
+            'properties': self.properties,
         }
 
 
 @dataclass(frozen=True)
 class BioCypherRelAsNode:
     """
-    Class to represent relationships as nodes (with in- and outgoing
-    edges) as a triplet of a BioCypherNode and two BioCypherEdges. Main
-    usage in type checking (instances where the receiving function needs
-    to check whether it receives a relationship as a single edge or as
-    a triplet).
+    Class to represent relationships as nodes.
+
+    A relationship can be converted or alternatively represented as a node
+    with in- and outgoing edges, ie. a triplet of a BioCypherNode and two
+    BioCypherEdges. Main usage in type checking (instances where the
+    receiving function needs to check whether it receives a relationship
+    as a single edge or as a triplet).
 
     Args:
-
-        node (BioCypherNode): node representing the relationship
-
-        source_edge (BioCypherEdge): edge representing the source of the
-            relationship
-
-        target_edge (BioCypherEdge): edge representing the target of the
-            relationship
-
+        node:
+            Node representing the relationship.
+        source_edge:
+            Eedge representing the source of the relationship.
+        target_edge:
+            Edge representing the target of the relationship.
     """
 
     node: BioCypherNode
@@ -303,40 +307,43 @@ class BioCypherRelAsNode:
     target_edge: BioCypherEdge
 
     def __post_init__(self):
-        if not isinstance(self.node, BioCypherNode):
-            raise TypeError(
-                f"BioCypherRelAsNode.node must be a BioCypherNode, "
-                f"not {type(self.node)}."
-            )
 
-        if not isinstance(self.source_edge, BioCypherEdge):
-            raise TypeError(
-                f"BioCypherRelAsNode.source_edge must be a BioCypherEdge, "
-                f"not {type(self.source_edge)}."
-            )
+        # wow, I thought dataclass at least does this out of the box
+        for attr, t in self.__class__.__annotations__.items():
 
-        if not isinstance(self.target_edge, BioCypherEdge):
-            raise TypeError(
-                f"BioCypherRelAsNode.target_edge must be a BioCypherEdge, "
-                f"not {type(self.target_edge)}."
-            )
+            if not isinstance(getattr(self, attr), t):
+
+                raise TypeError(
+                    f'{self.__class__.__name__}.{attr} must be '
+                    f'of type `{t.__name__}`.',
+                )
 
     def get_node(self):
+        """
+        The node representing the former relationship.
+        """
         return self.node
 
     def get_source_edge(self):
+        """
+        The edge pointing to the source of the relationship.
+        """
         return self.source_edge
 
     def get_target_edge(self) -> BioCypherEdge:
+        """
+        The edge pointing to the target of the relationship.
+        """
         return self.target_edge
 
 
 class VersionNode:
     """
-    Versioning and graph structure information meta node. Similar to
-    BioCypherNode but fixes label to ":BioCypher" and sets version by using the
-    current date and time (meaning it overrides both mandatory args from
-    BioCypherNode).
+    Versioning and graph structure information meta node.
+
+    Similar to BioCypherNode but fixes label to ":BioCypher" and sets
+    version by using the current date and time (meaning it overrides both
+    mandatory args from BioCypherNode).
 
     Is created upon establishment of connection with the database and remains
     fixed for each BioCypher "session" (ie, the entire duration from starting
@@ -345,22 +352,39 @@ class VersionNode:
     """
 
     def __init__(
-        self,
-        offline: bool = False,
-        from_config: bool = False,
-        config_file: str = None,
-        node_label: str = "BioCypher",
-        bcy_driver=None,
+            self,
+            offline: bool = False,
+            from_config: bool = False,
+            config_file: str = None,
+            node_label: str = 'BioCypher',
+            bcy_driver: Optional[biocypher.Driver] = None,
     ):
+        """
+        Create a node with schema and version information.
+
+        Args:
+            offline:
+                No connection to server.
+            from_config:
+                Read the parameters from config, instead of an existing
+                node in the database.
+            config_file:
+                Path to config file.
+            node_label:
+                Label of the version node.
+            bcy_driver:
+                A driver instance that supports the connection and already
+                carries config data.
+        """
 
         # if we do not have a driver, then likely we are offline, right?
-        self.offline = offline or getattr(bcy_driver, "offline", True)
+        self.offline = offline or getattr(bcy_driver, 'offline', True)
         self.from_config = from_config
         self.config_file = config_file
         self.node_label = node_label
         self.bcy_driver = bcy_driver
 
-        self.node_id = self._get_current_id()
+        self.node_id = self._timestamp
         self.graph_state = (
             self._get_graph_state() if not self.offline else None
         )
@@ -368,9 +392,9 @@ class VersionNode:
         self.leaves = self._get_leaves()
 
         self.properties = {
-            "graph_state": self.graph_state,
-            "schema": self.schema,
-            "leaves": self.leaves,
+            'graph_state': self.graph_state,
+            'schema': self.schema,
+            'leaves': self.leaves,
         }
 
     def get_id(self) -> str:
@@ -400,13 +424,15 @@ class VersionNode:
             properties as second-level dict.
         """
         return {
-            "node_id": self.node_id,
-            "node_label": self.node_label,
-            "properties": self.properties,
+            'node_id': self.node_id,
+            'node_label': self.node_label,
+            'properties': self.properties,
         }
 
-    def _get_current_id(self):
+    def _timestamp(self):
         """
+        A timestampt that serves as unique ID for the current session.
+
         Instantiate a version ID for the current session. For now does
         versioning using datetime.
 
@@ -415,33 +441,57 @@ class VersionNode:
         """
 
         now = datetime.now()
-        return now.strftime("v%Y%m%d-%H%M%S")
+        return now.strftime('v%Y%m%d-%H%M%S')
+
+    @property
+    def node_id(self):
+        """
+        Unique ID of the current session.
+        """
+
+        return self._node_id
+
+    @node_id.setter
+    def node_id(self, node_id: str) -> str:
+        """
+        Unique ID of the current session.
+        """
+
+        if hasattr(self, '_node_id'):
+
+            raise TypeError('Changing `node_id` is not supported.')
+
+        else:
+
+            self._node_id = node_id
 
     def _get_graph_state(self):
         """
+        Current graph state if available, otherwise create a new one.
+
         Check in active DBMS connection for existence of VersionNodes,
         return the most recent VersionNode as representation of the
         graph state. If no VersionNode found, assume blank graph state
         and initialise.
         """
 
-        logger.info("Getting graph state.")
+        logger.info('Getting graph state.')
 
         result, summary = self.bcy_driver.query(
-            "MATCH (meta:BioCypher)"
-            "WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)"
-            "RETURN meta",
+            'MATCH (meta:BioCypher)'
+            'WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)'
+            'RETURN meta',
         )
 
         # if result is empty, initialise
         if not result:
-            logger.info("No existing graph found, initialising.")
+            logger.info('No existing graph found, initialising.')
             return None
         # else, pass on graph state
         else:
-            version = result[0]["meta"]["id"]
-            logger.info(f"Found graph state at {version}.")
-            return result[0]["meta"]
+            version = result[0]['meta']['id']
+            logger.info(f'Found graph state at {version}.')
+            return result[0]['meta']
 
     def _get_graph_schema(
         self,
@@ -449,9 +499,12 @@ class VersionNode:
         config_file: Optional[str] = None,
     ) -> dict:
         """
-        Return graph schema information from meta graph if it exists, or
-        create new schema information properties from configuration
-        file.
+        The current schema.
+
+        Returns:
+            Graph schema information from meta graph if it exists, or
+            create new schema information properties from configuration
+            file.
 
         Todo:
             - get schema from meta graph
@@ -463,14 +516,14 @@ class VersionNode:
         if self.graph_state and not from_config:
             # TODO do we want information about actual structure here?
             res = self.bcy_driver.query(
-                "MATCH (src:MetaNode) "
+                'MATCH (src:MetaNode) '
                 # "OPTIONAL MATCH (src)-[r]->(tar)"
-                "RETURN src",  # , type(r) AS type, tar"
+                'RETURN src',  # , type(r) AS type, tar"
             )
             gs_dict = {}
             for r in res[0]:
-                src = r["src"]
-                key = src.pop("id")
+                src = r['src']
+                key = src.pop('id')
                 gs_dict[key] = src
 
             return gs_dict
@@ -479,15 +532,17 @@ class VersionNode:
             # load default yaml from module
             # get graph state from config
             if config_file is not None:
-                with open(config_file, "r") as f:
+                with open(config_file) as f:
                     dataMap = yaml.safe_load(f)
             else:
-                dataMap = config.module_data("schema_config")
+                dataMap = config.module_data('schema_config')
 
             return dataMap
 
     def _get_leaves(self, d: Optional[dict] = None) -> dict:
         """
+        Leaves of the schema.
+
         Get leaves of the tree hierarchy from the data structure dict
         contained in the `schema_config.yaml`. Creates virtual leaves
         (as children) from entries that provide more than one preferred
@@ -496,28 +551,27 @@ class VersionNode:
         Args:
             d:
                 Data structure dict from yaml file.
-
         """
 
         d = d or self.schema
 
-        leaves = dict()
-        max_depth = 0  # TODO needed?
+        leaves = {}
+        max_depth = 0  # TODO needed? # ???
 
         # first pass: get parent leaves with direct representation in ontology
         for k, v in d.items():
 
             # k is not an entity
-            if not "represented_as" in v:
+            if 'represented_as' not in v:
                 continue
 
             # k is an entity that is present in the ontology
-            if not "is_a" in v:
+            if 'is_a' not in v:
                 leaves[k] = v
 
             # find max depth of children
             else:
-                lst = v["is_a"] if isinstance(v["is_a"], list) else [v["is_a"]]
+                lst = v['is_a'] if isinstance(v['is_a'], list) else [v['is_a']]
                 max_depth = max(max_depth, len(lst))
 
         # second pass: "vertical" inheritance
@@ -525,7 +579,7 @@ class VersionNode:
         # create leaves for all straight descendants (no multiple identifiers
         # or sources) -> explicit children
         # TODO do we need to order children by depth from real leaves?
-        leaves.update({k: v for k, v in d.items() if "is_a" in v})
+        leaves.update({k: v for k, v in d.items() if 'is_a' in v})
 
         # "horizontal" inheritance: create siblings for multiple identifiers or
         # sources -> virtual leaves or implicit children
@@ -534,14 +588,14 @@ class VersionNode:
         for k, v in d.items():
 
             # k is not an entity
-            if not "represented_as" in v:
+            if 'represented_as' not in v:
                 continue
 
-            if isinstance(v.get("preferred_id"), list):
+            if isinstance(v.get('preferred_id'), list):
                 mi_leaves = self._horizontal_inheritance_pid(k, v)
                 leaves.update(mi_leaves)
 
-            elif isinstance(v.get("source"), list):
+            elif isinstance(v.get('source'), list):
                 ms_leaves = self._horizontal_inheritance_source(k, v)
                 leaves.update(ms_leaves)
 
@@ -554,28 +608,28 @@ class VersionNode:
         for k, v in d.items():
 
             # k is not an entity
-            if not "represented_as" in v:
+            if 'represented_as' not in v:
                 continue
 
             # k is an entity that is present in the ontology
-            if not "is_a" in v:
+            if 'is_a' not in v:
                 continue
 
             # "vertical" inheritance: inherit properties from parent
-            if v.get("inherit_properties", False):
+            if v.get('inherit_properties', False):
 
                 # get direct ancestor
-                if isinstance(v["is_a"], list):
-                    parent = v["is_a"][0]
+                if isinstance(v['is_a'], list):
+                    parent = v['is_a'][0]
                 else:
-                    parent = v["is_a"]
+                    parent = v['is_a']
 
                 # update properties of child
-                if self.schema[parent].get("properties"):
-                    v["properties"] = self.schema[parent]["properties"]
-                if self.schema[parent].get("exclude_properties"):
-                    v["exclude_properties"] = self.schema[parent][
-                        "exclude_properties"
+                if self.schema[parent].get('properties'):
+                    v['properties'] = self.schema[parent]['properties']
+                if self.schema[parent].get('exclude_properties'):
+                    v['exclude_properties'] = self.schema[parent][
+                        'exclude_properties'
                     ]
 
                 # update schema (d)
@@ -592,65 +646,63 @@ class VersionNode:
 
         leaves = {}
 
-        preferred_id = value["preferred_id"]
-        label_in_input = value["label_in_input"]
-        represented_as = value["represented_as"]
+        preferred_id = value['preferred_id']
+        label_in_input = value['label_in_input']
+        represented_as = value['represented_as']
 
         # adjust lengths
-        l = max(
-            [
-                len(_misc.to_list(preferred_id)),
-                len(_misc.to_list(label_in_input)),
-                len(_misc.to_list(represented_as)),
-            ]
+        length = max(
+            len(_misc.to_list(preferred_id)),
+            len(_misc.to_list(label_in_input)),
+            len(_misc.to_list(represented_as)),
         )
 
         # adjust pid length if necessary
         if isinstance(preferred_id, str):
-            pids = [preferred_id] * l
+            pids = [preferred_id] * length
         else:
             pids = preferred_id
 
         # adjust rep length if necessary
         if isinstance(represented_as, str):
-            reps = [represented_as] * l
+            reps = [represented_as] * length
         else:
             reps = represented_as
 
         for pid, lab, rep in zip(pids, label_in_input, reps):
 
-            skey = pid + "." + key
+            skey = pid + '.' + key
             svalue = {
-                "preferred_id": pid,
-                "label_in_input": lab,
-                "represented_as": rep,
+                'preferred_id': pid,
+                'label_in_input': lab,
+                'represented_as': rep,
                 # mark as virtual
-                "virtual": True,
+                'virtual': True,
             }
 
             # inherit is_a if exists
-            if "is_a" in value.keys():
+            if 'is_a' in value.keys():
 
                 # treat as multiple inheritance
-                if isinstance(value["is_a"], list):
-                    v = list(value["is_a"])
+                if isinstance(value['is_a'], list):
+                    v = list(value['is_a'])
                     v.insert(0, key)
-                    svalue["is_a"] = v
+                    svalue['is_a'] = v
 
                 else:
-                    svalue["is_a"] = [key, value["is_a"]]
+                    svalue['is_a'] = [key, value['is_a']]
 
             else:
                 # set parent as is_a
-                svalue["is_a"] = key
+                svalue['is_a'] = key
 
             # inherit everything except core attributes
             for k, v in value.items():
                 if k not in [
-                    "is_a",
-                    "preferred_id",
-                    "label_in_input",
-                    "represented_as",
+                    'is_a',
+                    'preferred_id',
+                    'label_in_input',
+                    'represented_as',
                 ]:
                     svalue[k] = v
 
@@ -667,59 +719,59 @@ class VersionNode:
 
         leaves = {}
 
-        source = value["source"]
-        label_in_input = value["label_in_input"]
-        represented_as = value["represented_as"]
+        source = value['source']
+        label_in_input = value['label_in_input']
+        represented_as = value['represented_as']
 
         # adjust lengths
-        l = len(source)
+        nsources = len(source)
 
         # adjust label length if necessary
         if isinstance(label_in_input, str):
-            labels = [label_in_input] * l
+            labels = [label_in_input] * nsources
         else:
             labels = label_in_input
 
         # adjust rep length if necessary
         if isinstance(represented_as, str):
-            reps = [represented_as] * l
+            reps = [represented_as] * nsources
         else:
             reps = represented_as
 
         for src, lab, rep in zip(source, labels, reps):
 
-            skey = src + "." + key
+            skey = src + '.' + key
             svalue = {
-                "source": src,
-                "label_in_input": lab,
-                "represented_as": rep,
+                'source': src,
+                'label_in_input': lab,
+                'represented_as': rep,
                 # mark as virtual
-                "virtual": True,
+                'virtual': True,
             }
 
             # inherit is_a if exists
-            if "is_a" in value.keys():
+            if 'is_a' in value.keys():
 
                 # treat as multiple inheritance
-                if isinstance(value["is_a"], list):
-                    v = list(value["is_a"])
+                if isinstance(value['is_a'], list):
+                    v = list(value['is_a'])
                     v.insert(0, key)
-                    svalue["is_a"] = v
+                    svalue['is_a'] = v
 
                 else:
-                    svalue["is_a"] = [key, value["is_a"]]
+                    svalue['is_a'] = [key, value['is_a']]
 
             else:
                 # set parent as is_a
-                svalue["is_a"] = key
+                svalue['is_a'] = key
 
             # inherit everything except core attributes
             for k, v in value.items():
                 if k not in [
-                    "is_a",
-                    "source",
-                    "label_in_input",
-                    "represented_as",
+                    'is_a',
+                    'source',
+                    'label_in_input',
+                    'represented_as',
                 ]:
                     svalue[k] = v
 

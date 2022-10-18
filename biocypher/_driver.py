@@ -112,46 +112,29 @@ class Driver(neo4j_utils.Driver):
 
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
-        # TODO: bools in config?
-        self.offline = offline
 
-        if offline:
+        neo4j_utils.Driver.__init__(**driver_args)
+        # get database version node ('check' module) immutable
+        # variable of each instance (ie, each call from the
+        # adapter to BioCypher); checks for existence of graph
+        # representation and returns if found, else creates new
+        # one
+        self.db_meta = VersionNode(
+            from_config=offline or wipe,
+            config_file=user_schema_config_path,
+            offline=offline,
+            bcy_driver=self,
+        )
 
-            logger.info('Offline mode: no connection to Neo4j.')
+        # if db representation node does not exist or explicitly
+        # asked for wipe, create new graph representation: default
+        # yaml, interactive?
+        # Denes: those are two different cases, if it's wiped, first
+        # its contents should be read, if it does not exist, a new one
+        # should be created.
 
-            self.db_meta = VersionNode(
-                from_config=True,
-                config_file=user_schema_config_path,
-                offline=True,
-                bcy_driver=self,
-            )
-
-        else:
-
-            neo4j_utils.Driver.__init__(**driver_args)
-
-            # if db representation node does not exist or explicitly
-            # asked for wipe, create new graph representation: default
-            # yaml, interactive?
-            if wipe:
-
-                # get database version node ('check' module) immutable
-                # variable of each instance (ie, each call from the
-                # adapter to BioCypher); checks for existence of graph
-                # representation and returns if found, else creates new
-                # one
-                self.db_meta = VersionNode(
-                    from_config=offline or wipe,
-                    config_file=user_schema_config_path,
-                    bcy_driver=self,
-                )
-
-                # init requires db_meta to be set
-                self.init_db()
-
-            else:
-
-                self.db_meta = VersionNode(self)
+        # likely this will be refactored soon
+        self._create_constraints()
 
         if increment_version:
 
@@ -163,7 +146,8 @@ class Driver(neo4j_utils.Driver):
         self._update_translator()
 
         # TODO: implement passing a driver instance
-        # I am not sure, but seems like it should work from driver
+        # Denes: I am not sure, but seems like it works already
+        # by the base class
 
     def update_meta_graph(self):
         """
