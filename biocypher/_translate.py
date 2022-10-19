@@ -557,13 +557,12 @@ class Translator:
         # legacy: deal with 4-tuples (no edge id)
         # TODO remove for performance reasons once safe
         edge_data = peekable(edge_data)
-        if len(edge_data.peek()) == 4:
-            edge_data = [
-                (None, src, tar, typ, props)
-                for src, tar, typ, props in edge_data
-            ]
 
-        for _id, _src, _tar, _type, _props in edge_data:
+        if len(edge_data.peek()) == 4:
+
+            edge_data = [(None,) + e for e in edge_data]
+
+        for _id, src, tar, _type, props in edge_data:
 
             # match the input label (_type) to
             # a Biolink label from schema_config
@@ -572,7 +571,7 @@ class Translator:
             if bl_type:
 
                 # filter properties for those specified in schema_config if any
-                _filtered_props = self._filter_props(bl_type, _props)
+                filtered_props = self._filter_props(bl_type, props)
 
                 rep = self.leaves[bl_type]['represented_as']
 
@@ -583,53 +582,41 @@ class Translator:
                         node_id = _id
 
                     else:
+
+                        props_str = _misc.dict_str(dct = props, sep = '_')
                         # source target concat
-                        node_id = (
-                            str(_src)
-                            + '_'
-                            + str(_tar)
-                            + '_'
-                            + '_'.join(
-                                str(v) for v in _filtered_props.values()
-                            )
-                        )
+                        node_id = f'{src}_{tar}_{props_str}'
 
                     n = BioCypherNode(
-                        node_id=node_id,
-                        node_label=bl_type,
-                        properties=_filtered_props,
+                        node_id = node_id,
+                        node_label = bl_type,
+                        properties = filtered_props,
                     )
 
                     # directionality check TODO generalise to account for
                     # different descriptions of directionality or find a
                     # more consistent solution for indicating directionality
-                    if _filtered_props.get('directed') == True:
+                    if filtered_props.get('directed'):
 
                         l1 = 'IS_SOURCE_OF'
                         l2 = 'IS_TARGET_OF'
 
-                    elif _filtered_props.get(
-                        'src_role',
-                    ) and _filtered_props.get('tar_role'):
-
-                        l1 = _filtered_props.get('src_role')
-                        l2 = _filtered_props.get('tar_role')
-
                     else:
 
-                        l1 = l2 = 'IS_PART_OF'
+                        l1 = filtered_props.get('src_role') or 'IS_PART_OF'
+                        l2 = filtered_props.get('tar_role') or 'IS_PART_OF'
 
                     e_s = BioCypherEdge(
-                        source_id=_src,
-                        target_id=node_id,
-                        relationship_label=l1,
+                        source_id = src,
+                        target_id = node_id,
+                        relationship_label = l1,
                         # additional here
                     )
 
                     e_t = BioCypherEdge(
-                        source_id=_tar,
-                        target_id=node_id,
-                        relationship_label=l2,
+                        source_id = tar,
+                        target_id = node_id,
+                        relationship_label = l2,
                         # additional here
                     )
 
@@ -644,10 +631,10 @@ class Translator:
                         edge_label = bl_type
 
                     yield BioCypherEdge(
-                        source_id=_src,
-                        target_id=_tar,
-                        relationship_label=edge_label,
-                        properties=_filtered_props,
+                        source_id = src,
+                        target_id = tar,
+                        relationship_label = edge_label,
+                        properties = filtered_props,
                     )
 
             else:
