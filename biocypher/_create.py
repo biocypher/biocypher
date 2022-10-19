@@ -32,7 +32,7 @@ Todo:
 from typing import TYPE_CHECKING, Union, Optional
 from datetime import datetime
 from dataclasses import field, dataclass
-import os
+import re
 
 import yaml
 
@@ -52,6 +52,9 @@ __all__ = [
 ]
 
 logger.debug(f'Loading module {__name__}.')
+
+
+_RELFCR = re.compile('[\n\r]+')
 
 
 @dataclass(frozen=True)
@@ -98,30 +101,18 @@ class BioCypherNode:
         # the dataclass as well as in the configuration file
 
         if ':TYPE' in self.properties.keys():
+
             logger.warning(
-                "Keyword ':TYPE' is reserved for Neo4j. "
+                'Keyword `:TYPE` is reserved for Neo4j. '
                 'Removing from properties.',
-                # "Renaming to 'type'."
             )
-            # self.properties["type"] = self.properties[":TYPE"]
             del self.properties[':TYPE']
 
-        for k, v in self.properties.items():
-            if isinstance(v, str):
-                self.properties[k] = (
-                    v.replace(os.linesep, ' ')
-                    .replace('\n', ' ')
-                    .replace('\r', ' ')
-                    .replace('"', "'")
-                )
-
-            elif isinstance(v, list):
-                self.properties[k] = (
-                    ', '.join(v)
-                    .replace(os.linesep, ' ')
-                    .replace('\n', ' ')
-                    .replace('\r', ' ')
-                )
+        self.properties = {
+            k:
+            _RELFCR.sub(' ', ', '.join(_misc.to_list(v))).replace('"', "'")
+            for k, v in self.properties.items()
+        }
 
     def get_id(self) -> str:
         """
