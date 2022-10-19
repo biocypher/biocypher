@@ -58,7 +58,7 @@ def prettyfloat(n: float) -> str:
     return '%.02g' % n if isinstance(n, float) else str(n)
 
 
-def dict_str(dct: dict) -> str:
+def dict_str(dct: dict, sep: str = ', ') -> str:
     """
     Compact string representation of a dict.
     """
@@ -67,7 +67,7 @@ def dict_str(dct: dict) -> str:
 
         return str(dct)
 
-    return ', '.join(
-        '%s=%s' % (str(key), prettyfloat(val))
-        for key, val in dct.items()
+    return sep.join(
+        f'{key}={prettyfloat(dct[key])}'
+        for key in sorted(dct.key())
     )
