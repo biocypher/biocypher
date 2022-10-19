@@ -452,7 +452,7 @@ class Translator:
 
     def translate_nodes(
         self,
-        id_type_prop_tuples: Iterable,
+        node_data: Iterable[tuple[str, str, dict]],
     ) -> Generator[BioCypherNode, None, None]:
         """
         Translates input node representation to a representation that
@@ -460,16 +460,15 @@ class Translator:
         requires explicit statement of node type on pass.
 
         Args:
-            id_type_tuples (list of tuples): collection of tuples
-                representing individual nodes by their unique id and a type
-                that is translated from the original database notation to
-                the corresponding BioCypher notation.
-
+            node_data:
+                Collection of tuples representing individual nodes by their
+                unique id and a type that is translated from the original
+                database notation to the corresponding BioCypher notation.
         """
 
-        self._log_begin_translate(id_type_prop_tuples, 'nodes')
+        self._log_begin_translate(node_data, 'nodes')
 
-        for _id, _type, _props in id_type_prop_tuples:
+        for _id, _type, _props in node_data:
 
             # find the node in leaves that represents biolink node type
             _bl_type = self._get_bl_type(_type)
@@ -534,7 +533,7 @@ class Translator:
 
     def translate_edges(
         self,
-        id_src_tar_type_prop_tuples: Iterable,
+        edge_data: Iterable[tuple[str, str, str, dict]],
     ) -> Generator[Union[BioCypherEdge, BioCypherRelAsNode], None, None]:
         """
         Translates input edge representation to a representation that
@@ -542,10 +541,8 @@ class Translator:
         requires explicit statement of edge type on pass.
 
         Args:
-
-            id_src_tar_type_prop_tuples (list of tuples):
-
-                collection of tuples representing source and target of
+            edge_data:
+                Collection of tuples representing source and target of
                 an interaction via their unique ids as well as the type
                 of interaction in the original database notation, which
                 is translated to BioCypher notation using the `leaves`.
@@ -555,18 +552,18 @@ class Translator:
         #    - id of interactions (now simple concat with "_")
         #    - do we even need one?
 
-        self._log_begin_translate(id_src_tar_type_prop_tuples, 'edges')
+        self._log_begin_translate(edge_data, 'edges')
 
         # legacy: deal with 4-tuples (no edge id)
         # TODO remove for performance reasons once safe
-        id_src_tar_type_prop_tuples = peekable(id_src_tar_type_prop_tuples)
-        if len(id_src_tar_type_prop_tuples.peek()) == 4:
-            id_src_tar_type_prop_tuples = [
+        edge_data = peekable(edge_data)
+        if len(edge_data.peek()) == 4:
+            edge_data = [
                 (None, src, tar, typ, props)
-                for src, tar, typ, props in id_src_tar_type_prop_tuples
+                for src, tar, typ, props in edge_data
             ]
 
-        for _id, _src, _tar, _type, _props in id_src_tar_type_prop_tuples:
+        for _id, _src, _tar, _type, _props in edge_data:
 
             # match the input label (_type) to
             # a Biolink label from schema_config

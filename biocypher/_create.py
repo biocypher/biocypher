@@ -635,7 +635,7 @@ class VersionNode:
             by: Literal['source', 'preferred_id'],
         ) -> dict:
         """
-        Create virtual leaves for multiple sources.
+        Create virtual leaves for multiple sources or preferred IDs.
 
         If we create virtual leaves, label_in_input always has to be a list.
         """
