@@ -272,18 +272,17 @@ contents and constraints and setting up new constraints.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="biocypher._driver.Driver.log_duplicates">
+<span class="sig-name descname"><span class="pre">log_duplicates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._driver.Driver.log_duplicates" title="Permalink to this definition"></a></dt>
+<dd><p>Get the set of duplicate nodes and edges encountered and print them to
+the logger.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="biocypher._driver.Driver.log_missing_bl_types">
 <span class="sig-name descname"><span class="pre">log_missing_bl_types</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._driver.Driver.log_missing_bl_types" title="Permalink to this definition"></a></dt>
 <dd><p>Get the set of Biolink types encountered without an entry in
 the <cite>schema_config.yaml</cite> and print them to the logger.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a set of missing Biolink types</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>set</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -811,6 +810,38 @@ commands.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._write.BatchWriter.get_duplicate_edge_types">
+<span class="sig-name descname"><span class="pre">get_duplicate_edge_types</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span></span></span><a class="headerlink" href="#biocypher._write.BatchWriter.get_duplicate_edge_types" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The set of edge types that have been found to have duplicates.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._write.BatchWriter.get_duplicate_edges">
+<span class="sig-name descname"><span class="pre">get_duplicate_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#biocypher._write.BatchWriter.get_duplicate_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a dict of duplicate edge types and the number of duplicates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._write.BatchWriter.get_duplicate_node_types">
+<span class="sig-name descname"><span class="pre">get_duplicate_node_types</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span></span></span><a class="headerlink" href="#biocypher._write.BatchWriter.get_duplicate_node_types" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The set of node types that have been found to have duplicates.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._write.BatchWriter.get_duplicate_nodes">
+<span class="sig-name descname"><span class="pre">get_duplicate_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#biocypher._write.BatchWriter.get_duplicate_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a dict of duplicate node types and the number of duplicates.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._write.BatchWriter.get_import_call">
 <span class="sig-name descname"><span class="pre">get_import_call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._write.BatchWriter.get_import_call" title="Permalink to this definition"></a></dt>
