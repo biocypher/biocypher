@@ -500,11 +500,7 @@ class Translator:
         Returns the preferred id for the given Biolink type.
         """
 
-        return (
-            self.leaves[_bl_type]['preferred_id']
-            if 'preferred_id' in self.leaves.get(_bl_type, {})
-            else 'id'
-        )
+        return self.leaves.get(_bl_type, {}).get('preferred_id', 'id')
 
     def _filter_props(self, bl_type: str, props: dict) -> dict:
         """
