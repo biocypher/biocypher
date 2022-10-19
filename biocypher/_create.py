@@ -29,7 +29,7 @@ Todo:
       later externalised)
 """
 
-from typing import TYPE_CHECKING, Union, Optional
+from typing import Literal, TYPE_CHECKING, Union, Optional
 from datetime import datetime
 from dataclasses import field, dataclass
 import re
@@ -628,80 +628,12 @@ class VersionNode:
 
         return d
 
-    def _horizontal_inheritance_pid(self, key, value):
-        """
-        Create virtual leaves for multiple preferred id types or sources.
-
-        If we create virtual leaves, label_in_input always has to be a list.
-        """
-
-        leaves = {}
-
-        preferred_id = value['preferred_id']
-        label_in_input = value['label_in_input']
-        represented_as = value['represented_as']
-
-        # adjust lengths
-        length = max(
-            len(_misc.to_list(preferred_id)),
-            len(_misc.to_list(label_in_input)),
-            len(_misc.to_list(represented_as)),
-        )
-
-        # adjust pid length if necessary
-        if isinstance(preferred_id, str):
-            pids = [preferred_id] * length
-        else:
-            pids = preferred_id
-
-        # adjust rep length if necessary
-        if isinstance(represented_as, str):
-            reps = [represented_as] * length
-        else:
-            reps = represented_as
-
-        for pid, lab, rep in zip(pids, label_in_input, reps):
-
-            skey = pid + '.' + key
-            svalue = {
-                'preferred_id': pid,
-                'label_in_input': lab,
-                'represented_as': rep,
-                # mark as virtual
-                'virtual': True,
-            }
-
-            # inherit is_a if exists
-            if 'is_a' in value.keys():
-
-                # treat as multiple inheritance
-                if isinstance(value['is_a'], list):
-                    v = list(value['is_a'])
-                    v.insert(0, key)
-                    svalue['is_a'] = v
-
-                else:
-                    svalue['is_a'] = [key, value['is_a']]
-
-            else:
-                # set parent as is_a
-                svalue['is_a'] = key
-
-            # inherit everything except core attributes
-            for k, v in value.items():
-                if k not in [
-                    'is_a',
-                    'preferred_id',
-                    'label_in_input',
-                    'represented_as',
-                ]:
-                    svalue[k] = v
-
-            leaves[skey] = svalue
-
-        return leaves
-
-    def _horizontal_inheritance_source(self, key, value):
+    def _horizontal_inheritance(
+            self,
+            key: str,
+            value: dict,
+            by: Literal['source', 'preferred_id'],
+        ) -> dict:
         """
         Create virtual leaves for multiple sources.
 
@@ -710,62 +642,57 @@ class VersionNode:
 
         leaves = {}
 
-        source = value['source']
-        label_in_input = value['label_in_input']
-        represented_as = value['represented_as']
+        variables = (by, 'label_in_input', 'represented_as')
 
-        # adjust lengths
-        nsources = len(source)
+        length = (
+            len(value['source'])
+                if by == 'source' else
+            max(len(_misc.to_list(value[v])) for v in variables)
+        )
 
-        # adjust label length if necessary
-        if isinstance(label_in_input, str):
-            labels = [label_in_input] * nsources
-        else:
-            labels = label_in_input
+        values = tuple(
+            [value[v]] * length
+                if isinstance(value[v], str) else
+            value[v]
+            for v in variables
+        )
 
-        # adjust rep length if necessary
-        if isinstance(represented_as, str):
-            reps = [represented_as] * nsources
-        else:
-            reps = represented_as
+        for _by, lab, rep in zip(*values):
 
-        for src, lab, rep in zip(source, labels, reps):
-
-            skey = src + '.' + key
-            svalue = {
-                'source': src,
+            skey = f'{_by}.{key}'
+            leaves[skey] = value.copy()
+            leaves[skey].update({
+                by: _by,
                 'label_in_input': lab,
                 'represented_as': rep,
-                # mark as virtual
                 'virtual': True,
-            }
-
-            # inherit is_a if exists
-            if 'is_a' in value.keys():
-
-                # treat as multiple inheritance
-                if isinstance(value['is_a'], list):
-                    v = list(value['is_a'])
-                    v.insert(0, key)
-                    svalue['is_a'] = v
-
-                else:
-                    svalue['is_a'] = [key, value['is_a']]
-
-            else:
-                # set parent as is_a
-                svalue['is_a'] = key
-
-            # inherit everything except core attributes
-            for k, v in value.items():
-                if k not in [
-                    'is_a',
-                    'source',
-                    'label_in_input',
-                    'represented_as',
-                ]:
-                    svalue[k] = v
-
-            leaves[skey] = svalue
+                'is_a': [key] + _misc.to_list(value.get('is_a', []))
+            })
 
         return leaves
+
+    def _horizontal_inheritance_pid(self, key, value):
+        """
+        Create virtual leaves for multiple preferred id types or sources.
+
+        If we create virtual leaves, label_in_input always has to be a list.
+        """
+
+        return self._horizontal_inheritance(
+            key = key,
+            value = value,
+            by = 'preferred_id',
+        )
+
+    def _horizontal_inheritance_source(self, key, value):
+        """
+        Create virtual leaves for multiple sources.
+
+        If we create virtual leaves, label_in_input always has to be a list.
+        """
+
+        return self._horizontal_inheritance(
+            key = key,
+            value = value,
+            by = 'source',
+        )
