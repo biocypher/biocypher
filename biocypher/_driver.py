@@ -686,11 +686,56 @@ class Driver(neo4j_utils.Driver):
                 msg += f'    {k}: {v} \n'
 
             logger.warning(msg)
-            return mt
 
         else:
+
             logger.info('No missing Biolink types in input.')
-            return None
+
+    def log_duplicates(self):
+        """
+        Get the set of duplicate nodes and edges encountered and print them to
+        the logger.
+        """
+
+        dtypes = self.batch_writer.get_duplicate_node_types()
+
+        if dtypes:
+            logger.warning(
+                'Duplicate nodes encountered in the following types '
+                '(see log for details): \n'
+                f'{dtypes}',
+            )
+
+            dn = self.batch_writer.get_duplicate_nodes()
+
+            msg = 'Duplicate nodes encountered: \n'
+            for k, v in dn.items():
+                msg += f'    {k}: {v} \n'
+
+            logger.debug(msg)
+
+        else:
+            logger.info('No duplicate nodes in input.')
+
+        etypes = self.batch_writer.get_duplicate_edge_types()
+
+        if etypes:
+            logger.warning(
+                'Duplicate edges encountered in the following types '
+                '(see log for details): \n'
+                f'{etypes}',
+            )
+
+            de = self.batch_writer.get_duplicate_edges()
+
+            msg = 'Duplicate edges encountered: \n'
+            for k, v in de.items():
+                msg += f'    {k}: {v} \n'
+
+            logger.debug(msg)
+
+        else:
+            logger.info('No duplicate edges in input.')
 
     # TRANSLATION METHODS #
 
