@@ -270,7 +270,7 @@ class Driver(neo4j_utils.Driver):
 
     def add_nodes(
             self,
-            id_type_tuples: Iterable[
+            nodes: Iterable[
                 tuple[
                     str,
                     str,
@@ -287,7 +287,7 @@ class Driver(neo4j_utils.Driver):
         method.
 
         Args:
-            id_type_tuples:
+            nodes:
                 For each node to add to the biocypher graph, a 3-tuple with
                 the following layout:
                 * The (unique if constrained) ID of the node.
@@ -302,12 +302,12 @@ class Driver(neo4j_utils.Driver):
             - second entry: Neo4j summary.
         """
 
-        bn = self.translator.translate_nodes(id_type_tuples)
+        bn = self.translator.translate_nodes(nodes)
         return self.add_biocypher_nodes(bn)
 
     def add_edges(
             self,
-            id_src_tar_type_tuples: Iterable[
+            edges: Iterable[
                 tuple[
                     Optional[str],
                     str,
@@ -345,8 +345,8 @@ class Driver(neo4j_utils.Driver):
             - second entry: Neo4j summary.
         """
 
-        bn = self.translator.translate_edges(id_src_tar_type_tuples)
-        return self.add_biocypher_edges(bn)
+        be = self.translator.translate_edges(edges)
+        return self.add_biocypher_edges(be)
 
     def add_biocypher_nodes(
             self,

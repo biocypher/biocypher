@@ -433,6 +433,7 @@ https://biolink.github.io/biolink-model-toolkit/example_usage.html
 
 
 class Translator:
+
     def __init__(self, leaves: dict[str, dict]):
         """
         Args:
@@ -452,7 +453,7 @@ class Translator:
 
     def translate_nodes(
         self,
-        node_data: Iterable[tuple[str, str, dict]],
+        nodes: Iterable[tuple[str, str, dict]],
     ) -> Generator[BioCypherNode, None, None]:
         """
         Translates input node representation to a representation that
@@ -460,32 +461,32 @@ class Translator:
         requires explicit statement of node type on pass.
 
         Args:
-            node_data:
+            nodes:
                 Collection of tuples representing individual nodes by their
                 unique id and a type that is translated from the original
                 database notation to the corresponding BioCypher notation.
         """
 
-        self._log_begin_translate(node_data, 'nodes')
+        self._log_begin_translate(nodes, 'nodes')
 
-        for _id, _type, _props in node_data:
+        for _id, _type, props in nodes:
 
             # find the node in leaves that represents biolink node type
-            _bl_type = self._get_bl_type(_type)
+            bl_type = self._get_bl_type(_type)
 
-            if _bl_type:
+            if bl_type:
 
                 # filter properties for those specified in schema_config if any
-                _filtered_props = self._filter_props(_bl_type, _props)
+                filtered_props = self._filter_props(bl_type, props)
 
                 # preferred id
-                _preferred_id = self._get_preferred_id(_bl_type)
+                preferred_id = self._get_preferred_id(bl_type)
 
                 yield BioCypherNode(
-                    node_id=_id,
-                    node_label=_bl_type,
-                    preferred_id=_preferred_id,
-                    properties=_filtered_props,
+                    node_id = _id,
+                    node_label = bl_type,
+                    preferred_id = preferred_id,
+                    properties = filtered_props,
                 )
 
             else:
@@ -533,7 +534,7 @@ class Translator:
 
     def translate_edges(
         self,
-        edge_data: Iterable[tuple[str, str, str, dict]],
+        edges: Iterable[tuple[str, str, str, dict]],
     ) -> Generator[Union[BioCypherEdge, BioCypherRelAsNode], None, None]:
         """
         Translates input edge representation to a representation that
@@ -541,7 +542,7 @@ class Translator:
         requires explicit statement of edge type on pass.
 
         Args:
-            edge_data:
+            edges:
                 Collection of tuples representing source and target of
                 an interaction via their unique ids as well as the type
                 of interaction in the original database notation, which
@@ -552,17 +553,17 @@ class Translator:
         #    - id of interactions (now simple concat with "_")
         #    - do we even need one?
 
-        self._log_begin_translate(edge_data, 'edges')
+        self._log_begin_translate(edges, 'edges')
 
         # legacy: deal with 4-tuples (no edge id)
         # TODO remove for performance reasons once safe
-        edge_data = peekable(edge_data)
+        edges = peekable(edges)
 
-        if len(edge_data.peek()) == 4:
+        if len(edges.peek()) == 4:
 
-            edge_data = [(None,) + e for e in edge_data]
+            edges = [(None,) + e for e in edges]
 
-        for _id, src, tar, _type, props in edge_data:
+        for _id, src, tar, _type, props in edges:
 
             # match the input label (_type) to
             # a Biolink label from schema_config
