@@ -76,14 +76,12 @@ from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
-from types import GeneratorType
-from typing import TYPE_CHECKING, Union, Optional
+from typing import Iterable, Literal, TYPE_CHECKING, Union, Optional
 from datetime import datetime
 from collections import OrderedDict, defaultdict
 import os
 
-from more_itertools import peekable
-
+import ._misc as _misc
 from biocypher._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
@@ -132,6 +130,24 @@ class BatchWriter:
             db_name:
                 Name of the Neo4j database that will be used in the generated
                 commands.
+
+        Attributes:
+            seen_node_ids:
+                Dictionary to store the ids of nodes that have already been
+                written; to avoid duplicates. keys: ids, values: amount of
+                duplicates
+            duplicate_node_types:
+                Set to store the types of nodes that have been found to have
+                duplicates.
+            seen_edges:
+                Dict to store the set of edges that have already been written;
+                to avoid duplicates; per edge type. Keys: ids, values: count.
+            duplicate_edge_types:
+                Set to store the types of nodes that have been found to have
+                duplicates.
+            property_types:
+                Dict to store a dict of properties for each label to check for
+                consistency and their type for now, relevant for `int`.
         """
         self.db_name = db_name
 
@@ -143,8 +159,7 @@ class BatchWriter:
 
         self.leaves = leaves
         self.bl_adapter = bl_adapter
-        self.node_property_dict = {}
-        self.edge_property_dict = {}
+        self.property_types = {'node': {}, 'edge': {}}
         self.import_call_nodes = ''
         self.import_call_edges = ''
 
@@ -156,17 +171,10 @@ class BatchWriter:
         logger.info(f'Creating output directory `{self.outdir}`.')
         os.makedirs(self.outdir, exist_ok=True)
 
-        self.seen_node_ids = {}  # dictionary to store the ids of nodes that
-        # have already been written; to avoid duplicates. keys: ids, values:
-        # amount of duplicates
-        self.duplicate_node_types = set()  # set to store the types of nodes
-        # that have been found to have duplicates
-
-        self.seen_edges = {}  # dict to store the set of edges that
-        # have already been written; to avoid duplicates; per edge type.
-        # keys: ids, values: count
-        self.duplicate_edge_types = set()  # set to store the types of nodes
-        # that have been found to have duplicates
+        self.seen_node_ids = defaultdict(int)
+        self.duplicate_node_types = set()
+        self.seen_edges = defaultdict(int)
+        self.duplicate_edge_types = set()
 
     def get_duplicate_node_types(self) -> set:
         """
@@ -237,7 +245,7 @@ class BatchWriter:
         return True
 
     def write_edges(
-        self, edges: Union[list, GeneratorType], batch_size: int = int(1e6),
+        self, edges: Iterable[BioCypherEdge], batch_size: int = int(1e6),
     ) -> bool:
         """
         Wrapper for writing edges and their headers.
@@ -298,7 +306,11 @@ class BatchWriter:
 
         return True
 
-    def _write_node_data(self, nodes, batch_size):
+    def _write_node_data(
+            self,
+            nodes: Iterable[BioCypherNode],
+            batch_size: int,
+        ) -> bool:
         """
         Writes biocypher nodes to CSV conforming to the headers created
         with `_write_node_headers()`, and is actually required to be run
@@ -308,151 +320,139 @@ class BatchWriter:
         :py:class:`BioCypherNode` class.
 
         Args:
-            nodes (BioCypherNode): a list or generator of nodes in
-                :py:class:`BioCypherNode` format
+            nodes:
+                An iterable of nodes, each represented by a
+                :py:class:`BioCypherNode` instance.
 
         Returns:
-            bool: The return value. True for success, False otherwise.
+            True for success, False otherwise.
         """
 
-        if isinstance(nodes, GeneratorType) or isinstance(nodes, peekable):
-            logger.debug('Writing node CSV from generator.')
+        if not isinstance(nodes, _misc.LIST_LIKE):
 
-            bins = defaultdict(list)  # dict to store a list for each
-            # label that is passed in
-            bin_l = {}  # dict to store the length of each list for
-            # batching cutoff
-            reference_props = defaultdict(
-                dict,
-            )  # dict to store a dict of properties
-            # for each label to check for consistency and their type
-            # for now, relevant for `int`
-            labels = {}  # dict to store the additional labels for each
-            # primary graph constituent from biolink hierarchy
-            for node in nodes:
-                _id = node.get_id()
-                label = node.get_label()
+            # is this error worth to check? if this value is not
+            # iterable at all, that means some huge and obvious error
+            # that raises a type error just a few lines below anyways
+            logger.error('Nodes must be passed as list or generator.')
+            return False
 
-                # check for non-id
-                if not _id:
-                    logger.warning(f'Node {label} has no id; skipping.')
-                    continue
+        logger.debug('Writing node CSV from generator.')
 
-                # check if node has already been written, if so skip
-                if _id in self.seen_node_ids.keys():
-                    self.seen_node_ids[_id] += 1
-                    if not label in self.duplicate_node_types:
-                        self.duplicate_node_types.add(label)
-                        # logger.warning(
-                        #     f"Duplicate nodes found in type {label}. "
-                        #     "More info can be found in the log file."
-                        # )
-                    continue
+        by_label = defaultdict(list)  # dict to store a list for each
+                                      # label that is passed in
+        labels = {}  # dict to store the additional labels for each
+                     # primary graph constituent from biolink hierarchy
 
-                if not label in bins.keys():
-                    # start new list
-                    all_labels = None
-                    bins[label].append(node)
-                    bin_l[label] = 1
+        for node in nodes:
 
-                    # get properties from config if present
-                    cprops = self.bl_adapter.leaves.get(label).get(
-                        'properties',
-                    )
-                    if cprops:
-                        d = dict(cprops)
+            _id = node.get_id()
+            self.seen_node_ids[_id] += 1
+            label = node.get_label()
 
-                        # add id and preferred id to properties; these are
-                        # created in node creation (`_create.BioCypherNode`)
-                        d['id'] = 'str'
-                        d['preferred_id'] = 'str'
+            # how would it be possible for a node not to have an id?
+            # shouldn't we check in the translation step, instead of
+            # at writing a csv?
+            # check for non-id
+            if not _id:
 
-                    else:
-                        d = dict(node.get_properties())
-                        # encode property type
-                        for k, v in d.items():
-                            if d[k] is not None:
-                                d[k] = type(v).__name__
-                    # else use first encountered node to define properties for
-                    # checking; could later be by checking all nodes but much
-                    # more complicated, particularly involving batch writing
-                    # (would require "do-overs"). for now, we output a warning
-                    # if node properties diverge from reference properties (in
-                    # write_single_node_list_to_file) TODO if it occurs, ask
-                    # user to select desired properties and restart the process
+                logger.warning(
+                    f'Node [{_misc.dict_str(node.get_dict())}] '
+                    'has no id; skipping.'
+                )
+                continue
 
-                    reference_props[label] = d
+            # check if node has already been written, if so skip
+            if self.seen_node_ids[_id] > 1:
 
-                    # get label hierarchy
-                    # multiple labels:
-                    if self.bl_adapter.biolink_leaves[label] is not None:
-                        all_labels = self.bl_adapter.biolink_leaves[label][
-                            'ancestors'
-                        ]
+                self.duplicate_node_types.add(label)
+                continue
 
-                    if all_labels:
-                        # remove duplicates
-                        all_labels = list(OrderedDict.fromkeys(all_labels))
-                        # concatenate with array delimiter
-                        all_labels = self.adelim.join(all_labels)
-                    else:
-                        all_labels = label
+            by_label[label].append(node)
 
-                    labels[label] = all_labels
+            if label not in by_label:
+                # else use first encountered node to define properties for
+                # checking; could later be by checking all nodes but much
+                # more complicated, particularly involving batch writing
+                # (would require "do-overs"). for now, we output a warning
+                # if node properties diverge from reference properties (in
+                # write_single_node_list_to_file) TODO if it occurs, ask
+                # user to select desired properties and restart the process
+                self._property_types(label = label, instance = node)
 
-                else:
-                    # add to list
-                    bins[label].append(node)
-                    bin_l[label] += 1
-                    if not bin_l[label] < batch_size:
-                        # batch size controlled here
-                        passed = self._write_single_node_list_to_file(
-                            bins[label],
-                            label,
-                            reference_props[label],
-                            labels[label],
-                        )
+                all_labels = (
+                    self.bl_adapter.biolink_leaves.
+                    get(label, {}).
+                    get('ancestors')
+                ) or (label,)
+                all_labels = OrderedDict.fromkeys(all_labels)
+                all_labels = self.adelim.join(all_labels)
+                labels[label] = all_labels
 
-                        if not passed:
-                            return False
+            if len(counts_by_label[label]) >= batch_size:
 
-                        bins[label] = []
-                        bin_l[label] = 0
-
-                self.seen_node_ids[_id] = 0
-
-            # after generator depleted, write remainder of bins
-            for label, nl in bins.items():
+                # batch size controlled here
                 passed = self._write_single_node_list_to_file(
-                    nl,
+                    by_label[label],
                     label,
-                    reference_props[label],
+                    self.property_types['node'][label],
                     labels[label],
                 )
 
                 if not passed:
+
                     return False
 
-            # use complete bin list to write header files
-            # TODO if a node type has varying properties
-            # (ie missingness), we'd need to collect all possible
-            # properties in the generator pass
+                by_label[label] = []
+                counts_by_label[label] = 0
 
-            # save config or first-node properties to instance attribute
-            for label in reference_props.keys():
-                self.node_property_dict[label] = reference_props[label]
+        # after generator depleted, write remainder of by_label
+        for label, lnodes in by_label.items():
 
-            return True
-        else:
-            if type(nodes) is not list:
-                logger.error('Nodes must be passed as list or generator.')
+            passed = self._write_single_node_list_to_file(
+                lnodes,
+                label,
+                self.property_types['node'][label],
+                labels[label],
+            )
+
+            if not passed:
+
                 return False
-            else:
 
-                def gen(nodes):
-                    yield from nodes
+        # --- where this comment belongs to?
+        # use complete bin list to write header files
+        # TODO if a node type has varying properties
+        # (ie missingness), we'd need to collect all possible
+        # properties in the generator pass
+        return True
 
-                return self._write_node_data(gen(nodes), batch_size=batch_size)
+    def _property_types(
+            self,
+            label: str,
+            instance: BioCypherNode | BioCypherEdge | None = None,
+            node_edge: Literal['node', 'edge'] = 'node',
+        ):
+
+        propt = {}
+        # get properties from config if present
+        from_conf = self.bl_adapter.leaves.get(label).get('properties')
+
+        if from_conf:
+
+            propt = dict(from_conf)
+            # add id and preferred id to properties; these are
+            # created in node creation (`_create.BioCypherNode`)
+            propt.update({'id': 'str', 'preferred_id': 'str'})
+
+        elif instance:
+
+            propt = {
+                k: v.__class__.__name__
+                for k, v in instance.get_properties()
+                if k is not None  # why would be a key here None?
+            }
+
+        self.property_types[node_edge][label] = propt
 
     def _write_node_headers(self):
         """
@@ -609,7 +609,11 @@ class BatchWriter:
 
         return True
 
-    def _write_edge_data(self, edges, batch_size):
+    def _write_edge_data(
+            self,
+            edges: Iterable[BioCypherEdge],
+            batch_size: int,
+        ) -> bool:
         """
         Writes biocypher edges to CSV conforming to the headers created
         with `_write_edge_headers()`, and is actually required to be run
@@ -619,11 +623,12 @@ class BatchWriter:
         from the :py:class:`BioCypherEdge` class.
 
         Args:
-            edges (BioCypherEdge): a list or generator of edges in
-                :py:class:`BioCypherEdge` format
+            edges:
+                Iterable of edges, each represented as
+                :py:class:`BioCypherEdge`.
 
         Returns:
-            bool: The return value. True for success, False otherwise.
+            True for success, False otherwise.
 
         Todo:
             - currently works for mixed edges but in practice often is
@@ -633,7 +638,7 @@ class BatchWriter:
         # TODO not memory efficient, but should be fine for most cases; is
         # there a more elegant solution?
 
-        if isinstance(edges, GeneratorType):
+        if isinstance(edges, _misc.LIST_LIKE):
             logger.debug('Writing edge CSV from generator.')
 
             bins = defaultdict(list)  # dict to store a list for each
