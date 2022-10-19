@@ -388,12 +388,12 @@ class Driver(neo4j_utils.Driver):
                 node.get_dict() for node in _misc.ensure_iterable(nodes)
             ]
 
-        except AttributeError:
+        except AttributeError as e:
 
-            msg = 'Nodes must have a `get_dict` method.'
+            msg = f'Nodes must have a `get_dict` method: {str(e)}'
             logger.error(msg)
 
-            raise ValueError(msg)
+            raise TypeError(msg)
 
         logger.info(f'Merging {len(entities)} nodes.')
 
@@ -476,12 +476,12 @@ class Driver(neo4j_utils.Driver):
 
                     rels.append(e.get_dict())
 
-        except AttributeError:
+        except AttributeError as e:
 
-            msg = 'Edges and nodes must have a `get_dict` method.'
+            msg = f'Edges and nodes must have a `get_dict` method: {str(e)}'
             logger.error(msg)
 
-            raise ValueError(msg)
+            raise TypeError(msg)
 
         self.add_biocypher_nodes(nodes)
         logger.info(f'Merging {len(rels)} edges.')
