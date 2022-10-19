@@ -981,7 +981,7 @@ class BatchWriter:
         """
 
         import_call = (
-            f"bin/neo4j-admin import --database={self.db_name} "
+            f"neo4j-admin import --database={self.db_name} "
             f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
         )
         if not self.quote == '"':
