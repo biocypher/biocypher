@@ -48,3 +48,26 @@ def ensure_iterable(value: Any) -> Iterable:
     """
 
     return value if isinstance(value, LIST_LIKE) else (value,)
+
+
+def prettyfloat(n: float) -> str:
+    """
+    Floats as strings of two value digits, for printing.
+    """
+
+    return '%.02g' % n if isinstance(n, float) else str(n)
+
+
+def dict_str(dct: dict) -> str:
+    """
+    Compact string representation of a dict.
+    """
+
+    if not isinstance(dct, dict):
+
+        return str(dct)
+
+    return ', '.join(
+        '%s=%s' % (str(key), prettyfloat(val))
+        for key, val in dct.items()
+    )
