@@ -153,10 +153,59 @@ class BatchWriter:
         logger.info(f"Creating output directory `{self.outdir}`.")
         os.makedirs(self.outdir, exist_ok=True)
 
-        self.seen_node_ids = set()  # set to store the ids of nodes that have
-        # already been written; to avoid duplicates
-        self.duplicate_types = set()  # set to store the types of nodes that
-        # have been found to have duplicates
+        self.seen_node_ids = {}  # dictionary to store the ids of nodes that
+        # have already been written; to avoid duplicates. keys: ids, values:
+        # amount of duplicates
+        self.duplicate_node_types = set()  # set to store the types of nodes
+        # that have been found to have duplicates
+
+        self.seen_edges = {}  # dict to store the set of edges that
+        # have already been written; to avoid duplicates; per edge type.
+        # keys: ids, values: count
+        self.duplicate_edge_types = set()  # set to store the types of nodes
+        # that have been found to have duplicates
+
+    def get_duplicate_node_types(self) -> set:
+        """
+        Returns:
+            The set of node types that have been found to have duplicates.
+        """
+        return self.duplicate_node_types
+
+    def get_duplicate_nodes(self) -> dict:
+        """
+        Returns a dict of duplicate node types and the number of duplicates.
+        """
+
+        if self.duplicate_node_types:
+            # subset seen_node_ids dictionary based on values > 0
+
+            return {
+                nid: count
+                for nid, count in self.seen_node_ids.items()
+                if count > 0
+            }
+
+    def get_duplicate_edge_types(self) -> set:
+        """
+        Returns:
+            The set of edge types that have been found to have duplicates.
+        """
+        return self.duplicate_edge_types
+
+    def get_duplicate_edges(self) -> dict:
+        """
+        Returns a dict of duplicate edge types and the number of duplicates.
+        """
+
+        if self.duplicate_edge_types:
+            # subset seen_edges dictionary based on values > 0
+
+            return {
+                nid: count
+                for nid, count in self.seen_edges.items()
+                if count > 0
+            }
 
     def write_nodes(self, nodes, batch_size=int(1e6)):
         """
@@ -201,6 +250,8 @@ class BatchWriter:
         passed = False
         # unwrap generator in one step
         edges = list(edges)  # force evaluation to handle empty generator
+        # TODO find a better way to handle empty generator and remove this
+
         if edges:
             z = zip(
                 *(
@@ -285,14 +336,14 @@ class BatchWriter:
                     continue
 
                 # check if node has already been written, if so skip
-                if _id in self.seen_node_ids:
-                    logger.debug(f"Duplicate node id: {_id}")
-                    if not label in self.duplicate_types:
-                        self.duplicate_types.add(label)
-                        logger.warning(
-                            f"Duplicate nodes found in type {label}. "
-                            "More info can be found in the log file."
-                        )
+                if _id in self.seen_node_ids.keys():
+                    self.seen_node_ids[_id] += 1
+                    if not label in self.duplicate_node_types:
+                        self.duplicate_node_types.add(label)
+                        # logger.warning(
+                        #     f"Duplicate nodes found in type {label}. "
+                        #     "More info can be found in the log file."
+                        # )
                     continue
 
                 if not label in bins.keys():
@@ -365,7 +416,7 @@ class BatchWriter:
                         bins[label] = []
                         bin_l[label] = 0
 
-                self.seen_node_ids.add(_id)
+                self.seen_node_ids[_id] = 0
 
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
@@ -576,9 +627,6 @@ class BatchWriter:
               called on one iterable containing one type of edge only
         """
 
-        self.seen_edges = set()  # set to store the set of edges that
-        # have already been written; to avoid duplicates; per edge type
-
         # TODO not memory efficient, but should be fine for most cases; is
         # there a more elegant solution?
 
@@ -612,21 +660,23 @@ class BatchWriter:
 
                 label = e.get_label()
 
-                src_tar_type = "_".join([e.get_source_id(), e.get_target_id()])
+                src_tar_ids = " -> ".join(
+                    [e.get_source_id(), e.get_target_id()]
+                )
 
                 # check for duplicates
-                if src_tar_type in self.seen_edges:
-                    logger.debug(f"Duplicate relationship: {e}")
-                    if not label in self.duplicate_types:
-                        self.duplicate_types.add(label)
-                        logger.warning(
-                            f"Duplicate nodes found in type {label}. "
-                            "More info can be found in the log file."
-                        )
+                if src_tar_ids in self.seen_edges.keys():
+                    self.seen_edges[src_tar_ids] += 1
+                    if not label in self.duplicate_node_types:
+                        self.duplicate_edge_types.add(label)
+                        # logger.warning(
+                        #     f"Duplicate edges found in type {label}. "
+                        #     "More info can be found in the log file."
+                        # )
                     continue
 
                 else:
-                    self.seen_edges.add(src_tar_type)
+                    self.seen_edges[src_tar_ids] = 0
 
                 if not label in bins.keys():
                     # start new list
