@@ -1,9 +1,9 @@
-from typing import Any, Mapping, KeysView, Generator, ItemsView, ValuesView
+from typing import Any
 from collections.abc import Iterable
 
-from neo4j_utils._misc import if_none  # noqa: F401
+from neo4j_utils._misc import LIST_LIKE, if_none, to_list  # noqa: F401
 
-__all__ = ['LIST_LIKE', 'SIMPLE_TYPES', 'ensure_iterable', 'to_list']
+__all__ = ['SIMPLE_TYPES', 'ensure_iterable', 'prettyfloat', 'dict_str']
 
 SIMPLE_TYPES = (
     bytes,
@@ -13,33 +13,6 @@ SIMPLE_TYPES = (
     bool,
     type(None),
 )
-
-LIST_LIKE = (
-    list,
-    set,
-    tuple,
-    Generator,
-    ItemsView,
-    KeysView,
-    Mapping,
-    ValuesView,
-)
-
-
-def to_list(value: Any) -> list:
-    """
-    Ensures that ``value`` is a list.
-    """
-
-    if isinstance(value, LIST_LIKE):
-
-        value = list(value)
-
-    else:
-
-        value = [value]
-
-    return value
 
 
 def ensure_iterable(value: Any) -> Iterable:
