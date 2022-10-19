@@ -33,9 +33,7 @@ Todo:
     - import ID types from pypath dictionary (later, externalised
       dictionary)? biolink?
 """
-from collections.abc import Generator
-from collections.abc import Iterable
-
+from collections.abc import Iterable, Generator
 
 from ._logger import logger
 
@@ -514,44 +512,29 @@ class Translator:
         """
 
         filter_props = self.leaves[bl_type].get('properties', {})
+        exclude_props = set(
+            _misc.to_list(
+                self.leaves[bl_type].get('exclude_properties', []),
+            ),
+        )
 
-        exclude_props = self.leaves[bl_type].get('exclude_properties', [])
-        if isinstance(exclude_props, str):
-            exclude_props = [exclude_props]
+        prop_keys = (
+            (set(props.keys()) - exclude_props) &
+            set(filter_props.keys())
+        )
 
-        if filter_props and exclude_props:
+        props = {k: props[k] for k in prop_keys}
 
-            filtered_props = {
-                k: v
-                for k, v in props.items()
-                if (k in filter_props.keys() and k not in exclude_props)
-            }
+        missing_keys = (
+            set(filter_props.keys()) -
+            exclude_props -
+            set(props.keys())
+        )
 
-        elif filter_props:
-
-            filtered_props = {
-                k: v for k, v in props.items() if k in filter_props.keys()
-            }
-
-        elif exclude_props:
-
-            filtered_props = {
-                k: v for k, v in props.items() if k not in exclude_props
-            }
-
-        else:
-
-            return props
-
-        missing_props = [
-            k for k in filter_props.keys() if k not in filtered_props.keys()
-        ]
         # add missing properties with default values
-        for k in missing_props:
+        props.update({k: None for k in missing_keys})
 
-            filtered_props[k] = None
-
-        return filtered_props
+        return props
 
     def translate_edges(
         self,
