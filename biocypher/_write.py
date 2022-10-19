@@ -98,24 +98,12 @@ if TYPE_CHECKING:
 
 class BatchWriter:
     """
-    Class for writing node and edge representations to disk using the
+    Write node and edge representations to disk using the
     format specified by Neo4j for the use of admin import. Each batch
     writer instance has a fixed representation that needs to be passed
     at instantiation via the :py:attr:`schema` argument. The instance
     also expects a biolink adapter via :py:attr:`bl_adapter` to be able
     to convert and extend the hierarchy.
-
-    Args:
-        schema:
-            The BioCypher graph schema (from :py:class:`VersionNode`).
-        bl_adapter:
-            Instance of :py:class:`BiolinkAdapter` to enable translation and
-            ontology queries
-        path:
-            Path for exporting CSV files.
-        db_name:
-            Name of the Neo4j database that will be used in the generated
-            commands.
     """
 
     def __init__(
@@ -130,6 +118,21 @@ class BatchWriter:
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
     ):
+        """
+        Export data into CSV for *neo4j-admin* import.
+
+        Args:
+            schema:
+                The BioCypher graph schema (from :py:class:`VersionNode`).
+            bl_adapter:
+                Instance of :py:class:`BiolinkAdapter` to enable translation
+                and ontology queries
+            path:
+                Path for exporting CSV files.
+            db_name:
+                Name of the Neo4j database that will be used in the generated
+                commands.
+        """
         self.db_name = db_name
 
         self.delim = delimiter
