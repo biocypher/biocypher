@@ -10,9 +10,9 @@ neo4j_pw: neo4j # password
 # for quick start, though no one uses that in production
 
 # Neo4j admin import batch writer settings
-neo4j_delimiter: '¦'
-neo4j_array_delimiter: '|'
-neo4j_quote_char: '"'
+csv_delimiter: '¦'
+csv_array_delimiter: '|'
+csv_quote_char: '"'
 csv_batch_size: 1000000
 
 # Path to the log directory

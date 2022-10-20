@@ -138,9 +138,9 @@ class BatchWriter:
         self,
         leaves: dict,
         bl_adapter: 'BiolinkAdapter',
-        delimiter: str,
-        array_delimiter: str,
-        quote: str,
+        delimiter: str | None = None,
+        array_delimiter: str | None = None,
+        quote: str | None = None,
         dirname: Optional[str] = None,
         db_name: str = 'neo4j',
         skip_bad_relationships: bool = False,
@@ -151,16 +151,29 @@ class BatchWriter:
         Export data into CSV for *neo4j-admin* import.
 
         Args:
-            schema:
+            leaves:
                 The BioCypher graph schema (from :py:class:`VersionNode`).
             bl_adapter:
                 Instance of :py:class:`BiolinkAdapter` to enable translation
                 and ontology queries
-            path:
+            delimiter:
+                Character to separate the fields in CSV files.
+            array_delimiter:
+                Character to separate elements of arrays within CSV fields.
+            quote:
+                Character to enclose string fields in CSV files.
+            dirname:
                 Path for exporting CSV files.
             db_name:
                 Name of the Neo4j database that will be used in the generated
                 commands.
+            skip_bad_relationships:
+                Behaviour when encountering erroneous relationships.
+            skip_duplicate_nodes:
+                Behaviour when encountering duplicate nodes.
+            batch_size:
+                Number of records in one CSV. Override here the value defined
+                in the config.
 
         Attributes:
             seen_node_ids:
@@ -179,18 +192,16 @@ class BatchWriter:
             property_types:
                 Dict to store a dict of properties for each label to check for
                 consistency and their type for now, relevant for `int`.
-            batch_size:
-                Number of records in one CSV. Override here the value defined
-                in the config.
         """
         self.db_name = db_name
 
-        self.delim = delimiter
-        self.adelim = array_delimiter
-        self.quote = quote
+        self.delim = delimiter or _conf('csv_delimiter')
+        self.adelim = array_delimiter or _conf('csv_array_delimiter')
+        self.quote = quote or _conf('csv_quote_char')
+        self.batch_size = batch_size or _conf('csv_batch_size')
+
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
-        self.batch_size = batch_size or _conf('csv_batch_size')
 
         self.leaves = leaves
         self.bl_adapter = bl_adapter
