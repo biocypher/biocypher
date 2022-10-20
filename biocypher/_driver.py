@@ -32,7 +32,8 @@ from . import _misc
 from ._write import BatchWriter
 from ._config import config as _config
 from ._create import VersionNode, BioCypherEdge, BioCypherNode
-from ._translate import Translator, BiolinkAdapter
+from ._translate import Translator
+from ._biolink import BiolinkAdapter
 
 __all__ = ['Driver']
 

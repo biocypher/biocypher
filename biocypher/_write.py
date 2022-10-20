@@ -90,7 +90,7 @@ __all__ = ['BatchWriter']
 
 if TYPE_CHECKING:
 
-    from ._translate import BiolinkAdapter
+    from ._biolink import BiolinkAdapter
 
 N4_ALL_TYPES = {
     'int',
