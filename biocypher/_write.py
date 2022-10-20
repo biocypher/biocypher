@@ -119,6 +119,7 @@ N4_TYPES = {
 }
 
 PY_TYPES = {py: n4 for n4, pys in N4_TYPES.items() for py in pys}
+BATCH_SIZE_FALLBACK = int(1e6)
 
 # TODO retrospective check of written csvs?
 
@@ -144,6 +145,7 @@ class BatchWriter:
         db_name: str = 'neo4j',
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
+        batch_size: int | None = None,
     ):
         """
         Export data into CSV for *neo4j-admin* import.
@@ -177,6 +179,9 @@ class BatchWriter:
             property_types:
                 Dict to store a dict of properties for each label to check for
                 consistency and their type for now, relevant for `int`.
+            batch_size:
+                Number of records in one CSV. Override here the value defined
+                in the config.
         """
         self.db_name = db_name
 
@@ -185,6 +190,7 @@ class BatchWriter:
         self.quote = quote
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
+        self.batch_size = batch_size or _conf('csv_batch_size')
 
         self.leaves = leaves
         self.bl_adapter = bl_adapter
@@ -250,7 +256,7 @@ class BatchWriter:
     def write_nodes(
             self,
             nodes: Iterable[BioCypherNode],
-            batch_size: int = int(1e6),
+            batch_size: int | None = None,
         ) -> bool:
         """
         Top level method for writing nodes and their headers.
@@ -264,6 +270,8 @@ class BatchWriter:
             True for success, False otherwise.
         """
         # TODO check represented_as
+
+        batch_size = self._batch_size(batch_size)
 
         # write node data
         passed = self._write_node_data(nodes, batch_size)
@@ -281,7 +289,7 @@ class BatchWriter:
     def write_edges(
         self,
         edges: Iterable[BioCypherEdge],
-        batch_size: int = int(1e6),
+        batch_size: int | None = None,
     ) -> bool:
         """
         Top level method for writing edges and their headers.
@@ -298,20 +306,22 @@ class BatchWriter:
             True for success, False otherwise.
         """
 
+        bs = batch_size = self._batch_size(batch_size)
+
         edges = _misc.to_list(edges)
         nodes = (n for ee in edges for n in ee.nodes)
         edges = (e for ee in edges for e in ee.edges)
 
         return (
-            self.write_nodes(nodes, batch_size = batch_size) and
-            self._write_edge_data(edges, batch_size = batch_size) and
+            self.write_nodes(nodes, batch_size = bs) and
+            self._write_edge_data(edges, batch_size = bs) and
             self._write_edge_headers()
         )
 
     def _write_node_data(
             self,
             nodes: Iterable[BioCypherNode],
-            batch_size: int,
+            batch_size: int | None = None,
         ) -> bool:
         """
         Writes biocypher nodes to CSV conforming to the headers created
@@ -344,6 +354,7 @@ class BatchWriter:
                                       # label that is passed in
         labels = {}  # dict to store the additional labels for each
                      # primary graph constituent from biolink hierarchy
+        batch_size = self._batch_size(batch_size)
 
         for node in nodes:
 
@@ -455,6 +466,13 @@ class BatchWriter:
             }
 
         self.property_types[node_edge][label] = propt
+
+    def _batch_size(self, override: int | None = None) -> int:
+        """
+        Batch size from the currently valid config.
+        """
+
+        return override or self._batch_size or BATCH_SIZE_FALLBACK
 
     def _write_node_headers(self) -> bool:
         """
@@ -615,7 +633,7 @@ class BatchWriter:
     def _write_edge_data(
             self,
             edges: Iterable[BioCypherEdge],
-            batch_size: int,
+            batch_size: int | None = None,
         ) -> bool:
         """
         Writes biocypher edges to CSV conforming to the headers created
@@ -641,7 +659,10 @@ class BatchWriter:
         # TODO not memory efficient, but should be fine for most cases; is
         # there a more elegant solution?
 
+        batch_size = self._batch_size(batch_size)
+
         if isinstance(edges, _misc.LIST_LIKE):
+
             logger.debug('Writing edge CSV from generator.')
 
             bins = defaultdict(list)  # dict to store a list for each
