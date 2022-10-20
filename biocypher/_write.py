@@ -247,16 +247,21 @@ class BatchWriter:
                 if count > 0
             }
 
-    def write_nodes(self, nodes, batch_size=int(1e6)):
+    def write_nodes(
+            self,
+            nodes: Iterable[BioCypherNode],
+            batch_size: int = int(1e6),
+        ) -> bool:
         """
-        Wrapper for writing nodes and their headers.
+        Top level method for writing nodes and their headers.
 
         Args:
-            nodes (BioCypherNode): a list or generator of nodes in
-                :py:class:`BioCypherNode` format
+            nodes:
+                Iterable of nodes, each represented as
+                :py:class:`BioCypherNode` instance.
 
         Returns:
-            bool: The return value. True for success, False otherwise.
+            True for success, False otherwise.
         """
         # TODO check represented_as
 
@@ -274,66 +279,34 @@ class BatchWriter:
         return True
 
     def write_edges(
-        self, edges: Iterable[BioCypherEdge], batch_size: int = int(1e6),
+        self,
+        edges: Iterable[BioCypherEdge],
+        batch_size: int = int(1e6),
     ) -> bool:
         """
-        Wrapper for writing edges and their headers.
+        Top level method for writing edges and their headers.
 
         Args:
-            edges (BioCypherEdge): a list or generator of edges in
+            edges:
+                Iterable of edges, each represented as a
                 :py:class:`BioCypherEdge` or :py:class:`BioCypherRelAsNode`
-                format
+                instance.
+            batch_size:
+                Number of records in one CSV file.
 
         Returns:
-            bool: The return value. True for success, False otherwise.
+            True for success, False otherwise.
         """
-        passed = False
-        # unwrap generator in one step
-        edges = list(edges)  # force evaluation to handle empty generator
-        # TODO find a better way to handle empty generator and remove this
 
-        if edges:
-            z = zip(
-                *(
-                    (
-                        e.get_node(),
-                        [e.get_source_edge(), e.get_target_edge()],
-                    )
-                    if isinstance(e, BioCypherRelAsNode)
-                    else (None, [e])
-                    for e in edges
-                )
-            )
-            nod, edg = (list(a) for a in z)
-            nod = [n for n in nod if n]
-            edg = [val for sublist in edg for val in sublist]  # flatten
+        edges = _misc.to_list(edges)
+        nodes = (n for ee in edges for n in ee.nodes)
+        edges = (e for ee in edges for e in ee.edges)
 
-            if nod and edg:
-                passed = self.write_nodes(nod) and self._write_edge_data(
-                    edg,
-                    batch_size,
-                )
-            else:
-                passed = self._write_edge_data(edg, batch_size)
-
-        else:
-            # is this a problem? if the generator or list is empty, we
-            # don't write anything.
-            logger.debug(
-                'No edges to write, possibly due to no matched Biolink classes.',
-            )
-            pass
-
-        if not passed:
-            logger.error('Error while writing edge data.')
-            return False
-        # pass property data to header writer per edge type written
-        passed = self._write_edge_headers()
-        if not passed:
-            logger.error('Error while writing edge headers.')
-            return False
-
-        return True
+        return (
+            self.write_nodes(nodes, batch_size = batch_size) and
+            self._write_edge_data(edges, batch_size = batch_size) and
+            self._write_edge_headers()
+        )
 
     def _write_node_data(
             self,

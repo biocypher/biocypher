@@ -272,6 +272,28 @@ class BioCypherEdge:
             'properties': self.properties,
         }
 
+    @property
+    def edges(self) -> tuple[BioCypherEdge]:
+        """
+        Create a tuple of edge(s).
+
+        Returns:
+            This edge in a single element tuple.
+        """
+
+        return (self,)
+
+    @property
+    def nodes(self) -> tuple:
+        """
+        Create a tuple of node(s).
+
+        Returns:
+            An empty tuple.
+        """
+
+        return ()
+
 
 @dataclass(frozen=True)
 class BioCypherRelAsNode:
@@ -326,6 +348,28 @@ class BioCypherRelAsNode:
         The edge pointing to the target of the relationship.
         """
         return self.target_edge
+
+    @property
+    def edges(self) -> tuple[BioCypherEdge, BioCypherEdge]:
+        """
+        Create a tuple of edge(s).
+
+        Returns:
+            The source and target edges in a two elements tuple.
+        """
+
+        return (self.source_edge, self.target_edge)
+
+    @property
+    def nodes(self) -> tuple[BioCypherNode]:
+        """
+        Create a tuple of node(s).
+
+        Returns:
+            An empty tuple.
+        """
+
+        return (self.node,)
 
 
 class VersionNode:
