@@ -239,7 +239,7 @@ class BatchWriter:
         by_entity = lambda val: {e: val() for e in ENTITIES.__args__}
 
         self.property_types = by_entity(lambda: defaultdict(dict))
-        self.cli_call = by_entity(lambda: [])
+        self.call = by_entity(lambda: [])
         self.seen = by_entity(lambda: defaultdict(int))
         self.dupl_by_type = by_entity(lambda: defaultdict(int))
 
@@ -474,59 +474,6 @@ class BatchWriter:
 
         return override or self._batch_size or BATCH_SIZE_FALLBACK
 
-    def _write_node_headers(self) -> bool:
-        """
-        Writes single CSV file for a graph entity that is represented
-        as a node as per the definition in the `schema_config.yaml`,
-        containing only the header for this type of node.
-
-        Returns:
-            True for success, False otherwise.
-        """
-        # load headers from data parse
-        if not self.property_types.get('nodes'):
-
-            logger.error(
-                'Header information not found. Was the data parsed first?',
-            )
-            return False
-
-        for label, props in self.property_types['nodes'].items():
-
-            # to programmatically define properties to be written, the
-            # data would have to be parsed before writing the header.
-            # alternatively, desired properties can also be provided
-            # via the schema_config.yaml.
-
-            # translate label to PascalCase
-            label = self.bl_adapter.name_sentence_to_pascal(label)
-            header_path = os.path.join(self.outdir, f'{label}-header.csv')
-            parts_path = os.path.join(self.outdir, f'{label}-part.*')
-
-            # check if file already exists
-            if not os.path.exists(header_path):
-
-                # add column types
-
-                header = [':ID']
-                header.extend(
-                    f'{prop}{self._col_type(py_t)}'
-                    for prop, py_t in props.items()
-                )
-                header.append(':LABEL')
-
-                with open(header_path, 'w') as f:
-
-                    # concatenate with delimiter
-                    f.write(self.delim.join(header))
-
-                # add file path to neo4 admin import statement
-                self.cli_call['node'].append(
-                    f'--nodes="{header_path},{parts_path}" '
-                )
-
-        return True
-
     @staticmethod
     def _col_type(py_type: str | type) -> str:
         """
@@ -698,68 +645,55 @@ class BatchWriter:
 
         return re.sub('^BioCypher', '', entity.__class__.__name__).lower()
 
-    def _write_edge_headers(self):
+    def _write_headers(self, what: ENTITIES) -> bool:
         """
-        Writes single CSV file for a graph entity that is represented
-        as an edge as per the definition in the `schema_config.yaml`,
-        containing only the header for this type of edge.
+        Write the header lines for exported CSV data.
 
         Returns:
-            bool: The return value. True for success, False otherwise.
+            True for success, False otherwise.
         """
+
         # load headers from data parse
-        if not self.edge_property_dict:
+        if not self.property_types[what]:
+
             logger.error(
                 'Header information not found. Was the data parsed first?',
             )
             return False
 
-        for label, props in self.edge_property_dict.items():
-            # create header CSV with :START_ID, (optional) properties,
-            # :END_ID, :TYPE
+        node = what == 'node'
+
+        for label, props in self.property_types[what].items():
+
+            # to programmatically define properties to be written, the
+            # data would have to be parsed before writing the header.
+            # alternatively, desired properties can also be provided
+            # via the schema_config.yaml.
 
             # translate label to PascalCase
-            pascal_label = self.bl_adapter.name_sentence_to_pascal(label)
+            label = self.bl_adapter.name_sentence_to_pascal(label)
+            hdr_path = os.path.join(self.outdir, f'{label}-header.csv')
+            prt_path = os.path.join(self.outdir, f'{label}-part.*')
 
-            # paths
-            header_path = os.path.join(
-                self.outdir, f'{pascal_label}-header.csv',
+            # check if file already exists
+            if os.path.exists(header_path): continue
+
+            # add column types
+            header = [':ID' if node else ':START_ID']
+            header.extend(
+                f'{prop}{self._col_type(py_t)}'
+                for prop, py_t in props.items()
             )
-            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
+            header.extend([':LABEL'] if node else [':END_ID', ':TYPE'])
 
-            # check for file exists
-            if not os.path.exists(header_path):
+            with open(header_path, 'w') as f:
 
-                # concatenate key:value in props
-                props_list = []
-                for k, v in props.items():
-                    if v in ['int', 'long']:
-                        props_list.append(f'{k}:long')
-                    elif v in ['float', 'double']:
-                        props_list.append(f'{k}:double')
-                    elif v in [
-                        'bool',
-                        'boolean',
-                    ]:  # TODO does Neo4j support bool?
-                        props_list.append(f'{k}:boolean')
-                    else:
-                        props_list.append(f'{k}')
+                # concatenate with delimiter
+                f.write(self.delim.join(header))
 
-                # create list of lists and flatten
-                # removes need for empty check of property list
-                out_list = [[':START_ID'], props_list, [':END_ID'], [':TYPE']]
-                out_list = [val for sublist in out_list for val in sublist]
-
-                with open(header_path, 'w') as f:
-
-                    # concatenate with delimiter
-                    row = self.delim.join(out_list)
-                    f.write(row)
-
-                # add file path to neo4 admin import statement
-                self.cli_call['edge'].append(
-                    f'--relationships="{header_path},{parts_path}" '
-                )
+            # add file path to neo4 admin import statement
+            switch = "node" if node else "relationship"
+            self.call['node'].append(f'--{switch}s="{hdr_path},{prt_path}"')
 
         return True
 
@@ -931,8 +865,8 @@ class BatchWriter:
                 '--skip-duplicate-nodes='
                 f'{str(self.skip_duplicate_nodes).lower()}',
             ] +
-            self.cli_call['nodes'] +
-            self.cli_call['edges']
+            self.call['nodes'] +
+            self.call['edges']
         )
 
         return f'    \{os.linesep}'.join(call)
