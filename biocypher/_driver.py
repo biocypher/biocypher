@@ -22,8 +22,6 @@ from typing import TYPE_CHECKING, Any, Optional
 import inspect
 import itertools
 
-from more_itertools import peekable
-
 if TYPE_CHECKING:
 
     import neo4j
@@ -521,27 +519,31 @@ class Driver(neo4j_utils.Driver):
 
     def write_csv(
             self,
-            nodes: Iterable[
-                BioCypherNode |
-                BioCypherEdge |
-                BioCypherRelAsNode
-            ],
+            items: Iterable[BatchWriter.INPUT_TYPES | BC_TYPES],
             dirname: Optional[str] = None,
             db_name: Optional[str] = None,
     ) -> bool:
         """
-        Write the nodes into CSV file.
+        Compile graph components and write them into CSV files.
 
-        Write BioCypher nodes to disk using the :mod:`write` module,
-        formatting the CSV to enable Neo4j admin import from the target
-        directory.
+        Here first we translate the items to biocypher's representation and
+        from there we compile CSV files that correspond to the current
+        database schema and suitable for *neo4j-admin import*.
 
         Args:
-            nodes:
-                Collection of nodes to be written in
-                BioCypher-compatible CSV format; can be any compatible
-                (ie, translatable) input format or already as
-                :class:`biocypher.create.BioCypherNode`.
+            items:
+                Nodes and edges to be written in BioCypher-compatible CSV
+                format; can be anything suitable for
+                :py:class:``Translator.translate``, or the objects from
+                :py:mod:``biocypher._create``.
+            dirname:
+                Directory for CSV output files.
+            db_name:
+                Name of a Neo4j database. Used only for the CLI call of the
+                *neo4j-admin import* command that is created by
+                :py:class:``BatchWriter``. This command is not executed by
+                biocypher, hence the database name can be easily modified
+                after the export.
 
         Returns:
             Whether the write was successful.
@@ -552,13 +554,10 @@ class Driver(neo4j_utils.Driver):
         self.start_bl_adapter()
         self.start_batch_writer(dirname, db_name)
 
-        nodes = peekable(nodes)
-        if not isinstance(nodes.peek(), BioCypherNode):
-            tnodes = self.translator.translate_nodes(nodes)
-        else:
-            tnodes = nodes
-        # write node files
-        return self.batch_writer.write(tnodes)
+        items = self.translator.translate(items)
+
+        # write
+        return self.batch_writer.write(items)
 
     def start_batch_writer(
         self,
@@ -601,43 +600,6 @@ class Driver(neo4j_utils.Driver):
         """
         if not self.bl_adapter:
             self.bl_adapter = BiolinkAdapter(leaves=self.db_meta.leaves)
-
-    def write_edges(
-            self,
-            edges: Iterable[BioCypherEdge],
-            db_name: str = None,
-            dirname: str = None,
-    ) -> bool:
-        """
-        Write the edges to CSV file.
-
-        Write BioCypher edges to disk using the :mod:`write` module,
-        formatting the CSV to enable Neo4j admin import from the target
-        directory.
-
-        Args:
-            edges:
-                Collection of edges to be written in BioCypher-compatible
-                CSV format; can be any compatible (ie, translatable) input
-                format or already as :class:`biocypher.create.BioCypherEdge`.
-
-        Returns:
-            Whether the write was successful.
-        """
-
-        # instantiate adapter on demand because it takes time to load
-        # the biolink model toolkit
-        self.start_bl_adapter()
-
-        self.start_batch_writer(dirname, db_name)
-
-        edges = peekable(edges)
-        if not isinstance(edges.peek(), BioCypherEdge):
-            tedges = self.translator.translate_edges(edges)
-        else:
-            tedges = edges
-        # write edge files
-        return self.batch_writer.write(tedges)
 
     def get_import_call(self) -> str:
         """
