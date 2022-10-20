@@ -205,22 +205,40 @@ class BatchWriter:
 
         self.leaves = leaves
         self.bl_adapter = bl_adapter
-        self.property_types = {'node': {}, 'edge': {}}
-        self.import_call_nodes = ''
-        self.import_call_edges = ''
+        self.set_outdir(dirname)
+        self.reset()
 
-        timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M')
+    def set_outdir(self, path: str | None = None):
+        """
+        Set and create the output directory where CSV files will be written.
 
-        self.outdir = dirname or os.path.join(_config('outdir'), timestamp())
+        Args:
+            path:
+                Use it to override the value from config.
+        """
+
+        timestamp = datetime.now().strftime('%Y%m%d%H%M')
+        self.outdir = path or os.path.join(_config('outdir'), timestamp)
         self.outdir = os.path.abspath(self.outdir)
 
         logger.info(f'Creating output directory `{self.outdir}`.')
         os.makedirs(self.outdir, exist_ok=True)
 
-        self.seen_node_ids = defaultdict(int)
-        self.duplicate_node_types = set()
-        self.seen_edges = defaultdict(int)
-        self.duplicate_edge_types = set()
+    def reset(self):
+        """
+        Creates empty data structures for the writing process.
+
+        This object works by preprocessing data and writing it into multiple
+        CSV files in batches, and creating CLI commands that can be used to
+        import the CSV files into a Neo4j database. This method drops all
+        previously preprocessed data and creates a clean environment for
+        further processing tasks.
+        """
+
+        self.property_types = {'node': {}, 'edge': {}}
+        self.cli_call = {'node': [], 'edge': []}
+        self.seen = {'nodes': defaultdict(int), 'edges': defaultdict(int)}
+        self.duplicate_types = {'nodes': set(), 'edges': set()}
 
     def get_duplicate_node_types(self) -> set:
         """
@@ -231,7 +249,10 @@ class BatchWriter:
 
     def get_duplicate_nodes(self) -> dict:
         """
-        Returns a dict of duplicate node types and the number of duplicates.
+        Summary of duplicate nodes found.
+
+        Returns:
+            Duplicate node types and the number of duplicates.
         """
 
         if self.duplicate_node_types:
