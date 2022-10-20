@@ -352,69 +352,40 @@ class BatchWriter:
 
         return self._count_duplicates('edge')
 
-    def write_nodes(
+    def write(
             self,
-            nodes: Iterable[BioCypherNode],
+            entities: Iterable[
+                BioCypherNode |
+                BioCypherEdge |
+                BioCypherRelAsNode
+            ],
             batch_size: int | None = None,
         ) -> bool:
         """
-        Top level method for writing nodes and their headers.
+        Top level method for writing graph components and their headers.
 
         Args:
-            nodes:
-                Iterable of nodes, each represented as
-                :py:class:`BioCypherNode` instance.
-
-        Returns:
-            True for success, False otherwise.
-        """
-        # TODO check represented_as
-
-        batch_size = self._batch_size(batch_size)
-
-        # write node data
-        passed = self._write_node_data(nodes, batch_size)
-        if not passed:
-            logger.error('Error while writing node data.')
-            return False
-        # pass property data to header writer per node type written
-        passed = self._write_node_headers()
-        if not passed:
-            logger.error('Error while writing node headers.')
-            return False
-
-        return True
-
-    def write_edges(
-        self,
-        edges: Iterable[BioCypherEdge],
-        batch_size: int | None = None,
-    ) -> bool:
-        """
-        Top level method for writing edges and their headers.
-
-        Args:
-            edges:
-                Iterable of edges, each represented as a
-                :py:class:`BioCypherEdge` or :py:class:`BioCypherRelAsNode`
-                instance.
+            entities:
+                Iterable of graph components.
             batch_size:
                 Number of records in one CSV file.
 
         Returns:
             True for success, False otherwise.
         """
+        # TODO check represented_as
 
-        bs = batch_size = self._batch_size(batch_size)
+        bs = self._batch_size(batch_size)
 
-        edges = _misc.to_list(edges)
-        nodes = (n for ee in edges for n in ee.nodes)
-        edges = (e for ee in edges for e in ee.edges)
+        entities = _misc.to_list(entities)
+        nodes = (n for ee in entities for n in ee.nodes)
+        edges = (e for ee in entities for e in ee.edges)
 
         return (
-            self.write_nodes(nodes, batch_size = bs) and
-            self._write_edge_data(edges, batch_size = bs) and
-            self._write_edge_headers()
+            self._write_records(nodes, batch_size = bs) and
+            self._write_records(edges, batch_size = bs) and
+            self._write_headers('node') and
+            self._write_headers('edge')
         )
 
     def _property_types(

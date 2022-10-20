@@ -164,6 +164,17 @@ class BioCypherNode:
             'properties': self.properties,
         }
 
+    @property
+    def nodes(self) -> tuple[BioCypherNode]:
+        """
+        Create a tuple of node(s).
+
+        Returns:
+            This node in a single element tuple.
+        """
+
+        return (self,)
+
 
 @dataclass(frozen=True)
 class BioCypherEdge:
