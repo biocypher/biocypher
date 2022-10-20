@@ -76,7 +76,7 @@ from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
-from typing import Iterable, Literal, TYPE_CHECKING, Union, Optional
+from typing import Any, Iterable, Literal, TYPE_CHECKING, Union, Optional
 from datetime import datetime
 from collections import OrderedDict, defaultdict
 import os
@@ -559,9 +559,8 @@ class BatchWriter:
 
     def _write_single_node_list_to_file(
             self,
-            node_list: list,
+            nodes: Iterable[BioCypherNode],
             label: str,
-            prop_dict: dict,
             labels: str,
         ) -> bool:
         """
@@ -569,80 +568,79 @@ class BatchWriter:
         to a Neo4j admin import compatible CSV file.
 
         Args:
-            node_list (list): list of BioCypherNodes to be written
-            label (str): the primary label of the node
-            prop_dict (dict): properties of node class passed from parsing
-                function and their types
-            labels (str): string of one or several concatenated labels
-                for the node class
+            nodes:
+                Iterable of ``BioCypherNode`` instances.
+            label:
+                The primary label of the nodes.
+            labels:
+                String of one or several concatenated labels
+                for the node class.
 
         Returns:
-            bool: The return value. True for success, False otherwise.
+            True for success, False otherwise.
         """
-        if not all(isinstance(n, BioCypherNode) for n in node_list):
+        if not all(isinstance(n, BioCypherNode) for n in nodes):
+
             logger.error('Nodes must be passed as type BioCypherNode.')
             return False
 
         # from list of nodes to list of strings
         lines = []
 
-        for n in node_list:
+        for n in nodes:
 
             # check for deviations in properties
             # node properties
-            n_props = n.get_properties()
-            n_keys = list(n_props.keys())
-            # reference properties
-            ref_props = list(prop_dict.keys())
+            props = n.get_properties()
+            ptypes = self.property_types['nodes'][label]
+            missing = set(ptypes.keys()) - set(props.keys())
+            excess = set(props.keys()) - set(ptypes.keys())
 
-            # compare lists order invariant
-            if not set(ref_props) == set(n_keys):
-                onode = n.get_id()
-                oprop1 = set(ref_props).difference(n_keys)
-                oprop2 = set(n_keys).difference(ref_props)
+            if missing:
+
                 logger.error(
-                    f'At least one node of the class {n.get_label()} '
-                    f'has more or fewer properties than another. '
-                    f'Offending node: {onode!r}, offending property: '
-                    f'{max([oprop1, oprop2])}. '
-                    f'All reference properties: {ref_props}, '
-                    f'All node properties: {n_keys}.',
+                    f'One `{n.get_label()}` node with ID `{n.get_id()}` is '
+                    f'missing the following properties: {", ".join(missing)}.'
+                )
+                return False
+
+            if excess:
+
+                logger.error(
+                    f'One `{n.get_label()}` node with ID `{n.get_id()}` has t'
+                    f'he following unexpected properties: {", ".join(excess)}.'
                 )
                 return False
 
             line = [n.get_id()]
-
-            if ref_props:
-
-                plist = []
-                # make all into strings, put actual strings in quotes
-                for k, v in prop_dict.items():
-                    p = n_props.get(k)
-                    if p is None:  # TODO make field empty instead of ""?
-                        plist.append('')
-                    elif v in [
-                        'int',
-                        'long',
-                        'float',
-                        'double',
-                        'dbl',
-                        'bool',
-                        'boolean',
-                    ]:
-                        plist.append(str(p))
-                    else:
-                        plist.append(self.quote + str(p) + self.quote)
-
-                line.append(self.delim.join(plist))
+            line.extend(
+                self._proc_prop(props.get(prop), py_type)
+                for prop, py_type in ptypes.items()
+            )
             line.append(labels)
-
-            lines.append(self.delim.join(line) + '\n')
+            lines.append(self.delim.join(line))
 
         # avoid writing empty files
         if lines:
+
             self._write_next_part(label, lines)
 
         return True
+
+    def _proc_prop(self, value: Any, py_type: str | type) -> str:
+        """
+        Process a property value.
+
+        Converts a property value to string and adds quotes if the column
+        type is string.
+        """
+
+        n4_type = self._col_type(py_type)
+        q = self.quote if n4_type == 'string' else ''
+        # make all into strings, put actual strings in quotes
+        value = '' if value is None else str(value)
+
+        return f'{q}{value}{q}'
 
     def _write_edge_data(
             self,
@@ -985,51 +983,39 @@ class BatchWriter:
 
         return True
 
-    def _write_next_part(self, label: str, lines: list):
+    def _write_part(self, label: str, lines: list[str]) -> bool:
         """
         This function writes a list of strings to a new part file.
 
         Args:
-            label (str): the label (type) of the edge; internal
-            representation sentence case -> needs to become PascalCase
-            for disk representation
-
-            lines (list): list of strings to be written
+            label:
+                The label (type) of the edge; internal representation
+                in sentence case -> will change to PascalCase before
+                writing to CSV.
+            lines:
+                The lines to be written.
 
         Returns:
-            bool: The return value. True for success, False otherwise.
+            True for success, False otherwise.
         """
         # translate label to PascalCase
         label = self.bl_adapter.name_sentence_to_pascal(label)
 
         # list files in self.outdir
         files = glob.glob(os.path.join(self.outdir, f'{label}-part*.csv'))
-        # find file with highest part number
-        if files:
-            next_part = (
-                max(
-                    [
-                        int(
-                            f.split('.')[-2].split('-')[-1].replace('part', ''),
-                        )
-                        for f in files
-                    ],
-                )
-                + 1
-            )
-        else:
-            next_part = 0
+        repart = re.compile('part(\d+)')
+
+        idx = max([int(repart.search(f).group(1)) for f in files] + [-1]) + 1
 
         # write to file
-        padded_part = str(next_part).zfill(3)
-        logger.info(
-            f'Writing {len(lines)} entries to {label}-part{padded_part}.csv',
-        )
-        file_path = os.path.join(self.outdir, f'{label}-part{padded_part}.csv')
+        path = os.path.join(self.outdir, f'{label}-part{idx:03d}.csv')
+        logger.info(f'Writing {len(lines)} entries to `{path}`.')
 
-        with open(file_path, 'w') as f:
+        with open(path, 'w') as fp:
             # concatenate with delimiter
-            f.writelines(lines)
+            fp.write(os.linesep.join(lines))
+
+        return True
 
     def get_import_call(self) -> str:
         """
