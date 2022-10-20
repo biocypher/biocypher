@@ -483,14 +483,14 @@ class BatchWriter:
 
         self.property_types[node_edge][label] = propt
 
-    def _write_node_headers(self):
+    def _write_node_headers(self) -> bool:
         """
         Writes single CSV file for a graph entity that is represented
         as a node as per the definition in the `schema_config.yaml`,
         containing only the header for this type of node.
 
         Returns:
-            bool: The return value. True for success, False otherwise.
+            True for success, False otherwise.
         """
         # load headers from data parse
         if not self.property_types.get('nodes'):
@@ -500,12 +500,7 @@ class BatchWriter:
             )
             return False
 
-
-
         for label, props in self.property_types['nodes'].items():
-
-            # create header CSV with ID, properties, labels
-            _id = ':ID'
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
@@ -513,32 +508,26 @@ class BatchWriter:
             # via the schema_config.yaml.
 
             # translate label to PascalCase
-            pascal_label = self.bl_adapter.name_sentence_to_pascal(label)
-
-            header_path = os.path.join(
-                self.outdir, f'{pascal_label}-header.csv',
-            )
-            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
+            label = self.bl_adapter.name_sentence_to_pascal(label)
+            header_path = os.path.join(self.outdir, f'{label}-header.csv')
+            parts_path = os.path.join(self.outdir, f'{label}-part.*')
 
             # check if file already exists
             if not os.path.exists(header_path):
 
-                # concatenate key:value in props
-                props_list = [
+                # add column types
+
+                header = [':ID']
+                header.extend(
                     f'{prop}{self._col_type(py_t)}'
                     for prop, py_t in props.items()
-                ]
-
-                # create list of lists and flatten
-                # removes need for empty check of property list
-                out_list = [[id], props_list, [':LABEL']]
-                out_list = [val for sublist in out_list for val in sublist]
+                )
+                header.append(':LABEL')
 
                 with open(header_path, 'w') as f:
 
                     # concatenate with delimiter
-                    row = self.delim.join(out_list)
-                    f.write(row)
+                    f.write(self.delim.join(header))
 
                 # add file path to neo4 admin import statement
                 self.import_call_nodes += (
@@ -569,12 +558,12 @@ class BatchWriter:
         return f'{":" if n4_type else ""}{n4_type}'
 
     def _write_single_node_list_to_file(
-        self,
-        node_list: list,
-        label: str,
-        prop_dict: dict,
-        labels: str,
-    ):
+            self,
+            node_list: list,
+            label: str,
+            prop_dict: dict,
+            labels: str,
+        ) -> bool:
         """
         This function takes one list of biocypher nodes and writes them
         to a Neo4j admin import compatible CSV file.
