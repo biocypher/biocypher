@@ -553,7 +553,7 @@ class BatchWriter:
                     f.write(self.delim.join(header))
 
                 # add file path to neo4 admin import statement
-                self.import_call_nodes += (
+                self.cli_call['node'].append(
                     f'--nodes="{header_path},{parts_path}" '
                 )
 
@@ -893,7 +893,7 @@ class BatchWriter:
                     f.write(row)
 
                 # add file path to neo4 admin import statement
-                self.import_call_edges += (
+                self.cli_call['edge'].append(
                     f'--relationships="{header_path},{parts_path}" '
                 )
 
@@ -1039,18 +1039,6 @@ class BatchWriter:
 
         return True
 
-    def get_import_call(self) -> str:
-        """
-        Function to return the import call detailing folder and
-        individual node and edge headers and data files, as well as
-        delimiters and database name.
-
-        Returns:
-            str: a bash command for neo4j-admin import
-        """
-
-        return self._construct_import_call()
-
     def write_import_call(self) -> bool:
         """
         Function to write the import call detailing folder and
@@ -1066,37 +1054,37 @@ class BatchWriter:
 
         with open(file_path, 'w') as f:
 
-            f.write(self._construct_import_call())
+            f.write(self.create_import_call())
 
         return True
 
-    def _construct_import_call(self) -> str:
+    def create_import_call(self) -> str:
         """
-        Function to construct the import call detailing folder and
+        Create the import call detailing folder and
         individual node and edge headers and data files, as well as
         delimiters and database name. Built after all data has been
         processed to ensure that nodes are called before any edges.
 
         Returns:
-            str: a bash command for neo4j-admin import
+            A call of the *neo4j-admin import* command.
         """
 
-        import_call = (
-            f'neo4j-admin import --database={self.db_name} '
-            f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
+        q = "'" if self.quote == '"' else '"'
+
+        call = (
+            [
+                'neo4j-admin import',
+                f'--database={self.db_name}',
+                f'--delimiter="{self.delim}"',
+                f'--array-delimiter="{self.adelim}"',
+                f'--quote={q}{self.quote}{q}',
+                '--skip-bad-relationships='
+                f'{str(self.skip_bad_relationships).lower()}',
+                '--skip-duplicate-nodes='
+                f'{str(self.skip_duplicate_nodes).lower()}',
+            ] +
+            self.cli_call['nodes'] +
+            self.cli_call['edges']
         )
-        if not self.quote == '"':
-            import_call += f'--quote="{self.quote}" '
-        else:
-            import_call += f"--quote='{self.quote}' "
 
-        if self.skip_bad_relationships:
-            import_call += '--skip-bad-relationships=true '
-        if self.skip_duplicate_nodes:
-            import_call += '--skip-duplicate-nodes=true '
-
-        # append node and edge import calls
-        import_call += self.import_call_nodes
-        import_call += self.import_call_edges
-
-        return import_call
+        return f'    \{os.linesep}'.join(call)
