@@ -420,6 +420,7 @@ class VersionNode:
             'properties': self.properties,
         }
 
+    @property
     def _timestamp(self):
         """
         A timestampt that serves as unique ID for the current session.
