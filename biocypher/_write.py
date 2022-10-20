@@ -10,10 +10,11 @@
 #
 
 """
-Export of CSV files for the Neo4J admin import. The admin import is able
-to quickly transfer large amounts of content into an unused database. For more
-explanation, see https://neo4j.com/docs/operations-manual/current/tuto\
-rial/neo4j-admin-import/.
+Export of CSV files for the Neo4J admin import.
+
+The admin import is able to quickly transfer large amounts of content into an
+unused database. For more explanation, see
+https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/.
 
 Import like that:
 https://community.neo4j.com/t/how-can-i-use-a-database-created-with-neo4j-\
@@ -70,17 +71,16 @@ for ordering of the earlier part files ("01, 02").
 3. start db, test for consistency
 """
 
-import glob
-
 from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
-from typing import Any, Iterable, Literal, TYPE_CHECKING, Union, Optional
+from typing import Any, Iterable, Literal, TYPE_CHECKING
 from datetime import datetime
 from collections import OrderedDict, defaultdict
 import os
 import re
+import glob
 
 import ._misc as _misc
 from biocypher._config import config as _config
@@ -142,7 +142,7 @@ class BatchWriter:
         delimiter: str | None = None,
         array_delimiter: str | None = None,
         quote: str | None = None,
-        dirname: Optional[str] = None,
+        dirname: str | None = None,
         db_name: str = 'neo4j',
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
@@ -208,6 +208,13 @@ class BatchWriter:
         self.bl_adapter = bl_adapter
         self.set_outdir(dirname)
         self.reset()
+
+    def main(self):
+        """
+        Creates CSV files from the provided components.
+        """
+
+        raise NotImplementedError
 
     def set_outdir(self, path: str | None = None):
         """
@@ -401,7 +408,7 @@ class BatchWriter:
 
         if what != 'node' and not from_conf:
 
-            from_conf.update(self._label_as_edge_proptypes(label) or {})
+            from_conf.update(self._lae_proptypes(label) or {})
 
         if from_conf:
 
@@ -422,7 +429,7 @@ class BatchWriter:
 
         self.property_types[what][label] = propt
 
-    def _label_as_edge_proptypes(self, label: str) -> dict[str, str] | None:
+    def _lae_proptypes(self, label: str) -> dict[str, str] | None:
         """
         Looks up property types for label as edge leaves.
         """
@@ -609,7 +616,6 @@ class BatchWriter:
         # (ie missingness), we'd need to collect all possible
         # properties in the generator pass
         return True
-        return True
 
     @staticmethod
     def _what(entity: BioCypherNode | BioCypherEdge) -> ENTITIES:
@@ -651,6 +657,8 @@ class BatchWriter:
 
             # add column types
             header = [':ID' if node else ':START_ID']
+            # this is not guaranteed to be order preserving
+            # though it will work fine in cpython
             header.extend(
                 f'{prop}{self._col_type(py_t)}'
                 for prop, py_t in props.items()
@@ -741,6 +749,8 @@ class BatchWriter:
                 return False
 
             line = [e.node_id if node else e.source_id]
+            # this is not guaranteed to be order preserving
+            # though it will work fine in cpython
             line.extend(
                 self._proc_prop(props.get(prop), py_type)
                 for prop, py_type in ptypes.items()
@@ -792,14 +802,17 @@ class BatchWriter:
 
         return True
 
-    def write_import_call(self) -> bool:
+    def write_call(self) -> bool:
         """
-        Function to write the import call detailing folder and
-        individual node and edge headers and data files, as well as
-        delimiters and database name, to the export folder as txt.
+        Write the *neo4j-admin import* call into a file.
+
+        This call contains information about all the exported files,
+        their headers, the database name and further parameters. It
+        is suitable for importing data into Neo4j by executing it
+        in the shell.
 
         Returns:
-            bool: The return value. True for success, False otherwise.
+            True for success, False otherwise.
         """
 
         file_path = os.path.join(self.outdir, 'neo4j-admin-import-call.sh')
@@ -807,16 +820,18 @@ class BatchWriter:
 
         with open(file_path, 'w') as f:
 
-            f.write(self.create_import_call())
+            f.write(self.compile_call())
 
         return True
 
-    def create_import_call(self) -> str:
+    def compile_call(self) -> str:
         """
-        Create the import call detailing folder and
-        individual node and edge headers and data files, as well as
-        delimiters and database name. Built after all data has been
-        processed to ensure that nodes are called before any edges.
+        Compile the *neo4j-admin* call based on previously processed data.
+
+        This call contains information about all the exported files,
+        their headers, the database name and further parameters. It
+        is suitable for importing data into Neo4j by executing it
+        in the shell.
 
         Returns:
             A call of the *neo4j-admin import* command.
