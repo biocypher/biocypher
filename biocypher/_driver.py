@@ -106,9 +106,9 @@ class Driver(neo4j_utils.Driver):
             for arg in inspect.signature(neo4j_utils.Driver).keys()
         }
 
-        self.db_delim = delimiter or _config('neo4j_delimiter')
-        self.db_adelim = array_delimiter or _config('neo4j_array_delimiter')
-        self.db_quote = quote_char or _config('neo4j_quote_char')
+        self.csv_delim = delimiter or _config('csv_delimiter')
+        self.csv_adelim = array_delimiter or _config('csv_array_delimiter')
+        self.csv_quote = quote_char or _config('csv_quote_char')
 
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
@@ -573,12 +573,13 @@ class Driver(neo4j_utils.Driver):
                 The name of the database to write the files to.
         """
         if not self.batch_writer:
+
             self.batch_writer = BatchWriter(
                 leaves=self.db_meta.leaves,
                 bl_adapter=self.bl_adapter,
-                delimiter=self.db_delim,
-                array_delimiter=self.db_adelim,
-                quote=self.db_quote,
+                delimiter=self.csv_delim,
+                array_delimiter=self.csv_adelim,
+                quote=self.csv_quote,
                 dirname=dirname,
                 db_name=db_name or self.current_db,
                 skip_bad_relationships=self.skip_bad_relationships,
