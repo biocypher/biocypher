@@ -519,12 +519,15 @@ class Driver(neo4j_utils.Driver):
 
         return result
 
-    def write_nodes(
+    def write_csv(
             self,
-            nodes: Iterable[BioCypherNode],
+            nodes: Iterable[
+                BioCypherNode |
+                BioCypherEdge |
+                BioCypherRelAsNode
+            ],
             dirname: Optional[str] = None,
             db_name: Optional[str] = None,
-
     ) -> bool:
         """
         Write the nodes into CSV file.
@@ -547,7 +550,6 @@ class Driver(neo4j_utils.Driver):
         # instantiate adapter on demand because it takes time to load
         # the biolink model toolkit
         self.start_bl_adapter()
-
         self.start_batch_writer(dirname, db_name)
 
         nodes = peekable(nodes)
@@ -556,7 +558,7 @@ class Driver(neo4j_utils.Driver):
         else:
             tnodes = nodes
         # write node files
-        return self.batch_writer.write_nodes(tnodes)
+        return self.batch_writer.write(tnodes)
 
     def start_batch_writer(
         self,
@@ -635,7 +637,7 @@ class Driver(neo4j_utils.Driver):
         else:
             tedges = edges
         # write edge files
-        return self.batch_writer.write_edges(tedges)
+        return self.batch_writer.write(tedges)
 
     def get_import_call(self) -> str:
         """

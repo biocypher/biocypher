@@ -84,7 +84,7 @@ import glob
 
 import ._misc as _misc
 from biocypher._config import config as _config
-from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from ._create import BC_TYPES, BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 __all__ = ['BatchWriter']
 
@@ -361,11 +361,7 @@ class BatchWriter:
 
     def write(
             self,
-            entities: Iterable[
-                BioCypherNode |
-                BioCypherEdge |
-                BioCypherRelAsNode
-            ],
+            entities: Iterable[BC_TYPES],
             batch_size: int | None = None,
         ) -> bool:
         """

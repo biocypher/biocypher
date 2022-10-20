@@ -45,6 +45,7 @@ if TYPE_CHECKING:
     import biocypher
 
 __all__ = [
+    'BC_TYPES',
     'BioCypherEdge',
     'BioCypherNode',
     'BioCypherRelAsNode',
@@ -55,6 +56,12 @@ logger.debug(f'Loading module {__name__}.')
 
 
 _RELFCR = re.compile('[\n\r]+')
+
+BC_TYPES = (
+    BioCypherNode |
+    BioCypherEdge |
+    BioCypherRelAsNode
+)
 
 
 @dataclass(frozen=True)

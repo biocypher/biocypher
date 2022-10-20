@@ -51,7 +51,7 @@ import bmt
 
 from . import _misc
 from ._config import _read_yaml, module_data_path
-from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from ._create import BC_TYPES, BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 __all__ = ['BiolinkAdapter', 'Translator']
 
@@ -434,8 +434,16 @@ https://biolink.github.io/biolink-model-toolkit/example_usage.html
 
 class Translator:
 
+    INPUT_TYPES = (
+        tuple[str, str, dict] |
+        tuple[str, str, str, dict] |
+        tuple[str, str, str, str, dict]
+    )
+
     def __init__(self, leaves: dict[str, dict]):
         """
+        Translate components to their biocypher representations.
+
         Args:
             leaves:
                 Dictionary detailing the leaves of the hierarchy
@@ -451,49 +459,227 @@ class Translator:
         # record nodes without biolink type configured in schema_config.yaml
         self.notype = collections.defaultdict(int)
 
-    def translate_nodes(
-        self,
-        nodes: Iterable[tuple[str, str, dict]],
-    ) -> Generator[BioCypherNode, None, None]:
+    def translate(
+            self,
+            items: INPUT_TYPES | Iterable[INTPUT_TYPES]
+        ) -> Generator[BC_TYPES, None, None]:
         """
+        Translate graph components to the current schema.
+
         Translates input node representation to a representation that
         conforms to the schema of the given BioCypher graph. For now
         requires explicit statement of node type on pass.
 
         Args:
-            nodes:
-                Collection of tuples representing individual nodes by their
-                unique id and a type that is translated from the original
-                database notation to the corresponding BioCypher notation.
+            items:
+                Tuples representing graph components.
+
+        Yields:
+            Graph components as objects that are suitable to be inserted
+            into the database.
         """
 
-        self._log_begin_translate(nodes, 'nodes')
+        self._log_begin_translate(items, 'components')
 
-        for _id, _type, props in nodes:
+        items = peekable(items)
+        first = items.peek()
 
-            # find the node in leaves that represents biolink node type
-            bl_type = self._get_bl_type(_type)
+        if isinstance(first, _misc.SIMPLE_TYPES):
 
-            if bl_type:
+            items = (first,)
 
-                # filter properties for those specified in schema_config if any
-                filtered_props = self._filter_props(bl_type, props)
+        for i in items:
 
-                # preferred id
-                preferred_id = self._get_preferred_id(bl_type)
+            bc_i = (
+                self.node(*i)
+                    if len(i) < 4 else
+                self.edge(*i)
+                    if len(i) == 4 else
+                self.edge(*i[1:], _id = i[0])
+            )
 
-                yield BioCypherNode(
-                    node_id = _id,
-                    node_label = bl_type,
-                    preferred_id = preferred_id,
-                    properties = filtered_props,
+            if bc_i: yield bc_i
+
+        self._log_finish_translate('components')
+
+    def edge(
+            self,
+            source: str,
+            target: str,
+            _type: str,
+            props: dict,
+            _id: str = None,
+        ) -> BioCypherEdge | BioCypherRelAsNode | None:
+        """
+        Creates one BioCypherEdge.
+
+        Args:
+            source:
+                ID of the source node.
+            target:
+                ID of the target node.
+            _type:
+                Type of the entity represented by the edge.
+            props:
+                Arbitrary properties.
+            _id:
+                ID property of the edge. If not provided, the source,
+                target, type and all properties will be concatenated to
+                create a unique ID for the edge. Used only if the relation
+                is represented as a node.
+
+        Returns:
+            An edge in BioCypher representation, if the entity type can be
+            found in the schema.
+        """
+
+        # match the input label (_type) to
+        # a Biolink label from schema_config
+        bl_type = self._get_bl_type(_type)
+
+        if not bl_type:
+
+            self._record_no_type(_type, (source, target))
+
+        else:
+
+            filtered_props = self._filter_props(bl_type, props)
+            rep = self.leaves[bl_type]['represented_as']
+
+            if rep == 'node':
+
+                return self._rel_as_node(
+                    source = source,
+                    target = target,
+                    bl_type = bl_type,
+                    _id = _id,
+                    props = filtered_props,
                 )
 
-            else:
+            edge_label = self.leaves[bl_type].get('label_as_edge') or bl_type
 
-                self._record_no_type(_type, _id)
+            return BioCypherEdge(
+                source_id = source,
+                target_id = target,
+                relationship_label = edge_label,
+                properties = filtered_props,
+            )
 
-        self._log_finish_translate('nodes')
+    def _rel_as_node(
+            self,
+            source: str,
+            target: str,
+            bl_type: str,
+            props: dict,
+            _id: str | None = None,
+        ) -> BioCypherRelAsNode:
+        """
+        Create node representation of a record represented by edge by default.
+
+        Args:
+            source:
+                ID of the source node.
+            target:
+                ID of the target node.
+            bl_type:
+                The Biolink type to be used as node label.
+            props:
+                Arbitrary properties, already filtered by ``_filter_props``.
+            _id:
+                ID property of the node. If not provided, the source,
+                target, type and all properties will be concatenated to
+                create a unique ID for the edge.
+
+        Returns:
+            A triplet of one node and two edges in BioCypher representation.
+        """
+
+        if _id:
+            # if it brings its own ID, use it
+            node_id = _id
+
+        else:
+
+            props_str = _misc.dict_str(dct = props, sep = '_')
+            # source target concat
+            node_id = f'{src}_{tar}_{props_str}'
+
+        n = BioCypherNode(
+            node_id = node_id,
+            node_label = bl_type,
+            properties = props,
+        )
+
+        # directionality check TODO generalise to account for
+        # different descriptions of directionality or find a
+        # more consistent solution for indicating directionality
+        if props.get('directed'):
+
+            reltype1 = 'IS_SOURCE_OF'
+            reltype2 = 'IS_TARGET_OF'
+
+        else:
+
+            reltype1 = props.get('src_role') or 'IS_PART_OF'
+            reltype2 = props.get('tar_role') or 'IS_PART_OF'
+
+        e_s = BioCypherEdge(
+            source_id = source,
+            target_id = node_id,
+            relationship_label = reltype1,
+        )
+
+        e_t = BioCypherEdge(
+            source_id = target,
+            target_id = node_id,
+            relationship_label = reltype2,
+        )
+
+        yield BioCypherRelAsNode(n, e_s, e_t)
+
+
+    def node(
+            self,
+            _id: str,
+            _type: str,
+            props: dict,
+        ) -> BioCypherNode | None:
+        """
+        Creates one BioCypherNode.
+
+        Args:
+            _id:
+                The node ID.
+            _type:
+                Type of the represented entity.
+            props:
+                Arbitrary properties.
+
+        Returns:
+            A node in BioCypher representation, if the entity type can be
+            found in the schema.
+        """
+
+        # find the node in leaves that represents biolink node type
+        bl_type = self._get_bl_type(_type)
+
+        if not bl_type:
+
+            self._record_no_type(_type, _id)
+
+        else:
+
+            # filter properties for those specified in schema_config if any
+            filtered_props = self._filter_props(bl_type, props)
+            preferred_id = self._get_preferred_id(bl_type)
+
+            return BioCypherNode(
+                node_id = _id,
+                node_label = bl_type,
+                preferred_id = preferred_id,
+                properties = filtered_props,
+            )
+
 
     def _get_preferred_id(self, _bl_type: str) -> str:
         """
@@ -531,118 +717,6 @@ class Translator:
         props.update({k: None for k in missing_keys})
 
         return props
-
-    def translate_edges(
-        self,
-        edges: Iterable[tuple[str, str, str, dict]],
-    ) -> Generator[Union[BioCypherEdge, BioCypherRelAsNode], None, None]:
-        """
-        Translates input edge representation to a representation that
-        conforms to the schema of the given BioCypher graph. For now
-        requires explicit statement of edge type on pass.
-
-        Args:
-            edges:
-                Collection of tuples representing source and target of
-                an interaction via their unique ids as well as the type
-                of interaction in the original database notation, which
-                is translated to BioCypher notation using the `leaves`.
-                Can optionally possess its own ID.
-        """
-        # TODO:
-        #    - id of interactions (now simple concat with "_")
-        #    - do we even need one?
-
-        self._log_begin_translate(edges, 'edges')
-
-        # legacy: deal with 4-tuples (no edge id)
-        # TODO remove for performance reasons once safe
-        edges = peekable(edges)
-
-        if len(edges.peek()) == 4:
-
-            edges = [(None,) + e for e in edges]
-
-        for _id, src, tar, _type, props in edges:
-
-            # match the input label (_type) to
-            # a Biolink label from schema_config
-            bl_type = self._get_bl_type(_type)
-
-            if bl_type:
-
-                # filter properties for those specified in schema_config if any
-                filtered_props = self._filter_props(bl_type, props)
-
-                rep = self.leaves[bl_type]['represented_as']
-
-                if rep == 'node':
-
-                    if _id:
-                        # if it brings its own ID, use it
-                        node_id = _id
-
-                    else:
-
-                        props_str = _misc.dict_str(dct = props, sep = '_')
-                        # source target concat
-                        node_id = f'{src}_{tar}_{props_str}'
-
-                    n = BioCypherNode(
-                        node_id = node_id,
-                        node_label = bl_type,
-                        properties = filtered_props,
-                    )
-
-                    # directionality check TODO generalise to account for
-                    # different descriptions of directionality or find a
-                    # more consistent solution for indicating directionality
-                    if filtered_props.get('directed'):
-
-                        l1 = 'IS_SOURCE_OF'
-                        l2 = 'IS_TARGET_OF'
-
-                    else:
-
-                        l1 = filtered_props.get('src_role') or 'IS_PART_OF'
-                        l2 = filtered_props.get('tar_role') or 'IS_PART_OF'
-
-                    e_s = BioCypherEdge(
-                        source_id = src,
-                        target_id = node_id,
-                        relationship_label = l1,
-                        # additional here
-                    )
-
-                    e_t = BioCypherEdge(
-                        source_id = tar,
-                        target_id = node_id,
-                        relationship_label = l2,
-                        # additional here
-                    )
-
-                    yield BioCypherRelAsNode(n, e_s, e_t)
-
-                else:
-
-                    edge_label = self.leaves[bl_type].get('label_as_edge')
-
-                    if edge_label is None:
-
-                        edge_label = bl_type
-
-                    yield BioCypherEdge(
-                        source_id = src,
-                        target_id = tar,
-                        relationship_label = edge_label,
-                        properties = filtered_props,
-                    )
-
-            else:
-
-                self._record_no_type(_type, (_src, _tar))
-
-        self._log_finish_translate('edges')
 
     def _record_no_type(self, _type: Any, what: Any) -> None:
         """
