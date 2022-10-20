@@ -80,6 +80,7 @@ from typing import Iterable, Literal, TYPE_CHECKING, Union, Optional
 from datetime import datetime
 from collections import OrderedDict, defaultdict
 import os
+import re
 
 import ._misc as _misc
 from biocypher._config import config as _config
@@ -90,6 +91,34 @@ __all__ = ['BatchWriter']
 if TYPE_CHECKING:
 
     from ._translate import BiolinkAdapter
+
+N4_ALL_TYPES = {
+    'int',
+    'long',
+    'float',
+    'double',
+    'boolean',
+    'byte',
+    'short',
+    'char',
+    'string',
+    'point',
+    'date',
+    'localtime',
+    'time',
+    'localdatetime',
+    'datetime',
+    'duration',
+}
+
+N4_TYPES = {
+    'long': ('int', 'long'),
+    'double': ('double', 'float', 'dbl'),
+    'boolean': ('bool', 'boolean'),
+    'string': ('str',),
+}
+
+PY_TYPES = {py: n4 for n4, pys in N4_TYPES.items() for py in pys}
 
 # TODO retrospective check of written csvs?
 
@@ -464,16 +493,19 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
         # load headers from data parse
-        if not self.node_property_dict:
+        if not self.property_types.get('nodes'):
+
             logger.error(
                 'Header information not found. Was the data parsed first?',
             )
             return False
 
-        for label, props in self.node_property_dict.items():
-            # create header CSV with ID, properties, labels
 
-            id = ':ID'
+
+        for label, props in self.property_types['nodes'].items():
+
+            # create header CSV with ID, properties, labels
+            _id = ':ID'
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
@@ -492,17 +524,10 @@ class BatchWriter:
             if not os.path.exists(header_path):
 
                 # concatenate key:value in props
-                props_list = []
-                for k, v in props.items():
-                    if v in ['int', 'long']:
-                        props_list.append(f'{k}:long')
-                    elif v in ['float', 'double', 'dbl']:
-                        props_list.append(f'{k}:double')
-                    elif v in ['bool', 'boolean']:
-                        # TODO Neo4j boolean support / spelling?
-                        props_list.append(f'{k}:boolean')
-                    else:
-                        props_list.append(f'{k}')
+                props_list = [
+                    f'{prop}{self._col_type(py_t)}'
+                    for prop, py_t in props.items()
+                ]
 
                 # create list of lists and flatten
                 # removes need for empty check of property list
@@ -521,6 +546,27 @@ class BatchWriter:
                 )
 
         return True
+
+    @staticmethod
+    def _col_type(py_type: str | type) -> str:
+        """
+        Neo4j column types as used in the CSV header notation.
+
+        Args:
+            py_type:
+                A type or its name.
+
+        Returns:
+            A type annotation that can be appended to the CSV column label.
+        """
+
+        py_type = py_type.__name__ if isinstance(py_type, type) else py_type
+        n4_type = PY_TYPES.get(
+            py_type,
+            py_type if py_type in N4_ALL_TYPES else None,
+        )
+
+        return f'{":" if n4_type else ""}{n4_type}'
 
     def _write_single_node_list_to_file(
         self,
