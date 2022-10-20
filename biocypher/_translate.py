@@ -461,7 +461,7 @@ class Translator:
 
     def translate(
             self,
-            items: INPUT_TYPES | Iterable[INTPUT_TYPES]
+            items: INPUT_TYPES | BC_TYPES | Iterable[INTPUT_TYPES | BC_TYPES],
         ) -> Generator[BC_TYPES, None, None]:
         """
         Translate graph components to the current schema.
@@ -484,13 +484,15 @@ class Translator:
         items = peekable(items)
         first = items.peek()
 
-        if isinstance(first, _misc.SIMPLE_TYPES):
+        if isinstance(first, (_misc.SIMPLE_TYPES, BC_TYPES)):
 
             items = (first,)
 
         for i in items:
 
             bc_i = (
+                i
+                    if isinstance(i, BC_TYPES) else
                 self.node(*i)
                     if len(i) < 4 else
                 self.edge(*i)
