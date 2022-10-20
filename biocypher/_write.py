@@ -503,11 +503,10 @@ class BatchWriter:
             if len(counts_by_label[label]) >= batch_size:
 
                 # batch size controlled here
-                passed = self._write_node_batch(
-                    by_label[label],
-                    label,
-                    self.property_types['node'][label],
-                    labels[label],
+                passed = self._compile_batch(
+                    entities = by_label[label],
+                    label = label,
+                    labels = labels[label],
                 )
 
                 if not passed:
@@ -520,11 +519,10 @@ class BatchWriter:
         # after generator depleted, write remainder of by_label
         for label, lnodes in by_label.items():
 
-            passed = self._write_node_batch(
-                lnodes,
-                label,
-                self.property_types['node'][label],
-                labels[label],
+            passed = self._compile_batch(
+                entities = lnodes,
+                label = label,
+                labels = labels[label],
             )
 
             if not passed:
@@ -646,73 +644,6 @@ class BatchWriter:
         )
 
         return f'{":" if n4_type else ""}{n4_type}'
-
-    def _write_node_batch(
-            self,
-            nodes: Iterable[BioCypherNode],
-            label: str,
-            labels: str,
-        ) -> bool:
-        """
-        This function takes one list of biocypher nodes and writes them
-        to a Neo4j admin import compatible CSV file.
-
-        Args:
-            nodes:
-                Iterable of ``BioCypherNode`` instances.
-            label:
-                The primary label of the nodes.
-            labels:
-                String of one or several concatenated labels
-                for the node class.
-
-        Returns:
-            True for success, False otherwise.
-        """
-        if not all(isinstance(n, BioCypherNode) for n in nodes):
-
-            logger.error('Nodes must be passed as type BioCypherNode.')
-            return False
-
-        # from list of nodes to list of strings
-        lines = []
-
-        for n in nodes:
-
-            # check for deviations in properties
-            # node properties
-            props = n.get_properties()
-            ptypes = self.property_types['nodes'][label]
-            missing = set(ptypes.keys()) - set(props.keys())
-            excess = set(props.keys()) - set(ptypes.keys())
-
-            if missing:
-
-                logger.error(
-                    f'One `{n.get_label()}` node with ID `{n.get_id()}` is '
-                    f'missing the following properties: {", ".join(missing)}.'
-                )
-                return False
-
-            if excess:
-
-                logger.error(
-                    f'One `{n.get_label()}` node with ID `{n.get_id()}` has t'
-                    f'he following unexpected properties: {", ".join(excess)}.'
-                )
-                return False
-
-            line = [n.get_id()]
-            line.extend(
-                self._proc_prop(props.get(prop), py_type)
-                for prop, py_type in ptypes.items()
-            )
-            line.append(labels)
-            lines.append(self.delim.join(line))
-
-        self._write_batch(label, lines)
-
-        return True
 
     def _proc_prop(self, value: Any, py_type: str | type) -> str:
         """
@@ -852,10 +783,9 @@ class BatchWriter:
                     bin_l[label] += 1
                     if not bin_l[label] < batch_size:
                         # batch size controlled here
-                        passed = self._write_edge_batch(
-                            bins[label],
-                            label,
-                            reference_props[label],
+                        passed = self._compile_batch(
+                            entities = bins[label],
+                            label = label,
                         )
 
                         if not passed:
@@ -867,10 +797,9 @@ class BatchWriter:
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
 
-                passed = self._write_edge_batch(
-                    nl,
-                    label,
-                    reference_props[label],
+                passed = self._compile_batch(
+                    entities = nl,
+                    label = label,
                 )
 
                 if not passed:
@@ -962,106 +891,90 @@ class BatchWriter:
 
         return True
 
-    def _write_edge_batch(
+    def _compile_batch(
         self,
-        edge_list: list,
+        entities: Iterable[BioCypherNode] | Iterable[BioCypherEdge],
         label: str,
-        prop_dict: dict,
-    ):
+        labels: str,
+    ) -> bool:
         """
-        This function takes one list of biocypher edges and writes them
-        to a Neo4j admin import compatible CSV file.
+        Compiles one batch into lines and writes the out to a CSV file.
 
         Args:
-            edge_list (list): list of BioCypherEdges to be written
-
-            label (str): the label (type) of the edge
-
-            prop_dict (dict): properties of node class passed from parsing
-                function and their types
+            entities:
+                Iterable of nodes or edges, each represented as a
+                ``BioCypherNode`` or ``BioCypherEdge`` instance.
+            label:
+                Label or type of the nodes or edges.
+            labels:
+                String of one or several concatenated labels
+                for the node class. Ignored for edges.
 
         Returns:
-            bool: The return value. True for success, False otherwise.
+            True for success, False otherwise.
         """
 
-        if not all(isinstance(n, BioCypherEdge) for n in edge_list):
+        entities = _misc.to_list(entities)
 
-            logger.error('Edges must be passed as type BioCypherEdge.')
+        if not entities: return
+
+        eclass = entities[0].__class__
+        what = re.sub('^BioCypher', '', eclass.__name__).lower()
+        node = what == 'node'
+
+        if not all(isinstance(e, eclass) for e in entities):
+
+            whatcap = what.capitalize()
+            logger.error(
+                f'{whatcap}s must be passed as '
+                f'type BioCypher{whatcap}.'
+            )
             return False
 
-        # from list of edges to list of strings
+        # from list of nodes or edges to list of strings
         lines = []
-        for e in edge_list:
+
+        for e in entities:
             # check for deviations in properties
             # edge properties
-            e_props = e.get_properties()
-            e_keys = list(e_props.keys())
-            ref_props = list(prop_dict.keys())
+            props = e.get_properties()
+            ptypes = self.property_types[what][label]
+            missing = set(ptypes.keys()) - set(props.keys())
+            excess = set(props.keys()) - set(ptypes.keys())
+            e_display = (
+                f'ID `{e.node_id}`'
+                    if node else
+                f'endpoint IDs `{e.source_id}-{e.target_id}`'
+            )
 
-            # compare list order invariant
-            if not set(ref_props) == set(e_keys):
-                oedge = f'{e.get_source_id()}-{e.get_target_id()}'
-                oprop1 = set(ref_props).difference(e_keys)
-                oprop2 = set(e_keys).difference(ref_props)
+            if missing:
+
                 logger.error(
-                    f'At least one edge of the class {e.get_label()} '
-                    f'has more or fewer properties than another. '
-                    f'Offending edge: {oedge!r}, offending property: '
-                    f'{max([oprop1, oprop2])}. '
-                    f'All reference properties: {ref_props}, '
-                    f'All edge properties: {e_keys}.',
+                    f'One `{e.get_label()}` {what} with {e_display} is '
+                    f'missing the following properties: {", ".join(missing)}.'
                 )
                 return False
 
-            if ref_props:
+            if excess:
 
-                plist = []
-                # make all into strings, put actual strings in quotes
-                for k, v in prop_dict.items():
-                    p = e_props.get(k)
-                    if p is None:  # TODO make field empty instead of ""?
-                        plist.append('')
-                    elif v in [
-                        'int',
-                        'long',
-                        'float',
-                        'double',
-                        'dbl',
-                        'bool',
-                        'boolean',
-                    ]:
-                        plist.append(str(p))
-                    else:
-                        plist.append(self.quote + str(p) + self.quote)
+                logger.error(
+                    f'One `{e.get_label()}` node with {e_display} has t'
+                    f'he following unexpected properties: {", ".join(excess)}.'
+                )
+                return False
 
-                lines.append(
-                    self.delim.join(
-                        [
-                            e.get_source_id(),
-                            # here we need a list of properties in
-                            # the same order as in the header
-                            self.delim.join(plist),
-                            e.get_target_id(),
-                            self.bl_adapter.name_sentence_to_pascal(
-                                e.get_label(),
-                            ),
-                        ],
-                    )
-                    + '\n',
-                )
-            else:
-                lines.append(
-                    self.delim.join(
-                        [
-                            e.get_source_id(),
-                            e.get_target_id(),
-                            self.bl_adapter.name_sentence_to_pascal(
-                                e.get_label(),
-                            ),
-                        ],
-                    )
-                    + '\n',
-                )
+            line = [e.node_id if node else e.source_id]
+            line.extend(
+                self._proc_prop(props.get(prop), py_type)
+                for prop, py_type in ptypes.items()
+            )
+            line.append(labels if node else e.target_id)
+
+            if not node:
+
+                line.append(e.get_label())
+
+            lines.append(self.delim.join(line))
 
         self._write_batch(label, lines)
 
