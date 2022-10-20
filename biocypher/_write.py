@@ -420,7 +420,7 @@ class BatchWriter:
             if len(counts_by_label[label]) >= batch_size:
 
                 # batch size controlled here
-                passed = self._write_single_node_list_to_file(
+                passed = self._write_node_batch(
                     by_label[label],
                     label,
                     self.property_types['node'][label],
@@ -437,7 +437,7 @@ class BatchWriter:
         # after generator depleted, write remainder of by_label
         for label, lnodes in by_label.items():
 
-            passed = self._write_single_node_list_to_file(
+            passed = self._write_node_batch(
                 lnodes,
                 label,
                 self.property_types['node'][label],
@@ -557,7 +557,7 @@ class BatchWriter:
 
         return f'{":" if n4_type else ""}{n4_type}'
 
-    def _write_single_node_list_to_file(
+    def _write_node_batch(
             self,
             nodes: Iterable[BioCypherNode],
             label: str,
@@ -620,10 +620,7 @@ class BatchWriter:
             line.append(labels)
             lines.append(self.delim.join(line))
 
-        # avoid writing empty files
-        if lines:
-
-            self._write_next_part(label, lines)
+        self._write_batch(label, lines)
 
         return True
 
@@ -766,7 +763,7 @@ class BatchWriter:
                     bin_l[label] += 1
                     if not bin_l[label] < batch_size:
                         # batch size controlled here
-                        passed = self._write_single_edge_list_to_file(
+                        passed = self._write_edge_batch(
                             bins[label],
                             label,
                             reference_props[label],
@@ -781,7 +778,7 @@ class BatchWriter:
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
 
-                passed = self._write_single_edge_list_to_file(
+                passed = self._write_edge_batch(
                     nl,
                     label,
                     reference_props[label],
@@ -876,7 +873,7 @@ class BatchWriter:
 
         return True
 
-    def _write_single_edge_list_to_file(
+    def _write_edge_batch(
         self,
         edge_list: list,
         label: str,
@@ -977,13 +974,11 @@ class BatchWriter:
                     + '\n',
                 )
 
-        # avoid writing empty files
-        if lines:
-            self._write_next_part(label, lines)
+        self._write_batch(label, lines)
 
         return True
 
-    def _write_part(self, label: str, lines: list[str]) -> bool:
+    def _write_batch(self, label: str, lines: list[str]):
         """
         This function writes a list of strings to a new part file.
 
@@ -994,10 +989,11 @@ class BatchWriter:
                 writing to CSV.
             lines:
                 The lines to be written.
-
-        Returns:
-            True for success, False otherwise.
         """
+
+        # avoid writing empty files
+        if not lines: return
+
         # translate label to PascalCase
         label = self.bl_adapter.name_sentence_to_pascal(label)
 
