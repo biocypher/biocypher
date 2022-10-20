@@ -120,6 +120,7 @@ N4_TYPES = {
 
 PY_TYPES = {py: n4 for n4, pys in N4_TYPES.items() for py in pys}
 BATCH_SIZE_FALLBACK = int(1e6)
+ENTITIES = Literal['node', 'edge']
 
 # TODO retrospective check of written csvs?
 
@@ -235,55 +236,121 @@ class BatchWriter:
         further processing tasks.
         """
 
-        self.property_types = {'node': {}, 'edge': {}}
-        self.cli_call = {'node': [], 'edge': []}
-        self.seen = {'nodes': defaultdict(int), 'edges': defaultdict(int)}
-        self.duplicate_types = {'nodes': set(), 'edges': set()}
+        by_entity = lambda val: {e: val() for e in ENTITIES.__args__}
 
-    def get_duplicate_node_types(self) -> set:
+        self.property_types = by_entity(lambda: defaultdict(dict))
+        self.cli_call = by_entity(lambda: [])
+        self.seen = by_entity(lambda: defaultdict(int))
+        self.dupl_by_type = by_entity(lambda: defaultdict(int))
+
+    def _duplicate_types(self, what: ENTITIES) -> set[str]:
         """
+        Node labels or edge types with duplicates.
+
+        Args:
+            what:
+                Nodes or edges?
+
         Returns:
-            The set of node types that have been found to have duplicates.
+            The labels or types with at least one duplicate ID.
         """
-        return self.duplicate_node_types
 
-    def get_duplicate_nodes(self) -> dict:
+        raise NotImplementedError(
+            'Not sure if this function is necessary. '
+            'If it is, will be easy to implement.'
+        )
+
+    @property
+    def duplicate_node_labels(self) -> set[str]:
         """
-        Summary of duplicate nodes found.
+        Node labels with duplicates.
 
         Returns:
-            Duplicate node types and the number of duplicates.
+            Node labels with at least one duplicate ID.
         """
 
-        if self.duplicate_node_types:
-            # subset seen_node_ids dictionary based on values > 0
+        return self._duplicate_types('node')
 
-            return {
-                nid: count
-                for nid, count in self.seen_node_ids.items()
-                if count > 0
-            }
-
-    def get_duplicate_edge_types(self) -> set:
+    @property
+    def duplicate_edge_types(self) -> set[str]:
         """
+        Edge types with duplicates.
+
         Returns:
-            The set of edge types that have been found to have duplicates.
-        """
-        return self.duplicate_edge_types
-
-    def get_duplicate_edges(self) -> dict:
-        """
-        Returns a dict of duplicate edge types and the number of duplicates.
+            Edge types with at least one duplicate ID.
         """
 
-        if self.duplicate_edge_types:
-            # subset seen_edges dictionary based on values > 0
+        return self._duplicate_types('edge')
 
-            return {
-                nid: count
-                for nid, count in self.seen_edges.items()
-                if count > 0
-            }
+    def _duplicates(self, what: ENTITIES) -> set[str]:
+        """
+        Node or edge IDs with duplicates.
+
+        Args:
+            what:
+                Nodes or edges?
+
+        Returns:
+            The IDs encountered at least twice.
+        """
+
+        return set(self._count_duplicates(what).keys())
+
+    @property
+    def duplicate_nodes(self) -> set[str]:
+        """
+        Node IDs with duplicates.
+
+        Returns:
+            Node IDs encountered at least twice.
+        """
+
+        return self._duplicates('node')
+
+    @property
+    def duplicate_edges(self) -> set[str]:
+        """
+        Edge IDs with duplicates.
+
+        Returns:
+            Edge IDs encountered at least twice.
+        """
+
+        return self._duplicates('edge')
+
+    def _count_duplicates(self, what: ENTITES) -> dict[str, int]:
+        """
+        Number of duplicates encountered by ID.
+
+        Args:
+            what:
+                Nodes or edges?
+
+        Returns:
+            Number of duplicates by ID.
+        """
+
+        return dict(it for it in self.seen[what].items() if it[1] > 1)
+
+    def count_duplicate_nodes(self) -> dict[str, int]:
+         """
+        Number of duplicate nodes encountered by label.
+
+        Returns:
+            Number of duplicates by label.
+        """
+
+        return self._count_duplicates('node')
+
+    def count_duplicate_edges(self) -> dict[str, int]:
+         """
+        Number of duplicate edges encountered by type.
+
+        Returns:
+            Number of duplicates by type.
+        """
+
+        return self._count_duplicates('edge')
 
     def write_nodes(
             self,
@@ -391,7 +458,7 @@ class BatchWriter:
         for node in nodes:
 
             _id = node.get_id()
-            self.seen_node_ids[_id] += 1
+            self.seen['node'][_id] += 1
             label = node.get_label()
 
             # how would it be possible for a node not to have an id?
@@ -407,9 +474,9 @@ class BatchWriter:
                 continue
 
             # check if node has already been written, if so skip
-            if self.seen_node_ids[_id] > 1:
+            if self.seen['node'][_id] > 1:
 
-                self.duplicate_node_types.add(label)
+                self.dupl_by_type['node'][label] += 1
                 continue
 
             by_label[label].append(node)
@@ -729,18 +796,14 @@ class BatchWriter:
                 )
 
                 # check for duplicates
-                if src_tar_ids in self.seen_edges.keys():
+                if src_tar_ids in self.seen['edge']:
+
                     self.seen_edges[src_tar_ids] += 1
-                    if not label in self.duplicate_node_types:
-                        self.duplicate_edge_types.add(label)
-                        # logger.warning(
-                        #     f"Duplicate edges found in type {label}. "
-                        #     "More info can be found in the log file."
-                        # )
+                    self.dupl_by_type['edge'][label] += 1
                     continue
 
                 else:
-                    self.seen_edges[src_tar_ids] = 0
+                    self.seen['edge'][src_tar_ids] = 0
 
                 if not label in bins.keys():
                     # start new list
