@@ -170,7 +170,7 @@ class Driver(neo4j_utils.Driver):
 
         # find current version node
         db_version = self.query(
-            'MATCH (v:BioCypher) ' 'WHERE NOT (v)-[:PRECEDES]->() ' 'RETURN v',
+            'MATCH (v:BioCypher) WHERE NOT (v)-[:PRECEDES]->() RETURN v',
         )
         # connect version node to previous
         if db_version[0]:

@@ -460,7 +460,7 @@ class VersionNode:
         self.graph_state = (
             self._get_graph_state() if not self.offline else None
         )
-        self.schema = self._get_graph_schema()
+        self.update_schema()
         self.leaves = self._get_leaves()
 
         self.properties = {
@@ -559,58 +559,80 @@ class VersionNode:
         # if result is empty, initialise
         if not result:
             logger.info('No existing graph found, initialising.')
-            return None
+            return {'id': self.node_id}
         # else, pass on graph state
         else:
             version = result[0]['meta']['id']
             logger.info(f'Found graph state at {version}.')
             return result[0]['meta']
 
-    def _get_graph_schema(
+    def read_schema(
         self,
         from_config: bool | None = None,
         config_file: str | None = None,
-    ) -> dict:
+    ):
         """
-        The current schema.
+        Read the schema either from the graph or from a config file.
 
-        Returns:
-            Graph schema information from meta graph if it exists, or
-            create new schema information properties from configuration
-            file.
+        Args:
+            from_config:
+                Load the schema from the config file even if schema
+                in the current database exists.
+            config_file:
+                Path to a config file. If not provided here or at the
+                instance level, the built-in default will be used.
 
-        Todo:
-            - get schema from meta graph
+        Attributes:
+            schema:
+                Graph schema information from meta graph if it exists, or
+                create new schema information properties from configuration
+                file.
         """
 
-        from_config = self.from_config if from_config is None else from_config
+        from_config = _misc.if_none(from_config, self.from_config)
+
+        self.schema = {} if from_config else self.schema_from_db()
+
+        if not self.schema:
+
+            self.schema = self.schema_from_config(config_file = config_file)
+
+    def schema_from_db(self) -> dict:
+        """
+        Read the schema encoded in the graph meta nodes.
+        """
+
+        # TODO do we want information about actual structure here?
+        res = self.bcy_driver.query(
+            'MATCH (src:MetaNode) '
+            # "OPTIONAL MATCH (src)-[r]->(tar)"
+            'RETURN src',  # , type(r) AS type, tar"
+        )
+
+        return {r['src'].pop('id'): r['src'] for r in res[0]}
+
+    def schema_from_config(self, config_file: str | None = None) -> dict:
+        """
+        Read the schema from a config file.
+
+        Args:
+            config_file:
+                Path to a config file. If not provided here or at the
+                instance level, the built-in default will be used.
+        """
+
         config_file = config_file or self.config_file
 
-        if self.graph_state and not from_config:
-            # TODO do we want information about actual structure here?
-            res = self.bcy_driver.query(
-                'MATCH (src:MetaNode) '
-                # "OPTIONAL MATCH (src)-[r]->(tar)"
-                'RETURN src',  # , type(r) AS type, tar"
-            )
-            gs_dict = {}
-            for r in res[0]:
-                src = r['src']
-                key = src.pop('id')
-                gs_dict[key] = src
+        if config_file:
 
-            return gs_dict
+            with open(config_file) as f:
 
+                schema = yaml.safe_load(f)
         else:
-            # load default yaml from module
-            # get graph state from config
-            if config_file is not None:
-                with open(config_file) as f:
-                    dataMap = yaml.safe_load(f)
-            else:
-                dataMap = config.module_data('schema_config')
 
-            return dataMap
+            schema = config.module_data('schema_config')
+
+        return schema
 
     def _get_leaves(self, d: dict | None = None) -> dict:
         """
