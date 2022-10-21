@@ -292,12 +292,14 @@ class Driver(neo4j_utils.Driver):
 
         # get structure
         for leaf in self.db_meta.leaves.items():
-            label = leaf[0]
+
             if leaf[1]['represented_as'] == 'node':
 
+                label_cc = _misc.cc(leaf[0])
+                label_sc = _misc.sc(leaf[0])
                 s = (
-                    f'CREATE CONSTRAINT {label}_id '
-                    f'IF NOT EXISTS ON (n:{label}) '
+                    f'CREATE CONSTRAINT {label_sc}_id '
+                    f'IF NOT EXISTS ON (n:{label_cc}) '
                     'ASSERT n.id IS UNIQUE'
                 )
                 self.query(s)
