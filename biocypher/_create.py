@@ -634,7 +634,7 @@ class VersionNode:
 
         return schema
 
-    def _get_leaves(self, d: dict | None = None) -> dict:
+    def update_leaves(self, schema: dict | None = None) -> dict:
         """
         Leaves of the schema.
 
@@ -644,37 +644,45 @@ class VersionNode:
         id type (and corresponding inputs).
 
         Args:
-            d:
-                Data structure dict from yaml file.
+            schema:
+                Data structure as loaded by ``update_schema``.
+
+        Attributes:
+            leaves:
+                Leaves in the database schema.
         """
 
-        d = d or self.schema
+        self.leaves = self.find_leaves(schema = schema or self.schema)
+
+    @staticmethod
+    def find_leaves(schema: dict) -> dict:
+        """
+        Leaves from schema.
+
+        Args:
+            schema:
+                Database schema as loaded by ``update_schema``.
+
+        Returns:
+            Leaves in the database schema.
+        """
 
         leaves = {}
-        max_depth = 0  # TODO needed? # ???
 
         # first pass: get parent leaves with direct representation in ontology
-        for k, v in d.items():
-
-            # k is not an entity
-            if 'represented_as' not in v:
-                continue
-
-            # k is an entity that is present in the ontology
-            if 'is_a' not in v:
-                leaves[k] = v
-
-            # find max depth of children
-            else:
-                lst = v['is_a'] if isinstance(v['is_a'], list) else [v['is_a']]
-                max_depth = max(max_depth, len(lst))
+        leaves = {
+            k: v
+            for k, v in schema.items()
+            if 'is_a' not in v and 'represented_as' in v
+        }
 
         # second pass: "vertical" inheritance
-        d = self._vertical_property_inheritance(d)
+        schema = self._vertical_property_inheritance(schema)
+
         # create leaves for all straight descendants (no multiple identifiers
         # or sources) -> explicit children
         # TODO do we need to order children by depth from real leaves?
-        leaves.update({k: v for k, v in d.items() if 'is_a' in v})
+        leaves.update({k: v for k, v in schema.items() if 'is_a' in v})
 
         # "horizontal" inheritance: create siblings for multiple identifiers or
         # sources -> virtual leaves or implicit children
@@ -696,41 +704,35 @@ class VersionNode:
 
         return leaves
 
-    def _vertical_property_inheritance(self, d):
+    def _vertical_property_inheritance(self, schema: dict) -> dict:
         """
-        Inherit properties from parents to children and update `d` accordingly.
+        Inherit properties from parents to children.
         """
-        for k, v in d.items():
 
-            # k is not an entity
-            if 'represented_as' not in v:
-                continue
+        def copy_key(d0, d1, key):
 
-            # k is an entity that is present in the ontology
-            if 'is_a' not in v:
+            if key in d0:
+
+                d1[key] = d0[key]
+
+
+        for k, v in schema.items():
+
+            # k is not an entity or present in the ontology
+            if 'represented_as' not in v or 'is_a' not in v:
+
                 continue
 
             # "vertical" inheritance: inherit properties from parent
             if v.get('inherit_properties', False):
 
                 # get direct ancestor
-                if isinstance(v['is_a'], list):
-                    parent = v['is_a'][0]
-                else:
-                    parent = v['is_a']
-
+                parent = _misc.first(v['is_a'])
                 # update properties of child
-                if self.schema[parent].get('properties'):
-                    v['properties'] = self.schema[parent]['properties']
-                if self.schema[parent].get('exclude_properties'):
-                    v['exclude_properties'] = self.schema[parent][
-                        'exclude_properties'
-                    ]
+                copy_key(self.schema[parent], v, 'properties')
+                copy_key(self.schema[parent], v, 'exclude_properties')
 
-                # update schema (d)
-                d[k] = v
-
-        return d
+        return schema
 
     def _horizontal_inheritance(
             self,
