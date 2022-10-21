@@ -12,6 +12,7 @@ __all__ = [
     'is_str',
     'cc',
     'sc',
+    'first',
 ]
 
 SIMPLE_TYPES = (
@@ -89,3 +90,17 @@ def sc(s: str) -> str:
     """
 
     return re.sub('[ \.]', '_', s).lower()
+
+
+def first(value: Any) -> Any:
+    """
+    First item of an iterable. Simple values pass thru.
+    """
+
+    if isinstance(value, SIMPLE_TYPES):
+
+        return value
+
+    elif isinstance(value, Iterable):
+
+        return next(iter(value), None)
