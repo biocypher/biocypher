@@ -29,7 +29,7 @@ Todo:
       later externalised)
 """
 
-from typing import Literal, TYPE_CHECKING, Union, Optional
+from typing import Literal, TYPE_CHECKING
 from datetime import datetime
 from dataclasses import field, dataclass
 import re
@@ -37,12 +37,13 @@ import re
 import yaml
 
 from . import _misc
+from ._misc import is_str
 from . import _config as config
 from ._logger import logger
 
 if TYPE_CHECKING:
 
-    import biocypher
+    from biocypher._driver import Driver
 
 __all__ = [
     'BC_TYPES',
@@ -57,15 +58,31 @@ logger.debug(f'Loading module {__name__}.')
 
 _RELFCR = re.compile('[\n\r]+')
 
-BC_TYPES = (
-    BioCypherNode |
-    BioCypherEdge |
-    BioCypherRelAsNode
-)
+
+class BioCypherEntity:
+
+    def _type_in_properties(self):
+
+        if ':TYPE' in self.properties:
+
+            logger.warning(
+                'Keyword `:TYPE` is reserved for Neo4j. '
+                'Removing from properties.',
+            )
+            del self.properties[':TYPE']
+
+    def _process_str_props(self):
+
+        self.properties = {
+            k:
+            _RELFCR.sub(' ', ', '.join(_misc.to_list(v))).replace('"', "'")
+            if is_str(v) or isinstance(v, list) and all(map(is_str, v)) else v
+            for k, v in self.properties.items()
+        }
 
 
-@dataclass(frozen=True)
-class BioCypherNode:
+@dataclass
+class BioCypherNode(BioCypherEntity):
     """
     Handoff class to represent biomedical entities as Neo4j nodes.
 
@@ -108,19 +125,8 @@ class BioCypherNode:
         # TODO actually make None possible here; as is, "id" is the default in
         # the dataclass as well as in the configuration file
 
-        if ':TYPE' in self.properties.keys():
-
-            logger.warning(
-                'Keyword `:TYPE` is reserved for Neo4j. '
-                'Removing from properties.',
-            )
-            del self.properties[':TYPE']
-
-        self.properties = {
-            k:
-            _RELFCR.sub(' ', ', '.join(_misc.to_list(v))).replace('"', "'")
-            for k, v in self.properties.items()
-        }
+        self._type_in_properties()
+        self._process_str_props()
 
     def get_id(self) -> str:
         """
@@ -173,7 +179,7 @@ class BioCypherNode:
         }
 
     @property
-    def nodes(self) -> tuple[BioCypherNode]:
+    def nodes(self) -> tuple['BioCypherNode']:
         """
         Create a tuple of node(s).
 
@@ -193,8 +199,8 @@ class BioCypherNode:
         return (self.node_label, self.entity)
 
 
-@dataclass(frozen=True)
-class BioCypherEdge:
+@dataclass
+class BioCypherEdge(BioCypherEntity):
     """
     Handoff class to represent biomedical relationships in Neo4j.
 
@@ -227,18 +233,11 @@ class BioCypherEdge:
         """
         Check for reserved keywords.
         """
+
         self.entity = 'edge'
+        self._type_in_properties()
 
-        if ':TYPE' in self.properties.keys():
-            logger.debug(
-                "Keyword ':TYPE' is reserved for Neo4j. "
-                'Removing from properties.',
-                # "Renaming to 'type'."
-            )
-            # self.properties["type"] = self.properties[":TYPE"]
-            del self.properties[':TYPE']
-
-    def get_id(self) -> Union[str, None]:
+    def get_id(self) -> str | None:
         """
         Returns primary node identifier or None.
 
@@ -302,7 +301,7 @@ class BioCypherEdge:
         }
 
     @property
-    def edges(self) -> tuple[BioCypherEdge]:
+    def edges(self) -> tuple['BioCypherEdge']:
         """
         Create a tuple of edge(s).
 
@@ -430,7 +429,7 @@ class VersionNode:
             from_config: bool = False,
             config_file: str = None,
             node_label: str = 'BioCypher',
-            bcy_driver: Optional[biocypher.Driver] = None,
+            bcy_driver: 'Driver' = None,
     ):
         """
         Create a node with schema and version information.
@@ -569,8 +568,8 @@ class VersionNode:
 
     def _get_graph_schema(
         self,
-        from_config: Optional[bool] = None,
-        config_file: Optional[str] = None,
+        from_config: bool | None = None,
+        config_file: str | None = None,
     ) -> dict:
         """
         The current schema.
@@ -613,7 +612,7 @@ class VersionNode:
 
             return dataMap
 
-    def _get_leaves(self, d: Optional[dict] = None) -> dict:
+    def _get_leaves(self, d: dict | None = None) -> dict:
         """
         Leaves of the schema.
 
@@ -779,3 +778,10 @@ class VersionNode:
             value = value,
             by = 'source',
         )
+
+
+BC_TYPES = (
+    BioCypherNode |
+    BioCypherEdge |
+    BioCypherRelAsNode
+)
