@@ -8,11 +8,11 @@ import pytest
 
 from biocypher._write import BatchWriter
 from biocypher._create import (
-    VersionNode,
     BioCypherEdge,
     BioCypherNode,
     BioCypherRelAsNode,
 )
+from biocypher._meta import VersionNode
 from biocypher._driver import Driver
 from biocypher._biolink import BiolinkAdapter
 

@@ -4,11 +4,11 @@ from hypothesis import strategies as st
 import pytest
 
 from biocypher._create import (
-    VersionNode,
     BioCypherEdge,
     BioCypherNode,
     BioCypherRelAsNode,
 )
+from biocypher._meta import VersionNode
 
 
 @pytest.fixture

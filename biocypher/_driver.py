@@ -33,7 +33,8 @@ import neo4j_utils
 from . import _misc
 from ._write import BatchWriter, ENTITIES
 from ._config import config as _config
-from ._create import BC_TYPES, VersionNode, BioCypherEdge, BioCypherNode
+from ._create import BC_TYPES, BioCypherEdge, BioCypherNode
+from ._meta import VersionNode
 from ._translate import Translator
 from ._biolink import BiolinkAdapter
 
