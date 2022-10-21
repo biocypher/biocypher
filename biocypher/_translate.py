@@ -81,7 +81,7 @@ class Translator:
 
     def translate(
             self,
-            items: INPUT_TYPES | BC_TYPES | Iterable[INTPUT_TYPES | BC_TYPES],
+            items: INPUT_TYPES | BC_TYPES | Iterable[INPUT_TYPES | BC_TYPES],
         ) -> Generator[BC_TYPES, None, None]:
         """
         Translate graph components to the current schema.

@@ -82,7 +82,7 @@ import os
 import re
 import glob
 
-import ._misc as _misc
+import biocypher._misc as _misc
 from biocypher._config import config as _config
 from ._create import BC_TYPES, BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
@@ -325,7 +325,7 @@ class BatchWriter:
 
         return self._duplicates('edge')
 
-    def _count_duplicates(self, what: ENTITES) -> dict[str, int]:
+    def _count_duplicates(self, what: ENTITIES) -> dict[str, int]:
         """
         Number of duplicates encountered by ID.
 
@@ -340,7 +340,7 @@ class BatchWriter:
         return dict(it for it in self.seen[what].items() if it[1] > 1)
 
     def count_duplicate_nodes(self) -> dict[str, int]:
-         """
+        """
         Number of duplicate nodes encountered by label.
 
         Returns:
@@ -350,7 +350,7 @@ class BatchWriter:
         return self._count_duplicates('node')
 
     def count_duplicate_edges(self) -> dict[str, int]:
-         """
+        """
         Number of duplicate edges encountered by type.
 
         Returns:
@@ -536,7 +536,7 @@ class BatchWriter:
             what = self._what(e)
             node = what == 'node'
 
-            if not node and and not (e.source_id and e.target_id):
+            if not node and not (e.source_id and e.target_id):
 
                 logger.error(
                     'Edge must have source and target node. '

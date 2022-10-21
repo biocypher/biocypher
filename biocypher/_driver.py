@@ -20,6 +20,7 @@ logger.debug(f'Loading module {__name__}.')
 
 from typing import TYPE_CHECKING, Any, Optional
 import inspect
+import collections
 import itertools
 import more_itertools as mit
 
@@ -32,13 +33,13 @@ import neo4j_utils
 from . import _misc
 from ._write import BatchWriter, ENTITIES
 from ._config import config as _config
-from ._create import VersionNode, BioCypherEdge, BioCypherNode
+from ._create import BC_TYPES, VersionNode, BioCypherEdge, BioCypherNode
 from ._translate import Translator
 from ._biolink import BiolinkAdapter
 
 __all__ = ['Driver']
 
-INPUT_BC_TYPES = BatchWriter.INPUT_TYPES | BC_TYPES
+INPUT_BC_TYPES = Translator.INPUT_TYPES | BC_TYPES
 
 
 class Driver(neo4j_utils.Driver):
@@ -105,7 +106,7 @@ class Driver(neo4j_utils.Driver):
 
         driver_args = {
             arg: _misc.if_none(locals().get(arg, None), _config(arg))
-            for arg in inspect.signature(neo4j_utils.Driver).keys()
+            for arg in inspect.signature(neo4j_utils.Driver).parameters
         }
 
         self.csv_delim = delimiter or _config('csv_delimiter')
@@ -115,7 +116,7 @@ class Driver(neo4j_utils.Driver):
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
 
-        neo4j_utils.Driver.__init__(**driver_args)
+        neo4j_utils.Driver.__init__(self, **driver_args)
         # get database version node ('check' module) immutable
         # variable of each instance (ie, each call from the
         # adapter to BioCypher); checks for existence of graph
@@ -601,7 +602,7 @@ class Driver(neo4j_utils.Driver):
 
     def write_csv(
             self,
-            items: Iterable[BatchWriter.INPUT_TYPES | BC_TYPES],
+            items: Iterable[INPUT_BC_TYPES],
             dirname: Optional[str] = None,
             db_name: Optional[str] = None,
     ) -> bool:

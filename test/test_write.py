@@ -14,7 +14,7 @@ from biocypher._create import (
     BioCypherRelAsNode,
 )
 from biocypher._driver import Driver
-from biocypher._translate import BiolinkAdapter
+from biocypher._biolink import BiolinkAdapter
 
 __all__ = [
     "bw",

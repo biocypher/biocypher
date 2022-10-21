@@ -3,7 +3,13 @@ from collections.abc import Iterable
 
 from neo4j_utils._misc import LIST_LIKE, if_none, to_list  # noqa: F401
 
-__all__ = ['SIMPLE_TYPES', 'ensure_iterable', 'prettyfloat', 'dict_str']
+__all__ = [
+    'SIMPLE_TYPES',
+    'ensure_iterable',
+    'prettyfloat',
+    'dict_str',
+    'is_str',
+]
 
 SIMPLE_TYPES = (
     bytes,
@@ -44,3 +50,6 @@ def dict_str(dct: dict, sep: str = ', ') -> str:
         f'{key}={prettyfloat(dct[key])}'
         for key in sorted(dct.key())
     )
+
+
+is_str = lambda x: isinstance(x, str)
