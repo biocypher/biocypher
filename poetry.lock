@@ -1404,7 +1404,7 @@ pytz = "*"
 
 [[package]]
 name = "neo4j-utils"
-version = "0.0.7"
+version = "0.0.8"
 description = ""
 category = "main"
 optional = false
@@ -1421,7 +1421,7 @@ toml = "*"
 type = "git"
 url = "https://github.com/saezlab/neo4j-utils.git"
 reference = "master"
-resolved_reference = "b47dfbc74624bf37467bdf07c6ff49d9530f1102"
+resolved_reference = "adfac00734966d8e1302d69db11196f73ef69658"
 
 [[package]]
 name = "nest-asyncio"
