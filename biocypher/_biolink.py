@@ -230,24 +230,15 @@ class BiolinkAdapter:
         PascalCase version of the BioCypher name, since sentence case is
         not useful for Cypher queries.
         """
-        if isinstance(original_name, list):
-            for on in original_name:
-                self.mappings[on] = self.name_sentence_to_pascal(
-                    biocypher_name,
-                )
-        else:
-            self.mappings[original_name] = self.name_sentence_to_pascal(
+
+        for on in _misc.to_list(original_name):
+            self.mappings[on] = self.name_sentence_to_pascal(
                 biocypher_name,
             )
 
-        if isinstance(biocypher_name, list):
-            for bn in biocypher_name:
-                self.reverse_mappings[
-                    self.name_sentence_to_pascal(bn)
-                ] = original_name
-        else:
+        for bn in _misc.to_list(biocypher_name):
             self.reverse_mappings[
-                self.name_sentence_to_pascal(biocypher_name)
+                self.name_sentence_to_pascal(bn)
             ] = original_name
 
     def _build_biolink_class(self, entity, values):
