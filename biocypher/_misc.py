@@ -1,5 +1,6 @@
 from typing import Any
 from collections.abc import Iterable
+import re
 
 from neo4j_utils._misc import LIST_LIKE, if_none, to_list  # noqa: F401
 
@@ -53,3 +54,19 @@ def dict_str(dct: dict, sep: str = ', ') -> str:
 
 
 is_str = lambda x: isinstance(x, str)
+
+
+def cc(s: str) -> str:
+    """
+    Convert sentence case to CamelCase.
+
+    From ``bmt.utils``.
+
+    Args:
+        s:
+            Input string in sentence case
+
+    Returns:
+        String in CamelCase form.
+    """
+    return re.sub(r'(?:^| )([a-zA-Z])', lambda m: m.group(1).upper(), s)
