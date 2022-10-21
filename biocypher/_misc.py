@@ -10,6 +10,8 @@ __all__ = [
     'prettyfloat',
     'dict_str',
     'is_str',
+    'cc',
+    'sc',
 ]
 
 SIMPLE_TYPES = (
@@ -69,4 +71,21 @@ def cc(s: str) -> str:
     Returns:
         String in CamelCase form.
     """
-    return re.sub(r'(?:^| )([a-zA-Z])', lambda m: m.group(1).upper(), s)
+    return re.sub(r'(?:^|\.| )([a-zA-Z])', lambda m: m.group(1).upper(), s)
+
+
+def sc(s: str) -> str:
+    """
+    Convert sentence case to snake_case.
+
+    From ``bmt.utils``.
+
+    Args:
+        s:
+            Input string in sentence case.
+
+    Returns:
+        String in snake_case form.
+    """
+
+    return re.sub('[ \.]', '_', s).lower()
