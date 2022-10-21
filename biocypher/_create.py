@@ -102,6 +102,7 @@ class BioCypherNode:
 
         Replace unwanted characters in properties.
         """
+        self.entity = 'node'
         self.properties['id'] = self.node_id
         self.properties['preferred_id'] = self.preferred_id or None
         # TODO actually make None possible here; as is, "id" is the default in
@@ -182,6 +183,15 @@ class BioCypherNode:
 
         return (self,)
 
+    @property
+    def key(self) -> tuple[str, str]:
+        """
+        A key that identifies the group of graph components
+        this item belongs to.
+        """
+
+        return (self.node_label, self.entity)
+
 
 @dataclass(frozen=True)
 class BioCypherEdge:
@@ -217,6 +227,7 @@ class BioCypherEdge:
         """
         Check for reserved keywords.
         """
+        self.entity = 'edge'
 
         if ':TYPE' in self.properties.keys():
             logger.debug(
@@ -311,6 +322,15 @@ class BioCypherEdge:
         """
 
         return ()
+
+    @property
+    def key(self) -> tuple[str, str]:
+        """
+        A key that identifies the group of graph components
+        this item belongs to.
+        """
+
+        return (self.relationship_label, self.entity)
 
 
 @dataclass(frozen=True)
