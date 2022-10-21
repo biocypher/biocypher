@@ -21,6 +21,7 @@ logger.debug(f'Loading module {__name__}.')
 from typing import TYPE_CHECKING, Any, Optional
 import inspect
 import itertools
+import more_itertools as mit
 
 if TYPE_CHECKING:
 
@@ -29,13 +30,15 @@ if TYPE_CHECKING:
 import neo4j_utils
 
 from . import _misc
-from ._write import BatchWriter
+from ._write import BatchWriter, ENTITIES
 from ._config import config as _config
 from ._create import VersionNode, BioCypherEdge, BioCypherNode
 from ._translate import Translator
 from ._biolink import BiolinkAdapter
 
 __all__ = ['Driver']
+
+INPUT_BC_TYPES = BatchWriter.INPUT_TYPES | BC_TYPES
 
 
 class Driver(neo4j_utils.Driver):
@@ -143,6 +146,7 @@ class Driver(neo4j_utils.Driver):
         self.bl_adapter = None
         self.batch_writer = None
         self._update_translator()
+        self._reset_insert_buffer()
 
         # TODO: implement passing a driver instance
         # Denes: I am not sure, but seems like it works already
@@ -228,6 +232,36 @@ class Driver(neo4j_utils.Driver):
 
         self.translator = Translator(leaves=self.db_meta.leaves)
 
+    def _reset_insert_buffer(self):
+        """
+        The graph components queue here before insertion in batches.
+        """
+
+        self.flush()
+        self._insert_buffer = collections.defaultdict(list)
+        self._inserts = 0
+
+    def _insert_queue(self, item: BC_TYPES):
+        """
+        Adds an item to the insert buffer, where it will stay until being
+        inserted.
+        """
+
+        self._insert_buffer[item.key].append(item)
+        self._inserts += 1
+
+        if self._inserts % 1000 == 0:
+
+            self._process_queue()
+
+    def _process_queue(self):
+        """
+        Checks for full queues in the insert buffer and inserts their contents.
+        """
+
+        self.flush(batch_size = _conf('insert_batch_size'))
+
+
     def init_db(self):
         """
         Wipes the database and creates constraints.
@@ -267,6 +301,53 @@ class Driver(neo4j_utils.Driver):
                 )
                 self.query(s)
 
+    def add(self, items: Iterable[INPUT_BC_TYPES] | INPUT_BC_TYPES):
+        """
+        Add components to the database.
+
+        Here first we translate the items to biocypher's representation and
+        then insert them into the database.
+
+        Args:
+            items:
+                Nodes and edges to be added to the database; can be anything
+                suitable for :py:class:``Translator.translate``, or the
+                objects from :py:mod:``biocypher._create``.
+        """
+
+        for it in self.translator.translate(items):
+
+            self._insert_queue(it)
+
+    def __iadd__(self, other):
+
+        self.add(other)
+
+    def __add__(self, other):
+
+        self.add(other)
+
+        return self
+
+    def flush(self, batch_size: int = 0):
+        """
+        Write out the contents of the insert buffer.
+
+        Args:
+            batch_size:
+                Minimum length for queues to be flushed.
+        """
+
+        insert_buffer = getattr(self, '_insert_buffer', {})
+
+        for (label, entity), queue in insert_buffer.items():
+
+            if len(queue) > batch_size:
+
+                getattr(self, f'add_{entity}s')(queue)
+
+                self._inserts -= len(queue)
+
     def add_nodes(
             self,
             nodes: Iterable[
@@ -301,7 +382,7 @@ class Driver(neo4j_utils.Driver):
             - second entry: Neo4j summary.
         """
 
-        bn = self.translator.translate_nodes(nodes)
+        bn = self.translator.translate(nodes)
         return self.add_biocypher_nodes(bn)
 
     def add_edges(
@@ -325,7 +406,7 @@ class Driver(neo4j_utils.Driver):
         :meth:`add_biocypher_edges()` method.
 
         Args:
-            id_src_tar_type_tuples (iterable of 5-tuple):
+            edges:
                 For each edge to add to the biocypher graph, a 5-tuple
                 with the following layout:
                 * The optional unique ID of the interaction. This can be
@@ -344,7 +425,7 @@ class Driver(neo4j_utils.Driver):
             - second entry: Neo4j summary.
         """
 
-        be = self.translator.translate_edges(edges)
+        be = self.translator.translate(edges)
         return self.add_biocypher_edges(be)
 
     def add_biocypher_nodes(
@@ -748,3 +829,9 @@ class Driver(neo4j_utils.Driver):
     def __repr__(self):
 
         return f'<BioCypher {neo4j_utils.Driver.__repr__(self)[1:]}'
+
+    def __del__(self):
+
+        if not self.offline:
+
+            self.flush()

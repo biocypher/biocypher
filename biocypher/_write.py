@@ -86,7 +86,7 @@ import ._misc as _misc
 from biocypher._config import config as _config
 from ._create import BC_TYPES, BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
-__all__ = ['BatchWriter']
+__all__ = ['BatchWriter', 'ENTITIES']
 
 if TYPE_CHECKING:
 
