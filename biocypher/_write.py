@@ -74,7 +74,7 @@ import glob
 
 from ._logger import logger
 
-logger.debug(f"Loading module {__name__}.")
+logger.debug(f'Loading module {__name__}.')
 
 from types import GeneratorType
 from typing import TYPE_CHECKING, Union, Optional
@@ -87,7 +87,7 @@ from more_itertools import peekable
 from biocypher._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
-__all__ = ["BatchWriter"]
+__all__ = ['BatchWriter']
 
 if TYPE_CHECKING:
 
@@ -121,12 +121,12 @@ class BatchWriter:
     def __init__(
         self,
         leaves: dict,
-        bl_adapter: "BiolinkAdapter",
+        bl_adapter: 'BiolinkAdapter',
         delimiter: str,
         array_delimiter: str,
         quote: str,
         dirname: Optional[str] = None,
-        db_name: str = "neo4j",
+        db_name: str = 'neo4j',
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
     ):
@@ -142,15 +142,15 @@ class BatchWriter:
         self.bl_adapter = bl_adapter
         self.node_property_dict = {}
         self.edge_property_dict = {}
-        self.import_call_nodes = ""
-        self.import_call_edges = ""
+        self.import_call_nodes = ''
+        self.import_call_edges = ''
 
-        timestamp = lambda: datetime.now().strftime("%Y%m%d%H%M")
+        timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M')
 
-        self.outdir = dirname or os.path.join(_config("outdir"), timestamp())
+        self.outdir = dirname or os.path.join(_config('outdir'), timestamp())
         self.outdir = os.path.abspath(self.outdir)
 
-        logger.info(f"Creating output directory `{self.outdir}`.")
+        logger.info(f'Creating output directory `{self.outdir}`.')
         os.makedirs(self.outdir, exist_ok=True)
 
         self.seen_node_ids = set()  # set to store the ids of nodes that have
@@ -174,18 +174,18 @@ class BatchWriter:
         # write node data
         passed = self._write_node_data(nodes, batch_size)
         if not passed:
-            logger.error("Error while writing node data.")
+            logger.error('Error while writing node data.')
             return False
         # pass property data to header writer per node type written
         passed = self._write_node_headers()
         if not passed:
-            logger.error("Error while writing node headers.")
+            logger.error('Error while writing node headers.')
             return False
 
         return True
 
     def write_edges(
-        self, edges: Union[list, GeneratorType], batch_size: int = int(1e6)
+        self, edges: Union[list, GeneratorType], batch_size: int = int(1e6),
     ) -> bool:
         """
         Wrapper for writing edges and their headers.
@@ -229,17 +229,17 @@ class BatchWriter:
             # is this a problem? if the generator or list is empty, we
             # don't write anything.
             logger.debug(
-                "No edges to write, possibly due to no matched Biolink classes."
+                'No edges to write, possibly due to no matched Biolink classes.',
             )
             pass
 
         if not passed:
-            logger.error("Error while writing edge data.")
+            logger.error('Error while writing edge data.')
             return False
         # pass property data to header writer per edge type written
         passed = self._write_edge_headers()
         if not passed:
-            logger.error("Error while writing edge headers.")
+            logger.error('Error while writing edge headers.')
             return False
 
         return True
@@ -262,14 +262,14 @@ class BatchWriter:
         """
 
         if isinstance(nodes, GeneratorType) or isinstance(nodes, peekable):
-            logger.debug("Writing node CSV from generator.")
+            logger.debug('Writing node CSV from generator.')
 
             bins = defaultdict(list)  # dict to store a list for each
             # label that is passed in
             bin_l = {}  # dict to store the length of each list for
             # batching cutoff
             reference_props = defaultdict(
-                dict
+                dict,
             )  # dict to store a dict of properties
             # for each label to check for consistency and their type
             # for now, relevant for `int`
@@ -281,17 +281,17 @@ class BatchWriter:
 
                 # check for non-id
                 if not _id:
-                    logger.warning(f"Node {label} has no id; skipping.")
+                    logger.warning(f'Node {label} has no id; skipping.')
                     continue
 
                 # check if node has already been written, if so skip
                 if _id in self.seen_node_ids:
-                    logger.debug(f"Duplicate node id: {_id}")
+                    logger.debug(f'Duplicate node id: {_id}')
                     if not label in self.duplicate_types:
                         self.duplicate_types.add(label)
                         logger.warning(
-                            f"Duplicate nodes found in type {label}. "
-                            "More info can be found in the log file."
+                            f'Duplicate nodes found in type {label}. '
+                            'More info can be found in the log file.',
                         )
                     continue
 
@@ -303,15 +303,15 @@ class BatchWriter:
 
                     # get properties from config if present
                     cprops = self.bl_adapter.leaves.get(label).get(
-                        "properties"
+                        'properties',
                     )
                     if cprops:
                         d = dict(cprops)
 
                         # add id and preferred id to properties; these are
                         # created in node creation (`_create.BioCypherNode`)
-                        d["id"] = "str"
-                        d["preferred_id"] = "str"
+                        d['id'] = 'str'
+                        d['preferred_id'] = 'str'
 
                     else:
                         d = dict(node.get_properties())
@@ -333,7 +333,7 @@ class BatchWriter:
                     # multiple labels:
                     if self.bl_adapter.biolink_leaves[label] is not None:
                         all_labels = self.bl_adapter.biolink_leaves[label][
-                            "ancestors"
+                            'ancestors'
                         ]
 
                     if all_labels:
@@ -391,7 +391,7 @@ class BatchWriter:
             return True
         else:
             if type(nodes) is not list:
-                logger.error("Nodes must be passed as list or generator.")
+                logger.error('Nodes must be passed as list or generator.')
                 return False
             else:
 
@@ -412,14 +412,14 @@ class BatchWriter:
         # load headers from data parse
         if not self.node_property_dict:
             logger.error(
-                "Header information not found. Was the data parsed first?",
+                'Header information not found. Was the data parsed first?',
             )
             return False
 
         for label, props in self.node_property_dict.items():
             # create header CSV with ID, properties, labels
 
-            id = ":ID"
+            id = ':ID'
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
@@ -430,9 +430,9 @@ class BatchWriter:
             pascal_label = self.bl_adapter.name_sentence_to_pascal(label)
 
             header_path = os.path.join(
-                self.outdir, f"{pascal_label}-header.csv"
+                self.outdir, f'{pascal_label}-header.csv',
             )
-            parts_path = os.path.join(self.outdir, f"{pascal_label}-part.*")
+            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
 
             # check if file already exists
             if not os.path.exists(header_path):
@@ -440,22 +440,22 @@ class BatchWriter:
                 # concatenate key:value in props
                 props_list = []
                 for k, v in props.items():
-                    if v in ["int", "long"]:
-                        props_list.append(f"{k}:long")
-                    elif v in ["float", "double", "dbl"]:
-                        props_list.append(f"{k}:double")
-                    elif v in ["bool", "boolean"]:
+                    if v in ['int', 'long']:
+                        props_list.append(f'{k}:long')
+                    elif v in ['float', 'double', 'dbl']:
+                        props_list.append(f'{k}:double')
+                    elif v in ['bool', 'boolean']:
                         # TODO Neo4j boolean support / spelling?
-                        props_list.append(f"{k}:boolean")
+                        props_list.append(f'{k}:boolean')
                     else:
-                        props_list.append(f"{k}")
+                        props_list.append(f'{k}')
 
                 # create list of lists and flatten
                 # removes need for empty check of property list
-                out_list = [[id], props_list, [":LABEL"]]
+                out_list = [[id], props_list, [':LABEL']]
                 out_list = [val for sublist in out_list for val in sublist]
 
-                with open(header_path, "w") as f:
+                with open(header_path, 'w') as f:
 
                     # concatenate with delimiter
                     row = self.delim.join(out_list)
@@ -491,7 +491,7 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
         if not all(isinstance(n, BioCypherNode) for n in node_list):
-            logger.error("Nodes must be passed as type BioCypherNode.")
+            logger.error('Nodes must be passed as type BioCypherNode.')
             return False
 
         # from list of nodes to list of strings
@@ -512,12 +512,12 @@ class BatchWriter:
                 oprop1 = set(ref_props).difference(n_keys)
                 oprop2 = set(n_keys).difference(ref_props)
                 logger.error(
-                    f"At least one node of the class {n.get_label()} "
-                    f"has more or fewer properties than another. "
-                    f"Offending node: {onode!r}, offending property: "
-                    f"{max([oprop1, oprop2])}. "
-                    f"All reference properties: {ref_props}, "
-                    f"All node properties: {n_keys}."
+                    f'At least one node of the class {n.get_label()} '
+                    f'has more or fewer properties than another. '
+                    f'Offending node: {onode!r}, offending property: '
+                    f'{max([oprop1, oprop2])}. '
+                    f'All reference properties: {ref_props}, '
+                    f'All node properties: {n_keys}.',
                 )
                 return False
 
@@ -530,15 +530,15 @@ class BatchWriter:
                 for k, v in prop_dict.items():
                     p = n_props.get(k)
                     if p is None:  # TODO make field empty instead of ""?
-                        plist.append("")
+                        plist.append('')
                     elif v in [
-                        "int",
-                        "long",
-                        "float",
-                        "double",
-                        "dbl",
-                        "bool",
-                        "boolean",
+                        'int',
+                        'long',
+                        'float',
+                        'double',
+                        'dbl',
+                        'bool',
+                        'boolean',
                     ]:
                         plist.append(str(p))
                     else:
@@ -547,7 +547,7 @@ class BatchWriter:
                 line.append(self.delim.join(plist))
             line.append(labels)
 
-            lines.append(self.delim.join(line) + "\n")
+            lines.append(self.delim.join(line) + '\n')
 
         # avoid writing empty files
         if lines:
@@ -583,14 +583,14 @@ class BatchWriter:
         # there a more elegant solution?
 
         if isinstance(edges, GeneratorType):
-            logger.debug("Writing edge CSV from generator.")
+            logger.debug('Writing edge CSV from generator.')
 
             bins = defaultdict(list)  # dict to store a list for each
             # label that is passed in
             bin_l = {}  # dict to store the length of each list for
             # batching cutoff
             reference_props = defaultdict(
-                dict
+                dict,
             )  # dict to store a dict of properties
             # for each label to check for consistency and their type
             # for now, relevant for `int`
@@ -599,29 +599,29 @@ class BatchWriter:
                     # shouldn't happen any more
                     logger.error(
                         "Edges cannot be of type 'RelAsNode'. "
-                        f"Caused by: {e}"
+                        f'Caused by: {e}',
                     )
                     return False
 
                 if not (e.get_source_id() and e.get_target_id()):
                     logger.error(
-                        "Edge must have source and target node. "
-                        f"Caused by: {e}"
+                        'Edge must have source and target node. '
+                        f'Caused by: {e}',
                     )
                     continue
 
                 label = e.get_label()
 
-                src_tar_type = "_".join([e.get_source_id(), e.get_target_id()])
+                src_tar_type = '_'.join([e.get_source_id(), e.get_target_id()])
 
                 # check for duplicates
                 if src_tar_type in self.seen_edges:
-                    logger.debug(f"Duplicate relationship: {e}")
+                    logger.debug(f'Duplicate relationship: {e}')
                     if not label in self.duplicate_types:
                         self.duplicate_types.add(label)
                         logger.warning(
-                            f"Duplicate nodes found in type {label}. "
-                            "More info can be found in the log file."
+                            f'Duplicate nodes found in type {label}. '
+                            'More info can be found in the log file.',
                         )
                     continue
 
@@ -641,14 +641,14 @@ class BatchWriter:
                     cprops = None
                     if label in self.bl_adapter.leaves:
                         cprops = self.bl_adapter.leaves.get(label).get(
-                            "properties"
+                            'properties',
                         )
                     else:
                         # try via "label_as_edge"
                         for k, v in self.bl_adapter.leaves.items():
                             if isinstance(v, dict):
-                                if v.get("label_as_edge") == label:
-                                    cprops = v.get("properties")
+                                if v.get('label_as_edge') == label:
+                                    cprops = v.get('properties')
                                     break
                     if cprops:
                         d = cprops
@@ -711,7 +711,7 @@ class BatchWriter:
             return True
         else:
             if type(edges) is not list:
-                logger.error("Edges must be passed as list or generator.")
+                logger.error('Edges must be passed as list or generator.')
                 return False
             else:
 
@@ -732,7 +732,7 @@ class BatchWriter:
         # load headers from data parse
         if not self.edge_property_dict:
             logger.error(
-                "Header information not found. Was the data parsed first?",
+                'Header information not found. Was the data parsed first?',
             )
             return False
 
@@ -745,9 +745,9 @@ class BatchWriter:
 
             # paths
             header_path = os.path.join(
-                self.outdir, f"{pascal_label}-header.csv"
+                self.outdir, f'{pascal_label}-header.csv',
             )
-            parts_path = os.path.join(self.outdir, f"{pascal_label}-part.*")
+            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
 
             # check for file exists
             if not os.path.exists(header_path):
@@ -755,24 +755,24 @@ class BatchWriter:
                 # concatenate key:value in props
                 props_list = []
                 for k, v in props.items():
-                    if v in ["int", "long"]:
-                        props_list.append(f"{k}:long")
-                    elif v in ["float", "double"]:
-                        props_list.append(f"{k}:double")
+                    if v in ['int', 'long']:
+                        props_list.append(f'{k}:long')
+                    elif v in ['float', 'double']:
+                        props_list.append(f'{k}:double')
                     elif v in [
-                        "bool",
-                        "boolean",
+                        'bool',
+                        'boolean',
                     ]:  # TODO does Neo4j support bool?
-                        props_list.append(f"{k}:boolean")
+                        props_list.append(f'{k}:boolean')
                     else:
-                        props_list.append(f"{k}")
+                        props_list.append(f'{k}')
 
                 # create list of lists and flatten
                 # removes need for empty check of property list
-                out_list = [[":START_ID"], props_list, [":END_ID"], [":TYPE"]]
+                out_list = [[':START_ID'], props_list, [':END_ID'], [':TYPE']]
                 out_list = [val for sublist in out_list for val in sublist]
 
-                with open(header_path, "w") as f:
+                with open(header_path, 'w') as f:
 
                     # concatenate with delimiter
                     row = self.delim.join(out_list)
@@ -809,7 +809,7 @@ class BatchWriter:
 
         if not all(isinstance(n, BioCypherEdge) for n in edge_list):
 
-            logger.error("Edges must be passed as type BioCypherEdge.")
+            logger.error('Edges must be passed as type BioCypherEdge.')
             return False
 
         # from list of edges to list of strings
@@ -823,16 +823,16 @@ class BatchWriter:
 
             # compare list order invariant
             if not set(ref_props) == set(e_keys):
-                oedge = f"{e.get_source_id()}-{e.get_target_id()}"
+                oedge = f'{e.get_source_id()}-{e.get_target_id()}'
                 oprop1 = set(ref_props).difference(e_keys)
                 oprop2 = set(e_keys).difference(ref_props)
                 logger.error(
-                    f"At least one edge of the class {e.get_label()} "
-                    f"has more or fewer properties than another. "
-                    f"Offending edge: {oedge!r}, offending property: "
-                    f"{max([oprop1, oprop2])}. "
-                    f"All reference properties: {ref_props}, "
-                    f"All edge properties: {e_keys}."
+                    f'At least one edge of the class {e.get_label()} '
+                    f'has more or fewer properties than another. '
+                    f'Offending edge: {oedge!r}, offending property: '
+                    f'{max([oprop1, oprop2])}. '
+                    f'All reference properties: {ref_props}, '
+                    f'All edge properties: {e_keys}.',
                 )
                 return False
 
@@ -843,15 +843,15 @@ class BatchWriter:
                 for k, v in prop_dict.items():
                     p = e_props.get(k)
                     if p is None:  # TODO make field empty instead of ""?
-                        plist.append("")
+                        plist.append('')
                     elif v in [
-                        "int",
-                        "long",
-                        "float",
-                        "double",
-                        "dbl",
-                        "bool",
-                        "boolean",
+                        'int',
+                        'long',
+                        'float',
+                        'double',
+                        'dbl',
+                        'bool',
+                        'boolean',
                     ]:
                         plist.append(str(p))
                     else:
@@ -866,11 +866,11 @@ class BatchWriter:
                             self.delim.join(plist),
                             e.get_target_id(),
                             self.bl_adapter.name_sentence_to_pascal(
-                                e.get_label()
+                                e.get_label(),
                             ),
                         ],
                     )
-                    + "\n",
+                    + '\n',
                 )
             else:
                 lines.append(
@@ -879,11 +879,11 @@ class BatchWriter:
                             e.get_source_id(),
                             e.get_target_id(),
                             self.bl_adapter.name_sentence_to_pascal(
-                                e.get_label()
+                                e.get_label(),
                             ),
                         ],
                     )
-                    + "\n",
+                    + '\n',
                 )
 
         # avoid writing empty files
@@ -910,17 +910,17 @@ class BatchWriter:
         label = self.bl_adapter.name_sentence_to_pascal(label)
 
         # list files in self.outdir
-        files = glob.glob(os.path.join(self.outdir, f"{label}-part*.csv"))
+        files = glob.glob(os.path.join(self.outdir, f'{label}-part*.csv'))
         # find file with highest part number
         if files:
             next_part = (
                 max(
                     [
                         int(
-                            f.split(".")[-2].split("-")[-1].replace("part", "")
+                            f.split('.')[-2].split('-')[-1].replace('part', ''),
                         )
                         for f in files
-                    ]
+                    ],
                 )
                 + 1
             )
@@ -930,11 +930,11 @@ class BatchWriter:
         # write to file
         padded_part = str(next_part).zfill(3)
         logger.info(
-            f"Writing {len(lines)} entries to {label}-part{padded_part}.csv"
+            f'Writing {len(lines)} entries to {label}-part{padded_part}.csv',
         )
-        file_path = os.path.join(self.outdir, f"{label}-part{padded_part}.csv")
+        file_path = os.path.join(self.outdir, f'{label}-part{padded_part}.csv')
 
-        with open(file_path, "w") as f:
+        with open(file_path, 'w') as f:
             # concatenate with delimiter
             f.writelines(lines)
 
@@ -960,10 +960,10 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
 
-        file_path = os.path.join(self.outdir, "neo4j-admin-import-call.sh")
-        logger.info(f"Writing neo4j-admin import call to `{file_path}`.")
+        file_path = os.path.join(self.outdir, 'neo4j-admin-import-call.sh')
+        logger.info(f'Writing neo4j-admin import call to `{file_path}`.')
 
-        with open(file_path, "w") as f:
+        with open(file_path, 'w') as f:
 
             f.write(self._construct_import_call())
 
@@ -981,7 +981,7 @@ class BatchWriter:
         """
 
         import_call = (
-            f"bin/neo4j-admin import --database={self.db_name} "
+            f'bin/neo4j-admin import --database={self.db_name} '
             f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
         )
         if not self.quote == '"':
@@ -990,9 +990,9 @@ class BatchWriter:
             import_call += f"--quote='{self.quote}' "
 
         if self.skip_bad_relationships:
-            import_call += "--skip-bad-relationships=true "
+            import_call += '--skip-bad-relationships=true '
         if self.skip_duplicate_nodes:
-            import_call += "--skip-duplicate-nodes=true "
+            import_call += '--skip-duplicate-nodes=true '
 
         # append node and edge import calls
         import_call += self.import_call_nodes

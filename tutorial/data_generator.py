@@ -5,6 +5,8 @@ Classes used to generate mock data for the BioCypher tutorial.
 import random
 import string
 
+__all__ = ['EntrezProtein', 'Interaction', 'InteractionGenerator', 'Node', 'Protein', 'ProteinProteinInteraction', 'RandomPropertyProtein', 'RandomPropertyProteinIsoform']
+
 
 class Node:
     """
@@ -42,7 +44,7 @@ class Protein(Node):
 
     def __init__(self):
         self.id = self._generate_id()
-        self.label = "uniprot_protein"
+        self.label = 'uniprot_protein'
         self.properties = self._generate_properties()
 
     def _generate_id(self):
@@ -53,7 +55,7 @@ class Protein(Node):
         nums = [random.choice(string.digits) for _ in range(3)]
 
         # join alternating between lets and nums
-        return "".join([x for y in zip(lets, nums) for x in y])
+        return ''.join([x for y in zip(lets, nums) for x in y])
 
     def _generate_properties(self):
         properties = {}
@@ -63,17 +65,17 @@ class Protein(Node):
         # random int between 50 and 250
         l = random.randint(50, 250)
 
-        properties["sequence"] = "".join(
-            [random.choice("ACDEFGHIKLMNPQRSTVWY") for _ in range(l)]
+        properties['sequence'] = ''.join(
+            [random.choice('ACDEFGHIKLMNPQRSTVWY') for _ in range(l)],
         )
 
         ## random description
-        properties["description"] = " ".join(
-            [random.choice(string.ascii_lowercase) for _ in range(10)]
+        properties['description'] = ' '.join(
+            [random.choice(string.ascii_lowercase) for _ in range(10)],
         )
 
         ## taxon
-        properties["taxon"] = "9606"
+        properties['taxon'] = '9606'
 
         return properties
 
@@ -91,21 +93,21 @@ class RandomPropertyProtein(Protein):
         # random int between 50 and 250
         l = random.randint(50, 250)
 
-        properties["sequence"] = "".join(
-            [random.choice("ACDEFGHIKLMNPQRSTVWY") for _ in range(l)]
+        properties['sequence'] = ''.join(
+            [random.choice('ACDEFGHIKLMNPQRSTVWY') for _ in range(l)],
         )
 
         ## random description
-        properties["description"] = " ".join(
-            [random.choice(string.ascii_lowercase) for _ in range(10)]
+        properties['description'] = ' '.join(
+            [random.choice(string.ascii_lowercase) for _ in range(10)],
         )
 
         ## random taxon
-        properties["taxon"] = str(random.randint(0, 10000))
+        properties['taxon'] = str(random.randint(0, 10000))
 
         ## randomly add 'mass'
         if random.random() > 0.5:
-            properties["mass"] = random.randint(0, 10000)
+            properties['mass'] = random.randint(0, 10000)
 
         return properties
 
@@ -117,7 +119,7 @@ class RandomPropertyProteinIsoform(RandomPropertyProtein):
 
     def __init__(self):
         super().__init__()
-        self.label = "uniprot_isoform"
+        self.label = 'uniprot_isoform'
 
 
 class EntrezProtein(Protein):
@@ -128,7 +130,7 @@ class EntrezProtein(Protein):
     def __init__(self):
         super().__init__()
         self.id = self._generate_id()
-        self.label = "entrez_protein"
+        self.label = 'entrez_protein'
 
     def _generate_id(self):
         """
@@ -191,7 +193,7 @@ class ProteinProteinInteraction(Interaction):
         self.id = self._generate_id()
         self.source_id = source
         self.target_id = target
-        self.label = "interacts_with"
+        self.label = 'interacts_with'
         self.properties = self._generate_properties()
 
     def _generate_id(self):
@@ -201,19 +203,19 @@ class ProteinProteinInteraction(Interaction):
         if random.random() > 0.5:
             return None
         else:
-            return "intact" + str(random.randint(1, 1000000))
+            return 'intact' + str(random.randint(1, 1000000))
 
     def _generate_properties(self):
         properties = {}
 
         ## randomly add 'source'
         if random.random() > 0.5:
-            properties["source"] = random.choice(["intact", "signor"])
+            properties['source'] = random.choice(['intact', 'signor'])
 
         ## randomly add 'method'
         if random.random() > 0.5:
-            properties["method"] = " ".join(
-                [random.choice(string.ascii_lowercase) for _ in range(10)]
+            properties['method'] = ' '.join(
+                [random.choice(string.ascii_lowercase) for _ in range(10)],
             )
 
         return properties
@@ -243,7 +245,7 @@ class InteractionGenerator:
 
                 if random.random() < self.interaction_probability:
                     interactions.append(
-                        ProteinProteinInteraction(source, target)
+                        ProteinProteinInteraction(source, target),
                     )
 
         return interactions

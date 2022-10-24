@@ -13,14 +13,15 @@
 A wrapper around the Neo4j driver which handles the DBMS connection and
 provides basic management methods.
 """
+from collections.abc import Iterable
 
 from ._logger import logger
 
-logger.debug(f"Loading module {__name__}.")
+logger.debug(f'Loading module {__name__}.')
 
+from typing import TYPE_CHECKING, List, Optional, Generator
 import importlib as imp
 import itertools
-from typing import TYPE_CHECKING, Generator, Iterable, List, Optional
 
 from more_itertools import peekable
 
@@ -31,16 +32,12 @@ if TYPE_CHECKING:
 import neo4j_utils
 
 from . import _misc
-from ._config import config as _config
-from ._create import (
-    BioCypherEdge,
-    BioCypherNode,
-    VersionNode,
-)
-from ._translate import BiolinkAdapter, Translator
 from ._write import BatchWriter
+from ._config import config as _config
+from ._create import VersionNode, BioCypherEdge, BioCypherNode
+from ._translate import Translator, BiolinkAdapter
 
-__all__ = ["Driver"]
+__all__ = ['Driver']
 
 
 class Driver(neo4j_utils.Driver):
@@ -84,7 +81,7 @@ class Driver(neo4j_utils.Driver):
 
     def __init__(
         self,
-        driver: Optional["neo4j.Driver"] = None,
+        driver: Optional['neo4j.Driver'] = None,
         db_name: Optional[str] = None,
         db_uri: Optional[str] = None,
         db_user: Optional[str] = None,
@@ -101,13 +98,13 @@ class Driver(neo4j_utils.Driver):
         skip_duplicate_nodes: bool = False,
     ):
 
-        db_name = db_name or _config("neo4j_db")
-        db_uri = db_uri or _config("neo4j_uri")
-        db_user = db_user or _config("neo4j_user")
-        db_passwd = db_passwd or _config("neo4j_pw")
-        self.db_delim = delimiter or _config("neo4j_delimiter")
-        self.db_adelim = array_delimiter or _config("neo4j_array_delimiter")
-        self.db_quote = quote_char or _config("neo4j_quote_char")
+        db_name = db_name or _config('neo4j_db')
+        db_uri = db_uri or _config('neo4j_uri')
+        db_user = db_user or _config('neo4j_user')
+        db_passwd = db_passwd or _config('neo4j_pw')
+        self.db_delim = delimiter or _config('neo4j_delimiter')
+        self.db_adelim = array_delimiter or _config('neo4j_array_delimiter')
+        self.db_quote = quote_char or _config('neo4j_quote_char')
 
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
@@ -116,7 +113,7 @@ class Driver(neo4j_utils.Driver):
 
         if offline:
 
-            logger.info("Offline mode: no connection to Neo4j.")
+            logger.info('Offline mode: no connection to Neo4j.')
 
             self.db_meta = VersionNode(
                 from_config=True,
@@ -126,11 +123,11 @@ class Driver(neo4j_utils.Driver):
             )
 
             self._db_config = {
-                "uri": db_uri,
-                "user": db_user,
-                "passwd": db_passwd,
-                "db": db_name,
-                "fetch_size": fetch_size,
+                'uri': db_uri,
+                'user': db_user,
+                'passwd': db_passwd,
+                'db': db_name,
+                'fetch_size': fetch_size,
             }
 
             self.driver = None
@@ -180,20 +177,20 @@ class Driver(neo4j_utils.Driver):
         if self.offline:
             return
 
-        logger.info("Updating Neo4j meta graph.")
+        logger.info('Updating Neo4j meta graph.')
         # add version node
         self.add_biocypher_nodes(self.db_meta)
 
         # find current version node
         db_version = self.query(
-            "MATCH (v:BioCypher) " "WHERE NOT (v)-[:PRECEDES]->() " "RETURN v"
+            'MATCH (v:BioCypher) ' 'WHERE NOT (v)-[:PRECEDES]->() ' 'RETURN v',
         )
         # connect version node to previous
         if db_version[0]:
             e_meta = BioCypherEdge(
-                self.db_meta.graph_state["id"],
+                self.db_meta.graph_state['id'],
                 self.db_meta.node_id,
-                "PRECEDES",
+                'PRECEDES',
             )
             self.add_biocypher_edges(e_meta)
 
@@ -203,14 +200,14 @@ class Driver(neo4j_utils.Driver):
         for entity, params in self.db_meta.leaves.items():
             no_l.append(
                 BioCypherNode(
-                    node_id=entity, node_label="MetaNode", properties=params
-                )
+                    node_id=entity, node_label='MetaNode', properties=params,
+                ),
             )
         self.add_biocypher_nodes(no_l)
 
         # remove connection of structure nodes from previous version
         # node(s)
-        self.query("MATCH ()-[r:CONTAINS]-()" "DELETE r")
+        self.query('MATCH ()-[r:CONTAINS]-()' 'DELETE r')
 
         # connect structure nodes to version node
         ed_v = []
@@ -220,8 +217,8 @@ class Driver(neo4j_utils.Driver):
                 BioCypherEdge(
                     source_id=current_version,
                     target_id=entity,
-                    relationship_label="CONTAINS",
-                )
+                    relationship_label='CONTAINS',
+                ),
             )
         self.add_biocypher_edges(ed_v)
 
@@ -229,11 +226,11 @@ class Driver(neo4j_utils.Driver):
         ed = []
         for no in no_l:
             id = no.get_id()
-            src = no.get_properties().get("source")
-            tar = no.get_properties().get("target")
+            src = no.get_properties().get('source')
+            tar = no.get_properties().get('target')
             if not None in [id, src, tar]:
-                ed.append(BioCypherEdge(id, src, "IS_SOURCE_OF"))
-                ed.append(BioCypherEdge(id, tar, "IS_TARGET_OF"))
+                ed.append(BioCypherEdge(id, src, 'IS_SOURCE_OF'))
+                ed.append(BioCypherEdge(id, tar, 'IS_TARGET_OF'))
         self.add_biocypher_edges(ed)
 
     def _update_translator(self):
@@ -252,7 +249,7 @@ class Driver(neo4j_utils.Driver):
 
         self.wipe_db()
         self._create_constraints()
-        logger.info("Initialising database.")
+        logger.info('Initialising database.')
 
     def _create_constraints(self):
         """
@@ -263,17 +260,17 @@ class Driver(neo4j_utils.Driver):
         constraints on the id of all entities represented as nodes.
         """
 
-        logger.info(f"Creating constraints for node types in config.")
+        logger.info(f'Creating constraints for node types in config.')
 
         # get structure
         for leaf in self.db_meta.leaves.items():
             label = leaf[0]
-            if leaf[1]["represented_as"] == "node":
+            if leaf[1]['represented_as'] == 'node':
 
                 s = (
-                    f"CREATE CONSTRAINT `{label}_id` "
-                    f"IF NOT EXISTS ON (n:`{label}`) "
-                    "ASSERT n.id IS UNIQUE"
+                    f'CREATE CONSTRAINT `{label}_id` '
+                    f'IF NOT EXISTS ON (n:`{label}`) '
+                    'ASSERT n.id IS UNIQUE'
                 )
                 self.query(s)
 
@@ -372,29 +369,29 @@ class Driver(neo4j_utils.Driver):
 
         except AttributeError:
 
-            msg = "Nodes must have a `get_dict` method."
+            msg = 'Nodes must have a `get_dict` method.'
             logger.error(msg)
 
             raise ValueError(msg)
 
-        logger.info(f"Merging {len(entities)} nodes.")
+        logger.info(f'Merging {len(entities)} nodes.')
 
         entity_query = (
-            "UNWIND $entities AS ent "
-            "CALL apoc.merge.node([ent.node_label], "
-            "{id: ent.node_id}, ent.properties, ent.properties) "
-            "YIELD node "
-            "RETURN node"
+            'UNWIND $entities AS ent '
+            'CALL apoc.merge.node([ent.node_label], '
+            '{id: ent.node_id}, ent.properties, ent.properties) '
+            'YIELD node '
+            'RETURN node'
         )
 
-        method = "explain" if explain else "profile" if profile else "query"
+        method = 'explain' if explain else 'profile' if profile else 'query'
 
         result = getattr(self, method)(
             entity_query,
-            parameters={"entities": entities},
+            parameters={'entities': entities},
         )
 
-        logger.info("Finished merging nodes.")
+        logger.info('Finished merging nodes.')
 
         return result
 
@@ -446,7 +443,7 @@ class Driver(neo4j_utils.Driver):
 
             for e in edges:
 
-                if hasattr(e, "get_node"):
+                if hasattr(e, 'get_node'):
 
                     nodes.append(e.get_node())
                     rels.append(e.get_source_edge().get_dict())
@@ -458,13 +455,13 @@ class Driver(neo4j_utils.Driver):
 
         except AttributeError:
 
-            msg = "Edges and nodes must have a `get_dict` method."
+            msg = 'Edges and nodes must have a `get_dict` method.'
             logger.error(msg)
 
             raise ValueError(msg)
 
         self.add_biocypher_nodes(nodes)
-        logger.info(f"Merging {len(rels)} edges.")
+        logger.info(f'Merging {len(rels)} edges.')
 
         # cypher query
 
@@ -472,30 +469,30 @@ class Driver(neo4j_utils.Driver):
         # properties on match and on create;
         # TODO add node labels?
         node_query = (
-            "UNWIND $rels AS r "
-            "MERGE (src {id: r.source_id}) "
-            "MERGE (tar {id: r.target_id}) "
+            'UNWIND $rels AS r '
+            'MERGE (src {id: r.source_id}) '
+            'MERGE (tar {id: r.target_id}) '
         )
 
-        self.query(node_query, parameters={"rels": rels})
+        self.query(node_query, parameters={'rels': rels})
 
         edge_query = (
-            "UNWIND $rels AS r "
-            "MATCH (src {id: r.source_id}) "
-            "MATCH (tar {id: r.target_id}) "
-            "WITH src, tar, r "
-            "CALL apoc.merge.relationship"
-            "(src, r.relationship_label, NULL, "
-            "r.properties, tar, r.properties) "
-            "YIELD rel "
-            "RETURN rel"
+            'UNWIND $rels AS r '
+            'MATCH (src {id: r.source_id}) '
+            'MATCH (tar {id: r.target_id}) '
+            'WITH src, tar, r '
+            'CALL apoc.merge.relationship'
+            '(src, r.relationship_label, NULL, '
+            'r.properties, tar, r.properties) '
+            'YIELD rel '
+            'RETURN rel'
         )
 
-        method = "explain" if explain else "profile" if profile else "query"
+        method = 'explain' if explain else 'profile' if profile else 'query'
 
-        result = getattr(self, method)(edge_query, parameters={"rels": rels})
+        result = getattr(self, method)(edge_query, parameters={'rels': rels})
 
-        logger.info("Finished merging edges.")
+        logger.info('Finished merging edges.')
 
         return result
 
@@ -627,18 +624,18 @@ class Driver(neo4j_utils.Driver):
 
         if mt:
             msg = (
-                "Input entities not accounted for due to them not being "
-                "present in the `schema_config.yaml` configuration file "
-                "(see log for details): \n"
+                'Input entities not accounted for due to them not being '
+                'present in the `schema_config.yaml` configuration file '
+                '(see log for details): \n'
             )
             for k, v in mt.items():
-                msg += f"    {k}: {v} \n"
+                msg += f'    {k}: {v} \n'
 
             logger.warning(msg)
             return mt
 
         else:
-            logger.info("No missing Biolink types in input.")
+            logger.info('No missing Biolink types in input.')
             return None
 
     ### TRANSLATION METHODS ###
@@ -685,4 +682,4 @@ class Driver(neo4j_utils.Driver):
 
     def __repr__(self):
 
-        return f"<BioCypher {neo4j_utils.Driver.__repr__(self)[1:]}"
+        return f'<BioCypher {neo4j_utils.Driver.__repr__(self)[1:]}'

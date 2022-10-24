@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 #
 # Copyright 2021, Heidelberg University Clinic
@@ -43,7 +42,9 @@ from . import _misc
 from . import _config as config
 from ._logger import logger
 
-logger.debug(f"Loading module {__name__}.")
+__all__ = ['BioCypherEdge', 'BioCypherNode', 'BioCypherRelAsNode', 'VersionNode']
+
+logger.debug(f'Loading module {__name__}.')
 
 
 @dataclass(frozen=True)
@@ -73,7 +74,7 @@ class BioCypherNode:
 
     node_id: str
     node_label: str
-    preferred_id: str = "id"
+    preferred_id: str = 'id'
     properties: dict = field(default_factory=dict)
 
     def __post_init__(self):
@@ -84,35 +85,35 @@ class BioCypherNode:
 
         Replace unwanted characters in properties.
         """
-        self.properties["id"] = self.node_id
-        self.properties["preferred_id"] = self.preferred_id or None
+        self.properties['id'] = self.node_id
+        self.properties['preferred_id'] = self.preferred_id or None
         # TODO actually make None possible here; as is, "id" is the default in
         # the dataclass as well as in the configuration file
 
-        if ":TYPE" in self.properties.keys():
+        if ':TYPE' in self.properties.keys():
             logger.warning(
                 "Keyword ':TYPE' is reserved for Neo4j. "
-                "Removing from properties."
+                'Removing from properties.',
                 # "Renaming to 'type'."
             )
             # self.properties["type"] = self.properties[":TYPE"]
-            del self.properties[":TYPE"]
+            del self.properties[':TYPE']
 
         for k, v in self.properties.items():
             if isinstance(v, str):
                 self.properties[k] = (
-                    v.replace(os.linesep, " ")
-                    .replace("\n", " ")
-                    .replace("\r", " ")
+                    v.replace(os.linesep, ' ')
+                    .replace('\n', ' ')
+                    .replace('\r', ' ')
                     .replace('"', "'")
                 )
 
             elif isinstance(v, list):
                 self.properties[k] = (
-                    ", ".join(v)
-                    .replace(os.linesep, " ")
-                    .replace("\n", " ")
-                    .replace("\r", " ")
+                    ', '.join(v)
+                    .replace(os.linesep, ' ')
+                    .replace('\n', ' ')
+                    .replace('\r', ' ')
                 )
 
     def get_id(self) -> str:
@@ -161,9 +162,9 @@ class BioCypherNode:
             properties as second-level dict.
         """
         return {
-            "node_id": self.node_id,
-            "node_label": self.node_label,
-            "properties": self.properties,
+            'node_id': self.node_id,
+            'node_label': self.node_label,
+            'properties': self.properties,
         }
 
 
@@ -204,14 +205,14 @@ class BioCypherEdge:
         Check for reserved keywords.
         """
 
-        if ":TYPE" in self.properties.keys():
+        if ':TYPE' in self.properties.keys():
             logger.debug(
                 "Keyword ':TYPE' is reserved for Neo4j. "
-                "Removing from properties."
+                'Removing from properties.',
                 # "Renaming to 'type'."
             )
             # self.properties["type"] = self.properties[":TYPE"]
-            del self.properties[":TYPE"]
+            del self.properties[':TYPE']
 
     def get_id(self) -> Union[str, None]:
         """
@@ -270,10 +271,10 @@ class BioCypherEdge:
                 dict.
         """
         return {
-            "source_id": self.source_id,
-            "target_id": self.target_id,
-            "relationship_label": self.relationship_label,
-            "properties": self.properties,
+            'source_id': self.source_id,
+            'target_id': self.target_id,
+            'relationship_label': self.relationship_label,
+            'properties': self.properties,
         }
 
 
@@ -305,20 +306,20 @@ class BioCypherRelAsNode:
     def __post_init__(self):
         if not isinstance(self.node, BioCypherNode):
             raise TypeError(
-                f"BioCypherRelAsNode.node must be a BioCypherNode, "
-                f"not {type(self.node)}."
+                f'BioCypherRelAsNode.node must be a BioCypherNode, '
+                f'not {type(self.node)}.',
             )
 
         if not isinstance(self.source_edge, BioCypherEdge):
             raise TypeError(
-                f"BioCypherRelAsNode.source_edge must be a BioCypherEdge, "
-                f"not {type(self.source_edge)}."
+                f'BioCypherRelAsNode.source_edge must be a BioCypherEdge, '
+                f'not {type(self.source_edge)}.',
             )
 
         if not isinstance(self.target_edge, BioCypherEdge):
             raise TypeError(
-                f"BioCypherRelAsNode.target_edge must be a BioCypherEdge, "
-                f"not {type(self.target_edge)}."
+                f'BioCypherRelAsNode.target_edge must be a BioCypherEdge, '
+                f'not {type(self.target_edge)}.',
             )
 
     def get_node(self):
@@ -349,12 +350,12 @@ class VersionNode:
         offline: bool = False,
         from_config: bool = False,
         config_file: str = None,
-        node_label: str = "BioCypher",
+        node_label: str = 'BioCypher',
         bcy_driver=None,
     ):
 
         # if we do not have a driver, then likely we are offline, right?
-        self.offline = offline or getattr(bcy_driver, "offline", True)
+        self.offline = offline or getattr(bcy_driver, 'offline', True)
         self.from_config = from_config
         self.config_file = config_file
         self.node_label = node_label
@@ -368,9 +369,9 @@ class VersionNode:
         self.leaves = self._get_leaves()
 
         self.properties = {
-            "graph_state": self.graph_state,
-            "schema": self.schema,
-            "leaves": self.leaves,
+            'graph_state': self.graph_state,
+            'schema': self.schema,
+            'leaves': self.leaves,
         }
 
     def get_id(self) -> str:
@@ -400,9 +401,9 @@ class VersionNode:
             properties as second-level dict.
         """
         return {
-            "node_id": self.node_id,
-            "node_label": self.node_label,
-            "properties": self.properties,
+            'node_id': self.node_id,
+            'node_label': self.node_label,
+            'properties': self.properties,
         }
 
     def _get_current_id(self):
@@ -415,7 +416,7 @@ class VersionNode:
         """
 
         now = datetime.now()
-        return now.strftime("v%Y%m%d-%H%M%S")
+        return now.strftime('v%Y%m%d-%H%M%S')
 
     def _get_graph_state(self):
         """
@@ -425,23 +426,23 @@ class VersionNode:
         and initialise.
         """
 
-        logger.info("Getting graph state.")
+        logger.info('Getting graph state.')
 
         result, summary = self.bcy_driver.query(
-            "MATCH (meta:BioCypher)"
-            "WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)"
-            "RETURN meta",
+            'MATCH (meta:BioCypher)'
+            'WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)'
+            'RETURN meta',
         )
 
         # if result is empty, initialise
         if not result:
-            logger.info("No existing graph found, initialising.")
+            logger.info('No existing graph found, initialising.')
             return None
         # else, pass on graph state
         else:
-            version = result[0]["meta"]["id"]
-            logger.info(f"Found graph state at {version}.")
-            return result[0]["meta"]
+            version = result[0]['meta']['id']
+            logger.info(f'Found graph state at {version}.')
+            return result[0]['meta']
 
     def _get_graph_schema(
         self,
@@ -463,14 +464,14 @@ class VersionNode:
         if self.graph_state and not from_config:
             # TODO do we want information about actual structure here?
             res = self.bcy_driver.query(
-                "MATCH (src:MetaNode) "
+                'MATCH (src:MetaNode) '
                 # "OPTIONAL MATCH (src)-[r]->(tar)"
-                "RETURN src",  # , type(r) AS type, tar"
+                'RETURN src',  # , type(r) AS type, tar"
             )
             gs_dict = {}
             for r in res[0]:
-                src = r["src"]
-                key = src.pop("id")
+                src = r['src']
+                key = src.pop('id')
                 gs_dict[key] = src
 
             return gs_dict
@@ -479,10 +480,10 @@ class VersionNode:
             # load default yaml from module
             # get graph state from config
             if config_file is not None:
-                with open(config_file, "r") as f:
+                with open(config_file, 'r') as f:
                     dataMap = yaml.safe_load(f)
             else:
-                dataMap = config.module_data("schema_config")
+                dataMap = config.module_data('schema_config')
 
             return dataMap
 
@@ -508,16 +509,16 @@ class VersionNode:
         for k, v in d.items():
 
             # k is not an entity
-            if not "represented_as" in v:
+            if not 'represented_as' in v:
                 continue
 
             # k is an entity that is present in the ontology
-            if not "is_a" in v:
+            if not 'is_a' in v:
                 leaves[k] = v
 
             # find max depth of children
             else:
-                lst = v["is_a"] if isinstance(v["is_a"], list) else [v["is_a"]]
+                lst = v['is_a'] if isinstance(v['is_a'], list) else [v['is_a']]
                 max_depth = max(max_depth, len(lst))
 
         # second pass: "vertical" inheritance
@@ -525,7 +526,7 @@ class VersionNode:
         # create leaves for all straight descendants (no multiple identifiers
         # or sources) -> explicit children
         # TODO do we need to order children by depth from real leaves?
-        leaves.update({k: v for k, v in d.items() if "is_a" in v})
+        leaves.update({k: v for k, v in d.items() if 'is_a' in v})
 
         # "horizontal" inheritance: create siblings for multiple identifiers or
         # sources -> virtual leaves or implicit children
@@ -534,14 +535,14 @@ class VersionNode:
         for k, v in d.items():
 
             # k is not an entity
-            if not "represented_as" in v:
+            if not 'represented_as' in v:
                 continue
 
-            if isinstance(v.get("preferred_id"), list):
+            if isinstance(v.get('preferred_id'), list):
                 mi_leaves = self._horizontal_inheritance_pid(k, v)
                 leaves.update(mi_leaves)
 
-            elif isinstance(v.get("source"), list):
+            elif isinstance(v.get('source'), list):
                 ms_leaves = self._horizontal_inheritance_source(k, v)
                 leaves.update(ms_leaves)
 
@@ -554,28 +555,28 @@ class VersionNode:
         for k, v in d.items():
 
             # k is not an entity
-            if not "represented_as" in v:
+            if not 'represented_as' in v:
                 continue
 
             # k is an entity that is present in the ontology
-            if not "is_a" in v:
+            if not 'is_a' in v:
                 continue
 
             # "vertical" inheritance: inherit properties from parent
-            if v.get("inherit_properties", False):
+            if v.get('inherit_properties', False):
 
                 # get direct ancestor
-                if isinstance(v["is_a"], list):
-                    parent = v["is_a"][0]
+                if isinstance(v['is_a'], list):
+                    parent = v['is_a'][0]
                 else:
-                    parent = v["is_a"]
+                    parent = v['is_a']
 
                 # update properties of child
-                if self.schema[parent].get("properties"):
-                    v["properties"] = self.schema[parent]["properties"]
-                if self.schema[parent].get("exclude_properties"):
-                    v["exclude_properties"] = self.schema[parent][
-                        "exclude_properties"
+                if self.schema[parent].get('properties'):
+                    v['properties'] = self.schema[parent]['properties']
+                if self.schema[parent].get('exclude_properties'):
+                    v['exclude_properties'] = self.schema[parent][
+                        'exclude_properties'
                     ]
 
                 # update schema (d)
@@ -592,9 +593,9 @@ class VersionNode:
 
         leaves = {}
 
-        preferred_id = value["preferred_id"]
-        label_in_input = value["label_in_input"]
-        represented_as = value["represented_as"]
+        preferred_id = value['preferred_id']
+        label_in_input = value['label_in_input']
+        represented_as = value['represented_as']
 
         # adjust lengths
         l = max(
@@ -602,7 +603,7 @@ class VersionNode:
                 len(_misc.to_list(preferred_id)),
                 len(_misc.to_list(label_in_input)),
                 len(_misc.to_list(represented_as)),
-            ]
+            ],
         )
 
         # adjust pid length if necessary
@@ -619,38 +620,38 @@ class VersionNode:
 
         for pid, lab, rep in zip(pids, label_in_input, reps):
 
-            skey = pid + "." + key
+            skey = pid + '.' + key
             svalue = {
-                "preferred_id": pid,
-                "label_in_input": lab,
-                "represented_as": rep,
+                'preferred_id': pid,
+                'label_in_input': lab,
+                'represented_as': rep,
                 # mark as virtual
-                "virtual": True,
+                'virtual': True,
             }
 
             # inherit is_a if exists
-            if "is_a" in value.keys():
+            if 'is_a' in value.keys():
 
                 # treat as multiple inheritance
-                if isinstance(value["is_a"], list):
-                    v = list(value["is_a"])
+                if isinstance(value['is_a'], list):
+                    v = list(value['is_a'])
                     v.insert(0, key)
-                    svalue["is_a"] = v
+                    svalue['is_a'] = v
 
                 else:
-                    svalue["is_a"] = [key, value["is_a"]]
+                    svalue['is_a'] = [key, value['is_a']]
 
             else:
                 # set parent as is_a
-                svalue["is_a"] = key
+                svalue['is_a'] = key
 
             # inherit everything except core attributes
             for k, v in value.items():
                 if k not in [
-                    "is_a",
-                    "preferred_id",
-                    "label_in_input",
-                    "represented_as",
+                    'is_a',
+                    'preferred_id',
+                    'label_in_input',
+                    'represented_as',
                 ]:
                     svalue[k] = v
 
@@ -667,9 +668,9 @@ class VersionNode:
 
         leaves = {}
 
-        source = value["source"]
-        label_in_input = value["label_in_input"]
-        represented_as = value["represented_as"]
+        source = value['source']
+        label_in_input = value['label_in_input']
+        represented_as = value['represented_as']
 
         # adjust lengths
         l = len(source)
@@ -688,38 +689,38 @@ class VersionNode:
 
         for src, lab, rep in zip(source, labels, reps):
 
-            skey = src + "." + key
+            skey = src + '.' + key
             svalue = {
-                "source": src,
-                "label_in_input": lab,
-                "represented_as": rep,
+                'source': src,
+                'label_in_input': lab,
+                'represented_as': rep,
                 # mark as virtual
-                "virtual": True,
+                'virtual': True,
             }
 
             # inherit is_a if exists
-            if "is_a" in value.keys():
+            if 'is_a' in value.keys():
 
                 # treat as multiple inheritance
-                if isinstance(value["is_a"], list):
-                    v = list(value["is_a"])
+                if isinstance(value['is_a'], list):
+                    v = list(value['is_a'])
                     v.insert(0, key)
-                    svalue["is_a"] = v
+                    svalue['is_a'] = v
 
                 else:
-                    svalue["is_a"] = [key, value["is_a"]]
+                    svalue['is_a'] = [key, value['is_a']]
 
             else:
                 # set parent as is_a
-                svalue["is_a"] = key
+                svalue['is_a'] = key
 
             # inherit everything except core attributes
             for k, v in value.items():
                 if k not in [
-                    "is_a",
-                    "source",
-                    "label_in_input",
-                    "represented_as",
+                    'is_a',
+                    'source',
+                    'label_in_input',
+                    'represented_as',
                 ]:
                     svalue[k] = v
 

@@ -1,12 +1,7 @@
-from typing import (
-    Any,
-    Mapping,
-    Iterable,
-    KeysView,
-    Generator,
-    ItemsView,
-    ValuesView,
-)
+from typing import Any, Mapping, KeysView, Generator, ItemsView, ValuesView
+from collections.abc import Iterable
+
+__all__ = ['LIST_LIKE', 'SIMPLE_TYPES', 'ensure_iterable', 'to_list']
 
 SIMPLE_TYPES = (
     bytes,

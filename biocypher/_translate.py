@@ -29,17 +29,17 @@ Todo:
           the schema_config.yaml file ("label_in_input").
 
     - type checking: use biolink classes for typing directly?
-    
+
     - import ID types from pypath dictionary (later, externalised
       dictionary)? biolink?
 """
-
+from collections.abc import Iterable, Generator
 
 from ._logger import logger
 
-logger.debug(f"Loading module {__name__}.")
+logger.debug(f'Loading module {__name__}.')
 
-from typing import Any, Union, Literal, Iterable, Optional, Generator
+from typing import Any, Union, Literal, Optional
 import os
 import re
 
@@ -52,11 +52,7 @@ from . import _misc
 from ._config import _read_yaml, module_data_path
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
-__all__ = [
-    "BiolinkAdapter",
-    "Translator",
-    "getpath",
-]
+__all__ = ['BiolinkAdapter', 'Translator']
 
 
 class BiolinkAdapter:
@@ -75,7 +71,7 @@ class BiolinkAdapter:
         leaves: dict,
         schema: Optional[
             Union[
-                Literal["biocypher", "biolink"],
+                Literal['biocypher', 'biolink'],
                 str,
                 dict,
             ]
@@ -102,7 +98,7 @@ class BiolinkAdapter:
         self.mappings = {}
         self.reverse_mappings = {}
 
-        logger.debug("Instantiating Biolink Adapter.")
+        logger.debug('Instantiating Biolink Adapter.')
 
         self.main()
 
@@ -117,14 +113,14 @@ class BiolinkAdapter:
     def set_schema(self):
 
         schemata_builtin = {
-            "biocypher": "biocypher-biolink-model",
-            "biolink": "biolink-model",
+            'biocypher': 'biocypher-biolink-model',
+            'biolink': 'biolink-model',
         }
 
-        self.schema = self.schema or "biocypher"
+        self.schema = self.schema or 'biocypher'
 
         self.schema_name = (
-            self.schema if isinstance(self.schema, str) else "custom"
+            self.schema if isinstance(self.schema, str) else 'custom'
         )
 
         if self.schema in schemata_builtin:
@@ -139,7 +135,7 @@ class BiolinkAdapter:
         # 'biocypher' after running set_schema? How would we get default?
         # - yes it is, we should default to biocypher, isn't it?
         logger.info(
-            f"Creating BioLink model toolkit from `{self.schema_name}` model.",
+            f'Creating BioLink model toolkit from `{self.schema_name}` model.',
         )
 
         self.toolkit = (
@@ -161,7 +157,7 @@ class BiolinkAdapter:
         we switch to pascal case?
         """
 
-        logger.info("Translating BioCypher config leaves to Biolink.")
+        logger.info('Translating BioCypher config leaves to Biolink.')
 
         self.biolink_leaves = {}
 
@@ -169,22 +165,22 @@ class BiolinkAdapter:
         for entity, values in self.leaves.items():
 
             entity_biolink_class = self.toolkit.get_element(
-                entity
+                entity,
             )  # element name
 
             if entity_biolink_class:
 
                 # find ancestors of biolink type in PascalCase
                 ancestors = self.trim_biolink_ancestry(
-                    self.toolkit.get_ancestors(entity, formatted=True)
+                    self.toolkit.get_ancestors(entity, formatted=True),
                 )
 
-                input_label = values.get("label_in_input")
+                input_label = values.get('label_in_input')
 
                 # add translation mappings
                 bc_name = (
-                    values.get("label_as_edge")
-                    if values.get("label_as_edge")
+                    values.get('label_as_edge')
+                    if values.get('label_as_edge')
                     else entity
                 )
                 self._add_translation_mappings(input_label, bc_name)
@@ -192,14 +188,14 @@ class BiolinkAdapter:
                 # create dict of biolink class definition and biolink
                 # ancestors, add to biolink leaves
                 self.biolink_leaves[entity] = {
-                    "class_definition": entity_biolink_class,
-                    "ancestors": ancestors,
+                    'class_definition': entity_biolink_class,
+                    'ancestors': ancestors,
                 }
 
         # secondly check explicit children
         for entity, values in self.leaves.items():
 
-            if values.get("is_a") and not values.get("virtual"):
+            if values.get('is_a') and not values.get('virtual'):
 
                 # build class definition for explicit child
                 self._build_biolink_class(entity, values)
@@ -207,7 +203,7 @@ class BiolinkAdapter:
         # lastly check virtual leaves (implicit children)
         for entity, values in self.leaves.items():
 
-            if values.get("virtual"):
+            if values.get('virtual'):
 
                 # build class definition for virtual leaf
                 self._build_biolink_class(entity, values)
@@ -231,7 +227,7 @@ class BiolinkAdapter:
         Translate a cypher query. Only translates labels as of now.
         """
         for key in self.mappings:
-            query = query.replace(":" + key, ":" + self.mappings[key])
+            query = query.replace(':' + key, ':' + self.mappings[key])
         return query
 
     def reverse_translate(self, query):
@@ -241,21 +237,21 @@ class BiolinkAdapter:
         """
         for key in self.reverse_mappings:
 
-            a = ":" + key + ")"
-            b = ":" + key + "]"
+            a = ':' + key + ')'
+            b = ':' + key + ']'
             # TODO this conditional probably does not cover all cases
             if a in query or b in query:
                 if isinstance(self.reverse_mappings[key], list):
                     raise NotImplementedError(
-                        "Reverse translation of multiple inputs not "
-                        "implemented yet. Many-to-one mappings are "
-                        "not reversible. "
-                        f"({key} -> {self.reverse_mappings[key]})"
+                        'Reverse translation of multiple inputs not '
+                        'implemented yet. Many-to-one mappings are '
+                        'not reversible. '
+                        f'({key} -> {self.reverse_mappings[key]})',
                     )
                 else:
                     query = query.replace(
-                        a, ":" + self.reverse_mappings[key] + ")"
-                    ).replace(b, ":" + self.reverse_mappings[key] + "]")
+                        a, ':' + self.reverse_mappings[key] + ')',
+                    ).replace(b, ':' + self.reverse_mappings[key] + ']')
         return query
 
     def _add_translation_mappings(self, original_name, biocypher_name):
@@ -267,11 +263,11 @@ class BiolinkAdapter:
         if isinstance(original_name, list):
             for on in original_name:
                 self.mappings[on] = self.name_sentence_to_pascal(
-                    biocypher_name
+                    biocypher_name,
                 )
         else:
             self.mappings[original_name] = self.name_sentence_to_pascal(
-                biocypher_name
+                biocypher_name,
             )
 
         if isinstance(biocypher_name, list):
@@ -289,7 +285,7 @@ class BiolinkAdapter:
         Build a Biolink class definition from a Biolink entity name and
         property dict.
         """
-        if values.get("represented_as") == "node":
+        if values.get('represented_as') == 'node':
             return self._build_biolink_node_class(entity, values)
         else:
             return self._build_biolink_edge_class(entity, values)
@@ -300,26 +296,26 @@ class BiolinkAdapter:
         and property dict.
         """
 
-        input_label = values.get("label_in_input")
-        parents = _misc.to_list(values.get("is_a"))
+        input_label = values.get('label_in_input')
+        parents = _misc.to_list(values.get('is_a'))
         ancestors = []
 
         logger.info(
-            "Received ad hoc multiple inheritance "
-            "information; updating pseudo-Biolink node "
-            f"by setting `{entity}` as a child of `{parents[0]}`."
+            'Received ad hoc multiple inheritance '
+            'information; updating pseudo-Biolink node '
+            f'by setting `{entity}` as a child of `{parents[0]}`.',
         )
 
         while parents:
             parent = parents.pop(0)
             if self.biolink_leaves.get(parent):
-                ancestors += self.biolink_leaves.get(parent).get("ancestors")
+                ancestors += self.biolink_leaves.get(parent).get('ancestors')
                 break
             elif self.toolkit.get_ancestors(parent):
                 bla = _misc.to_list(
                     self.trim_biolink_ancestry(
-                        self.toolkit.get_ancestors(parent, formatted=True)
-                    )
+                        self.toolkit.get_ancestors(parent, formatted=True),
+                    ),
                 )
                 ancestors += bla
                 break
@@ -330,16 +326,16 @@ class BiolinkAdapter:
             ancestors.insert(0, self.name_sentence_to_pascal(entity))
         else:
             raise ValueError(
-                f"Parent `{parent}` of `{entity}` not found in Biolink "
-                "model."
+                f'Parent `{parent}` of `{entity}` not found in Biolink '
+                'model.',
             )
 
         # create class definition
         se = ClassDefinition(entity)
         se.is_a = parent
         self.biolink_leaves[entity] = {
-            "class_definition": se,
-            "ancestors": ancestors,
+            'class_definition': se,
+            'ancestors': ancestors,
         }
 
         # add translation mappings
@@ -351,26 +347,26 @@ class BiolinkAdapter:
         and property dict.
         """
 
-        input_label = values.get("label_in_input")
-        parents = _misc.to_list(values.get("is_a"))
+        input_label = values.get('label_in_input')
+        parents = _misc.to_list(values.get('is_a'))
         ancestors = []
 
         logger.info(
-            "Received ad hoc multiple inheritance "
-            "information; updating pseudo-Biolink edge "
-            f"by setting `{entity}` as a child of `{parents[0]}`."
+            'Received ad hoc multiple inheritance '
+            'information; updating pseudo-Biolink edge '
+            f'by setting `{entity}` as a child of `{parents[0]}`.',
         )
 
         while parents:
             parent = parents.pop(0)
             if self.biolink_leaves.get(parent):
-                ancestors += self.biolink_leaves.get(parent).get("ancestors")
+                ancestors += self.biolink_leaves.get(parent).get('ancestors')
                 break
             elif self.toolkit.get_ancestors(parent):
                 bla = _misc.to_list(
                     self.trim_biolink_ancestry(
-                        self.toolkit.get_ancestors(parent, formatted=True)
-                    )
+                        self.toolkit.get_ancestors(parent, formatted=True),
+                    ),
                 )
                 ancestors += bla
                 break
@@ -381,22 +377,22 @@ class BiolinkAdapter:
             ancestors.insert(0, self.name_sentence_to_pascal(entity))
         else:
             raise ValueError(
-                f"Parent `{parent}` of `{entity}` not found in Biolink "
-                "model."
+                f'Parent `{parent}` of `{entity}` not found in Biolink '
+                'model.',
             )
 
         # create class definition
         se = ClassDefinition(entity)
         se.is_a = parent
         self.biolink_leaves[entity] = {
-            "class_definition": se,
-            "ancestors": ancestors,
+            'class_definition': se,
+            'ancestors': ancestors,
         }
 
         # add translation mappings
         bc_name = (
-            values.get("label_as_edge")
-            if values.get("label_as_edge")
+            values.get('label_as_edge')
+            if values.get('label_as_edge')
             else entity
         )
         self._add_translation_mappings(input_label, bc_name)
@@ -408,7 +404,7 @@ class BiolinkAdapter:
         """
 
         # replace 'biolink:' with ''
-        return [re.sub("^biolink:", "", a) for a in ancestry]
+        return [re.sub('^biolink:', '', a) for a in ancestry]
 
     @staticmethod
     def name_sentence_to_pascal(name: str) -> str:
@@ -416,18 +412,16 @@ class BiolinkAdapter:
         Converts a name in sentence case to pascal case.
         """
         # split on dots if dot is present
-        if "." in name:
-            return ".".join(
-                [sentencecase_to_camelcase(n) for n in name.split(".")]
+        if '.' in name:
+            return '.'.join(
+                [sentencecase_to_camelcase(n) for n in name.split('.')],
             )
         else:
             return sentencecase_to_camelcase(name)
 
 
-"""
-Biolink toolkit wiki:
-https://biolink.github.io/biolink-model-toolkit/example_usage.html
-"""
+# Biolink toolkit wiki:
+# https://biolink.github.io/biolink-model-toolkit/example_usage.html
 
 
 # -------------------------------------------
@@ -470,7 +464,7 @@ class Translator:
 
         """
 
-        self._log_begin_translate(id_type_prop_tuples, "nodes")
+        self._log_begin_translate(id_type_prop_tuples, 'nodes')
 
         for _id, _type, _props in id_type_prop_tuples:
 
@@ -496,7 +490,7 @@ class Translator:
 
                 self._record_no_type(_type, _id)
 
-        self._log_finish_translate("nodes")
+        self._log_finish_translate('nodes')
 
     def _get_preferred_id(self, _bl_type: str) -> str:
         """
@@ -504,9 +498,9 @@ class Translator:
         """
 
         return (
-            self.leaves[_bl_type]["preferred_id"]
-            if "preferred_id" in self.leaves.get(_bl_type, {})
-            else "id"
+            self.leaves[_bl_type]['preferred_id']
+            if 'preferred_id' in self.leaves.get(_bl_type, {})
+            else 'id'
         )
 
     def _filter_props(self, bl_type: str, props: dict) -> dict:
@@ -514,9 +508,9 @@ class Translator:
         Filters properties for those specified in schema_config if any.
         """
 
-        filter_props = self.leaves[bl_type].get("properties", {})
+        filter_props = self.leaves[bl_type].get('properties', {})
 
-        exclude_props = self.leaves[bl_type].get("exclude_properties", [])
+        exclude_props = self.leaves[bl_type].get('exclude_properties', [])
         if isinstance(exclude_props, str):
             exclude_props = [exclude_props]
 
@@ -577,7 +571,7 @@ class Translator:
         #    - id of interactions (now simple concat with "_")
         #    - do we even need one?
 
-        self._log_begin_translate(id_src_tar_type_prop_tuples, "edges")
+        self._log_begin_translate(id_src_tar_type_prop_tuples, 'edges')
 
         # legacy: deal with 4-tuples (no edge id)
         # TODO remove for performance reasons once safe
@@ -599,9 +593,9 @@ class Translator:
                 # filter properties for those specified in schema_config if any
                 _filtered_props = self._filter_props(bl_type, _props)
 
-                rep = self.leaves[bl_type]["represented_as"]
+                rep = self.leaves[bl_type]['represented_as']
 
-                if rep == "node":
+                if rep == 'node':
 
                     if _id:
                         # if it brings its own ID, use it
@@ -611,10 +605,10 @@ class Translator:
                         # source target concat
                         node_id = (
                             str(_src)
-                            + "_"
+                            + '_'
                             + str(_tar)
-                            + "_"
-                            + "_".join(
+                            + '_'
+                            + '_'.join(
                                 str(v) for v in _filtered_props.values()
                             )
                         )
@@ -628,21 +622,21 @@ class Translator:
                     # directionality check TODO generalise to account for
                     # different descriptions of directionality or find a
                     # more consistent solution for indicating directionality
-                    if _filtered_props.get("directed") == True:
+                    if _filtered_props.get('directed') == True:
 
-                        l1 = "IS_SOURCE_OF"
-                        l2 = "IS_TARGET_OF"
+                        l1 = 'IS_SOURCE_OF'
+                        l2 = 'IS_TARGET_OF'
 
                     elif _filtered_props.get(
-                        "src_role"
-                    ) and _filtered_props.get("tar_role"):
+                        'src_role',
+                    ) and _filtered_props.get('tar_role'):
 
-                        l1 = _filtered_props.get("src_role")
-                        l2 = _filtered_props.get("tar_role")
+                        l1 = _filtered_props.get('src_role')
+                        l2 = _filtered_props.get('tar_role')
 
                     else:
 
-                        l1 = l2 = "IS_PART_OF"
+                        l1 = l2 = 'IS_PART_OF'
 
                     e_s = BioCypherEdge(
                         source_id=_src,
@@ -662,7 +656,7 @@ class Translator:
 
                 else:
 
-                    edge_label = self.leaves[bl_type].get("label_as_edge")
+                    edge_label = self.leaves[bl_type].get('label_as_edge')
 
                     if edge_label is None:
 
@@ -679,7 +673,7 @@ class Translator:
 
                 self._record_no_type(_type, (_src, _tar))
 
-        self._log_finish_translate("edges")
+        self._log_finish_translate('edges')
 
     def _record_no_type(self, _type: Any, what: Any) -> None:
         """
@@ -687,7 +681,7 @@ class Translator:
         schema_config.
         """
 
-        logger.debug(f"No Biolink type defined for `{_type}`: {what}")
+        logger.debug(f'No Biolink type defined for `{_type}`: {what}')
 
         if self.notype.get(_type, None):
 
@@ -708,14 +702,14 @@ class Translator:
     @staticmethod
     def _log_begin_translate(_input: Iterable, what: str):
 
-        n = f"{len(_input)} " if hasattr(_input, "__len__") else ""
+        n = f'{len(_input)} ' if hasattr(_input, '__len__') else ''
 
-        logger.debug(f"Translating {n}{what} to BioCypher")
+        logger.debug(f'Translating {n}{what} to BioCypher')
 
     @staticmethod
     def _log_finish_translate(what: str):
 
-        logger.debug(f"Finished translating {what} to BioCypher.")
+        logger.debug(f'Finished translating {what} to BioCypher.')
 
     def _update_bl_types(self):
         """
@@ -728,11 +722,11 @@ class Translator:
 
         for key, value in self.leaves.items():
 
-            if isinstance(value.get("label_in_input"), str):
-                self._bl_types[value.get("label_in_input")] = key
+            if isinstance(value.get('label_in_input'), str):
+                self._bl_types[value.get('label_in_input')] = key
 
-            elif isinstance(value.get("label_in_input"), list):
-                for label in value["label_in_input"]:
+            elif isinstance(value.get('label_in_input'), list):
+                for label in value['label_in_input']:
                     self._bl_types[label] = key
 
     def _get_bl_type(self, label: str) -> Optional[str]:
