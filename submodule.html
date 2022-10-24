@@ -16,6 +16,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -191,7 +192,7 @@ translation functionality and calls the
 <a class="reference internal" href="#biocypher._driver.Driver.add_biocypher_edges" title="biocypher._driver.Driver.add_biocypher_edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_biocypher_edges()</span></code></a> method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>id_src_tar_type_tuples</strong> (<em>iterable of 5-tuple</em>) – for each edge to add to the biocypher graph, a 5-tuple
+<dd class="field-odd"><p><strong>id_src_tar_type_tuples</strong> (<em>iterable</em><em> of </em><em>5-tuple</em>) – for each edge to add to the biocypher graph, a 5-tuple
 with the following layout: first, the optional unique ID
 of the interaction. This can be <cite>None</cite> if there is no
 systematic identifier (which for many interactions is
@@ -225,7 +226,7 @@ graph via the <code class="xref py py-class docutils literal notranslate"><span 
 functionality and calls the <a class="reference internal" href="#biocypher._driver.Driver.add_biocypher_nodes" title="biocypher._driver.Driver.add_biocypher_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_biocypher_nodes()</span></code></a> method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>id_type_tuples</strong> (<em>iterable of 3-tuple</em>) – for each node to add to
+<dd class="field-odd"><p><strong>id_type_tuples</strong> (<em>iterable</em><em> of </em><em>3-tuple</em>) – for each node to add to
 the biocypher graph, a 3-tuple with the following layout:
 first, the (unique if constrained) ID of the node; second, the
 type of the node, capitalised or PascalCase and in noun form
