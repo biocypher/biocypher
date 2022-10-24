@@ -271,8 +271,8 @@ class Driver(neo4j_utils.Driver):
             if leaf[1]["represented_as"] == "node":
 
                 s = (
-                    f"CREATE CONSTRAINT {label}_id "
-                    f"IF NOT EXISTS ON (n:{label}) "
+                    f"CREATE CONSTRAINT `{label}_id` "
+                    f"IF NOT EXISTS ON (n:`{label}`) "
                     "ASSERT n.id IS UNIQUE"
                 )
                 self.query(s)
