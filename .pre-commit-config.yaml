@@ -64,10 +64,10 @@ repos:
     hooks:
     -   id: Flake8-pyproject
         additional_dependencies: [flake8-docstrings, flake8-comprehensions, flake8-bugbear]
--   repo: https://github.com/myint/rstcheck
-    rev: v6.0.0rc3
-    hooks:
-    -   id: rstcheck
+# -   repo: https://github.com/myint/rstcheck
+#     rev: v6.0.0rc3
+#     hooks:
+#     -   id: rstcheck
 # -   repo: https://github.com/asottile/pyupgrade
 #     rev: v2.23.1
 #     hooks:
