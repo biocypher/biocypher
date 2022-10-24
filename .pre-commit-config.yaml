@@ -66,7 +66,7 @@ repos:
         args: [--remove] # for Python3 codebase, it's not necessary
     -   id: requirements-txt-fixer
 -   repo: https://github.com/john-hen/Flake8-pyproject
-    rev: 0.9.0
+    rev: 1.1.0
     hooks:
     -   id: Flake8-pyproject
         additional_dependencies: [flake8-docstrings, flake8-comprehensions, flake8-bugbear]
