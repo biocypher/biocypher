@@ -14,12 +14,6 @@ repos:
     -   id: yapf
         additional_dependencies: [toml]
         stages: [manual]
--   repo: https://github.com/psf/black
-    rev: 22.3.0
-    hooks:
-    -   id: black
-        additional_dependencies: [toml]
-        stages: [manual]
 -   repo: https://github.com/Instagram/Fixit
     rev: 9d59f968e84bd2773f34b0069eeeaad3ce783254
     hooks:
@@ -84,11 +78,6 @@ repos:
     hooks:
     -   id: pyupgrade
         args: [--py3-plus, --py36-plus]
--   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.3.0
-    hooks:
-    -   id: pretty-format-yaml
-        args: [--autofix, --indent, '4']
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.9.0
     hooks:
