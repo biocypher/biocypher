@@ -50,11 +50,11 @@
 <li class="toctree-l1"><a class="reference internal" href="adapter.html">The Host-BioCypher Adapter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Submodule documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._driver"><cite>_driver.py</cite>: the BioCypher Neo4j Driver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._create"><cite>_create.py</cite>: Base Classes for Node and Edge Representations in BioCypher</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._translate"><cite>_translate.py</cite>: Translation Functionality for Implemented Types of Representation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._write"><cite>_write.py</cite>: Write the Graph to CSV Files for quick ‘admin import’</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._logger"><cite>_logger.py</cite>: Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#driver-py-the-biocypher-neo4j-driver"><code class="docutils literal notranslate"><span class="pre">_driver.py</span></code>: the BioCypher Neo4j Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-py-base-classes-for-node-and-edge-representations-in-biocypher"><code class="docutils literal notranslate"><span class="pre">_create.py</span></code>: Base Classes for Node and Edge Representations in BioCypher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#translate-py-translation-functionality-for-implemented-types-of-representation"><code class="docutils literal notranslate"><span class="pre">_translate.py</span></code>: Translation Functionality for Implemented Types of Representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#write-py-write-the-graph-to-csv-files-for-quick-admin-import"><code class="docutils literal notranslate"><span class="pre">_write.py</span></code>: Write the Graph to CSV Files for quick ‘admin import’</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logger-py-logging"><code class="docutils literal notranslate"><span class="pre">_logger.py</span></code>: Logging</a></li>
 </ul>
 </li>
 </ul>
@@ -85,9 +85,9 @@
              
   <section id="submodule-documentation">
 <h1>Submodule documentation<a class="headerlink" href="#submodule-documentation" title="Permalink to this heading"></a></h1>
-<section id="module-biocypher._driver">
-<span id="driver-py-the-biocypher-neo4j-driver"></span><span id="driver"></span><h2><cite>_driver.py</cite>: the BioCypher Neo4j Driver<a class="headerlink" href="#module-biocypher._driver" title="Permalink to this heading"></a></h2>
-<p>A wrapper around the Neo4j driver which handles the DBMS connection and
+<section id="driver-py-the-biocypher-neo4j-driver">
+<span id="driver"></span><h2><code class="docutils literal notranslate"><span class="pre">_driver.py</span></code>: the BioCypher Neo4j Driver<a class="headerlink" href="#driver-py-the-biocypher-neo4j-driver" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-biocypher._driver"></span><p>A wrapper around the Neo4j driver which handles the DBMS connection and
 provides basic management methods.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._driver.Driver">
@@ -384,9 +384,9 @@ BioCypher-compatible CSV format; can be any compatible
 </dd></dl>
 
 </section>
-<section id="module-biocypher._create">
-<span id="create-py-base-classes-for-node-and-edge-representations-in-biocypher"></span><h2><cite>_create.py</cite>: Base Classes for Node and Edge Representations in BioCypher<a class="headerlink" href="#module-biocypher._create" title="Permalink to this heading"></a></h2>
-<p>Create a property graph database for biomedical research applications.
+<section id="create-py-base-classes-for-node-and-edge-representations-in-biocypher">
+<h2><code class="docutils literal notranslate"><span class="pre">_create.py</span></code>: Base Classes for Node and Edge Representations in BioCypher<a class="headerlink" href="#create-py-base-classes-for-node-and-edge-representations-in-biocypher" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-biocypher._create"></span><p>Create a property graph database for biomedical research applications.
 Transforms ordered collections of biomedical entities and relationships
 to BioCypher objects that represent property graph nodes and edges.</p>
 <dl class="py class">
@@ -674,9 +674,9 @@ properties as second-level dict.</p>
 </dd></dl>
 
 </section>
-<section id="module-biocypher._translate">
-<span id="translate-py-translation-functionality-for-implemented-types-of-representation"></span><h2><cite>_translate.py</cite>: Translation Functionality for Implemented Types of Representation<a class="headerlink" href="#module-biocypher._translate" title="Permalink to this heading"></a></h2>
-<p>Lookup and storage of entity IDs that are part of the BioCypher schema.</p>
+<section id="translate-py-translation-functionality-for-implemented-types-of-representation">
+<h2><code class="docutils literal notranslate"><span class="pre">_translate.py</span></code>: Translation Functionality for Implemented Types of Representation<a class="headerlink" href="#translate-py-translation-functionality-for-implemented-types-of-representation" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-biocypher._translate"></span><p>Lookup and storage of entity IDs that are part of the BioCypher schema.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">BiolinkAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'biocypher'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'biolink'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter" title="Permalink to this definition"></a></dt>
@@ -737,9 +737,9 @@ we switch to pascal case?</p>
 </dd></dl>
 
 </section>
-<section id="module-biocypher._write">
-<span id="write-py-write-the-graph-to-csv-files-for-quick-admin-import"></span><h2><cite>_write.py</cite>: Write the Graph to CSV Files for quick ‘admin import’<a class="headerlink" href="#module-biocypher._write" title="Permalink to this heading"></a></h2>
-<p>Export of CSV files for the Neo4J admin import. The admin import is able
+<section id="write-py-write-the-graph-to-csv-files-for-quick-admin-import">
+<h2><code class="docutils literal notranslate"><span class="pre">_write.py</span></code>: Write the Graph to CSV Files for quick ‘admin import’<a class="headerlink" href="#write-py-write-the-graph-to-csv-files-for-quick-admin-import" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-biocypher._write"></span><p>Export of CSV files for the Neo4J admin import. The admin import is able
 to quickly transfer large amounts of content into an unused database. For more
 explanation, see <a class="reference external" href="https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/">https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/</a>.</p>
 <p>Import like that:
@@ -884,9 +884,9 @@ delimiters and database name, to the export folder as txt.</p>
 </dd></dl>
 
 </section>
-<section id="module-biocypher._logger">
-<span id="logger-py-logging"></span><h2><cite>_logger.py</cite>: Logging<a class="headerlink" href="#module-biocypher._logger" title="Permalink to this heading"></a></h2>
-<p>Configuration of the module logger.</p>
+<section id="logger-py-logging">
+<h2><code class="docutils literal notranslate"><span class="pre">_logger.py</span></code>: Logging<a class="headerlink" href="#logger-py-logging" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-biocypher._logger"></span><p>Configuration of the module logger.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="biocypher._logger.get_logger">
 <span class="sig-prename descclassname"><span class="pre">biocypher._logger.</span></span><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'biocypher'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Logger</span></span></span><a class="headerlink" href="#biocypher._logger.get_logger" title="Permalink to this definition"></a></dt>
