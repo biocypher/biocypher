@@ -21,6 +21,8 @@ import importlib.metadata
 
 import toml
 
+_VERSION = '0.3.1'
+
 
 def get_metadata():
     """
@@ -56,11 +58,16 @@ def get_metadata():
 
         try:
 
-            meta = dict(importlib.metadata.metadata(here.name).items())
+            meta = {
+                k.lower(): v for k, v in
+                importlib.metadata.metadata(here.name).items()
+            }
 
         except importlib.metadata.PackageNotFoundError:
 
             pass
+
+    meta['version'] = meta.get('version', None) or _VERSION
 
     return meta
 
