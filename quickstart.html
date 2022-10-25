@@ -32,7 +32,7 @@
             <a href="contents.html" class="icon icon-home"> BioCypher
           </a>
               <div class="version">
-                0.3.1
+                0.3.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -170,15 +170,15 @@ identifier, the corresponding ENSEMBL identifier, or an HGNC gene
 symbol. The CURIE prefix for “Uniprot Protein” is <code class="docutils literal notranslate"><span class="pre">uniprot</span></code>, so a
 consistent protein schema definition would be:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span><span class="w"></span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span><span class="w">  </span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w">  </span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For BioCypher classes, similar to the internal representation in the Biolink
-model, we use lower sentence-case notation, e.g., <code class="docutils literal notranslate"><span class="pre">protein</span></code> and <code class="docutils literal notranslate"><span class="pre">small</span> <span class="pre">molecule</span></code>. For file names and Neo4j labels, these are converted to PascalCase.</p>
+model, we use lower sentence-case notation, e.g., <code class="docutils literal notranslate"><span class="pre">protein</span></code> and <code class="docutils literal notranslate"><span class="pre">small</span>&#160; <span class="pre">molecule</span></code>. For file names and Neo4j labels, these are converted to PascalCase.</p>
 </div>
 <p>In the protein case, we are specifying its representation as a node,
 that we wish to use the UniProt identifier as the main identifier for
@@ -187,9 +187,9 @@ the label <code class="docutils literal notranslate"><span class="pre">protein</
 notation instead of UniProt, the corresponding CURIE prefix, in this
 case, <code class="docutils literal notranslate"><span class="pre">ensembl</span></code>, can be substituted.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ensembl</span><span class="w"></span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ensembl</span><span class="w">  </span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w">  </span>
 </pre></div>
 </div>
 <p>If there exists no identifier system that is suitable for coverage of
@@ -213,9 +213,9 @@ and target attribute in the <code class="docutils literal notranslate"><span cla
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">post translational interaction</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
 <span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
-<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"></span>
-<span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"></span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">post_translational</span><span class="w"></span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">post_translational</span><span class="w"> </span>
 </pre></div>
 </div>
 <p>For the post-translational interaction, which is an association, we are
@@ -256,9 +256,9 @@ the above example to the following:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">post translational interaction</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edge</span><span class="w"></span>
 <span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
-<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"></span>
-<span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"></span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">post_translational</span><span class="w"></span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">post_translational</span><span class="w"> </span>
 <span class="w">  </span><span class="nt">label_as_edge</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INTERACTS_POST_TRANSLATIONALLY</span><span class="w"></span>
 </pre></div>
 </div>
@@ -287,8 +287,8 @@ schema_config.yaml to implicitly extend the Biolink model by specifying
 more than one preferred_id and label_in_input (in a paired manner):</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pathway</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">reactome</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">kegg</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">reactome</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">kegg_pathway</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">reactome</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">kegg</span><span class="p p-Indicator">]</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">reactome</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">kegg_pathway</span><span class="p p-Indicator">]</span><span class="w"> </span>
 </pre></div>
 </div>
 <p>This pattern will be parsed by BioCypher to yield two implicit children
@@ -322,8 +322,8 @@ along the list will be established as virtual children of the Biolink
 parent node. For example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">mutation to tissue association</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"></span>
-<span class="w">    </span><span class="nv">genotype to tissue association</span><span class="p p-Indicator">,</span><span class="w"></span>
-<span class="w">    </span><span class="nv">entity to tissue association</span><span class="p p-Indicator">,</span><span class="w"></span>
+<span class="w">    </span><span class="nv">genotype to tissue association</span><span class="p p-Indicator">,</span><span class="w"> </span>
+<span class="w">    </span><span class="nv">entity to tissue association</span><span class="p p-Indicator">,</span><span class="w"> </span>
 <span class="w">    </span><span class="nv">association</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
