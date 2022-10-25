@@ -8,7 +8,6 @@
 #
 # Distributed under GPLv3 license, see the file `LICENSE`.
 #
-
 """
 Package metadata (version, authors, etc).
 """
@@ -46,7 +45,9 @@ def get_metadata():
             pyproject = toml.load(toml_path)
 
             meta = {
-                'name': pyproject['tool']['poetry']['name'], 'version': pyproject['tool']['poetry']['version'], 'author': pyproject['tool']['poetry']['authors'],
+                'name': pyproject['tool']['poetry']['name'],
+                'version': pyproject['tool']['poetry']['version'],
+                'author': pyproject['tool']['poetry']['authors'],
                 'license': pyproject['tool']['poetry']['license'],
                 'full_metadata': pyproject,
             }
@@ -58,8 +59,8 @@ def get_metadata():
         try:
 
             meta = {
-                k.lower(): v for k, v in
-                importlib.metadata.metadata(here.name).items()
+                k.lower(): v
+                for k, v in importlib.metadata.metadata(here.name).items()
             }
 
         except importlib.metadata.PackageNotFoundError:
