@@ -13,6 +13,7 @@ dist/
 *.pickle
 out/*
 biocypher-log/*
+biocypher-out/*
 *.log
 dist/*
 *.pye

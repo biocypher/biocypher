@@ -5,7 +5,7 @@ your own property graph consists of two components:
 
 1. the [host module adapter](host-module-adapter), a python
    program, and
-2. the [schema configuration file](schema-config), a YAML file. 
+2. the [schema configuration file](schema-config), a YAML file.
 
 The adapter serves as a data interface between the source and BioCypher,
 piping the "raw" data into BioCypher for the creation of the property
@@ -34,7 +34,7 @@ starting in "offline mode" using `offline = True`, i.e., without
 connection to a running Neo4j instance, or by providing authentication
 details via arguments or configuration file:
 
-```
+```{code-block} python
 import biocypher
 d = biocypher.Driver(<args>)
 ```
@@ -44,7 +44,7 @@ as some form of iterable (commonly a list or generator of items). As a
 minimal example, we load a list of proteins with identifiers, trivial
 names, and molecular masses from a (fictional) CSV:
 
-```
+```{code-block} python
 # read into data frame
 with open("file.csv", "r") as f:
   proteins = pd.read_csv(f)
@@ -65,11 +65,10 @@ def node_generator():
 d.write_nodes(node_generator())
 ```
 
-For nodes, BioCypher expects a tuple containing three entries; the
-preferred identifier of the node, the type of entity, and a dictionary
-containing all other properties. What BioCypher does with the received
-information is determined largely by the schema configuration detailed
-below.
+For nodes, BioCypher expects a tuple containing three entries; the preferred
+identifier of the node, the type of entity, and a dictionary containing all
+other properties (can be empty). What BioCypher does with the received
+information is determined largely by the schema configuration detailed below.
 
 For advanced usage, the type of node or edge can be determined
 programatically. Properties do not need to be explicitly called one by
@@ -96,11 +95,17 @@ identifier, the corresponding ENSEMBL identifier, or an HGNC gene
 symbol. The CURIE prefix for "Uniprot Protein" is `uniprot`, so a
 consistent protein schema definition would be:
 
+```{code-block} yaml
+protein:
+  represented_as: node
+  preferred_id: uniprot
+  label_in_input: protein
 ```
-Protein:
-  represented_as: node 
-  preferred_id: uniprot  
-  label_in_input: protein  
+
+```{note}
+For BioCypher classes, similar to the internal representation in the Biolink
+model, we use lower sentence-case notation, e.g., `protein` and `small
+molecule`. For file names and Neo4j labels, these are converted to PascalCase.
 ```
 
 In the protein case, we are specifying its representation as a node,
@@ -110,11 +115,11 @@ the label ``protein`` (in lowercase). Should one wish to use ENSEMBL
 notation instead of UniProt, the corresponding CURIE prefix, in this
 case, `ensembl`, can be substituted.
 
-```
-Protein:
-  represented_as: node 
-  preferred_id: ensembl  
-  label_in_input: protein  
+```{code-block} yaml
+protein:
+  represented_as: node
+  preferred_id: ensembl
+  label_in_input: protein
 ```
 
 If there exists no identifier system that is suitable for coverage of
@@ -135,15 +140,15 @@ For associations, BioCypher additionally requires the specification of
 the source and target of the association; for instance, a
 post-translational interaction occurs between proteins, so the source
 and target attribute in the ``schema-config.yaml`` will both be
-``Protein``. Again, these should adhere to the naming scheme of Biolink.
+``protein``.
 
-```
-PostTranslationalInteraction:
+```{code-block} yaml
+post translational interaction:
   represented_as: node
   preferred_id: id
-  source: Protein 
-  target: Protein 
-  label_in_input: post_translational 
+  source: protein
+  target: protein
+  label_in_input: post_translational
 ```
 
 For the post-translational interaction, which is an association, we are
@@ -165,14 +170,15 @@ desired, one can use any arbitrary string as a designation for this
 identifier, which will then be a named property on the
 ``PostTranslationalInteraction`` nodes.
 
-Note that BioCypher accepts non-Biolink IDs since not all
-possible entries possess a systematic identifier system, whereas the
-entity class (``Protein``, ``PostTranslationalInteraction``) has to be
-included in the Biolink schema and spelled identically. For this reason,
-we [extend the Biolink schema](biolink) in cases where there exists no
-entry for our entity of choice. Further, we are specifying the source
-and target classes of our association (both ``Protein``), the label we
-provide in the input from ``PyPath`` (``post_translational``). 
+```{note}
+BioCypher accepts non-Biolink IDs since not all possible entries possess a
+systematic identifier system, whereas the entity class (``protein``,
+``post translational interaction``) has to be included in the Biolink schema and
+spelled identically. For this reason, we [extend the Biolink schema](biolink)
+in cases where there exists no entry for our entity of choice. Further, we are
+specifying the source and target classes of our association (both ``protein``),
+the label we provide in the input from ``PyPath`` (``post_translational``).
+```
 
 If we wanted the interaction to be represented in the graph as an edge,
 we would also need to supply an additional - arbitrary - property,
@@ -183,13 +189,13 @@ represented in all upper case form and as verbs, to distinguish from
 nodes that are represented in PascalCase and as nouns. This would modify
 the above example to the following:
 
-```
-PostTranslationalInteraction:
+```{code-block} yaml
+post translational interaction:
   represented_as: edge
-  preferred_id: concat_ids
-  source: Protein 
-  target: Protein 
-  label_in_input: post_translational 
+  preferred_id: id
+  source: protein
+  target: protein
+  label_in_input: post_translational
   label_as_edge: INTERACTS_POST_TRANSLATIONALLY
 ```
 
@@ -217,53 +223,57 @@ to their distinct make-up. In this case, we can use the
 schema_config.yaml to implicitly extend the Biolink model by specifying
 more than one preferred_id and label_in_input (in a paired manner):
 
-```
-Pathway:
+```{code-block} yaml
+pathway:
   represented_as: node
-  preferred_id: [REACT, KEGG] 
-  label_in_input: [reactome, kegg_pathway] 
+  preferred_id: [reactome, kegg]
+  label_in_input: [reactome, kegg_pathway]
 ```
 
 This pattern will be parsed by BioCypher to yield two implicit children
-of the Biolink entity "Pathway" by prepending the preferred ID to the
-label ("REACT.Pathway" and "KEGG.Pathway"). The input labels again are
+of the Biolink entity "pathway" by prepending the preferred ID to the
+label (``reactome.pathway`` and ``kegg.pathway``). The input labels again are
 arbitrary and can be adjusted to fit the way these pathways are
 represented in the raw data.
 
 This will allow both datasets to be represented as pathways in the final
 graph with granular access to each one and without information loss, but
-will also enable aggregate query of all pathways by calling the parent 
-entity, "Pathway".
+will also enable aggregate query of all pathways by calling the parent
+entity, ``pathway``.
 
 (explicit)=
 #### Explicit subclasses
 
-For example, adding the child `Tissue` to the existing Biolink class
-`GrossAnatomicalStructure` as a specification:
+For example, adding the child `tissue` to the existing Biolink class
+`gross anatomical structure` as a specification:
 
-```
-Tissue:
-  is_a: GrossAnatomicalStructure
+```{code-block} yaml
+tissue:
+  is_a: gross anatomical structure
   represented_as: node
-  preferred_id: UBERON
+  preferred_id: uberon
   label_in_input: tissue
 ```
 
 This will create a "faux" Biolink class at BioCypher runtime, extending
-the hierarchical tree to include `Tissue` as a
-`GrossAnatomicalStructure`, preserving the entire inheritance of the
+the hierarchical tree to include `tissue` as a
+`gross anatomical structure`, preserving the entire inheritance of the
 parent class. BioCypher can create arbitrarily long inheritance
 structures by accepting lists as input to the `is_a` field, as long as
 the final entry in the list is an existant Biolink entity. All entities
-along the list will be established as virtual children of the Biolink 
+along the list will be established as virtual children of the Biolink
 parent node. For example:
 
-```
-MutationToTissueAssociation:
-  is_a: [GenotypeToTissueAssociation, EntityToTissueAssociation, Association]
+```{code-block} yaml
+mutation to tissue association:
+  is_a: [
+    genotype to tissue association,
+    entity to tissue association,
+    association
+  ]
 ```
 
-Where only `Association` is an existent class in the Biolink model.
+Where only `association` is an existent class in the Biolink model.
 Generally, it is preferable to add extensions to the Biolink model to
 the original repository via a pull request to ensure compatibility with
 other DBs. Creating a hard-wired extension as described in the next
@@ -295,10 +305,9 @@ extended version of the Biolink
 model](https://github.com/saezlab/BioCypher/blob/main/biocypher/_config/biocypher-biolink-model.yaml)
 with the BioCypher repository.
 
-Changes or additions desired by the user can be introduced locally in
-this file without having to modify remote contents. Users also have the
-option to create their own modified version of the Biolink YAML file
-under a different file name and specify that path in the
-``custom_yaml_file`` argument of the
-{class}`biocypher.translate.BiolinkAdapter` class, which handles all
-communication between BioCypher and Biolink.
+Changes or additions desired by the user can be introduced locally in this file
+without having to modify remote contents. Users also have the option to create
+their own modified version of the Biolink YAML file under a different file name
+and specify that path in the ``user_schema_config_path`` argument of the
+{class}`biocypher.Driver` class, which handles all communication between
+BioCypher and Biolink.

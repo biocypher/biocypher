@@ -1,4 +1,5 @@
 from typing import Union
+
 from hypothesis import given
 from hypothesis import strategies as st
 import pytest
@@ -10,26 +11,28 @@ from biocypher._create import (
     BioCypherRelAsNode,
 )
 
+__all__ = ['test_edge', 'test_getting_properties_via_config', 'test_node', 'test_rel_as_node', 'test_rel_as_node_invalid_node', 'test_version_node', 'test_virtual_leaves_node', 'version_node']
+
 
 @pytest.fixture
 def version_node():
     yield VersionNode(
         offline=True,
         from_config=True,
-        config_file="biocypher/_config/test_schema_config.yaml",
+        config_file='biocypher/_config/test_schema_config.yaml',
     )
 
 
 def test_version_node(version_node):
-    assert version_node.get_label() == "BioCypher"
+    assert version_node.get_label() == 'BioCypher'
 
 
 def test_virtual_leaves_node(version_node):
-    assert "wikipathways.pathway" in version_node.leaves
+    assert 'wikipathways.pathway' in version_node.leaves
 
 
 def test_getting_properties_via_config(version_node):
-    assert "name" in version_node.leaves["protein"].get("properties").keys()
+    assert 'name' in version_node.leaves['protein'].get('properties').keys()
 
 
 @given(st.builds(BioCypherNode))
@@ -39,7 +42,7 @@ def test_node(node):
     assert isinstance(node.get_properties(), dict)
     assert isinstance(node.get_dict(), dict)
 
-    assert "id" in node.get_properties().keys()
+    assert 'id' in node.get_properties().keys()
 
 
 @given(st.builds(BioCypherEdge))
@@ -61,4 +64,4 @@ def test_rel_as_node(rel_as_node):
 
 def test_rel_as_node_invalid_node():
     with pytest.raises(TypeError):
-        BioCypherRelAsNode("str", 1, 2.5122)
+        BioCypherRelAsNode('str', 1, 2.5122)

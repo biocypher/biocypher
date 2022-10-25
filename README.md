@@ -25,8 +25,8 @@ between identifier systems.
 ## Usage
 
 BioCypher is currently in prototype stage. To use it locally, please clone the
-repository and use it as a local dependency or as a git submodule of your 
-project. 
+repository and use it as a local dependency or as a git submodule of your
+project.
 
 Exemplary usage of BioCypher to build a graph database is shown in the
 [PyPath](https://github.com/saezlab/pypath) repository. The example
