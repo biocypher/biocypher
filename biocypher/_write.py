@@ -129,6 +129,7 @@ class BatchWriter:
         db_name: str = 'neo4j',
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
+        wipe: bool = True,
     ):
         self.db_name = db_name
 
@@ -137,7 +138,8 @@ class BatchWriter:
         self.quote = quote
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
-
+        self.wipe = wipe
+        
         self.leaves = leaves
         self.bl_adapter = bl_adapter
         self.node_property_dict = {}
@@ -455,7 +457,7 @@ class BatchWriter:
                 out_list = [[id], props_list, [':LABEL']]
                 out_list = [val for sublist in out_list for val in sublist]
 
-                with open(header_path, 'w') as f:
+                with open(header_path, 'w', encoding='utf-8') as f:
 
                     # concatenate with delimiter
                     row = self.delim.join(out_list)
@@ -772,7 +774,7 @@ class BatchWriter:
                 out_list = [[':START_ID'], props_list, [':END_ID'], [':TYPE']]
                 out_list = [val for sublist in out_list for val in sublist]
 
-                with open(header_path, 'w') as f:
+                with open(header_path, 'w', encoding='utf-8') as f:
 
                     # concatenate with delimiter
                     row = self.delim.join(out_list)
@@ -934,7 +936,8 @@ class BatchWriter:
         )
         file_path = os.path.join(self.outdir, f'{label}-part{padded_part}.csv')
 
-        with open(file_path, 'w') as f:
+        with open(file_path, 'w', encoding='utf-8') as f:
+
             # concatenate with delimiter
             f.writelines(lines)
 
@@ -963,7 +966,7 @@ class BatchWriter:
         file_path = os.path.join(self.outdir, 'neo4j-admin-import-call.sh')
         logger.info(f'Writing neo4j-admin import call to `{file_path}`.')
 
-        with open(file_path, 'w') as f:
+        with open(file_path, 'w', encoding='utf-8') as f:
 
             f.write(self._construct_import_call())
 
@@ -984,7 +987,10 @@ class BatchWriter:
             f'bin/neo4j-admin import --database={self.db_name} '
             f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
         )
-        if not self.quote == '"':
+        if self.wipe:
+            import_call += f'--force=true '
+            
+        if self.quote == "'":
             import_call += f'--quote="{self.quote}" '
         else:
             import_call += f"--quote='{self.quote}' "

@@ -108,6 +108,8 @@ class Driver(neo4j_utils.Driver):
 
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
+        self.wipe = wipe
+
         # TODO: bools in config?
         self.offline = offline
 
@@ -546,6 +548,7 @@ class Driver(neo4j_utils.Driver):
                 db_name=db_name or self._db_name,
                 skip_bad_relationships=self.skip_bad_relationships,
                 skip_duplicate_nodes=self.skip_duplicate_nodes,
+                wipe=self.wipe,
             )
 
     def start_bl_adapter(self) -> None:
