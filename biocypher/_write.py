@@ -139,7 +139,7 @@ class BatchWriter:
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
         self.wipe = wipe
-        
+
         self.leaves = leaves
         self.bl_adapter = bl_adapter
         self.node_property_dict = {}
@@ -987,14 +987,14 @@ class BatchWriter:
             f'bin/neo4j-admin import --database={self.db_name} '
             f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
         )
-        if self.wipe:
-            import_call += f'--force=true '
-            
+
         if self.quote == "'":
             import_call += f'--quote="{self.quote}" '
         else:
             import_call += f"--quote='{self.quote}' "
 
+        if self.wipe:
+            import_call += f'--force=true '
         if self.skip_bad_relationships:
             import_call += '--skip-bad-relationships=true '
         if self.skip_duplicate_nodes:

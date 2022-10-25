@@ -94,7 +94,7 @@ def test_write_node_data_headers_import_call(bw):
         and p == ':ID;name;score:double;taxon:long;id;preferred_id;:LABEL'
         and m == ':ID;name;taxon:long;id;preferred_id;:LABEL'
         and c
-        == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
+        == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
     )
 
 
@@ -575,7 +575,7 @@ def test_write_edge_data_headers_import_call(bw):
         and l == ':START_ID;residue;level:long;:END_ID;:TYPE'
         and c == ':START_ID;site;confidence:long;:END_ID;:TYPE'
         and call
-        == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" --relationships="{path}/PERTURBED_IN_DISEASE-header.csv,{path}/PERTURBED_IN_DISEASE-part.*" --relationships="{path}/Is_Mutated_In-header.csv,{path}/Is_Mutated_In-part.*" '
+        == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" --relationships="{path}/PERTURBED_IN_DISEASE-header.csv,{path}/PERTURBED_IN_DISEASE-part.*" --relationships="{path}/Is_Mutated_In-header.csv,{path}/Is_Mutated_In-part.*" '
     )
 
 
@@ -748,7 +748,7 @@ def test_create_import_call(bw):
     assert (
         passed
         and call == 'bin/neo4j-admin import --database=neo4j --delimiter=";" '
-        '--array-delimiter="|" --quote="\'" '
+        '--array-delimiter="|" --quote="\'" --force=true '
         f'--nodes="{path}/PostTranslationalInteraction-header.csv,{path}/PostTranslationalInteraction-part.*" '
         f'--relationships="{path}/IS_SOURCE_OF-header.csv,{path}/IS_SOURCE_OF-part.*" '
         f'--relationships="{path}/IS_TARGET_OF-header.csv,{path}/IS_TARGET_OF-part.*" '
