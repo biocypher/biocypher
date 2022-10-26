@@ -8,7 +8,6 @@
 #
 # Distributed under GPLv3 license, see the file `LICENSE`.
 #
-
 """
 Module data directory, including:
 
@@ -85,15 +84,11 @@ def config(*args, **kwargs) -> Optional[Any]:
     if args and kwargs:
 
         raise ValueError(
-            'Setting and getting values in the same call is not allowed.',
-        )
+            'Setting and getting values in the same call is not allowed.',)
 
     if args:
 
-        result = tuple(
-            globals()['_config'].get(key, None)
-            for key in args
-        )
+        result = tuple(globals()['_config'].get(key, None) for key in args)
 
         return result[0] if len(result) == 1 else result
 

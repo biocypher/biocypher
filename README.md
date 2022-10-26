@@ -1,7 +1,7 @@
 # BioCypher
 
 This is the development repository for BioCypher, our proposal for a unified
-framework to create knowledge graph databases for systems biology. For an 
+framework to create knowledge graph databases for systems biology. For an
 overview, usage notes, and a tutorial, read the docs
 [here](https://saezlab.github.io/BioCypher/).
 
@@ -9,7 +9,7 @@ overview, usage notes, and a tutorial, read the docs
 
 ## Usage
 
-BioCypher is currently in prototype stage. Installation instructions can be 
+BioCypher is currently in prototype stage. Installation instructions can be
 found [here](https://saezlab.github.io/BioCypher/installation.html).
 
 Exemplary usage of BioCypher to build a graph database is shown in the

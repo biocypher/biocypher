@@ -12,6 +12,7 @@ repos:
     rev: v0.32.0
     hooks:
     -   id: yapf
+        language: python
         additional_dependencies: [toml]
         # stages: [manual]
 -   repo: https://github.com/Instagram/Fixit
@@ -33,10 +34,10 @@ repos:
     rev: v1.0.1
     hooks:
     -   id: upgrade-type-hints
--   repo: https://github.com/asottile/add-trailing-comma
-    rev: v2.2.3
-    hooks:
-    -   id: add-trailing-comma
+# -   repo: https://github.com/asottile/add-trailing-comma
+#     rev: v2.2.3
+#     hooks:
+#     -   id: add-trailing-comma
 -   repo: https://github.com/myint/unify
     rev: v0.5
     hooks:

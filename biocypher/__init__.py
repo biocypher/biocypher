@@ -8,7 +8,6 @@
 #
 # Distributed under GPLv3 license, see the file `LICENSE`.
 #
-
 """
 Graph database standard for molecular biology
 """

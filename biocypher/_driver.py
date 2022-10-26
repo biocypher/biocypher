@@ -8,7 +8,6 @@
 #
 # Distributed under GPLv3 license, see the file `LICENSE`.
 #
-
 """
 A wrapper around the Neo4j driver which handles the DBMS connection and
 provides basic management methods.
@@ -185,8 +184,9 @@ class Driver(neo4j_utils.Driver):
 
         # find current version node
         db_version = self.query(
-            'MATCH (v:BioCypher) ' 'WHERE NOT (v)-[:PRECEDES]->() ' 'RETURN v',
-        )
+            'MATCH (v:BioCypher) '
+            'WHERE NOT (v)-[:PRECEDES]->() '
+            'RETURN v',)
         # connect version node to previous
         if db_version[0]:
             e_meta = BioCypherEdge(
@@ -202,14 +202,16 @@ class Driver(neo4j_utils.Driver):
         for entity, params in self.db_meta.leaves.items():
             no_l.append(
                 BioCypherNode(
-                    node_id=entity, node_label='MetaNode', properties=params,
-                ),
-            )
+                    node_id=entity,
+                    node_label='MetaNode',
+                    properties=params,
+                ),)
         self.add_biocypher_nodes(no_l)
 
         # remove connection of structure nodes from previous version
         # node(s)
-        self.query('MATCH ()-[r:CONTAINS]-()' 'DELETE r')
+        self.query('MATCH ()-[r:CONTAINS]-()'
+                   'DELETE r',)
 
         # connect structure nodes to version node
         ed_v = []
@@ -220,8 +222,7 @@ class Driver(neo4j_utils.Driver):
                     source_id=current_version,
                     target_id=entity,
                     relationship_label='CONTAINS',
-                ),
-            )
+                ),)
         self.add_biocypher_edges(ed_v)
 
         # add graph structure between MetaNodes
@@ -230,7 +231,7 @@ class Driver(neo4j_utils.Driver):
             id = no.get_id()
             src = no.get_properties().get('source')
             tar = no.get_properties().get('target')
-            if not None in [id, src, tar]:
+            if None not in [id, src, tar]:
                 ed.append(BioCypherEdge(id, src, 'IS_SOURCE_OF'))
                 ed.append(BioCypherEdge(id, tar, 'IS_TARGET_OF'))
         self.add_biocypher_edges(ed)
@@ -262,24 +263,22 @@ class Driver(neo4j_utils.Driver):
         constraints on the id of all entities represented as nodes.
         """
 
-        logger.info(f'Creating constraints for node types in config.')
+        logger.info('Creating constraints for node types in config.')
 
         # get structure
         for leaf in self.db_meta.leaves.items():
             label = leaf[0]
             if leaf[1]['represented_as'] == 'node':
 
-                s = (
-                    f'CREATE CONSTRAINT `{label}_id` '
-                    f'IF NOT EXISTS ON (n:`{label}`) '
-                    'ASSERT n.id IS UNIQUE'
-                )
+                s = (f'CREATE CONSTRAINT `{label}_id` '
+                     f'IF NOT EXISTS ON (n:`{label}`) '
+                     'ASSERT n.id IS UNIQUE')
                 self.query(s)
 
     def add_nodes(self, id_type_tuples: Iterable[tuple]) -> tuple:
         """
-        Generic node adder method to add any kind of input to the
-        graph via the :class:`biocypher.create.BioCypherNode` class. Employs translation
+        Generic node adder method to add any kind of input to the graph via the
+        :class:`biocypher.create.BioCypherNode` class. Employs translation
         functionality and calls the :meth:`add_biocypher_nodes()` method.
 
         Args:
@@ -378,19 +377,19 @@ class Driver(neo4j_utils.Driver):
 
         logger.info(f'Merging {len(entities)} nodes.')
 
-        entity_query = (
-            'UNWIND $entities AS ent '
-            'CALL apoc.merge.node([ent.node_label], '
-            '{id: ent.node_id}, ent.properties, ent.properties) '
-            'YIELD node '
-            'RETURN node'
-        )
+        entity_query = ('UNWIND $entities AS ent '
+                        'CALL apoc.merge.node([ent.node_label], '
+                        '{id: ent.node_id}, ent.properties, ent.properties) '
+                        'YIELD node '
+                        'RETURN node')
 
         method = 'explain' if explain else 'profile' if profile else 'query'
 
         result = getattr(self, method)(
             entity_query,
-            parameters={'entities': entities},
+            parameters={
+                'entities': entities,
+            },
         )
 
         logger.info('Finished merging nodes.')
@@ -470,25 +469,21 @@ class Driver(neo4j_utils.Driver):
         # merging only on the ids of the entities, passing the
         # properties on match and on create;
         # TODO add node labels?
-        node_query = (
-            'UNWIND $rels AS r '
-            'MERGE (src {id: r.source_id}) '
-            'MERGE (tar {id: r.target_id}) '
-        )
+        node_query = ('UNWIND $rels AS r '
+                      'MERGE (src {id: r.source_id}) '
+                      'MERGE (tar {id: r.target_id}) ')
 
         self.query(node_query, parameters={'rels': rels})
 
-        edge_query = (
-            'UNWIND $rels AS r '
-            'MATCH (src {id: r.source_id}) '
-            'MATCH (tar {id: r.target_id}) '
-            'WITH src, tar, r '
-            'CALL apoc.merge.relationship'
-            '(src, r.relationship_label, NULL, '
-            'r.properties, tar, r.properties) '
-            'YIELD rel '
-            'RETURN rel'
-        )
+        edge_query = ('UNWIND $rels AS r '
+                      'MATCH (src {id: r.source_id}) '
+                      'MATCH (tar {id: r.target_id}) '
+                      'WITH src, tar, r '
+                      'CALL apoc.merge.relationship'
+                      '(src, r.relationship_label, NULL, '
+                      'r.properties, tar, r.properties) '
+                      'YIELD rel '
+                      'RETURN rel')
 
         method = 'explain' if explain else 'profile' if profile else 'query'
 
@@ -626,11 +621,9 @@ class Driver(neo4j_utils.Driver):
         mt = self.translator.get_missing_bl_types()
 
         if mt:
-            msg = (
-                'Input entities not accounted for due to them not being '
-                'present in the `schema_config.yaml` configuration file '
-                '(see log for details): \n'
-            )
+            msg = ('Input entities not accounted for due to them not being '
+                   'present in the `schema_config.yaml` configuration file '
+                   '(see log for details): \n')
             for k, v in mt.items():
                 msg += f'    {k}: {v} \n'
 
@@ -641,7 +634,7 @@ class Driver(neo4j_utils.Driver):
             logger.info('No missing Biolink types in input.')
             return None
 
-    ### TRANSLATION METHODS ###
+    # TRANSLATION METHODS ###
 
     def translate_term(self, term: str) -> str:
         """

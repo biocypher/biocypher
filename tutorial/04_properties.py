@@ -7,12 +7,10 @@ __all__ = ['main']
 def main():
     # Setup: create a list of proteins to be imported
     proteins = [
-        p
-        for sublist in zip(
+        p for sublist in zip(
             [RandomPropertyProtein() for _ in range(10)],
             [EntrezProtein() for _ in range(10)],
-        )
-        for p in sublist
+        ) for p in sublist
     ]
 
     # Extract id, label, and property dictionary

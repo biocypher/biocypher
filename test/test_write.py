@@ -16,7 +16,34 @@ from biocypher._create import (
 from biocypher._driver import Driver
 from biocypher._translate import BiolinkAdapter
 
-__all__ = ['bw', 'get_random_string', 'test_BioCypherRelAsNode_implementation', 'test_RelAsNode_overwrite_behaviour', 'test_accidental_exact_batch_size', 'test_create_import_call', 'test_duplicate_id', 'test_not_enough_properties', 'test_property_types', 'test_too_many_properties', 'test_write_duplicate_edges', 'test_write_edge_data_from_gen', 'test_write_edge_data_from_large_gen', 'test_write_edge_data_from_list', 'test_write_edge_data_from_list_no_props', 'test_write_edge_data_headers_import_call', 'test_write_mixed_edges', 'test_write_node_data_from_gen', 'test_write_node_data_from_gen_no_props', 'test_write_node_data_from_large_gen', 'test_write_node_data_from_list', 'test_write_node_data_headers_import_call', 'test_write_none_type_property_and_order_invariance', 'test_write_offline', 'test_writer_and_output_dir', 'version_node']
+__all__ = [
+    'bw',
+    'get_random_string',
+    'test_BioCypherRelAsNode_implementation',
+    'test_RelAsNode_overwrite_behaviour',
+    'test_accidental_exact_batch_size',
+    'test_create_import_call',
+    'test_duplicate_id',
+    'test_not_enough_properties',
+    'test_property_types',
+    'test_too_many_properties',
+    'test_write_duplicate_edges',
+    'test_write_edge_data_from_gen',
+    'test_write_edge_data_from_large_gen',
+    'test_write_edge_data_from_list',
+    'test_write_edge_data_from_list_no_props',
+    'test_write_edge_data_headers_import_call',
+    'test_write_mixed_edges',
+    'test_write_node_data_from_gen',
+    'test_write_node_data_from_gen_no_props',
+    'test_write_node_data_from_large_gen',
+    'test_write_node_data_from_list',
+    'test_write_node_data_headers_import_call',
+    'test_write_none_type_property_and_order_invariance',
+    'test_write_offline',
+    'test_writer_and_output_dir',
+    'version_node',
+]
 
 
 def get_random_string(length):
@@ -65,9 +92,8 @@ def bw(version_node):
 
 def test_writer_and_output_dir(bw):
 
-    assert (
-        os.path.isdir(path) and isinstance(bw, BatchWriter) and bw.delim == ';'
-    )
+    assert (os.path.isdir(path) and isinstance(bw, BatchWriter) and
+            bw.delim == ';')
 
 
 def test_write_node_data_headers_import_call(bw):
@@ -90,11 +116,10 @@ def test_write_node_data_headers_import_call(bw):
         c = f.read()
 
     assert (
-        passed
-        and p == ':ID;name;score:double;taxon:long;id;preferred_id;:LABEL'
-        and m == ':ID;name;taxon:long;id;preferred_id;:LABEL'
-        and c
-        == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
+        passed and
+        p == ':ID;name;score:double;taxon:long;id;preferred_id;:LABEL' and
+        m == ':ID;name;taxon:long;id;preferred_id;:LABEL' and c ==
+        f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
     )
 
 
@@ -116,7 +141,10 @@ def _get_nodes(l: int) -> list:
             node_id=f'm{i+1}',
             node_label='microRNA',
             preferred_id='mirbase',
-            properties={'name': 'StringProperty1', 'taxon': 9606},
+            properties={
+                'name': 'StringProperty1',
+                'taxon': 9606,
+            },
         )
         nodes.append(bnm)
 
@@ -149,10 +177,10 @@ def test_property_types(bw):
         header = f.read()
 
     assert (
-        passed
-        and header == ':ID;name;score:double;taxon:long;id;preferred_id;:LABEL'
-        and data
-        == "p1;'StringProperty1';4.0;9606;'p1';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;'StringProperty1';2.0;9606;'p2';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3;'StringProperty1';1.3333333333333333;9606;'p3';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4;'StringProperty1';1.0;9606;'p4';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+        passed and
+        header == ':ID;name;score:double;taxon:long;id;preferred_id;:LABEL' and
+        data ==
+        "p1;'StringProperty1';4.0;9606;'p1';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;'StringProperty1';2.0;9606;'p2';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3;'StringProperty1';1.3333333333333333;9606;'p3';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4;'StringProperty1';1.0;9606;'p4';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
     )
 
 
@@ -171,11 +199,10 @@ def test_write_node_data_from_list(bw):
         mi = f.read()
 
     assert (
-        passed
-        and pr
-        == "p1;'StringProperty1';4.0;9606;'p1';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;'StringProperty1';2.0;9606;'p2';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3;'StringProperty1';1.3333333333333333;9606;'p3';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4;'StringProperty1';1.0;9606;'p4';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
-        and mi
-        == "m1;'StringProperty1';9606;'m1';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm2;'StringProperty1';9606;'m2';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm3;'StringProperty1';9606;'m3';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm4;'StringProperty1';9606;'m4';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+        passed and pr ==
+        "p1;'StringProperty1';4.0;9606;'p1';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;'StringProperty1';2.0;9606;'p2';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3;'StringProperty1';1.3333333333333333;9606;'p3';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4;'StringProperty1';1.0;9606;'p4';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+        and mi ==
+        "m1;'StringProperty1';9606;'m1';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm2;'StringProperty1';9606;'m2';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm3;'StringProperty1';9606;'m3';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm4;'StringProperty1';9606;'m4';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\n"
     )
 
 
@@ -197,11 +224,10 @@ def test_write_node_data_from_gen(bw):
         mi = f.read()
 
     assert (
-        passed
-        and pr
-        == "p1;'StringProperty1';4.0;9606;'p1';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;'StringProperty1';2.0;9606;'p2';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3;'StringProperty1';1.3333333333333333;9606;'p3';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4;'StringProperty1';1.0;9606;'p4';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
-        and mi
-        == "m1;'StringProperty1';9606;'m1';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm2;'StringProperty1';9606;'m2';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm3;'StringProperty1';9606;'m3';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm4;'StringProperty1';9606;'m4';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+        passed and pr ==
+        "p1;'StringProperty1';4.0;9606;'p1';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;'StringProperty1';2.0;9606;'p2';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3;'StringProperty1';1.3333333333333333;9606;'p3';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4;'StringProperty1';1.0;9606;'p4';'uniprot';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+        and mi ==
+        "m1;'StringProperty1';9606;'m1';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm2;'StringProperty1';9606;'m2';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm3;'StringProperty1';9606;'m3';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm4;'StringProperty1';9606;'m4';'mirbase';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\n"
     )
 
 
@@ -240,11 +266,10 @@ def test_write_node_data_from_gen_no_props(bw):
         mi = f.read()
 
     assert (
-        passed
-        and pr
-        == "p1;'StringProperty1';4.0;9606;'p1';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;'StringProperty1';2.0;9606;'p2';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3;'StringProperty1';1.3333333333333333;9606;'p3';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4;'StringProperty1';1.0;9606;'p4';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
-        and mi
-        == "m1;'m1';'id';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm2;'m2';'id';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm3;'m3';'id';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm4;'m4';'id';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+        passed and pr ==
+        "p1;'StringProperty1';4.0;9606;'p1';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;'StringProperty1';2.0;9606;'p2';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3;'StringProperty1';1.3333333333333333;9606;'p3';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4;'StringProperty1';1.0;9606;'p4';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+        and mi ==
+        "m1;'m1';'id';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm2;'m2';'id';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm3;'m3';'id';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm4;'m4';'id';MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\n"
     )
 
 
@@ -269,13 +294,8 @@ def test_write_node_data_from_large_gen(bw):
     pr_lines1 = sum(1 for _ in open(p1_csv))
     mi_lines1 = sum(1 for _ in open(m1_csv))
 
-    assert (
-        passed
-        and pr_lines == 1e4
-        and mi_lines == 1e4
-        and pr_lines1 == 4
-        and mi_lines1 == 4
-    )
+    assert (passed and pr_lines == 1e4 and mi_lines == 1e4 and
+            pr_lines1 == 4 and mi_lines1 == 4)
 
 
 def test_too_many_properties(bw):
@@ -334,17 +354,28 @@ def test_write_none_type_property_and_order_invariance(bw):
     bnp1 = BioCypherNode(
         node_id=f'p1',
         node_label='protein',
-        properties={'taxon': 9606, 'score': 1, 'name': None},
+        properties={
+            'taxon': 9606,
+            'score': 1,
+            'name': None,
+        },
     )
     bnp2 = BioCypherNode(
         node_id=f'p2',
         node_label='protein',
-        properties={'name': None, 'score': 2, 'taxon': 9606},
+        properties={
+            'name': None,
+            'score': 2,
+            'taxon': 9606,
+        },
     )
     bnm = BioCypherNode(
         node_id=f'm1',
         node_label='microRNA',
-        properties={'name': None, 'taxon': 9606},
+        properties={
+            'name': None,
+            'taxon': 9606,
+        },
     )
     nodes.append(bnp1)
     nodes.append(bnp2)
@@ -363,9 +394,8 @@ def test_write_none_type_property_and_order_invariance(bw):
         p = f.read()
 
     assert (
-        passed
-        and p
-        == "p1;;1;9606;'p1';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;;2;9606;'p2';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
+        passed and p ==
+        "p1;;1;9606;'p1';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2;;2;9606;'p2';'id';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"
     )
 
 
@@ -396,15 +426,10 @@ def test_accidental_exact_batch_size(bw):
     with open(mh_csv) as f:
         m = f.read()
 
-    assert (
-        passed
-        and pr_lines == 1e4
-        and mi_lines == 1e4
-        and not isfile(p1_csv)
-        and not isfile(m1_csv)
-        and p == ':ID;name;score:double;taxon:long;id;preferred_id;:LABEL'
-        and m == ':ID;name;taxon:long;id;preferred_id;:LABEL'
-    )
+    assert (passed and pr_lines == 1e4 and mi_lines == 1e4 and
+            not isfile(p1_csv) and not isfile(m1_csv) and
+            p == ':ID;name;score:double;taxon:long;id;preferred_id;:LABEL' and
+            m == ':ID;name;taxon:long;id;preferred_id;:LABEL')
 
 
 def test_write_edge_data_from_gen(bw):
@@ -424,11 +449,10 @@ def test_write_edge_data_from_gen(bw):
         c = f.read()
 
     assert (
-        passed
-        and l
-        == "p0;'T253';4;p1;PERTURBED_IN_DISEASE\np1;'T253';4;p2;PERTURBED_IN_DISEASE\np2;'T253';4;p3;PERTURBED_IN_DISEASE\np3;'T253';4;p4;PERTURBED_IN_DISEASE\n"
-        and c
-        == "m0;'3-UTR';1;p1;Is_Mutated_In\nm1;'3-UTR';1;p2;Is_Mutated_In\nm2;'3-UTR';1;p3;Is_Mutated_In\nm3;'3-UTR';1;p4;Is_Mutated_In\n"
+        passed and l ==
+        "p0;'T253';4;p1;PERTURBED_IN_DISEASE\np1;'T253';4;p2;PERTURBED_IN_DISEASE\np2;'T253';4;p3;PERTURBED_IN_DISEASE\np3;'T253';4;p4;PERTURBED_IN_DISEASE\n"
+        and c ==
+        "m0;'3-UTR';1;p1;Is_Mutated_In\nm1;'3-UTR';1;p2;Is_Mutated_In\nm2;'3-UTR';1;p3;Is_Mutated_In\nm3;'3-UTR';1;p4;Is_Mutated_In\n"
     )
 
 
@@ -439,7 +463,10 @@ def _get_edges(l):
             source_id=f'p{i}',
             target_id=f'p{i + 1}',
             relationship_label='PERTURBED_IN_DISEASE',
-            properties={'residue': 'T253', 'level': 4},
+            properties={
+                'residue': 'T253',
+                'level': 4,
+            },
             # we suppose the verb-form relationship label is created by
             # translation functionality in translate.py
         )
@@ -448,7 +475,10 @@ def _get_edges(l):
             source_id=f'm{i}',
             target_id=f'p{i + 1}',
             relationship_label='Is_Mutated_In',
-            properties={'site': '3-UTR', 'confidence': 1},
+            properties={
+                'site': '3-UTR',
+                'confidence': 1,
+            },
             # we suppose the verb-form relationship label is created by
             # translation functionality in translate.py
         )
@@ -475,13 +505,8 @@ def test_write_edge_data_from_large_gen(bw):
     l_lines1 = sum(1 for _ in open(apl1_csv))
     c_lines1 = sum(1 for _ in open(ips1_csv))
 
-    assert (
-        passed
-        and l_lines0 == 1e4
-        and c_lines0 == 1e4
-        and l_lines1 == 4
-        and c_lines1 == 4
-    )
+    assert (passed and l_lines0 == 1e4 and c_lines0 == 1e4 and l_lines1 == 4 and
+            c_lines1 == 4)
 
 
 def test_write_edge_data_from_list(bw):
@@ -498,11 +523,10 @@ def test_write_edge_data_from_list(bw):
         c = f.read()
 
     assert (
-        passed
-        and l
-        == "p0;'T253';4;p1;PERTURBED_IN_DISEASE\np1;'T253';4;p2;PERTURBED_IN_DISEASE\np2;'T253';4;p3;PERTURBED_IN_DISEASE\np3;'T253';4;p4;PERTURBED_IN_DISEASE\n"
-        and c
-        == "m0;'3-UTR';1;p1;Is_Mutated_In\nm1;'3-UTR';1;p2;Is_Mutated_In\nm2;'3-UTR';1;p3;Is_Mutated_In\nm3;'3-UTR';1;p4;Is_Mutated_In\n"
+        passed and l ==
+        "p0;'T253';4;p1;PERTURBED_IN_DISEASE\np1;'T253';4;p2;PERTURBED_IN_DISEASE\np2;'T253';4;p3;PERTURBED_IN_DISEASE\np3;'T253';4;p4;PERTURBED_IN_DISEASE\n"
+        and c ==
+        "m0;'3-UTR';1;p1;Is_Mutated_In\nm1;'3-UTR';1;p2;Is_Mutated_In\nm2;'3-UTR';1;p3;Is_Mutated_In\nm3;'3-UTR';1;p4;Is_Mutated_In\n"
     )
 
 
@@ -534,11 +558,10 @@ def test_write_edge_data_from_list_no_props(bw):
         c = f.read()
 
     assert (
-        passed
-        and l
-        == 'p0;p1;PERTURBED_IN_DISEASE\np1;p2;PERTURBED_IN_DISEASE\np2;p3;PERTURBED_IN_DISEASE\np3;p4;PERTURBED_IN_DISEASE\n'
-        and c
-        == 'm0;p1;Is_Mutated_In\nm1;p2;Is_Mutated_In\nm2;p3;Is_Mutated_In\nm3;p4;Is_Mutated_In\n'
+        passed and l ==
+        'p0;p1;PERTURBED_IN_DISEASE\np1;p2;PERTURBED_IN_DISEASE\np2;p3;PERTURBED_IN_DISEASE\np3;p4;PERTURBED_IN_DISEASE\n'
+        and c ==
+        'm0;p1;Is_Mutated_In\nm1;p2;Is_Mutated_In\nm2;p3;Is_Mutated_In\nm3;p4;Is_Mutated_In\n'
     )
 
 
@@ -571,11 +594,9 @@ def test_write_edge_data_headers_import_call(bw):
         call = f.read()
 
     assert (
-        passed
-        and l == ':START_ID;residue;level:long;:END_ID;:TYPE'
-        and c == ':START_ID;site;confidence:long;:END_ID;:TYPE'
-        and call
-        == f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" --relationships="{path}/PERTURBED_IN_DISEASE-header.csv,{path}/PERTURBED_IN_DISEASE-part.*" --relationships="{path}/Is_Mutated_In-header.csv,{path}/Is_Mutated_In-part.*" '
+        passed and l == ':START_ID;residue;level:long;:END_ID;:TYPE' and
+        c == ':START_ID;site;confidence:long;:END_ID;:TYPE' and call ==
+        f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" --relationships="{path}/PERTURBED_IN_DISEASE-header.csv,{path}/PERTURBED_IN_DISEASE-part.*" --relationships="{path}/Is_Mutated_In-header.csv,{path}/Is_Mutated_In-part.*" '
     )
 
 
@@ -614,13 +635,12 @@ def test_BioCypherRelAsNode_implementation(bw):
         p = f.read()
 
     assert (
-        passed
-        and s
-        == 'i1;p1;IS_SOURCE_OF\ni2;p2;IS_SOURCE_OF\ni3;p3;IS_SOURCE_OF\ni4;p4;IS_SOURCE_OF\n'
-        and t
-        == 'i0;p2;IS_TARGET_OF\ni1;p3;IS_TARGET_OF\ni2;p4;IS_TARGET_OF\ni3;p5;IS_TARGET_OF\n'
-        and p
-        == "i1;True;-1;'i1';'id';PostTranslationalInteraction|PairwiseMolecularInteraction|PairwiseGeneToGeneInteraction|GeneToGeneAssociation|Association|Entity\ni2;True;-1;'i2';'id';PostTranslationalInteraction|PairwiseMolecularInteraction|PairwiseGeneToGeneInteraction|GeneToGeneAssociation|Association|Entity\ni3;True;-1;'i3';'id';PostTranslationalInteraction|PairwiseMolecularInteraction|PairwiseGeneToGeneInteraction|GeneToGeneAssociation|Association|Entity\ni4;True;-1;'i4';'id';PostTranslationalInteraction|PairwiseMolecularInteraction|PairwiseGeneToGeneInteraction|GeneToGeneAssociation|Association|Entity\n"
+        passed and s ==
+        'i1;p1;IS_SOURCE_OF\ni2;p2;IS_SOURCE_OF\ni3;p3;IS_SOURCE_OF\ni4;p4;IS_SOURCE_OF\n'
+        and t ==
+        'i0;p2;IS_TARGET_OF\ni1;p3;IS_TARGET_OF\ni2;p4;IS_TARGET_OF\ni3;p5;IS_TARGET_OF\n'
+        and p ==
+        "i1;True;-1;'i1';'id';PostTranslationalInteraction|PairwiseMolecularInteraction|PairwiseGeneToGeneInteraction|GeneToGeneAssociation|Association|Entity\ni2;True;-1;'i2';'id';PostTranslationalInteraction|PairwiseMolecularInteraction|PairwiseGeneToGeneInteraction|GeneToGeneAssociation|Association|Entity\ni3;True;-1;'i3';'id';PostTranslationalInteraction|PairwiseMolecularInteraction|PairwiseGeneToGeneInteraction|GeneToGeneAssociation|Association|Entity\ni4;True;-1;'i4';'id';PostTranslationalInteraction|PairwiseMolecularInteraction|PairwiseGeneToGeneInteraction|GeneToGeneAssociation|Association|Entity\n"
     )
 
 
@@ -630,7 +650,10 @@ def _get_rel_as_nodes(l):
         n = BioCypherNode(
             node_id=f'i{i+1}',
             node_label='post translational interaction',
-            properties={'directed': True, 'effect': -1},
+            properties={
+                'directed': True,
+                'effect': -1,
+            },
         )
         e1 = BioCypherEdge(
             source_id=f'i{i+1}',
@@ -702,13 +725,8 @@ def test_write_mixed_edges(bw):
     ito_csv = os.path.join(path, 'IS_TARGET_OF-header.csv')
     ipt_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-header.csv')
 
-    assert (
-        passed
-        and os.path.isfile(pmi_csv)
-        and os.path.isfile(iso_csv)
-        and os.path.isfile(ito_csv)
-        and os.path.isfile(ipt_csv)
-    )
+    assert (passed and os.path.isfile(pmi_csv) and os.path.isfile(iso_csv) and
+            os.path.isfile(ito_csv) and os.path.isfile(ipt_csv))
 
 
 def test_create_import_call(bw):
@@ -746,8 +764,8 @@ def test_create_import_call(bw):
     call = bw.get_import_call()
 
     assert (
-        passed
-        and call == 'bin/neo4j-admin import --database=neo4j --delimiter=";" '
+        passed and
+        call == 'bin/neo4j-admin import --database=neo4j --delimiter=";" '
         '--array-delimiter="|" --quote="\'" --force=true '
         f'--nodes="{path}/PostTranslationalInteraction-header.csv,{path}/PostTranslationalInteraction-part.*" '
         f'--relationships="{path}/IS_SOURCE_OF-header.csv,{path}/IS_SOURCE_OF-part.*" '
@@ -778,11 +796,10 @@ def test_write_offline():
         mi = f.read()
 
     assert (
-        passed
-        and pr
-        == 'p1,"StringProperty1",4.0,9606,"p1","uniprot",Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2,"StringProperty1",2.0,9606,"p2","uniprot",Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3,"StringProperty1",1.3333333333333333,9606,"p3","uniprot",Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4,"StringProperty1",1.0,9606,"p4","uniprot",Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n'
-        and mi
-        == 'm1,"StringProperty1",9606,"m1","mirbase",MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm2,"StringProperty1",9606,"m2","mirbase",MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm3,"StringProperty1",9606,"m3","mirbase",MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm4,"StringProperty1",9606,"m4","mirbase",MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\n'
+        passed and pr ==
+        'p1,"StringProperty1",4.0,9606,"p1","uniprot",Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np2,"StringProperty1",2.0,9606,"p2","uniprot",Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np3,"StringProperty1",1.3333333333333333,9606,"p3","uniprot",Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\np4,"StringProperty1",1.0,9606,"p4","uniprot",Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n'
+        and mi ==
+        'm1,"StringProperty1",9606,"m1","mirbase",MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm2,"StringProperty1",9606,"m2","mirbase",MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm3,"StringProperty1",9606,"m3","mirbase",MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\nm4,"StringProperty1",9606,"m4","mirbase",MicroRNA|NoncodingRNAProduct|RNAProduct|GeneProductMixin|Transcript|NucleicAcidEntity|GenomicEntity|PhysicalEssence|OntologyClass|MolecularEntity|ChemicalEntity|ChemicalOrDrugOrTreatment|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|NamedThing|Entity|PhysicalEssenceOrOccurrent|ThingWithTaxon|GeneOrGeneProduct|MacromolecularMachineMixin\n'
     )
 
 

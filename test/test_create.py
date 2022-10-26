@@ -11,7 +11,16 @@ from biocypher._create import (
     BioCypherRelAsNode,
 )
 
-__all__ = ['test_edge', 'test_getting_properties_via_config', 'test_node', 'test_rel_as_node', 'test_rel_as_node_invalid_node', 'test_version_node', 'test_virtual_leaves_node', 'version_node']
+__all__ = [
+    'test_edge',
+    'test_getting_properties_via_config',
+    'test_node',
+    'test_rel_as_node',
+    'test_rel_as_node_invalid_node',
+    'test_version_node',
+    'test_virtual_leaves_node',
+    'version_node',
+]
 
 
 @pytest.fixture

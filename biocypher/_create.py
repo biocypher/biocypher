@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 #
 # Copyright 2021, Heidelberg University Clinic
 #
@@ -8,7 +7,6 @@
 #
 # Distributed under GPLv3 license, see the file `LICENSE`.
 #
-
 """
 Create a property graph database for biomedical research applications.
 Transforms ordered collections of biomedical entities and relationships
@@ -42,7 +40,12 @@ from . import _misc
 from . import _config as config
 from ._logger import logger
 
-__all__ = ['BioCypherEdge', 'BioCypherNode', 'BioCypherRelAsNode', 'VersionNode']
+__all__ = [
+    'BioCypherEdge',
+    'BioCypherNode',
+    'BioCypherRelAsNode',
+    'VersionNode',
+]
 
 logger.debug(f'Loading module {__name__}.')
 
@@ -91,30 +94,34 @@ class BioCypherNode:
         # the dataclass as well as in the configuration file
 
         if ':TYPE' in self.properties.keys():
-            logger.warning(
-                "Keyword ':TYPE' is reserved for Neo4j. "
-                'Removing from properties.',
-                # "Renaming to 'type'."
-            )
+            logger.warning("Keyword ':TYPE' is reserved for Neo4j. "
+                           'Removing from properties.',
+                           # "Renaming to 'type'."
+                          )
             # self.properties["type"] = self.properties[":TYPE"]
             del self.properties[':TYPE']
 
         for k, v in self.properties.items():
             if isinstance(v, str):
-                self.properties[k] = (
-                    v.replace(os.linesep, ' ')
-                    .replace('\n', ' ')
-                    .replace('\r', ' ')
-                    .replace('"', "'")
-                )
+                self.properties[k] = (v.replace(
+                    os.linesep,
+                    ' ',
+                ).replace(
+                    '\n',
+                    ' ',
+                ).replace(
+                    '\r',
+                    ' ',
+                ).replace('"', "'"))
 
             elif isinstance(v, list):
-                self.properties[k] = (
-                    ', '.join(v)
-                    .replace(os.linesep, ' ')
-                    .replace('\n', ' ')
-                    .replace('\r', ' ')
-                )
+                self.properties[k] = (', '.join(v).replace(
+                    os.linesep,
+                    ' ',
+                ).replace(
+                    '\n',
+                    ' ',
+                ).replace('\r', ' '))
 
     def get_id(self) -> str:
         """
@@ -206,11 +213,10 @@ class BioCypherEdge:
         """
 
         if ':TYPE' in self.properties.keys():
-            logger.debug(
-                "Keyword ':TYPE' is reserved for Neo4j. "
-                'Removing from properties.',
-                # "Renaming to 'type'."
-            )
+            logger.debug("Keyword ':TYPE' is reserved for Neo4j. "
+                         'Removing from properties.',
+                         # "Renaming to 'type'."
+                        )
             # self.properties["type"] = self.properties[":TYPE"]
             del self.properties[':TYPE']
 
@@ -307,20 +313,17 @@ class BioCypherRelAsNode:
         if not isinstance(self.node, BioCypherNode):
             raise TypeError(
                 f'BioCypherRelAsNode.node must be a BioCypherNode, '
-                f'not {type(self.node)}.',
-            )
+                f'not {type(self.node)}.',)
 
         if not isinstance(self.source_edge, BioCypherEdge):
             raise TypeError(
                 f'BioCypherRelAsNode.source_edge must be a BioCypherEdge, '
-                f'not {type(self.source_edge)}.',
-            )
+                f'not {type(self.source_edge)}.',)
 
         if not isinstance(self.target_edge, BioCypherEdge):
             raise TypeError(
                 f'BioCypherRelAsNode.target_edge must be a BioCypherEdge, '
-                f'not {type(self.target_edge)}.',
-            )
+                f'not {type(self.target_edge)}.',)
 
     def get_node(self):
         return self.node
@@ -362,9 +365,8 @@ class VersionNode:
         self.bcy_driver = bcy_driver
 
         self.node_id = self._get_current_id()
-        self.graph_state = (
-            self._get_graph_state() if not self.offline else None
-        )
+        self.graph_state = (self._get_graph_state()
+                            if not self.offline else None)
         self.schema = self._get_graph_schema()
         self.leaves = self._get_leaves()
 
@@ -431,8 +433,7 @@ class VersionNode:
         result, summary = self.bcy_driver.query(
             'MATCH (meta:BioCypher)'
             'WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)'
-            'RETURN meta',
-        )
+            'RETURN meta',)
 
         # if result is empty, initialise
         if not result:
@@ -509,11 +510,11 @@ class VersionNode:
         for k, v in d.items():
 
             # k is not an entity
-            if not 'represented_as' in v:
+            if 'represented_as' not in v:
                 continue
 
             # k is an entity that is present in the ontology
-            if not 'is_a' in v:
+            if 'is_a' not in v:
                 leaves[k] = v
 
             # find max depth of children
@@ -535,7 +536,7 @@ class VersionNode:
         for k, v in d.items():
 
             # k is not an entity
-            if not 'represented_as' in v:
+            if 'represented_as' not in v:
                 continue
 
             if isinstance(v.get('preferred_id'), list):
@@ -555,11 +556,11 @@ class VersionNode:
         for k, v in d.items():
 
             # k is not an entity
-            if not 'represented_as' in v:
+            if 'represented_as' not in v:
                 continue
 
             # k is an entity that is present in the ontology
-            if not 'is_a' in v:
+            if 'is_a' not in v:
                 continue
 
             # "vertical" inheritance: inherit properties from parent
@@ -576,8 +577,7 @@ class VersionNode:
                     v['properties'] = self.schema[parent]['properties']
                 if self.schema[parent].get('exclude_properties'):
                     v['exclude_properties'] = self.schema[parent][
-                        'exclude_properties'
-                    ]
+                        'exclude_properties']
 
                 # update schema (d)
                 d[k] = v
@@ -598,23 +598,21 @@ class VersionNode:
         represented_as = value['represented_as']
 
         # adjust lengths
-        l = max(
-            [
-                len(_misc.to_list(preferred_id)),
-                len(_misc.to_list(label_in_input)),
-                len(_misc.to_list(represented_as)),
-            ],
-        )
+        max_l = max([
+            len(_misc.to_list(preferred_id)),
+            len(_misc.to_list(label_in_input)),
+            len(_misc.to_list(represented_as)),
+        ],)
 
         # adjust pid length if necessary
         if isinstance(preferred_id, str):
-            pids = [preferred_id] * l
+            pids = [preferred_id] * max_l
         else:
             pids = preferred_id
 
         # adjust rep length if necessary
         if isinstance(represented_as, str):
-            reps = [represented_as] * l
+            reps = [represented_as] * max_l
         else:
             reps = represented_as
 
@@ -648,10 +646,10 @@ class VersionNode:
             # inherit everything except core attributes
             for k, v in value.items():
                 if k not in [
-                    'is_a',
-                    'preferred_id',
-                    'label_in_input',
-                    'represented_as',
+                        'is_a',
+                        'preferred_id',
+                        'label_in_input',
+                        'represented_as',
                 ]:
                     svalue[k] = v
 
@@ -673,17 +671,17 @@ class VersionNode:
         represented_as = value['represented_as']
 
         # adjust lengths
-        l = len(source)
+        src_l = len(source)
 
         # adjust label length if necessary
         if isinstance(label_in_input, str):
-            labels = [label_in_input] * l
+            labels = [label_in_input] * src_l
         else:
             labels = label_in_input
 
         # adjust rep length if necessary
         if isinstance(represented_as, str):
-            reps = [represented_as] * l
+            reps = [represented_as] * src_l
         else:
             reps = represented_as
 
@@ -717,10 +715,10 @@ class VersionNode:
             # inherit everything except core attributes
             for k, v in value.items():
                 if k not in [
-                    'is_a',
-                    'source',
-                    'label_in_input',
-                    'represented_as',
+                        'is_a',
+                        'source',
+                        'label_in_input',
+                        'represented_as',
                 ]:
                     svalue[k] = v
 

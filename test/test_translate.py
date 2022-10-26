@@ -5,7 +5,34 @@ from biocypher._config import module_data_path
 from biocypher._create import VersionNode, BioCypherEdge, BioCypherNode
 from biocypher._translate import Translator, BiolinkAdapter
 
-__all__ = ['biolink_adapter', 'test_ad_hoc_children_node', 'test_adapter', 'test_biolink_yaml_extension', 'test_custom_bmt_yaml', 'test_exclude_properties', 'test_inherit_properties', 'test_leaves_of_ad_hoc_child', 'test_log_missing_nodes', 'test_merge_multiple_inputs_edge', 'test_merge_multiple_inputs_node', 'test_multiple_inheritance', 'test_multiple_inputs_multiple_virtual_leaves_rel_as_node', 'test_properties_from_config', 'test_reverse_translate_query', 'test_reverse_translate_term', 'test_specific_and_generic_ids', 'test_translate_edges', 'test_translate_identifiers', 'test_translate_nodes', 'test_translate_query', 'test_translate_term', 'test_virtual_leaves_inherit_is_a', 'test_virtual_leaves_inherit_properties', 'translator', 'version_node']
+__all__ = [
+    'biolink_adapter',
+    'test_ad_hoc_children_node',
+    'test_adapter',
+    'test_biolink_yaml_extension',
+    'test_custom_bmt_yaml',
+    'test_exclude_properties',
+    'test_inherit_properties',
+    'test_leaves_of_ad_hoc_child',
+    'test_log_missing_nodes',
+    'test_merge_multiple_inputs_edge',
+    'test_merge_multiple_inputs_node',
+    'test_multiple_inheritance',
+    'test_multiple_inputs_multiple_virtual_leaves_rel_as_node',
+    'test_properties_from_config',
+    'test_reverse_translate_query',
+    'test_reverse_translate_term',
+    'test_specific_and_generic_ids',
+    'test_translate_edges',
+    'test_translate_identifiers',
+    'test_translate_nodes',
+    'test_translate_query',
+    'test_translate_term',
+    'test_virtual_leaves_inherit_is_a',
+    'test_virtual_leaves_inherit_properties',
+    'translator',
+    'version_node',
+]
 
 
 @pytest.fixture
@@ -33,9 +60,27 @@ def biolink_adapter(version_node):
 
 def test_translate_nodes(translator):
     id_type = [
-        ('G9205', 'protein', {'taxon': 9606}),
-        ('hsa-miR-132-3p', 'mirna', {'taxon': 9606}),
-        ('ASDB_OSBS', 'complex', {'taxon': 9606}),
+        (
+            'G9205',
+            'protein',
+            {
+                'taxon': 9606,
+            },
+        ),
+        (
+            'hsa-miR-132-3p',
+            'mirna',
+            {
+                'taxon': 9606,
+            },
+        ),
+        (
+            'ASDB_OSBS',
+            'complex',
+            {
+                'taxon': 9606,
+            },
+        ),
         ('REACT:25520', 'reactome', {}),
     ]
     t = translator.translate_nodes(id_type)
@@ -50,7 +95,13 @@ def test_translate_nodes(translator):
 
 def test_specific_and_generic_ids(translator):
     id_type = [
-        ('CHAT', 'hgnc', {'taxon': 9606}),
+        (
+            'CHAT',
+            'hgnc',
+            {
+                'taxon': 9606,
+            },
+        ),
         ('REACT:25520', 'reactome', {}),
     ]
     t = list(translator.translate_nodes(id_type))
@@ -82,35 +133,47 @@ def test_translate_edges(translator):
 
     # node type association (defined in `schema_config.yaml`)
     src_tar_type_node = [
-        ('G21058', 'G50127', 'post_translational', {'prop1': 'test'}),
+        (
+            'G21058',
+            'G50127',
+            'post_translational',
+            {
+                'prop1': 'test',
+            },
+        ),
         (
             'G22418',
             'G50123',
             'post_translational',
-            {'directed': 'arbitrary_string'},
+            {
+                'directed': 'arbitrary_string',
+            },
         ),
         (
             'G15258',
             'G16347',
             'post_translational',
-            {'directed': True, 'effect': -1},
+            {
+                'directed': True,
+                'effect': -1,
+            },
         ),
     ]
     t = translator.translate_edges(src_tar_type_node)
+    t = list(t)
 
-    n = next(t)
-    n = next(t)
-    assert n.get_source_edge().get_label() == 'IS_PART_OF'
-    n = next(t)
-    no = n.get_node()
-    assert (
-        type(n.get_node()) == BioCypherNode
-        and type(n.get_source_edge()) == BioCypherEdge
-        and type(n.get_target_edge()) == BioCypherEdge
-    )
-    assert n.get_node().get_id() == 'G15258_G16347_True_-1'
-    assert n.get_source_edge().get_source_id() == 'G15258'
-    assert n.get_target_edge().get_label() == 'IS_TARGET_OF'
+    n1 = t[0]
+    n2 = t[1]
+    n3 = t[2]
+
+    assert n1.get_source_edge().get_label() == 'IS_PART_OF'
+    assert n2.get_source_edge().get_label() == 'IS_PART_OF'
+    assert n3.get_target_edge().get_label() == 'IS_TARGET_OF'
+    assert (type(n1.get_node()) == BioCypherNode and
+            type(n1.get_source_edge()) == BioCypherEdge and
+            type(n1.get_target_edge()) == BioCypherEdge)
+    assert n3.get_node().get_id() == 'G15258_G16347_True_-1'
+    assert n3.get_source_edge().get_source_id() == 'G15258'
 
 
 def test_adapter(version_node):
@@ -136,16 +199,13 @@ def test_biolink_yaml_extension(biolink_adapter):
     p1 = biolink_adapter.biolink_leaves['post translational interaction']
     p2 = biolink_adapter.biolink_leaves['phosphorylation']
 
-    assert (
-        p1['class_definition'].description
-        == 'A pairwise interaction between two proteins'
-        and 'PairwiseMolecularInteraction' in p1['ancestors']
-        and 'Entity' in p1['ancestors']
-        and p2['class_definition'].description
-        == 'The action of one protein phosphorylating another protein'
-        and 'PostTranslationalInteraction' in p2['ancestors']
-        and 'Entity' in p2['ancestors']
-    )
+    assert (p1['class_definition'].description
+            == 'A pairwise interaction between two proteins' and
+            'PairwiseMolecularInteraction' in p1['ancestors'] and
+            'Entity' in p1['ancestors'] and p2['class_definition'].description
+            == 'The action of one protein phosphorylating another protein' and
+            'PostTranslationalInteraction' in p2['ancestors'] and
+            'Entity' in p2['ancestors'])
 
 
 def test_translate_identifiers(translator):
@@ -162,8 +222,20 @@ def test_merge_multiple_inputs_node(version_node, translator):
 
     # define nodes
     id_type = [
-        ('CHAT', 'hgnc', {'taxon': 9606}),
-        ('CHRNA4', 'ensg', {'taxon': 9606}),
+        (
+            'CHAT',
+            'hgnc',
+            {
+                'taxon': 9606,
+            },
+        ),
+        (
+            'CHRNA4',
+            'ensg',
+            {
+                'taxon': 9606,
+            },
+        ),
     ]
     t = list(translator.translate_nodes(id_type))
 
@@ -186,22 +258,32 @@ def test_merge_multiple_inputs_edge(version_node, translator):
 
     # define nodes
     src_tar_type = [
-        ('CHAT', 'AD', 'gene_disease', {'taxon': 9606}),
-        ('CHRNA4', 'AD', 'protein_disease', {'taxon': 9606}),
+        (
+            'CHAT',
+            'AD',
+            'gene_disease',
+            {
+                'taxon': 9606,
+            },
+        ),
+        (
+            'CHRNA4',
+            'AD',
+            'protein_disease',
+            {
+                'taxon': 9606,
+            },
+        ),
     ]
     t = list(translator.translate_edges(src_tar_type))
 
     # check unique edge type
-    assert not any(
-        [
-            s
-            for s in version_node.leaves.keys()
-            if '.gene to disease association' in s
-        ],
-    )
+    assert not any([
+        s for s in version_node.leaves.keys()
+        if '.gene to disease association' in s
+    ],)
     assert any(
-        [s for s in version_node.leaves.keys() if '.sequence variant' in s],
-    )
+        [s for s in version_node.leaves.keys() if '.sequence variant' in s],)
 
     # check translator.translate_nodes for unique return type
     assert all([type(e) == BioCypherEdge for e in t])
@@ -211,17 +293,13 @@ def test_merge_multiple_inputs_edge(version_node, translator):
 def test_multiple_inputs_multiple_virtual_leaves_rel_as_node(biolink_adapter):
     vtg = biolink_adapter.biolink_leaves['variant to gene association']
     kvtg = biolink_adapter.biolink_leaves[
-        'known.sequence variant.variant to gene association'
-    ]
+        'known.sequence variant.variant to gene association']
     svtg = biolink_adapter.biolink_leaves[
-        'known.sequence variant.variant to gene association'
-    ]
+        'known.sequence variant.variant to gene association']
 
-    assert (
-        isinstance(vtg['class_definition'], ClassDefinition)
-        and 'VariantToGeneAssociation' in kvtg['ancestors']
-        and 'VariantToGeneAssociation' in svtg['ancestors']
-    )
+    assert (isinstance(vtg['class_definition'], ClassDefinition) and
+            'VariantToGeneAssociation' in kvtg['ancestors'] and
+            'VariantToGeneAssociation' in svtg['ancestors'])
 
 
 def test_virtual_leaves_inherit_is_a(version_node):
@@ -291,22 +369,37 @@ def test_multiple_inheritance(biolink_adapter):
 
 def test_properties_from_config(version_node, translator):
     id_type = [
-        ('G49205', 'protein', {'taxon': 9606, 'name': 'test'}),
-        ('G92035', 'protein', {'taxon': 9606}),
+        (
+            'G49205',
+            'protein',
+            {
+                'taxon': 9606,
+                'name': 'test',
+            },
+        ),
+        (
+            'G92035',
+            'protein',
+            {
+                'taxon': 9606,
+            },
+        ),
         (
             'G92205',
             'protein',
-            {'taxon': 9606, 'name': 'test2', 'test': 'should_not_be_returned'},
+            {
+                'taxon': 9606,
+                'name': 'test2',
+                'test': 'should_not_be_returned',
+            },
         ),
     ]
     t = translator.translate_nodes(id_type)
 
     r = list(t)
-    assert (
-        'name' in r[0].get_properties().keys()
-        and 'name' in r[1].get_properties().keys()
-        and 'test' not in r[2].get_properties().keys()
-    )
+    assert ('name' in r[0].get_properties().keys() and
+            'name' in r[1].get_properties().keys() and
+            'test' not in r[2].get_properties().keys())
 
     src_tar_type = [
         (
@@ -334,14 +427,12 @@ def test_properties_from_config(version_node, translator):
     t = translator.translate_edges(src_tar_type)
 
     r = list(t)
-    assert (
-        'directional' in r[0].get_properties().keys()
-        and 'directional' in r[1].get_properties().keys()
-        and 'curated' in r[1].get_properties().keys()
-        and 'score' in r[0].get_properties().keys()
-        and 'score' in r[1].get_properties().keys()
-        and 'test' not in r[1].get_properties().keys()
-    )
+    assert ('directional' in r[0].get_properties().keys() and
+            'directional' in r[1].get_properties().keys() and
+            'curated' in r[1].get_properties().keys() and
+            'score' in r[0].get_properties().keys() and
+            'score' in r[1].get_properties().keys() and
+            'test' not in r[1].get_properties().keys())
 
 
 def test_exclude_properties(translator):
@@ -349,18 +440,25 @@ def test_exclude_properties(translator):
         (
             'CHAT',
             'ensg',
-            {'taxon': 9606, 'accession': 'should_not_be_returned'},
+            {
+                'taxon': 9606,
+                'accession': 'should_not_be_returned',
+            },
         ),
-        ('ACHE', 'ensg', {'taxon': 9606}),
+        (
+            'ACHE',
+            'ensg',
+            {
+                'taxon': 9606,
+            },
+        ),
     ]
     t = translator.translate_nodes(id_type)
 
     r = list(t)
-    assert (
-        'taxon' in r[0].get_properties().keys()
-        and 'taxon' in r[1].get_properties().keys()
-        and 'accession' not in r[0].get_properties().keys()
-    )
+    assert ('taxon' in r[0].get_properties().keys() and
+            'taxon' in r[1].get_properties().keys() and
+            'accession' not in r[0].get_properties().keys())
 
     src_tar_type = [
         (
@@ -387,38 +485,31 @@ def test_exclude_properties(translator):
     t = translator.translate_edges(src_tar_type)
 
     r = list(t)
-    assert (
-        'directional' in r[0].get_properties().keys()
-        and 'directional' in r[1].get_properties().keys()
-        and 'score' in r[0].get_properties().keys()
-        and 'score' in r[1].get_properties().keys()
-        and 'accession' not in r[1].get_properties().keys()
-    )
+    assert ('directional' in r[0].get_properties().keys() and
+            'directional' in r[1].get_properties().keys() and
+            'score' in r[0].get_properties().keys() and
+            'score' in r[1].get_properties().keys() and
+            'accession' not in r[1].get_properties().keys())
 
 
 def test_translate_term(biolink_adapter):
     assert biolink_adapter.translate_term('hgnc') == 'Gene'
-    assert (
-        biolink_adapter.translate_term('protein_disease')
-        == 'PERTURBED_IN_DISEASE'
-    )
+    assert (biolink_adapter.translate_term('protein_disease') ==
+            'PERTURBED_IN_DISEASE')
 
 
 def test_reverse_translate_term(biolink_adapter):
     assert 'hgnc' in biolink_adapter.reverse_translate_term('Gene')
     assert 'protein_disease' in biolink_adapter.reverse_translate_term(
-        'PERTURBED_IN_DISEASE',
-    )
+        'PERTURBED_IN_DISEASE',)
 
 
 def test_translate_query(biolink_adapter):
     # we translate to PascalCase for cypher queries, not to internal
     # sentence case
     query = 'MATCH (n:hgnc)-[r:gene_disease]->(d:Disease) RETURN n'
-    assert (
-        biolink_adapter.translate(query)
-        == 'MATCH (n:Gene)-[r:PERTURBED_IN_DISEASE]->(d:Disease) RETURN n'
-    )
+    assert (biolink_adapter.translate(query) ==
+            'MATCH (n:Gene)-[r:PERTURBED_IN_DISEASE]->(d:Disease) RETURN n')
 
 
 def test_reverse_translate_query(biolink_adapter):
@@ -430,19 +521,23 @@ def test_reverse_translate_query(biolink_adapter):
 
     query = 'MATCH (n:Known.SequenceVariant)-[r:Known.SequenceVariant.VariantToGeneAssociation]->(g:Protein) RETURN n'
     assert (
-        biolink_adapter.reverse_translate(query)
-        == 'MATCH (n:Known_variant)-[r:VARIANT_FOUND_IN_GENE_Known_variant_Gene]->(g:protein) RETURN n'
+        biolink_adapter.reverse_translate(query) ==
+        'MATCH (n:Known_variant)-[r:VARIANT_FOUND_IN_GENE_Known_variant_Gene]->(g:protein) RETURN n'
     )
 
 
 def test_log_missing_nodes(translator):
-    tn = translator.translate_nodes(
-        [
-            ('G49205', 'missing_protein', {'taxon': 9606}),
-            ('G92035', 'missing_protein', {}),
-            ('REACT:25520', 'missing_pathway', {}),
-        ],
-    )
+    tn = translator.translate_nodes([
+        (
+            'G49205',
+            'missing_protein',
+            {
+                'taxon': 9606,
+            },
+        ),
+        ('G92035', 'missing_protein', {}),
+        ('REACT:25520', 'missing_pathway', {}),
+    ],)
 
     tn = list(tn)
 

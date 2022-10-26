@@ -10,7 +10,17 @@ from neo4j_utils._print import bcolors
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._driver import Driver
 
-__all__ = ['create_network_by_gen', 'create_network_by_list', 'create_networks', 'delete_test_network', 'explain_neo4j', 'profile_neo4j', 'remove_constraint', 'setup_constraint', 'visualise_benchmark']
+__all__ = [
+    'create_network_by_gen',
+    'create_network_by_list',
+    'create_networks',
+    'delete_test_network',
+    'explain_neo4j',
+    'profile_neo4j',
+    'remove_constraint',
+    'setup_constraint',
+    'visualise_benchmark',
+]
 
 
 def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
@@ -28,17 +38,22 @@ def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
             yield BioCypherEdge(src, tar, 'test')
 
     node_profile, np_printout = d.add_biocypher_nodes(
-        node_gen(num_nodes), profile=profile, explain=explain,
+        node_gen(num_nodes),
+        profile=profile,
+        explain=explain,
     )
     edge_profile, ep_printout = d.add_biocypher_edges(
-        edge_gen(num_edges), profile=profile, explain=explain,
+        edge_gen(num_edges),
+        profile=profile,
+        explain=explain,
     )
 
     if profile:
         delete_test_network()
         d.add_biocypher_nodes(node_gen(num_nodes), profile=False)
         edge_profile_mod, epm_printout = d.add_biocypher_edges(
-            edge_gen(num_edges), profile=profile,
+            edge_gen(num_edges),
+            profile=profile,
         )
         return (
             (node_profile, np_printout),
@@ -49,7 +64,8 @@ def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
         delete_test_network()
         d.add_biocypher_nodes(node_gen(num_nodes), explain=False)
         edge_profile_mod, epm_printout = d.add_biocypher_edges(
-            edge_gen(num_edges), explain=explain,
+            edge_gen(num_edges),
+            explain=explain,
         )
         return (
             (node_profile, np_printout),
@@ -90,8 +106,7 @@ def setup_constraint():
     d.query(
         'CREATE CONSTRAINT test_id '
         'IF NOT EXISTS ON (n:test) '
-        'ASSERT n.id IS UNIQUE ',
-    )
+        'ASSERT n.id IS UNIQUE ',)
     d.close()
 
 
@@ -114,11 +129,13 @@ def create_networks():
 
     for n in seq:
         lis = timeit.timeit(
-            lambda: create_network_by_list(n, int(n * 1.5)), number=1,
+            lambda: create_network_by_list(n, int(n * 1.5)),
+            number=1,
         )
         delete_test_network()
         lism = timeit.timeit(
-            lambda: create_network_by_list(n, int(n * 1.5), mod=True), number=1,
+            lambda: create_network_by_list(n, int(n * 1.5), mod=True),
+            number=1,
         )
         delete_test_network()
 

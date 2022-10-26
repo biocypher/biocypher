@@ -5,7 +5,16 @@ Classes used to generate mock data for the BioCypher tutorial.
 import random
 import string
 
-__all__ = ['EntrezProtein', 'Interaction', 'InteractionGenerator', 'Node', 'Protein', 'ProteinProteinInteraction', 'RandomPropertyProtein', 'RandomPropertyProteinIsoform']
+__all__ = [
+    'EntrezProtein',
+    'Interaction',
+    'InteractionGenerator',
+    'Node',
+    'Protein',
+    'ProteinProteinInteraction',
+    'RandomPropertyProtein',
+    'RandomPropertyProteinIsoform',
+]
 
 
 class Node:
@@ -66,13 +75,11 @@ class Protein(Node):
         l = random.randint(50, 250)
 
         properties['sequence'] = ''.join(
-            [random.choice('ACDEFGHIKLMNPQRSTVWY') for _ in range(l)],
-        )
+            [random.choice('ACDEFGHIKLMNPQRSTVWY') for _ in range(l)],)
 
         ## random description
         properties['description'] = ' '.join(
-            [random.choice(string.ascii_lowercase) for _ in range(10)],
-        )
+            [random.choice(string.ascii_lowercase) for _ in range(10)],)
 
         ## taxon
         properties['taxon'] = '9606'
@@ -94,13 +101,11 @@ class RandomPropertyProtein(Protein):
         l = random.randint(50, 250)
 
         properties['sequence'] = ''.join(
-            [random.choice('ACDEFGHIKLMNPQRSTVWY') for _ in range(l)],
-        )
+            [random.choice('ACDEFGHIKLMNPQRSTVWY') for _ in range(l)],)
 
         ## random description
         properties['description'] = ' '.join(
-            [random.choice(string.ascii_lowercase) for _ in range(10)],
-        )
+            [random.choice(string.ascii_lowercase) for _ in range(10)],)
 
         ## random taxon
         properties['taxon'] = str(random.randint(0, 10000))
@@ -215,8 +220,7 @@ class ProteinProteinInteraction(Interaction):
         ## randomly add 'method'
         if random.random() > 0.5:
             properties['method'] = ' '.join(
-                [random.choice(string.ascii_lowercase) for _ in range(10)],
-            )
+                [random.choice(string.ascii_lowercase) for _ in range(10)],)
 
         return properties
 
@@ -245,7 +249,6 @@ class InteractionGenerator:
 
                 if random.random() < self.interaction_probability:
                     interactions.append(
-                        ProteinProteinInteraction(source, target),
-                    )
+                        ProteinProteinInteraction(source, target),)
 
         return interactions

@@ -8,7 +8,6 @@
 #
 # Distributed under GPLv3 license, see the file `LICENSE`.
 #
-
 """
 Lookup and storage of entity IDs that are part of the BioCypher schema.
 
@@ -69,13 +68,8 @@ class BiolinkAdapter:
     def __init__(
         self,
         leaves: dict,
-        schema: Optional[
-            Union[
-                Literal['biocypher', 'biolink'],
-                str,
-                dict,
-            ]
-        ] = None,
+        schema: Optional[Union[Literal['biocypher', 'biolink'], str,
+                               dict,]] = None,
     ):
         """
         Args:
@@ -119,9 +113,8 @@ class BiolinkAdapter:
 
         self.schema = self.schema or 'biocypher'
 
-        self.schema_name = (
-            self.schema if isinstance(self.schema, str) else 'custom'
-        )
+        self.schema_name = (self.schema
+                            if isinstance(self.schema, str) else 'custom')
 
         if self.schema in schemata_builtin:
 
@@ -135,12 +128,10 @@ class BiolinkAdapter:
         # 'biocypher' after running set_schema? How would we get default?
         # - yes it is, we should default to biocypher, isn't it?
         logger.info(
-            f'Creating BioLink model toolkit from `{self.schema_name}` model.',
-        )
+            f'Creating BioLink model toolkit from `{self.schema_name}` model.',)
 
-        self.toolkit = (
-            bmt.Toolkit(self.schema) if self.schema else bmt.Toolkit()
-        )
+        self.toolkit = (bmt.Toolkit(self.schema)
+                        if self.schema else bmt.Toolkit())
 
     def translate_leaves_to_biolink(self):
         """
@@ -164,25 +155,20 @@ class BiolinkAdapter:
         # ontology parents first
         for entity, values in self.leaves.items():
 
-            entity_biolink_class = self.toolkit.get_element(
-                entity,
-            )  # element name
+            entity_biolink_class = self.toolkit.get_element(entity,
+                                                           )  # element name
 
             if entity_biolink_class:
 
                 # find ancestors of biolink type in PascalCase
                 ancestors = self.trim_biolink_ancestry(
-                    self.toolkit.get_ancestors(entity, formatted=True),
-                )
+                    self.toolkit.get_ancestors(entity, formatted=True),)
 
                 input_label = values.get('label_in_input')
 
                 # add translation mappings
-                bc_name = (
-                    values.get('label_as_edge')
-                    if values.get('label_as_edge')
-                    else entity
-                )
+                bc_name = (values.get('label_as_edge')
+                           if values.get('label_as_edge') else entity)
                 self._add_translation_mappings(input_label, bc_name)
 
                 # create dict of biolink class definition and biolink
@@ -246,11 +232,11 @@ class BiolinkAdapter:
                         'Reverse translation of multiple inputs not '
                         'implemented yet. Many-to-one mappings are '
                         'not reversible. '
-                        f'({key} -> {self.reverse_mappings[key]})',
-                    )
+                        f'({key} -> {self.reverse_mappings[key]})',)
                 else:
                     query = query.replace(
-                        a, ':' + self.reverse_mappings[key] + ')',
+                        a,
+                        ':' + self.reverse_mappings[key] + ')',
                     ).replace(b, ':' + self.reverse_mappings[key] + ']')
         return query
 
@@ -263,22 +249,18 @@ class BiolinkAdapter:
         if isinstance(original_name, list):
             for on in original_name:
                 self.mappings[on] = self.name_sentence_to_pascal(
-                    biocypher_name,
-                )
+                    biocypher_name,)
         else:
             self.mappings[original_name] = self.name_sentence_to_pascal(
-                biocypher_name,
-            )
+                biocypher_name,)
 
         if isinstance(biocypher_name, list):
             for bn in biocypher_name:
-                self.reverse_mappings[
-                    self.name_sentence_to_pascal(bn)
-                ] = original_name
+                self.reverse_mappings[self.name_sentence_to_pascal(
+                    bn,)] = original_name
         else:
-            self.reverse_mappings[
-                self.name_sentence_to_pascal(biocypher_name)
-            ] = original_name
+            self.reverse_mappings[self.name_sentence_to_pascal(
+                biocypher_name,)] = original_name
 
     def _build_biolink_class(self, entity, values):
         """
@@ -303,8 +285,7 @@ class BiolinkAdapter:
         logger.info(
             'Received ad hoc multiple inheritance '
             'information; updating pseudo-Biolink node '
-            f'by setting `{entity}` as a child of `{parents[0]}`.',
-        )
+            f'by setting `{entity}` as a child of `{parents[0]}`.',)
 
         while parents:
             parent = parents.pop(0)
@@ -314,9 +295,7 @@ class BiolinkAdapter:
             elif self.toolkit.get_ancestors(parent):
                 bla = _misc.to_list(
                     self.trim_biolink_ancestry(
-                        self.toolkit.get_ancestors(parent, formatted=True),
-                    ),
-                )
+                        self.toolkit.get_ancestors(parent, formatted=True),),)
                 ancestors += bla
                 break
             else:
@@ -327,8 +306,7 @@ class BiolinkAdapter:
         else:
             raise ValueError(
                 f'Parent `{parent}` of `{entity}` not found in Biolink '
-                'model.',
-            )
+                'model.',)
 
         # create class definition
         se = ClassDefinition(entity)
@@ -354,8 +332,7 @@ class BiolinkAdapter:
         logger.info(
             'Received ad hoc multiple inheritance '
             'information; updating pseudo-Biolink edge '
-            f'by setting `{entity}` as a child of `{parents[0]}`.',
-        )
+            f'by setting `{entity}` as a child of `{parents[0]}`.',)
 
         while parents:
             parent = parents.pop(0)
@@ -365,9 +342,7 @@ class BiolinkAdapter:
             elif self.toolkit.get_ancestors(parent):
                 bla = _misc.to_list(
                     self.trim_biolink_ancestry(
-                        self.toolkit.get_ancestors(parent, formatted=True),
-                    ),
-                )
+                        self.toolkit.get_ancestors(parent, formatted=True),),)
                 ancestors += bla
                 break
             else:
@@ -378,8 +353,7 @@ class BiolinkAdapter:
         else:
             raise ValueError(
                 f'Parent `{parent}` of `{entity}` not found in Biolink '
-                'model.',
-            )
+                'model.',)
 
         # create class definition
         se = ClassDefinition(entity)
@@ -390,11 +364,8 @@ class BiolinkAdapter:
         }
 
         # add translation mappings
-        bc_name = (
-            values.get('label_as_edge')
-            if values.get('label_as_edge')
-            else entity
-        )
+        bc_name = (values.get('label_as_edge')
+                   if values.get('label_as_edge') else entity)
         self._add_translation_mappings(input_label, bc_name)
 
     @staticmethod
@@ -414,8 +385,7 @@ class BiolinkAdapter:
         # split on dots if dot is present
         if '.' in name:
             return '.'.join(
-                [sentencecase_to_camelcase(n) for n in name.split('.')],
-            )
+                [sentencecase_to_camelcase(n) for n in name.split('.')],)
         else:
             return sentencecase_to_camelcase(name)
 
@@ -423,13 +393,13 @@ class BiolinkAdapter:
 # Biolink toolkit wiki:
 # https://biolink.github.io/biolink-model-toolkit/example_usage.html
 
-
 # -------------------------------------------
 # Create nodes and edges from separate inputs
 # -------------------------------------------
 
 
 class Translator:
+
     def __init__(self, leaves: dict[str, dict]):
         """
         Args:
@@ -497,11 +467,8 @@ class Translator:
         Returns the preferred id for the given Biolink type.
         """
 
-        return (
-            self.leaves[_bl_type]['preferred_id']
-            if 'preferred_id' in self.leaves.get(_bl_type, {})
-            else 'id'
-        )
+        return (self.leaves[_bl_type]['preferred_id']
+                if 'preferred_id' in self.leaves.get(_bl_type, {}) else 'id')
 
     def _filter_props(self, bl_type: str, props: dict) -> dict:
         """
@@ -604,14 +571,8 @@ class Translator:
                     else:
                         # source target concat
                         node_id = (
-                            str(_src)
-                            + '_'
-                            + str(_tar)
-                            + '_'
-                            + '_'.join(
-                                str(v) for v in _filtered_props.values()
-                            )
-                        )
+                            str(_src) + '_' + str(_tar) + '_' +
+                            '_'.join(str(v) for v in _filtered_props.values()))
 
                     n = BioCypherNode(
                         node_id=node_id,
@@ -628,8 +589,7 @@ class Translator:
                         l2 = 'IS_TARGET_OF'
 
                     elif _filtered_props.get(
-                        'src_role',
-                    ) and _filtered_props.get('tar_role'):
+                            'src_role',) and _filtered_props.get('tar_role'):
 
                         l1 = _filtered_props.get('src_role')
                         l2 = _filtered_props.get('tar_role')
