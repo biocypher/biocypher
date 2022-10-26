@@ -32,7 +32,7 @@
             <a href="contents.html" class="icon icon-home"> BioCypher
           </a>
               <div class="version">
-                0.3.3
+                0.3.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -84,7 +84,7 @@
            <div itemprop="articleBody">
              
   <section id="biocypher-tutorial-basics">
-<h1>BioCypher Tutorial - Basics<a class="headerlink" href="#biocypher-tutorial-basics" title="Permalink to this heading"></a></h1>
+<span id="tutorial"></span><h1>BioCypher Tutorial - Basics<a class="headerlink" href="#biocypher-tutorial-basics" title="Permalink to this heading"></a></h1>
 <p>The main purpose of BioCypher is to facilitate the pre-processing of biomedical
 data to save development time in the maintainance of curated knowledge graphs
 and to allow the simple and efficient creation of task-specific lightweight
@@ -130,8 +130,8 @@ where required.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_generator</span><span class="p">():</span>
     <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
         <span class="k">yield</span> <span class="p">(</span>
-          <span class="n">protein</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span> 
-          <span class="n">protein</span><span class="o">.</span><span class="n">get_label</span><span class="p">(),</span> 
+          <span class="n">protein</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span>
+          <span class="n">protein</span><span class="o">.</span><span class="n">get_label</span><span class="p">(),</span>
           <span class="n">protein</span><span class="o">.</span><span class="n">get_properties</span><span class="p">()</span>
         <span class="p">)</span>
 </pre></div>
