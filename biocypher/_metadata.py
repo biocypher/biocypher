@@ -19,7 +19,7 @@ import importlib.metadata
 
 import toml
 
-_VERSION = '0.3.2'
+_VERSION = '0.3.3'
 # TODO do we need this? it's another place we have to update the version number
 
 
