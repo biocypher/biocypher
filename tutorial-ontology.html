@@ -284,20 +284,31 @@ specific datasets depending on the desired granularity.</p>
 identifiers but the sources (defined in the <code class="docutils literal notranslate"><span class="pre">source</span></code> field) are used to
 create the subclasses.</p>
 </div>
-<p>For instance, if we wanted to create subclasses for <code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">protein</span> <span class="pre">interaction</span></code> relationships from two differenent sources, say, Signor and Intact,
-we could do so as follows:</p>
+<p>For instance, if we wanted to create subclasses for pathway membership
+relationships of proteins from two different sources, such as the above Reactome
+and Wikipathways pathways, we could do so as follows:</p>
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id6" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein protein interaction</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pairwise molecular interaction</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pathway to protein association</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">association</span><span class="w"></span>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
-<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">signor</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">intact</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">signor_ppi</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">intact_ppi</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">reactome.pathway</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wikipathways.pathway</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">react_protein_membership</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wiki_protein_membership</span><span class="p p-Indicator">]</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># ...</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
+<p>Like in the above example, this will prompt BioCypher to create two subclasses
+of <code class="docutils literal notranslate"><span class="pre">pathway</span> <span class="pre">to</span> <span class="pre">protein</span> <span class="pre">association</span></code>, one for each input, and to map the input
+data to these subclasses. In the resulting knowledge graph, pathway to protein
+associations from Reactome and Wikipathways will be represented as distinct
+subclasses by prepending the source to the relationship label, i.e., as
+<code class="docutils literal notranslate"><span class="pre">Reactome.PathwayToProteinAssociation</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Wikipathways.PathwayToProteinAssociation</span></code>.</p>
 <!-- TODO tutorial code -->
+<!-- TODO are these really the labels? do the sources need to be provided in
+sentence case or PascalCase? -->
 </section>
 <section id="synonyms">
 <span id="tut-synonyms"></span><h3>Synonyms<a class="headerlink" href="#synonyms" title="Permalink to this heading"></a></h3>
