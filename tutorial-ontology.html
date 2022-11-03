@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Handling ontologies &mdash; BioCypher  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Host-BioCypher Adapter" href="adapter.html" />
+    <link rel="prev" title="BioCypher Tutorial - Basics" href="tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="contents.html" class="icon icon-home"> BioCypher
+          </a>
+              <div class="version">
+                0.3.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">BioCypher Tutorial - Basics</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Handling ontologies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-an-ontology">What is an ontology?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-biocypher-uses-ontologies">How BioCypher uses ontologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-ontologies-plain-biolink">Using ontologies: plain Biolink</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#biolink-model-extensions">Biolink model extensions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="adapter.html">The Host-BioCypher Adapter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="contents.html">BioCypher</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="contents.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Handling ontologies</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tutorial-ontology.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="handling-ontologies">
+<h1>Handling ontologies<a class="headerlink" href="#handling-ontologies" title="Permalink to this heading"></a></h1>
+<p>BioCypher relies on ontologies to ground the knowledge graph contents in
+biology. This has the advantage of making working with BioCypher accessible to
+biologically oriented researchers. However, it also means that BioCypher
+requires a certain amount of knowledge about ontologies and how to use them. We
+try to make dealing with ontologies as easy as possible, but some basic
+understanding is required. In the following we will cover the basics of
+ontologies and how to use them in BioCypher.</p>
+<section id="what-is-an-ontology">
+<h2>What is an ontology?<a class="headerlink" href="#what-is-an-ontology" title="Permalink to this heading"></a></h2>
+<p>An ontology is a formal representation of a domain of knowledge. It is a
+hierarchical structure of concepts and relations. The concepts are organized
+into a hierarchy, where each concept is a subclass of a more general concept.
+For instance, a <em>wardrobe</em> is a subclass of a <em>piece of furniture</em>. Individual
+wardrobes, such as yours or mine, are instances of the concept <em>wardrobe</em>, and
+as such would be represented as <em>Wardrobe</em> nodes in a knowledge graph. In
+BioCypher, these nodes would additionally inherit the <em>PieceOfFurniture</em> label
+from the ontological hierarchy of things.</p>
+<p>The relations between concepts can also be organized into a hierarchy. In the
+specific case of a Neo4j graph, however, relationships cannot possess multiple
+labels; therefore, if concept inheritance is desired for relationships, they
+need to be “reified”, i.e., turned into nodes. BioCypher provides a simple way
+of converting edges to nodes and vice versa (using the <code class="docutils literal notranslate"><span class="pre">represented_as</span></code> field).</p>
+</section>
+<section id="how-biocypher-uses-ontologies">
+<h2>How BioCypher uses ontologies<a class="headerlink" href="#how-biocypher-uses-ontologies" title="Permalink to this heading"></a></h2>
+<p>BioCypher is - in principle - agnostic to the choice of ontology. Practically,
+however, we have built our initial projects around the Biolink model, because it
+comprises a large part of concepts that are relevant to the biomedical domain.
+This does not mean that it is the only ontology that can be used with
+BioCypher. In fact, it is possible to use multiple ontologies in the same
+project. For instance, one might want to extend the rather basic classes
+relating to molecular interactions in Biolink (the most specific being
+<code class="docutils literal notranslate"><span class="pre">pairwise</span> <span class="pre">molecular</span> <span class="pre">interaction</span></code>) with more specific classes from a more
+domain-specific ontology, such as the EBI molecular interactions ontology
+(PSI-MI).</p>
+<!-- TODO example, link? -->
+</section>
+<section id="using-ontologies-plain-biolink">
+<h2>Using ontologies: plain Biolink<a class="headerlink" href="#using-ontologies-plain-biolink" title="Permalink to this heading"></a></h2>
+<p>BioCypher maps any input data to the underlying ontology; in the basic case, the
+Biolink model. This mapping is defined in the schema configuration
+(<code class="docutils literal notranslate"><span class="pre">schema_config.yaml</span></code>, see also <span class="xref myst">here</span>). In the simplest case, the
+representation of a concept in the knowledge graph to be built and the Biolink
+model class representing this concept are synonymous. For instance, the
+concept <em>protein</em> is represented by the Biolink class <span class="xref myst"><em>protein</em></span>. To
+introduce proteins into the knowledge graph, one would simply define a node
+constituent with the class label <em>protein</em>. This is the mechanism we implicitly
+used for proteins in the basic tutorial; to reiterate:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Biolink model uses two different case notations for its labels: the
+“internal” designation of classes is in lower sentence case (“protein”,
+“pairwise molecular interaction”), while the “external” designation is in
+PascalCase (“Protein”, “PairwiseMolecularInteraction”). BioCypher uses the
+same paradigm: in most cases (input, schema configuration, internally), the
+lower sentence case is used, while in the output (Neo4j labels, file system
+names) the PascalCase is more suitable; Neo4j labels and system file names don’t
+deal well with spaces and special characters. We also remove the “biolink:”
+prefix for use in file names and Neo4j labels.</p>
+</div>
+</section>
+<section id="biolink-model-extensions">
+<h2>Biolink model extensions<a class="headerlink" href="#biolink-model-extensions" title="Permalink to this heading"></a></h2>
+<p>There are multiple reasons why a user might want to modify the Biolink model.  A
+class that is relevant to the user’s task might be missing (<a class="reference internal" href="#explicit"><span class="std std-ref">Explicit
+inheritance</span></a>). A class might be not granular enough, and the user
+would like to split it into subclasses based on distinct inputs (<a class="reference internal" href="#implicit"><span class="std std-ref">Implicit
+inheritance</span></a>). The name of a Biolink model class may be too unwieldy
+for the use inside the desired knowledge graph, and the user would like to
+introduce a synonym (<a class="reference internal" href="#synonyms"><span class="std std-ref">Synonyms</span></a>). For some very common use cases, we
+recommend going one step further and, maybe after some testing, proposing the
+introduction of a new class to the Biolink model itself. Biolink is an open
+source community project, and new classes can be requested by opening an issue
+or filing a pull request directly on the <a class="reference external" href="https://github.com/biolink/biolink-model">Biolink model GitHub
+repository</a>. To prepare this pull
+request (or to maintain a local version of the Biolink model), BioCypher allows
+building the Biolink model from a modified YAML file (<a class="reference internal" href="#custom"><span class="std std-ref">Custom Biolink
+model</span></a>). Or, the user might want to extend the Biolink model with
+another ontology, such as the EBI molecular interactions
+ontology (<span class="xref myst">Hybridising ontologies</span>).</p>
+<section id="explicit-inheritance">
+<span id="explicit"></span><h3>Explicit inheritance<a class="headerlink" href="#explicit-inheritance" title="Permalink to this heading"></a></h3>
+<p>Explicit inheritance is the most straightforward way of extending the Biolink
+model. It is also the most common use case. For instance, the Biolink model
+does not contain a class for <em>protein isoform</em>, and neither does it contain a
+relationship class for <em>protein protein interaction</em>, both of which we have
+already used in the basic tutorial. Since protein isoforms are specific types of
+protein, it makes sense to extend the existing Biolink model class <em>protein</em>
+with the concept of protein isoforms. To do this, we simple add a new class
+<em>protein isoform</em> to the schema configuration, and specify that it is a subclass
+of <em>protein</em> using the (optional) <code class="docutils literal notranslate"><span class="pre">is_a</span></code> field:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein_isoform</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<p>Explicit inheritance can also be used to introduce new relationship classes.
+However, if the output is a Neo4j graph, these relationships must be represented
+as nodes, because edges do not allow multiple labels. For instance, we have
+already used the <em>protein protein interaction</em> relationship in the basic
+tutorial, making it a child of the Biolink model class <em>pairwise molecular
+interaction</em>. To reiterate:</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein protein interaction</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pairwise molecular interaction</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">is_a</span></code> field can be used to specify multiple inheritance, i.e., multiple
+ancestor classes and their direct parent-child relationships can be created by
+specifying multiple classes (as a list) in the <code class="docutils literal notranslate"><span class="pre">is_a</span></code> field. For instance, if we
+wanted to further extend the protein-protein interaction with a more specific
+<em>enzymatic interaction</em> class, we could do so as follows:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id5" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enzymatic interaction</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">protein protein interaction</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">molecular interaction</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To create this multiple inheritance chain, we do not require the creation of
+a <em>protein protein interaction</em> class as shown above; all intermediary classes
+are automatically created by BioCypher and inserted into the ontological
+hierarchy.</p>
+</div>
+</section>
+<section id="implicit-inheritance">
+<span id="implicit"></span><h3>Implicit inheritance<a class="headerlink" href="#implicit-inheritance" title="Permalink to this heading"></a></h3>
+<p>The base model (in the standard case, Biolink) can also be extended without
+specifying an explicit <code class="docutils literal notranslate"><span class="pre">is_a</span></code> field. This “implicit” inheritance happens when
+a class has multiple input labels that each refer to a distinct preferred
+identifier. In other words, if both the <code class="docutils literal notranslate"><span class="pre">label_in_input</span></code> and the <code class="docutils literal notranslate"><span class="pre">preferred_id</span></code>
+fields of a schema configuration class are lists, BioCypher will automatically
+create a subclass for each of the preferred identifiers. This is demonstrated in
+<a class="reference internal" href="tutorial.html#implicit-subclass"><span class="std std-ref">part 3</span></a> of the basic tutorial.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>If only the <code class="docutils literal notranslate"><span class="pre">label_in_input</span></code> field - but not the <code class="docutils literal notranslate"><span class="pre">preferred_id</span></code> field - is a
+list, BioCypher will merge the inputs instead. This is useful for cases where
+different input streams should be unified under the same class label. See
+<a class="reference internal" href="tutorial.html#merging"><span class="std std-ref">part 2</span></a> of the basic tutorial for more information.</p>
+</div>
+<p>To make this more concrete, let’s consider the example of <em>pathway</em> annotations.
+There are multiple projects that provide pathway annotations, such as Reactome
+and Wikipathways, and, in contrast to proteins, pathways are not easily mapped
+one-to-one. For classes where mapping is difficult or even impossible, we can
+use implicit subclassing instead. The Biolink model contains a <em>pathway</em> class,
+which we can use as a parent class of the Reactome and Wikipathways classes; we
+simply need to provide the pathways as two separate inputs with their own labels
+(e.g., “react” and “wiki”), and specify a corresponding list of
+preferred identifiers in the <code class="docutils literal notranslate"><span class="pre">preferred_id</span></code> field:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id6" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pathway</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">reactome</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wikipathways</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">react</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wiki</span><span class="p p-Indicator">]</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<p>This will prompt BioCypher to create two subclasses of <em>pathway</em>, one for each
+input, and to map the input data to these subclasses. In the resulting knowledge
+graph, the Reactome and Wikipathways pathways will be represented as distinct
+classes by prepending the preferred identifier to the class label:
+<em>Reactome.Pathway</em> and <em>Wikipathways.Pathway</em>. By virtue of BioCypher’s multiple
+labelling paradigm, those nodes will also inherit the <em>Pathway</em> class label as
+well as all parent labels and mixins of <em>Pathway</em> (<code class="docutils literal notranslate"><span class="pre">BiologicalProcess</span></code>, etc.).
+This allows us to query the graph for all Pathway nodes as well as for specific
+datasets depending on the desired granularity.</p>
+<!-- TODO tutorial code -->
+</section>
+<section id="synonyms">
+<span id="id1"></span><h3>Synonyms<a class="headerlink" href="#synonyms" title="Permalink to this heading"></a></h3>
+<p>In some cases, Biolink may contain a biological concept, but the name of the
+concept in Biolink does for some reason not agree with the users desired
+knowledge graph structure. For instance, the user may not want to represent
+protein complexes in the graph as <code class="docutils literal notranslate"><span class="pre">MacromolecularComplexMixin</span></code> nodes simply
+due to ease of use and readability criteria. In such cases, the user can
+introduce a synonym for the Biolink class. This is done by selecting another,
+more desirable name for the respective class(es) and specifying the
+<code class="docutils literal notranslate"><span class="pre">synonym_for</span></code> field in their schema configuration. In this case, we would like
+to represent complexes as <code class="docutils literal notranslate"><span class="pre">complex</span></code> nodes, and we can do so as follows:</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id7" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">complex</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">synonym_for</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">macromolecular complex mixin</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is essential that the desired class name is used as the main class key in
+the schema configuration, and the Biolink class name is given in the
+<code class="docutils literal notranslate"><span class="pre">synonym_for</span></code> field. The name given in the <code class="docutils literal notranslate"><span class="pre">synonym_for</span></code> field must be an
+existing Biolink class name.</p>
+</div>
+</section>
+<section id="custom-biolink-model">
+<span id="custom"></span><h3>Custom Biolink model<a class="headerlink" href="#custom-biolink-model" title="Permalink to this heading"></a></h3>
+<p>The Biolink model is a living entity, and it is constantly being updated and
+extended. However, it is not always possible to wait for the Biolink model to
+be updated to include a new concept or relationship. In such cases, it is
+possible to create a custom Biolink model that can be used in BioCypher. This
+is done by specifying a custom Biolink model to be built using the Biolink
+Model Toolkit (BMT) in the BioCypher workflow. We provide one such model with
+BioCypher directly (<code class="docutils literal notranslate"><span class="pre">biocypher/_config/biocypher-biolink-model.yaml</span></code>), which is
+a modified version of the original Biolink model that includes a <em>post
+translational interaction</em> class as well as a custom mixin (so far only for
+demonstration purposes).</p>
+<!-- TODO provide config access to custom biolink model path -->
+</section>
+<section id="hybridise-ontologies">
+<span id="hybridise"></span><h3>Hybridise ontologies<a class="headerlink" href="#hybridise-ontologies" title="Permalink to this heading"></a></h3>
+<p>Not implemented yet; coming soon.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial.html" class="btn btn-neutral float-left" title="BioCypher Tutorial - Basics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="adapter.html" class="btn btn-neutral float-right" title="The Host-BioCypher Adapter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, BioCypher developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
