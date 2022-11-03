@@ -69,6 +69,7 @@ class BiolinkAdapter:
         self,
         leaves: dict,
         schema: str = None,
+        biolink_version: str = None,
     ):
         """
         Args:
@@ -79,11 +80,22 @@ class BiolinkAdapter:
             schema:
                 A path to a YAML file with the schema. If not provided, the
                 default Biolink schema will be used.
+            biolink_version:
+                The version of the Biolink schema to use. If not provided,
+                the current default version will be used.
+
+        TODO: how do we get a YAML for a specific version programmatically?
         """
 
         self.leaves = leaves
         self.schema = schema
+        self.biolink_version = biolink_version
         self.biolink_leaves = None
+
+        # it makes no sense to provide a yaml and a version at the same time
+        if self.schema and self.biolink_version:
+            raise ValueError(
+                'Please provide either a schema or a version, not both.',)
 
         # mapping functionality for translating terms and queries
         self.mappings = {}
@@ -101,9 +113,9 @@ class BiolinkAdapter:
 
     def init_toolkit(self):
         """
-        Set Biolink schema to use. By default, BioCypher should use the public current
-        version of the Biolink model for compatibility reasons. The user can
-        define a custom schema in YAML format (conforming to LinkML and the
+        Set Biolink schema to use. By default, BioCypher should use the public
+        current version of the Biolink model for compatibility reasons. The user
+        can define a custom schema in YAML format (conforming to LinkML and the
         Biolink model structure), which will be used instead.
         """
 
@@ -112,10 +124,22 @@ class BiolinkAdapter:
             self.toolkit = bmt.Toolkit(self.schema)
             logger.info(
                 f'Creating BioLink model toolkit from `{self.schema}`.',)
+
+            # TODO extract version from schema and update self.biolink_version
+
+        elif self.biolink_version:
+
+            # TODO use version to get schema from biolink repo
+            # TODO use schema to create toolkit
+            raise NotImplementedError(
+                'Pinning Biolink versions is not implemented yet.',)
+
         else:
             # use default schema
             self.toolkit = bmt.Toolkit()
-            logger.info('Creating BioLink model toolkit from default schema.')
+            self.biolink_version = self.toolkit.get_model_version()
+            logger.info('Creating BioLink model toolkit from default schema.'
+                        f' Version: {self.biolink_version}')
 
     def translate_leaves_to_biolink(self):
         """
