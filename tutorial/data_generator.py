@@ -21,7 +21,6 @@ class Node:
     """
     Base class for nodes.
     """
-
     def __init__(self):
         self.id = None
         self.label = None
@@ -50,7 +49,6 @@ class Protein(Node):
     """
     Generates instances of proteins.
     """
-
     def __init__(self):
         self.id = self._generate_id()
         self.label = 'uniprot_protein'
@@ -75,11 +73,13 @@ class Protein(Node):
         l = random.randint(50, 250)
 
         properties['sequence'] = ''.join(
-            [random.choice('ACDEFGHIKLMNPQRSTVWY') for _ in range(l)],)
+            [random.choice('ACDEFGHIKLMNPQRSTVWY') for _ in range(l)],
+        )
 
         ## random description
         properties['description'] = ' '.join(
-            [random.choice(string.ascii_lowercase) for _ in range(10)],)
+            [random.choice(string.ascii_lowercase) for _ in range(10)],
+        )
 
         ## taxon
         properties['taxon'] = '9606'
@@ -91,7 +91,6 @@ class RandomPropertyProtein(Protein):
     """
     Generates instances of proteins with random properties.
     """
-
     def _generate_properties(self):
         properties = {}
 
@@ -101,11 +100,13 @@ class RandomPropertyProtein(Protein):
         l = random.randint(50, 250)
 
         properties['sequence'] = ''.join(
-            [random.choice('ACDEFGHIKLMNPQRSTVWY') for _ in range(l)],)
+            [random.choice('ACDEFGHIKLMNPQRSTVWY') for _ in range(l)],
+        )
 
         ## random description
         properties['description'] = ' '.join(
-            [random.choice(string.ascii_lowercase) for _ in range(10)],)
+            [random.choice(string.ascii_lowercase) for _ in range(10)],
+        )
 
         ## random taxon
         properties['taxon'] = str(random.randint(0, 10000))
@@ -121,7 +122,6 @@ class RandomPropertyProteinIsoform(RandomPropertyProtein):
     """
     Generates instances of protein isoforms with random properties.
     """
-
     def __init__(self):
         super().__init__()
         self.label = 'uniprot_isoform'
@@ -131,7 +131,6 @@ class EntrezProtein(Protein):
     """
     Generates instances of proteins with Entrez IDs.
     """
-
     def __init__(self):
         super().__init__()
         self.id = self._generate_id()
@@ -148,7 +147,6 @@ class Interaction:
     """
     Base class for interactions.
     """
-
     def __init__(self):
         self.id = None
         self.source_id = None
@@ -192,7 +190,6 @@ class ProteinProteinInteraction(Interaction):
     Simulates interactions between proteins given a source and target protein
     IDs. Occasionally generates an ID for the interaction itself.
     """
-
     def __init__(self, source, target):
         super().__init__()
         self.id = self._generate_id()
@@ -220,7 +217,8 @@ class ProteinProteinInteraction(Interaction):
         ## randomly add 'method'
         if random.random() > 0.5:
             properties['method'] = ' '.join(
-                [random.choice(string.ascii_lowercase) for _ in range(10)],)
+                [random.choice(string.ascii_lowercase) for _ in range(10)],
+            )
 
         return properties
 
@@ -230,7 +228,6 @@ class InteractionGenerator:
     Simulates interactions given a list of potential interactors based on an
     interaction probability or probability distribution.
     """
-
     def __init__(self, interactors: list, interaction_probability: float):
         self.interactors = interactors
         self.interaction_probability = interaction_probability
@@ -249,6 +246,7 @@ class InteractionGenerator:
 
                 if random.random() < self.interaction_probability:
                     interactions.append(
-                        ProteinProteinInteraction(source, target),)
+                        ProteinProteinInteraction(source, target),
+                    )
 
         return interactions

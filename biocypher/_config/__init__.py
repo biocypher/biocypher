@@ -84,7 +84,8 @@ def config(*args, **kwargs) -> Optional[Any]:
     if args and kwargs:
 
         raise ValueError(
-            'Setting and getting values in the same call is not allowed.',)
+            'Setting and getting values in the same call is not allowed.',
+        )
 
     if args:
 

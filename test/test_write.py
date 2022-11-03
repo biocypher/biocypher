@@ -73,8 +73,10 @@ def version_node():
 @pytest.fixture
 def bw(version_node):
 
-    bl_adapter = BiolinkAdapter(leaves=version_node.leaves,
-                                schema=module_data_path('test-biolink-model'))
+    bl_adapter = BiolinkAdapter(
+        leaves=version_node.leaves,
+        schema=module_data_path('test-biolink-model')
+    )
     bw = BatchWriter(
         leaves=version_node.leaves,
         bl_adapter=bl_adapter,
@@ -94,8 +96,9 @@ def bw(version_node):
 
 def test_writer_and_output_dir(bw):
 
-    assert (os.path.isdir(path) and isinstance(bw, BatchWriter) and
-            bw.delim == ';')
+    assert (
+        os.path.isdir(path) and isinstance(bw, BatchWriter) and bw.delim == ';'
+    )
 
 
 def test_write_node_data_headers_import_call(bw):
@@ -296,8 +299,10 @@ def test_write_node_data_from_large_gen(bw):
     pr_lines1 = sum(1 for _ in open(p1_csv))
     mi_lines1 = sum(1 for _ in open(m1_csv))
 
-    assert (passed and pr_lines == 1e4 and mi_lines == 1e4 and
-            pr_lines1 == 4 and mi_lines1 == 4)
+    assert (
+        passed and pr_lines == 1e4 and mi_lines == 1e4 and pr_lines1 == 4 and
+        mi_lines1 == 4
+    )
 
 
 def test_too_many_properties(bw):
@@ -428,10 +433,12 @@ def test_accidental_exact_batch_size(bw):
     with open(mh_csv) as f:
         m = f.read()
 
-    assert (passed and pr_lines == 1e4 and mi_lines == 1e4 and
-            not isfile(p1_csv) and not isfile(m1_csv) and
-            p == ':ID;name;score:double;taxon:long;id;preferred_id;:LABEL' and
-            m == ':ID;name;taxon:long;id;preferred_id;:LABEL')
+    assert (
+        passed and pr_lines == 1e4 and mi_lines == 1e4 and
+        not isfile(p1_csv) and not isfile(m1_csv) and
+        p == ':ID;name;score:double;taxon:long;id;preferred_id;:LABEL' and
+        m == ':ID;name;taxon:long;id;preferred_id;:LABEL'
+    )
 
 
 def test_write_edge_data_from_gen(bw):
@@ -507,8 +514,10 @@ def test_write_edge_data_from_large_gen(bw):
     l_lines1 = sum(1 for _ in open(apl1_csv))
     c_lines1 = sum(1 for _ in open(ips1_csv))
 
-    assert (passed and l_lines0 == 1e4 and c_lines0 == 1e4 and l_lines1 == 4 and
-            c_lines1 == 4)
+    assert (
+        passed and l_lines0 == 1e4 and c_lines0 == 1e4 and l_lines1 == 4 and
+        c_lines1 == 4
+    )
 
 
 def test_write_edge_data_from_list(bw):
@@ -727,8 +736,10 @@ def test_write_mixed_edges(bw):
     ito_csv = os.path.join(path, 'IS_TARGET_OF-header.csv')
     ipt_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-header.csv')
 
-    assert (passed and os.path.isfile(pmi_csv) and os.path.isfile(iso_csv) and
-            os.path.isfile(ito_csv) and os.path.isfile(ipt_csv))
+    assert (
+        passed and os.path.isfile(pmi_csv) and os.path.isfile(iso_csv) and
+        os.path.isfile(ito_csv) and os.path.isfile(ipt_csv)
+    )
 
 
 def test_create_import_call(bw):

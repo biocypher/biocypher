@@ -49,18 +49,18 @@ def driver():
 
     # teardown
     d.query('MATCH (n:Test)'
-            'DETACH DELETE n',)
+            'DETACH DELETE n', )
     d.query('MATCH (n:Int1)'
-            'DETACH DELETE n',)
+            'DETACH DELETE n', )
     d.query('MATCH (n:Int2)'
-            'DETACH DELETE n',)
+            'DETACH DELETE n', )
 
     # to deal with merging on non-existing nodes
     # see test_add_single_biocypher_edge_missing_nodes()
     d.query("MATCH (n2) WHERE n2.id = 'src'"
-            'DETACH DELETE n2',)
+            'DETACH DELETE n2', )
     d.query("MATCH (n3) WHERE n3.id = 'tar'"
-            'DETACH DELETE n3',)
+            'DETACH DELETE n3', )
     d.close()
 
 
@@ -121,7 +121,8 @@ def test_add_single_biocypher_node(driver):
     r, summary = driver.query(
         'MATCH (n:Test) '
         'WITH n, n.id AS id '
-        'RETURN id ',)
+        'RETURN id ',
+    )
     assert r[0]['id'] == 'test_id1'
 
 
@@ -133,7 +134,8 @@ def test_add_biocypher_node_list(driver):
     r, summary = driver.query(
         'MATCH (n:Test) '
         'WITH n, n.id AS id '
-        'RETURN id ',)
+        'RETURN id ',
+    )
     assert set([r[0]['id'], r[1]['id']]) == set(['test_id1', 'test_id2'])
 
 
@@ -150,7 +152,8 @@ def test_add_biocypher_node_generator(driver):
     r, summary = driver.query(
         'MATCH (n:Test) '
         'WITH n, n.id AS id '
-        'RETURN id ',)
+        'RETURN id ',
+    )
     assert r[0]['id'] == 'test_id1' and r[1]['id'] == 'test_id2'
 
 
@@ -159,7 +162,7 @@ def test_add_specific_id_node(driver):
     driver.add_biocypher_nodes(n)
 
     r, summary = driver.query('MATCH (n:Gene) '
-                              'RETURN n',)
+                              'RETURN n', )
 
     assert r[0]['n'].get('id') == 'CHAT'
     assert r[0]['n'].get('preferred_id') == 'hgnc'
@@ -170,7 +173,7 @@ def test_add_generic_id_node(driver):
     driver.add_biocypher_nodes(n)
 
     r, summary = driver.query('MATCH (n:Gene) '
-                              'RETURN n',)
+                              'RETURN n', )
 
     assert r[0]['n'].get('id') is not None
 
@@ -192,9 +195,12 @@ def test_add_single_biocypher_edge_explicit_node_creation(driver):
     r, summary = driver.query(
         'MATCH (n1)-[r:Test]->(n2) '
         'WITH n1, n2, n1.id AS id1, n2.id AS id2, type(r) AS label '
-        'RETURN id1, id2, label',)
-    assert (r[0]['id1'] == 'src' and r[0]['id2'] == 'tar' and
-            r[0]['label'] == 'Test')
+        'RETURN id1, id2, label',
+    )
+    assert (
+        r[0]['id1'] == 'src' and r[0]['id2'] == 'tar' and
+        r[0]['label'] == 'Test'
+    )
 
 
 def test_add_single_biocypher_edge_missing_nodes(driver):
@@ -207,9 +213,12 @@ def test_add_single_biocypher_edge_missing_nodes(driver):
     r, summary = driver.query(
         'MATCH (n1)-[r:Test]->(n2) '
         'WITH n1, n2, n1.id AS id1, n2.id AS id2, type(r) AS label '
-        'RETURN id1, id2, label',)
-    assert (r[0]['id1'] == 'src' and r[0]['id2'] == 'tar' and
-            r[0]['label'] == 'Test')
+        'RETURN id1, id2, label',
+    )
+    assert (
+        r[0]['id1'] == 'src' and r[0]['id2'] == 'tar' and
+        r[0]['label'] == 'Test'
+    )
 
 
 def test_add_biocypher_edge_list(driver):
@@ -227,10 +236,13 @@ def test_add_biocypher_edge_list(driver):
         'MATCH (n3)<-[r2:Test2]-(n1)-[r1:Test1]->(n2) '
         'WITH n1, n2, n3, n1.id AS id1, n2.id AS id2, n3.id AS id3, '
         'type(r1) AS label1, type(r2) AS label2 '
-        'RETURN id1, id2, id3, label1, label2',)
-    assert (r[0]['id1'] == 'src' and r[0]['id2'] == 'tar1' and
-            r[0]['id3'] == 'tar2' and r[0]['label1'] == 'Test1' and
-            r[0]['label2'] == 'Test2')
+        'RETURN id1, id2, id3, label1, label2',
+    )
+    assert (
+        r[0]['id1'] == 'src' and r[0]['id2'] == 'tar1' and
+        r[0]['id3'] == 'tar2' and r[0]['label1'] == 'Test1' and
+        r[0]['label2'] == 'Test2'
+    )
 
 
 def test_add_biocypher_edge_generator(driver):
@@ -259,10 +271,13 @@ def test_add_biocypher_edge_generator(driver):
         'MATCH (n3)<-[r2:Test2]-(n1)-[r1:Test1]->(n2) '
         'WITH n1, n2, n3, n1.id AS id1, n2.id AS id2, n3.id AS id3, '
         'type(r1) AS label1, type(r2) AS label2 '
-        'RETURN id1, id2, id3, label1, label2',)
-    assert (r[0]['id1'] == 'src' and r[0]['id2'] == 'tar1' and
-            r[0]['id3'] == 'tar2' and r[0]['label1'] == 'Test1' and
-            r[0]['label2'] == 'Test2')
+        'RETURN id1, id2, id3, label1, label2',
+    )
+    assert (
+        r[0]['id1'] == 'src' and r[0]['id2'] == 'tar1' and
+        r[0]['id3'] == 'tar2' and r[0]['label1'] == 'Test1' and
+        r[0]['label2'] == 'Test2'
+    )
 
 
 def test_add_biocypher_interaction_as_BioCypherRelAsNode_list(driver):
@@ -283,13 +298,15 @@ def test_add_biocypher_interaction_as_BioCypherRelAsNode_list(driver):
         'i1.id AS id3, i2.id AS id4, '
         'type(e1) AS label1, type(e2) AS label2, '
         'type(e3) AS label3, type(e4) AS label4 '
-        'RETURN id1, id2, id3, id4, label1, label2, label3, label4',)
-    assert (r[0]['id1'] == 'src' and r[0]['id2'] == 'tar' and
-            r[0]['id3'] == 'int1' and r[0]['id4'] == 'int2' and
-            r[0]['label1'] == 'is_source_of' and
-            r[0]['label2'] == 'is_target_of' and
-            r[0]['label3'] == 'is_source_of' and
-            r[0]['label4'] == 'is_target_of')
+        'RETURN id1, id2, id3, id4, label1, label2, label3, label4',
+    )
+    assert (
+        r[0]['id1'] == 'src' and r[0]['id2'] == 'tar' and
+        r[0]['id3'] == 'int1' and r[0]['id4'] == 'int2' and
+        r[0]['label1'] == 'is_source_of' and
+        r[0]['label2'] == 'is_target_of' and
+        r[0]['label3'] == 'is_source_of' and r[0]['label4'] == 'is_target_of'
+    )
 
 
 def test_add_biocypher_interaction_as_BioCypherRelAsNode_generator(driver):
@@ -316,20 +333,23 @@ def test_add_biocypher_interaction_as_BioCypherRelAsNode_generator(driver):
         'i1.id AS id3, i2.id AS id4, '
         'type(e1) AS label1, type(e2) AS label2, '
         'type(e3) AS label3, type(e4) AS label4 '
-        'RETURN id1, id2, id3, id4, label1, label2, label3, label4',)
-    assert (r[0]['id1'] == 'src' and r[0]['id2'] == 'tar' and
-            r[0]['id3'] == 'int1' and r[0]['id4'] == 'int2' and
-            r[0]['label1'] == 'is_source_of' and
-            r[0]['label2'] == 'is_target_of' and
-            r[0]['label3'] == 'is_source_of' and
-            r[0]['label4'] == 'is_target_of')
+        'RETURN id1, id2, id3, id4, label1, label2, label3, label4',
+    )
+    assert (
+        r[0]['id1'] == 'src' and r[0]['id2'] == 'tar' and
+        r[0]['id3'] == 'int1' and r[0]['id4'] == 'int2' and
+        r[0]['label1'] == 'is_source_of' and
+        r[0]['label2'] == 'is_target_of' and
+        r[0]['label3'] == 'is_source_of' and r[0]['label4'] == 'is_target_of'
+    )
 
 
 def test_pretty_profile(driver):
     prof, printout = driver.profile(
         'UNWIND [1,2,3,4,5] as id '
         'MERGE (n:Test {id: id}) '
-        'MERGE (x:Test {id: id + 1})',)
+        'MERGE (x:Test {id: id + 1})',
+    )
 
     assert 'args' in prof and 'ProduceResults' in printout[1]
 
@@ -338,7 +358,8 @@ def test_pretty_explain(driver):
     plan, printout = driver.explain(
         'UNWIND [1,2,3,4,5] as id '
         'MERGE (n:Test {id: id}) '
-        'MERGE (x:Test {id: id + 1})',)
+        'MERGE (x:Test {id: id + 1})',
+    )
 
     assert 'args' in plan and 'ProduceResults' in printout[0]
 
@@ -346,11 +367,15 @@ def test_pretty_explain(driver):
 def test_access_translate(driver):
     assert driver.translate_term('mirna') == 'MicroRNA'
     assert (driver.reverse_translate_term('SideEffect') == 'sider')
-    assert (driver.translate_query('MATCH (n:reactome) RETURN n') ==
-            'MATCH (n:Reactome.Pathway) RETURN n')
-    assert (driver.reverse_translate_query(
-        'MATCH (n:Wikipathways.Pathway) RETURN n',) ==
-            'MATCH (n:wikipathways) RETURN n')
+    assert (
+        driver.translate_query('MATCH (n:reactome) RETURN n') ==
+        'MATCH (n:Reactome.Pathway) RETURN n'
+    )
+    assert (
+        driver.reverse_translate_query(
+            'MATCH (n:Wikipathways.Pathway) RETURN n',
+        ) == 'MATCH (n:wikipathways) RETURN n'
+    )
 
 
 def test_log_missing_bl_types(driver):

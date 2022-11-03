@@ -106,7 +106,8 @@ def setup_constraint():
     d.query(
         'CREATE CONSTRAINT test_id '
         'IF NOT EXISTS ON (n:test) '
-        'ASSERT n.id IS UNIQUE ',)
+        'ASSERT n.id IS UNIQUE ',
+    )
     d.close()
 
 

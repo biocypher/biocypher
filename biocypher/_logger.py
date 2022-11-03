@@ -53,7 +53,8 @@ def get_logger(name: str = 'biocypher') -> logging.Logger:
 
         # formatting
         file_formatter = logging.Formatter(
-            '%(asctime)s\t%(levelname)s\tmodule:%(module)s\n%(message)s',)
+            '%(asctime)s\t%(levelname)s\tmodule:%(module)s\n%(message)s',
+        )
         stdout_formatter = logging.Formatter('%(levelname)s -- %(message)s')
 
         # file name and creation

@@ -32,12 +32,13 @@ copyright = f'2021-{datetime.now():%Y}, BioCypher developers'
 # TOC only in sidebar
 master_doc = 'contents'
 html_sidebars = {
-    '**': [
-        'globaltoc.html',
-        'relations.html',
-        'sourcelink.html',
-        'searchbox.html',
-    ],
+    '**':
+        [
+            'globaltoc.html',
+            'relations.html',
+            'sourcelink.html',
+            'searchbox.html',
+        ],
 }
 
 # Add any Sphinx extension module names here, as strings. They can be

@@ -116,7 +116,6 @@ class BatchWriter:
             Name of the Neo4j database that will be used in the generated
             commands.
     """
-
     def __init__(
         self,
         leaves: dict,
@@ -186,9 +185,9 @@ class BatchWriter:
         return True
 
     def write_edges(
-            self,
-            edges: Union[list, GeneratorType],
-            batch_size: int = int(1e6),
+        self,
+        edges: Union[list, GeneratorType],
+        batch_size: int = int(1e6),
     ) -> bool:
         """
         Wrapper for writing edges and their headers.
@@ -205,14 +204,18 @@ class BatchWriter:
         # unwrap generator in one step
         edges = list(edges)  # force evaluation to handle empty generator
         if edges:
-            z = zip(*((
-                e.get_node(),
-                [
-                    e.get_source_edge(),
-                    e.get_target_edge(),
-                ],
-            ) if isinstance(e, BioCypherRelAsNode) else (None, [e])
-                      for e in edges))
+            z = zip(
+                *(
+                    (
+                        e.get_node(),
+                        [
+                            e.get_source_edge(),
+                            e.get_target_edge(),
+                        ],
+                    ) if isinstance(e, BioCypherRelAsNode) else (None, [e])
+                    for e in edges
+                )
+            )
             nod, edg = (list(a) for a in z)
             nod = [n for n in nod if n]
             edg = [val for sublist in edg for val in sublist]  # flatten
@@ -268,8 +271,9 @@ class BatchWriter:
             # label that is passed in
             bin_l = {}  # dict to store the length of each list for
             # batching cutoff
-            reference_props = defaultdict(dict,
-                                         )  # dict to store a dict of properties
+            reference_props = defaultdict(
+                dict,
+            )  # dict to store a dict of properties
             # for each label to check for consistency and their type
             # for now, relevant for `int`
             labels = {}  # dict to store the additional labels for each
@@ -290,7 +294,8 @@ class BatchWriter:
                         self.duplicate_types.add(label)
                         logger.warning(
                             f'Duplicate nodes found in type {label}. '
-                            'More info can be found in the log file.',)
+                            'More info can be found in the log file.',
+                        )
                     continue
 
                 if not label in bins.keys():
@@ -301,7 +306,8 @@ class BatchWriter:
 
                     # get properties from config if present
                     cprops = self.bl_adapter.leaves.get(label).get(
-                        'properties',)
+                        'properties',
+                    )
                     if cprops:
                         d = dict(cprops)
 
@@ -408,7 +414,8 @@ class BatchWriter:
         # load headers from data parse
         if not self.node_property_dict:
             logger.error(
-                'Header information not found. Was the data parsed first?',)
+                'Header information not found. Was the data parsed first?',
+            )
             return False
 
         for label, props in self.node_property_dict.items():
@@ -459,7 +466,8 @@ class BatchWriter:
 
                 # add file path to neo4 admin import statement
                 self.import_call_nodes += (
-                    f'--nodes="{header_path},{parts_path}" ')
+                    f'--nodes="{header_path},{parts_path}" '
+                )
 
         return True
 
@@ -512,7 +520,8 @@ class BatchWriter:
                     f'Offending node: {onode!r}, offending property: '
                     f'{max([oprop1, oprop2])}. '
                     f'All reference properties: {ref_props}, '
-                    f'All node properties: {n_keys}.',)
+                    f'All node properties: {n_keys}.',
+                )
                 return False
 
             line = [n.get_id()]
@@ -526,13 +535,13 @@ class BatchWriter:
                     if p is None:  # TODO make field empty instead of ""?
                         plist.append('')
                     elif v in [
-                            'int',
-                            'long',
-                            'float',
-                            'double',
-                            'dbl',
-                            'bool',
-                            'boolean',
+                        'int',
+                        'long',
+                        'float',
+                        'double',
+                        'dbl',
+                        'bool',
+                        'boolean',
                     ]:
                         plist.append(str(p))
                     else:
@@ -583,8 +592,9 @@ class BatchWriter:
             # label that is passed in
             bin_l = {}  # dict to store the length of each list for
             # batching cutoff
-            reference_props = defaultdict(dict,
-                                         )  # dict to store a dict of properties
+            reference_props = defaultdict(
+                dict,
+            )  # dict to store a dict of properties
             # for each label to check for consistency and their type
             # for now, relevant for `int`
             for e in edges:
@@ -592,13 +602,15 @@ class BatchWriter:
                     # shouldn't happen any more
                     logger.error(
                         "Edges cannot be of type 'RelAsNode'. "
-                        f'Caused by: {e}',)
+                        f'Caused by: {e}',
+                    )
                     return False
 
                 if not (e.get_source_id() and e.get_target_id()):
                     logger.error(
                         'Edge must have source and target node. '
-                        f'Caused by: {e}',)
+                        f'Caused by: {e}',
+                    )
                     continue
 
                 label = e.get_label()
@@ -612,7 +624,8 @@ class BatchWriter:
                         self.duplicate_types.add(label)
                         logger.warning(
                             f'Duplicate nodes found in type {label}. '
-                            'More info can be found in the log file.',)
+                            'More info can be found in the log file.',
+                        )
                     continue
 
                 else:
@@ -631,7 +644,8 @@ class BatchWriter:
                     cprops = None
                     if label in self.bl_adapter.leaves:
                         cprops = self.bl_adapter.leaves.get(label).get(
-                            'properties',)
+                            'properties',
+                        )
                     else:
                         # try via "label_as_edge"
                         for k, v in self.bl_adapter.leaves.items():
@@ -721,7 +735,8 @@ class BatchWriter:
         # load headers from data parse
         if not self.edge_property_dict:
             logger.error(
-                'Header information not found. Was the data parsed first?',)
+                'Header information not found. Was the data parsed first?',
+            )
             return False
 
         for label, props in self.edge_property_dict.items():
@@ -749,8 +764,8 @@ class BatchWriter:
                     elif v in ['float', 'double']:
                         props_list.append(f'{k}:double')
                     elif v in [
-                            'bool',
-                            'boolean',
+                        'bool',
+                        'boolean',
                     ]:  # TODO does Neo4j support bool?
                         props_list.append(f'{k}:boolean')
                     else:
@@ -769,7 +784,8 @@ class BatchWriter:
 
                 # add file path to neo4 admin import statement
                 self.import_call_edges += (
-                    f'--relationships="{header_path},{parts_path}" ')
+                    f'--relationships="{header_path},{parts_path}" '
+                )
 
         return True
 
@@ -820,7 +836,8 @@ class BatchWriter:
                     f'Offending edge: {oedge!r}, offending property: '
                     f'{max([oprop1, oprop2])}. '
                     f'All reference properties: {ref_props}, '
-                    f'All edge properties: {e_keys}.',)
+                    f'All edge properties: {e_keys}.',
+                )
                 return False
 
             if ref_props:
@@ -832,13 +849,13 @@ class BatchWriter:
                     if p is None:  # TODO make field empty instead of ""?
                         plist.append('')
                     elif v in [
-                            'int',
-                            'long',
-                            'float',
-                            'double',
-                            'dbl',
-                            'bool',
-                            'boolean',
+                        'int',
+                        'long',
+                        'float',
+                        'double',
+                        'dbl',
+                        'bool',
+                        'boolean',
                     ]:
                         plist.append(str(p))
                     else:
@@ -852,16 +869,23 @@ class BatchWriter:
                             # the same order as in the header
                             self.delim.join(plist),
                             e.get_target_id(),
-                            self.bl_adapter.name_sentence_to_pascal(
-                                e.get_label(),),
-                        ],) + '\n',)
+                            self.bl_adapter.
+                            name_sentence_to_pascal(e.get_label(), ),
+                        ],
+                    ) + '\n',
+                )
             else:
                 lines.append(
-                    self.delim.join([
-                        e.get_source_id(),
-                        e.get_target_id(),
-                        self.bl_adapter.name_sentence_to_pascal(e.get_label()),
-                    ],) + '\n',)
+                    self.delim.join(
+                        [
+                            e.get_source_id(),
+                            e.get_target_id(),
+                            self.bl_adapter.name_sentence_to_pascal(
+                                e.get_label()
+                            ),
+                        ],
+                    ) + '\n',
+                )
 
         # avoid writing empty files
         if lines:
@@ -890,17 +914,23 @@ class BatchWriter:
         files = glob.glob(os.path.join(self.outdir, f'{label}-part*.csv'))
         # find file with highest part number
         if files:
-            next_part = (max([
-                int(f.split('.')[-2].split('-')[-1].replace('part', ''))
-                for f in files
-            ],) + 1)
+            next_part = (
+                max(
+                    [
+                        int(
+                            f.split('.')[-2].split('-')[-1].replace('part', '')
+                        ) for f in files
+                    ],
+                ) + 1
+            )
         else:
             next_part = 0
 
         # write to file
         padded_part = str(next_part).zfill(3)
         logger.info(
-            f'Writing {len(lines)} entries to {label}-part{padded_part}.csv',)
+            f'Writing {len(lines)} entries to {label}-part{padded_part}.csv',
+        )
         file_path = os.path.join(self.outdir, f'{label}-part{padded_part}.csv')
 
         with open(file_path, 'w', encoding='utf-8') as f:
@@ -952,7 +982,8 @@ class BatchWriter:
 
         import_call = (
             f'bin/neo4j-admin import --database={self.db_name} '
-            f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" ')
+            f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
+        )
 
         if self.quote == "'":
             import_call += f'--quote="{self.quote}" '

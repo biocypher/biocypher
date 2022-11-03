@@ -94,34 +94,39 @@ class BioCypherNode:
         # the dataclass as well as in the configuration file
 
         if ':TYPE' in self.properties.keys():
-            logger.warning("Keyword ':TYPE' is reserved for Neo4j. "
-                           'Removing from properties.',
-                           # "Renaming to 'type'."
-                          )
+            logger.warning(
+                "Keyword ':TYPE' is reserved for Neo4j. "
+                'Removing from properties.',
+                # "Renaming to 'type'."
+            )
             # self.properties["type"] = self.properties[":TYPE"]
             del self.properties[':TYPE']
 
         for k, v in self.properties.items():
             if isinstance(v, str):
-                self.properties[k] = (v.replace(
-                    os.linesep,
-                    ' ',
-                ).replace(
-                    '\n',
-                    ' ',
-                ).replace(
-                    '\r',
-                    ' ',
-                ).replace('"', "'"))
+                self.properties[k] = (
+                    v.replace(
+                        os.linesep,
+                        ' ',
+                    ).replace(
+                        '\n',
+                        ' ',
+                    ).replace(
+                        '\r',
+                        ' ',
+                    ).replace('"', "'")
+                )
 
             elif isinstance(v, list):
-                self.properties[k] = (', '.join(v).replace(
-                    os.linesep,
-                    ' ',
-                ).replace(
-                    '\n',
-                    ' ',
-                ).replace('\r', ' '))
+                self.properties[k] = (
+                    ', '.join(v).replace(
+                        os.linesep,
+                        ' ',
+                    ).replace(
+                        '\n',
+                        ' ',
+                    ).replace('\r', ' ')
+                )
 
     def get_id(self) -> str:
         """
@@ -213,10 +218,11 @@ class BioCypherEdge:
         """
 
         if ':TYPE' in self.properties.keys():
-            logger.debug("Keyword ':TYPE' is reserved for Neo4j. "
-                         'Removing from properties.',
-                         # "Renaming to 'type'."
-                        )
+            logger.debug(
+                "Keyword ':TYPE' is reserved for Neo4j. "
+                'Removing from properties.',
+                # "Renaming to 'type'."
+            )
             # self.properties["type"] = self.properties[":TYPE"]
             del self.properties[':TYPE']
 
@@ -313,17 +319,20 @@ class BioCypherRelAsNode:
         if not isinstance(self.node, BioCypherNode):
             raise TypeError(
                 f'BioCypherRelAsNode.node must be a BioCypherNode, '
-                f'not {type(self.node)}.',)
+                f'not {type(self.node)}.',
+            )
 
         if not isinstance(self.source_edge, BioCypherEdge):
             raise TypeError(
                 f'BioCypherRelAsNode.source_edge must be a BioCypherEdge, '
-                f'not {type(self.source_edge)}.',)
+                f'not {type(self.source_edge)}.',
+            )
 
         if not isinstance(self.target_edge, BioCypherEdge):
             raise TypeError(
                 f'BioCypherRelAsNode.target_edge must be a BioCypherEdge, '
-                f'not {type(self.target_edge)}.',)
+                f'not {type(self.target_edge)}.',
+            )
 
     def get_node(self):
         return self.node
@@ -347,7 +356,6 @@ class VersionNode:
     the connection to the termination of the BioCypher adapter instance). Is
     connected to MetaNodes and MetaEdges via ":CONTAINS" relationships.
     """
-
     def __init__(
         self,
         offline: bool = False,
@@ -365,8 +373,9 @@ class VersionNode:
         self.bcy_driver = bcy_driver
 
         self.node_id = self._get_current_id()
-        self.graph_state = (self._get_graph_state()
-                            if not self.offline else None)
+        self.graph_state = (
+            self._get_graph_state() if not self.offline else None
+        )
         self.schema = self._get_graph_schema()
         self.leaves = self._get_leaves()
 
@@ -433,7 +442,8 @@ class VersionNode:
         result, summary = self.bcy_driver.query(
             'MATCH (meta:BioCypher)'
             'WHERE NOT (meta)-[:PRECEDES]->(:BioCypher)'
-            'RETURN meta',)
+            'RETURN meta',
+        )
 
         # if result is empty, initialise
         if not result:
@@ -598,11 +608,13 @@ class VersionNode:
         represented_as = value['represented_as']
 
         # adjust lengths
-        max_l = max([
-            len(_misc.to_list(preferred_id)),
-            len(_misc.to_list(label_in_input)),
-            len(_misc.to_list(represented_as)),
-        ],)
+        max_l = max(
+            [
+                len(_misc.to_list(preferred_id)),
+                len(_misc.to_list(label_in_input)),
+                len(_misc.to_list(represented_as)),
+            ],
+        )
 
         # adjust pid length if necessary
         if isinstance(preferred_id, str):
@@ -646,10 +658,10 @@ class VersionNode:
             # inherit everything except core attributes
             for k, v in value.items():
                 if k not in [
-                        'is_a',
-                        'preferred_id',
-                        'label_in_input',
-                        'represented_as',
+                    'is_a',
+                    'preferred_id',
+                    'label_in_input',
+                    'represented_as',
                 ]:
                     svalue[k] = v
 
@@ -715,10 +727,10 @@ class VersionNode:
             # inherit everything except core attributes
             for k, v in value.items():
                 if k not in [
-                        'is_a',
-                        'source',
-                        'label_in_input',
-                        'represented_as',
+                    'is_a',
+                    'source',
+                    'label_in_input',
+                    'represented_as',
                 ]:
                     svalue[k] = v
 

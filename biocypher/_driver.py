@@ -77,7 +77,6 @@ class Driver(neo4j_utils.Driver):
         array_delimiter:
             Array delimiter for CSV exported contents.
     """
-
     def __init__(
         self,
         driver: Optional['neo4j.Driver'] = None,
@@ -186,7 +185,8 @@ class Driver(neo4j_utils.Driver):
         db_version = self.query(
             'MATCH (v:BioCypher) '
             'WHERE NOT (v)-[:PRECEDES]->() '
-            'RETURN v',)
+            'RETURN v',
+        )
         # connect version node to previous
         if db_version[0]:
             e_meta = BioCypherEdge(
@@ -205,13 +205,14 @@ class Driver(neo4j_utils.Driver):
                     node_id=entity,
                     node_label='MetaNode',
                     properties=params,
-                ),)
+                ),
+            )
         self.add_biocypher_nodes(no_l)
 
         # remove connection of structure nodes from previous version
         # node(s)
         self.query('MATCH ()-[r:CONTAINS]-()'
-                   'DELETE r',)
+                   'DELETE r', )
 
         # connect structure nodes to version node
         ed_v = []
@@ -222,7 +223,8 @@ class Driver(neo4j_utils.Driver):
                     source_id=current_version,
                     target_id=entity,
                     relationship_label='CONTAINS',
-                ),)
+                ),
+            )
         self.add_biocypher_edges(ed_v)
 
         # add graph structure between MetaNodes
@@ -270,9 +272,11 @@ class Driver(neo4j_utils.Driver):
             label = leaf[0]
             if leaf[1]['represented_as'] == 'node':
 
-                s = (f'CREATE CONSTRAINT `{label}_id` '
-                     f'IF NOT EXISTS ON (n:`{label}`) '
-                     'ASSERT n.id IS UNIQUE')
+                s = (
+                    f'CREATE CONSTRAINT `{label}_id` '
+                    f'IF NOT EXISTS ON (n:`{label}`) '
+                    'ASSERT n.id IS UNIQUE'
+                )
                 self.query(s)
 
     def add_nodes(self, id_type_tuples: Iterable[tuple]) -> tuple:
@@ -377,11 +381,13 @@ class Driver(neo4j_utils.Driver):
 
         logger.info(f'Merging {len(entities)} nodes.')
 
-        entity_query = ('UNWIND $entities AS ent '
-                        'CALL apoc.merge.node([ent.node_label], '
-                        '{id: ent.node_id}, ent.properties, ent.properties) '
-                        'YIELD node '
-                        'RETURN node')
+        entity_query = (
+            'UNWIND $entities AS ent '
+            'CALL apoc.merge.node([ent.node_label], '
+            '{id: ent.node_id}, ent.properties, ent.properties) '
+            'YIELD node '
+            'RETURN node'
+        )
 
         method = 'explain' if explain else 'profile' if profile else 'query'
 
@@ -469,21 +475,25 @@ class Driver(neo4j_utils.Driver):
         # merging only on the ids of the entities, passing the
         # properties on match and on create;
         # TODO add node labels?
-        node_query = ('UNWIND $rels AS r '
-                      'MERGE (src {id: r.source_id}) '
-                      'MERGE (tar {id: r.target_id}) ')
+        node_query = (
+            'UNWIND $rels AS r '
+            'MERGE (src {id: r.source_id}) '
+            'MERGE (tar {id: r.target_id}) '
+        )
 
         self.query(node_query, parameters={'rels': rels})
 
-        edge_query = ('UNWIND $rels AS r '
-                      'MATCH (src {id: r.source_id}) '
-                      'MATCH (tar {id: r.target_id}) '
-                      'WITH src, tar, r '
-                      'CALL apoc.merge.relationship'
-                      '(src, r.relationship_label, NULL, '
-                      'r.properties, tar, r.properties) '
-                      'YIELD rel '
-                      'RETURN rel')
+        edge_query = (
+            'UNWIND $rels AS r '
+            'MATCH (src {id: r.source_id}) '
+            'MATCH (tar {id: r.target_id}) '
+            'WITH src, tar, r '
+            'CALL apoc.merge.relationship'
+            '(src, r.relationship_label, NULL, '
+            'r.properties, tar, r.properties) '
+            'YIELD rel '
+            'RETURN rel'
+        )
 
         method = 'explain' if explain else 'profile' if profile else 'query'
 
@@ -621,9 +631,11 @@ class Driver(neo4j_utils.Driver):
         mt = self.translator.get_missing_bl_types()
 
         if mt:
-            msg = ('Input entities not accounted for due to them not being '
-                   'present in the `schema_config.yaml` configuration file '
-                   '(see log for details): \n')
+            msg = (
+                'Input entities not accounted for due to them not being '
+                'present in the `schema_config.yaml` configuration file '
+                '(see log for details): \n'
+            )
             for k, v in mt.items():
                 msg += f'    {k}: {v} \n'
 
