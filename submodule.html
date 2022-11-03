@@ -31,7 +31,7 @@
             <a href="contents.html" class="icon icon-home"> BioCypher
           </a>
               <div class="version">
-                0.3.2
+                0.3.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -691,6 +691,17 @@ queries.</p>
 current version of the Biolink model for compatibility reasons. The user
 can define a custom schema in YAML format (conforming to LinkML and the
 Biolink model structure), which will be used instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.main">
+<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.main" title="Permalink to this definition"></a></dt>
+<dd><p>Initialises the Biolink Model Toolkit and builds the mappings.</p>
+<p>Since this is a time-consuming step that depends on online
+functionality, we can save the resulting objects (biolink leaves,
+mappings, and version) to a file and load them from there if they
+already exist. The cache is overwritten if the schema configuration has
+been updated. This is checked via a hash of the leaves dict.</p>
 </dd></dl>
 
 <dl class="py method">
