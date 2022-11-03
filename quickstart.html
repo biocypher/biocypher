@@ -53,7 +53,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">BioCypher Tutorial - Basics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">Handling ontologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">BioCypher Tutorial: Handling Ontologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapter.html">The Host-BioCypher Adapter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
@@ -88,9 +88,9 @@
 <p>The main interface for interacting with the BioCypher module to create
 your own property graph consists of two components:</p>
 <ol class="arabic simple">
-<li><p>the <a class="reference internal" href="#host-module-adapter"><span class="std std-ref">host module adapter</span></a>, a python
+<li><p>the <a class="reference internal" href="#qs-host-module-adapter"><span class="std std-ref">host module adapter</span></a>, a python
 program, and</p></li>
-<li><p>the <a class="reference internal" href="#schema-config"><span class="std std-ref">schema configuration file</span></a>, a YAML file.</p></li>
+<li><p>the <a class="reference internal" href="#qs-schema-config"><span class="std std-ref">schema configuration file</span></a>, a YAML file.</p></li>
 </ol>
 <p>The adapter serves as a data interface between the source and BioCypher,
 piping the “raw” data into BioCypher for the creation of the property
@@ -98,7 +98,7 @@ graph, while the schema configuration tells BioCypher how the graph
 should be structured, detailing the names of constituents and how they
 should be connected.</p>
 <section id="the-host-module-adapter">
-<span id="host-module-adapter"></span><h2>The host module adapter<a class="headerlink" href="#the-host-module-adapter" title="Permalink to this heading"></a></h2>
+<span id="qs-host-module-adapter"></span><h2>The host module adapter<a class="headerlink" href="#the-host-module-adapter" title="Permalink to this heading"></a></h2>
 <p>Currently, BioCypher expects input from the user module via an adapter
 module. Throughout the tutorial, we will exemplarise the use of
 BioCypher using <a class="reference external" href="https://omnipathdb.org">OmniPath</a> (more specifically,
@@ -154,7 +154,7 @@ filtered inside BioCypher by detailing the desired properties per node
 type in the schema configuration file.</p>
 </section>
 <section id="the-schema-configuration-yaml-file">
-<span id="schema-config"></span><h2>The schema configuration YAML file<a class="headerlink" href="#the-schema-configuration-yaml-file" title="Permalink to this heading"></a></h2>
+<span id="qs-schema-config"></span><h2>The schema configuration YAML file<a class="headerlink" href="#the-schema-configuration-yaml-file" title="Permalink to this heading"></a></h2>
 <p>The second important component of translation into a
 BioCypher-compatible property graph is the specification of graph
 constituents and their mode of representation in the graph. For
@@ -241,7 +241,7 @@ identifier, which will then be a named property on the
 <p>BioCypher accepts non-Biolink IDs since not all possible entries possess a
 systematic identifier system, whereas the entity class (<code class="docutils literal notranslate"><span class="pre">protein</span></code>,
 <code class="docutils literal notranslate"><span class="pre">post</span> <span class="pre">translational</span> <span class="pre">interaction</span></code>) has to be included in the Biolink schema and
-spelled identically. For this reason, we <a class="reference internal" href="#biolink"><span class="std std-ref">extend the Biolink schema</span></a>
+spelled identically. For this reason, we <a class="reference internal" href="#qs-biolink"><span class="std std-ref">extend the Biolink schema</span></a>
 in cases where there exists no entry for our entity of choice. Further, we are
 specifying the source and target classes of our association (both <code class="docutils literal notranslate"><span class="pre">protein</span></code>),
 the label we provide in the input from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> (<code class="docutils literal notranslate"><span class="pre">post_translational</span></code>).</p>
@@ -265,21 +265,21 @@ the above example to the following:</p>
 </div>
 </section>
 <section id="the-biolink-model-extension">
-<span id="biolink"></span><h2>The Biolink model extension<a class="headerlink" href="#the-biolink-model-extension" title="Permalink to this heading"></a></h2>
+<span id="qs-biolink"></span><h2>The Biolink model extension<a class="headerlink" href="#the-biolink-model-extension" title="Permalink to this heading"></a></h2>
 <section id="soft-extensions">
 <h3>Soft extensions<a class="headerlink" href="#soft-extensions" title="Permalink to this heading"></a></h3>
 <p>In some cases that are not too complex, the Biolink model can be
 extended using only implicit subclasses given in the BioCypher
 schema_config.yaml file. Soft extensions can be achieved in two ways:</p>
 <ul class="simple">
-<li><p>via <a class="reference internal" href="tutorial-ontology.html#implicit"><span class="std std-ref">implicit subclasses</span></a> of existing Biolink classes by supplying
+<li><p>via <a class="reference internal" href="#qs-implicit"><span class="std std-ref">implicit subclasses</span></a> of existing Biolink classes by supplying
 multiple preferred ids and input labels in the <code class="docutils literal notranslate"><span class="pre">schema_config.yaml</span></code></p></li>
-<li><p>via <a class="reference internal" href="tutorial-ontology.html#explicit"><span class="std std-ref">explicit subclasses</span></a> of existing Biolink classes by supplying an
+<li><p>via <a class="reference internal" href="#qs-explicit"><span class="std std-ref">explicit subclasses</span></a> of existing Biolink classes by supplying an
 <code class="docutils literal notranslate"><span class="pre">is_a</span></code> parameter to any non-biolink class, referring to an existing
 one</p></li>
 </ul>
 <section id="implicit-subclasses">
-<span id="implicit"></span><h4>Implicit subclasses<a class="headerlink" href="#implicit-subclasses" title="Permalink to this heading"></a></h4>
+<span id="qs-implicit"></span><h4>Implicit subclasses<a class="headerlink" href="#implicit-subclasses" title="Permalink to this heading"></a></h4>
 <p>For instance, Pathway annotations are supplied by multiple sources,
 e.g., <a class="reference external" href="https://www.genome.jp/kegg/pathway.html">KEGG</a> and
 <a class="reference external" href="https://reactome.org/">Reactome</a>, which do not allow direct mapping due
@@ -303,7 +303,7 @@ will also enable aggregate query of all pathways by calling the parent
 entity, <code class="docutils literal notranslate"><span class="pre">pathway</span></code>.</p>
 </section>
 <section id="explicit-subclasses">
-<span id="explicit"></span><h4>Explicit subclasses<a class="headerlink" href="#explicit-subclasses" title="Permalink to this heading"></a></h4>
+<span id="qs-explicit"></span><h4>Explicit subclasses<a class="headerlink" href="#explicit-subclasses" title="Permalink to this heading"></a></h4>
 <p>For example, adding the child <code class="docutils literal notranslate"><span class="pre">tissue</span></code> to the existing Biolink class
 <code class="docutils literal notranslate"><span class="pre">gross</span> <span class="pre">anatomical</span> <span class="pre">structure</span></code> as a specification:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">tissue</span><span class="p">:</span><span class="w"></span>
