@@ -41,11 +41,15 @@ logger.debug(f'Loading module {__name__}.')
 from typing import Any, Union, Literal, Optional
 import os
 import re
+import json
+import pickle
+import hashlib
 
 from bmt.utils import sentencecase_to_camelcase
 from more_itertools import peekable
 from linkml_runtime.linkml_model.meta import ClassDefinition
 import bmt
+import appdirs
 
 from . import _misc
 from ._config import _read_yaml, module_data_path
@@ -106,10 +110,70 @@ class BiolinkAdapter:
         self.main()
 
     def main(self):
-        # initialise biolink toolkit
-        self.init_toolkit()
-        # translate leaves
-        self.translate_leaves_to_biolink()
+        """
+        Initialises the Biolink Model Toolkit and builds the mappings.
+
+        Since this is a time-consuming step that depends on online
+        functionality, we can save the resulting objects (biolink leaves,
+        mappings, and version) to a file and load them from there if they
+        already exist. The cache is overwritten if the schema configuration has
+        been updated. This is checked via a hash of the leaves dict.
+        """
+
+        # check if cache exists
+        cache_dir = appdirs.user_cache_dir('biocypher')
+        cache_path = os.path.join(cache_dir, 'biolink_cache.json')
+
+        if os.path.exists(cache_path):
+            with open(cache_path, 'r') as f:
+                cache = json.load(f)
+            cached_hash = cache.get('hash', None)
+        else:
+            cached_hash = None
+
+        # check if schema config has changed
+        current_hash = hashlib.md5(
+            json.dumps(self.leaves, sort_keys=True).encode('utf-8'),
+        ).hexdigest()
+
+        if cached_hash == current_hash:
+            # use cached version
+            logger.info('Using cached Biolink schema.')
+            self.mappings = cache['mappings']
+            self.reverse_mappings = cache['reverse_mappings']
+            self.biolink_version = cache['version']
+
+            # load biolink leaves from pickle
+            biolink_leaves_path = cache['biolink_leaves_path']
+            with open(biolink_leaves_path, 'rb') as f:
+                self.biolink_leaves = pickle.load(f)
+
+        else:
+            logger.info('Building Biolink schema and saving cache.')
+            # initialise biolink toolkit
+            self.init_toolkit()
+            # translate leaves
+            self.translate_leaves_to_biolink()
+
+            # save JSON and picke to cache
+            if not os.path.exists(cache_dir):
+                os.makedirs(cache_dir)
+
+            # pickle biolink leaves to cache dir
+            pickle_path = os.path.join(cache_dir, 'biolink_leaves.pickle')
+            with open(pickle_path, 'wb') as f:
+                pickle.dump(self.biolink_leaves, f)
+
+            # save cache
+            cache = {
+                'biolink_leaves_path': pickle_path,
+                'mappings': self.mappings,
+                'reverse_mappings': self.reverse_mappings,
+                'version': self.biolink_version,
+                'hash': current_hash,
+            }
+            with open(cache_path, 'w') as f:
+                json.dump(cache, f)
 
     def init_toolkit(self):
         """
