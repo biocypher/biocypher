@@ -133,23 +133,17 @@ dsDNA sequence:
 post translational interaction:
   represented_as: node
   label_as_edge: INTERACTS_POST_TRANSLATIONAL
-  source: Protein
-  target: Protein
   label_in_input: post_translational
 
 # auto label as edge
 phosphorylation:
   represented_as: edge
-  source: Protein
-  target: Protein
   label_in_input: phosphorylation
 
 # merge edges
 gene to disease association:
   represented_as: edge
   label_as_edge: PERTURBED_IN_DISEASE
-  source: Protein
-  target: Disease
   label_in_input: [protein_disease, gene_disease]
   exclude_properties: accession
 
@@ -158,8 +152,6 @@ mutation to tissue association:
   is_a: [genotype to tissue association, entity to tissue association, association]
   represented_as: edge
   label_as_edge: Is_Mutated_In
-  source: Gene
-  target: Tissue
   label_in_input: Gene_Is_Mutated_In_Cell_Tissue
 
 
@@ -176,8 +168,6 @@ variant to gene association: # -> Known.... and Somatic....
 # property filter
 gene to gene association:
   represented_as: edge
-  source: gene
-  target: gene
   label_in_input: gene_gene
   properties:
     directional: bool
