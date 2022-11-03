@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BioCypher Tutorial: Handling Ontologies &mdash; BioCypher  documentation</title>
+  <title>BioCypher Tutorial - Handling Ontologies &mdash; BioCypher  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -48,7 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">BioCypher Tutorial - Basics</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher Tutorial: Handling Ontologies</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher Tutorial - Handling Ontologies</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#what-is-an-ontology">What is an ontology?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-biocypher-uses-ontologies">How BioCypher uses ontologies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-ontologies-plain-biolink">Using ontologies: plain Biolink</a></li>
@@ -74,7 +74,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="contents.html" class="icon icon-home"></a> &raquo;</li>
-      <li>BioCypher Tutorial: Handling Ontologies</li>
+      <li>BioCypher Tutorial - Handling Ontologies</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/tutorial-ontology.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -85,7 +85,7 @@
            <div itemprop="articleBody">
              
   <section id="biocypher-tutorial-handling-ontologies">
-<h1>BioCypher Tutorial: Handling Ontologies<a class="headerlink" href="#biocypher-tutorial-handling-ontologies" title="Permalink to this heading"></a></h1>
+<h1>BioCypher Tutorial - Handling Ontologies<a class="headerlink" href="#biocypher-tutorial-handling-ontologies" title="Permalink to this heading"></a></h1>
 <p>BioCypher relies on ontologies to ground the knowledge graph contents in
 biology. This has the advantage of making working with BioCypher accessible to
 biologically oriented researchers. However, it also means that BioCypher
@@ -148,7 +148,7 @@ Biolink model class representing this concept are synonymous. For instance, the
 concept <em>protein</em> is represented by the Biolink class <span class="xref myst"><em>protein</em></span>. To
 introduce proteins into the knowledge graph, one would simply define a node
 constituent with the class label <em>protein</em>. This is the mechanism we implicitly
-used for proteins in the basic tutorial; to reiterate:</p>
+used for proteins in the basic tutorial (<a class="reference internal" href="tutorial.html#tut-01-schema"><span class="std std-ref">part 1</span></a>); to reiterate:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
@@ -162,7 +162,7 @@ used for proteins in the basic tutorial; to reiterate:</p>
 <h2>Biolink model extensions<a class="headerlink" href="#biolink-model-extensions" title="Permalink to this heading"></a></h2>
 <p>There are multiple reasons why a user might want to modify the Biolink model.  A
 class that is relevant to the user’s task might be missing (<a class="reference internal" href="#tut-explicit"><span class="std std-ref">Explicit
-inheritance</span></a>). A class might be not granular enough, and the user
+inheritance</span></a>). A class might not be granular enough, and the user
 would like to split it into subclasses based on distinct inputs (<a class="reference internal" href="#tut-implicit"><span class="std std-ref">Implicit
 inheritance</span></a>). The name of a Biolink model class may be too
 unwieldy for the use inside the desired knowledge graph, and the user would like
@@ -185,7 +185,7 @@ does not contain a class for <code class="docutils literal notranslate"><span cl
 relationship class for <code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">protein</span> <span class="pre">interaction</span></code>, both of which we have
 already used in the basic tutorial. Since protein isoforms are specific types of
 protein, it makes sense to extend the existing Biolink model class <code class="docutils literal notranslate"><span class="pre">protein</span></code>
-with the concept of protein isoforms. To do this, we simple add a new class
+with the concept of protein isoforms. To do this, we simply add a new class
 <code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">isoform</span></code> to the schema configuration, and specify that it is a subclass
 of <code class="docutils literal notranslate"><span class="pre">protein</span></code> using the (optional) <code class="docutils literal notranslate"><span class="pre">is_a</span></code> field:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
@@ -352,7 +352,7 @@ possible to create a custom Biolink model that can be used in BioCypher. This
 is done by specifying a custom Biolink model to be built using the <a class="reference external" href="https://github.com/biolink/biolink-model-toolkit">Biolink
 Model Toolkit (BMT)</a> in the
 BioCypher workflow. We provide one such model with BioCypher directly
-(<code class="docutils literal notranslate"><span class="pre">biocypher/_config/biocypher-biolink-model.yaml</span></code>), which is a modified version
+(<code class="docutils literal notranslate"><span class="pre">biocypher/_config/test-biolink-model.yaml</span></code>), which is a modified version
 of the original Biolink model that includes a <em>post translational interaction</em>
 class as well as a custom mixin (so far only for demonstration purposes).</p>
 <div class="admonition caution">
