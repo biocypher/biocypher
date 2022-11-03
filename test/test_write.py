@@ -75,7 +75,8 @@ def bw(version_node):
 
     bl_adapter = BiolinkAdapter(
         leaves=version_node.leaves,
-        schema=module_data_path('test-biolink-model')
+        schema=module_data_path('test-biolink-model'),
+        clear_cache=True,
     )
     bw = BatchWriter(
         leaves=version_node.leaves,

@@ -54,6 +54,7 @@ def biolink_adapter(version_node):
     return BiolinkAdapter(
         version_node.leaves,
         schema=module_data_path('test-biolink-model'),
+        clear_cache=True,
     )
 
 
@@ -179,7 +180,7 @@ def test_translate_edges(translator):
 
 def test_adapter(version_node):
     # current Biolink model (as opposed to rest of tests)
-    ad = BiolinkAdapter(version_node.leaves)
+    ad = BiolinkAdapter(version_node.leaves, clear_cache=True)
     ver = ad.biolink_version
 
     assert isinstance(
@@ -193,6 +194,7 @@ def test_custom_bmt_yaml(version_node):
     ad = BiolinkAdapter(
         version_node.leaves,
         schema=module_data_path('test-biolink-model'),
+        clear_cache=True,
     )
     p = ad.biolink_leaves['protein']
 

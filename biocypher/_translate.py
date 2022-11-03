@@ -73,6 +73,7 @@ class BiolinkAdapter:
         leaves: dict,
         schema: str = None,
         biolink_version: str = None,
+        clear_cache: bool = False,
     ):
         """
         Args:
@@ -94,6 +95,8 @@ class BiolinkAdapter:
         self.schema = schema
         self.biolink_version = biolink_version
         self.biolink_leaves = None
+
+        self.clear_cache = clear_cache
 
         # it makes no sense to provide a yaml and a version at the same time
         if self.schema and self.biolink_version:
@@ -123,6 +126,10 @@ class BiolinkAdapter:
         # check if cache exists
         cache_dir = appdirs.user_cache_dir('biocypher')
         cache_path = os.path.join(cache_dir, 'biolink_cache.json')
+
+        if self.clear_cache:
+            if os.path.exists(cache_path):
+                os.remove(cache_path)
 
         if os.path.exists(cache_path):
             with open(cache_path, 'r') as f:

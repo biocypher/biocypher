@@ -89,6 +89,7 @@ class Driver(neo4j_utils.Driver):
         offline: bool = False,
         increment_version=True,
         user_schema_config_path: Optional[str] = None,
+        clear_cache: bool = False,
         delimiter: Optional[str] = None,
         array_delimiter: Optional[str] = None,
         quote_char: Optional[str] = None,
@@ -110,6 +111,7 @@ class Driver(neo4j_utils.Driver):
 
         # TODO: bools in config?
         self.offline = offline
+        self.clear_cache = clear_cache
 
         if offline:
 
@@ -562,7 +564,9 @@ class Driver(neo4j_utils.Driver):
         existing.
         """
         if not self.bl_adapter:
-            self.bl_adapter = BiolinkAdapter(leaves=self.db_meta.leaves)
+            self.bl_adapter = BiolinkAdapter(
+                leaves=self.db_meta.leaves, clear_cache=self.clear_cache
+            )
 
     def write_edges(
         self,
