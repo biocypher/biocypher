@@ -523,6 +523,10 @@ class VersionNode:
             if 'represented_as' not in v:
                 continue
 
+            # preferred_id optional: if not provided, use `id`
+            if not v.get('preferred_id'):
+                v['preferred_id'] = 'id'
+
             # k is an entity that is present in the ontology
             if 'is_a' not in v:
                 leaves[k] = v
