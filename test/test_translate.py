@@ -53,8 +53,7 @@ def translator(version_node):
 def biolink_adapter(version_node):
     return BiolinkAdapter(
         version_node.leaves,
-        schema='biocypher',  # this is the default
-        # unstable, move to test yaml
+        schema=module_data_path('test-biolink-model'),
     )
 
 
@@ -177,7 +176,8 @@ def test_translate_edges(translator):
 
 
 def test_adapter(version_node):
-    ad = BiolinkAdapter(version_node.leaves, schema='biolink')
+    ad = BiolinkAdapter(version_node.leaves,
+                        schema=module_data_path('test-biolink-model'))
 
     assert isinstance(
         ad.biolink_leaves['protein']['class_definition'],

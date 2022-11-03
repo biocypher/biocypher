@@ -68,8 +68,7 @@ class BiolinkAdapter:
     def __init__(
         self,
         leaves: dict,
-        schema: Optional[Union[Literal['biocypher', 'biolink'], str,
-                               dict,]] = None,
+        schema: str = None,
     ):
         """
         Args:
@@ -78,14 +77,12 @@ class BiolinkAdapter:
                 to be built. These are the "leaves" of the ontology
                 hierarchy tree.
             schema:
-                Either a label referring to a built-in schema, or a path
-                to a YAML file with the schema. If not provided, the default
-                built-in schema will be used.
+                A path to a YAML file with the schema. If not provided, the
+                default Biolink schema will be used.
         """
 
         self.leaves = leaves
         self.schema = schema
-        self.schema_name = None
         self.biolink_leaves = None
 
         # mapping functionality for translating terms and queries
@@ -97,41 +94,28 @@ class BiolinkAdapter:
         self.main()
 
     def main(self):
-        # select with schema to use
-        self.set_schema()
         # initialise biolink toolkit
         self.init_toolkit()
         # translate leaves
         self.translate_leaves_to_biolink()
 
-    def set_schema(self):
-
-        schemata_builtin = {
-            'biocypher': 'biocypher-biolink-model',
-            'biolink': 'biolink-model',
-        }
-
-        self.schema = self.schema or 'biocypher'
-
-        self.schema_name = (self.schema
-                            if isinstance(self.schema, str) else 'custom')
-
-        if self.schema in schemata_builtin:
-
-            label = schemata_builtin[self.schema]
-            self.schema = module_data_path(label)
-
     def init_toolkit(self):
-        """ """
+        """
+        Set Biolink schema to use. By default, BioCypher should use the public current
+        version of the Biolink model for compatibility reasons. The user can
+        define a custom schema in YAML format (conforming to LinkML and the
+        Biolink model structure), which will be used instead.
+        """
 
-        # TODO explain: isn't schma_yaml automatically at least
-        # 'biocypher' after running set_schema? How would we get default?
-        # - yes it is, we should default to biocypher, isn't it?
-        logger.info(
-            f'Creating BioLink model toolkit from `{self.schema_name}` model.',)
-
-        self.toolkit = (bmt.Toolkit(self.schema)
-                        if self.schema else bmt.Toolkit())
+        if self.schema:
+            # use custom schema
+            self.toolkit = bmt.Toolkit(self.schema)
+            logger.info(
+                f'Creating BioLink model toolkit from `{self.schema}`.',)
+        else:
+            # use default schema
+            self.toolkit = bmt.Toolkit()
+            logger.info('Creating BioLink model toolkit from default schema.')
 
     def translate_leaves_to_biolink(self):
         """

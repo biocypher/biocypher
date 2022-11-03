@@ -7,6 +7,7 @@ from genericpath import isfile
 import pytest
 
 from biocypher._write import BatchWriter
+from biocypher._config import module_data_path
 from biocypher._create import (
     VersionNode,
     BioCypherEdge,
@@ -72,7 +73,8 @@ def version_node():
 @pytest.fixture
 def bw(version_node):
 
-    bl_adapter = BiolinkAdapter(leaves=version_node.leaves)
+    bl_adapter = BiolinkAdapter(leaves=version_node.leaves,
+                                schema=module_data_path('test-biolink-model'))
     bw = BatchWriter(
         leaves=version_node.leaves,
         bl_adapter=bl_adapter,
