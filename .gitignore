@@ -20,3 +20,4 @@ dist/*
 *.pyc
 *.kate-swp
 .hypothesis/
+.venv/
