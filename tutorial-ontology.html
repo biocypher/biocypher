@@ -265,6 +265,7 @@ preferred identifiers in the <code class="docutils literal notranslate"><span cl
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
 <span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">reactome</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wikipathways</span><span class="p p-Indicator">]</span><span class="w"></span>
 <span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">react</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wiki</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># ...</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -277,6 +278,25 @@ labelling paradigm, those nodes will also inherit the <code class="docutils lite
 well as all parent labels and mixins of <code class="docutils literal notranslate"><span class="pre">Pathway</span></code> (<code class="docutils literal notranslate"><span class="pre">BiologicalProcess</span></code>, etc.).
 This allows us to query the graph for all <code class="docutils literal notranslate"><span class="pre">Pathway</span></code> nodes as well as for
 specific datasets depending on the desired granularity.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This also works for relationships, but in this case, not the preferred
+identifiers but the sources (defined in the <code class="docutils literal notranslate"><span class="pre">source</span></code> field) are used to
+create the subclasses.</p>
+</div>
+<p>For instance, if we wanted to create subclasses for <code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">protein</span> <span class="pre">interaction</span></code> relationships from two differenent sources, say, Signor and Intact,
+we could do so as follows:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id6" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein protein interaction</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pairwise molecular interaction</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">signor</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">intact</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">signor_ppi</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">intact_ppi</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># ...</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
 <!-- TODO tutorial code -->
 </section>
 <section id="synonyms">
@@ -291,11 +311,12 @@ class. This is done by selecting another, more desirable name for the respective
 class(es) and specifying the <code class="docutils literal notranslate"><span class="pre">synonym_for</span></code> field in their schema configuration.
 In this case, we would like to represent patient phenotypes as <code class="docutils literal notranslate"><span class="pre">phenotype</span></code>
 nodes, and we can do so as follows:</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id6" title="Permalink to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id7" title="Permalink to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">phenotype</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">synonym_for</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clinical finding</span><span class="w"></span>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># ...</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
