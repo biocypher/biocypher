@@ -827,3 +827,31 @@ def test_duplicate_id(bw):
     l_lines0 = sum(1 for _ in open(csv))
 
     assert passed and l_lines0 == 1
+
+
+def test_write_synonym(bw):
+    nodes = []
+    csv = os.path.join(path, 'Complex-part000.csv')
+    # remove csv file in path
+    if os.path.exists(csv):
+        os.remove(csv)
+    # four proteins, four miRNAs
+    for _ in range(4):
+        bnp = BioCypherNode(
+            node_id=f'p{_+1}',
+            node_label='complex',
+            properties={
+                'name': 'StringProperty1',
+                'score': 4.32,
+                'taxon': 9606,
+            },
+        )
+        nodes.append(bnp)
+
+    passed = bw.write_nodes(nodes)
+
+    with open(csv) as f:
+        comp = f.read()
+
+    assert passed and os.path.exists(csv)
+    assert comp == "p1;'StringProperty1';4.32;9606;'p1';'id';Complex|MacromolecularComplexMixin|MacromolecularMachineMixin\np2;'StringProperty1';4.32;9606;'p2';'id';Complex|MacromolecularComplexMixin|MacromolecularMachineMixin\np3;'StringProperty1';4.32;9606;'p3';'id';Complex|MacromolecularComplexMixin|MacromolecularMachineMixin\np4;'StringProperty1';4.32;9606;'p4';'id';Complex|MacromolecularComplexMixin|MacromolecularMachineMixin\n"

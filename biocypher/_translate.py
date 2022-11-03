@@ -155,14 +155,26 @@ class BiolinkAdapter:
         # ontology parents first
         for entity, values in self.leaves.items():
 
-            entity_biolink_class = self.toolkit.get_element(entity,
-                                                           )  # element name
+            # check whether valid biolink entity should be called by a synonym
+            # in the KG (e.g. for readability reasons)
+            if not values.get('synonym_for'):
+                name_or_synonym = entity
+            else:
+                name_or_synonym = values['synonym_for']
+
+            entity_biolink_class = self.toolkit.get_element(
+                name_or_synonym)  # element name
 
             if entity_biolink_class:
 
                 # find ancestors of biolink type in PascalCase
                 ancestors = self.trim_biolink_ancestry(
-                    self.toolkit.get_ancestors(entity, formatted=True),)
+                    self.toolkit.get_ancestors(name_or_synonym,
+                                               formatted=True),)
+
+                if values.get('synonym_for'):
+                    # add synonym to ancestors
+                    ancestors.insert(0, self.name_sentence_to_pascal(entity))
 
                 input_label = values.get('label_in_input')
 

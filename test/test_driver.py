@@ -345,8 +345,7 @@ def test_pretty_explain(driver):
 
 def test_access_translate(driver):
     assert driver.translate_term('mirna') == 'MicroRNA'
-    assert (driver.reverse_translate_term('MacromolecularComplexMixin') ==
-            'complex')
+    assert (driver.reverse_translate_term('SideEffect') == 'sider')
     assert (driver.translate_query('MATCH (n:reactome) RETURN n') ==
             'MATCH (n:Reactome.Pathway) RETURN n')
     assert (driver.reverse_translate_query(

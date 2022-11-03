@@ -90,7 +90,7 @@ def test_translate_nodes(translator):
     t = translator.translate_nodes(id_type)
     assert next(t).get_label() == 'protein'
     assert next(t).get_label() == 'microRNA'
-    assert next(t).get_label() == 'macromolecular complex mixin'
+    assert next(t).get_label() == 'complex'
 
 
 def test_specific_and_generic_ids(translator):
@@ -365,6 +365,15 @@ def test_multiple_inheritance(biolink_adapter):
     assert 'GenotypeToTissueAssociation' in mta['ancestors']
     assert 'EntityToTissueAssociation' in mta['ancestors']
     assert 'Association' in mta['ancestors']
+
+
+def test_synonym(biolink_adapter):
+
+    comp = biolink_adapter.biolink_leaves.get('complex')
+
+    assert comp
+    assert 'Complex' in comp['ancestors']
+    assert 'MacromolecularComplexMixin' in comp['ancestors']
 
 
 def test_properties_from_config(version_node, translator):
