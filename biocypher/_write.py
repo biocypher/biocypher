@@ -334,7 +334,7 @@ class BatchWriter:
 
                     # get label hierarchy
                     # multiple labels:
-                    if self.bl_adapter.biolink_leaves[label] is not None:
+                    if self.bl_adapter.biolink_leaves.get(label):
                         all_labels = self.bl_adapter.biolink_leaves[label][
                             'ancestors']
 
