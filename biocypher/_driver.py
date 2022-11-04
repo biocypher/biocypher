@@ -65,17 +65,31 @@ class Driver(neo4j_utils.Driver):
         wipe:
             Wipe the database after connection, ensuring the data is
             loaded into an empty database.
+        offline:
+            Do not connect to the database, but use the provided
+            schema to create a graph representation and write CSVs for
+            admin import.
         increment_version:
             Whether to increase version number automatically and create a
             new BioCypher version node in the graph.
-        schema_config:
-            Path to a custom database schema configuration file.
+        user_schema_config_path:
+            Path to the graph database schema configuration file.
+        clear_cache:
+            Whether to clear the ontological hierarchy cache at driver
+            instantiation. The cache is used to speed up the translation
+            of Biolink classes to the database schema.
         delimiter:
             Delimiter for CSV export.
-        quote_char:
-            String quotation character for CSV export.
         array_delimiter:
             Array delimiter for CSV exported contents.
+        quote_char:
+            String quotation character for CSV export.
+        skip_bad_relationships:
+            Whether to skip relationships with missing source or target
+            nodes in the admin import shell command.
+        skip_duplicate_nodes:
+            Whether to skip duplicate nodes in the admin import shell
+            command.
     """
     def __init__(
         self,
