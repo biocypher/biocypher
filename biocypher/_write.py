@@ -421,7 +421,7 @@ class BatchWriter:
         for label, props in self.node_property_dict.items():
             # create header CSV with ID, properties, labels
 
-            id = ':ID'
+            _id = ':ID'
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
@@ -457,7 +457,7 @@ class BatchWriter:
 
                 # create list of lists and flatten
                 # removes need for empty check of property list
-                out_list = [[id], props_list, [':LABEL']]
+                out_list = [[_id], props_list, [':LABEL']]
                 out_list = [val for sublist in out_list for val in sublist]
 
                 with open(header_path, 'w', encoding='utf-8') as f:
