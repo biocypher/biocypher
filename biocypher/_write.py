@@ -991,11 +991,19 @@ class BatchWriter:
         Returns:
             str: a bash command for neo4j-admin import
         """
-
-        import_call = (
+        
+        if self.delim == "\t":         
+            import_call = (
             f'bin/neo4j-admin import --database={self.db_name} '
-            f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
-        )
+            f'--delimiter="\\t" --array-delimiter="{self.adelim}" ')
+        elif self.adelim == "\t":            
+            import_call = (
+                f'bin/neo4j-admin import --database={self.db_name} '
+                f'--delimiter="{self.delim}" --array-delimiter="\\t" ')
+        else:                    
+            import_call = (
+                f'bin/neo4j-admin import --database={self.db_name} '
+                f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" ')
 
         if self.quote == "'":
             import_call += f'--quote="{self.quote}" '
