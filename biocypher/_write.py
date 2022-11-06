@@ -545,7 +545,12 @@ class BatchWriter:
                     ]:
                         plist.append(str(p))
                     else:
-                        plist.append(self.quote + str(p) + self.quote)
+                        if isinstance(p, list):
+                            plist.append(self.quote + self.adelim.join(p) + self.quote)
+                        elif "**" in p:
+                            plist.append(self.quote + p.replace("**", self.adelim) + self.quote)
+                        else:                            
+                            plist.append(self.quote + str(p) + self.quote)
 
                 line.append(self.delim.join(plist))
             line.append(labels)
@@ -859,7 +864,12 @@ class BatchWriter:
                     ]:
                         plist.append(str(p))
                     else:
-                        plist.append(self.quote + str(p) + self.quote)
+                        if isinstance(p, list):
+                            plist.append(self.quote + self.adelim.join(p) + self.quote)
+                        elif "**" in p:
+                            plist.append(self.quote + p.replace("**", self.adelim) + self.quote)
+                        else:                            
+                            plist.append(self.quote + str(p) + self.quote)
 
                 lines.append(
                     self.delim.join(
