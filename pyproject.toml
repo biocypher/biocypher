@@ -28,7 +28,7 @@ python = "^3.8"
 neo4j = ">=4.4.0"
 PyYAML = ">=5.0"
 click = ">=7.0"
-bmt = "*"
+bmt = "0.8.12"
 # bmt = { path = "../biolink-model-toolkit/", develop = true }
 more_itertools = "*"
 toml = "*"
@@ -37,7 +37,6 @@ neo4j-utils = { git = "https://github.com/saezlab/neo4j-utils.git", tag = "v0.0.
 # for local development one can switch to local path:
 # neo4j-utils = { path = "../neo4j-utils/", develop = true }
 myst-parser = "^0.18.0"
-black = "^22.6.0"
 matplotlib = "^3.5.2"
 yapf = "^0.32.0"
 pre-commit = "^2.20.0"
