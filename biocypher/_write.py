@@ -450,6 +450,8 @@ class BatchWriter:
                     elif v in ['bool', 'boolean']:
                         # TODO Neo4j boolean support / spelling?
                         props_list.append(f'{k}:boolean')
+                    elif v == 'str[]' or v == 'string[]':
+                        props_list.append(f'{k}:string[]')
                     else:
                         props_list.append(f'{k}')
 
