@@ -119,7 +119,7 @@ class BioCypherNode:
 
             elif isinstance(v, list):
                 self.properties[k] = (
-                    ', '.join(v).replace(
+                    '**'.join(v).replace(
                         os.linesep,
                         ' ',
                     ).replace(
