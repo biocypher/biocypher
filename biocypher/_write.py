@@ -421,7 +421,7 @@ class BatchWriter:
         for label, props in self.node_property_dict.items():
             # create header CSV with ID, properties, labels
 
-            id = ':ID'
+            _id = ':ID'
 
             # to programmatically define properties to be written, the
             # data would have to be parsed before writing the header.
@@ -450,12 +450,14 @@ class BatchWriter:
                     elif v in ['bool', 'boolean']:
                         # TODO Neo4j boolean support / spelling?
                         props_list.append(f'{k}:boolean')
+                    elif v in ['str[]', 'string[]']:
+                        props_list.append(f'{k}:string[]')
                     else:
                         props_list.append(f'{k}')
 
                 # create list of lists and flatten
                 # removes need for empty check of property list
-                out_list = [[id], props_list, [':LABEL']]
+                out_list = [[_id], props_list, [':LABEL']]
                 out_list = [val for sublist in out_list for val in sublist]
 
                 with open(header_path, 'w', encoding='utf-8') as f:
@@ -545,7 +547,12 @@ class BatchWriter:
                     ]:
                         plist.append(str(p))
                     else:
-                        plist.append(self.quote + str(p) + self.quote)
+                        if isinstance(p, list):
+                            plist.append(
+                                self.quote + self.adelim.join(p) + self.quote
+                            )
+                        else:
+                            plist.append(self.quote + str(p) + self.quote)
 
                 line.append(self.delim.join(plist))
             line.append(labels)
@@ -859,7 +866,17 @@ class BatchWriter:
                     ]:
                         plist.append(str(p))
                     else:
-                        plist.append(self.quote + str(p) + self.quote)
+                        if isinstance(p, list):
+                            plist.append(
+                                self.quote + self.adelim.join(p) + self.quote
+                            )
+                        elif '**' in p:
+                            plist.append(
+                                self.quote + p.replace('**', self.adelim) +
+                                self.quote
+                            )
+                        else:
+                            plist.append(self.quote + str(p) + self.quote)
 
                 lines.append(
                     self.delim.join(
@@ -980,9 +997,13 @@ class BatchWriter:
             str: a bash command for neo4j-admin import
         """
 
+        # escape backslashes in self.delim and self.adelim
+        delim = self.delim.replace('\\', '\\\\')
+        adelim = self.adelim.replace('\\', '\\\\')
+
         import_call = (
             f'bin/neo4j-admin import --database={self.db_name} '
-            f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
+            f'--delimiter="{delim}" --array-delimiter="{adelim}" '
         )
 
         if self.quote == "'":

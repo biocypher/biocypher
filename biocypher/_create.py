@@ -119,13 +119,15 @@ class BioCypherNode:
 
             elif isinstance(v, list):
                 self.properties[k] = (
-                    ', '.join(v).replace(
-                        os.linesep,
-                        ' ',
-                    ).replace(
-                        '\n',
-                        ' ',
-                    ).replace('\r', ' ')
+                    [
+                        val.replace(
+                            os.linesep,
+                            ' ',
+                        ).replace(
+                            '\n',
+                            ' ',
+                        ).replace('\r', ' ') for val in v
+                    ]
                 )
 
     def get_id(self) -> str:
