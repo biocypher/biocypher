@@ -334,7 +334,7 @@ class BiolinkAdapter:
 
         # refactor inheritance tree to be compatible with treelib
         treedict = {
-            'entity': None,  # root node, named itself to stop while loop
+            'entity': None,  # root node
             'mixin': 'entity',
         }
         for class_name, properties in self.biolink_leaves.items():
