@@ -129,6 +129,38 @@ def test_write_node_data_headers_import_call(bw):
     )
 
 
+def test_tab_delimiter(version_node):
+    bl_adapter = BiolinkAdapter(
+        leaves=version_node.leaves,
+        schema=module_data_path('test-biolink-model'),
+        clear_cache=True,
+    )
+    bw = BatchWriter(
+        leaves=version_node.leaves,
+        bl_adapter=bl_adapter,
+        dirname=path,
+        delimiter='\t',
+        array_delimiter='|',
+        quote="'",
+    )
+
+    nodes = _get_nodes(8)
+
+    passed = bw.write_nodes(nodes[:4])
+    passed = bw.write_nodes(nodes[4:])
+    bw.write_import_call()
+
+    call = os.path.join(path, 'neo4j-admin-import-call.sh')
+
+    with open(call) as f:
+        c = f.read()
+
+    assert (
+        passed and c ==
+        f'bin/neo4j-admin import --database=neo4j --delimiter="\t" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
+    )
+
+
 def _get_nodes(l: int) -> list:
     nodes = []
     for i in range(l):
