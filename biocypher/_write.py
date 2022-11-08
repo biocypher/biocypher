@@ -548,10 +548,15 @@ class BatchWriter:
                         plist.append(str(p))
                     else:
                         if isinstance(p, list):
-                            plist.append(self.quote + self.adelim.join(p) + self.quote)
-                        elif "**" in p:
-                            plist.append(self.quote + p.replace("**", self.adelim) + self.quote)
-                        else:                            
+                            plist.append(
+                                self.quote + self.adelim.join(p) + self.quote
+                            )
+                        elif '**' in p:
+                            plist.append(
+                                self.quote + p.replace('**', self.adelim) +
+                                self.quote
+                            )
+                        else:
                             plist.append(self.quote + str(p) + self.quote)
 
                 line.append(self.delim.join(plist))
@@ -867,10 +872,15 @@ class BatchWriter:
                         plist.append(str(p))
                     else:
                         if isinstance(p, list):
-                            plist.append(self.quote + self.adelim.join(p) + self.quote)
-                        elif "**" in p:
-                            plist.append(self.quote + p.replace("**", self.adelim) + self.quote)
-                        else:                            
+                            plist.append(
+                                self.quote + self.adelim.join(p) + self.quote
+                            )
+                        elif '**' in p:
+                            plist.append(
+                                self.quote + p.replace('**', self.adelim) +
+                                self.quote
+                            )
+                        else:
                             plist.append(self.quote + str(p) + self.quote)
 
                 lines.append(
@@ -991,19 +1001,15 @@ class BatchWriter:
         Returns:
             str: a bash command for neo4j-admin import
         """
-        
-        if self.delim == "\t":         
-            import_call = (
+
+        # escape backslashes in self.delim and self.adelim
+        delim = self.delim.replace('\\', '\\\\')
+        adelim = self.adelim.replace('\\', '\\\\')
+
+        import_call = (
             f'bin/neo4j-admin import --database={self.db_name} '
-            f'--delimiter="\\t" --array-delimiter="{self.adelim}" ')
-        elif self.adelim == "\t":            
-            import_call = (
-                f'bin/neo4j-admin import --database={self.db_name} '
-                f'--delimiter="{self.delim}" --array-delimiter="\\t" ')
-        else:                    
-            import_call = (
-                f'bin/neo4j-admin import --database={self.db_name} '
-                f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" ')
+            f'--delimiter="{delim}" --array-delimiter="{adelim}" '
+        )
 
         if self.quote == "'":
             import_call += f'--quote="{self.quote}" '
