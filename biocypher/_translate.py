@@ -145,10 +145,14 @@ class BiolinkAdapter:
 
         if cached_hash == current_hash:
             # use cached version
-            logger.info('Using cached Biolink schema.')
             self.mappings = cache['mappings']
             self.reverse_mappings = cache['reverse_mappings']
             self.biolink_version = cache['version']
+
+            logger.info(
+                'Using cached Biolink schema, Biolink model version: '
+                f'{self.biolink_version}.'
+            )
 
             # load biolink leaves from pickle
             biolink_leaves_path = cache['biolink_leaves_path']
