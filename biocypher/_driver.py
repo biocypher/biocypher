@@ -652,12 +652,13 @@ class Driver(neo4j_utils.Driver):
             msg = (
                 'Input entities not accounted for due to them not being '
                 'present in the `schema_config.yaml` configuration file '
-                '(see log for details): \n'
+                '(this is not necessarily a problem, if you did not intend '
+                'to include them in the database; see the log for details): \n'
             )
             for k, v in mt.items():
                 msg += f'    {k}: {v} \n'
 
-            logger.warning(msg)
+            logger.info(msg)
             return mt
 
         else:
