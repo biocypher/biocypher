@@ -87,6 +87,8 @@ class BiolinkAdapter:
             biolink_version:
                 The version of the Biolink schema to use. If not provided,
                 the current default version will be used.
+            clear_cache:
+                If True, the Biolink model cache will be cleared and rebuilt.
 
         TODO: how do we get a YAML for a specific version programmatically?
         """
@@ -95,6 +97,9 @@ class BiolinkAdapter:
         self.schema = schema
         self.biolink_version = biolink_version
         self.biolink_leaves = None
+
+        # property to store ad hoc inheritance to log in case of cache load
+        self._ad_hoc_inheritance = []
 
         self.clear_cache = clear_cache
 
@@ -148,11 +153,18 @@ class BiolinkAdapter:
             self.mappings = cache['mappings']
             self.reverse_mappings = cache['reverse_mappings']
             self.biolink_version = cache['version']
+            self._ad_hoc_inheritance = cache['ad_hoc_inheritance']
 
             logger.info(
                 'Using cached Biolink schema, Biolink model version: '
                 f'{self.biolink_version}.'
             )
+
+            if self._ad_hoc_inheritance:
+                inherit_msg = 'Ad hoc inheritance found in cache:\n'
+                for key, value in self._ad_hoc_inheritance:
+                    inherit_msg += f'   {key} -> {value}\n'
+                logger.info(inherit_msg)
 
             # load biolink leaves from pickle
             biolink_leaves_path = cache['biolink_leaves_path']
@@ -172,6 +184,12 @@ class BiolinkAdapter:
             # translate leaves
             self.translate_leaves_to_biolink()
 
+            if self._ad_hoc_inheritance:
+                inherit_msg = 'Ad hoc inheritance found in config:\n'
+                for key, value in self._ad_hoc_inheritance:
+                    inherit_msg += f'   {key} -> {value}\n'
+                logger.info(inherit_msg)
+
             # save JSON and picke to cache
             if not os.path.exists(cache_dir):
                 os.makedirs(cache_dir)
@@ -188,6 +206,7 @@ class BiolinkAdapter:
                 'reverse_mappings': self.reverse_mappings,
                 'version': self.biolink_version,
                 'hash': current_hash,
+                'ad_hoc_inheritance': self._ad_hoc_inheritance,
             }
             with open(cache_path, 'w') as f:
                 json.dump(cache, f)
@@ -394,11 +413,7 @@ class BiolinkAdapter:
         parents = _misc.to_list(values.get('is_a'))
         ancestors = []
 
-        logger.info(
-            'Received ad hoc multiple inheritance '
-            'information; updating pseudo-Biolink node '
-            f'by setting `{entity}` as a child of `{parents[0]}`.',
-        )
+        self._ad_hoc_inheritance.append((parents[0], entity))
 
         while parents:
             parent = parents.pop(0)
@@ -445,11 +460,7 @@ class BiolinkAdapter:
         parents = _misc.to_list(values.get('is_a'))
         ancestors = []
 
-        logger.info(
-            'Received ad hoc multiple inheritance '
-            'information; updating pseudo-Biolink edge '
-            f'by setting `{entity}` as a child of `{parents[0]}`.',
-        )
+        self._ad_hoc_inheritance.append((parents[0], entity))
 
         while parents:
             parent = parents.pop(0)
