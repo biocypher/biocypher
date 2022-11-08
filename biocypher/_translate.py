@@ -47,7 +47,7 @@ import hashlib
 
 from bmt.utils import sentencecase_to_camelcase
 from more_itertools import peekable
-from linkml_runtime.linkml_model.meta import ClassDefinition
+from linkml_runtime.linkml_model.meta import TypeDefinition, ClassDefinition
 import bmt
 import appdirs
 
@@ -339,7 +339,7 @@ class BiolinkAdapter:
         }
         for class_name, properties in self.biolink_leaves.items():
 
-            if isinstance(properties['class_definition'], bmt.TypeDefinition):
+            if isinstance(properties['class_definition'], TypeDefinition):
                 logger.warning(
                     f'Leaf `{class_name}` is a type definition, not a class.'
                     ' This is not supported yet.'
