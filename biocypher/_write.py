@@ -551,11 +551,6 @@ class BatchWriter:
                             plist.append(
                                 self.quote + self.adelim.join(p) + self.quote
                             )
-                        elif '**' in p:
-                            plist.append(
-                                self.quote + p.replace('**', self.adelim) +
-                                self.quote
-                            )
                         else:
                             plist.append(self.quote + str(p) + self.quote)
 
