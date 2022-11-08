@@ -219,7 +219,7 @@ class BiolinkAdapter:
             self.biolink_version = self.toolkit.get_model_version()
             logger.info(
                 'Creating BioLink model toolkit from default schema.'
-                f' Version: {self.biolink_version}'
+                f' Biolink model version: {self.biolink_version}'
             )
 
     def translate_leaves_to_biolink(self):
