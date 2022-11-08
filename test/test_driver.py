@@ -386,3 +386,7 @@ def test_log_missing_bl_types(driver):
     mt = driver.log_missing_bl_types()
 
     assert mt.get('a') == 1 and mt.get('b') == 2
+
+
+def test_treelib_vis(driver):
+    pass

@@ -100,6 +100,7 @@ class BiolinkAdapter:
 
         # property to store ad hoc inheritance to log in case of cache load
         self._ad_hoc_inheritance = []
+        self.inheritance_tree = None
 
         self.clear_cache = clear_cache
 
@@ -154,6 +155,7 @@ class BiolinkAdapter:
             self.reverse_mappings = cache['reverse_mappings']
             self.biolink_version = cache['version']
             self._ad_hoc_inheritance = cache['ad_hoc_inheritance']
+            self.inheritance_tree = cache['inheritance_tree']
 
             logger.info(
                 'Using cached Biolink schema, Biolink model version: '
@@ -183,6 +185,8 @@ class BiolinkAdapter:
             self.init_toolkit()
             # translate leaves
             self.translate_leaves_to_biolink()
+            # create complete ontology backbone
+            self.create_ontology_backbone()
 
             if self._ad_hoc_inheritance:
                 inherit_msg = 'Ad hoc inheritance found in config:\n'
@@ -207,6 +211,7 @@ class BiolinkAdapter:
                 'version': self.biolink_version,
                 'hash': current_hash,
                 'ad_hoc_inheritance': self._ad_hoc_inheritance,
+                'inheritance_tree': self.inheritance_tree,
             }
             with open(cache_path, 'w') as f:
                 json.dump(cache, f)
@@ -320,6 +325,51 @@ class BiolinkAdapter:
 
                 # build class definition for virtual leaf
                 self._build_biolink_class(entity, values)
+
+    def create_ontology_backbone(self):
+        """
+        Create the backbone of the ontology by adding all classes that are
+        ancestors of the leaves to receive a coherent parent-child structure.
+        """
+
+        # refactor inheritance tree to be compatible with treelib
+        treedict = {
+            'entity': None,  # root node, named itself to stop while loop
+            'mixin': 'entity',
+        }
+        for class_name, properties in self.biolink_leaves.items():
+
+            if properties['class_definition']['is_a'] is not None:
+
+                parent = properties['class_definition']['is_a']
+
+                # add to treedict
+                treedict[class_name] = parent
+
+        # find parents that are not in tree (apart from root node)
+        parents = set(treedict.values())
+        parents.discard(None)
+        children = set(treedict.keys())
+
+        # while there are still parents that are not in the tree
+        while parents - children:
+            missing = parents - children
+
+            # add missing parents to tree
+            for child in missing:
+                parent = self.toolkit.get_parent(child)
+                if parent:
+                    treedict[child] = parent
+
+                # remove root and mixins
+                if self.toolkit.is_mixin(child):
+                    treedict[child] = 'mixin'
+
+            parents = set(treedict.values())
+            parents.discard(None)
+            children = set(treedict.keys())
+
+        self.inheritance_tree = treedict
 
     def translate_term(self, term):
         """
@@ -522,6 +572,20 @@ class BiolinkAdapter:
             )
         else:
             return sentencecase_to_camelcase(name)
+
+    def show_ontology_structure(self):
+        """
+        Show the ontology structure using treelib.
+        """
+
+        tree = _misc.create_tree_visualisation(self.inheritance_tree)
+        print(
+            'Showing ontology structure, '
+            f'based on Biolink {self.biolink_version}:'
+        )
+        tree.show()
+
+        return tree
 
 
 # Biolink toolkit wiki:

@@ -665,6 +665,16 @@ class Driver(neo4j_utils.Driver):
             logger.info('No missing Biolink types in input.')
             return None
 
+    def show_ontology_structure(self) -> None:
+        """
+        Show the ontology structure of the database using the Biolink schema and
+        treelib.
+        """
+
+        self.start_bl_adapter()
+
+        self.bl_adapter.show_ontology_structure()
+
     # TRANSLATION METHODS ###
 
     def translate_term(self, term: str) -> str:
