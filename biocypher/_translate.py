@@ -156,7 +156,13 @@ class BiolinkAdapter:
                 self.biolink_leaves = pickle.load(f)
 
         else:
-            logger.info('Building Biolink schema and saving cache.')
+            logger.info(
+                'Building Biolink schema and saving to cache. '
+                'This step can sometimes take several minutes for reasons '
+                'related to LinkML online functions. It is so far not clear '
+                'what exactly causes it, but an issue has been opened at '
+                'the source. Please try again shortly.'
+            )
             # initialise biolink toolkit
             self.init_toolkit()
             # translate leaves
