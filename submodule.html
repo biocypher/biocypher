@@ -311,6 +311,13 @@ the <cite>schema_config.yaml</cite> and print them to the logger.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="biocypher._driver.Driver.show_ontology_structure">
+<span class="sig-name descname"><span class="pre">show_ontology_structure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#biocypher._driver.Driver.show_ontology_structure" title="Permalink to this definition"></a></dt>
+<dd><p>Show the ontology structure of the database using the Biolink schema and
+treelib.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="biocypher._driver.Driver.start_batch_writer">
 <span class="sig-name descname"><span class="pre">start_batch_writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#biocypher._driver.Driver.start_batch_writer" title="Permalink to this definition"></a></dt>
 <dd><p>Instantiate the batch writer if it does not exist.</p>
@@ -695,6 +702,13 @@ properties as second-level dict.</p>
 <p>Stores schema mappings to allow (reverse) translation of terms and
 queries.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.create_ontology_backbone">
+<span class="sig-name descname"><span class="pre">create_ontology_backbone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.create_ontology_backbone" title="Permalink to this definition"></a></dt>
+<dd><p>Create the backbone of the ontology by adding all classes that are
+ancestors of the leaves to receive a coherent parent-child structure.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.init_toolkit">
 <span class="sig-name descname"><span class="pre">init_toolkit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.init_toolkit" title="Permalink to this definition"></a></dt>
 <dd><p>Set Biolink schema to use. By default, BioCypher should use the public
@@ -731,6 +745,12 @@ now.</p>
 <dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.reverse_translate_term">
 <span class="sig-name descname"><span class="pre">reverse_translate_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.reverse_translate_term" title="Permalink to this definition"></a></dt>
 <dd><p>Reverse translate a single term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.show_ontology_structure">
+<span class="sig-name descname"><span class="pre">show_ontology_structure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.show_ontology_structure" title="Permalink to this definition"></a></dt>
+<dd><p>Show the ontology structure using treelib.</p>
 </dd></dl>
 
 <dl class="py method">
