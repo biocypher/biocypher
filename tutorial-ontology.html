@@ -248,7 +248,11 @@ of <code class="docutils literal notranslate"><span class="pre">protein</span></
 </div>
 <p>Explicit inheritance can also be used to introduce new relationship classes.
 However, if the output is a Neo4j graph, these relationships must be represented
-as nodes, because edges do not allow multiple labels. For instance, we have
+as nodes to provide full functionality, since edges do not allow multiple
+labels. This does not mean that explicit inheritance cannot be used in edges; it
+is even recommended to do so to situate all components of the knowledge graph in
+the ontological hierarchy. However, to have the ancestry represented in the
+resulting Neo4j graph DB, multiple labels are required. For instance, we have
 already used the <code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">protein</span> <span class="pre">interaction</span></code> relationship in the basic
 tutorial (<a class="reference internal" href="tutorial.html#tut-relationships"><span class="std std-ref">part 6</span></a>), making it a child of the Biolink model
 class <code class="docutils literal notranslate"><span class="pre">pairwise</span> <span class="pre">molecular</span> <span class="pre">interaction</span></code>. To reiterate:</p>
@@ -269,7 +273,7 @@ wanted to further extend the protein-protein interaction with a more specific
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id5" title="Permalink to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enzymatic interaction</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">protein protein interaction</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">molecular interaction</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">protein protein interaction</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">pairwise molecular interaction</span><span class="p p-Indicator">]</span><span class="w"></span>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># ...</span><span class="w"></span>
 </pre></div>
@@ -277,10 +281,11 @@ wanted to further extend the protein-protein interaction with a more specific
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>To create this multiple inheritance chain, we do not require the creation of
-a <code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">protein</span> <span class="pre">interaction</span></code> class as shown above; all intermediary classes
-are automatically created by BioCypher and inserted into the ontological
-hierarchy.</p>
+<p>To create this multiple inheritance chain, we do not require the creation of a
+<code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">protein</span> <span class="pre">interaction</span></code> class as shown above; all intermediary classes are
+automatically created by BioCypher and inserted into the ontological hierarchy.
+To obtain a continuous ontology tree, the target class (i.e., the last in the
+list) must be a real Biolink model class.</p>
 </div>
 </section>
 <section id="implicit-inheritance">
