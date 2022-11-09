@@ -100,10 +100,10 @@ class Driver(neo4j_utils.Driver):
         db_passwd: Optional[str] = None,
         fetch_size: int = 1000,
         wipe: bool = False,
-        offline: bool = False,
-        increment_version=True,
+        offline: Optional[bool] = None,
+        increment_version: bool = True,
         user_schema_config_path: Optional[str] = None,
-        clear_cache: bool = False,
+        clear_cache: Optional[bool] = None,
         delimiter: Optional[str] = None,
         array_delimiter: Optional[str] = None,
         quote_char: Optional[str] = None,
@@ -123,9 +123,8 @@ class Driver(neo4j_utils.Driver):
         self.skip_duplicate_nodes = skip_duplicate_nodes
         self.wipe = wipe
 
-        # TODO: bools in config?
-        self.offline = offline
-        self.clear_cache = clear_cache
+        self.offline = offline or _config('offline')
+        self.clear_cache = clear_cache or _config('clear_cache')
 
         if offline:
 
