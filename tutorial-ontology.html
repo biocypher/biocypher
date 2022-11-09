@@ -149,7 +149,10 @@ driver:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Visualising the ontology hierarchy</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">biocypher</span>
-<span class="n">driver</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span><span class="n">offline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># no need to connect or to load data</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span>
+    <span class="n">offline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># no need to connect or to load data</span>
+    <span class="n">user_schema_config_path</span><span class="o">=</span><span class="s2">&quot;tutorial/06_schema_config.yaml&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="n">driver</span><span class="o">.</span><span class="n">show_ontology_structure</span><span class="p">()</span>
 </pre></div>
 </div>
