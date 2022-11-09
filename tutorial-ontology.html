@@ -395,7 +395,8 @@ existing Biolink class name.</p>
 <p>We can visualise the structure of the ontology as we have before using
 <code class="docutils literal notranslate"><span class="pre">driver.show_ontology_structure()</span></code>, and we observe that the <code class="docutils literal notranslate"><span class="pre">complex</span></code> class is
 now a synonym for the <code class="docutils literal notranslate"><span class="pre">macromolecular</span> <span class="pre">complex</span> <span class="pre">mixin</span></code> class and has taken its
-place as the child of <code class="docutils literal notranslate"><span class="pre">macromolecular</span> <span class="pre">machine</span> <span class="pre">mixin</span></code>:</p>
+place as the child of <code class="docutils literal notranslate"><span class="pre">macromolecular</span> <span class="pre">machine</span> <span class="pre">mixin</span></code> (their being synonyms
+indicated as an equals sign):</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Showing ontology structure, based on Biolink 3.0.3:
 entity
 ├── association
@@ -405,7 +406,7 @@ entity
 │               └── protein protein interaction
 ├── mixin
 │   └── macromolecular machine mixin
-│       └── complex
+│       └── complex = macromolecular complex mixin
 └── named thing
     └── biological entity
         └── polypeptide
