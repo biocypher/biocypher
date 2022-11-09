@@ -58,7 +58,15 @@ def create_tree_visualisation(inheritance_tree: dict) -> str:
     # find root node
     classes = set(inheritance_tree.keys())
     parents = set(inheritance_tree.values())
-    root = list(parents - classes)[0]
+    root = list(parents - classes)
+
+    if len(root) > 1:
+        raise ValueError(
+            'Inheritance tree cannot have more than one root node.'
+        )
+    else:
+        root = root[0]
+
     if not root:
         # find key whose value is None
         root = list(inheritance_tree.keys())[list(inheritance_tree.values()

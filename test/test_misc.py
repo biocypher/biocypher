@@ -1,3 +1,5 @@
+import pytest
+
 from biocypher._misc import create_tree_visualisation
 
 inheritance_tree = {
@@ -11,6 +13,15 @@ inheritance_tree = {
     'I': 'G',
 }
 
+disjoint_tree = {
+    'B': 'A',
+    'C': 'A',
+    'D': 'B',
+    'F': 'E',
+    'G': 'E',
+    'H': 'F',
+}
+
 
 def test_tree_vis():
 
@@ -19,6 +30,12 @@ def test_tree_vis():
     assert tree_vis.DEPTH == 1
     assert tree_vis.WIDTH == 2
     assert tree_vis.root == 'A'
+
+
+def test_disjoint_tree():
+
+    with pytest.raises(ValueError):
+        create_tree_visualisation(disjoint_tree)
 
 
 if __name__ == '__main__':
