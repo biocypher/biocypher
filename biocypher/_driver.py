@@ -98,6 +98,7 @@ class Driver(neo4j_utils.Driver):
         db_uri: Optional[str] = None,
         db_user: Optional[str] = None,
         db_passwd: Optional[str] = None,
+        multi_db: Optional[bool] = None,
         fetch_size: int = 1000,
         wipe: bool = False,
         offline: Optional[bool] = None,
@@ -115,6 +116,7 @@ class Driver(neo4j_utils.Driver):
         db_uri = db_uri or _config('neo4j_uri')
         db_user = db_user or _config('neo4j_user')
         db_passwd = db_passwd or _config('neo4j_pw')
+        multi_db = multi_db or _config('neo4j_multi_db')
         self.db_delim = delimiter or _config('neo4j_delimiter')
         self.db_adelim = array_delimiter or _config('neo4j_array_delimiter')
         self.db_quote = quote_char or _config('neo4j_quote_char')
