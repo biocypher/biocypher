@@ -1,4 +1,5 @@
 from tutorial.data_generator import (
+    Complex,
     EntrezProtein,
     InteractionGenerator,
     RandomPropertyProtein,
@@ -11,26 +12,27 @@ __all__ = ['main']
 
 def main():
     # Setup: create a list of proteins to be imported
-    proteins = [
+    proteins_complexes = [
         p for sublist in zip(
             [RandomPropertyProtein() for _ in range(10)],
             [RandomPropertyProteinIsoform() for _ in range(10)],
             [EntrezProtein() for _ in range(10)],
+            [Complex() for _ in range(10)],
         ) for p in sublist
     ]
 
     # Extract id, label, and property dictionary
     def node_generator():
-        for protein in proteins:
+        for p_or_c in proteins_complexes:
             yield (
-                protein.get_id(),
-                protein.get_label(),
-                protein.get_properties(),
+                p_or_c.get_id(),
+                p_or_c.get_label(),
+                p_or_c.get_properties(),
             )
 
     # Simulate edges
     ppi = InteractionGenerator(
-        interactors=[p.get_id() for p in proteins],
+        interactors=[p.get_id() for p in proteins_complexes],
         interaction_probability=0.05,
     ).generate_interactions()
 
@@ -48,8 +50,8 @@ def main():
     # Create BioCypher driver
     driver = biocypher.Driver(
         offline=True,  # start without connecting to Neo4j instance
-        db_name='relationships',  # name of database for import call
-        user_schema_config_path='tutorial/06_schema_config.yaml',
+        db_name='synonyms',  # name of database for import call
+        user_schema_config_path='tutorial/07_schema_config.yaml',
     )
     # Run the import
     driver.write_nodes(node_generator())
