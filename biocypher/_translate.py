@@ -590,6 +590,15 @@ class BiolinkAdapter:
             'Showing ontology structure, '
             f'based on Biolink {self.biolink_version}:'
         )
+
+        # add synonym information
+        for class_name in self.leaves:
+            if self.leaves[class_name].get('synonym_for'):
+                tree.nodes[class_name].tag = (
+                    f'{class_name} = '
+                    f"{self.leaves[class_name].get('synonym_for')}"
+                )
+
         tree.show()
 
         return tree
