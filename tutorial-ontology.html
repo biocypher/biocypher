@@ -148,14 +148,16 @@ of the structure of our project, we can run the following command via the
 driver:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Visualising the ontology hierarchy</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span><span class="o">.</span><span class="n">show_ontology_structure</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">biocypher</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span><span class="n">offline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># no need to connect or to load data</span>
+<span class="n">driver</span><span class="o">.</span><span class="n">show_ontology_structure</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<p>This will print a tree visualisation of the ontology hierarchy to the console
-using the treelib library. You can see this in action in tutorial
-<a class="reference internal" href="tutorial.html#tut-relationships"><span class="std std-ref">part 6</span></a> (<code class="docutils literal notranslate"><span class="pre">tutorial/06_relationships.py</span></code>). The output will
-look something like this:</p>
+<p>This will build the ontology scaffold and print a tree visualisation of its
+hierarchy to the console using the treelib library. You can see this in action
+in tutorial <a class="reference internal" href="tutorial.html#tut-relationships"><span class="std std-ref">part 6</span></a> (<code class="docutils literal notranslate"><span class="pre">tutorial/06_relationships.py</span></code>). The
+output will look something like this:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Showing ontology structure, based on Biolink 3.0.3:
 entity
 ├── association
