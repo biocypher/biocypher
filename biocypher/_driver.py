@@ -690,7 +690,11 @@ class Driver(neo4j_utils.Driver):
 
             logger.info(msg)
 
-            logger.debug(f'Duplicate node IDs: {nids}')
+            idmsg = ('Duplicate node IDs encountered: \n')
+            for _id in nids:
+                idmsg += f'    {_id}\n'
+
+            logger.debug(idmsg)
 
         else:
             logger.info('No duplicate nodes in input.')
@@ -708,7 +712,11 @@ class Driver(neo4j_utils.Driver):
 
             logger.info(msg)
 
-            logger.debug(f'Duplicate edge IDs: {eids}')
+            idmsg = ('Duplicate edge IDs encountered: \n')
+            for _id in eids:
+                idmsg += f'    {_id}\n'
+
+            logger.debug(idmsg)
 
         else:
             logger.info('No duplicate edges in input.')
