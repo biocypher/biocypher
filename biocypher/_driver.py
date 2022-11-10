@@ -666,6 +666,48 @@ class Driver(neo4j_utils.Driver):
             logger.info('No missing Biolink types in input.')
             return None
 
+    def log_duplicates(self):
+        """
+        Get the set of duplicate nodes and edges encountered and print them to
+        the logger.
+        """
+
+        dn = self.batch_writer.get_duplicate_nodes()
+
+        if dn:
+
+            ntypes = dn[0]
+            nids = dn[1]
+
+            msg = ('Duplicate node types encountered (IDs in log): \n')
+            for typ in ntypes:
+                msg += f'    {typ}\n'
+
+            logger.info(msg)
+
+            logger.debug(f'Duplicate node IDs: {nids}')
+
+        else:
+            logger.info('No duplicate nodes in input.')
+
+        de = self.batch_writer.get_duplicate_edges()
+
+        if de:
+
+            etypes = de[0]
+            eids = de[1]
+
+            msg = ('Duplicate edge types encountered (IDs in log): \n')
+            for typ in etypes:
+                msg += f'    {typ}\n'
+
+            logger.info(msg)
+
+            logger.debug(f'Duplicate edge IDs: {eids}')
+
+        else:
+            logger.info('No duplicate edges in input.')
+
     def show_ontology_structure(self) -> None:
         """
         Show the ontology structure of the database using the Biolink schema and

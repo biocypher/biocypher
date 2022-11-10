@@ -918,3 +918,85 @@ def test_write_synonym(bw):
 
     assert passed and os.path.exists(csv)
     assert comp == "p1;'StringProperty1';4.32;9606;'p1';'id';Complex|MacromolecularComplexMixin|MacromolecularMachineMixin\np2;'StringProperty1';4.32;9606;'p2';'id';Complex|MacromolecularComplexMixin|MacromolecularMachineMixin\np3;'StringProperty1';4.32;9606;'p3';'id';Complex|MacromolecularComplexMixin|MacromolecularMachineMixin\np4;'StringProperty1';4.32;9606;'p4';'id';Complex|MacromolecularComplexMixin|MacromolecularMachineMixin\n"
+
+
+def test_duplicate_nodes(bw):
+    nodes = _get_nodes(4)
+    nodes.append(
+        BioCypherNode(
+            node_id='p1',
+            node_label='protein',
+            properties={
+                'name': 'StringProperty1',
+                'score': 4.32,
+                'taxon': 9606,
+                'genes': ['gene1', 'gene2']
+            }
+        )
+    )
+
+    passed = bw.write_nodes(nodes)
+
+    assert 'protein' in bw.duplicate_node_types
+    assert 'p1' in bw.duplicate_node_ids
+
+
+def test_get_duplicate_nodes(bw):
+    nodes = _get_nodes(4)
+    nodes.append(
+        BioCypherNode(
+            node_id='p1',
+            node_label='protein',
+            properties={
+                'name': 'StringProperty1',
+                'score': 4.32,
+                'taxon': 9606,
+                'genes': ['gene1', 'gene2']
+            }
+        )
+    )
+
+    bw.write_nodes(nodes)
+
+    d = bw.get_duplicate_nodes()
+    types = d[0]
+    ids = d[1]
+
+    assert 'protein' in types
+    assert 'p1' in ids
+
+
+def test_duplicate_edges(bw):
+    edges = _get_edges(4)
+    edges.append(
+        BioCypherEdge(
+            source_id='p1',
+            target_id='p2',
+            relationship_label='PERTURBED_IN_DISEASE',
+        )
+    )
+
+    passed = bw.write_edges(edges)
+
+    assert 'PERTURBED_IN_DISEASE' in bw.duplicate_edge_types
+    assert 'p1_p2' in bw.duplicate_edge_ids
+
+
+def test_get_duplicate_edges(bw):
+    edges = _get_edges(4)
+    edges.append(
+        BioCypherEdge(
+            source_id='p1',
+            target_id='p2',
+            relationship_label='PERTURBED_IN_DISEASE',
+        )
+    )
+
+    bw.write_edges(edges)
+
+    d = bw.get_duplicate_edges()
+    types = d[0]
+    ids = d[1]
+
+    assert 'PERTURBED_IN_DISEASE' in types
+    assert 'p1_p2' in ids

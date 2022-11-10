@@ -155,8 +155,23 @@ class BatchWriter:
 
         self.seen_node_ids = set()  # set to store the ids of nodes that have
         # already been written; to avoid duplicates
-        self.duplicate_types = set()  # set to store the types of nodes that
+        self.duplicate_node_ids = set(
+        )  # set to store the ids of nodes that were
+        # found to have duplicates (avoid overloading the log)
+        self.duplicate_node_types = set(
+        )  # set to store the types of nodes that
         # have been found to have duplicates
+
+        self.seen_edges = {}  # dict to store the set of edges that
+        # have already been written; to avoid duplicates; per edge type
+        self.duplicate_edge_ids = set()  # set to store the ids of edges that
+        # were found to have duplicates (avoid overloading the log)
+        self.duplicate_edge_types = set(
+        )  # set to store the types of edges that
+        # have been found to have duplicates
+
+        # TODO not memory efficient, but should be fine for most cases; is
+        # there a more elegant solution?
 
     def write_nodes(self, nodes, batch_size=int(1e6)):
         """
@@ -289,12 +304,11 @@ class BatchWriter:
 
                 # check if node has already been written, if so skip
                 if _id in self.seen_node_ids:
-                    logger.debug(f'Duplicate node id: {_id}')
-                    if not label in self.duplicate_types:
-                        self.duplicate_types.add(label)
+                    self.duplicate_node_ids.add(_id)
+                    if not label in self.duplicate_node_types:
+                        self.duplicate_node_types.add(label)
                         logger.warning(
                             f'Duplicate nodes found in type {label}. '
-                            'More info can be found in the log file.',
                         )
                     continue
 
@@ -586,12 +600,6 @@ class BatchWriter:
               called on one iterable containing one type of edge only
         """
 
-        self.seen_edges = set()  # set to store the set of edges that
-        # have already been written; to avoid duplicates; per edge type
-
-        # TODO not memory efficient, but should be fine for most cases; is
-        # there a more elegant solution?
-
         if isinstance(edges, GeneratorType):
             logger.debug('Writing edge CSV from generator.')
 
@@ -622,21 +630,23 @@ class BatchWriter:
 
                 label = e.get_label()
 
-                src_tar_type = '_'.join([e.get_source_id(), e.get_target_id()])
+                if not label in self.seen_edges.keys():
+                    self.seen_edges[label] = set()
+
+                src_tar_id = '_'.join([e.get_source_id(), e.get_target_id()])
 
                 # check for duplicates
-                if src_tar_type in self.seen_edges:
-                    logger.debug(f'Duplicate relationship: {e}')
-                    if not label in self.duplicate_types:
-                        self.duplicate_types.add(label)
+                if src_tar_id in self.seen_edges.get(label, set()):
+                    self.duplicate_edge_ids.add(src_tar_id)
+                    if not label in self.duplicate_edge_types:
+                        self.duplicate_edge_types.add(label)
                         logger.warning(
-                            f'Duplicate nodes found in type {label}. '
-                            'More info can be found in the log file.',
+                            f'Duplicate edges found in type {label}. '
                         )
                     continue
 
                 else:
-                    self.seen_edges.add(src_tar_type)
+                    self.seen_edges[label].add(src_tar_id)
 
                 if not label in bins.keys():
                     # start new list
@@ -1023,3 +1033,29 @@ class BatchWriter:
         import_call += self.import_call_edges
 
         return import_call
+
+    def get_duplicate_nodes(self):
+        """
+        Function to return a list of duplicate nodes.
+
+        Returns:
+            list: list of duplicate nodes
+        """
+
+        if self.duplicate_node_types:
+            return (self.duplicate_node_types, self.duplicate_node_ids)
+        else:
+            return None
+
+    def get_duplicate_edges(self):
+        """
+        Function to return a list of duplicate edges.
+
+        Returns:
+            list: list of duplicate edges
+        """
+
+        if self.duplicate_edge_types:
+            return (self.duplicate_edge_types, self.duplicate_edge_ids)
+        else:
+            return None
