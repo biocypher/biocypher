@@ -587,3 +587,25 @@ def test_show_ontology(biolink_adapter):
     treevis = biolink_adapter.show_ontology_structure()
 
     assert treevis is not None
+
+
+def test_strict_mode_error(translator):
+    translator.strict_mode = True
+
+    n1 = ('n2', 'Test', {'prop': 'val', 'source': 'test', 'licence': 'test'})
+    n2 = ('n1', 'Test', {'prop': 'val'})
+
+    with pytest.raises(ValueError):
+        list(translator.translate_nodes([n1, n2]))
+
+    e1 = (
+        'n1', 'n2', 'Test', {
+            'prop': 'val',
+            'source': 'test',
+            'licence': 'test'
+        }
+    )
+    e2 = ('n1', 'n2', 'Test', {'prop': 'val'})
+
+    with pytest.raises(ValueError):
+        list(translator.translate_edges([e1, e2]))

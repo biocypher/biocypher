@@ -613,7 +613,7 @@ class BiolinkAdapter:
 
 
 class Translator:
-    def __init__(self, leaves: dict[str, dict]):
+    def __init__(self, leaves: dict[str, dict], strict_mode: bool = False):
         """
         Args:
             leaves:
@@ -625,6 +625,7 @@ class Translator:
         """
 
         self.leaves = leaves
+        self.strict_mode = strict_mode
         self._update_bl_types()
 
         # record nodes without biolink type configured in schema_config.yaml
@@ -650,6 +651,19 @@ class Translator:
         self._log_begin_translate(id_type_prop_tuples, 'nodes')
 
         for _id, _type, _props in id_type_prop_tuples:
+
+            # check for strict mode requirements
+            if self.strict_mode:
+                if not 'source' in _props:
+                    raise ValueError(
+                        f'Node {_id} does not have a `source` property.',
+                        ' This is required in strict mode.',
+                    )
+                if not 'licence' in _props:
+                    raise ValueError(
+                        f'Node {_id} does not have a `licence` property.',
+                        ' This is required in strict mode.',
+                    )
 
             # find the node in leaves that represents biolink node type
             _bl_type = self._get_bl_type(_type)
@@ -767,6 +781,19 @@ class Translator:
             ]
 
         for _id, _src, _tar, _type, _props in id_src_tar_type_prop_tuples:
+
+            # check for strict mode requirements
+            if self.strict_mode:
+                if not 'source' in _props:
+                    raise ValueError(
+                        f'Edge {_id if _id else (_src, _tar)} does not have a `source` property.',
+                        ' This is required in strict mode.',
+                    )
+                if not 'licence' in _props:
+                    raise ValueError(
+                        f'Edge {_id if _id else (_src, _tar)} does not have a `licence` property.',
+                        ' This is required in strict mode.',
+                    )
 
             # match the input label (_type) to
             # a Biolink label from schema_config

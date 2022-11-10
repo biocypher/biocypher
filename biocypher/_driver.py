@@ -100,16 +100,17 @@ class Driver(neo4j_utils.Driver):
         db_passwd: Optional[str] = None,
         multi_db: Optional[bool] = None,
         fetch_size: int = 1000,
+        skip_bad_relationships: bool = False,
+        skip_duplicate_nodes: bool = False,
         wipe: bool = False,
+        strict_mode: bool = False,
         offline: Optional[bool] = None,
         increment_version: bool = True,
-        user_schema_config_path: Optional[str] = None,
         clear_cache: Optional[bool] = None,
+        user_schema_config_path: Optional[str] = None,
         delimiter: Optional[str] = None,
         array_delimiter: Optional[str] = None,
         quote_char: Optional[str] = None,
-        skip_bad_relationships: bool = False,
-        skip_duplicate_nodes: bool = False,
     ):
 
         db_name = db_name or _config('neo4j_db')
@@ -125,6 +126,7 @@ class Driver(neo4j_utils.Driver):
         self.skip_duplicate_nodes = skip_duplicate_nodes
         self.wipe = wipe
 
+        self.strict_mode = strict_mode
         self.offline = offline or _config('offline')
         self.clear_cache = clear_cache or _config('clear_cache')
 
@@ -257,7 +259,10 @@ class Driver(neo4j_utils.Driver):
 
     def _update_translator(self):
 
-        self.translator = Translator(leaves=self.db_meta.leaves)
+        self.translator = Translator(
+            leaves=self.db_meta.leaves,
+            strict_mode=self.strict_mode,
+        )
 
     def init_db(self):
         """
