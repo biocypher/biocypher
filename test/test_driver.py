@@ -386,3 +386,13 @@ def test_log_missing_bl_types(driver):
     mt = driver.log_missing_bl_types()
 
     assert mt.get('a') == 1 and mt.get('b') == 2
+
+
+def test_schema_config_from_web():
+    driver = Driver(
+        offline=True,
+        user_schema_config_path=
+        'https://raw.githubusercontent.com/saezlab/BioCypher/main/biocypher/_config/test_schema_config.yaml'
+    )
+
+    assert driver.translator._bl_types

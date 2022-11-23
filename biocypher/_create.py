@@ -32,6 +32,7 @@ Todo:
 from typing import Union, Optional
 from datetime import datetime
 from dataclasses import field, dataclass
+from urllib.request import urlopen
 import os
 
 import yaml
@@ -491,12 +492,23 @@ class VersionNode:
 
         else:
             # load default yaml from module
-            # get graph state from config
-            if config_file is not None:
-                with open(config_file, 'r') as f:
-                    dataMap = yaml.safe_load(f)
-            else:
+            if config_file is None:
+
                 dataMap = config.module_data('schema_config')
+
+            # load yaml file from web
+            elif config_file.startswith('http'):
+
+                with urlopen(config_file) as f:
+
+                    dataMap = yaml.safe_load(f)
+
+            # get graph state from config (assume file is local)
+            else:
+
+                with open(config_file, 'r') as f:
+
+                    dataMap = yaml.safe_load(f)
 
             return dataMap
 
