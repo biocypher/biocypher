@@ -653,17 +653,19 @@ class Translator:
         for _id, _type, _props in id_type_prop_tuples:
 
             # check for strict mode requirements
+            required_props = ['source', 'licence', 'version']
+
             if self.strict_mode:
-                if not 'source' in _props:
-                    raise ValueError(
-                        f'Node {_id} does not have a `source` property.',
-                        ' This is required in strict mode.',
-                    )
-                if not 'licence' in _props:
-                    raise ValueError(
-                        f'Node {_id} does not have a `licence` property.',
-                        ' This is required in strict mode.',
-                    )
+                # rename 'license' to 'licence' in _props
+                if _props.get('license'):
+                    _props['licence'] = _props.pop('license')
+
+                for prop in required_props:
+                    if prop not in _props:
+                        raise ValueError(
+                            f'Property `{prop}` missing from node {_id}. '
+                            'Strict mode is enabled, so this is not allowed.'
+                        )
 
             # find the node in leaves that represents biolink node type
             _bl_type = self._get_bl_type(_type)
