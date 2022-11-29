@@ -130,7 +130,7 @@ class Driver(neo4j_utils.Driver):
         self.offline = offline or _config('offline')
         self.clear_cache = clear_cache or _config('clear_cache')
 
-        if offline:
+        if self.offline:
 
             logger.info('Offline mode: no connection to Neo4j.')
 
