@@ -105,16 +105,42 @@ class BatchWriter:
     to convert and extend the hierarchy.
 
     Args:
-        schema:
-            The BioCypher graph schema (from :py:class:`VersionNode`).
+        leaves:
+            The BioCypher graph schema leaves (ontology classes).
+
         bl_adapter:
             Instance of :py:class:`BiolinkAdapter` to enable translation and
             ontology queries
-        path:
+
+        delimiter:
+            The delimiter to use for the CSV files.
+
+        array_delimiter:
+            The delimiter to use for array properties.
+
+        quote:
+            The quote character to use for the CSV files.
+
+        dirname:
             Path for exporting CSV files.
+
         db_name:
             Name of the Neo4j database that will be used in the generated
             commands.
+
+        skip_bad_relationships:
+            Whether to skip relationships that do not have a valid
+            start and end node. (In admin import call.)
+
+        skip_duplicate_nodes:
+            Whether to skip duplicate nodes. (In admin import call.)
+
+        wipe:
+            Whether to force import (removing existing DB content). (In
+            admin import call.)
+
+        strict_mode:
+            Whether to enforce source, version, and license properties.
     """
     def __init__(
         self,
@@ -128,6 +154,7 @@ class BatchWriter:
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
         wipe: bool = True,
+        strict_mode: bool = False,
     ):
         self.db_name = db_name
 
