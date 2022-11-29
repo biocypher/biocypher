@@ -708,7 +708,18 @@ class Translator:
 
         filter_props = self.leaves[bl_type].get('properties', {})
 
+        # strict mode: add required properties
+        if self.strict_mode:
+            filter_props.update(
+                {
+                    'source': 'str',
+                    'licence': 'str',
+                    'version': 'str'
+                },
+            )
+
         exclude_props = self.leaves[bl_type].get('exclude_properties', [])
+
         if isinstance(exclude_props, str):
             exclude_props = [exclude_props]
 
