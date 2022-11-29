@@ -576,6 +576,7 @@ class Driver(neo4j_utils.Driver):
                 skip_bad_relationships=self.skip_bad_relationships,
                 skip_duplicate_nodes=self.skip_duplicate_nodes,
                 wipe=self.wipe,
+                strict_mode=self.strict_mode,
             )
 
     def start_bl_adapter(self) -> None:

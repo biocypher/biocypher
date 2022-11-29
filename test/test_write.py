@@ -60,6 +60,12 @@ path = os.path.join(
 )
 os.makedirs(path, exist_ok=True)
 
+path_strict = os.path.join(
+    tempfile.gettempdir(),
+    f'biocypher-test-{get_random_string(5)}',
+)
+os.makedirs(path_strict, exist_ok=True)
+
 
 @pytest.fixture
 def version_node():
@@ -93,6 +99,30 @@ def bw(version_node):
     for f in os.listdir(path):
         os.remove(os.path.join(path, f))
     os.rmdir(path)
+
+
+@pytest.fixture
+def bw_strict(version_node):
+    bl_adapter = BiolinkAdapter(
+        leaves=version_node.leaves,
+        schema=module_data_path('test-biolink-model'),
+    )
+    bw = BatchWriter(
+        leaves=version_node.leaves,
+        bl_adapter=bl_adapter,
+        dirname=path_strict,
+        delimiter=';',
+        array_delimiter='|',
+        quote="'",
+        strict_mode=True,
+    )
+
+    yield bw
+
+    # teardown
+    for f in os.listdir(path_strict):
+        os.remove(os.path.join(path_strict, f))
+    os.rmdir(path_strict)
 
 
 @pytest.fixture
@@ -1000,3 +1030,31 @@ def test_get_duplicate_edges(bw):
 
     assert 'PERTURBED_IN_DISEASE' in types
     assert 'p1_p2' in ids
+
+
+def test_write_strict(bw_strict):
+
+    n1 = BioCypherNode(
+        node_id='p1',
+        node_label='protein',
+        properties={
+            'name': 'StringProperty1',
+            'score': 4.32,
+            'taxon': 9606,
+            'genes': ['gene1', 'gene2'],
+            'source': 'source1',
+            'version': 'version1',
+            'licence': 'licence1',
+        },
+    )
+
+    passed = bw_strict.write_nodes([n1])
+
+    assert passed
+
+    csv = os.path.join(path_strict, 'Protein-part000.csv')
+
+    with open(csv) as f:
+        prot = f.read()
+
+    assert prot == "p1;'StringProperty1';4.32;9606;'gene1|gene2';'p1';'id';'source1';'version1';'licence1';Protein|GeneProductMixin|ThingWithTaxon|Polypeptide|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|BiologicalEntity|NamedThing|Entity|GeneOrGeneProduct|MacromolecularMachineMixin\n"

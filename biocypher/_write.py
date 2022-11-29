@@ -165,6 +165,8 @@ class BatchWriter:
         self.skip_duplicate_nodes = skip_duplicate_nodes
         self.wipe = wipe
 
+        self.strict_mode = strict_mode
+
         self.leaves = leaves
         self.bl_adapter = bl_adapter
         self.node_property_dict = {}
@@ -356,6 +358,12 @@ class BatchWriter:
                         # created in node creation (`_create.BioCypherNode`)
                         d['id'] = 'str'
                         d['preferred_id'] = 'str'
+
+                        # add strict mode properties
+                        if self.strict_mode:
+                            d['source'] = 'str'
+                            d['version'] = 'str'
+                            d['licence'] = 'str'
 
                     else:
                         d = dict(node.get_properties())
@@ -699,6 +707,13 @@ class BatchWriter:
                                     break
                     if cprops:
                         d = cprops
+
+                        # add strict mode properties
+                        if self.strict_mode:
+                            d['source'] = 'str'
+                            d['version'] = 'str'
+                            d['licence'] = 'str'
+
                     else:
                         d = dict(e.get_properties())
                         # encode property type
