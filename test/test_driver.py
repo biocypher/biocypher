@@ -37,6 +37,7 @@ def driver():
     # neo4j database needs to be running!
     # there needs to be a database called "test" in the neo4j instance
     d = Driver(
+        offline=False,
         db_name='test',
         db_passwd='your_password_here',
         wipe=True,

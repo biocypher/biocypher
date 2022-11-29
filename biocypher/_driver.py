@@ -69,6 +69,8 @@ class Driver(neo4j_utils.Driver):
             Do not connect to the database, but use the provided
             schema to create a graph representation and write CSVs for
             admin import.
+        output_directory:
+            Directory to write CSV files to.
         increment_version:
             Whether to increase version number automatically and create a
             new BioCypher version node in the graph.
@@ -105,6 +107,7 @@ class Driver(neo4j_utils.Driver):
         wipe: bool = False,
         strict_mode: Optional[bool] = None,
         offline: Optional[bool] = None,
+        output_directory: Optional[str] = None,
         increment_version: bool = True,
         clear_cache: Optional[bool] = None,
         user_schema_config_path: Optional[str] = None,
@@ -127,7 +130,8 @@ class Driver(neo4j_utils.Driver):
         self.wipe = wipe
 
         self.strict_mode = strict_mode or _config('strict_mode')
-        self.offline = offline or _config('offline')
+        self.offline = False if not offline else _config('offline')
+        self.output_directory = output_directory or _config('output_directory')
         self.clear_cache = clear_cache or _config('clear_cache')
 
         if self.offline:
@@ -525,7 +529,7 @@ class Driver(neo4j_utils.Driver):
 
         return result
 
-    def write_nodes(self, nodes, dirname: str = None, db_name: str = None):
+    def write_nodes(self, nodes):
         """
         Write BioCypher nodes to disk using the :mod:`write` module,
         formatting the CSV to enable Neo4j admin import from the target
@@ -542,7 +546,7 @@ class Driver(neo4j_utils.Driver):
         # the biolink model toolkit
         self.start_bl_adapter()
 
-        self.start_batch_writer(dirname, db_name)
+        self.start_batch_writer()
 
         nodes = peekable(nodes)
         if not isinstance(nodes.peek(), BioCypherNode):
@@ -552,11 +556,7 @@ class Driver(neo4j_utils.Driver):
         # write node files
         return self.batch_writer.write_nodes(tnodes)
 
-    def start_batch_writer(
-        self,
-        dirname: str,
-        db_name: str,
-    ) -> None:
+    def start_batch_writer(self, ) -> None:
         """
         Instantiate the batch writer if it does not exist.
 
@@ -571,8 +571,8 @@ class Driver(neo4j_utils.Driver):
                 delimiter=self.db_delim,
                 array_delimiter=self.db_adelim,
                 quote=self.db_quote,
-                dirname=dirname,
-                db_name=db_name or self._db_name,
+                dirname=self.output_directory,
+                db_name=self._db_name,
                 skip_bad_relationships=self.skip_bad_relationships,
                 skip_duplicate_nodes=self.skip_duplicate_nodes,
                 wipe=self.wipe,
@@ -592,8 +592,6 @@ class Driver(neo4j_utils.Driver):
     def write_edges(
         self,
         edges,
-        db_name: str = None,
-        dirname: str = None,
     ) -> None:
         """
         Write BioCypher edges to disk using the :mod:`write` module,
@@ -611,7 +609,7 @@ class Driver(neo4j_utils.Driver):
         # the biolink model toolkit
         self.start_bl_adapter()
 
-        self.start_batch_writer(dirname, db_name)
+        self.start_batch_writer()
 
         edges = peekable(edges)
         if not isinstance(edges.peek(), BioCypherEdge):
