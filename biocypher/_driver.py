@@ -103,7 +103,7 @@ class Driver(neo4j_utils.Driver):
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
         wipe: bool = False,
-        strict_mode: bool = False,
+        strict_mode: Optional[bool] = None,
         offline: Optional[bool] = None,
         increment_version: bool = True,
         clear_cache: Optional[bool] = None,
@@ -126,7 +126,7 @@ class Driver(neo4j_utils.Driver):
         self.skip_duplicate_nodes = skip_duplicate_nodes
         self.wipe = wipe
 
-        self.strict_mode = strict_mode
+        self.strict_mode = strict_mode or _config('strict_mode')
         self.offline = offline or _config('offline')
         self.clear_cache = clear_cache or _config('clear_cache')
 
