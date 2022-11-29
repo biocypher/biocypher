@@ -129,8 +129,12 @@ class Driver(neo4j_utils.Driver):
         self.skip_duplicate_nodes = skip_duplicate_nodes
         self.wipe = wipe
 
+        if offline is None:
+            self.offline = _config('offline')
+        else:
+            self.offline = offline
+
         self.strict_mode = strict_mode or _config('strict_mode')
-        self.offline = False if not offline else _config('offline')
         self.output_directory = output_directory or _config('output_directory')
         self.clear_cache = clear_cache or _config('clear_cache')
 
