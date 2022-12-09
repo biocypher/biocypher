@@ -49,13 +49,103 @@ from bmt.utils import sentencecase_to_camelcase
 from more_itertools import peekable
 from linkml_runtime.linkml_model.meta import TypeDefinition, ClassDefinition
 import bmt
+import obonet
 import appdirs
+import networkx as nx
 
 from . import _misc
 from ._config import _read_yaml, module_data_path
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 __all__ = ['BiolinkAdapter', 'Translator']
+
+
+class OntologyAdapter:
+    """
+    Generic ontology adapter class. Can ingest OBO files and build a hybrid
+    ontology from them. Uses Biolink as the default head ontology if no URL is
+    given.
+
+    Args:
+        head_ontology_url:
+            URL to the head ontology.
+
+        tail_ontology_url:
+            URL to the tail ontology.
+
+        head_join_node:
+            The node in the head ontology to which the tail ontology will be
+            joined.
+
+        tail_join_node:
+            The node in the tail ontology that will be joined to the head
+            ontology.
+
+        bl_adapter:
+            A BiolinkAdapter instance. To be supplied if no head ontology URL
+            is given.
+    """
+    def __init__(
+        self,
+        head_join_node: str,
+        tail_join_node: str,
+        tail_ontology_url: str,
+        head_ontology_url: Optional[str] = None,
+        bl_adapter: Optional['BiolinkAdapter'] = None,
+    ):
+
+        if not head_ontology_url and not bl_adapter:
+            raise ValueError(
+                'Either head_ontology_url or bl_adapter must be supplied.'
+            )
+
+        self.head_ontology_url = head_ontology_url
+        self.tail_ontology_url = tail_ontology_url
+        self.head_join_node = head_join_node
+        self.tail_join_node = tail_join_node
+        self.bl_adapter = bl_adapter
+
+        self.head_ontology = None
+        self.tail_ontology = None
+
+        self.main()
+
+    def main(self):
+        """
+        Main method to be run on instantiation. Loads the ontologies, joins
+        them, and returns the hybrid ontology.
+        """
+        self.load_ontologies()
+        self.join_ontologies()
+
+    def load_ontologies(self):
+        """
+        Loads the ontologies using obonet.
+        """
+        if self.head_ontology_url:
+            self.head_ontology = obonet.read_obo(self.head_ontology_url)
+        else:
+            self.head_ontology = self.bl_adapter.get_networkx_graph()
+
+        self.tail_ontology = obonet.read_obo(self.tail_ontology_url)
+
+    def join_ontologies(self):
+        """
+        Joins the ontologies by adding the tail ontology as a subgraph to the
+        head ontology at the specified join nodes.
+        """
+
+        # subset tail ontology at join node
+        tail_ontology_subgraph = nx.ego_graph(
+            self.tail_ontology,
+            self.tail_join_node,
+            radius=1,
+        )
+
+        # merge subgraph onto head ontology at specified join node
+        self.head_ontology.add_edges_from(
+            tail_ontology_subgraph.edges(self.head_join_node),
+        )
 
 
 class BiolinkAdapter:
@@ -333,10 +423,14 @@ class BiolinkAdapter:
         """
 
         # refactor inheritance tree to be compatible with treelib
-        treedict = {
+        flat_treedict = {
             'entity': None,  # root node
             'mixin': 'entity',
         }
+
+        # create nested treedict for networkx
+        nested_treedict = {'entity': None}
+
         for class_name, properties in self.biolink_leaves.items():
 
             if isinstance(properties['class_definition'], TypeDefinition):
@@ -350,13 +444,13 @@ class BiolinkAdapter:
 
                 parent = properties['class_definition']['is_a']
 
-                # add to treedict
-                treedict[class_name] = parent
+                # add to flat treedict
+                flat_treedict[class_name] = parent
 
         # find parents that are not in tree (apart from root node)
-        parents = set(treedict.values())
+        parents = set(flat_treedict.values())
         parents.discard(None)
-        children = set(treedict.keys())
+        children = set(flat_treedict.keys())
 
         # while there are still parents that are not in the tree
         while parents - children:
@@ -366,17 +460,71 @@ class BiolinkAdapter:
             for child in missing:
                 parent = self.toolkit.get_parent(child)
                 if parent:
-                    treedict[child] = parent
+                    flat_treedict[child] = parent
 
                 # remove root and mixins
                 if self.toolkit.is_mixin(child):
-                    treedict[child] = 'mixin'
+                    flat_treedict[child] = 'mixin'
 
-            parents = set(treedict.values())
+            parents = set(flat_treedict.values())
             parents.discard(None)
-            children = set(treedict.keys())
+            children = set(flat_treedict.keys())
 
-        self.inheritance_tree = treedict
+        self.inheritance_tree = flat_treedict
+
+        # add all entries to a nested treedict starting from the entity node
+        in_tree = set(['entity'])
+        todo = set(flat_treedict.keys())
+        # delete entity from todo
+        todo.remove('entity')
+
+        while todo:
+
+            added = []
+
+            for child in todo:
+                parent = flat_treedict[child]
+                if parent in in_tree:
+                    # find parent recursively in nested treedict
+                    nested_treedict = self._add_class_to_nested_treedict(
+                        child,
+                        parent,
+                        {},
+                        nested_treedict,
+                    )
+                    added.append(child)
+
+            for key in added:
+                todo.remove(key)
+                in_tree.add(key)
+
+        self.nested_inheritance_tree = nested_treedict
+
+    def _add_class_to_nested_treedict(
+        self, class_name, parent, properties, nested_treedict
+    ):
+        """
+        Add a class to the nested treedict recursively.
+        """
+
+        if parent not in nested_treedict:
+
+            for key, value in nested_treedict.items():
+                if isinstance(value, dict):
+                    nested_treedict[key] = self._add_class_to_nested_treedict(
+                        class_name,
+                        parent,
+                        properties,
+                        value,
+                    )
+
+        else:
+            if nested_treedict.get(parent) is None:
+                nested_treedict[parent] = {class_name: properties}
+            else:
+                nested_treedict[parent].update({class_name: properties})
+
+        return nested_treedict
 
     def translate_term(self, term):
         """
@@ -602,6 +750,14 @@ class BiolinkAdapter:
         tree.show()
 
         return tree
+
+    def get_networkx_graph(self) -> nx.DiGraph:
+        """
+        Get the ontology as a networkx graph.
+        """
+
+        # create networkx graph from treelib dictionary
+        return nx.Graph(self.nested_inheritance_tree)
 
 
 # Biolink toolkit wiki:

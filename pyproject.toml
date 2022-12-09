@@ -41,6 +41,7 @@ matplotlib = "^3.5.2"
 yapf = "^0.32.0"
 pre-commit = "^2.20.0"
 treelib = "^1.6.1"
+obonet = "^0.3.1"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=6.0"
@@ -55,6 +56,9 @@ sphinx-autodoc-typehints = ">=1.18.0"
 pytest-cov = "^3.0.0"
 hypothesis = "^6.50.1"
 isort = "^5.10.1"
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.7.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
