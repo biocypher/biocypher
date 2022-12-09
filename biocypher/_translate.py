@@ -69,9 +69,9 @@ class OntologyAdapter:
     """
     def __init__(
         self,
-        head_join_node: str,
-        tail_join_node: str,
-        tail_ontology_url: str,
+        head_join_node: Optional[str] = None,
+        tail_join_node: Optional[str] = None,
+        tail_ontology_url: Optional[str] = None,
         head_ontology_url: Optional[str] = None,
         biolink_adapter: Optional['BiolinkAdapter'] = None,
     ):
@@ -98,7 +98,7 @@ class OntologyAdapter:
 
         if not head_ontology_url and not biolink_adapter:
             raise ValueError(
-                'Either head_ontology_url or bl_adapter must be supplied.'
+                'Either head_ontology_url or biolink_adapter must be supplied.'
             )
 
         self.head_ontology_url = head_ontology_url
@@ -116,11 +116,14 @@ class OntologyAdapter:
     def main(self):
         """
         Main method to be run on instantiation. Loads the ontologies, joins
-        them, and returns the hybrid ontology.
+        them, and returns the hybrid ontology. Loads only the Biolink ontology
+        if nothing else is given.
         """
         self.load_ontologies()
-        self.find_join_nodes()
-        self.join_ontologies()
+
+        if self.tail_ontology_url:
+            self.find_join_nodes()
+            self.join_ontologies()
 
     def load_ontologies(self):
         """
@@ -147,9 +150,11 @@ class OntologyAdapter:
             ).reverse()
 
         # tail ontology is always loaded from URL
-        self.tail_ontology = obonet.read_obo(self.tail_ontology_url)
+        if self.tail_ontology_url:
 
-        self.tail_ontology = self.reverse_name_and_id(self.tail_ontology)
+            self.tail_ontology = obonet.read_obo(self.tail_ontology_url)
+
+            self.tail_ontology = self.reverse_name_and_id(self.tail_ontology)
 
     def find_join_nodes(self):
         """
@@ -234,6 +239,38 @@ class OntologyAdapter:
         self.hybrid_ontology = nx.compose(
             self.hybrid_ontology, tail_ontology_subtree
         )
+
+    def show_ontology_structure(self):
+        """
+        Show the ontology structure using treelib.
+        """
+
+        msg = 'Showing ontology structure,'
+
+        if self.hybrid_ontology:
+
+            ontology = self.hybrid_ontology
+
+        else:
+
+            ontology = self.head_ontology
+
+        tree = _misc.create_tree_visualisation(ontology)
+
+        msg += f' based on Biolink {self.biolink_adapter.biolink_version}:'
+        print(msg)
+
+        # add synonym information
+        for class_name in self.biolink_adapter.leaves:
+            if self.biolink_adapter.leaves[class_name].get('synonym_for'):
+                tree.nodes[class_name].tag = (
+                    f'{class_name} = '
+                    f"{self.biolink_adapter.leaves[class_name].get('synonym_for')}"
+                )
+
+        tree.show()
+
+        return tree
 
 
 class BiolinkAdapter:
@@ -728,29 +765,6 @@ class BiolinkAdapter:
 
         # replace 'biolink:' with ''
         return [re.sub('^biolink:', '', a) for a in ancestry]
-
-    def show_ontology_structure(self):
-        """
-        Show the ontology structure using treelib.
-        """
-
-        tree = _misc.create_tree_visualisation(self.inheritance_tree)
-        print(
-            'Showing ontology structure, '
-            f'based on Biolink {self.biolink_version}:'
-        )
-
-        # add synonym information
-        for class_name in self.leaves:
-            if self.leaves[class_name].get('synonym_for'):
-                tree.nodes[class_name].tag = (
-                    f'{class_name} = '
-                    f"{self.leaves[class_name].get('synonym_for')}"
-                )
-
-        tree.show()
-
-        return tree
 
     def get_networkx_graph(self) -> nx.DiGraph:
         """

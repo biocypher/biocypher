@@ -572,8 +572,8 @@ def test_log_missing_nodes(translator):
     assert m.get('missing_pathway') == 1
 
 
-def test_show_ontology(biolink_adapter):
-    treevis = biolink_adapter.show_ontology_structure()
+def test_show_ontology(ontology_adapter):
+    treevis = ontology_adapter.show_ontology_structure()
 
     assert treevis is not None
 

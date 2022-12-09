@@ -1,4 +1,5 @@
 import pytest
+import networkx as nx
 
 from biocypher._misc import create_tree_visualisation
 
@@ -32,6 +33,17 @@ def test_tree_vis():
     assert tree_vis.root == 'A'
 
 
+def test_tree_vis_from_networkx():
+
+    G = nx.DiGraph(inheritance_tree)
+
+    tree_vis = create_tree_visualisation(G)
+
+    assert tree_vis.DEPTH == 1
+    assert tree_vis.WIDTH == 2
+    assert tree_vis.root == 'A'
+
+
 def test_disjoint_tree():
 
     with pytest.raises(ValueError):
@@ -40,4 +52,4 @@ def test_disjoint_tree():
 
 if __name__ == '__main__':
     # to look at it
-    print(create_tree_visualisation(inheritance_tree).show())
+    print(create_tree_visualisation(nx.DiGraph(inheritance_tree)).show())

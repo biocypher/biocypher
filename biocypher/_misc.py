@@ -1,7 +1,16 @@
-from typing import Any, Mapping, KeysView, Generator, ItemsView, ValuesView
+from typing import (
+    Any,
+    Union,
+    Mapping,
+    KeysView,
+    Generator,
+    ItemsView,
+    ValuesView,
+)
 from collections.abc import Iterable
 
 from treelib import Tree
+import networkx as nx
 
 __all__ = ['LIST_LIKE', 'SIMPLE_TYPES', 'ensure_iterable', 'to_list']
 
@@ -50,10 +59,16 @@ def ensure_iterable(value: Any) -> Iterable:
     return value if isinstance(value, LIST_LIKE) else (value, )
 
 
-def create_tree_visualisation(inheritance_tree: dict) -> str:
+def create_tree_visualisation(inheritance_tree: Union[dict, nx.Graph]) -> str:
     """
     Creates a visualisation of the inheritance tree using treelib.
     """
+
+    if isinstance(inheritance_tree, nx.Graph):
+
+        inheritance_tree = nx.to_dict_of_lists(inheritance_tree)
+        # unlist values
+        inheritance_tree = {k: v[0] for k, v in inheritance_tree.items() if v}
 
     # find root node
     classes = set(inheritance_tree.keys())
