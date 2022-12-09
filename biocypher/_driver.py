@@ -34,7 +34,7 @@ from . import _misc
 from ._write import BatchWriter
 from ._config import config as _config
 from ._create import VersionNode, BioCypherEdge, BioCypherNode
-from ._translate import Translator, BiolinkAdapter
+from ._translate import Translator, BiolinkAdapter, OntologyAdapter
 
 __all__ = ['Driver']
 
@@ -192,7 +192,7 @@ class Driver(neo4j_utils.Driver):
             # set new current version node
             self.update_meta_graph()
 
-        self.biolink_adapter = None
+        self.ontology_adapter = None
         self.batch_writer = None
         self._update_translator()
 
@@ -548,7 +548,7 @@ class Driver(neo4j_utils.Driver):
 
         # instantiate adapter on demand because it takes time to load
         # the biolink model toolkit
-        self.start_biolink_adapter()
+        self.start_ontology_adapter()
 
         self.start_batch_writer()
 
@@ -571,7 +571,7 @@ class Driver(neo4j_utils.Driver):
         if not self.batch_writer:
             self.batch_writer = BatchWriter(
                 leaves=self.db_meta.leaves,
-                biolink_adapter=self.biolink_adapter,
+                ontology_adapter=self.ontology_adapter,
                 translator=self.translator,
                 delimiter=self.db_delim,
                 array_delimiter=self.db_adelim,
@@ -584,16 +584,20 @@ class Driver(neo4j_utils.Driver):
                 strict_mode=self.strict_mode,
             )
 
-    def start_biolink_adapter(self) -> None:
+    def start_ontology_adapter(self) -> None:
         """
-        Instantiate the :class:`biocypher.adapter.BioLinkAdapter` if not
+        Instantiate the :class:`biocypher._translate.OntologyAdapter` if not
         existing.
         """
-        if not self.biolink_adapter:
-            self.biolink_adapter = BiolinkAdapter(
+        if not self.ontology_adapter:
+            biolink_adapter = BiolinkAdapter(
                 leaves=self.db_meta.leaves,
-                clear_cache=self.clear_cache,
                 translator=self.translator,
+                clear_cache=self.clear_cache,
+            )
+            # standard use case; TODO options for hybrids
+            self.ontology_adapter = OntologyAdapter(
+                biolink_adapter=biolink_adapter,
             )
 
     def write_edges(
@@ -614,7 +618,7 @@ class Driver(neo4j_utils.Driver):
 
         # instantiate adapter on demand because it takes time to load
         # the biolink model toolkit
-        self.start_biolink_adapter()
+        self.start_ontology_adapter()
 
         self.start_batch_writer()
 
@@ -733,9 +737,9 @@ class Driver(neo4j_utils.Driver):
         treelib.
         """
 
-        self.start_biolink_adapter()
+        self.start_ontology_adapter()
 
-        self.biolink_adapter.show_ontology_structure()
+        self.ontology_adapter.show_ontology_structure()
 
     # TRANSLATION METHODS ###
 
@@ -745,7 +749,7 @@ class Driver(neo4j_utils.Driver):
         """
 
         # instantiate adapter if not exists
-        self.start_biolink_adapter()
+        self.start_ontology_adapter()
 
         return self.translator.translate_term(term)
 
@@ -755,7 +759,7 @@ class Driver(neo4j_utils.Driver):
         """
 
         # instantiate adapter if not exists
-        self.start_biolink_adapter()
+        self.start_ontology_adapter()
 
         return self.translator.reverse_translate_term(term)
 
@@ -765,7 +769,7 @@ class Driver(neo4j_utils.Driver):
         """
 
         # instantiate adapter if not exists
-        self.start_biolink_adapter()
+        self.start_ontology_adapter()
 
         return self.translator.translate(query)
 
@@ -775,7 +779,7 @@ class Driver(neo4j_utils.Driver):
         """
 
         # instantiate adapter if not exists
-        self.start_biolink_adapter()
+        self.start_ontology_adapter()
 
         return self.translator.reverse_translate(query)
 

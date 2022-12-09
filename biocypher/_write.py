@@ -90,7 +90,7 @@ __all__ = ['BatchWriter']
 
 if TYPE_CHECKING:
 
-    from ._translate import Translator, BiolinkAdapter
+    from ._translate import Translator, OntologyAdapter
 
 # TODO retrospective check of written csvs?
 
@@ -101,15 +101,15 @@ class BatchWriter:
     format specified by Neo4j for the use of admin import. Each batch
     writer instance has a fixed representation that needs to be passed
     at instantiation via the :py:attr:`schema` argument. The instance
-    also expects a biolink adapter via :py:attr:`biolink_adapter` to be able
+    also expects an ontology adapter via :py:attr:`ontology_adapter` to be able
     to convert and extend the hierarchy.
 
     Args:
         leaves:
             The BioCypher graph schema leaves (ontology classes).
 
-        biolink_adapter:
-            Instance of :py:class:`BiolinkAdapter` to enable translation and
+        ontology_adapter:
+            Instance of :py:class:`OntologyAdapter` to enable translation and
             ontology queries
 
         delimiter:
@@ -145,7 +145,7 @@ class BatchWriter:
     def __init__(
         self,
         leaves: dict,
-        biolink_adapter: 'BiolinkAdapter',
+        ontology_adapter: 'OntologyAdapter',
         translator: 'Translator',
         delimiter: str,
         array_delimiter: str,
@@ -169,7 +169,7 @@ class BatchWriter:
         self.strict_mode = strict_mode
 
         self.leaves = leaves
-        self.biolink_adapter = biolink_adapter
+        self.ontology_adapter = ontology_adapter
         self.translator = translator
         self.node_property_dict = {}
         self.edge_property_dict = {}
@@ -350,7 +350,7 @@ class BatchWriter:
                     bin_l[label] = 1
 
                     # get properties from config if present
-                    cprops = self.biolink_adapter.leaves.get(label).get(
+                    cprops = self.ontology_adapter.leaves.get(label).get(
                         'properties',
                     )
                     if cprops:
@@ -385,9 +385,9 @@ class BatchWriter:
 
                     # get label hierarchy
                     # multiple labels:
-                    if self.biolink_adapter.biolink_leaves.get(label):
-                        all_labels = self.biolink_adapter.biolink_leaves[label][
-                            'ancestors']
+                    if self.ontology_adapter.biolink_leaves.get(label):
+                        all_labels = self.ontology_adapter.biolink_leaves[
+                            label]['ancestors']
 
                     if all_labels:
                         # remove duplicates
@@ -692,17 +692,17 @@ class BatchWriter:
 
                     # get properties from config if present
 
-                    # check whether label is in biolink_adapter.leaves
+                    # check whether label is in ontology_adapter.leaves
                     # (may not be if it is an edge that carries the
                     # "label_as_edge" property)
                     cprops = None
-                    if label in self.biolink_adapter.leaves:
-                        cprops = self.biolink_adapter.leaves.get(label).get(
+                    if label in self.ontology_adapter.leaves:
+                        cprops = self.ontology_adapter.leaves.get(label).get(
                             'properties',
                         )
                     else:
                         # try via "label_as_edge"
-                        for k, v in self.biolink_adapter.leaves.items():
+                        for k, v in self.ontology_adapter.leaves.items():
                             if isinstance(v, dict):
                                 if v.get('label_as_edge') == label:
                                     cprops = v.get('properties')

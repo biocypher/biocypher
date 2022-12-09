@@ -107,6 +107,12 @@ class OntologyAdapter:
         self.tail_join_node = tail_join_node
         self.biolink_adapter = biolink_adapter
 
+        # only works for the case of Biolink as head ontology;
+        # TODO generalise
+        if self.biolink_adapter:
+            self.leaves = self.biolink_adapter.leaves
+            self.biolink_leaves = self.biolink_adapter.biolink_leaves
+
         self.head_ontology = None
         self.tail_ontology = None
         self.hybrid_ontology = None
@@ -261,11 +267,11 @@ class OntologyAdapter:
         print(msg)
 
         # add synonym information
-        for class_name in self.biolink_adapter.leaves:
-            if self.biolink_adapter.leaves[class_name].get('synonym_for'):
+        for class_name in self.leaves:
+            if self.leaves[class_name].get('synonym_for'):
                 tree.nodes[class_name].tag = (
                     f'{class_name} = '
-                    f"{self.biolink_adapter.leaves[class_name].get('synonym_for')}"
+                    f"{self.leaves[class_name].get('synonym_for')}"
                 )
 
         tree.show()
@@ -367,6 +373,7 @@ class BiolinkAdapter:
             self.biolink_version = cache['version']
             self._ad_hoc_inheritance = cache['ad_hoc_inheritance']
             self.inheritance_tree = cache['inheritance_tree']
+            self.nested_inheritance_tree = cache['nested_inheritance_tree']
 
             logger.info(
                 'Using cached Biolink schema, Biolink model version: '
@@ -423,6 +430,7 @@ class BiolinkAdapter:
                 'hash': current_hash,
                 'ad_hoc_inheritance': self._ad_hoc_inheritance,
                 'inheritance_tree': self.inheritance_tree,
+                'nested_inheritance_tree': self.nested_inheritance_tree,
             }
             with open(cache_path, 'w') as f:
                 json.dump(cache, f)

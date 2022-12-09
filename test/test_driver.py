@@ -14,6 +14,7 @@ def driver():
         db_name='test',
         db_passwd='your_password_here',
         wipe=True,
+        clear_cache=True,
         increment_version=False,
         user_schema_config_path='biocypher/_config/test_schema_config.yaml',
     )
@@ -339,6 +340,9 @@ def test_pretty_explain(driver):
 
 
 def test_access_translate(driver):
+
+    driver.start_ontology_adapter()
+
     assert driver.translate_term('mirna') == 'MicroRNA'
     assert (driver.reverse_translate_term('SideEffect') == 'sider')
     assert (
