@@ -66,25 +66,6 @@ class OntologyAdapter:
     Generic ontology adapter class. Can ingest OBO files and build a hybrid
     ontology from them. Uses Biolink as the default head ontology if no URL is
     given.
-
-    Args:
-        head_ontology_url:
-            URL to the head ontology.
-
-        tail_ontology_url:
-            URL to the tail ontology.
-
-        head_join_node:
-            The node in the head ontology to which the tail ontology will be
-            joined.
-
-        tail_join_node:
-            The node in the tail ontology that will be joined to the head
-            ontology.
-
-        bl_adapter:
-            A BiolinkAdapter instance. To be supplied if no head ontology URL
-            is given.
     """
     def __init__(
         self,
@@ -94,6 +75,26 @@ class OntologyAdapter:
         head_ontology_url: Optional[str] = None,
         biolink_adapter: Optional['BiolinkAdapter'] = None,
     ):
+        """
+        Args:
+            head_ontology_url:
+                URL to the head ontology.
+
+            tail_ontology_url:
+                URL to the tail ontology.
+
+            head_join_node:
+                The node in the head ontology to which the tail ontology will be
+                joined.
+
+            tail_join_node:
+                The node in the tail ontology that will be joined to the head
+                ontology.
+
+            bl_adapter:
+                A BiolinkAdapter instance. To be supplied if no head ontology URL
+                is given.
+        """
 
         if not head_ontology_url and not biolink_adapter:
             raise ValueError(
@@ -241,13 +242,11 @@ class BiolinkAdapter:
 
     Stores schema mappings to allow (reverse) translation of terms and
     queries.
-
-    Todo:
-        - refer to pythonised biolink model from YAML
     """
     def __init__(
         self,
         leaves: dict,
+        translator: 'Translator',
         schema: str = None,
         biolink_version: str = None,
         clear_cache: bool = False,
@@ -258,6 +257,8 @@ class BiolinkAdapter:
                 A dictionary representing the constituents of the graph
                 to be built. These are the "leaves" of the ontology
                 hierarchy tree.
+            translator:
+                A Translator instance.
             schema:
                 A path to a YAML file with the schema. If not provided, the
                 default Biolink schema will be used.
@@ -266,9 +267,9 @@ class BiolinkAdapter:
                 the current default version will be used.
             clear_cache:
                 If True, the Biolink model cache will be cleared and rebuilt.
-
-        TODO: how do we get a YAML for a specific version programmatically?
         """
+
+        self.translator = translator
 
         self.leaves = leaves
         self.schema = schema
@@ -286,10 +287,6 @@ class BiolinkAdapter:
             raise ValueError(
                 'Please provide either a schema or a version, not both.',
             )
-
-        # mapping functionality for translating terms and queries
-        self.mappings = {}
-        self.reverse_mappings = {}
 
         logger.debug('Instantiating Biolink Adapter.')
 
@@ -328,8 +325,8 @@ class BiolinkAdapter:
 
         if cached_hash == current_hash:
             # use cached version
-            self.mappings = cache['mappings']
-            self.reverse_mappings = cache['reverse_mappings']
+            self.translator.mappings = cache['mappings']
+            self.translator.reverse_mappings = cache['reverse_mappings']
             self.biolink_version = cache['version']
             self._ad_hoc_inheritance = cache['ad_hoc_inheritance']
             self.inheritance_tree = cache['inheritance_tree']
@@ -383,8 +380,8 @@ class BiolinkAdapter:
             # save cache
             cache = {
                 'biolink_leaves_path': pickle_path,
-                'mappings': self.mappings,
-                'reverse_mappings': self.reverse_mappings,
+                'mappings': self.translator.mappings,
+                'reverse_mappings': self.translator.reverse_mappings,
                 'version': self.biolink_version,
                 'hash': current_hash,
                 'ad_hoc_inheritance': self._ad_hoc_inheritance,
@@ -469,7 +466,9 @@ class BiolinkAdapter:
 
                 if values.get('synonym_for'):
                     # add synonym to ancestors
-                    ancestors.insert(0, self.name_sentence_to_pascal(entity))
+                    ancestors.insert(
+                        0, self.translator.name_sentence_to_pascal(entity)
+                    )
 
                 input_label = values.get('label_in_input')
 
@@ -478,7 +477,7 @@ class BiolinkAdapter:
                     values.get('label_as_edge')
                     if values.get('label_as_edge') else entity
                 )
-                self._add_translation_mappings(input_label, bc_name)
+                self.translator._add_translation_mappings(input_label, bc_name)
 
                 # create dict of biolink class definition and biolink
                 # ancestors, add to biolink leaves
@@ -613,78 +612,6 @@ class BiolinkAdapter:
 
         return nested_treedict
 
-    def translate_term(self, term):
-        """
-        Translate a single term.
-        """
-
-        return self.mappings.get(term, None)
-
-    def reverse_translate_term(self, term):
-        """
-        Reverse translate a single term.
-        """
-
-        return self.reverse_mappings.get(term, None)
-
-    def translate(self, query):
-        """
-        Translate a cypher query. Only translates labels as of now.
-        """
-        for key in self.mappings:
-            query = query.replace(':' + key, ':' + self.mappings[key])
-        return query
-
-    def reverse_translate(self, query):
-        """
-        Reverse translate a cypher query. Only translates labels as of
-        now.
-        """
-        for key in self.reverse_mappings:
-
-            a = ':' + key + ')'
-            b = ':' + key + ']'
-            # TODO this conditional probably does not cover all cases
-            if a in query or b in query:
-                if isinstance(self.reverse_mappings[key], list):
-                    raise NotImplementedError(
-                        'Reverse translation of multiple inputs not '
-                        'implemented yet. Many-to-one mappings are '
-                        'not reversible. '
-                        f'({key} -> {self.reverse_mappings[key]})',
-                    )
-                else:
-                    query = query.replace(
-                        a,
-                        ':' + self.reverse_mappings[key] + ')',
-                    ).replace(b, ':' + self.reverse_mappings[key] + ']')
-        return query
-
-    def _add_translation_mappings(self, original_name, biocypher_name):
-        """
-        Add translation mappings for a label and name. We use here the
-        PascalCase version of the BioCypher name, since sentence case is
-        not useful for Cypher queries.
-        """
-        if isinstance(original_name, list):
-            for on in original_name:
-                self.mappings[on] = self.name_sentence_to_pascal(
-                    biocypher_name,
-                )
-        else:
-            self.mappings[original_name] = self.name_sentence_to_pascal(
-                biocypher_name,
-            )
-
-        if isinstance(biocypher_name, list):
-            for bn in biocypher_name:
-                self.reverse_mappings[self.name_sentence_to_pascal(bn, )
-                                     ] = original_name
-        else:
-            self.reverse_mappings[self.name_sentence_to_pascal(
-                biocypher_name,
-            )] = original_name
-
     def _build_biolink_class(self, entity, values):
         """
         Build a Biolink class definition from a Biolink entity name and
@@ -721,10 +648,10 @@ class BiolinkAdapter:
                 ancestors += bla
                 break
             else:
-                ancestors += [self.name_sentence_to_pascal(parent)]
+                ancestors += [self.translator.name_sentence_to_pascal(parent)]
 
         if ancestors:
-            ancestors.insert(0, self.name_sentence_to_pascal(entity))
+            ancestors.insert(0, self.translator.name_sentence_to_pascal(entity))
         else:
             raise ValueError(
                 f'Parent `{parent}` of `{entity}` not found in Biolink '
@@ -740,7 +667,7 @@ class BiolinkAdapter:
         }
 
         # add translation mappings
-        self._add_translation_mappings(input_label, entity)
+        self.translator._add_translation_mappings(input_label, entity)
 
     def _build_biolink_edge_class(self, entity: str, values: dict) -> None:
         """
@@ -768,10 +695,10 @@ class BiolinkAdapter:
                 ancestors += bla
                 break
             else:
-                ancestors += [self.name_sentence_to_pascal(parent)]
+                ancestors += [self.translator.name_sentence_to_pascal(parent)]
 
         if ancestors:
-            ancestors.insert(0, self.name_sentence_to_pascal(entity))
+            ancestors.insert(0, self.translator.name_sentence_to_pascal(entity))
         else:
             raise ValueError(
                 f'Parent `{parent}` of `{entity}` not found in Biolink '
@@ -791,7 +718,7 @@ class BiolinkAdapter:
             values.get('label_as_edge')
             if values.get('label_as_edge') else entity
         )
-        self._add_translation_mappings(input_label, bc_name)
+        self.translator._add_translation_mappings(input_label, bc_name)
 
     @staticmethod
     def trim_biolink_ancestry(ancestry: list[str]) -> list[str]:
@@ -801,19 +728,6 @@ class BiolinkAdapter:
 
         # replace 'biolink:' with ''
         return [re.sub('^biolink:', '', a) for a in ancestry]
-
-    @staticmethod
-    def name_sentence_to_pascal(name: str) -> str:
-        """
-        Converts a name in sentence case to pascal case.
-        """
-        # split on dots if dot is present
-        if '.' in name:
-            return '.'.join(
-                [sentencecase_to_camelcase(n) for n in name.split('.')],
-            )
-        else:
-            return sentencecase_to_camelcase(name)
 
     def show_ontology_structure(self):
         """
@@ -876,14 +790,21 @@ class Translator:
                 the entities that will be direct components of the graph,
                 while the intermediary nodes are additional labels for
                 filtering purposes.
+            strict_mode:
+                If True, the translator will raise an error if input data do not
+                carry source, licence, and version information.
         """
 
         self.leaves = leaves
         self.strict_mode = strict_mode
-        self._update_bl_types()
+        self._update_ontology_types()
 
         # record nodes without biolink type configured in schema_config.yaml
         self.notype = {}
+
+        # mapping functionality for translating terms and queries
+        self.mappings = {}
+        self.reverse_mappings = {}
 
     def translate_nodes(
         self,
@@ -922,7 +843,7 @@ class Translator:
                         )
 
             # find the node in leaves that represents biolink node type
-            _bl_type = self._get_bl_type(_type)
+            _bl_type = self._get_biolink_type(_type)
 
             if _bl_type:
 
@@ -1064,7 +985,7 @@ class Translator:
 
             # match the input label (_type) to
             # a Biolink label from schema_config
-            bl_type = self._get_bl_type(_type)
+            bl_type = self._get_biolink_type(_type)
 
             if bl_type:
 
@@ -1164,7 +1085,7 @@ class Translator:
 
             self.notype[_type] = 1
 
-    def get_missing_bl_types(self) -> dict:
+    def get_missing_biolink_types(self) -> dict:
         """
         Returns a dictionary of types that were not represented in the
         schema_config.
@@ -1184,25 +1105,25 @@ class Translator:
 
         logger.debug(f'Finished translating {what} to BioCypher.')
 
-    def _update_bl_types(self):
+    def _update_ontology_types(self):
         """
-        Creates a dictionary to translate from input labels to Biolink labels.
+        Creates a dictionary to translate from input labels to ontology labels.
 
         If multiple input labels, creates mapping for each.
         """
 
-        self._bl_types = {}
+        self._biolink_types = {}
 
         for key, value in self.leaves.items():
 
             if isinstance(value.get('label_in_input'), str):
-                self._bl_types[value.get('label_in_input')] = key
+                self._biolink_types[value.get('label_in_input')] = key
 
             elif isinstance(value.get('label_in_input'), list):
                 for label in value['label_in_input']:
-                    self._bl_types[label] = key
+                    self._biolink_types[label] = key
 
-    def _get_bl_type(self, label: str) -> Optional[str]:
+    def _get_biolink_type(self, label: str) -> Optional[str]:
         """
         For each given input type ("label_in_input"), find the corresponding
         Biolink type in the leaves dictionary.
@@ -1214,4 +1135,89 @@ class Translator:
         """
 
         # commented out until behaviour of _update_bl_types is fixed
-        return self._bl_types.get(label, None)
+        return self._biolink_types.get(label, None)
+
+    def translate_term(self, term):
+        """
+        Translate a single term.
+        """
+
+        return self.mappings.get(term, None)
+
+    def reverse_translate_term(self, term):
+        """
+        Reverse translate a single term.
+        """
+
+        return self.reverse_mappings.get(term, None)
+
+    def translate(self, query):
+        """
+        Translate a cypher query. Only translates labels as of now.
+        """
+        for key in self.mappings:
+            query = query.replace(':' + key, ':' + self.mappings[key])
+        return query
+
+    def reverse_translate(self, query):
+        """
+        Reverse translate a cypher query. Only translates labels as of
+        now.
+        """
+        for key in self.reverse_mappings:
+
+            a = ':' + key + ')'
+            b = ':' + key + ']'
+            # TODO this conditional probably does not cover all cases
+            if a in query or b in query:
+                if isinstance(self.reverse_mappings[key], list):
+                    raise NotImplementedError(
+                        'Reverse translation of multiple inputs not '
+                        'implemented yet. Many-to-one mappings are '
+                        'not reversible. '
+                        f'({key} -> {self.reverse_mappings[key]})',
+                    )
+                else:
+                    query = query.replace(
+                        a,
+                        ':' + self.reverse_mappings[key] + ')',
+                    ).replace(b, ':' + self.reverse_mappings[key] + ']')
+        return query
+
+    def _add_translation_mappings(self, original_name, biocypher_name):
+        """
+        Add translation mappings for a label and name. We use here the
+        PascalCase version of the BioCypher name, since sentence case is
+        not useful for Cypher queries.
+        """
+        if isinstance(original_name, list):
+            for on in original_name:
+                self.mappings[on] = self.name_sentence_to_pascal(
+                    biocypher_name,
+                )
+        else:
+            self.mappings[original_name] = self.name_sentence_to_pascal(
+                biocypher_name,
+            )
+
+        if isinstance(biocypher_name, list):
+            for bn in biocypher_name:
+                self.reverse_mappings[self.name_sentence_to_pascal(bn, )
+                                     ] = original_name
+        else:
+            self.reverse_mappings[self.name_sentence_to_pascal(
+                biocypher_name,
+            )] = original_name
+
+    @staticmethod
+    def name_sentence_to_pascal(name: str) -> str:
+        """
+        Converts a name in sentence case to pascal case.
+        """
+        # split on dots if dot is present
+        if '.' in name:
+            return '.'.join(
+                [sentencecase_to_camelcase(n) for n in name.split('.')],
+            )
+        else:
+            return sentencecase_to_camelcase(name)

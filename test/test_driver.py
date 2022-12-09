@@ -4,33 +4,6 @@ import pytest
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._driver import Driver
 
-__all__ = [
-    'driver',
-    'test_access_translate',
-    'test_add_biocypher_edge_generator',
-    'test_add_biocypher_edge_list',
-    'test_add_biocypher_interaction_as_BioCypherRelAsNode_generator',
-    'test_add_biocypher_interaction_as_BioCypherRelAsNode_list',
-    'test_add_biocypher_node_generator',
-    'test_add_biocypher_node_list',
-    'test_add_generic_id_node',
-    'test_add_invalid_biocypher_edge',
-    'test_add_invalid_biocypher_node',
-    'test_add_single_biocypher_edge_explicit_node_creation',
-    'test_add_single_biocypher_edge_missing_nodes',
-    'test_add_single_biocypher_node',
-    'test_add_specific_id_node',
-    'test_connect_to_db',
-    'test_create_driver',
-    'test_create_offline',
-    'test_explain',
-    'test_log_missing_bl_types',
-    'test_pretty_explain',
-    'test_pretty_profile',
-    'test_profile',
-    'test_wipe',
-]
-
 
 @pytest.fixture
 def driver():
@@ -396,4 +369,4 @@ def test_schema_config_from_web():
         'https://raw.githubusercontent.com/saezlab/BioCypher/main/biocypher/_config/test_schema_config.yaml'
     )
 
-    assert driver.translator._bl_types
+    assert driver.translator._biolink_types

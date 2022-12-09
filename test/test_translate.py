@@ -7,35 +7,6 @@ from biocypher._config import module_data_path
 from biocypher._create import VersionNode, BioCypherEdge, BioCypherNode
 from biocypher._translate import Translator, BiolinkAdapter, OntologyAdapter
 
-__all__ = [
-    'biolink_adapter',
-    'test_ad_hoc_children_node',
-    'test_adapter',
-    'test_biolink_yaml_extension',
-    'test_custom_bmt_yaml',
-    'test_exclude_properties',
-    'test_inherit_properties',
-    'test_leaves_of_ad_hoc_child',
-    'test_log_missing_nodes',
-    'test_merge_multiple_inputs_edge',
-    'test_merge_multiple_inputs_node',
-    'test_multiple_inheritance',
-    'test_multiple_inputs_multiple_virtual_leaves_rel_as_node',
-    'test_properties_from_config',
-    'test_reverse_translate_query',
-    'test_reverse_translate_term',
-    'test_specific_and_generic_ids',
-    'test_translate_edges',
-    'test_translate_identifiers',
-    'test_translate_nodes',
-    'test_translate_query',
-    'test_translate_term',
-    'test_virtual_leaves_inherit_is_a',
-    'test_virtual_leaves_inherit_properties',
-    'translator',
-    'version_node',
-]
-
 
 @pytest.fixture
 def version_node():
@@ -52,9 +23,10 @@ def translator(version_node):
 
 
 @pytest.fixture
-def biolink_adapter(version_node):
+def biolink_adapter(version_node, translator):
     return BiolinkAdapter(
         version_node.leaves,
+        translator,
         schema=module_data_path('test-biolink-model'),
         clear_cache=True,
     )
@@ -193,9 +165,9 @@ def test_translate_edges(translator):
     assert n3.get_source_edge().get_source_id() == 'G15258'
 
 
-def test_biolink_adapter(version_node):
+def test_biolink_adapter(version_node, translator):
     # current Biolink model (as opposed to rest of tests)
-    ad = BiolinkAdapter(version_node.leaves, clear_cache=True)
+    ad = BiolinkAdapter(version_node.leaves, translator, clear_cache=True)
     ver = ad.biolink_version
 
     assert isinstance(
@@ -205,9 +177,10 @@ def test_biolink_adapter(version_node):
     assert ver
 
 
-def test_custom_bmt_yaml(version_node):
+def test_custom_bmt_yaml(version_node, translator):
     ad = BiolinkAdapter(
         version_node.leaves,
+        translator,
         schema=module_data_path('test-biolink-model'),
         clear_cache=True,
     )
@@ -537,41 +510,42 @@ def test_exclude_properties(translator):
     )
 
 
-def test_translate_term(biolink_adapter):
-    assert biolink_adapter.translate_term('hgnc') == 'Gene'
+# we need to load the adapter because the mappings are passed from the adapter
+# to the translator
+def test_translate_term(translator, biolink_adapter):
+    assert translator.translate_term('hgnc') == 'Gene'
     assert (
-        biolink_adapter.translate_term('protein_disease') ==
-        'PERTURBED_IN_DISEASE'
+        translator.translate_term('protein_disease') == 'PERTURBED_IN_DISEASE'
     )
 
 
-def test_reverse_translate_term(biolink_adapter):
-    assert 'hgnc' in biolink_adapter.reverse_translate_term('Gene')
-    assert 'protein_disease' in biolink_adapter.reverse_translate_term(
+def test_reverse_translate_term(translator, biolink_adapter):
+    assert 'hgnc' in translator.reverse_translate_term('Gene')
+    assert 'protein_disease' in translator.reverse_translate_term(
         'PERTURBED_IN_DISEASE',
     )
 
 
-def test_translate_query(biolink_adapter):
+def test_translate_query(translator, biolink_adapter):
     # we translate to PascalCase for cypher queries, not to internal
     # sentence case
     query = 'MATCH (n:hgnc)-[r:gene_disease]->(d:Disease) RETURN n'
     assert (
-        biolink_adapter.translate(query) ==
+        translator.translate(query) ==
         'MATCH (n:Gene)-[r:PERTURBED_IN_DISEASE]->(d:Disease) RETURN n'
     )
 
 
-def test_reverse_translate_query(biolink_adapter):
+def test_reverse_translate_query(translator, biolink_adapter):
     # TODO cannot use sentence case in this context. include sentence to
     # pascal case and back in translation?
     query = 'MATCH (n:Known.SequenceVariant)-[r:Known.SequenceVariant.VariantToGeneAssociation]->(g:Gene) RETURN n'
     with pytest.raises(NotImplementedError):
-        biolink_adapter.reverse_translate(query)
+        translator.reverse_translate(query)
 
     query = 'MATCH (n:Known.SequenceVariant)-[r:Known.SequenceVariant.VariantToGeneAssociation]->(g:Protein) RETURN n'
     assert (
-        biolink_adapter.reverse_translate(query) ==
+        translator.reverse_translate(query) ==
         'MATCH (n:Known_variant)-[r:VARIANT_FOUND_IN_GENE_Known_variant_Gene]->(g:protein) RETURN n'
     )
 
@@ -593,7 +567,7 @@ def test_log_missing_nodes(translator):
 
     tn = list(tn)
 
-    m = translator.get_missing_bl_types()
+    m = translator.get_missing_biolink_types()
     assert m.get('missing_protein') == 2
     assert m.get('missing_pathway') == 1
 

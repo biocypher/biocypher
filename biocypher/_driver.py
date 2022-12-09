@@ -192,7 +192,7 @@ class Driver(neo4j_utils.Driver):
             # set new current version node
             self.update_meta_graph()
 
-        self.bl_adapter = None
+        self.biolink_adapter = None
         self.batch_writer = None
         self._update_translator()
 
@@ -548,7 +548,7 @@ class Driver(neo4j_utils.Driver):
 
         # instantiate adapter on demand because it takes time to load
         # the biolink model toolkit
-        self.start_bl_adapter()
+        self.start_biolink_adapter()
 
         self.start_batch_writer()
 
@@ -571,7 +571,8 @@ class Driver(neo4j_utils.Driver):
         if not self.batch_writer:
             self.batch_writer = BatchWriter(
                 leaves=self.db_meta.leaves,
-                bl_adapter=self.bl_adapter,
+                biolink_adapter=self.biolink_adapter,
+                translator=self.translator,
                 delimiter=self.db_delim,
                 array_delimiter=self.db_adelim,
                 quote=self.db_quote,
@@ -583,14 +584,16 @@ class Driver(neo4j_utils.Driver):
                 strict_mode=self.strict_mode,
             )
 
-    def start_bl_adapter(self) -> None:
+    def start_biolink_adapter(self) -> None:
         """
         Instantiate the :class:`biocypher.adapter.BioLinkAdapter` if not
         existing.
         """
-        if not self.bl_adapter:
-            self.bl_adapter = BiolinkAdapter(
-                leaves=self.db_meta.leaves, clear_cache=self.clear_cache
+        if not self.biolink_adapter:
+            self.biolink_adapter = BiolinkAdapter(
+                leaves=self.db_meta.leaves,
+                clear_cache=self.clear_cache,
+                translator=self.translator,
             )
 
     def write_edges(
@@ -611,7 +614,7 @@ class Driver(neo4j_utils.Driver):
 
         # instantiate adapter on demand because it takes time to load
         # the biolink model toolkit
-        self.start_bl_adapter()
+        self.start_biolink_adapter()
 
         self.start_batch_writer()
 
@@ -655,7 +658,7 @@ class Driver(neo4j_utils.Driver):
             set: a set of missing Biolink types
         """
 
-        mt = self.translator.get_missing_bl_types()
+        mt = self.translator.get_missing_biolink_types()
 
         if mt:
             msg = (
@@ -730,9 +733,9 @@ class Driver(neo4j_utils.Driver):
         treelib.
         """
 
-        self.start_bl_adapter()
+        self.start_biolink_adapter()
 
-        self.bl_adapter.show_ontology_structure()
+        self.biolink_adapter.show_ontology_structure()
 
     # TRANSLATION METHODS ###
 
@@ -742,9 +745,9 @@ class Driver(neo4j_utils.Driver):
         """
 
         # instantiate adapter if not exists
-        self.start_bl_adapter()
+        self.start_biolink_adapter()
 
-        return self.bl_adapter.translate_term(term)
+        return self.translator.translate_term(term)
 
     def reverse_translate_term(self, term: str) -> str:
         """
@@ -752,9 +755,9 @@ class Driver(neo4j_utils.Driver):
         """
 
         # instantiate adapter if not exists
-        self.start_bl_adapter()
+        self.start_biolink_adapter()
 
-        return self.bl_adapter.reverse_translate_term(term)
+        return self.translator.reverse_translate_term(term)
 
     def translate_query(self, query: str) -> str:
         """
@@ -762,9 +765,9 @@ class Driver(neo4j_utils.Driver):
         """
 
         # instantiate adapter if not exists
-        self.start_bl_adapter()
+        self.start_biolink_adapter()
 
-        return self.bl_adapter.translate(query)
+        return self.translator.translate(query)
 
     def reverse_translate_query(self, query: str) -> str:
         """
@@ -772,9 +775,9 @@ class Driver(neo4j_utils.Driver):
         """
 
         # instantiate adapter if not exists
-        self.start_bl_adapter()
+        self.start_biolink_adapter()
 
-        return self.bl_adapter.reverse_translate(query)
+        return self.translator.reverse_translate(query)
 
     def __repr__(self):
 

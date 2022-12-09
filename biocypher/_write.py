@@ -90,7 +90,7 @@ __all__ = ['BatchWriter']
 
 if TYPE_CHECKING:
 
-    from ._translate import BiolinkAdapter
+    from ._translate import Translator, BiolinkAdapter
 
 # TODO retrospective check of written csvs?
 
@@ -101,14 +101,14 @@ class BatchWriter:
     format specified by Neo4j for the use of admin import. Each batch
     writer instance has a fixed representation that needs to be passed
     at instantiation via the :py:attr:`schema` argument. The instance
-    also expects a biolink adapter via :py:attr:`bl_adapter` to be able
+    also expects a biolink adapter via :py:attr:`biolink_adapter` to be able
     to convert and extend the hierarchy.
 
     Args:
         leaves:
             The BioCypher graph schema leaves (ontology classes).
 
-        bl_adapter:
+        biolink_adapter:
             Instance of :py:class:`BiolinkAdapter` to enable translation and
             ontology queries
 
@@ -145,7 +145,8 @@ class BatchWriter:
     def __init__(
         self,
         leaves: dict,
-        bl_adapter: 'BiolinkAdapter',
+        biolink_adapter: 'BiolinkAdapter',
+        translator: 'Translator',
         delimiter: str,
         array_delimiter: str,
         quote: str,
@@ -168,7 +169,8 @@ class BatchWriter:
         self.strict_mode = strict_mode
 
         self.leaves = leaves
-        self.bl_adapter = bl_adapter
+        self.biolink_adapter = biolink_adapter
+        self.translator = translator
         self.node_property_dict = {}
         self.edge_property_dict = {}
         self.import_call_nodes = ''
@@ -348,7 +350,7 @@ class BatchWriter:
                     bin_l[label] = 1
 
                     # get properties from config if present
-                    cprops = self.bl_adapter.leaves.get(label).get(
+                    cprops = self.biolink_adapter.leaves.get(label).get(
                         'properties',
                     )
                     if cprops:
@@ -383,8 +385,8 @@ class BatchWriter:
 
                     # get label hierarchy
                     # multiple labels:
-                    if self.bl_adapter.biolink_leaves.get(label):
-                        all_labels = self.bl_adapter.biolink_leaves[label][
+                    if self.biolink_adapter.biolink_leaves.get(label):
+                        all_labels = self.biolink_adapter.biolink_leaves[label][
                             'ancestors']
 
                     if all_labels:
@@ -478,7 +480,7 @@ class BatchWriter:
             # via the schema_config.yaml.
 
             # translate label to PascalCase
-            pascal_label = self.bl_adapter.name_sentence_to_pascal(label)
+            pascal_label = self.translator.name_sentence_to_pascal(label)
 
             header_path = os.path.join(
                 self.outdir,
@@ -690,17 +692,17 @@ class BatchWriter:
 
                     # get properties from config if present
 
-                    # check whether label is in bl_adapter.leaves
+                    # check whether label is in biolink_adapter.leaves
                     # (may not be if it is an edge that carries the
                     # "label_as_edge" property)
                     cprops = None
-                    if label in self.bl_adapter.leaves:
-                        cprops = self.bl_adapter.leaves.get(label).get(
+                    if label in self.biolink_adapter.leaves:
+                        cprops = self.biolink_adapter.leaves.get(label).get(
                             'properties',
                         )
                     else:
                         # try via "label_as_edge"
-                        for k, v in self.bl_adapter.leaves.items():
+                        for k, v in self.biolink_adapter.leaves.items():
                             if isinstance(v, dict):
                                 if v.get('label_as_edge') == label:
                                     cprops = v.get('properties')
@@ -803,7 +805,7 @@ class BatchWriter:
             # :END_ID, :TYPE
 
             # translate label to PascalCase
-            pascal_label = self.bl_adapter.name_sentence_to_pascal(label)
+            pascal_label = self.translator.name_sentence_to_pascal(label)
 
             # paths
             header_path = os.path.join(
@@ -938,7 +940,7 @@ class BatchWriter:
                             # the same order as in the header
                             self.delim.join(plist),
                             e.get_target_id(),
-                            self.bl_adapter.
+                            self.translator.
                             name_sentence_to_pascal(e.get_label(), ),
                         ],
                     ) + '\n',
@@ -949,9 +951,8 @@ class BatchWriter:
                         [
                             e.get_source_id(),
                             e.get_target_id(),
-                            self.bl_adapter.name_sentence_to_pascal(
-                                e.get_label()
-                            ),
+                            self.translator.
+                            name_sentence_to_pascal(e.get_label(), ),
                         ],
                     ) + '\n',
                 )
@@ -977,7 +978,7 @@ class BatchWriter:
             bool: The return value. True for success, False otherwise.
         """
         # translate label to PascalCase
-        label = self.bl_adapter.name_sentence_to_pascal(label)
+        label = self.translator.name_sentence_to_pascal(label)
 
         # list files in self.outdir
         files = glob.glob(os.path.join(self.outdir, f'{label}-part*.csv'))

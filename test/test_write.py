@@ -15,36 +15,7 @@ from biocypher._create import (
     BioCypherRelAsNode,
 )
 from biocypher._driver import Driver
-from biocypher._translate import BiolinkAdapter
-
-__all__ = [
-    'bw',
-    'get_random_string',
-    'test_BioCypherRelAsNode_implementation',
-    'test_RelAsNode_overwrite_behaviour',
-    'test_accidental_exact_batch_size',
-    'test_create_import_call',
-    'test_duplicate_id',
-    'test_not_enough_properties',
-    'test_property_types',
-    'test_too_many_properties',
-    'test_write_duplicate_edges',
-    'test_write_edge_data_from_gen',
-    'test_write_edge_data_from_large_gen',
-    'test_write_edge_data_from_list',
-    'test_write_edge_data_from_list_no_props',
-    'test_write_edge_data_headers_import_call',
-    'test_write_mixed_edges',
-    'test_write_node_data_from_gen',
-    'test_write_node_data_from_gen_no_props',
-    'test_write_node_data_from_large_gen',
-    'test_write_node_data_from_list',
-    'test_write_node_data_headers_import_call',
-    'test_write_none_type_property_and_order_invariance',
-    'test_write_offline',
-    'test_writer_and_output_dir',
-    'version_node',
-]
+from biocypher._translate import Translator, BiolinkAdapter
 
 
 def get_random_string(length):
@@ -54,6 +25,7 @@ def get_random_string(length):
     return ''.join(random.choice(letters) for _ in range(length))
 
 
+# temporary output paths
 path = os.path.join(
     tempfile.gettempdir(),
     f'biocypher-test-{get_random_string(5)}',
@@ -77,16 +49,24 @@ def version_node():
 
 
 @pytest.fixture
-def bw(version_node):
+def translator(version_node):
+    return Translator(leaves=version_node.leaves)
 
-    bl_adapter = BiolinkAdapter(
+
+@pytest.fixture
+def bw(version_node, translator):
+
+    biolink_adapter = BiolinkAdapter(
         leaves=version_node.leaves,
+        translator=translator,
         schema=module_data_path('test-biolink-model'),
         clear_cache=True,
     )
+
     bw = BatchWriter(
         leaves=version_node.leaves,
-        bl_adapter=bl_adapter,
+        biolink_adapter=biolink_adapter,
+        translator=translator,
         dirname=path,
         delimiter=';',
         array_delimiter='|',
@@ -102,14 +82,18 @@ def bw(version_node):
 
 
 @pytest.fixture
-def bw_strict(version_node):
-    bl_adapter = BiolinkAdapter(
+def bw_strict(version_node, translator):
+
+    biolink_adapter = BiolinkAdapter(
         leaves=version_node.leaves,
+        translator=translator,
         schema=module_data_path('test-biolink-model'),
     )
+
     bw = BatchWriter(
         leaves=version_node.leaves,
-        bl_adapter=bl_adapter,
+        biolink_adapter=biolink_adapter,
+        translator=translator,
         dirname=path_strict,
         delimiter=';',
         array_delimiter='|',
@@ -126,15 +110,19 @@ def bw_strict(version_node):
 
 
 @pytest.fixture
-def tab_bw(version_node):
-    tmp_bl_adapter = BiolinkAdapter(
+def tab_bw(version_node, translator):
+
+    tmp_biolink_adapter = BiolinkAdapter(
         leaves=version_node.leaves,
+        translator=translator,
         schema=module_data_path('test-biolink-model'),
         clear_cache=True,
     )
+
     tab_bw = BatchWriter(
         leaves=version_node.leaves,
-        bl_adapter=tmp_bl_adapter,
+        biolink_adapter=tmp_biolink_adapter,
+        translator=translator,
         dirname=path,
         delimiter='\t',
         array_delimiter='|',
