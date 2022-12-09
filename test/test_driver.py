@@ -373,4 +373,4 @@ def test_schema_config_from_web():
         'https://raw.githubusercontent.com/saezlab/BioCypher/main/biocypher/_config/test_schema_config.yaml'
     )
 
-    assert driver.translator._biolink_types
+    assert driver.translator._ontology_mapping

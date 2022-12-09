@@ -91,7 +91,7 @@ class OntologyAdapter:
                 The node in the tail ontology that will be joined to the head
                 ontology.
 
-            bl_adapter:
+            biolink_adapter:
                 A BiolinkAdapter instance. To be supplied if no head ontology URL
                 is given.
         """
@@ -107,8 +107,8 @@ class OntologyAdapter:
         self.tail_join_node = tail_join_node
         self.biolink_adapter = biolink_adapter
 
-        # only works for the case of Biolink as head ontology;
-        # TODO generalise
+        # pass on leaves from biolink adapter, only works for the case of
+        # Biolink as head ontology; TODO generalise
         if self.biolink_adapter:
             self.leaves = self.biolink_adapter.leaves
             self.biolink_leaves = self.biolink_adapter.biolink_leaves
@@ -148,7 +148,9 @@ class OntologyAdapter:
 
             self.head_ontology = obonet.read_obo(self.head_ontology_url)
 
-            self.head_ontology = self.reverse_name_and_id(self.head_ontology)
+            self.head_ontology = self.reverse_name_and_accession(
+                self.head_ontology
+            )
 
         else:
 
@@ -160,7 +162,9 @@ class OntologyAdapter:
 
             self.tail_ontology = obonet.read_obo(self.tail_ontology_url)
 
-            self.tail_ontology = self.reverse_name_and_id(self.tail_ontology)
+            self.tail_ontology = self.reverse_name_and_accession(
+                self.tail_ontology
+            )
 
     def find_join_nodes(self):
         """
@@ -207,15 +211,24 @@ class OntologyAdapter:
 
         return name_to_id.get(node_name)
 
-    def reverse_name_and_id(self, ontology):
+    def reverse_name_and_accession(self, ontology):
         """
-        Reverses the name and ID of the ontology nodes.
+        Reverses the name and ID of the ontology nodes. Replaces underscores in
+        the node names with spaces. Currently standard for consistency with
+        Biolink, although we lose the original ontology's spelling. Replace the
+        underscores in the join node names as well.
         """
+
+        if self.head_join_node:
+            self.head_join_node = self.head_join_node.replace('_', ' ')
+
+        if self.tail_join_node:
+            self.tail_join_node = self.tail_join_node.replace('_', ' ')
 
         id_to_name = {}
         for _id, data in ontology.nodes(data=True):
-            data['id'] = _id
-            id_to_name[_id] = data.get('name')
+            data['accession'] = _id
+            id_to_name[_id] = data.get('name').replace('_', ' ')
 
         ontology = nx.relabel_nodes(ontology, id_to_name)
 
@@ -235,6 +248,12 @@ class OntologyAdapter:
         tail_ontology_subtree = dfs_tree(
             self.tail_ontology.reverse(), self.tail_join_node
         ).reverse()
+
+        # transfer node attributes from tail ontology to subtree
+        for node in tail_ontology_subtree.nodes:
+            tail_ontology_subtree.nodes[node].update(
+                self.tail_ontology.nodes[node]
+            )
 
         # rename tail join node to match head join node
         tail_ontology_subtree = nx.relabel_nodes(
@@ -282,9 +301,6 @@ class OntologyAdapter:
 class BiolinkAdapter:
     """
     Performs various functions to integrate the Biolink ontology.
-
-    Stores schema mappings to allow (reverse) translation of terms and
-    queries.
     """
     def __init__(
         self,
@@ -551,6 +567,8 @@ class BiolinkAdapter:
         """
         Create the backbone of the ontology by adding all classes that are
         ancestors of the leaves to receive a coherent parent-child structure.
+        Also create a nested dictionary for creating a networkx instance of the
+        ontology backbone.
         """
 
         # refactor inheritance tree to be compatible with treelib
@@ -558,9 +576,6 @@ class BiolinkAdapter:
             'entity': None,  # root node
             'mixin': 'entity',
         }
-
-        # create nested treedict for networkx
-        nested_treedict = {'entity': None}
 
         for class_name, properties in self.biolink_leaves.items():
 
@@ -604,6 +619,8 @@ class BiolinkAdapter:
         self.inheritance_tree = flat_treedict
 
         # add all entries to a nested treedict starting from the entity node
+        nested_treedict = {'entity': {}}
+
         in_tree = set(['entity'])
         todo = set(flat_treedict.keys())
         # delete entity from todo
@@ -656,6 +673,45 @@ class BiolinkAdapter:
                 nested_treedict[parent].update({class_name: properties})
 
         return nested_treedict
+
+    def _get_biolink_properties(self, class_name):
+        """
+        Get the properties of a Biolink class. Inserted into the nested
+        treedict for networkx creation.
+        """
+
+        props = {}
+
+        values = self.leaves.get(class_name)
+
+        if not values:
+
+            classdef = self.toolkit.get_element(class_name)
+
+        else:
+
+            if not values.get('synonym_for'):
+
+                name_or_synonym = class_name
+
+            else:
+
+                name_or_synonym = values['synonym_for']
+
+            classdef = self.toolkit.get_element(name_or_synonym)
+
+        if classdef:
+            props['exact_mappings'] = classdef['exact_mappings']
+            props['close_mappings'] = classdef['close_mappings']
+            props['narrow_mappings'] = classdef['narrow_mappings']
+            props['broad_mappings'] = classdef['broad_mappings']
+            props['is_a'] = classdef['is_a']
+            props['description'] = classdef['description']
+            props['class_uri'] = classdef['class_uri']
+            props['id_prefixes'] = classdef['id_prefixes']
+            props['name'] = classdef['name']
+
+        return props
 
     def _build_biolink_class(self, entity, values):
         """
@@ -782,14 +838,24 @@ class BiolinkAdapter:
         # Empty directed graph
         graph = nx.DiGraph()
 
-        # Iterate through the layers
+        # Add nodes and their data from nested inheritance tree
         queue = list(self.nested_inheritance_tree.items())
         while queue:
-            v, d = queue.pop()
-            for nv, nd in d.items():
-                graph.add_edge(v, nv)
-                if isinstance(nd, Mapping):
-                    queue.append((nv, nd))
+            parent_class, children = queue.pop()
+            data = self._get_biolink_properties(parent_class)
+            graph.add_node(parent_class, **data)
+            for child_class, grandchildren in children.items():
+                if isinstance(children, Mapping):
+                    queue.append((child_class, grandchildren))
+
+        # Add edges from nested inheritance tree
+        queue = list(self.nested_inheritance_tree.items())
+        while queue:
+            parent_class, children = queue.pop()
+            for child_class, grandchildren in children.items():
+                graph.add_edge(parent_class, child_class)
+                if isinstance(grandchildren, Mapping):
+                    queue.append((child_class, grandchildren))
 
         return graph
 
@@ -803,6 +869,17 @@ class BiolinkAdapter:
 
 
 class Translator:
+    """
+    Class responsible for exacting the translation process that is configured in
+    the schema_config.yaml file. Creates a mapping dictionary from that file,
+    and, given nodes and edges, translates them into BioCypherNodes and
+    BioCypherEdges. During this process, can also filter the properties of the
+    entities if the schema_config.yaml file specifies a property whitelist or
+    blacklist.
+
+    Provides utility functions for translating between input and output labels
+    and cypher queries.
+    """
     def __init__(self, leaves: dict[str, dict], strict_mode: bool = False):
         """
         Args:
@@ -865,19 +942,19 @@ class Translator:
                         )
 
             # find the node in leaves that represents biolink node type
-            _bl_type = self._get_biolink_type(_type)
+            _ontology_class = self._get_ontology_mapping(_type)
 
-            if _bl_type:
+            if _ontology_class:
 
                 # filter properties for those specified in schema_config if any
-                _filtered_props = self._filter_props(_bl_type, _props)
+                _filtered_props = self._filter_props(_ontology_class, _props)
 
                 # preferred id
-                _preferred_id = self._get_preferred_id(_bl_type)
+                _preferred_id = self._get_preferred_id(_ontology_class)
 
                 yield BioCypherNode(
                     node_id=_id,
-                    node_label=_bl_type,
+                    node_label=_ontology_class,
                     preferred_id=_preferred_id,
                     properties=_filtered_props,
                 )
@@ -1007,7 +1084,7 @@ class Translator:
 
             # match the input label (_type) to
             # a Biolink label from schema_config
-            bl_type = self._get_biolink_type(_type)
+            bl_type = self._get_ontology_mapping(_type)
 
             if bl_type:
 
@@ -1134,21 +1211,21 @@ class Translator:
         If multiple input labels, creates mapping for each.
         """
 
-        self._biolink_types = {}
+        self._ontology_mapping = {}
 
         for key, value in self.leaves.items():
 
             if isinstance(value.get('label_in_input'), str):
-                self._biolink_types[value.get('label_in_input')] = key
+                self._ontology_mapping[value.get('label_in_input')] = key
 
             elif isinstance(value.get('label_in_input'), list):
                 for label in value['label_in_input']:
-                    self._biolink_types[label] = key
+                    self._ontology_mapping[label] = key
 
-    def _get_biolink_type(self, label: str) -> Optional[str]:
+    def _get_ontology_mapping(self, label: str) -> Optional[str]:
         """
         For each given input type ("label_in_input"), find the corresponding
-        Biolink type in the leaves dictionary.
+        ontology class in the leaves dictionary (from the `schema_config.yam`).
 
         Args:
             label:
@@ -1157,7 +1234,7 @@ class Translator:
         """
 
         # commented out until behaviour of _update_bl_types is fixed
-        return self._biolink_types.get(label, None)
+        return self._ontology_mapping.get(label, None)
 
     def translate_term(self, term):
         """
