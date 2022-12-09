@@ -94,6 +94,7 @@ def test_translate_nodes(translator):
             },
         ),
         ('REACT:25520', 'reactome', {}),
+        ('agpl:001524', 'agpl', {}),
     ]
     t = translator.translate_nodes(id_type)
 
@@ -103,6 +104,8 @@ def test_translate_nodes(translator):
     assert next(t).get_label() == 'protein'
     assert next(t).get_label() == 'microRNA'
     assert next(t).get_label() == 'complex'
+    assert next(t).get_label() == 'reactome.pathway'
+    assert next(t).get_label() == 'altered_gene_product_level'
 
 
 def test_specific_and_generic_ids(translator):
@@ -190,7 +193,7 @@ def test_translate_edges(translator):
     assert n3.get_source_edge().get_source_id() == 'G15258'
 
 
-def test_adapter(version_node):
+def test_biolink_adapter(version_node):
     # current Biolink model (as opposed to rest of tests)
     ad = BiolinkAdapter(version_node.leaves, clear_cache=True)
     ver = ad.biolink_version
@@ -401,7 +404,7 @@ def test_synonym(biolink_adapter):
     assert 'MacromolecularComplexMixin' in comp['ancestors']
 
 
-def test_properties_from_config(version_node, translator):
+def test_properties_from_config(translator):
     id_type = [
         (
             'G49205',
