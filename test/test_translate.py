@@ -1,10 +1,11 @@
 from networkx.classes.graph import Graph
 from linkml_runtime.linkml_model.meta import ClassDefinition
 import pytest
+import networkx as nx
 
 from biocypher._config import module_data_path
 from biocypher._create import VersionNode, BioCypherEdge, BioCypherNode
-from biocypher._translate import Translator, BiolinkAdapter
+from biocypher._translate import Translator, BiolinkAdapter, OntologyAdapter
 
 __all__ = [
     'biolink_adapter',
@@ -56,6 +57,16 @@ def biolink_adapter(version_node):
         version_node.leaves,
         schema=module_data_path('test-biolink-model'),
         clear_cache=True,
+    )
+
+
+@pytest.fixture
+def ontology_adapter(biolink_adapter):
+    return OntologyAdapter(
+        head_join_node='sequence variant',
+        tail_join_node='protein_coding',
+        biolink_adapter=biolink_adapter,
+        tail_ontology_url='test/so.obo',
     )
 
 
@@ -661,3 +672,10 @@ def test_networkx_from_treedict(biolink_adapter):
     graph = biolink_adapter.get_networkx_graph()
 
     assert isinstance(graph, Graph)
+    assert 'sequence variant' in graph.nodes
+
+
+def test_generic_ontology_adapter(ontology_adapter):
+    assert isinstance(ontology_adapter, OntologyAdapter)
+    assert len(ontology_adapter.tail_ontology) == 481
+    assert nx.is_directed_acyclic_graph(ontology_adapter.tail_ontology)

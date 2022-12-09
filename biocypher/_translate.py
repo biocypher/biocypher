@@ -32,13 +32,13 @@ Todo:
     - import ID types from pypath dictionary (later, externalised
       dictionary)? biolink?
 """
-from collections.abc import Iterable, Generator
+from collections.abc import Mapping, Iterable, Generator
 
 from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
-from typing import Any, Union, Literal, Optional
+from typing import Any, Union, Optional
 import os
 import re
 import json
@@ -48,6 +48,7 @@ import hashlib
 from bmt.utils import sentencecase_to_camelcase
 from more_itertools import peekable
 from linkml_runtime.linkml_model.meta import TypeDefinition, ClassDefinition
+from networkx.algorithms.traversal.depth_first_search import dfs_tree
 import bmt
 import obonet
 import appdirs
@@ -91,10 +92,10 @@ class OntologyAdapter:
         tail_join_node: str,
         tail_ontology_url: str,
         head_ontology_url: Optional[str] = None,
-        bl_adapter: Optional['BiolinkAdapter'] = None,
+        biolink_adapter: Optional['BiolinkAdapter'] = None,
     ):
 
-        if not head_ontology_url and not bl_adapter:
+        if not head_ontology_url and not biolink_adapter:
             raise ValueError(
                 'Either head_ontology_url or bl_adapter must be supplied.'
             )
@@ -103,7 +104,7 @@ class OntologyAdapter:
         self.tail_ontology_url = tail_ontology_url
         self.head_join_node = head_join_node
         self.tail_join_node = tail_join_node
-        self.bl_adapter = bl_adapter
+        self.biolink_adapter = biolink_adapter
 
         self.head_ontology = None
         self.tail_ontology = None
@@ -116,6 +117,7 @@ class OntologyAdapter:
         them, and returns the hybrid ontology.
         """
         self.load_ontologies()
+        self.find_join_nodes()
         self.join_ontologies()
 
     def load_ontologies(self):
@@ -125,9 +127,54 @@ class OntologyAdapter:
         if self.head_ontology_url:
             self.head_ontology = obonet.read_obo(self.head_ontology_url)
         else:
-            self.head_ontology = self.bl_adapter.get_networkx_graph()
+            self.head_ontology = self.biolink_adapter.get_networkx_graph()
 
         self.tail_ontology = obonet.read_obo(self.tail_ontology_url)
+
+    def find_join_nodes(self):
+        """
+        Finds the join nodes in the ontologies. If the join nodes are not
+        found, the method will raise an error.
+        """
+        if self.head_join_node not in self.head_ontology.nodes:
+
+            if self.head_ontology_url:
+
+                self.head_join_node = self.find_join_node_by_name(
+                    self.head_ontology, self.head_join_node
+                )
+
+            else:
+
+                raise ValueError(
+                    f'Head join node {self.head_join_node} not found in '
+                    f'head ontology.'
+                )
+
+        if self.tail_join_node not in self.tail_ontology.nodes:
+
+            self.tail_join_node = self.find_join_node_by_name(
+                self.tail_ontology, self.tail_join_node
+            )
+
+            if not self.tail_join_node:
+
+                raise ValueError(
+                    f'Tail join node {self.tail_join_node} not found in '
+                    f'tail ontology.'
+                )
+
+    def find_join_node_by_name(self, ontology, node_name):
+        """
+        Finds the join node in the ontology by name. If the join node is not
+        found, the method will return None.
+        """
+        name_to_id = {
+            data.get('name'): _id
+            for _id, data in ontology.nodes(data=True)
+        }
+
+        return name_to_id.get(node_name)
 
     def join_ontologies(self):
         """
@@ -135,17 +182,7 @@ class OntologyAdapter:
         head ontology at the specified join nodes.
         """
 
-        # subset tail ontology at join node
-        tail_ontology_subgraph = nx.ego_graph(
-            self.tail_ontology,
-            self.tail_join_node,
-            radius=1,
-        )
-
-        # merge subgraph onto head ontology at specified join node
-        self.head_ontology.add_edges_from(
-            tail_ontology_subgraph.edges(self.head_join_node),
-        )
+        pass
 
 
 class BiolinkAdapter:
@@ -756,8 +793,19 @@ class BiolinkAdapter:
         Get the ontology as a networkx graph.
         """
 
-        # create networkx graph from treelib dictionary
-        return nx.Graph(self.nested_inheritance_tree)
+        # Empty directed graph
+        graph = nx.DiGraph()
+
+        # Iterate through the layers
+        queue = list(self.nested_inheritance_tree.items())
+        while queue:
+            v, d = queue.pop()
+            for nv, nd in d.items():
+                graph.add_edge(v, nv)
+                if isinstance(nd, Mapping):
+                    queue.append((nv, nd))
+
+        return graph
 
 
 # Biolink toolkit wiki:
