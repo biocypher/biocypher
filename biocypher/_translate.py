@@ -108,6 +108,7 @@ class OntologyAdapter:
 
         self.head_ontology = None
         self.tail_ontology = None
+        self.hybrid_ontology = None
 
         self.main()
 
@@ -122,14 +123,32 @@ class OntologyAdapter:
 
     def load_ontologies(self):
         """
-        Loads the ontologies using obonet.
+        Loads the ontologies using obonet. Importantly, obonet orients edges not
+        from parent to child, but from child to parent, which goes against the
+        assumptions in networkx. For instance, for subsetting the ontology, the
+        .reverse() method needs to be called first. If head ontology is loaded
+        from Biolink, it is reversed to be consistent with obonet. Currently,
+        we use the names of the nodes instead of accessions, so we reverse the
+        name and ID mapping. The accession becomes the 'id' attribute of the
+        node data.
         """
-        if self.head_ontology_url:
-            self.head_ontology = obonet.read_obo(self.head_ontology_url)
-        else:
-            self.head_ontology = self.biolink_adapter.get_networkx_graph()
 
+        # use Biolink as the head ontology if no URL is given
+        if self.head_ontology_url:
+
+            self.head_ontology = obonet.read_obo(self.head_ontology_url)
+
+            self.head_ontology = self.reverse_name_and_id(self.head_ontology)
+
+        else:
+
+            self.head_ontology = self.biolink_adapter.get_networkx_graph(
+            ).reverse()
+
+        # tail ontology is always loaded from URL
         self.tail_ontology = obonet.read_obo(self.tail_ontology_url)
+
+        self.tail_ontology = self.reverse_name_and_id(self.tail_ontology)
 
     def find_join_nodes(self):
         """
@@ -176,13 +195,44 @@ class OntologyAdapter:
 
         return name_to_id.get(node_name)
 
+    def reverse_name_and_id(self, ontology):
+        """
+        Reverses the name and ID of the ontology nodes.
+        """
+
+        id_to_name = {}
+        for _id, data in ontology.nodes(data=True):
+            data['id'] = _id
+            id_to_name[_id] = data.get('name')
+
+        ontology = nx.relabel_nodes(ontology, id_to_name)
+
+        return ontology
+
     def join_ontologies(self):
         """
         Joins the ontologies by adding the tail ontology as a subgraph to the
-        head ontology at the specified join nodes.
+        head ontology at the specified join nodes. Note that the tail ontology
+        needs to be reversed before creating the subgraph, as obonet orients
+        edges from child to parent.
         """
 
-        pass
+        self.hybrid_ontology = self.head_ontology.copy()
+
+        # subtree of tail ontology at join node
+        tail_ontology_subtree = dfs_tree(
+            self.tail_ontology.reverse(), self.tail_join_node
+        ).reverse()
+
+        # rename tail join node to match head join node
+        tail_ontology_subtree = nx.relabel_nodes(
+            tail_ontology_subtree, {self.tail_join_node: self.head_join_node}
+        )
+
+        # combine head ontology and tail subtree
+        self.hybrid_ontology = nx.compose(
+            self.hybrid_ontology, tail_ontology_subtree
+        )
 
 
 class BiolinkAdapter:
