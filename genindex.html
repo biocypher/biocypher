@@ -29,7 +29,7 @@
             <a href="contents.html" class="icon icon-home"> BioCypher
           </a>
               <div class="version">
-                0.3.5
+                0.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -221,6 +221,10 @@
       </ul></li>
       <li><a href="submodule.html#biocypher._logger.get_logger">get_logger() (in module biocypher._logger)</a>
 </li>
+      <li><a href="submodule.html#biocypher._translate.Translator.get_missing_biolink_types">get_missing_biolink_types() (biocypher._translate.Translator method)</a>
+</li>
+      <li><a href="submodule.html#biocypher._translate.BiolinkAdapter.get_networkx_graph">get_networkx_graph() (biocypher._translate.BiolinkAdapter method)</a>
+</li>
       <li><a href="submodule.html#biocypher._create.BioCypherNode.get_preferred_id">get_preferred_id() (biocypher._create.BioCypherNode method)</a>
 </li>
       <li><a href="submodule.html#biocypher._create.BioCypherEdge.get_properties">get_properties() (biocypher._create.BioCypherEdge method)</a>
@@ -290,7 +294,7 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="submodule.html#biocypher._translate.BiolinkAdapter.name_sentence_to_pascal">name_sentence_to_pascal() (biocypher._translate.BiolinkAdapter static method)</a>
+      <li><a href="submodule.html#biocypher._translate.Translator.name_sentence_to_pascal">name_sentence_to_pascal() (biocypher._translate.Translator static method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -298,7 +302,7 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="submodule.html#biocypher._translate.BiolinkAdapter.reverse_translate">reverse_translate() (biocypher._translate.BiolinkAdapter method)</a>
+      <li><a href="submodule.html#biocypher._translate.Translator.reverse_translate">reverse_translate() (biocypher._translate.Translator method)</a>
 </li>
       <li><a href="submodule.html#biocypher._driver.Driver.reverse_translate_query">reverse_translate_query() (biocypher._driver.Driver method)</a>
 </li>
@@ -307,7 +311,7 @@
       <li><a href="submodule.html#biocypher._driver.Driver.reverse_translate_term">reverse_translate_term() (biocypher._driver.Driver method)</a>
 
       <ul>
-        <li><a href="submodule.html#biocypher._translate.BiolinkAdapter.reverse_translate_term">(biocypher._translate.BiolinkAdapter method)</a>
+        <li><a href="submodule.html#biocypher._translate.Translator.reverse_translate_term">(biocypher._translate.Translator method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -317,16 +321,12 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="submodule.html#biocypher._driver.Driver.show_ontology_structure">show_ontology_structure() (biocypher._driver.Driver method)</a>
-
-      <ul>
-        <li><a href="submodule.html#biocypher._translate.BiolinkAdapter.show_ontology_structure">(biocypher._translate.BiolinkAdapter method)</a>
 </li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="submodule.html#biocypher._driver.Driver.start_batch_writer">start_batch_writer() (biocypher._driver.Driver method)</a>
 </li>
-      <li><a href="submodule.html#biocypher._driver.Driver.start_bl_adapter">start_bl_adapter() (biocypher._driver.Driver method)</a>
+      <li><a href="submodule.html#biocypher._driver.Driver.start_ontology_adapter">start_ontology_adapter() (biocypher._driver.Driver method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -334,20 +334,26 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="submodule.html#biocypher._translate.BiolinkAdapter.translate">translate() (biocypher._translate.BiolinkAdapter method)</a>
+      <li><a href="submodule.html#biocypher._translate.Translator.translate">translate() (biocypher._translate.Translator method)</a>
+</li>
+      <li><a href="submodule.html#biocypher._translate.Translator.translate_edges">translate_edges() (biocypher._translate.Translator method)</a>
 </li>
       <li><a href="submodule.html#biocypher._translate.BiolinkAdapter.translate_leaves_to_biolink">translate_leaves_to_biolink() (biocypher._translate.BiolinkAdapter method)</a>
 </li>
-      <li><a href="submodule.html#biocypher._driver.Driver.translate_query">translate_query() (biocypher._driver.Driver method)</a>
+      <li><a href="submodule.html#biocypher._translate.Translator.translate_nodes">translate_nodes() (biocypher._translate.Translator method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="submodule.html#biocypher._driver.Driver.translate_query">translate_query() (biocypher._driver.Driver method)</a>
+</li>
       <li><a href="submodule.html#biocypher._driver.Driver.translate_term">translate_term() (biocypher._driver.Driver method)</a>
 
       <ul>
-        <li><a href="submodule.html#biocypher._translate.BiolinkAdapter.translate_term">(biocypher._translate.BiolinkAdapter method)</a>
+        <li><a href="submodule.html#biocypher._translate.Translator.translate_term">(biocypher._translate.Translator method)</a>
 </li>
       </ul></li>
+      <li><a href="submodule.html#biocypher._translate.Translator">Translator (class in biocypher._translate)</a>
+</li>
       <li><a href="submodule.html#biocypher._translate.BiolinkAdapter.trim_biolink_ancestry">trim_biolink_ancestry() (biocypher._translate.BiolinkAdapter static method)</a>
 </li>
   </ul></td>

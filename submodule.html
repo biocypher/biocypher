@@ -31,7 +31,7 @@
             <a href="contents.html" class="icon icon-home"> BioCypher
           </a>
               <div class="version">
-                0.3.5
+                0.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -341,9 +341,9 @@ treelib.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="biocypher._driver.Driver.start_bl_adapter">
-<span class="sig-name descname"><span class="pre">start_bl_adapter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#biocypher._driver.Driver.start_bl_adapter" title="Permalink to this definition"></a></dt>
-<dd><p>Instantiate the <code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher.adapter.BioLinkAdapter</span></code> if not
+<dt class="sig sig-object py" id="biocypher._driver.Driver.start_ontology_adapter">
+<span class="sig-name descname"><span class="pre">start_ontology_adapter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#biocypher._driver.Driver.start_ontology_adapter" title="Permalink to this definition"></a></dt>
+<dd><p>Instantiate the <code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher._translate.OntologyAdapter</span></code> if not
 existing.</p>
 </dd></dl>
 
@@ -706,15 +706,21 @@ properties as second-level dict.</p>
 <span class="target" id="module-biocypher._translate"></span><p>Lookup and storage of entity IDs that are part of the BioCypher schema.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">BiolinkAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">BiolinkAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build_from_biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter" title="Permalink to this definition"></a></dt>
 <dd><p>Performs various functions to integrate the Biolink ontology.</p>
-<p>Stores schema mappings to allow (reverse) translation of terms and
-queries.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.create_ontology_backbone">
 <span class="sig-name descname"><span class="pre">create_ontology_backbone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.create_ontology_backbone" title="Permalink to this definition"></a></dt>
 <dd><p>Create the backbone of the ontology by adding all classes that are
-ancestors of the leaves to receive a coherent parent-child structure.</p>
+ancestors of the leaves to receive a coherent parent-child structure.
+Also create a nested dictionary for creating a networkx instance of the
+ontology backbone.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.get_networkx_graph">
+<span class="sig-name descname"><span class="pre">get_networkx_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DiGraph</span></span></span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.get_networkx_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Get the ontology as a networkx graph.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -738,37 +744,6 @@ been updated. This is checked via a hash of the leaves dict.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.name_sentence_to_pascal">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name_sentence_to_pascal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.name_sentence_to_pascal" title="Permalink to this definition"></a></dt>
-<dd><p>Converts a name in sentence case to pascal case.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.reverse_translate">
-<span class="sig-name descname"><span class="pre">reverse_translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.reverse_translate" title="Permalink to this definition"></a></dt>
-<dd><p>Reverse translate a cypher query. Only translates labels as of
-now.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.reverse_translate_term">
-<span class="sig-name descname"><span class="pre">reverse_translate_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.reverse_translate_term" title="Permalink to this definition"></a></dt>
-<dd><p>Reverse translate a single term.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.show_ontology_structure">
-<span class="sig-name descname"><span class="pre">show_ontology_structure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.show_ontology_structure" title="Permalink to this definition"></a></dt>
-<dd><p>Show the ontology structure using treelib.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.translate">
-<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.translate" title="Permalink to this definition"></a></dt>
-<dd><p>Translate a cypher query. Only translates labels as of now.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.translate_leaves_to_biolink">
 <span class="sig-name descname"><span class="pre">translate_leaves_to_biolink</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.translate_leaves_to_biolink" title="Permalink to this definition"></a></dt>
 <dd><p>Translates the leaves (direct constituents of the graph) given
@@ -783,15 +758,93 @@ we switch to pascal case?</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.translate_term">
-<span class="sig-name descname"><span class="pre">translate_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.translate_term" title="Permalink to this definition"></a></dt>
-<dd><p>Translate a single term.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="biocypher._translate.BiolinkAdapter.trim_biolink_ancestry">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trim_biolink_ancestry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ancestry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#biocypher._translate.BiolinkAdapter.trim_biolink_ancestry" title="Permalink to this definition"></a></dt>
 <dd><p>Trims “biolink:” prefix from Biolink ancestry elements.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher._translate.Translator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">Translator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator" title="Permalink to this definition"></a></dt>
+<dd><p>Class responsible for exacting the translation process that is configured in
+the schema_config.yaml file. Creates a mapping dictionary from that file,
+and, given nodes and edges, translates them into BioCypherNodes and
+BioCypherEdges. During this process, can also filter the properties of the
+entities if the schema_config.yaml file specifies a property whitelist or
+blacklist.</p>
+<p>Provides utility functions for translating between input and output labels
+and cypher queries.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.Translator.get_missing_biolink_types">
+<span class="sig-name descname"><span class="pre">get_missing_biolink_types</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#biocypher._translate.Translator.get_missing_biolink_types" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a dictionary of types that were not represented in the
+schema_config.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.Translator.name_sentence_to_pascal">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name_sentence_to_pascal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._translate.Translator.name_sentence_to_pascal" title="Permalink to this definition"></a></dt>
+<dd><p>Converts a name in sentence case to pascal case.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.Translator.reverse_translate">
+<span class="sig-name descname"><span class="pre">reverse_translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator.reverse_translate" title="Permalink to this definition"></a></dt>
+<dd><p>Reverse translate a cypher query. Only translates labels as of
+now.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.Translator.reverse_translate_term">
+<span class="sig-name descname"><span class="pre">reverse_translate_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator.reverse_translate_term" title="Permalink to this definition"></a></dt>
+<dd><p>Reverse translate a single term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.Translator.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator.translate" title="Permalink to this definition"></a></dt>
+<dd><p>Translate a cypher query. Only translates labels as of now.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.Translator.translate_edges">
+<span class="sig-name descname"><span class="pre">translate_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_src_tar_type_prop_tuples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#biocypher._create.BioCypherEdge" title="biocypher._create.BioCypherEdge"><span class="pre">BioCypherEdge</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#biocypher._create.BioCypherRelAsNode" title="biocypher._create.BioCypherRelAsNode"><span class="pre">BioCypherRelAsNode</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#biocypher._translate.Translator.translate_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Translates input edge representation to a representation that
+conforms to the schema of the given BioCypher graph. For now
+requires explicit statement of edge type on pass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id_src_tar_type_prop_tuples</strong> (<em>list</em><em> of </em><em>tuples</em>) – collection of tuples representing source and target of
+an interaction via their unique ids as well as the type
+of interaction in the original database notation, which
+is translated to BioCypher notation using the <cite>leaves</cite>.
+Can optionally possess its own ID.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.Translator.translate_nodes">
+<span class="sig-name descname"><span class="pre">translate_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_type_prop_tuples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#biocypher._create.BioCypherNode" title="biocypher._create.BioCypherNode"><span class="pre">BioCypherNode</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#biocypher._translate.Translator.translate_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Translates input node representation to a representation that
+conforms to the schema of the given BioCypher graph. For now
+requires explicit statement of node type on pass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id_type_tuples</strong> (<em>list</em><em> of </em><em>tuples</em>) – collection of tuples
+representing individual nodes by their unique id and a type
+that is translated from the original database notation to
+the corresponding BioCypher notation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.Translator.translate_term">
+<span class="sig-name descname"><span class="pre">translate_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator.translate_term" title="Permalink to this definition"></a></dt>
+<dd><p>Translate a single term.</p>
 </dd></dl>
 
 </dd></dl>
@@ -853,18 +906,18 @@ for ordering of the earlier part files (“01, 02”).</p>
 </ol>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._write.BatchWriter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._write.</span></span><span class="sig-name descname"><span class="pre">BatchWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bl_adapter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._translate.BiolinkAdapter" title="biocypher._translate.BiolinkAdapter"><span class="pre">BiolinkAdapter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quote</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'neo4j'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_bad_relationships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_duplicate_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wipe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.BatchWriter" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._write.</span></span><span class="sig-name descname"><span class="pre">BatchWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leaves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_adapter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OntologyAdapter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quote</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'neo4j'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_bad_relationships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_duplicate_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wipe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.BatchWriter" title="Permalink to this definition"></a></dt>
 <dd><p>Class for writing node and edge representations to disk using the
 format specified by Neo4j for the use of admin import. Each batch
 writer instance has a fixed representation that needs to be passed
 at instantiation via the <code class="xref py py-attr docutils literal notranslate"><span class="pre">schema</span></code> argument. The instance
-also expects a biolink adapter via <code class="xref py py-attr docutils literal notranslate"><span class="pre">bl_adapter</span></code> to be able
+also expects an ontology adapter via <code class="xref py py-attr docutils literal notranslate"><span class="pre">ontology_adapter</span></code> to be able
 to convert and extend the hierarchy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>leaves</strong> – The BioCypher graph schema leaves (ontology classes).</p></li>
-<li><p><strong>bl_adapter</strong> – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">BiolinkAdapter</span></code> to enable translation and
+<li><p><strong>ontology_adapter</strong> – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">OntologyAdapter</span></code> to enable translation and
 ontology queries</p></li>
 <li><p><strong>delimiter</strong> – The delimiter to use for the CSV files.</p></li>
 <li><p><strong>array_delimiter</strong> – The delimiter to use for array properties.</p></li>
