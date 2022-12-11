@@ -385,17 +385,24 @@ class BatchWriter:
 
                     # get label hierarchy
                     # multiple labels:
-                    if self.ontology_adapter.biolink_leaves.get(label):
-                        all_labels = self.ontology_adapter.biolink_leaves[
-                            label]['ancestors']
+                    all_labels = self.ontology_adapter.get_node_ancestry(label)
 
                     if all_labels:
+                        # convert to pascal case
+                        all_labels = [
+                            self.translator.name_sentence_to_pascal(label)
+                            for label in all_labels
+                        ]
                         # remove duplicates
                         all_labels = list(OrderedDict.fromkeys(all_labels))
+                        # order alphabetically
+                        all_labels.sort()
                         # concatenate with array delimiter
                         all_labels = self.adelim.join(all_labels)
                     else:
-                        all_labels = label
+                        all_labels = self.translator.name_sentence_to_pascal(
+                            label
+                        )
 
                     labels[label] = all_labels
 

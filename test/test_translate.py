@@ -78,7 +78,7 @@ def test_translate_nodes(translator):
     assert next(t).get_label() == 'microRNA'
     assert next(t).get_label() == 'complex'
     assert next(t).get_label() == 'reactome.pathway'
-    assert next(t).get_label() == 'altered_gene_product_level'
+    assert next(t).get_label() == 'altered gene product level'
 
 
 def test_specific_and_generic_ids(translator):
@@ -652,6 +652,10 @@ def test_networkx_from_treedict(biolink_adapter):
     assert isinstance(graph, Graph)
     assert 'sequence variant' in graph.nodes
 
+    # make sure the mixins don't get lost
+    assert 'physical essence or occurrent' in graph.nodes
+    assert 'gene product mixin' in graph.nodes
+
 
 def test_generic_ontology_adapter(ontology_adapter):
     assert isinstance(ontology_adapter, OntologyAdapter)
@@ -665,12 +669,10 @@ def test_generic_ontology_adapter(ontology_adapter):
 
     # get predecessors of terminal node from hybrid ontology (successors because
     # of inverted graph)
-    predecessors = list(
-        dfs_tree(
-            ontology_adapter.hybrid_ontology, 'decreased gene product level'
-        )
+    predecessors = ontology_adapter.get_node_ancestry(
+        'decreased gene product level'
     )
-    assert len(predecessors) == 7
+    assert len(predecessors) == 13
     assert 'altered gene product level' in predecessors
     assert 'sequence variant' in predecessors
     assert 'entity' in predecessors

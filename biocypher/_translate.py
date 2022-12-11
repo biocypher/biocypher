@@ -33,6 +33,7 @@ Todo:
       dictionary)? biolink?
 """
 from collections.abc import Mapping, Iterable, Generator
+import itertools
 
 from ._logger import logger
 
@@ -296,6 +297,24 @@ class OntologyAdapter:
         tree.show()
 
         return tree
+
+    def get_node_ancestry(self, node: str):
+        """
+        Returns the ancestry of a node in the ontology.
+        """
+        if self.hybrid_ontology:
+
+            ontology = self.hybrid_ontology
+
+        else:
+
+            ontology = self.head_ontology
+
+        # check if node in ontology
+        if node not in ontology.nodes:
+            return None
+
+        return list(dfs_tree(ontology, node))
 
 
 class BiolinkAdapter:
@@ -574,7 +593,7 @@ class BiolinkAdapter:
         # refactor inheritance tree to be compatible with treelib
         flat_treedict = {
             'entity': None,  # root node
-            'mixin': 'entity',
+            'mixin': ['entity'],
         }
 
         for class_name, properties in self.biolink_leaves.items():
@@ -588,13 +607,25 @@ class BiolinkAdapter:
 
             if properties['class_definition']['is_a'] is not None:
 
-                parent = properties['class_definition']['is_a']
+                parent = [str(properties['class_definition']['is_a'])]
+
+                mixins = list(properties['class_definition']['mixins'])
+
+                if mixins:
+                    parent.extend(mixins)
 
                 # add to flat treedict
                 flat_treedict[class_name] = parent
 
-        # find parents that are not in tree (apart from root node)
-        parents = set(flat_treedict.values())
+        # flatten values lists of flat_treedict to set of parents
+        parents = set()
+        for value in flat_treedict.values():
+            if isinstance(value, list):
+                for v in value:
+                    parents.add(v)
+            else:
+                parents.add(value)
+
         parents.discard(None)
         children = set(flat_treedict.keys())
 
@@ -604,47 +635,80 @@ class BiolinkAdapter:
 
             # add missing parents to tree
             for child in missing:
-                parent = self.toolkit.get_parent(child)
-                if parent:
-                    flat_treedict[child] = parent
+                element = self.toolkit.get_element(child)
+                if element:
+                    # get parent
+                    parent = element['is_a']
 
-                # remove root and mixins
-                if self.toolkit.is_mixin(child):
-                    flat_treedict[child] = 'mixin'
+                    if not parent:
 
-            parents = set(flat_treedict.values())
+                        if self.toolkit.is_mixin(child):
+
+                            flat_treedict[child] = ['mixin']
+
+                    else:
+
+                        parent = [parent]
+
+                        # get mixins
+                        mixins = element['mixins']
+
+                        if mixins:
+                            parent.extend(mixins)
+
+                        flat_treedict[child] = parent
+
+            parents = set()
+            for value in flat_treedict.values():
+                if isinstance(value, list):
+                    for v in value:
+                        parents.add(v)
+                else:
+                    parents.add(value)
             parents.discard(None)
             children = set(flat_treedict.keys())
-
-        self.inheritance_tree = flat_treedict
 
         # add all entries to a nested treedict starting from the entity node
         nested_treedict = {'entity': {}}
 
         in_tree = set(['entity'])
-        todo = set(flat_treedict.keys())
         # delete entity from todo
-        todo.remove('entity')
+        flat_treedict.pop('entity')
 
-        while todo:
+        while flat_treedict:
 
-            added = []
+            added = {}
 
-            for child in todo:
-                parent = flat_treedict[child]
-                if parent in in_tree:
-                    # find parent recursively in nested treedict
-                    nested_treedict = self._add_class_to_nested_treedict(
-                        child,
-                        parent,
-                        {},
-                        nested_treedict,
-                    )
-                    added.append(child)
+            for child, parents in flat_treedict.items():
+                parents = _misc.ensure_iterable(parents)
+                for parent in parents:
+                    if parent in in_tree:
+                        # find parent recursively in nested treedict
+                        nested_treedict = self._add_class_to_nested_treedict(
+                            child,
+                            parent,
+                            {},
+                            nested_treedict,
+                        )
+                        # add parent to child list of added
+                        if child not in added:
+                            added[child] = set([parent])
+                        else:
+                            added[child].update([parent])
 
-            for key in added:
-                todo.remove(key)
+            for key, parents in added.items():
+                parents = _misc.ensure_iterable(parents)
+                for parent in parents:
+                    if parent not in flat_treedict[key]:
+                        continue
+                    # remove parent from flat_treedict[child]
+                    flat_treedict[key].remove(parent)
                 in_tree.add(key)
+
+            # remove flat_treedict entries with empty parents list
+            for key in list(flat_treedict):
+                if not flat_treedict[key]:
+                    flat_treedict.pop(key)
 
         self.nested_inheritance_tree = nested_treedict
 
@@ -679,6 +743,10 @@ class BiolinkAdapter:
         Get the properties of a Biolink class. Inserted into the nested
         treedict for networkx creation.
         """
+
+        # check whether self has toolkit attribute
+        if not hasattr(self, 'toolkit'):
+            self.init_toolkit()
 
         props = {}
 
