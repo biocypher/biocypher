@@ -326,7 +326,7 @@ class BiolinkAdapter:
         leaves: dict,
         translator: 'Translator',
         schema: str = None,
-        biolink_version: str = None,
+        build_from_biolink_version: str = None,
         clear_cache: bool = False,
     ):
         """
@@ -340,9 +340,9 @@ class BiolinkAdapter:
             schema:
                 A path to a YAML file with the schema. If not provided, the
                 default Biolink schema will be used.
-            biolink_version:
-                The version of the Biolink schema to use. If not provided,
-                the current default version will be used.
+            build_from_biolink_version:
+                The version of the Biolink schema to use to build the adapter.
+                If not provided, the current default version will be used.
             clear_cache:
                 If True, the Biolink model cache will be cleared and rebuilt.
         """
@@ -351,7 +351,8 @@ class BiolinkAdapter:
 
         self.leaves = leaves
         self.schema = schema
-        self.biolink_version = biolink_version
+        self.build_from_biolink_version = build_from_biolink_version
+        self.biolink_version = None
         self.biolink_leaves = None
 
         # property to store ad hoc inheritance to log in case of cache load
@@ -361,7 +362,7 @@ class BiolinkAdapter:
         self.clear_cache = clear_cache
 
         # it makes no sense to provide a yaml and a version at the same time
-        if self.schema and self.biolink_version:
+        if self.schema and self.build_from_biolink_version:
             raise ValueError(
                 'Please provide either a schema or a version, not both.',
             )
@@ -487,7 +488,7 @@ class BiolinkAdapter:
 
             # TODO extract version from schema and update self.biolink_version
 
-        elif self.biolink_version:
+        elif self.build_from_biolink_version:
 
             # TODO use version to get schema from biolink repo
             # TODO use schema to create toolkit
@@ -769,15 +770,16 @@ class BiolinkAdapter:
             classdef = self.toolkit.get_element(name_or_synonym)
 
         if classdef:
-            props['exact_mappings'] = classdef['exact_mappings']
-            props['close_mappings'] = classdef['close_mappings']
-            props['narrow_mappings'] = classdef['narrow_mappings']
-            props['broad_mappings'] = classdef['broad_mappings']
-            props['is_a'] = classdef['is_a']
-            props['description'] = classdef['description']
-            props['class_uri'] = classdef['class_uri']
-            props['id_prefixes'] = classdef['id_prefixes']
-            props['name'] = classdef['name']
+            # use _get to get item from json object (parent of linkml classdef)
+            props['exact_mappings'] = classdef._get('exact_mappings')
+            props['close_mappings'] = classdef._get('close_mappings')
+            props['narrow_mappings'] = classdef._get('narrow_mappings')
+            props['broad_mappings'] = classdef._get('broad_mappings')
+            props['is_a'] = classdef._get('is_a')
+            props['description'] = classdef._get('description')
+            props['class_uri'] = classdef._get('class_uri')
+            props['id_prefixes'] = classdef._get('id_prefixes')
+            props['name'] = classdef._get('name')
 
         return props
 
