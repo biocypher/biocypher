@@ -92,6 +92,12 @@ class Driver(neo4j_utils.Driver):
         skip_duplicate_nodes:
             Whether to skip duplicate nodes in the admin import shell
             command.
+        tail_ontology_url:
+            URL of the ontology to hybridise to the head ontology.
+        head_join_node:
+            Biolink class of the node to join the tail ontology to.
+        tail_join_node:
+            Ontology class of the node to join the head ontology to.
     """
     def __init__(
         self,
@@ -114,6 +120,9 @@ class Driver(neo4j_utils.Driver):
         delimiter: Optional[str] = None,
         array_delimiter: Optional[str] = None,
         quote_char: Optional[str] = None,
+        tail_ontology_url: Optional[str] = None,
+        head_join_node: Optional[str] = None,
+        tail_join_node: Optional[str] = None,
     ):
 
         db_name = db_name or _config('neo4j_db')
@@ -137,6 +146,12 @@ class Driver(neo4j_utils.Driver):
         self.strict_mode = strict_mode or _config('strict_mode')
         self.output_directory = output_directory or _config('output_directory')
         self.clear_cache = clear_cache or _config('clear_cache')
+
+        self.tail_ontology_url = tail_ontology_url or _config(
+            'tail_ontology_url'
+        )
+        self.head_join_node = head_join_node or _config('head_join_node')
+        self.tail_join_node = tail_join_node or _config('tail_join_node')
 
         if self.offline:
 
@@ -595,8 +610,11 @@ class Driver(neo4j_utils.Driver):
                 translator=self.translator,
                 clear_cache=self.clear_cache,
             )
-            # standard use case; TODO options for hybrids
+            # only simple one-hybrid case; TODO generalise
             self.ontology_adapter = OntologyAdapter(
+                tail_ontology_url=self.tail_ontology_url,
+                head_join_node=self.head_join_node,
+                tail_join_node=self.tail_join_node,
                 biolink_adapter=biolink_adapter,
             )
 
