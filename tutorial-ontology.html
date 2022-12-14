@@ -55,6 +55,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#visualising-ontologies">Visualising ontologies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-ontologies-plain-biolink">Using ontologies: plain Biolink</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#biolink-model-extensions">Biolink model extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hybridising-ontologies">Hybridising ontologies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="adapter.html">The Host-BioCypher Adapter</a></li>
@@ -451,8 +452,9 @@ on.</p>
 </div>
 <!-- TODO provide config access to custom biolink model path -->
 </section>
+</section>
 <section id="hybridising-ontologies">
-<span id="tut-hybridising"></span><h3>Hybridising ontologies<a class="headerlink" href="#hybridising-ontologies" title="Permalink to this heading"></a></h3>
+<span id="tut-hybridising"></span><h2>Hybridising ontologies<a class="headerlink" href="#hybridising-ontologies" title="Permalink to this heading"></a></h2>
 <p>A broad, general ontology is a useful tool for knowledge representation, but
 often the task at hand requires more specific and granular concepts. In such
 cases, it is possible to hybridise the general ontology with a more specific
@@ -484,13 +486,14 @@ BioCypher configuration file.</p>
 </div>
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text">Using biocypher_config.yaml</span><a class="headerlink" href="#id10" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">tail_ontology_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/so.obo</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span><span class="w"></span>
+<span class="nt">tail_ontology_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/so.obo</span><span class="w"></span>
 <span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span><span class="w"></span>
 <span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence_variant</span><span class="w"></span>
+<span class="c1"># ...</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
-</section>
 </section>
 </section>
 
