@@ -453,7 +453,43 @@ on.</p>
 </section>
 <section id="hybridising-ontologies">
 <span id="tut-hybridising"></span><h3>Hybridising ontologies<a class="headerlink" href="#hybridising-ontologies" title="Permalink to this heading"></a></h3>
-<p>Not implemented yet; coming soon.</p>
+<p>A broad, general ontology is a useful tool for knowledge representation, but
+often the task at hand requires more specific and granular concepts. In such
+cases, it is possible to hybridise the general ontology with a more specific
+one. For instance, there are many different types of sequence variants in
+biology, but Biolink only provides a generic “sequence variant” class (and it
+may exceed the scope of Biolink to provide granular classes for all thinkable
+cases). However, there are many specialist ontologies, such as the Sequence
+Ontology (SO), which provides a more granular representation of sequence
+variants.</p>
+<p>To hybridise the Biolink model with the SO, we can use the generic ontology
+adapter class of BioCypher by providing a “tail ontology” as a link to an OBO
+format ontology file, as well as a set of nodes (one in Biolink, one in SO)
+which should be joined to form the hybridised ontology. The ontology adapter
+also accepts any arbitrary “head ontology” as a base ontology, but if none is
+provided, the Biolink model is used as the default head ontology. These options
+can be provided to the BioCypher driver as parameters, or as options in the
+BioCypher configuration file.</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Programmatic usage</span><a class="headerlink" href="#id9" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="o">.</span><span class="n">driver</span><span class="p">(</span>
+    <span class="c1"># ...</span>
+    <span class="n">tail_ontology_url</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/so.obo&quot;</span><span class="p">,</span>
+    <span class="n">head_join_node</span><span class="o">=</span><span class="s2">&quot;sequence variant&quot;</span><span class="p">,</span>  <span class="c1"># Biolink class</span>
+    <span class="n">tail_join_node</span><span class="o">=</span><span class="s2">&quot;sequence_variant&quot;</span><span class="p">,</span>  <span class="c1"># SO class</span>
+    <span class="c1"># ...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Using biocypher_config.yaml</span><a class="headerlink" href="#id10" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">tail_ontology_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/so.obo</span><span class="w"></span>
+<span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span><span class="w"></span>
+<span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence_variant</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 </section>
