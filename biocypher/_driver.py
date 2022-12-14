@@ -125,6 +125,7 @@ class Driver(neo4j_utils.Driver):
         tail_join_node: Optional[str] = None,
     ):
 
+        # Neo4j options
         db_name = db_name or _config('neo4j_db')
         db_uri = db_uri or _config('neo4j_uri')
         db_user = db_user or _config('neo4j_user')
@@ -143,6 +144,10 @@ class Driver(neo4j_utils.Driver):
         else:
             self.offline = offline
 
+        # BioCypher options
+        self.user_schema_config_path = user_schema_config_path or _config(
+            'user_schema_config_path'
+        )
         self.strict_mode = strict_mode or _config('strict_mode')
         self.output_directory = output_directory or _config('output_directory')
         self.clear_cache = clear_cache or _config('clear_cache')
@@ -159,7 +164,7 @@ class Driver(neo4j_utils.Driver):
 
             self.db_meta = VersionNode(
                 from_config=True,
-                config_file=user_schema_config_path,
+                config_file=self.user_schema_config_path,
                 offline=True,
                 bcy_driver=self,
             )
@@ -191,7 +196,7 @@ class Driver(neo4j_utils.Driver):
                 # one
                 self.db_meta = VersionNode(
                     from_config=offline or wipe,
-                    config_file=user_schema_config_path,
+                    config_file=self.user_schema_config_path,
                     bcy_driver=self,
                 )
 
