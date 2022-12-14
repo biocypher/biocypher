@@ -160,6 +160,14 @@ class Driver(neo4j_utils.Driver):
 
         if self.offline:
 
+            if not self.user_schema_config_path:
+                raise ValueError(
+                    'Offline mode requires a user schema config file.'
+                    ' Please provide one with the `user_schema_config_path`'
+                    ' argument or set the `user_schema_config_path`'
+                    ' configuration variable.'
+                )
+
             logger.info('Offline mode: no connection to Neo4j.')
 
             self.db_meta = VersionNode(
