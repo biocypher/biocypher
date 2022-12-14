@@ -67,6 +67,14 @@ class OntologyAdapter:
     Generic ontology adapter class. Can ingest OBO files and build a hybrid
     ontology from them. Uses Biolink as the default head ontology if no URL is
     given.
+
+    TODO:
+        build visualisation only for parts of the schema_config also for tail
+        ontology
+
+        update show ontology structure to print also tail ontology info
+
+        genericise leaves creation beyond biolink
     """
     def __init__(
         self,
