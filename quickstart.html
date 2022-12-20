@@ -117,8 +117,23 @@ starting in “offline mode” using <code class="docutils literal notranslate">
 connection to a running Neo4j instance, or by providing authentication
 details via arguments or configuration file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">biocypher</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span><span class="o">&lt;</span><span class="n">args</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span>
+  <span class="n">offline</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+  <span class="n">db_uri</span> <span class="o">=</span> <span class="s2">&quot;bolt://localhost:7687&quot;</span><span class="p">,</span>
+  <span class="n">db_user</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span><span class="p">,</span>
+  <span class="n">db_passwd</span> <span class="o">=</span> <span class="s2">&quot;password&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
+</div>
+<div class="highlight-{note notranslate"><div class="highlight"><pre><span></span>We use the APOC library for Neo4j, which is not included automatically, but
+needs to be installed as a plugin to the DMBS. For more information, please
+refer to the [APOC documentation](https://neo4j.com/labs/apoc/).
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>The settings for the BioCypher driver can also be specified in a configuration
+file. For more details, please refer to the <a class="reference internal" href="installation.html#config"><span class="std std-ref">Setup instructions</span></a>.</p>
 </div>
 <p>The main function of the adapter is to pass data into BioCypher, usually
 as some form of iterable (commonly a list or generator of items). As a
@@ -197,7 +212,8 @@ case, <code class="docutils literal notranslate"><span class="pre">ensembl</span
 <p>If there exists no identifier system that is suitable for coverage of
 the data, the standard field <code class="docutils literal notranslate"><span class="pre">id</span></code> can be used; this will not result in
 the creation of a named property that reflects the identifier of each
-node. See below for an example.</p>
+node. See below for an example. The <code class="docutils literal notranslate"><span class="pre">preferred_id</span></code> field can in this case also
+be omitted entirely; this will lead to the same outcome (<code class="docutils literal notranslate"><span class="pre">id</span></code>).</p>
 <p>The other slots of a graph constituent entry contain information
 BioCypher needs to receive the input data correctly and construct the
 graph accordingly. For “Named Thing” entities such as the protein, this
