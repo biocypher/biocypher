@@ -49,11 +49,11 @@ The `driver` tests require a running Neo4j instance with a DB named `test`.
 # Configuration
 BioCypher comes with a default set of configuration parameters. You can
 overwrite them by creating a `biocypher_config.yaml` file in the root directory
-of your project. You only need to specify the ones you wish to override from
-default. If you want to create global user settings, you can create a
-`biocypher_config.yaml` in your default BioCypher user directory (as found using
-`appdirs.user_config_dir('biocypher')`). For instance, on Mac OS, this would be
-`~/Library/Caches/biocypher/biocypher_config.yaml`.
+or the `config` directory of your project. You only need to specify the ones you
+wish to override from default. If you want to create global user settings, you
+can create a `biocypher_config.yaml` in your default BioCypher user directory
+(as found using `appdirs.user_config_dir('biocypher')`). For instance, on Mac
+OS, this would be `~/Library/Caches/biocypher/biocypher_config.yaml`.
 
 Configuration files are read in the order `default -> user level -> project
 level`, with the later ones overriding the preceding. The following parameters

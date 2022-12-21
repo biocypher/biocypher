@@ -67,7 +67,7 @@ def read_config() -> dict:
     user_confdir = appdirs.user_config_dir('biocypher', 'saezlab')
     user = _read_yaml(os.path.join(user_confdir, 'biocypher_config.yaml')) or {}
     # check if there is a local config file `biocypher_config.yaml` in the
-    # current working directory
+    # current working directory # TODO account for .yml?
     if os.path.exists('biocypher_config.yaml'):
         local = _read_yaml('biocypher_config.yaml')
     elif os.path.exists('config/biocypher_config.yaml'):
