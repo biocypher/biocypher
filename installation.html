@@ -143,11 +143,11 @@ a local dependency.</p>
 <span id="config"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h1>
 <p>BioCypher comes with a default set of configuration parameters. You can
 overwrite them by creating a <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> file in the root directory
-of your project. You only need to specify the ones you wish to override from
-default. If you want to create global user settings, you can create a
-<code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> in your default BioCypher user directory (as found using
-<code class="docutils literal notranslate"><span class="pre">appdirs.user_config_dir('biocypher')</span></code>). For instance, on Mac OS, this would be
-<code class="docutils literal notranslate"><span class="pre">~/Library/Caches/biocypher/biocypher_config.yaml</span></code>.</p>
+or the <code class="docutils literal notranslate"><span class="pre">config</span></code> directory of your project. You only need to specify the ones you
+wish to override from default. If you want to create global user settings, you
+can create a <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> in your default BioCypher user directory
+(as found using <code class="docutils literal notranslate"><span class="pre">appdirs.user_config_dir('biocypher')</span></code>). For instance, on Mac
+OS, this would be <code class="docutils literal notranslate"><span class="pre">~/Library/Caches/biocypher/biocypher_config.yaml</span></code>.</p>
 <p>Configuration files are read in the order <code class="docutils literal notranslate"><span class="pre">default</span> <span class="pre">-&gt;</span> <span class="pre">user</span> <span class="pre">level</span> <span class="pre">-&gt;</span> <span class="pre">project</span> <span class="pre">level</span></code>, with the later ones overriding the preceding. The following parameters
 are available:</p>
 <section id="neo4j-settings">
