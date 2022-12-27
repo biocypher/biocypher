@@ -1234,6 +1234,7 @@ class Translator:
                         edge_label = bl_type
 
                     yield BioCypherEdge(
+                        relationship_id=_id,
                         source_id=_src,
                         target_id=_tar,
                         relationship_label=edge_label,
