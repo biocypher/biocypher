@@ -31,7 +31,7 @@
             <a href="contents.html" class="icon icon-home"> BioCypher
           </a>
               <div class="version">
-                0.4.0
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -421,7 +421,7 @@ Transforms ordered collections of biomedical entities and relationships
 to BioCypher objects that represent property graph nodes and edges.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._create.BioCypherEdge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationship_label:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties:</span> <span class="pre">dict</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._create.</span></span><span class="sig-name descname"><span class="pre">BioCypherEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationship_label:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationship_id:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties:</span> <span class="pre">dict</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._create.BioCypherEdge" title="Permalink to this definition"></a></dt>
 <dd><p>Handoff class to represent biomedical relationships in Neo4j.</p>
 <p>Has source and target ids, label, property dict; ids and label (in
 the Neo4j sense of a label, ie, the entity descriptor after the
