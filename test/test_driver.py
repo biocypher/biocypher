@@ -41,7 +41,12 @@ def driver():
 
 def test_wipe():
     # just convenience function to wipe the database in testing env
-    d = Driver(db_name='test', db_passwd='your_password_here', wipe=True)
+    d = Driver(
+        db_name='test',
+        db_passwd='your_password_here',
+        wipe=True,
+        user_schema_config_path='biocypher/_config/test_schema_config.yaml',
+    )
     d.close()
 
     assert True
@@ -53,7 +58,10 @@ def test_create_driver(driver):
 
 
 def test_create_offline():
-    d = Driver(offline=True)
+    d = Driver(
+        offline=True,
+        user_schema_config_path='biocypher/_config/test_schema_config.yaml',
+    )
     assert isinstance(d, Driver)
     d.close()
 
