@@ -212,7 +212,7 @@ class BioCypherEdge:
     source_id: str
     target_id: str
     relationship_label: str
-    id: str = None
+    relationship_id: str = None
     properties: dict = field(default_factory=dict)
 
     def __post_init__(self):
@@ -237,7 +237,7 @@ class BioCypherEdge:
             str: node_id
         """
 
-        return self.id
+        return self.relationship_id
 
     def get_source_id(self) -> str:
         """
