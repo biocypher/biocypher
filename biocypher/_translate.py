@@ -893,10 +893,8 @@ class BiolinkAdapter:
         }
 
         # add translation mappings
-        bc_name = (
-            values.get('label_as_edge')
-            if values.get('label_as_edge') else entity
-        )
+        bc_name = values.get('label_as_edge'
+                            ) if values.get('label_as_edge') else entity
         self.translator._add_translation_mappings(input_label, bc_name)
 
     @staticmethod
@@ -1060,8 +1058,8 @@ class Translator:
 
         filter_props = self.leaves[bl_type].get('properties', {})
 
-        # strict mode: add required properties
-        if self.strict_mode:
+        # strict mode: add required properties (only if there is a whitelist)
+        if self.strict_mode and filter_props:
             filter_props.update(
                 {
                     'source': 'str',
