@@ -9,13 +9,13 @@ framework to create knowledge graph databases for systems biomedicine. For an
 overview, usage notes, and a tutorial, read the docs
 [here](https://biocypher.org).
 
-<img 
-    style="display: block; 
+<img
+    style="display: block;
            margin-left: auto;
            margin-right: auto;
            width: 50%;"
-    src="graphical_abstract.png" 
-    alt="Our logo">
+    src="graphical_abstract.png"
+    alt="Graphical Abstract">
 </img>
 
 ## ⚙️ Usage
