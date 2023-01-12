@@ -1,7 +1,9 @@
 # BioCypher
 
 ## 📖 Documentation
-https://biocypher.org
+Tutorial and developer docs at https://biocypher.org. For a quickstart into your
+own pipeline, you can refer to our [project 
+template](https://github.com/saezlab/biocypher-project-template).
 
 ## ❓ Description
 This is the development repository for BioCypher, our proposal for a unifying
