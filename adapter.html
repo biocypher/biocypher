@@ -53,6 +53,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher Tutorial - Adapters</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#loading-the-data">1. Loading the Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#passing-the-data">2. Passing the Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#note-strict-mode">Note: Strict mode</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#interacting-with-neo4j">Interacting with Neo4j</a><ul>
@@ -97,16 +98,22 @@
 <p>To facilitate the creation of a BioCypher pipeline, we have created a template
 repository that can be used as a starting point for your own adapter. It
 contains a basic structure for an adapter, as well as a script that can be used
-as a blueprint for a build pipeline. The repository can be found here:
-https://github.com/saezlab/biocypher-project-template</p>
+as a blueprint for a build pipeline. The repository can be found
+<a class="reference external" href="https://github.com/saezlab/biocypher-project-template">here</a>.</p>
 </div>
 <p>A “BioCypher adapter” is a python program responsible for connecting to the
 BioCypher core and providing it with the data from its associated resource.
 In doing so, it should adhere to several design principles to ensure simple
-interoperability between core and multiple adapters. In essence, an adapter
+interoperability between the core and multiple adapters. In essence, an adapter
 should conform to an interface that is defined by the core to give information
 about the nodes and edges the adapter provides to enable automatic harmonisation
-of the contents.</p>
+of the contents. An adapter can be “primary”, i.e., responsible for a single
+“atomic” resource (e.g. UniProt, Reactome, etc.), or “secondary”, i.e.,
+connecting to a resource that is itself a combination of multiple primary
+resources (e.g. OmniPath, Open Targets, etc.). Due to extensive prior
+harmonisation, the latter is often easier to implement and thus is a good
+starting point that can be subsequently extended to and replaced by primary
+adapters.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>The adapter interface is still under development and may change rapidly.</p>
@@ -189,8 +196,9 @@ an ontological class via the <code class="docutils literal notranslate"><span cl
 <p>This representation will probably be subject to change soon and yield to a more
 standardised interface for nodes and edges, derived from a BioCypher core class.</p>
 </div>
-<section id="strict-mode">
-<h3>Strict mode<a class="headerlink" href="#strict-mode" title="Permalink to this heading"></a></h3>
+</section>
+<section id="note-strict-mode">
+<h2>Note: Strict mode<a class="headerlink" href="#note-strict-mode" title="Permalink to this heading"></a></h2>
 <p>We can activate BioCypher strict mode with the <code class="docutils literal notranslate"><span class="pre">strict_mode</span></code> parameter upon
 instantiation of the driver. In strict mode, the driver will raise an error if
 it encounters a node or edge without data source, version, and licence. These
@@ -198,7 +206,6 @@ currently need to be provided as part of the node and edge attribute
 dictionaries, with the reserved keywords <code class="docutils literal notranslate"><span class="pre">source</span></code>, <code class="docutils literal notranslate"><span class="pre">version</span></code>, and <code class="docutils literal notranslate"><span class="pre">licence</span></code> or
 <code class="docutils literal notranslate"><span class="pre">license</span></code>. However, this may change to a more rigorous implementation in the
 future.</p>
-</section>
 </section>
 </section>
 <section id="interacting-with-neo4j">
