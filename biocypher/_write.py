@@ -265,7 +265,6 @@ class BatchWriter:
             nod, edg = (list(a) for a in z)
             nod = [n for n in nod if n]
             edg = [val for sublist in edg for val in sublist]  # flatten
-
             if nod and edg:
                 passed = self.write_nodes(nod) and self._write_edge_data(
                     edg,
@@ -281,7 +280,6 @@ class BatchWriter:
                 'No edges to write, possibly due to no matched Biolink classes.',
             )
             pass
-
         if not passed:
             logger.error('Error while writing edge data.')
             return False
@@ -643,7 +641,6 @@ class BatchWriter:
             - currently works for mixed edges but in practice often is
               called on one iterable containing one type of edge only
         """
-
         if isinstance(edges, GeneratorType):
             logger.debug('Writing edge CSV from generator.')
 
@@ -657,6 +654,7 @@ class BatchWriter:
             # for each label to check for consistency and their type
             # for now, relevant for `int`
             for e in edges:
+            
                 if isinstance(e, BioCypherRelAsNode):
                     # shouldn't happen any more
                     logger.error(
@@ -673,38 +671,40 @@ class BatchWriter:
                     continue
 
                 label = e.get_label()
-
-                if not label in self.seen_edges.keys():
-                    self.seen_edges[label] = set()
+                input_label = e.get_input_label()
+                label_class = self.translator._ontology_mapping.get(input_label)
+                
+                if not input_label in self.seen_edges.keys():
+                    self.seen_edges[input_label] = set()
 
                 src_tar_id = '_'.join([e.get_source_id(), e.get_target_id()])
 
-                # check for duplicates
-                if src_tar_id in self.seen_edges.get(label, set()):
+                # check duplicates for input_label
+                if src_tar_id in self.seen_edges.get(input_label, set()):
                     self.duplicate_edge_ids.add(src_tar_id)
-                    if not label in self.duplicate_edge_types:
-                        self.duplicate_edge_types.add(label)
+                    if not input_label in self.duplicate_edge_types:
+                        self.duplicate_edge_types.add(input_label)
                         logger.warning(
-                            f'Duplicate edges found in type {label}. '
+                            f'Duplicate edges found in type {input_label}. '
                         )
                     continue
 
                 else:
-                    self.seen_edges[label].add(src_tar_id)
+                    self.seen_edges[input_label].add(src_tar_id)
 
-                if not label in bins.keys():
+                if not label_class in bins.keys():
                     # start new list
-                    bins[label].append(e)
-                    bin_l[label] = 1
+                    bins[label_class].append(e)
+                    bin_l[label_class] = 1
 
                     # get properties from config if present
-
-                    # check whether label is in ontology_adapter.leaves
+                    
+                    # check whether input_label is in ontology_adapter.leaves
                     # (may not be if it is an edge that carries the
                     # "label_as_edge" property)
                     cprops = None
-                    if label in self.ontology_adapter.leaves:
-                        cprops = self.ontology_adapter.leaves.get(label).get(
+                    if input_label in self.translator._ontology_mapping:
+                        cprops = self.ontology_adapter.leaves.get(self.translator._ontology_mapping.get(input_label)).get(
                             'properties',
                         )
                     else:
@@ -737,34 +737,39 @@ class BatchWriter:
                     # if edge properties diverge from reference
                     # properties (in write_single_edge_list_to_file)
                     # TODO
-
-                    reference_props[label] = d
-
+                    
+                    # create reference_props
+                    if isinstance(self.ontology_adapter.leaves.get(label_class).get('label_in_input'), str):
+                        reference_props[self.ontology_adapter.leaves.get(label_class).get('label_in_input')] = d
+                        
+                    else: # for association classes that have multiple 'label_in_input' fields create key-value pair for each 
+                        for l in self.ontology_adapter.leaves.get(label_class).get('label_in_input'):
+                            reference_props[l] = d
+                            
                 else:
                     # add to list
-                    bins[label].append(e)
-                    bin_l[label] += 1
-                    if not bin_l[label] < batch_size:
+                    bins[label_class].append(e)
+                    bin_l[label_class] += 1
+                    if not bin_l[label_class] < batch_size:
                         # batch size controlled here
                         passed = self._write_single_edge_list_to_file(
-                            bins[label],
-                            label,
-                            reference_props[label],
+                            bins[label_class],
+                            label_class,
+                            reference_props,
                         )
 
                         if not passed:
                             return False
 
-                        bins[label] = []
-                        bin_l[label] = 0
+                        bins[label_class] = []
+                        bin_l[label_class] = 0
 
             # after generator depleted, write remainder of bins
-            for label, nl in bins.items():
-
+            for label_class, nl in bins.items():
                 passed = self._write_single_edge_list_to_file(
                     nl,
-                    label,
-                    reference_props[label],
+                    label_class,
+                    reference_props,
                 )
 
                 if not passed:
@@ -773,11 +778,14 @@ class BatchWriter:
             # use complete bin list to write header files
             # TODO if a edge type has varying properties
             # (ie missingness), we'd need to collect all possible
-            # properties in the generator pass
+            # properties in the generator pass            
+            # MAKING PROPERTIES FOR ASSOCIATION CLASSES SOLVES SOME 
+            # PORTION OF THE ISSUE ABOVE (NOT MISSINGNESS THO).            
 
-            # save first-edge properties to instance attribute
+            # save first-edge class properties to instance attribute
             for label in reference_props.keys():
-                self.edge_property_dict[label] = reference_props[label]
+                if self.translator._ontology_mapping[label] not in self.edge_property_dict.keys():
+                    self.edge_property_dict[self.translator._ontology_mapping[label]] = reference_props[label]
 
             return True
         else:
@@ -806,14 +814,13 @@ class BatchWriter:
                 'Header information not found. Was the data parsed first?',
             )
             return False
-
         for label, props in self.edge_property_dict.items():
             # create header CSV with :START_ID, (optional) properties,
             # :END_ID, :TYPE
 
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
-
+            
             # paths
             header_path = os.path.join(
                 self.outdir,
@@ -883,25 +890,27 @@ class BatchWriter:
 
             logger.error('Edges must be passed as type BioCypherEdge.')
             return False
-
+        
         # from list of edges to list of strings
-        lines = []
+        lines = []        
         for e in edge_list:
+        
             # check for deviations in properties
             # edge properties
             e_props = e.get_properties()
             e_keys = list(e_props.keys())
-            ref_props = list(prop_dict.keys())
+            ref_props = list(prop_dict[e.get_input_label()].keys())
 
             # compare list order invariant
             if not set(ref_props) == set(e_keys):
                 oedge = f'{e.get_source_id()}-{e.get_target_id()}'
                 oprop1 = set(ref_props).difference(e_keys)
                 oprop2 = set(e_keys).difference(ref_props)
+                oinputlabeltype = e.get_input_label()
                 logger.error(
                     f'At least one edge of the class {e.get_label()} '
                     f'has more or fewer properties than another. '
-                    f'Offending edge: {oedge!r}, offending property: '
+                    f'Offending edge: {oedge!r}, offending input edge type: {oinputlabeltype}, offending property: '
                     f'{max([oprop1, oprop2])}. '
                     f'All reference properties: {ref_props}, '
                     f'All edge properties: {e_keys}.',
@@ -910,48 +919,58 @@ class BatchWriter:
 
             if ref_props:
 
-                plist = []
                 # make all into strings, put actual strings in quotes
                 for k, v in prop_dict.items():
-                    p = e_props.get(k)
-                    if p is None:  # TODO make field empty instead of ""?
-                        plist.append('')
-                    elif v in [
-                        'int',
-                        'long',
-                        'float',
-                        'double',
-                        'dbl',
-                        'bool',
-                        'boolean',
-                    ]:
-                        plist.append(str(p))
-                    else:
-                        if isinstance(p, list):
-                            plist.append(
-                                self.quote + self.adelim.join(p) + self.quote
-                            )
-                        elif '**' in p:
-                            plist.append(
-                                self.quote + p.replace('**', self.adelim) +
-                                self.quote
-                            )
-                        else:
-                            plist.append(self.quote + str(p) + self.quote)
+                
+                    # check if it is equal to input label
+                    if k == e.get_input_label():
+                        plist = []
+                        for v_k, v_v in v.items():
 
-                lines.append(
-                    self.delim.join(
-                        [
-                            e.get_source_id(),
-                            # here we need a list of properties in
-                            # the same order as in the header
-                            self.delim.join(plist),
-                            e.get_target_id(),
-                            self.translator.
-                            name_sentence_to_pascal(e.get_label(), ),
-                        ],
-                    ) + '\n',
-                )
+                            p = e_props.get(v_k)
+                            if p is None:  # TODO make field empty instead of ""?
+                                plist.append('')
+                            elif v in [
+                                'int',
+                                'long',
+                                'float',
+                                'double',
+                                'dbl',
+                                'bool',
+                                'boolean',
+                            ]:
+                                plist.append(str(p))
+                            else:
+                                if isinstance(p, list):
+                                    plist.append(
+                                        self.quote + self.adelim.join(p) + self.quote
+                                    )
+                                elif '**' in p:
+                                    plist.append(
+                                        self.quote + p.replace('**', self.adelim) +
+                                        self.quote
+                                    )
+                                else:
+                                    plist.append(self.quote + str(p) + self.quote)
+                              
+                        
+                    
+                        lines.append(
+                            self.delim.join(
+                                [
+                                    e.get_source_id(),
+                                    # here we need a list of properties in
+                                    # the same order as in the header
+                                    self.delim.join(plist),
+                                    e.get_target_id(),
+                                    self.translator.
+                                    name_sentence_to_pascal(e.get_label(), ),
+                                ],
+                            ) + '\n',
+                        )
+                        
+                        break
+                    
             else:
                 lines.append(
                     self.delim.join(
@@ -989,6 +1008,7 @@ class BatchWriter:
 
         # list files in self.outdir
         files = glob.glob(os.path.join(self.outdir, f'{label}-part*.csv'))
+
         # find file with highest part number
         if files:
             next_part = (
@@ -1005,6 +1025,7 @@ class BatchWriter:
 
         # write to file
         padded_part = str(next_part).zfill(3)
+
         logger.info(
             f'Writing {len(lines)} entries to {label}-part{padded_part}.csv',
         )
