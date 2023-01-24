@@ -1133,7 +1133,7 @@ class Translator:
         #    - do we even need one?
 
         self._log_begin_translate(id_src_tar_type_prop_tuples, 'edges')
-
+        
         # legacy: deal with 4-tuples (no edge id)
         # TODO remove for performance reasons once safe
         id_src_tar_type_prop_tuples = peekable(id_src_tar_type_prop_tuples)
@@ -1142,7 +1142,6 @@ class Translator:
                 (None, src, tar, typ, props)
                 for src, tar, typ, props in id_src_tar_type_prop_tuples
             ]
-
         for _id, _src, _tar, _type, _props in id_src_tar_type_prop_tuples:
 
             # check for strict mode requirements
@@ -1161,7 +1160,7 @@ class Translator:
             # match the input label (_type) to
             # a Biolink label from schema_config
             bl_type = self._get_ontology_mapping(_type)
-
+            
             if bl_type:
 
                 # filter properties for those specified in schema_config if any
@@ -1210,37 +1209,57 @@ class Translator:
                     e_s = BioCypherEdge(
                         source_id=_src,
                         target_id=node_id,
-                        relationship_label=l1,
+                        graph_db_relationship_label=l1,
+                        input_relationship_label=_type,
                         # additional here
                     )
 
                     e_t = BioCypherEdge(
                         source_id=_tar,
                         target_id=node_id,
-                        relationship_label=l2,
+                        graph_db_relationship_label=l2,
+                        input_relationship_label=_type,
                         # additional here
                     )
 
                     yield BioCypherRelAsNode(n, e_s, e_t)
 
                 else:
-
-                    edge_label = self.leaves[bl_type].get('label_as_edge')
-
+                    # take corresponding 'label_as_edge' field to 'label_in_input'
+                    if isinstance(self.leaves[bl_type].get('label_as_edge'), str):
+                        edge_label = self.leaves[bl_type].get('label_as_edge')
+                        
+                    elif isinstance(self.leaves[bl_type].get('label_as_edge'), list):
+                        input_labels = self.leaves[bl_type].get('label_in_input')
+                        
+                        if not isinstance(input_labels, list):
+                            logger.error(" Type of 'label_in_input' field should be list in config file.")
+                            
+                        if len(input_labels) != len(self.leaves[bl_type].get('label_as_edge')):
+                            logger.error("'label_in_input' list and 'label_as_edge' list are not of equal length.")
+                        
+                        for l in input_labels:
+                            if l == _type:
+                                index = input_labels.index(l)
+                                break
+                        
+                        edge_label = self.leaves[bl_type].get('label_as_edge')[index]
+                        
                     if edge_label is None:
 
                         edge_label = bl_type
-
+                    
+                    
                     yield BioCypherEdge(
                         relationship_id=_id,
                         source_id=_src,
                         target_id=_tar,
-                        relationship_label=edge_label,
+                        graph_db_relationship_label=edge_label,
+                        input_relationship_label=_type,
                         properties=_filtered_props,
                     )
 
             else:
-
                 self._record_no_type(_type, (_src, _tar))
 
         self._log_finish_translate('edges')
@@ -1287,7 +1306,6 @@ class Translator:
 
         If multiple input labels, creates mapping for each.
         """
-
         self._ontology_mapping = {}
 
         for key, value in self.leaves.items():
@@ -1299,13 +1317,15 @@ class Translator:
                 for label in value['label_in_input']:
                     self._ontology_mapping[label] = key
 
+
     def _get_ontology_mapping(self, label: str) -> Optional[str]:
         """
         For each given input type ("label_in_input"), find the corresponding
-        ontology class in the leaves dictionary (from the `schema_config.yam`).
+        ontology class in the leaves dictionary (from the `schema_config.yaml`).
 
         Args:
             label:
+        
                 The input type to find (`label_in_input` in
                 `schema_config.yaml`).
         """
