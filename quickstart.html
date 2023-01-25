@@ -110,17 +110,19 @@ should be structured, detailing the names of constituents and how they
 should be connected.</p>
 <section id="the-host-module-adapter">
 <span id="qs-host-module-adapter"></span><h2>The host module adapter<a class="headerlink" href="#the-host-module-adapter" title="Permalink to this heading"></a></h2>
-<p>Currently, BioCypher expects input from the user module via an adapter
-module. Throughout the tutorial, we will exemplarise the use of
-BioCypher using <a class="reference external" href="https://omnipathdb.org">OmniPath</a> (more specifically,
-its infrastructural backend,
-<a class="reference external" href="https://github.com/saezlab/pypath">PyPath</a>). The adapter has the job of
-piping the data as it is represented in the original database into the
-BioCypher input, for instance as a <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code> object of
-single database entries, whether they be nodes or relationships in the
-graph to be created. For more details, please refer to the example
-<a class="reference external" href="https://github.com/saezlab/pypath/blob/master/pypath/biocypher/adapter.py">PyPath adapter</a>
-and the section on <a class="reference internal" href="adapter.html#adapter-functions"><span class="std std-ref">adapter functions</span></a>.</p>
+<p>Currently, BioCypher expects input from the user module via an adapter module.
+The adapter has the job of piping the data as it is represented in the original
+database into the BioCypher input, for instance as a <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>
+object of single database entries, whether they be nodes or relationships in the
+graph to be created. Examples for current adapters can be found in several of
+our ongoing projects and the section on <a class="reference internal" href="adapter.html#adapter-functions"><span class="std std-ref">adapter functions</span></a>.
+Adapters can ingest data from many different input sources, including Python
+modules as in the <a class="reference external" href="https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration">CROssBAR
+adapter</a> (which
+uses the OmniPath backend software, PyPath, for downloading and caching data),
+advanced file management formats such as Parquet as in the <a class="reference external" href="https://github.com/saezlab/OTAR-BioCypher">Open Targets
+adapter</a>, or simple CSV files as in
+the <a class="reference external" href="https://github.com/saezlab/DepMap-BioCypher">Dependency Map adapter</a>.</p>
 <p>The recommended mode of access into BioCypher functionality is via the
 <a class="reference internal" href="submodule.html#biocypher._driver.Driver" title="biocypher._driver.Driver"><code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher._driver.Driver</span></code></a> class. It can be called either
 starting in “offline mode” using <code class="docutils literal notranslate"><span class="pre">offline</span> <span class="pre">=</span> <span class="pre">True</span></code>, i.e., without
