@@ -1232,11 +1232,14 @@ class Translator:
                     elif isinstance(self.leaves[bl_type].get('label_as_edge'), list):
                         input_labels = self.leaves[bl_type].get('label_in_input')
                         
+                        # This error check can be moved to more proper place
                         if not isinstance(input_labels, list):
                             logger.error(" Type of 'label_in_input' field should be list in config file.")
-                            
+                            return False
+                        
                         if len(input_labels) != len(self.leaves[bl_type].get('label_as_edge')):
-                            logger.error("'label_in_input' list and 'label_as_edge' list are not of equal length.")
+                            logger.error("'label_in_input' list and 'label_as_edge' list are not of equal length.")                            
+                            return False
                         
                         for l in input_labels:
                             if l == _type:
