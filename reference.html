@@ -494,7 +494,7 @@ queries.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._biolink.BiolinkAdapter.save_to_cache">
-<span class="sig-name descname"><span class="pre">save_to_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._biolink.BiolinkAdapter.save_to_cache" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">save_to_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cachedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._biolink.BiolinkAdapter.save_to_cache" title="Permalink to this definition"></a></dt>
 <dd><p>Save the data currently contained in the object into the cache.</p>
 </dd></dl>
 
@@ -884,8 +884,8 @@ found in the schema.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="biocypher._translate.Translator.reverse_translate">
-<span class="sig-name descname"><span class="pre">reverse_translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator.reverse_translate" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="biocypher._translate.Translator.reverse_translate_cypher">
+<span class="sig-name descname"><span class="pre">reverse_translate_cypher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator.reverse_translate_cypher" title="Permalink to this definition"></a></dt>
 <dd><p>Reverse translate a cypher query.</p>
 <p>Only translates labels as of now.</p>
 </dd></dl>
@@ -898,7 +898,25 @@ found in the schema.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._translate.Translator.translate">
-<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator.translate" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">INPUT_TYPES</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BC_TYPES</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">INPUT_TYPES</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BC_TYPES</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">BC_TYPES</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#biocypher._translate.Translator.translate" title="Permalink to this definition"></a></dt>
+<dd><p>Translate graph components to the current schema.</p>
+<p>Translates input node representation to a representation that
+conforms to the schema of the given BioCypher graph. For now
+requires explicit statement of node type on pass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>items</strong> – Tuples representing graph components.</p>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p>Graph components as objects that are suitable to be inserted
+into the database.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.Translator.translate_cypher">
+<span class="sig-name descname"><span class="pre">translate_cypher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator.translate_cypher" title="Permalink to this definition"></a></dt>
 <dd><p>Translate a cypher query. Only translates labels as of now.</p>
 </dd></dl>
 
@@ -1187,6 +1205,13 @@ in the shell.</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="biocypher._misc.to_set">
+<span class="sig-prename descclassname"><span class="pre">biocypher._misc.</span></span><span class="sig-name descname"><span class="pre">to_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span></span></span><a class="headerlink" href="#biocypher._misc.to_set" title="Permalink to this definition"></a></dt>
+<dd><p>Makes sure <cite>value</cite> is a <cite>set</cite>.</p>
+<p>If it is already, returns it unchanged; otherwise converts it to a set.</p>
+</dd></dl>
+
 </section>
 <section id="module-biocypher._cache">
 <span id="cache-py-access-biocypher-s-cache"></span><h2><cite>_cache.py</cite>: Access BioCypher’s cache<a class="headerlink" href="#module-biocypher._cache" title="Permalink to this heading"></a></h2>
@@ -1204,8 +1229,14 @@ in the shell.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="biocypher._cache.cache_path">
-<span class="sig-prename descclassname"><span class="pre">biocypher._cache.</span></span><span class="sig-name descname"><span class="pre">cache_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cachedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._cache.cache_path" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">biocypher._cache.</span></span><span class="sig-name descname"><span class="pre">cache_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cachedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._cache.cache_path" title="Permalink to this definition"></a></dt>
 <dd><p>Path to a cache item.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="biocypher._cache.ensure_cachedir">
+<span class="sig-prename descclassname"><span class="pre">biocypher._cache.</span></span><span class="sig-name descname"><span class="pre">ensure_cachedir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cachedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._cache.ensure_cachedir" title="Permalink to this definition"></a></dt>
+<dd><p>Makes sure the cache directory exists.</p>
 </dd></dl>
 
 <dl class="py function">
