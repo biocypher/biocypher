@@ -32,7 +32,7 @@
             <a href="contents.html" class="icon icon-home"> BioCypher
           </a>
               <div class="version">
-                0.5.0
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -59,7 +59,7 @@
 <li class="toctree-l1"><a class="reference internal" href="adapter.html">BioCypher Tutorial - Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapter.html#interacting-with-neo4j">Interacting with Neo4j</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
 </ul>
 
         </div>
@@ -133,8 +133,8 @@ where required.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_generator</span><span class="p">():</span>
     <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
         <span class="k">yield</span> <span class="p">(</span>
-          <span class="n">protein</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span> 
-          <span class="n">protein</span><span class="o">.</span><span class="n">get_label</span><span class="p">(),</span> 
+          <span class="n">protein</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span>
+          <span class="n">protein</span><span class="o">.</span><span class="n">get_label</span><span class="p">(),</span>
           <span class="n">protein</span><span class="o">.</span><span class="n">get_properties</span><span class="p">()</span>
         <span class="p">)</span>
 </pre></div>
@@ -176,10 +176,10 @@ the schema configuration <em>and</em> is present in the input data stream, will 
 part of our knowledge graph.</p>
 <p>In our case, since we only import proteins, we
 only require few lines of configuration:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w">                            </span><span class="c1"># mapping</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w">              </span><span class="c1"># schema configuration</span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span><span class="w">             </span><span class="c1"># uniqueness</span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot_protein</span><span class="w">   </span><span class="c1"># connection to input stream</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w">                            </span><span class="c1"># mapping</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w">              </span><span class="c1"># schema configuration</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span><span class="w">             </span><span class="c1"># uniqueness</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot_protein</span><span class="w">   </span><span class="c1"># connection to input stream</span><span class="w"></span>
 </pre></div>
 </div>
 <p>The first line (<code class="docutils literal notranslate"><span class="pre">protein</span></code>) identifies our entity and connects to the
@@ -358,10 +358,10 @@ subcategories, we can simply add the new input stream to the existing one and
 add the new label to the schema configuration (the new label being
 <code class="docutils literal notranslate"><span class="pre">entrez_protein</span></code>). In this case, we would add the following to the schema
 configuration:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This again creates a single output file, now for both protein types, including
@@ -393,10 +393,10 @@ one-to-one mapping between different data sources. Thus, if we so desire, we
 can merge datasets into the same ontological class by creating <em>ad hoc</em>
 subclasses implicitly through BioCypher, by providing multiple preferred
 identifiers. In our case, we update our schema configuration as follows:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This will “implicitly” create two subclasses of the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class, which will
@@ -459,15 +459,15 @@ designated property names, will be ignored.</p>
 <p>Let’s imagine that some, but not all, of our protein nodes have a <code class="docutils literal notranslate"><span class="pre">mass</span></code> value.
 If we want to include the mass value on all proteins, we can add the following
 to our schema configuration:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="nt">properties</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">sequence</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
-<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
-<span class="w">    </span><span class="nt">taxon</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
-<span class="w">    </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">properties</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">sequence</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">taxon</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This will add the <code class="docutils literal notranslate"><span class="pre">mass</span></code> property to all proteins (in addition to the three we
@@ -505,12 +505,12 @@ setting the <code class="docutils literal notranslate"><span class="pre">inherit
 <p>Let’s say we have an additional <code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">isoform</span></code> class, which can reasonably
 inherit from <code class="docutils literal notranslate"><span class="pre">protein</span></code> and should carry the same properties as the parent. We
 can add the following to our schema configuration:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein isoform</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
-<span class="w">  </span><span class="nt">inherit_properties</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot_isoform</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein isoform</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"></span>
+<span class="w">  </span><span class="nt">inherit_properties</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot_isoform</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This allows maintenance of property lists for many classes at once.</p>
@@ -553,14 +553,14 @@ the configuration of nodes, relationships also have fields for the <code class="
 nodes, and are currently optional.</p>
 <p>To add protein-protein interactions to our graph, we can add the following to
 the schema configuration above:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein protein interaction</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pairwise molecular interaction</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">intact</span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">interacts_with</span>
-<span class="w">  </span><span class="nt">properties</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
-<span class="w">    </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein protein interaction</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pairwise molecular interaction</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">intact</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">interacts_with</span><span class="w"></span>
+<span class="w">  </span><span class="nt">properties</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Here, we use explicit subclassing to define the protein-protein interaction,

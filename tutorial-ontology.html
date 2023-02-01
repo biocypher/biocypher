@@ -32,7 +32,7 @@
             <a href="contents.html" class="icon icon-home"> BioCypher
           </a>
               <div class="version">
-                0.5.0
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,7 +61,7 @@
 <li class="toctree-l1"><a class="reference internal" href="adapter.html">BioCypher Tutorial - Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapter.html#interacting-with-neo4j">Interacting with Neo4j</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
 </ul>
 
         </div>
@@ -205,9 +205,9 @@ constituent with the class label <em>protein</em>. This is the mechanism we impl
 used for proteins in the basic tutorial (<a class="reference internal" href="tutorial.html#tut-01-schema"><span class="std std-ref">part 1</span></a>); to reiterate:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="c1"># ...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># ...</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -244,10 +244,10 @@ with the concept of protein isoforms. To do this, we simply add a new class
 of <code class="docutils literal notranslate"><span class="pre">protein</span></code> using the (optional) <code class="docutils literal notranslate"><span class="pre">is_a</span></code> field:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein isoform</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="c1"># ...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein isoform</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># ...</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -263,10 +263,10 @@ tutorial (<a class="reference internal" href="tutorial.html#tut-relationships"><
 class <code class="docutils literal notranslate"><span class="pre">pairwise</span> <span class="pre">molecular</span> <span class="pre">interaction</span></code>. To reiterate:</p>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein protein interaction</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pairwise molecular interaction</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="c1"># ...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein protein interaction</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pairwise molecular interaction</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># ...</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -277,10 +277,10 @@ wanted to further extend the protein-protein interaction with a more specific
 <code class="docutils literal notranslate"><span class="pre">enzymatic</span> <span class="pre">interaction</span></code> class, we could do so as follows:</p>
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id5" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enzymatic interaction</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">protein protein interaction</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">pairwise molecular interaction</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="c1"># ...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enzymatic interaction</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">protein protein interaction</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">pairwise molecular interaction</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># ...</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -320,11 +320,11 @@ simply need to provide the pathways as two separate inputs with their own labels
 preferred identifiers in the <code class="docutils literal notranslate"><span class="pre">preferred_id</span></code> field:</p>
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id6" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pathway</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">reactome</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wikipathways</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">react</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wiki</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="c1"># ...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pathway</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">reactome</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wikipathways</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">react</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wiki</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># ...</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -348,13 +348,13 @@ relationships of proteins from two different sources, such as the above Reactome
 and Wikipathways pathways, we could do so as follows:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id7" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pathway to protein association</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">association</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">reactome.pathway</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wikipathways.pathway</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
-<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">react_protein_membership</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wiki_protein_membership</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="c1"># ...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pathway to protein association</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">association</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">reactome.pathway</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wikipathways.pathway</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w"></span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">react_protein_membership</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">wiki_protein_membership</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># ...</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -389,10 +389,10 @@ as we would like to represent protein complexes as <code class="docutils literal
 as follows:</p>
 <div class="literal-block-wrapper docutils container" id="id8">
 <div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id8" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">complex</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">synonym_for</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">macromolecular complex mixin</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="c1"># ...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">complex</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">synonym_for</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">macromolecular complex mixin</span><span class="w"></span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># ...</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -489,11 +489,11 @@ BioCypher configuration file.</p>
 </div>
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text">Using biocypher_config.yaml</span><a class="headerlink" href="#id10" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
-<span class="nt">tail_ontology_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/so.obo</span>
-<span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span>
-<span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence_variant</span>
-<span class="c1"># ...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span><span class="w"></span>
+<span class="nt">tail_ontology_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/so.obo</span><span class="w"></span>
+<span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span><span class="w"></span>
+<span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence_variant</span><span class="w"></span>
+<span class="c1"># ...</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
