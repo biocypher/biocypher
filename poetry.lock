@@ -336,7 +336,7 @@ python-versions = "*"
 
 [[package]]
 name = "docutils"
-version = "0.17.1"
+version = "0.18.1"
 description = "Docutils -- Python Documentation Utilities"
 category = "main"
 optional = false
@@ -1084,15 +1084,15 @@ tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "pa
 
 [[package]]
 name = "platformdirs"
-version = "2.6.2"
+version = "3.0.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.extras]
-docs = ["furo (>=2022.12.7)", "proselint (>=0.13)", "sphinx (>=5.3)", "sphinx-autodoc-typehints (>=1.19.5)"]
-test = ["appdirs (==1.4.4)", "covdefaults (>=2.2.2)", "pytest (>=7.2)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
+docs = ["furo (>=2022.12.7)", "proselint (>=0.13)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.22,!=1.23.4)"]
+test = ["appdirs (==1.4.4)", "covdefaults (>=2.2.2)", "pytest (>=7.2.1)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
 
 [[package]]
 name = "pluggy"
@@ -1680,15 +1680,16 @@ sphinx = ">=1.8"
 
 [[package]]
 name = "sphinx-rtd-theme"
-version = "1.1.1"
+version = "1.2.0"
 description = "Read the Docs theme for Sphinx"
 category = "main"
 optional = false
-python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7"
 
 [package.dependencies]
-docutils = "<0.18"
-sphinx = ">=1.6,<6"
+docutils = "<0.19"
+sphinx = ">=1.6,<7"
+sphinxcontrib-jquery = {version = ">=2.0.0,<3.0.0 || >3.0.0", markers = "python_version > \"3\""}
 
 [package.extras]
 dev = ["bump2version", "sphinxcontrib-httpdomain", "transifex-client", "wheel"]
@@ -1728,6 +1729,17 @@ python-versions = ">=3.8"
 [package.extras]
 lint = ["docutils-stubs", "flake8", "mypy"]
 test = ["html5lib", "pytest"]
+
+[[package]]
+name = "sphinxcontrib-jquery"
+version = "2.0.0"
+description = "Extension to include jQuery on newer Sphinx releases"
+category = "main"
+optional = false
+python-versions = ">=2.7"
+
+[package.dependencies]
+setuptools = "*"
 
 [[package]]
 name = "sphinxcontrib-jsmath"
@@ -1853,14 +1865,14 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "tox"
-version = "4.4.4"
+version = "4.4.5"
 description = "tox is a generic virtualenv management and test command line tool"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
-cachetools = ">=5.2.1"
+cachetools = ">=5.3"
 chardet = ">=5.1"
 colorama = ">=0.4.6"
 filelock = ">=3.9"
@@ -1872,8 +1884,8 @@ tomli = {version = ">=2.0.1", markers = "python_version < \"3.11\""}
 virtualenv = ">=20.17.1"
 
 [package.extras]
-docs = ["furo (>=2022.12.7)", "sphinx (>=6.1.3)", "sphinx-argparse-cli (>=1.11)", "sphinx-autodoc-typehints (>=1.20.1)", "sphinx-copybutton (>=0.5.1)", "sphinx-inline-tabs (>=2022.1.2b11)", "sphinxcontrib-towncrier (>=0.2.1a0)", "towncrier (>=22.12)"]
-testing = ["build[virtualenv] (>=0.9)", "covdefaults (>=2.2.2)", "devpi-process (>=0.3)", "diff-cover (>=7.3)", "distlib (>=0.3.6)", "flaky (>=3.7)", "hatch-vcs (>=0.3)", "hatchling (>=1.12.2)", "psutil (>=5.9.4)", "pytest (>=7.2)", "pytest-cov (>=4)", "pytest-mock (>=3.10)", "pytest-xdist (>=3.1)", "re-assert (>=1.1)", "time-machine (>=2.8.2)", "wheel (>=0.38.4)"]
+docs = ["furo (>=2022.12.7)", "sphinx (>=6.1.3)", "sphinx-argparse-cli (>=1.11)", "sphinx-autodoc-typehints (>=1.22,!=1.23.4)", "sphinx-copybutton (>=0.5.1)", "sphinx-inline-tabs (>=2022.1.2b11)", "sphinxcontrib-towncrier (>=0.2.1a0)", "towncrier (>=22.12)"]
+testing = ["build[virtualenv] (>=0.10)", "covdefaults (>=2.2.2)", "devpi-process (>=0.3)", "diff-cover (>=7.4)", "distlib (>=0.3.6)", "flaky (>=3.7)", "hatch-vcs (>=0.3)", "hatchling (>=1.12.2)", "psutil (>=5.9.4)", "pytest (>=7.2.1)", "pytest-cov (>=4)", "pytest-mock (>=3.10)", "pytest-xdist (>=3.1)", "re-assert (>=1.1)", "time-machine (>=2.9)", "wheel (>=0.38.4)"]
 
 [[package]]
 name = "traitlets"
@@ -1921,7 +1933,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.18.0"
+version = "20.19.0"
 description = "Virtual Python Environment builder"
 category = "main"
 optional = false
@@ -1930,7 +1942,7 @@ python-versions = ">=3.7"
 [package.dependencies]
 distlib = ">=0.3.6,<1"
 filelock = ">=3.4.1,<4"
-platformdirs = ">=2.4,<3"
+platformdirs = ">=2.4,<4"
 
 [package.extras]
 docs = ["furo (>=2022.12.7)", "proselint (>=0.13)", "sphinx (>=6.1.3)", "sphinx-argparse (>=0.4)", "sphinxcontrib-towncrier (>=0.2.1a0)", "towncrier (>=22.12)"]
@@ -2296,8 +2308,8 @@ distlib = [
     {file = "distlib-0.3.6.tar.gz", hash = "sha256:14bad2d9b04d3a36127ac97f30b12a19268f211063d8f8ee4f47108896e11b46"},
 ]
 docutils = [
-    {file = "docutils-0.17.1-py2.py3-none-any.whl", hash = "sha256:cf316c8370a737a022b72b56874f6602acf974a37a9fba42ec2876387549fc61"},
-    {file = "docutils-0.17.1.tar.gz", hash = "sha256:686577d2e4c32380bb50cbb22f575ed742d58168cee37e99117a854bcd88f125"},
+    {file = "docutils-0.18.1-py2.py3-none-any.whl", hash = "sha256:23010f129180089fbcd3bc08cfefccb3b890b0050e1ca00c867036e9d161b98c"},
+    {file = "docutils-0.18.1.tar.gz", hash = "sha256:679987caf361a7539d76e584cbeddc311e3aee937877c87346f31debc63e9d06"},
 ]
 et-xmlfile = [
     {file = "et_xmlfile-1.1.0-py3-none-any.whl", hash = "sha256:a2ba85d1d6a74ef63837eed693bcb89c3f752169b0e3e7ae5b16ca5e1b3deada"},
@@ -2817,8 +2829,8 @@ pillow = [
     {file = "Pillow-9.4.0.tar.gz", hash = "sha256:a1c2d7780448eb93fbcc3789bf3916aa5720d942e37945f4056680317f1cd23e"},
 ]
 platformdirs = [
-    {file = "platformdirs-2.6.2-py3-none-any.whl", hash = "sha256:83c8f6d04389165de7c9b6f0c682439697887bca0aa2f1c87ef1826be3584490"},
-    {file = "platformdirs-2.6.2.tar.gz", hash = "sha256:e1fea1fe471b9ff8332e229df3cb7de4f53eeea4998d3b6bfff542115e998bd2"},
+    {file = "platformdirs-3.0.0-py3-none-any.whl", hash = "sha256:b1d5eb14f221506f50d6604a561f4c5786d9e80355219694a1b244bcd96f4567"},
+    {file = "platformdirs-3.0.0.tar.gz", hash = "sha256:8a1228abb1ef82d788f74139988b137e78692984ec7b08eaa6c65f1723af28f9"},
 ]
 pluggy = [
     {file = "pluggy-1.0.0-py2.py3-none-any.whl", hash = "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"},
@@ -3217,8 +3229,8 @@ sphinx-last-updated-by-git = [
     {file = "sphinx_last_updated_by_git-0.3.4-py3-none-any.whl", hash = "sha256:633db0377a6d7ac38d73d80dfa0fdadecc1995b33f3d828eca2e372beae132be"},
 ]
 sphinx-rtd-theme = [
-    {file = "sphinx_rtd_theme-1.1.1-py2.py3-none-any.whl", hash = "sha256:31faa07d3e97c8955637fc3f1423a5ab2c44b74b8cc558a51498c202ce5cbda7"},
-    {file = "sphinx_rtd_theme-1.1.1.tar.gz", hash = "sha256:6146c845f1e1947b3c3dd4432c28998a1693ccc742b4f9ad7c63129f0757c103"},
+    {file = "sphinx_rtd_theme-1.2.0-py2.py3-none-any.whl", hash = "sha256:f823f7e71890abe0ac6aaa6013361ea2696fc8d3e1fa798f463e82bdb77eeff2"},
+    {file = "sphinx_rtd_theme-1.2.0.tar.gz", hash = "sha256:a0d8bd1a2ed52e0b338cbe19c4b2eef3c5e7a048769753dac6a9f059c7b641b8"},
 ]
 sphinxcontrib-applehelp = [
     {file = "sphinxcontrib-applehelp-1.0.4.tar.gz", hash = "sha256:828f867945bbe39817c210a1abfd1bc4895c8b73fcaade56d45357a348a07d7e"},
@@ -3231,6 +3243,10 @@ sphinxcontrib-devhelp = [
 sphinxcontrib-htmlhelp = [
     {file = "sphinxcontrib-htmlhelp-2.0.1.tar.gz", hash = "sha256:0cbdd302815330058422b98a113195c9249825d681e18f11e8b1f78a2f11efff"},
     {file = "sphinxcontrib_htmlhelp-2.0.1-py3-none-any.whl", hash = "sha256:c38cb46dccf316c79de6e5515e1770414b797162b23cd3d06e67020e1d2a6903"},
+]
+sphinxcontrib-jquery = [
+    {file = "sphinxcontrib-jquery-2.0.0.tar.gz", hash = "sha256:8fb65f6dba84bf7bcd1aea1f02ab3955ac34611d838bcc95d4983b805b234daa"},
+    {file = "sphinxcontrib_jquery-2.0.0-py3-none-any.whl", hash = "sha256:ed47fa425c338ffebe3c37e1cdb56e30eb806116b85f01055b158c7057fdb995"},
 ]
 sphinxcontrib-jsmath = [
     {file = "sphinxcontrib-jsmath-1.0.1.tar.gz", hash = "sha256:a9925e4a4587247ed2191a22df5f6970656cb8ca2bd6284309578f2153e0c4b8"},
@@ -3307,8 +3323,8 @@ tomli = [
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
 ]
 tox = [
-    {file = "tox-4.4.4-py3-none-any.whl", hash = "sha256:1195820ca35b141ce5ab040c9dfad8f03de6897c9bd867c6151dfb7dc58e64cd"},
-    {file = "tox-4.4.4.tar.gz", hash = "sha256:e1ef01d9e9503b1218511f74517dc3f0008c8b5e0cc53ab7f51ff3c2ca63b349"},
+    {file = "tox-4.4.5-py3-none-any.whl", hash = "sha256:1081864f1a1393ffa11ebe9beaa280349020579310d217a594a4e7b6124c5425"},
+    {file = "tox-4.4.5.tar.gz", hash = "sha256:f9bc83c5da8666baa2a4d4e884bbbda124fe646e4b1c0e412949cecc2b6e8f90"},
 ]
 traitlets = [
     {file = "traitlets-5.9.0-py3-none-any.whl", hash = "sha256:9e6ec080259b9a5940c797d58b613b5e31441c2257b87c2e795c5228ae80d2d8"},
@@ -3326,8 +3342,8 @@ urllib3 = [
     {file = "urllib3-1.26.14.tar.gz", hash = "sha256:076907bf8fd355cde77728471316625a4d2f7e713c125f51953bb5b3eecf4f72"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.18.0-py3-none-any.whl", hash = "sha256:9d61e4ec8d2c0345dab329fb825eb05579043766a4b26a2f66b28948de68c722"},
-    {file = "virtualenv-20.18.0.tar.gz", hash = "sha256:f262457a4d7298a6b733b920a196bf8b46c8af15bf1fd9da7142995eff15118e"},
+    {file = "virtualenv-20.19.0-py3-none-any.whl", hash = "sha256:54eb59e7352b573aa04d53f80fc9736ed0ad5143af445a1e539aada6eb947dd1"},
+    {file = "virtualenv-20.19.0.tar.gz", hash = "sha256:37a640ba82ed40b226599c522d411e4be5edb339a0c0de030c0dc7b646d61590"},
 ]
 watchdog = [
     {file = "watchdog-2.2.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:a09483249d25cbdb4c268e020cb861c51baab2d1affd9a6affc68ffe6a231260"},

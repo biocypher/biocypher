@@ -120,6 +120,7 @@ class Driver(neo4j_utils.Driver):
         delimiter: Optional[str] = None,
         array_delimiter: Optional[str] = None,
         quote_char: Optional[str] = None,
+        biolink_model: Optional[str] = None,
         tail_ontology_url: Optional[str] = None,
         head_join_node: Optional[str] = None,
         tail_join_node: Optional[str] = None,
@@ -151,6 +152,8 @@ class Driver(neo4j_utils.Driver):
         self.strict_mode = strict_mode or _config('strict_mode')
         self.output_directory = output_directory or _config('output_directory')
         self.clear_cache = clear_cache or _config('clear_cache')
+
+        self.biolink_model = biolink_model or _config('biolink_model')
 
         self.tail_ontology_url = tail_ontology_url or _config(
             'tail_ontology_url'
@@ -620,6 +623,7 @@ class Driver(neo4j_utils.Driver):
         if not self.ontology_adapter:
             biolink_adapter = BiolinkAdapter(
                 leaves=self.db_meta.leaves,
+                schema=self.biolink_model,
                 translator=self.translator,
                 clear_cache=self.clear_cache,
             )
