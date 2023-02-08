@@ -92,6 +92,8 @@ class Driver(neo4j_utils.Driver):
         skip_duplicate_nodes:
             Whether to skip duplicate nodes in the admin import shell
             command.
+        biolink_model:
+            Path to the custom Biolink model YAML file.
         tail_ontology_url:
             URL of the ontology to hybridise to the head ontology.
         head_join_node:
