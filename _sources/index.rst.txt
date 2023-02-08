@@ -24,10 +24,10 @@ the Neo4j admin-import feature.
 
 .. Note::
 
-   BioCypher is a community-driven project. If you have any questions,
-   specific needs, or want to contribute to the project, please contact
-   us over by `GitHub <https://github.com/saezlab/BioCypher>`_ or via email
-   at sebastian.lobentanzer (at) uni-heidelberg.de.
+   BioCypher is a community-driven project. If you have any questions, specific
+   needs, or want to contribute to the project, please contact us over on
+   `GitHub <https://github.com/saezlab/BioCypher>`_ or via email at
+   sebastian.lobentanzer (at) uni-heidelberg.de.
 
 .. figure:: ../graphical_abstract.png
    :width: 70%

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BioCypher Tutorial - Adapters &mdash; BioCypher  documentation</title>
@@ -29,14 +29,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="contents.html" class="icon icon-home"> BioCypher
+
+          
+          
+          <a href="contents.html" class="icon icon-home">
+            BioCypher
           </a>
               <div class="version">
-                0.5.0
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -64,7 +68,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
 </ul>
 
         </div>
@@ -80,7 +84,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="contents.html" class="icon icon-home"></a></li>
+      <li><a href="contents.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">BioCypher Tutorial - Adapters</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/adapter.md.txt" rel="nofollow"> View page source</a>
@@ -213,7 +217,7 @@ future.</p>
 <h1>Interacting with Neo4j<a class="headerlink" href="#interacting-with-neo4j" title="Permalink to this heading"></a></h1>
 <section id="communication-via-the-neo4j-python-driver">
 <h2>Communication via the Neo4j Python Driver<a class="headerlink" href="#communication-via-the-neo4j-python-driver" title="Permalink to this heading"></a></h2>
-<p>The BioCypher <a class="reference internal" href="reference.html#driver"><span class="std std-ref">Driver</span></a> is the main submodule of BioCypher. It
+<p>The BioCypher <a class="reference internal" href="submodule.html#driver"><span class="std std-ref">Driver</span></a> is the main submodule of BioCypher. It
 establishes a connection with a running graph database via the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">neo4j.GraphDatabase.driver</span></code>, integrates the funtions of the
 other submodules, and serves as outside interface of BioCypher. The
@@ -225,14 +229,14 @@ can be instantiated and accessed like this:</p>
 
 <span class="c1"># offline mode</span>
 <span class="n">d</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span>
-   <span class="n">db_name</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span><span class="p">,</span> 
+   <span class="n">db_name</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span><span class="p">,</span>
    <span class="n">offline</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span>
 
 <span class="c1"># online mode</span>
 <span class="n">d</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span>
-   <span class="n">db_name</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span><span class="p">,</span> 
-   <span class="n">db_user</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span><span class="p">,</span> 
+   <span class="n">db_name</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span><span class="p">,</span>
+   <span class="n">db_user</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span><span class="p">,</span>
    <span class="n">db_passwd</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span>
 <span class="p">)</span>
 </pre></div>
