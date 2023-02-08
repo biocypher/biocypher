@@ -369,7 +369,23 @@ useful to record the version of the Biolink model that the custom model is based
 on.
 ```
 
-<!-- TODO provide config access to custom biolink model path -->
+You can specify an absolute or relative path to load the custom Biolink model
+from, either by setting the `biolink_model` parameter at `Driver` class
+instantiation, or by setting it in the `biocypher_config.yaml` file.
+
+```{code-block} python
+:caption: At Driver class instantiation
+driver = Driver(
+  biolink_model="/path/to/custom-biolink-model.yaml",
+  ..., # other parameters
+)
+```
+
+```{code-block} yaml
+:caption: biocypher_config.yaml
+biolink_model: /path/to/custom-biolink-model.yaml
+... # other settings
+```
 
 (tut_hybridising)=
 ## Hybridising ontologies

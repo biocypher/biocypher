@@ -457,7 +457,25 @@ possible compatibility. However, if a custom Biolink model is specified, it is
 useful to record the version of the Biolink model that the custom model is based
 on.</p>
 </div>
-<!-- TODO provide config access to custom biolink model path -->
+<p>You can specify an absolute or relative path to load the custom Biolink model
+from, either by setting the <code class="docutils literal notranslate"><span class="pre">biolink_model</span></code> parameter at <code class="docutils literal notranslate"><span class="pre">Driver</span></code> class
+instantiation, or by setting it in the <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> file.</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">At Driver class instantiation</span><a class="headerlink" href="#id9" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span> <span class="o">=</span> <span class="n">Driver</span><span class="p">(</span>
+  <span class="n">biolink_model</span><span class="o">=</span><span class="s2">&quot;/path/to/custom-biolink-model.yaml&quot;</span><span class="p">,</span>
+  <span class="o">...</span><span class="p">,</span> <span class="c1"># other parameters</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id10" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">biolink_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/custom-biolink-model.yaml</span>
+<span class="nn">...</span><span class="w"> </span><span class="c1"># other settings</span>
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 <section id="hybridising-ontologies">
@@ -479,8 +497,8 @@ also accepts any arbitrary “head ontology” as a base ontology, but if none i
 provided, the Biolink model is used as the default head ontology. These options
 can be provided to the BioCypher driver as parameters, or as options in the
 BioCypher configuration file.</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Programmatic usage</span><a class="headerlink" href="#id9" title="Permalink to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Programmatic usage</span><a class="headerlink" href="#id11" title="Permalink to this code"></a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="o">.</span><span class="n">driver</span><span class="p">(</span>
     <span class="c1"># ...</span>
     <span class="n">tail_ontology_url</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/so.obo&quot;</span><span class="p">,</span>
@@ -491,8 +509,8 @@ BioCypher configuration file.</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Using biocypher_config.yaml</span><a class="headerlink" href="#id10" title="Permalink to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Using biocypher_config.yaml</span><a class="headerlink" href="#id12" title="Permalink to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 <span class="nt">tail_ontology_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/so.obo</span>
 <span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span>
