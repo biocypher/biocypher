@@ -1,4 +1,4 @@
-.. toctree::
+.. toctree:: 
    :maxdepth: 2
    :caption: Table of Contents
 
@@ -9,4 +9,4 @@
    tutorial-ontology
    adapter
    usage
-   submodule
+   reference

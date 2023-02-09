@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BioCypher Tutorial - Handling Ontologies &mdash; BioCypher  documentation</title>
@@ -29,18 +29,14 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="contents.html" class="icon icon-home">
-            BioCypher
+            <a href="contents.html" class="icon icon-home"> BioCypher
           </a>
               <div class="version">
-                0.4.1
+                0.5.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,7 +61,7 @@
 <li class="toctree-l1"><a class="reference internal" href="adapter.html">BioCypher Tutorial - Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapter.html#interacting-with-neo4j">Interacting with Neo4j</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
 </ul>
 
         </div>
@@ -81,7 +77,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="contents.html" class="icon icon-home"></a></li>
       <li class="breadcrumb-item active">BioCypher Tutorial - Handling Ontologies</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/tutorial-ontology.md.txt" rel="nofollow"> View page source</a>
@@ -132,9 +128,7 @@ Neo4j labels.</p>
 specific case of a Neo4j graph, however, relationships cannot possess multiple
 labels; therefore, if concept inheritance is desired for relationships, they
 need to be “reified”, i.e., turned into nodes. BioCypher provides a simple way
-of converting edges to nodes and vice versa (using the <code class="docutils literal notranslate"><span class="pre">represented_as</span></code> field).
-For a more in-depth explanation of ontologies, we recommend <a class="reference external" href="https://oboacademy.github.io/obook/explanation/intro-to-ontologies/">this
-introduction</a>.</p>
+of converting edges to nodes and vice versa (using the <code class="docutils literal notranslate"><span class="pre">represented_as</span></code> field).</p>
 </section>
 <section id="how-biocypher-uses-ontologies">
 <h2>How BioCypher uses ontologies<a class="headerlink" href="#how-biocypher-uses-ontologies" title="Permalink to this heading"></a></h2>
@@ -459,25 +453,7 @@ possible compatibility. However, if a custom Biolink model is specified, it is
 useful to record the version of the Biolink model that the custom model is based
 on.</p>
 </div>
-<p>You can specify an absolute or relative path to load the custom Biolink model
-from, either by setting the <code class="docutils literal notranslate"><span class="pre">biolink_model</span></code> parameter at <code class="docutils literal notranslate"><span class="pre">Driver</span></code> class
-instantiation, or by setting it in the <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> file.</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">At Driver class instantiation</span><a class="headerlink" href="#id9" title="Permalink to this code"></a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span> <span class="o">=</span> <span class="n">Driver</span><span class="p">(</span>
-  <span class="n">biolink_model</span><span class="o">=</span><span class="s2">&quot;/path/to/custom-biolink-model.yaml&quot;</span><span class="p">,</span>
-  <span class="o">...</span><span class="p">,</span> <span class="c1"># other parameters</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id10" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">biolink_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/custom-biolink-model.yaml</span>
-<span class="nn">...</span><span class="w"> </span><span class="c1"># other settings</span>
-</pre></div>
-</div>
-</div>
+<!-- TODO provide config access to custom biolink model path -->
 </section>
 </section>
 <section id="hybridising-ontologies">
@@ -499,8 +475,8 @@ also accepts any arbitrary “head ontology” as a base ontology, but if none i
 provided, the Biolink model is used as the default head ontology. These options
 can be provided to the BioCypher driver as parameters, or as options in the
 BioCypher configuration file.</p>
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Programmatic usage</span><a class="headerlink" href="#id11" title="Permalink to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Programmatic usage</span><a class="headerlink" href="#id9" title="Permalink to this code"></a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="o">.</span><span class="n">driver</span><span class="p">(</span>
     <span class="c1"># ...</span>
     <span class="n">tail_ontology_url</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/so.obo&quot;</span><span class="p">,</span>
@@ -511,8 +487,8 @@ BioCypher configuration file.</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Using biocypher_config.yaml</span><a class="headerlink" href="#id12" title="Permalink to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Using biocypher_config.yaml</span><a class="headerlink" href="#id10" title="Permalink to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 <span class="nt">tail_ontology_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/so.obo</span>
 <span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span>

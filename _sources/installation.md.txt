@@ -35,23 +35,25 @@ poetry install
 ```
 
 Poetry creates a virtual environment for you (starting with `biocypher-`;
-alternatively you can name it yourself) and installs all dependencies.
+alternatively you can name it yourself) and installs all dependencies. You can
+activate the virtual environment by running `poetry shell` and then run the
+tests by running `pytest` in the root directory of the repository. Once this is
+set up, you can go through the [tutorial](tutorial) or use it in your project as
+a local dependency.
 
-* Make sure that you have a Neo4j instance with the APOC plugin installed and a database named `test` running on standard bolt port `7687`
-* Enter your Neo4j DBMS password in `./test/test_driver.py`: `db_passwd='your_password_here'`
-* Activate the virtual environment by running `% poetry shell` and then run the tests by running `% pytest` in the root directory of the repository.
-
-Once this is set up, you can go through the [tutorial](tutorial) or use it in your project as a local dependency.
+```{note}
+The `driver` tests require a running Neo4j instance with a DB named `test`.
+```
 
 (config)=
 # Configuration
 BioCypher comes with a default set of configuration parameters. You can
-overwrite them by creating a `biocypher_config.yaml` file in the root directory
-or the `config` directory of your project. You only need to specify the ones you
-wish to override from default. If you want to create global user settings, you
-can create a `biocypher_config.yaml` in your default BioCypher user directory
+overwrite them by creating a `biocypher.yaml` file in the root directory
+of your project. You only need to specify the ones you wish to override from
+default. If you want to create global user settings, you
+can create a `conf.yaml` in your default BioCypher user directory
 (as found using `appdirs.user_config_dir('biocypher')`). For instance, on Mac
-OS, this would be `~/Library/Caches/biocypher/biocypher_config.yaml`.
+OS, this often points to `~/Library/Caches/biocypher/conf.yaml`.
 
 Configuration files are read in the order `default -> user level -> project
 level`, with the later ones overriding the preceding. The following parameters
