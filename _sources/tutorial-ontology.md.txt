@@ -42,6 +42,8 @@ specific case of a Neo4j graph, however, relationships cannot possess multiple
 labels; therefore, if concept inheritance is desired for relationships, they
 need to be "reified", i.e., turned into nodes. BioCypher provides a simple way
 of converting edges to nodes and vice versa (using the `represented_as` field).
+For a more in-depth explanation of ontologies, we recommend [this
+introduction](https://oboacademy.github.io/obook/explanation/intro-to-ontologies/).
 
 ## How BioCypher uses ontologies
 BioCypher is — in principle — agnostic to the choice of ontology. Practically,
