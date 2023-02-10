@@ -465,12 +465,26 @@ The Biolink ontology is used as a default.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="biocypher._ontology.OntologyAdapter.reload">
+<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._ontology.OntologyAdapter.reload" title="Permalink to this definition"></a></dt>
+<dd><p>Reloads the object from the module level.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="biocypher._ontology.OntologyAdapter.reverse_name_and_ac">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reverse_name_and_ac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._ontology.OntologyAdapter.reverse_name_and_ac" title="Permalink to this definition"></a></dt>
 <dd><p>Reverses the name and ID of the ontology nodes.</p>
 <p>Reverses the name and ID of the ontology nodes. Replaces underscores in
 the node names with spaces. Currently standard for consistency with
 Biolink, although we lose the original ontology’s spelling.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._ontology.OntologyAdapter.update_tree">
+<span class="sig-name descname"><span class="pre">update_tree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._ontology.OntologyAdapter.update_tree" title="Permalink to this definition"></a></dt>
+<dd><p>Creates tree representation in the form of an edge list.</p>
+<p>The edge list is a flat dict, keys are children, values are parents.
+It is stored under the <cite>_tree</cite> attribute.</p>
 </dd></dl>
 
 </dd></dl>
@@ -494,6 +508,12 @@ queries.</p>
 <dt class="sig sig-object py" id="biocypher._biolink.BiolinkAdapter.name_sentence_to_pascal">
 <span class="sig-name descname"><span class="pre">name_sentence_to_pascal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._biolink.BiolinkAdapter.name_sentence_to_pascal" title="Permalink to this definition"></a></dt>
 <dd><p>Converts a name in sentence case to pascal case.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._biolink.BiolinkAdapter.reload">
+<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._biolink.BiolinkAdapter.reload" title="Permalink to this definition"></a></dt>
+<dd><p>Reloads the object from the module level.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -525,8 +545,10 @@ we switch to pascal case?</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._biolink.BiolinkAdapter.update_tree">
 <span class="sig-name descname"><span class="pre">update_tree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._biolink.BiolinkAdapter.update_tree" title="Permalink to this definition"></a></dt>
-<dd><p>Create a tree representation of the ontology including the ancestors
-of the leaves.</p>
+<dd><p>Creates tree representation in the form of an edge list.</p>
+<p>The edge list is a flat dict, keys are children, values are parents.
+The tree includes the ancestors of the leaves. It is stored under the
+<cite>_tree</cite> attribute.</p>
 </dd></dl>
 
 </dd></dl>
