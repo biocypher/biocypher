@@ -8,5 +8,4 @@
    tutorial
    tutorial-ontology
    adapter
-   usage
    submodule
