@@ -44,6 +44,8 @@ the Neo4j admin-import feature.
    graph can be created and shared for every specific task.
 
 
+.. _adapters:
+
 ########
 Adapters
 ########
