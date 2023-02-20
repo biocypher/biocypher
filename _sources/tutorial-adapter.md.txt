@@ -2,7 +2,7 @@
 # BioCypher Tutorial - Adapters
 
 ```{note}
-For a list of existing and planned adapters, please see [here](Adapters).
+For a list of existing and planned adapters, please see [here](adapters).
 ```
 
 ![BioCypher pipeline interface](figure_pipeline.png)
