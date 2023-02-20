@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Usage Notes" href="usage.html" />
+    <link rel="next" title="Interacting with Neo4j" href="neo4j.html" />
     <link rel="prev" title="BioCypher Tutorial - Handling Ontologies" href="tutorial-ontology.html" /> 
 </head>
 
@@ -36,7 +36,7 @@
             BioCypher
           </a>
               <div class="version">
-                0.5.0
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -60,15 +60,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#note-strict-mode">Note: Strict mode</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#interacting-with-neo4j">Interacting with Neo4j</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#communication-via-the-neo4j-python-driver">Communication via the Neo4j Python Driver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#interacting-with-a-running-neo4j-instance">Interacting with a running Neo4j instance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#exporting-for-the-neo4j-admin-import-feature">Exporting for the <code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> feature</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#translating-between-original-and-biocypher-vocabulary">Translating between original and BioCypher vocabulary</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
 </ul>
 
         </div>
@@ -87,7 +80,7 @@
       <li><a href="contents.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">BioCypher Tutorial - Adapters</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/adapter.md.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/tutorial-adapter.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -213,131 +206,13 @@ dictionaries, with the reserved keywords <code class="docutils literal notransla
 future.</p>
 </section>
 </section>
-<section id="interacting-with-neo4j">
-<h1>Interacting with Neo4j<a class="headerlink" href="#interacting-with-neo4j" title="Permalink to this heading"></a></h1>
-<section id="communication-via-the-neo4j-python-driver">
-<h2>Communication via the Neo4j Python Driver<a class="headerlink" href="#communication-via-the-neo4j-python-driver" title="Permalink to this heading"></a></h2>
-<p>The BioCypher <span class="xref myst">Driver</span> is the main submodule of BioCypher. It
-establishes a connection with a running graph database via the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">neo4j.GraphDatabase.driver</span></code>, integrates the funtions of the
-other submodules, and serves as outside interface of BioCypher. The
-<code class="docutils literal notranslate"><span class="pre">Driver</span></code> is the main class for interacting with BioCypher in the host
-module’s adapter class. It handles authentification and basic database
-management as well as the creation and manipulation of graph entries. It
-can be instantiated and accessed like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">biocypher</span>
-
-<span class="c1"># offline mode</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span>
-   <span class="n">db_name</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span><span class="p">,</span>
-   <span class="n">offline</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="p">)</span>
-
-<span class="c1"># online mode</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span>
-   <span class="n">db_name</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span><span class="p">,</span>
-   <span class="n">db_user</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span><span class="p">,</span>
-   <span class="n">db_passwd</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>In our example, it is instantiated in the initialisation of the adapter,
-and then called on for <a class="reference internal" href="#running"><span class="std std-ref">interacting with a running graph</span></a> and
-for exporting a complete database in CSV format for the <a class="reference internal" href="#admin-import"><span class="std std-ref">Neo4j
-admin-import feature</span></a>. Upon instantiation, it
-automatically assesses the graph database it is connected to (specified
-using the <code class="docutils literal notranslate"><span class="pre">db_name</span></code> argument) regarding whether or not it already
-contains a BioCypher graph, and, if so, what the structure of this graph
-is.</p>
-<p>If there exists no BioCypher graph in the currently active database, or
-if the user explicitly specifies so using the <code class="docutils literal notranslate"><span class="pre">wipe</span></code> attribute of the
-driver, a new BioCypher database is created using the schema
-configuration specified in the <span class="xref myst">schema-config.yaml</span>.</p>
-</section>
-<section id="interacting-with-a-running-neo4j-instance">
-<span id="running"></span><h2>Interacting with a running Neo4j instance<a class="headerlink" href="#interacting-with-a-running-neo4j-instance" title="Permalink to this heading"></a></h2>
-<p>Once instantiated, the BioCypher driver can be used to modify the
-current graph by adding or deleting nodes, edges, properties,
-constraints, et cetera. Most commonly, the methods
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.Driver.add_nodes()</span></code> and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.Driver.add_edges()</span></code> are used to introduce new
-entries into the graph database.</p>
-</section>
-<section id="exporting-for-the-neo4j-admin-import-feature">
-<span id="admin-import"></span><h2>Exporting for the <code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> feature<a class="headerlink" href="#exporting-for-the-neo4j-admin-import-feature" title="Permalink to this heading"></a></h2>
-<p>Particularly if the data are very extensive (or performance is of the
-utmost priority), BioCypher can be used to facilitate a speedy and safe
-import of the data using the <code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> console command.
-<a class="reference external" href="https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/">Admin
-Import</a>
-is a particularly fast method of writing data to a newly created graph
-database (the database needs to be completely empty) that gains most of
-its performance advantage from turning off safety features regarding
-input data consistency. Therefore, a sound and consistent representation
-of the nodes and edges in the graph is of high importance in this
-process, which is why the BioCypher export functionality has been
-specifically designed to perform type and content checking for all data
-to be written to the graph.</p>
-<p>Data input from the source database is exactly as in the case of
-<a class="reference internal" href="#running"><span class="std std-ref">interacting with a running database</span></a>, with the data
-representation being converted to a series of CSV files in a designated
-output folder (standard being <code class="docutils literal notranslate"><span class="pre">biocypher-out/</span></code> and the current datetime).
-BioCypher creates separate header and data files for all node and edge
-types to be represented in the graph via the driver methods
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.Driver.write_nodes()</span></code> and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.Driver.write_edges()</span></code>. Additionally, it creates
-a file called <code class="docutils literal notranslate"><span class="pre">neo4j-admin-import-call.txt</span></code> containing the console
-command for creating a new database, which only has to be executed from
-the directory of the currently running Neo4j database.</p>
-<p>The name of the database to be created is given by the <code class="docutils literal notranslate"><span class="pre">db_name</span></code>
-attribute of the driver methods, ie, <code class="docutils literal notranslate"><span class="pre">write_nodes()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">write_edges()</span></code>, which should receive the same name as in the
-<code class="docutils literal notranslate"><span class="pre">PyPath</span></code> adapter example, and can be arbitrary. In case the
-<code class="docutils literal notranslate"><span class="pre">db_name</span></code> is not the default Neo4j database name, <code class="docutils literal notranslate"><span class="pre">neo4j</span></code>, the
-database needs to be created in Neo4j before or after using the
-<code class="docutils literal notranslate"><span class="pre">neo4j-admin</span> <span class="pre">import</span></code> statement. This can be done by executing, in the
-running database (<code class="docutils literal notranslate"><span class="pre">&lt;db_name&gt;</span></code> being the name assigned in the method):</p>
-<ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">:use</span> <span class="pre">system</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">create</span> <span class="pre">database</span> <span class="pre">&lt;db_name&gt;</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">:use</span> <span class="pre">&lt;db_name&gt;</span></code></p></li>
-</ol>
-</section>
-<section id="translating-between-original-and-biocypher-vocabulary">
-<span id="translation"></span><h2>Translating between original and BioCypher vocabulary<a class="headerlink" href="#translating-between-original-and-biocypher-vocabulary" title="Permalink to this heading"></a></h2>
-<p>For quickly transitioning to BioCypher, single terms or entire queries
-can be translated using the information provided in the
-<code class="docutils literal notranslate"><span class="pre">schema_config.yaml</span></code>. The translation functionality can be accessed
-through the driver methods <code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.translate_term()</span></code>,
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.reverse_translate_term()</span></code>,
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.translate_query()</span></code>, and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.reverse_translate_query()</span></code>. For instance, to
-find out the designation of “gene_gene” relationships in BioCypher, one
-can call:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span><span class="o">.</span><span class="n">translate_term</span><span class="p">(</span><span class="s2">&quot;gene_gene&quot;</span><span class="p">)</span>
-<span class="c1"># &#39;GeneToGeneAssociation&#39;</span>
-</pre></div>
-</div>
-<p>Similarly, to discover the original naming of
-“PostTranslationalInteraction” relationships, one can call the reverse
-function:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span><span class="o">.</span><span class="n">reverse_translate_term</span><span class="p">(</span><span class="s2">&quot;PostTranslationalInteraction&quot;</span><span class="p">)</span>
-<span class="c1"># &#39;post_translational&#39;</span>
-</pre></div>
-</div>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.translate_query()</span></code> and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">biocypher.driver.reverse_translate_query()</span></code> replace all label
-designations (following a “:”) in entire CYPHER query strings with the
-BioCypher or original versions, respectively.</p>
-</section>
-</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="tutorial-ontology.html" class="btn btn-neutral float-left" title="BioCypher Tutorial - Handling Ontologies" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="usage.html" class="btn btn-neutral float-right" title="Usage Notes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="neo4j.html" class="btn btn-neutral float-right" title="Interacting with Neo4j" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

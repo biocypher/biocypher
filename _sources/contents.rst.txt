@@ -7,6 +7,6 @@
    quickstart
    tutorial
    tutorial-ontology
-   adapter
-   usage
-   reference
+   tutorial-adapter
+   neo4j
+   submodule

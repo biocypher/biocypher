@@ -36,7 +36,7 @@
             BioCypher
           </a>
               <div class="version">
-                0.5.0
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -59,10 +59,9 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">BioCypher Tutorial - Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">BioCypher Tutorial - Handling Ontologies</a></li>
-<li class="toctree-l1"><a class="reference internal" href="adapter.html">BioCypher Tutorial - Adapters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="adapter.html#interacting-with-neo4j">Interacting with Neo4j</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-adapter.html">BioCypher Tutorial - Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
 </ul>
 
         </div>
@@ -120,7 +119,7 @@ The adapter has the job of piping the data as it is represented in the original
 database into the BioCypher input, for instance as a <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>
 object of single database entries, whether they be nodes or relationships in the
 graph to be created. Examples for current adapters can be found in several of
-our ongoing projects and the section on <a class="reference internal" href="adapter.html#adapter-functions"><span class="std std-ref">adapter functions</span></a>.
+our ongoing projects and the section on <a class="reference internal" href="tutorial-adapter.html#adapter-functions"><span class="std std-ref">adapter functions</span></a>.
 Adapters can ingest data from many different input sources, including Python
 modules as in the <a class="reference external" href="https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration">CROssBAR
 adapter</a> (which
@@ -129,7 +128,7 @@ advanced file management formats such as Parquet as in the <a class="reference e
 adapter</a>, or simple CSV files as in
 the <a class="reference external" href="https://github.com/saezlab/DepMap-BioCypher">Dependency Map adapter</a>.</p>
 <p>The recommended mode of access into BioCypher functionality is via the
-<a class="reference internal" href="reference.html#biocypher._driver.Driver" title="biocypher._driver.Driver"><code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher._driver.Driver</span></code></a> class. It can be called either
+<a class="reference internal" href="submodule.html#biocypher._driver.Driver" title="biocypher._driver.Driver"><code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher._driver.Driver</span></code></a> class. It can be called either
 starting in “offline mode” using <code class="docutils literal notranslate"><span class="pre">offline</span> <span class="pre">=</span> <span class="pre">True</span></code>, i.e., without
 connection to a running Neo4j instance, or by providing authentication
 details via arguments or configuration file:</p>

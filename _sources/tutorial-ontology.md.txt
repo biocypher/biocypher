@@ -42,6 +42,8 @@ specific case of a Neo4j graph, however, relationships cannot possess multiple
 labels; therefore, if concept inheritance is desired for relationships, they
 need to be "reified", i.e., turned into nodes. BioCypher provides a simple way
 of converting edges to nodes and vice versa (using the `represented_as` field).
+For a more in-depth explanation of ontologies, we recommend [this
+introduction](https://oboacademy.github.io/obook/explanation/intro-to-ontologies/).
 
 ## How BioCypher uses ontologies
 BioCypher is — in principle — agnostic to the choice of ontology. Practically,
@@ -369,7 +371,23 @@ useful to record the version of the Biolink model that the custom model is based
 on.
 ```
 
-<!-- TODO provide config access to custom biolink model path -->
+You can specify an absolute or relative path to load the custom Biolink model
+from, either by setting the `biolink_model` parameter at `Driver` class
+instantiation, or by setting it in the `biocypher_config.yaml` file.
+
+```{code-block} python
+:caption: At Driver class instantiation
+driver = Driver(
+  biolink_model="/path/to/custom-biolink-model.yaml",
+  ..., # other parameters
+)
+```
+
+```{code-block} yaml
+:caption: biocypher_config.yaml
+biolink_model: /path/to/custom-biolink-model.yaml
+... # other settings
+```
 
 (tut_hybridising)=
 ## Hybridising ontologies
