@@ -2,7 +2,7 @@
 
 ## 📖 Documentation
 Tutorial and developer docs at https://biocypher.org. For a quickstart into your
-own pipeline, you can refer to our [project 
+own pipeline, you can refer to our [project
 template](https://github.com/saezlab/biocypher-project-template).
 
 ## ❓ Description
@@ -34,6 +34,9 @@ As the project evolves, more of these examples will be directly included in the 
 We are very happy about contributions from the community, large and small!
 If you would like to contribute to BioCypher development, please refer to
 our [contribution guidelines](CONTRIBUTING.md). :)
+
+## Citation
+The BioCypher paper is available as a preprint at https://arxiv.org/abs/2212.13543.
 
 ## Acknowledgements
 This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 965193 for DECIDER and No 116030 for TransQST.
