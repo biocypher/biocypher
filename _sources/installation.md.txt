@@ -23,6 +23,12 @@ conda activate biocypher
 pip install git+https://github.com/saezlab/BioCypher.git
 ```
 
+```{note}
+BioCypher generally supports the most recent three Python versions. If you
+encounter any issues with a specific Python version, please open an issue on
+GitHub.
+```
+
 ## Standalone installation
 If you want to directly install BioCypher, here are the steps (requires
 [Poetry](https://python-poetry.org/docs/#installation)):
