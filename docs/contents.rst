@@ -8,4 +8,5 @@
    tutorial
    tutorial-ontology
    tutorial-adapter
+   neo4j
    submodule
