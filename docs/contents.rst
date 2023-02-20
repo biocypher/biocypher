@@ -7,5 +7,5 @@
    quickstart
    tutorial
    tutorial-ontology
-   adapter
+   tutorial-adapter
    submodule
