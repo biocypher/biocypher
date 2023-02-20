@@ -59,6 +59,10 @@ development, or if you would like to contribute to the development of a new
 adapter, please refer to `this GitHub projects view
 <https://github.com/orgs/saezlab/projects/5/views/6>`_.
 
+.. Note::
+   We are currently working on adapter documentation, so the collection in the
+   GitHub Projects view may be less than complete.
+
 The project view is built from issues in the `BioCypher GitHub repository
 <https://github.com/saezlab/BioCypher/issues>`_, which carry labels for adapters
 and adapter subtypes, as well as an ``Adapter status`` label to indicate the state
