@@ -1,6 +1,10 @@
 (adapter_functions)=
 # BioCypher Tutorial - Adapters
 
+```{note}
+For a list of existing and planned adapters, please see [here](Adapters).
+```
+
 ![BioCypher pipeline interface](figure_pipeline.png)
 
 ```{note}
