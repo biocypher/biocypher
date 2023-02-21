@@ -21,4 +21,6 @@ conduct](https://github.com/saezlab/BioCypher/blob/main/CODE_OF_CONDUCT.md) and
 For simple communication, join the `#development` channel on Zulip, where you
 can ask questions and discuss ideas. You can also open an issue on
 [GitHub](https://github.com/saezlab/BioCypher/issues) for feature requests
-including adapters.
+including adapters. If you want to find out whether you favourite resource or
+database is already supported, planned, or in progress, have a look at our
+[Github project](https://github.com/orgs/saezlab/projects/5/views/6).
