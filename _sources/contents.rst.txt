@@ -4,6 +4,7 @@
 
    index
    installation
+   get-invoved
    quickstart
    tutorial
    tutorial-ontology
