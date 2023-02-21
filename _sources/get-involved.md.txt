@@ -1,4 +1,4 @@
-# Get Invoved!
+# Get Involved!
 We are always looking for new users and contributors to help us make BioCypher
 better. We are particulary interested in increasing the accessibility of
 knowledge representation to structurally disadvantaged researchers. The best
