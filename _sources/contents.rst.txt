@@ -3,8 +3,8 @@
    :caption: Table of Contents
 
    index
-   installation
    get-involved
+   installation
    quickstart
    tutorial
    tutorial-ontology
