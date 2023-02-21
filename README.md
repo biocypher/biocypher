@@ -30,12 +30,16 @@ adapters we have created. For instance, interested users can refer to the
 the [adapters created for the CROssBAR project](https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration/blob/main/scripts/create_crossbar.py).
 As the project evolves, more of these examples will be directly included in the documentation.
 
-### Note for contributors
+## 🤝 Getting involved
 We are very happy about contributions from the community, large and small!
 If you would like to contribute to BioCypher development, please refer to
 our [contribution guidelines](CONTRIBUTING.md). :)
 
-## Citation
+> Imposter syndrome disclaimer: We want your help. No, really. There may be a little voice inside your head that is telling you that you're not ready, that you aren't skilled enough to contribute. We assure you that the little voice in your head is wrong. Most importantly, there are many valuable ways to contribute besides writing code.
+>
+> This disclaimer was adapted from the [Pooch](https://github.com/fatiando/pooch) project.
+
+## ✍️ Citation
 The BioCypher paper is available as a preprint at https://arxiv.org/abs/2212.13543.
 
 ## Acknowledgements
