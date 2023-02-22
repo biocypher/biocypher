@@ -11,7 +11,9 @@ yourselves, discuss ideas, and share your work.
 
 We chose Zulip because it is a modern, open-source alternative to Slack. It
 is organised by topics, which helps in keeping the discussions focused. It also
-is free of charge for open-source and academic projects.
+is free of charge for open-source and academic projects, which means that they
+sponsor the cloud hosting for our channel (as for many other open-source
+projects) - thanks!
 
 If you want to contribute, please have a look at our [contribution
 guidelines](https://github.com/saezlab/BioCypher/blob/main/CONTRIBUTING.md),
