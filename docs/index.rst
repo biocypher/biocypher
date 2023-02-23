@@ -1,4 +1,4 @@
-.. image:: biocypher-open-graph.png
+.. image:: banner.png
 
 ############
 Introduction
