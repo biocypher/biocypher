@@ -25,8 +25,9 @@ the Neo4j admin-import feature.
 .. Note::
 
    BioCypher is a community-driven project. If you have any questions, specific
-   needs, or want to contribute to the project, please contact us over on
-   `GitHub <https://github.com/saezlab/BioCypher>`_ or via email at
+   needs, or want to contribute to the project, please contact us over on our
+   `Zulip channel <https://biocypher.zulipchat.com/>`_, on `GitHub
+   <https://github.com/saezlab/BioCypher>`_ or via email at
    sebastian.lobentanzer (at) uni-heidelberg.de.
 
 .. figure:: ../graphical_abstract.png
@@ -50,6 +51,11 @@ the Neo4j admin-import feature.
 Adapters
 ########
 
+.. admonition:: Adapters overview
+   We collect an overview of adapters for resources, ontologies, and output
+   formats in several `BioCypher GitHub projects views
+   <https://github.com/orgs/saezlab/projects/5/views/6>`_.
+
 BioCypher is a modular framework, with the main purpose of avoiding redundant
 maintenance work for maintainers of secondary resources and end users alike. To
 achieve this, we use a collection of reusable “adapters” for the different
@@ -57,9 +63,10 @@ sources of biomedical knowledge as well as for different ontologies. To see
 whether your favourite resource is already supported or currently in
 development, or if you would like to contribute to the development of a new
 adapter, please refer to `this GitHub projects view
-<https://github.com/orgs/saezlab/projects/5/views/6>`_.
+<https://github.com/orgs/saezlab/projects/5/views/6>`_. Check the tabs for
+different views.
 
-.. Note::
+.. warning::
    We are currently working on adapter documentation, so the collection in the
    GitHub Projects view may be less than complete.
 
