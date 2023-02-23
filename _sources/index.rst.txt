@@ -51,7 +51,7 @@ the Neo4j admin-import feature.
 Adapters
 ########
 
-.. admonition:: Adapters overview
+.. note:: Adapters overview
    We collect an overview of adapters for resources, ontologies, and output
    formats in several `BioCypher GitHub projects views
    <https://github.com/orgs/saezlab/projects/5/views/6>`_.
