@@ -35,7 +35,9 @@ We are very happy about contributions from the community, large and small!
 If you would like to contribute to BioCypher development, please refer to
 our [contribution guidelines](CONTRIBUTING.md). :)
 
-> Imposter syndrome disclaimer: We want your help. No, really. There may be a little voice inside your head that is telling you that you're not ready, that you aren't skilled enough to contribute. We assure you that the little voice in your head is wrong. Most importantly, there are many valuable ways to contribute besides writing code.
+If you want to ask informal questions, talk about dev things, or just chat, please join our community at https://biocypher.zulipchat.com!
+
+> **Imposter syndrome disclaimer:** We want your help. No, really. There may be a little voice inside your head that is telling you that you're not ready, that you aren't skilled enough to contribute. We assure you that the little voice in your head is wrong. Most importantly, there are many valuable ways to contribute besides writing code.
 >
 > This disclaimer was adapted from the [Pooch](https://github.com/fatiando/pooch) project.
 
