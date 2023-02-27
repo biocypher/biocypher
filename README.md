@@ -3,7 +3,10 @@
 ## 📖 Documentation
 Tutorial and developer docs at https://biocypher.org. For a quickstart into your
 own pipeline, you can refer to our [project
-template](https://github.com/saezlab/biocypher-project-template).
+template](https://github.com/saezlab/biocypher-project-template), and for an 
+overview of existing and planned adapters for resources and outputs, as well
+as other features, visit our [GitHub Project 
+Board](https://github.com/orgs/saezlab/projects/5/views/6).
 
 ## ❓ Description
 This is the development repository for BioCypher, our proposal for a unifying
