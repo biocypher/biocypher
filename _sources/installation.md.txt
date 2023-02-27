@@ -73,9 +73,10 @@ neo4j_user: neo4j                   # user name
 neo4j_pw: neo4j                     # password
 
 # Neo4j admin import batch writer settings
-neo4j_delimiter: '¦'
-neo4j_array_delimiter: '|'
-neo4j_quote_char: '"'
+neo4j_delimiter: '¦'                # delimiter for CSV files
+neo4j_array_delimiter: '|'          # delimiter for array values
+neo4j_quote_char: '"'               # quote character for CSV files
+neo4j_admin_import_prefix: 'bin/'   # path of admin-import executable
 
 # MultiDB functionality
 # Set to false for using community edition or older versions of Neo4j
