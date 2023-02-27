@@ -154,6 +154,7 @@ class BatchWriter:
         db_name: str = 'neo4j',
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
+        import_call_prefix: Optional[str] = None,
         wipe: bool = True,
         strict_mode: bool = False,
     ):
@@ -164,8 +165,9 @@ class BatchWriter:
         self.quote = quote
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
-        self.wipe = wipe
+        self.import_call_prefix = import_call_prefix or 'bin/'
 
+        self.wipe = wipe
         self.strict_mode = strict_mode
 
         self.leaves = leaves
@@ -1062,7 +1064,8 @@ class BatchWriter:
         adelim = self.adelim.replace('\\', '\\\\')
 
         import_call = (
-            f'bin/neo4j-admin import --database={self.db_name} '
+            f'{self.import_call_prefix}neo4j-admin import '
+            f'--database={self.db_name} '
             f'--delimiter="{delim}" --array-delimiter="{adelim}" '
         )
 

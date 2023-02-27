@@ -183,6 +183,17 @@ def test_write_node_data_headers_import_call(bw):
         f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
     )
 
+    # custom import call executable path
+    bw.import_call_prefix = ''
+
+    os.remove(call)
+    bw.write_import_call()
+
+    with open(call) as f:
+        c = f.read()
+
+    assert c == f'neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
+
 
 def test_write_hybrid_ontology_nodes(bw):
     nodes = []
