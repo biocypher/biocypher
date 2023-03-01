@@ -566,6 +566,7 @@ class BiolinkAdapter:
                     values.get('label_as_edge')
                     if values.get('label_as_edge') else entity
                 )
+
                 self.translator._add_translation_mappings(input_label, bc_name)
 
                 # create dict of biolink class definition and biolink
@@ -1232,14 +1233,11 @@ class Translator:
                     elif isinstance(self.leaves[bl_type].get('label_as_edge'), list):
                         input_labels = self.leaves[bl_type].get('label_in_input')
                         
-                        # This error check can be moved to more proper place
                         if not isinstance(input_labels, list):
                             logger.error(" Type of 'label_in_input' field should be list in config file.")
-                            return False
-                        
+                            
                         if len(input_labels) != len(self.leaves[bl_type].get('label_as_edge')):
-                            logger.error("'label_in_input' list and 'label_as_edge' list are not of equal length.")                            
-                            return False
+                            logger.error("'label_in_input' list and 'label_as_edge' list are not of equal length.")
                         
                         for l in input_labels:
                             if l == _type:
@@ -1389,7 +1387,12 @@ class Translator:
         PascalCase version of the BioCypher name, since sentence case is
         not useful for Cypher queries.
         """
-        if isinstance(original_name, list):
+        if isinstance(original_name, list) and isinstance(biocypher_name, list):
+            for on, bn in zip(original_name, biocypher_name):
+                self.mappings[on] = self.name_sentence_to_pascal(
+                    bn,
+                )
+        elif isinstance(original_name, list):
             for on in original_name:
                 self.mappings[on] = self.name_sentence_to_pascal(
                     biocypher_name,
@@ -1399,7 +1402,11 @@ class Translator:
                 biocypher_name,
             )
 
-        if isinstance(biocypher_name, list):
+        if isinstance(original_name, list) and isinstance(biocypher_name, list):
+            for on, bn in zip(original_name, biocypher_name):
+                self.reverse_mappings[self.name_sentence_to_pascal(bn, )
+                ] = on
+        elif isinstance(biocypher_name, list):
             for bn in biocypher_name:
                 self.reverse_mappings[self.name_sentence_to_pascal(bn, )
                                      ] = original_name
