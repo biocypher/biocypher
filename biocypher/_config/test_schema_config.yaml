@@ -146,7 +146,7 @@ dsDNA sequence:
 post translational interaction:
   represented_as: node
   label_as_edge: INTERACTS_POST_TRANSLATIONAL
-  label_in_input: post_translational
+  label_in_input: protein_interacts_with_protein
 
 # auto label as edge
 phosphorylation:
@@ -156,8 +156,8 @@ phosphorylation:
 # merge edges
 gene to disease association:
   represented_as: edge
-  label_as_edge: PERTURBED_IN_DISEASE
-  label_in_input: [protein_disease, gene_disease]
+  label_as_edge: [PERTURBED_IN_DISEASE, PERTURBED_IN_DISEASE]
+  label_in_input: [protein_PERTURBED_IN_DISEASE_disease, gene_PERTURBED_IN_DISEASE_disease]
   exclude_properties: accession
 
 # multiple inheritance
