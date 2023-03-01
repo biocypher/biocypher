@@ -322,6 +322,7 @@ class BatchWriter:
             # for now, relevant for `int`
             labels = {}  # dict to store the additional labels for each
             # primary graph constituent from biolink hierarchy
+
             for node in nodes:
                 _id = node.get_id()
                 label = node.get_label()
@@ -403,7 +404,7 @@ class BatchWriter:
                         )
 
                     labels[label] = all_labels
-
+                
                 else:
                     # add to list
                     bins[label].append(node)
@@ -443,6 +444,7 @@ class BatchWriter:
             # properties in the generator pass
 
             # save config or first-node properties to instance attribute
+            
             for label in reference_props.keys():
                 self.node_property_dict[label] = reference_props[label]
 
@@ -653,8 +655,8 @@ class BatchWriter:
             )  # dict to store a dict of properties
             # for each label to check for consistency and their type
             # for now, relevant for `int`
+
             for e in edges:
-            
                 if isinstance(e, BioCypherRelAsNode):
                     # shouldn't happen any more
                     logger.error(
@@ -673,12 +675,12 @@ class BatchWriter:
                 label = e.get_label()
                 input_label = e.get_input_label()
                 label_class = self.translator._ontology_mapping.get(input_label)
-                
+
                 if not input_label in self.seen_edges.keys():
                     self.seen_edges[input_label] = set()
 
                 src_tar_id = '_'.join([e.get_source_id(), e.get_target_id()])
-
+                
                 # check duplicates for input_label
                 if src_tar_id in self.seen_edges.get(input_label, set()):
                     self.duplicate_edge_ids.add(src_tar_id)
@@ -739,11 +741,12 @@ class BatchWriter:
                     # TODO
                     
                     # create reference_props
-                    if isinstance(self.ontology_adapter.leaves.get(label_class).get('label_in_input'), str):
+                    if isinstance(self.ontology_adapter.leaves.get(label_class, {}).get('label_in_input'), str):
                         reference_props[self.ontology_adapter.leaves.get(label_class).get('label_in_input')] = d
                         
-                    else: # for association classes that have multiple 'label_in_input' fields create key-value pair for each 
-                        for l in self.ontology_adapter.leaves.get(label_class).get('label_in_input'):
+                    elif isinstance(self.ontology_adapter.leaves.get(label_class, {}).get('label_in_input'), list): 
+                        # for association classes that have multiple 'label_in_input' fields create key-value pair for each 
+                        for l in self.ontology_adapter.leaves.get(label_class, {}).get('label_in_input'):
                             reference_props[l] = d
                             
                 else:
@@ -945,7 +948,7 @@ class BatchWriter:
                                     plist.append(
                                         self.quote + self.adelim.join(p) + self.quote
                                     )
-                                elif '**' in p:
+                                elif isinstance(p, str) and '**' in p:
                                     plist.append(
                                         self.quote + p.replace('**', self.adelim) +
                                         self.quote
