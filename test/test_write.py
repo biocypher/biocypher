@@ -560,8 +560,8 @@ def test_write_edge_data_from_gen(bw):
 
     passed = bw._write_edge_data(edge_gen(edges), batch_size=int(1e4))
 
-    pid_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part000.csv')
-    imi_csv = os.path.join(path, 'Is_Mutated_In-part000.csv')
+    pid_csv = os.path.join(path, 'GeneToDiseaseAssociation-part000.csv')
+    imi_csv = os.path.join(path, 'MutationToTissueAssociation-part000.csv')
 
     with open(pid_csv) as f:
         l = f.read()
@@ -570,9 +570,9 @@ def test_write_edge_data_from_gen(bw):
 
     assert (
         passed and l ==
-        "p0;'T253';4;p1;PERTURBED_IN_DISEASE\np1;'T253';4;p2;PERTURBED_IN_DISEASE\np2;'T253';4;p3;PERTURBED_IN_DISEASE\np3;'T253';4;p4;PERTURBED_IN_DISEASE\n"
+        "p0;'T253';'4';p1;PERTURBED_IN_DISEASE\np1;'T253';'4';p2;PERTURBED_IN_DISEASE\np2;'T253';'4';p3;PERTURBED_IN_DISEASE\np3;'T253';'4';p4;PERTURBED_IN_DISEASE\n"
         and c ==
-        "m0;'3-UTR';1;p1;Is_Mutated_In\nm1;'3-UTR';1;p2;Is_Mutated_In\nm2;'3-UTR';1;p3;Is_Mutated_In\nm3;'3-UTR';1;p4;Is_Mutated_In\n"
+        "m0;'3-UTR';'1';p1;Is_Mutated_In\nm1;'3-UTR';'1';p2;Is_Mutated_In\nm2;'3-UTR';'1';p3;Is_Mutated_In\nm3;'3-UTR';'1';p4;Is_Mutated_In\n"
     )
 
 
@@ -582,7 +582,8 @@ def _get_edges(l):
         e1 = BioCypherEdge(
             source_id=f'p{i}',
             target_id=f'p{i + 1}',
-            relationship_label='PERTURBED_IN_DISEASE',
+            graph_db_relationship_label='PERTURBED_IN_DISEASE',
+            input_relationship_label = "_".join(['gene', 'PERTURBED_IN_DISEASE', 'disease']),
             properties={
                 'residue': 'T253',
                 'level': 4,
@@ -594,7 +595,8 @@ def _get_edges(l):
         e2 = BioCypherEdge(
             source_id=f'm{i}',
             target_id=f'p{i + 1}',
-            relationship_label='Is_Mutated_In',
+            graph_db_relationship_label='Is_Mutated_In',
+            input_relationship_label = 'Gene_Is_Mutated_In_Cell_Tissue',
             properties={
                 'site': '3-UTR',
                 'confidence': 1,
@@ -615,10 +617,10 @@ def test_write_edge_data_from_large_gen(bw):
 
     passed = bw._write_edge_data(edge_gen(edges), batch_size=int(1e4))
 
-    apl0_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part000.csv')
-    ips0_csv = os.path.join(path, 'Is_Mutated_In-part000.csv')
-    apl1_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part001.csv')
-    ips1_csv = os.path.join(path, 'Is_Mutated_In-part001.csv')
+    apl0_csv = os.path.join(path, 'GeneToDiseaseAssociation-part000.csv')
+    ips0_csv = os.path.join(path, 'MutationToTissueAssociation-part000.csv')
+    apl1_csv = os.path.join(path, 'GeneToDiseaseAssociation-part001.csv')
+    ips1_csv = os.path.join(path, 'MutationToTissueAssociation-part001.csv')
 
     l_lines0 = sum(1 for _ in open(apl0_csv))
     c_lines0 = sum(1 for _ in open(ips0_csv))
@@ -636,8 +638,8 @@ def test_write_edge_data_from_list(bw):
 
     passed = bw._write_edge_data(edges, batch_size=int(1e4))
 
-    apl_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part000.csv')
-    ips_csv = os.path.join(path, 'Is_Mutated_In-part000.csv')
+    apl_csv = os.path.join(path, 'GeneToDiseaseAssociation-part000.csv')
+    ips_csv = os.path.join(path, 'MutationToTissueAssociation-part000.csv')
 
     with open(apl_csv) as f:
         l = f.read()
@@ -646,9 +648,9 @@ def test_write_edge_data_from_list(bw):
 
     assert (
         passed and l ==
-        "p0;'T253';4;p1;PERTURBED_IN_DISEASE\np1;'T253';4;p2;PERTURBED_IN_DISEASE\np2;'T253';4;p3;PERTURBED_IN_DISEASE\np3;'T253';4;p4;PERTURBED_IN_DISEASE\n"
+        "p0;'T253';'4';p1;PERTURBED_IN_DISEASE\np1;'T253';'4';p2;PERTURBED_IN_DISEASE\np2;'T253';'4';p3;PERTURBED_IN_DISEASE\np3;'T253';'4';p4;PERTURBED_IN_DISEASE\n"
         and c ==
-        "m0;'3-UTR';1;p1;Is_Mutated_In\nm1;'3-UTR';1;p2;Is_Mutated_In\nm2;'3-UTR';1;p3;Is_Mutated_In\nm3;'3-UTR';1;p4;Is_Mutated_In\n"
+        "m0;'3-UTR';'1';p1;Is_Mutated_In\nm1;'3-UTR';'1';p2;Is_Mutated_In\nm2;'3-UTR';'1';p3;Is_Mutated_In\nm3;'3-UTR';'1';p4;Is_Mutated_In\n"
     )
 
 
@@ -659,20 +661,22 @@ def test_write_edge_data_from_list_no_props(bw):
         e1 = BioCypherEdge(
             source_id=f'p{i}',
             target_id=f'p{i + 1}',
-            relationship_label='PERTURBED_IN_DISEASE',
+            graph_db_relationship_label='PERTURBED_IN_DISEASE',
+            input_relationship_label = "_".join(['gene', 'PERTURBED_IN_DISEASE', 'disease'])
         )
         edges.append(e1)
         e2 = BioCypherEdge(
             source_id=f'm{i}',
             target_id=f'p{i + 1}',
-            relationship_label='Is_Mutated_In',
+            graph_db_relationship_label='Is_Mutated_In',
+            input_relationship_label = 'Gene_Is_Mutated_In_Cell_Tissue'
         )
         edges.append(e2)
 
     passed = bw._write_edge_data(edges, batch_size=int(1e4))
 
-    ptl_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part000.csv')
-    pts_csv = os.path.join(path, 'Is_Mutated_In-part000.csv')
+    ptl_csv = os.path.join(path, 'GeneToDiseaseAssociation-part000.csv')
+    pts_csv = os.path.join(path, 'MutationToTissueAssociation-part000.csv')
 
     with open(ptl_csv) as f:
         l = f.read()
@@ -704,8 +708,8 @@ def test_write_edge_data_headers_import_call(bw):
 
     bw.write_import_call()
 
-    ptl_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-header.csv')
-    pts_csv = os.path.join(path, 'Is_Mutated_In-header.csv')
+    ptl_csv = os.path.join(path, 'GeneToDiseaseAssociation-header.csv')
+    pts_csv = os.path.join(path, 'MutationToTissueAssociation-header.csv')
     call_csv = os.path.join(path, 'neo4j-admin-import-call.sh')
 
     with open(ptl_csv) as f:
@@ -718,7 +722,7 @@ def test_write_edge_data_headers_import_call(bw):
     assert (
         passed and l == ':START_ID;residue;level:long;:END_ID;:TYPE' and
         c == ':START_ID;site;confidence:long;:END_ID;:TYPE' and call ==
-        f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" --relationships="{path}/PERTURBED_IN_DISEASE-header.csv,{path}/PERTURBED_IN_DISEASE-part.*" --relationships="{path}/Is_Mutated_In-header.csv,{path}/Is_Mutated_In-part.*" '
+        f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" --relationships="{path}/GeneToDiseaseAssociation-header.csv,{path}/GeneToDiseaseAssociation-part.*" --relationships="{path}/MutationToTissueAssociation-header.csv,{path}/MutationToTissueAssociation-part.*" '
     )
 
 
@@ -728,8 +732,8 @@ def test_write_duplicate_edges(bw):
 
     passed = bw.write_edges(edges)
 
-    ptl_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part000.csv')
-    pts_csv = os.path.join(path, 'Is_Mutated_In-part000.csv')
+    ptl_csv = os.path.join(path, 'GeneToDiseaseAssociation-part000.csv')
+    pts_csv = os.path.join(path, 'MutationToTissueAssociation-part000.csv')
 
     l = sum(1 for _ in open(ptl_csv))
     c = sum(1 for _ in open(pts_csv))
@@ -780,12 +784,14 @@ def _get_rel_as_nodes(l):
         e1 = BioCypherEdge(
             source_id=f'i{i+1}',
             target_id=f'p{i+1}',
-            relationship_label='IS_SOURCE_OF',
+            graph_db_relationship_label='IS_SOURCE_OF',
+            input_relationship_label = "_".join([f'i{i+1}', 'IS_SOURCE_OF', f'p{i+1}'])
         )
         e2 = BioCypherEdge(
             source_id=f'i{i}',
             target_id=f'p{i + 2}',
-            relationship_label='IS_TARGET_OF',
+            graph_db_relationship_label='IS_TARGET_OF',
+            input_relationship_label = "_".join([f'i{i}', 'IS_TARGET_OF', f'p{i + 2}'])
         )
         rels.append(BioCypherRelAsNode(n, e1, e2))
     return rels
@@ -817,7 +823,8 @@ def test_write_mixed_edges(bw):
         e3 = BioCypherEdge(
             source_id=f'p{i+1}',
             target_id=f'p{i+1}',
-            relationship_label='PERTURBED_IN_DISEASE',
+            graph_db_relationship_label='PERTURBED_IN_DISEASE',
+            input_relationship_label="_".join(['gene', 'PERTURBED_IN_DISEASE', 'disease'])
         )
         mixed.append(e3)
 
@@ -828,12 +835,14 @@ def test_write_mixed_edges(bw):
         e1 = BioCypherEdge(
             source_id=f'i{i+1}',
             target_id=f'p{i+1}',
-            relationship_label='IS_SOURCE_OF',
+            graph_db_relationship_label='IS_SOURCE_OF',
+            input_relationship_label="_".join(['gene', 'PERTURBED_IN_DISEASE', 'disease'])
         )
         e2 = BioCypherEdge(
             source_id=f'i{i}',
             target_id=f'p{i+2}',
-            relationship_label='IS_TARGET_OF',
+            graph_db_relationship_label='IS_TARGET_OF',
+            input_relationship_label="_".join(['gene', 'PERTURBED_IN_DISEASE', 'disease'])
         )
         mixed.append(BioCypherRelAsNode(n, e1, e2))
 
@@ -864,19 +873,22 @@ def test_create_import_call(bw):
         e1 = BioCypherEdge(
             source_id=f'i{i+1}',
             target_id=f'p{i+1}',
-            relationship_label='IS_SOURCE_OF',
+            graph_db_relationship_label='IS_SOURCE_OF',
+            input_relationship_label = "_".join([f'i{i+1}', 'IS_SOURCE_OF', f'p{i+1}'])
         )
         e2 = BioCypherEdge(
             source_id=f'i{i}',
             target_id=f'p{i+2}',
-            relationship_label='IS_TARGET_OF',
+            graph_db_relationship_label='IS_TARGET_OF',
+            input_relationship_label = "_".join([f'i{i}', 'IS_TARGET_OF', f'p{i+2}'])
         )
         mixed.append(BioCypherRelAsNode(n, e1, e2))
 
         e3 = BioCypherEdge(
             source_id=f'p{i+1}',
             target_id=f'p{i+1}',
-            relationship_label='PERTURBED_IN_DISEASE',
+            graph_db_relationship_label='PERTURBED_IN_DISEASE',
+            input_relationship_label = "_".join([f'p{i+1}', 'IS_TARGET_OF', f'p{i+1}'])
         )
         mixed.append(e3)
 
@@ -1035,13 +1047,14 @@ def test_duplicate_edges(bw):
         BioCypherEdge(
             source_id='p1',
             target_id='p2',
-            relationship_label='PERTURBED_IN_DISEASE',
+            graph_db_relationship_label='PERTURBED_IN_DISEASE',
+            input_relationship_label = 'gene_PERTURBED_IN_DISEASE_disease'
         )
     )
 
     passed = bw.write_edges(edges)
 
-    assert 'PERTURBED_IN_DISEASE' in bw.duplicate_edge_types
+    assert 'gene_PERTURBED_IN_DISEASE_disease' in bw.duplicate_edge_types
     assert 'p1_p2' in bw.duplicate_edge_ids
 
 
@@ -1051,7 +1064,8 @@ def test_get_duplicate_edges(bw):
         BioCypherEdge(
             source_id='p1',
             target_id='p2',
-            relationship_label='PERTURBED_IN_DISEASE',
+            graph_db_relationship_label='PERTURBED_IN_DISEASE',
+            input_relationship_label = 'gene_PERTURBED_IN_DISEASE_disease'
         )
     )
 
@@ -1061,7 +1075,7 @@ def test_get_duplicate_edges(bw):
     types = d[0]
     ids = d[1]
 
-    assert 'PERTURBED_IN_DISEASE' in types
+    assert 'gene_PERTURBED_IN_DISEASE_disease' in types
     assert 'p1_p2' in ids
 
 
