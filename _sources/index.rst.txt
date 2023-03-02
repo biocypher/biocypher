@@ -15,7 +15,7 @@ by leveraging the biomedical community.
 
 On this page, you will find technical documentation, user experience reports
 (soon), tutorials, and other resources for BioCypher. You can read our paper on
-[arXiv](https://arxiv.org/abs/2212.13543). We are an inclusive community and
+`arXiv <https://arxiv.org/abs/2212.13543>`_. We are an inclusive community and
 welcome contributions and questions from everyone; see below for further links.
 
 .. Note::
