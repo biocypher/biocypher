@@ -48,11 +48,6 @@ by leveraging the biomedical community.
 
       :octicon:`project;3em`
 
-On this page, you will find technical documentation, user experience reports
-(soon), tutorials, and other resources for BioCypher. You can read our paper on
-`arXiv <https://arxiv.org/abs/2212.13543>`_. We are an inclusive community and
-welcome contributions and questions from everyone; see below for further links.
-
 .. Note::
 
    BioCypher is an inclusive community-driven project. If you have any
