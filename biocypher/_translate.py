@@ -78,31 +78,26 @@ class OntologyAdapter:
     """
     def __init__(
         self,
-        head_join_node: Optional[str] = None,
-        tail_join_node: Optional[str] = None,
-        tail_ontology_url: Optional[str] = None,
         head_ontology_url: Optional[str] = None,
         biolink_adapter: Optional['BiolinkAdapter'] = None,
+        tail_ontologies: Optional[Iterable] = None,
     ):
         """
         Args:
             head_ontology_url:
                 URL to the head ontology.
 
-            tail_ontology_url:
-                URL to the tail ontology.
-
-            head_join_node:
-                The node in the head ontology to which the tail ontology will be
-                joined.
-
-            tail_join_node:
-                The node in the tail ontology that will be joined to the head
-                ontology.
-
             biolink_adapter:
                 A BiolinkAdapter instance. To be supplied if no head ontology URL
                 is given.
+
+            tail_ontologies:
+                A list of dictionaries carrying the URL and join nodes for each
+                tail ontology to be joined to the head ontology. Keywords are
+                'url' for the location of the OBO file, 'head_join_node' for the
+                class name of the node in the head ontology to be hybridised to,
+                and 'tail_join_node' for the class name of the node in the tail
+                ontology to be joined to the head ontology.
         """
 
         if not head_ontology_url and not biolink_adapter:
@@ -111,10 +106,8 @@ class OntologyAdapter:
             )
 
         self.head_ontology_url = head_ontology_url
-        self.tail_ontology_url = tail_ontology_url
-        self.head_join_node = head_join_node
-        self.tail_join_node = tail_join_node
         self.biolink_adapter = biolink_adapter
+        self.tail_ontology_meta = tail_ontologies
 
         # pass on leaves from biolink adapter, only works for the case of
         # Biolink as head ontology; TODO generalise
@@ -123,7 +116,7 @@ class OntologyAdapter:
             self.biolink_leaves = self.biolink_adapter.biolink_leaves
 
         self.head_ontology = None
-        self.tail_ontology = None
+        self.tail_ontology_list = None
         self.hybrid_ontology = None
 
         self.main()
@@ -136,9 +129,10 @@ class OntologyAdapter:
         """
         self.load_ontologies()
 
-        if self.tail_ontology_url:
-            self.find_join_nodes()
-            self.join_ontologies()
+        if self.tail_ontology_list:
+            for onto_dict in self.tail_ontology_list:
+                onto_dict = self.find_join_nodes(onto_dict)
+                self.join_ontologies(onto_dict)
 
     def load_ontologies(self):
         """
@@ -166,47 +160,80 @@ class OntologyAdapter:
             self.head_ontology = self.biolink_adapter.get_networkx_graph(
             ).reverse()
 
-        # tail ontology is always loaded from URL
-        if self.tail_ontology_url:
+        # tail ontologies are always loaded from URL
+        if self.tail_ontology_meta:
 
-            self.tail_ontology = obonet.read_obo(self.tail_ontology_url)
+            self.tail_ontology_list = []
 
-            self.tail_ontology = self.reverse_name_and_accession(
-                self.tail_ontology
-            )
+            for meta_dict in self.tail_ontology_meta:
 
-    def find_join_nodes(self):
+                onto_net = obonet.read_obo(meta_dict['url'])
+                head_join_node = meta_dict['head_join_node']
+                tail_join_node = meta_dict['tail_join_node']
+
+                onto_net, head_join_node, tail_join_node = self.reverse_name_and_accession(
+                    onto_net,
+                    head_join_node,
+                    tail_join_node,
+                )
+
+                self.tail_ontology_list.append(
+                    {
+                        'tail_ontology': onto_net,
+                        'head_join_node': head_join_node,
+                        'tail_join_node': tail_join_node,
+                    }
+                )
+
+    def find_join_nodes(self, onto_dict: dict):
         """
         Finds the join nodes in the ontologies. If the join nodes are not
         found, the method will raise an error.
+
+        Args:
+            onto_dict:
+                A dictionary containing the networkx graph of the ontology,
+                the name of the head join node, and the name of the tail join
+                node.
         """
-        if self.head_join_node not in self.head_ontology.nodes:
+
+        head_join_node = onto_dict['head_join_node']
+        tail_join_node = onto_dict['tail_join_node']
+        tail_ontology = onto_dict['tail_ontology']
+
+        if head_join_node not in self.head_ontology.nodes:
 
             if self.head_ontology_url:
 
-                self.head_join_node = self.find_join_node_by_name(
-                    self.head_ontology, self.head_join_node
+                head_join_node = self.find_join_node_by_name(
+                    self.head_ontology, head_join_node
                 )
 
             else:
 
                 raise ValueError(
-                    f'Head join node {self.head_join_node} not found in '
+                    f'Head join node {head_join_node} not found in '
                     f'head ontology.'
                 )
 
-        if self.tail_join_node not in self.tail_ontology.nodes:
+        if tail_join_node not in tail_ontology.nodes:
 
-            self.tail_join_node = self.find_join_node_by_name(
-                self.tail_ontology, self.tail_join_node
+            tail_join_node = self.find_join_node_by_name(
+                tail_ontology, tail_join_node
             )
 
-            if not self.tail_join_node:
+            if not tail_join_node:
 
                 raise ValueError(
-                    f'Tail join node {self.tail_join_node} not found in '
+                    f'Tail join node {tail_join_node} not found in '
                     f'tail ontology.'
                 )
+
+        return {
+            'head_join_node': head_join_node,
+            'tail_join_node': tail_join_node,
+            'tail_ontology': tail_ontology,
+        }
 
     def find_join_node_by_name(self, ontology, node_name):
         """
@@ -220,19 +247,32 @@ class OntologyAdapter:
 
         return name_to_id.get(node_name)
 
-    def reverse_name_and_accession(self, ontology):
+    def reverse_name_and_accession(
+        self,
+        ontology,
+        head_join_node: Optional[str] = None,
+        tail_join_node: Optional[str] = None,
+    ):
         """
         Reverses the name and ID of the ontology nodes. Replaces underscores in
         the node names with spaces. Currently standard for consistency with
-        Biolink, although we lose the original ontology's spelling. Replace the
+        Biolink, although we lose the original ontology's spelling. Replaces the
         underscores in the join node names as well.
+
+        Args:
+            ontology:
+                The networkx graph of the ontology.
+            head_join_node:
+                The name of the head join node.
+            tail_join_node:
+                The name of the tail join node.
         """
 
-        if self.head_join_node:
-            self.head_join_node = self.head_join_node.replace('_', ' ')
+        if head_join_node:
+            head_join_node = head_join_node.replace('_', ' ')
 
-        if self.tail_join_node:
-            self.tail_join_node = self.tail_join_node.replace('_', ' ')
+        if tail_join_node:
+            tail_join_node = tail_join_node.replace('_', ' ')
 
         id_to_name = {}
         for _id, data in ontology.nodes(data=True):
@@ -241,33 +281,42 @@ class OntologyAdapter:
 
         ontology = nx.relabel_nodes(ontology, id_to_name)
 
-        return ontology
+        return ontology, head_join_node, tail_join_node
 
-    def join_ontologies(self):
+    def join_ontologies(self, onto_dict: dict):
         """
         Joins the ontologies by adding the tail ontology as a subgraph to the
         head ontology at the specified join nodes. Note that the tail ontology
         needs to be reversed before creating the subgraph, as obonet orients
         edges from child to parent.
+
+        Args:
+            onto_dict:
+                A dictionary containing the networkx graph of the ontology,
+                the name of the head join node, and the name of the tail join
+                node.
         """
 
         self.hybrid_ontology = self.head_ontology.copy()
 
+        head_join_node = onto_dict['head_join_node']
+        tail_join_node = onto_dict['tail_join_node']
+        tail_ontology = onto_dict['tail_ontology']
+
         # subtree of tail ontology at join node
         tail_ontology_subtree = dfs_tree(
-            self.tail_ontology.reverse(), self.tail_join_node
+            tail_ontology.reverse(), tail_join_node
         ).reverse()
 
         # transfer node attributes from tail ontology to subtree
         for node in tail_ontology_subtree.nodes:
-            tail_ontology_subtree.nodes[node].update(
-                self.tail_ontology.nodes[node]
-            )
+            tail_ontology_subtree.nodes[node].update(tail_ontology.nodes[node])
 
         # rename tail join node to match head join node
-        tail_ontology_subtree = nx.relabel_nodes(
-            tail_ontology_subtree, {self.tail_join_node: self.head_join_node}
-        )
+        if not tail_join_node == head_join_node:
+            tail_ontology_subtree = nx.relabel_nodes(
+                tail_ontology_subtree, {tail_join_node: head_join_node}
+            )
 
         # combine head ontology and tail subtree
         self.hybrid_ontology = nx.compose(

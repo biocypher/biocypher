@@ -127,9 +127,7 @@ class Driver(neo4j_utils.Driver):
         quote_char: Optional[str] = None,
         import_call_prefix: Optional[str] = None,
         biolink_model: Optional[str] = None,
-        tail_ontology_url: Optional[str] = None,
-        head_join_node: Optional[str] = None,
-        tail_join_node: Optional[str] = None,
+        tail_ontologies: Optional[list] = None,
     ):
 
         # Neo4j options
@@ -164,11 +162,7 @@ class Driver(neo4j_utils.Driver):
 
         self.biolink_model = biolink_model or _config('biolink_model')
 
-        self.tail_ontology_url = tail_ontology_url or _config(
-            'tail_ontology_url'
-        )
-        self.head_join_node = head_join_node or _config('head_join_node')
-        self.tail_join_node = tail_join_node or _config('tail_join_node')
+        self.tail_ontologies = tail_ontologies  # or _config('tail_ontologies')
 
         if self.offline:
 
@@ -639,10 +633,8 @@ class Driver(neo4j_utils.Driver):
             )
             # only simple one-hybrid case; TODO generalise
             self.ontology_adapter = OntologyAdapter(
-                tail_ontology_url=self.tail_ontology_url,
-                head_join_node=self.head_join_node,
-                tail_join_node=self.tail_join_node,
                 biolink_adapter=biolink_adapter,
+                tail_ontologies=self.tail_ontologies,
             )
 
     def write_edges(
