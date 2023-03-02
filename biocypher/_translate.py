@@ -275,9 +275,16 @@ class OntologyAdapter:
             tail_join_node = tail_join_node.replace('_', ' ')
 
         id_to_name = {}
-        for _id, data in ontology.nodes(data=True):
+        for _id in list(ontology.nodes):
+
+            data = ontology.nodes(data=True)[_id]
 
             if 'name' not in data:
+                # remove node from networkx graph
+                ontology.remove_node(_id)
+                # TODO where do these nodes come from (relationships)? do we
+                # need them for something downstream, or are they safe to
+                # remove?
                 continue
 
             data['accession'] = _id

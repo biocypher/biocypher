@@ -680,7 +680,12 @@ def test_generic_ontology_adapter(ontology_adapter):
         combined_length += len(d.get('tail_ontology'))
     hybrid_length = len(ontology_adapter.hybrid_ontology)
 
-    # assert hybrid_length == combined_length - 2
+    assert hybrid_length == combined_length - (
+        len(ontology_adapter.tail_ontology_list) + 1
+    )
+    # TODO where does the +1 come from? i would assume that by merging head and
+    # tail nodes, we remove one for each tail ontology. however, we are,
+    # somehow, losing one additional node.
 
     # get predecessors of terminal node from hybrid ontology (successors because
     # of inverted graph)
