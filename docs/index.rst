@@ -13,11 +13,6 @@ ontology, and modularity of output formats (see the Figure below). This design
 allows for a high degree of flexibility and reusability, rationalising efforts
 by leveraging the biomedical community.
 
-On this page, you will find technical documentation, user experience reports
-(soon), tutorials, and other resources for BioCypher. You can read our paper on
-`arXiv <https://arxiv.org/abs/2212.13543>`_. We are an inclusive community and
-welcome contributions and questions from everyone; see below for further links.
-
 .. grid:: 4
    :gutter: 2 2 3 4
 
@@ -25,25 +20,38 @@ welcome contributions and questions from everyone; see below for further links.
       :link: https://github.com/saezlab/BioCypher
       :text-align: center
 
-      GitHub: :octicon:`github;3em`
+      On GitHub:
+
+      :octicon:`mark-github;3em`
 
    .. grid-item-card::
       :link: https://arxiv.org/abs/2212.13543
       :text-align: center
 
-      Paper: :octicon:`file-pdf;3em`
+      The paper:
+
+      :octicon:`book;3em`
 
    .. grid-item-card::
       :link: https://biocypher.zulipchat.com/
       :text-align: center
 
-      Chat: :octicon:`comment-discussion;3em`
+      Get in touch:
+
+      :octicon:`comment-discussion;3em`
 
    .. grid-item-card::
       :link: https://github.com/orgs/saezlab/projects/5/views/6
       :text-align: center
 
-      Adapters: :octicon:`project;3em`
+      Our adapters:
+
+      :octicon:`project;3em`
+
+On this page, you will find technical documentation, user experience reports
+(soon), tutorials, and other resources for BioCypher. You can read our paper on
+`arXiv <https://arxiv.org/abs/2212.13543>`_. We are an inclusive community and
+welcome contributions and questions from everyone; see below for further links.
 
 .. Note::
 
