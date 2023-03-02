@@ -18,20 +18,28 @@ On this page, you will find technical documentation, user experience reports
 `arXiv <https://arxiv.org/abs/2212.13543>`_. We are an inclusive community and
 welcome contributions and questions from everyone; see below for further links.
 
-.. grid::
-   :columns: 4
+.. panels::
 
-   :octicon:`book;5em` `Documentation <https://biocypher.readthedocs.io/en/latest/>`_
-   :octicon:`mortar-board;5em` `Tutorials <https://biocypher.readthedocs.io/en/latest/tutorials.html>`_
-   :octicon:`comment-discussion;5em` `Zulip channel <https://biocypher.zulipchat.com/>`_
-   :octicon:`file-code;5em` `GitHub repository <https://github.com/saezlab/BioCypher>`_
+    .. link-button:: https://example.com
+        :classes: btn-success
+
+    ---
+
+    This entire panel is clickable.
+
+    +++
+
+    .. link-button:: panels/usage
+        :type: ref
+        :text: Go To Reference
+        :classes: btn-outline-primary btn-block stretched-link
 
 .. Note::
 
-   BioCypher is a community-driven project. If you have any questions, specific
-   needs, or want to contribute to the project, please contact us over on our
-   `Zulip channel <https://biocypher.zulipchat.com/>`_, on `GitHub
-   <https://github.com/saezlab/BioCypher>`_ or via email at
+   BioCypher is an inclusive community-driven project. If you have any
+   questions, specific needs, or want to contribute to the project, please
+   contact us over on our `Zulip channel <https://biocypher.zulipchat.com/>`_,
+   on `GitHub <https://github.com/saezlab/BioCypher>`_ or via email at
    sebastian.lobentanzer (at) uni-heidelberg.de.
 
 .. figure:: ../graphical_abstract.png
