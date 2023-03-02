@@ -851,15 +851,23 @@ class BiolinkAdapter:
 
         return props
 
-    def _build_biolink_class(self, entity, values):
+    def _build_biolink_class(self, entity, values) -> None:
         """
         Build a Biolink class definition from a Biolink entity name and
         property dict.
         """
+        if values.get('is_a') == entity:
+            logger.warning(
+                f'Entity {entity} is a subclass of itself and was removed. '
+                'This is not allowed because it leads to an infinite loop. '
+                'Please check your configuration.'
+            )
+            return
+
         if values.get('represented_as') == 'node':
-            return self._build_biolink_node_class(entity, values)
+            self._build_biolink_node_class(entity, values)
         else:
-            return self._build_biolink_edge_class(entity, values)
+            self._build_biolink_edge_class(entity, values)
 
     def _build_biolink_node_class(self, entity: str, values: dict) -> None:
         """

@@ -716,3 +716,11 @@ def test_generic_ontology_adapter(ontology_adapter):
     assert 'disease or phenotypic feature' in cf_predecessors
     assert 'entity' in cf_predecessors
     # mixins?
+
+
+def test_inheritance_loop(ontology_adapter):
+
+    assert 'gene to variant association' in ontology_adapter.leaves.keys()
+
+    assert 'gene to variant association' not in ontology_adapter.biolink_leaves.keys(
+    )

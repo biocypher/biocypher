@@ -186,3 +186,8 @@ gene to gene association:
     directional: bool
     curated: bool
     score: float
+
+gene to variant association:
+  is_a: gene to variant association
+  represented_as: edge
+  label_in_input: gene_variant
