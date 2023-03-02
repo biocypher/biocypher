@@ -80,7 +80,7 @@ class OntologyAdapter:
         self,
         head_ontology_url: Optional[str] = None,
         biolink_adapter: Optional['BiolinkAdapter'] = None,
-        tail_ontologies: Optional[Iterable] = None,
+        tail_ontologies: Optional[dict] = None,
     ):
         """
         Args:
@@ -92,7 +92,7 @@ class OntologyAdapter:
                 is given.
 
             tail_ontologies:
-                A list of dictionaries carrying the URL and join nodes for each
+                A dict of dicts carrying the URL and join nodes for each
                 tail ontology to be joined to the head ontology. Keywords are
                 'url' for the location of the OBO file, 'head_join_node' for the
                 class name of the node in the head ontology to be hybridised to,
@@ -116,7 +116,7 @@ class OntologyAdapter:
             self.biolink_leaves = self.biolink_adapter.biolink_leaves
 
         self.head_ontology = None
-        self.tail_ontology_list = None
+        self.tail_ontology_dict = None
         self.hybrid_ontology = None
 
         self.main()
@@ -129,8 +129,8 @@ class OntologyAdapter:
         """
         self.load_ontologies()
 
-        if self.tail_ontology_list:
-            for onto_dict in self.tail_ontology_list:
+        if self.tail_ontology_dict:
+            for onto_dict in self.tail_ontology_dict.values():
                 onto_dict = self.find_join_nodes(onto_dict)
                 self.join_ontologies(onto_dict)
 
@@ -163,9 +163,9 @@ class OntologyAdapter:
         # tail ontologies are always loaded from URL
         if self.tail_ontology_meta:
 
-            self.tail_ontology_list = []
+            self.tail_ontology_dict = {}
 
-            for meta_dict in self.tail_ontology_meta:
+            for key, meta_dict in self.tail_ontology_meta.items():
 
                 onto_net = obonet.read_obo(meta_dict['url'])
                 head_join_node = meta_dict['head_join_node']
@@ -177,13 +177,11 @@ class OntologyAdapter:
                     tail_join_node,
                 )
 
-                self.tail_ontology_list.append(
-                    {
-                        'tail_ontology': onto_net,
-                        'head_join_node': head_join_node,
-                        'tail_join_node': tail_join_node,
-                    }
-                )
+                self.tail_ontology_dict[key] = {
+                    'tail_ontology': onto_net,
+                    'head_join_node': head_join_node,
+                    'tail_join_node': tail_join_node,
+                }
 
     def find_join_nodes(self, onto_dict: dict):
         """

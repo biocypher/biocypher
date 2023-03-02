@@ -36,17 +36,20 @@ def biolink_adapter(version_node, translator):
 @pytest.fixture
 def ontology_adapter(biolink_adapter):
     return OntologyAdapter(
-        tail_ontologies=[
-            {
-                'url': 'test/so.obo',
-                'head_join_node': 'sequence variant',
-                'tail_join_node': 'sequence_variant',
-            }, {
-                'url': 'test/mondo.obo',
-                'head_join_node': 'disease',
-                'tail_join_node': 'disease',
-            }
-        ],
+        tail_ontologies={
+            'so':
+                {
+                    'url': 'test/so.obo',
+                    'head_join_node': 'sequence variant',
+                    'tail_join_node': 'sequence_variant',
+                },
+            'mondo':
+                {
+                    'url': 'test/mondo.obo',
+                    'head_join_node': 'disease',
+                    'tail_join_node': 'disease',
+                }
+        },
         biolink_adapter=biolink_adapter,
     )
 
@@ -668,7 +671,7 @@ def test_networkx_from_treedict(biolink_adapter):
 def test_generic_ontology_adapter(ontology_adapter):
     assert isinstance(ontology_adapter, OntologyAdapter)
 
-    first_tail_ontology = ontology_adapter.tail_ontology_list[0].get(
+    first_tail_ontology = ontology_adapter.tail_ontology_dict.get('so').get(
         'tail_ontology'
     )
     assert len(first_tail_ontology) == 7
@@ -676,12 +679,12 @@ def test_generic_ontology_adapter(ontology_adapter):
 
     # subgraph combination
     combined_length = len(ontology_adapter.head_ontology)
-    for d in ontology_adapter.tail_ontology_list:
-        combined_length += len(d.get('tail_ontology'))
+    for onto_dict in ontology_adapter.tail_ontology_dict.values():
+        combined_length += len(onto_dict.get('tail_ontology'))
     hybrid_length = len(ontology_adapter.hybrid_ontology)
 
     assert hybrid_length == combined_length - (
-        len(ontology_adapter.tail_ontology_list) + 1
+        len(ontology_adapter.tail_ontology_dict) + 1
     )
     # TODO where does the +1 come from? i would assume that by merging head and
     # tail nodes, we remove one for each tail ontology. however, we are,

@@ -162,7 +162,7 @@ class Driver(neo4j_utils.Driver):
 
         self.biolink_model = biolink_model or _config('biolink_model')
 
-        self.tail_ontologies = tail_ontologies  # or _config('tail_ontologies')
+        self.tail_ontologies = tail_ontologies or _config('tail_ontologies')
 
         if self.offline:
 

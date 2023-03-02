@@ -64,13 +64,14 @@ def bw(version_node, translator):
     )
 
     ontology_adapter = OntologyAdapter(
-        tail_ontologies=[
-            {
-                'url': 'test/so.obo',
-                'head_join_node': 'sequence variant',
-                'tail_join_node': 'sequence_variant'
-            },
-        ],
+        tail_ontologies={
+            'so':
+                {
+                    'url': 'test/so.obo',
+                    'head_join_node': 'sequence variant',
+                    'tail_join_node': 'sequence_variant'
+                },
+        },
         biolink_adapter=biolink_adapter,
     )
 
