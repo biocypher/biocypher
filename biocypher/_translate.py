@@ -254,7 +254,7 @@ class OntologyAdapter:
         tail_join_node: Optional[str] = None,
     ):
         """
-        Reverses the name and ID of the ontology nodes. Replaces underscores in
+        Reverses the name and ID of the ontology nodes, adding the ID under the keyword "accession". Replaces underscores in
         the node names with spaces. Currently standard for consistency with
         Biolink, although we lose the original ontology's spelling. Replaces the
         underscores in the join node names as well.
@@ -276,7 +276,12 @@ class OntologyAdapter:
 
         id_to_name = {}
         for _id, data in ontology.nodes(data=True):
+
+            if 'name' not in data:
+                continue
+
             data['accession'] = _id
+
             id_to_name[_id] = data.get('name').replace('_', ' ')
 
         ontology = nx.relabel_nodes(ontology, id_to_name)
@@ -297,7 +302,8 @@ class OntologyAdapter:
                 node.
         """
 
-        self.hybrid_ontology = self.head_ontology.copy()
+        if not self.hybrid_ontology:
+            self.hybrid_ontology = self.head_ontology.copy()
 
         head_join_node = onto_dict['head_join_node']
         tail_join_node = onto_dict['tail_join_node']

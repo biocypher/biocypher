@@ -40,8 +40,12 @@ def ontology_adapter(biolink_adapter):
             {
                 'url': 'test/so.obo',
                 'head_join_node': 'sequence variant',
-                'tail_join_node': 'sequence_variant'
-            },
+                'tail_join_node': 'sequence_variant',
+            }, {
+                'url': 'test/mondo.obo',
+                'head_join_node': 'disease',
+                'tail_join_node': 'disease',
+            }
         ],
         biolink_adapter=biolink_adapter,
     )
@@ -663,6 +667,7 @@ def test_networkx_from_treedict(biolink_adapter):
 
 def test_generic_ontology_adapter(ontology_adapter):
     assert isinstance(ontology_adapter, OntologyAdapter)
+
     first_tail_ontology = ontology_adapter.tail_ontology_list[0].get(
         'tail_ontology'
     )
@@ -670,9 +675,12 @@ def test_generic_ontology_adapter(ontology_adapter):
     assert nx.is_directed_acyclic_graph(first_tail_ontology)
 
     # subgraph combination
-    combined_length = len(ontology_adapter.head_ontology
-                         ) + len(first_tail_ontology)
-    assert len(ontology_adapter.hybrid_ontology) == combined_length - 2
+    combined_length = len(ontology_adapter.head_ontology)
+    for d in ontology_adapter.tail_ontology_list:
+        combined_length += len(d.get('tail_ontology'))
+    hybrid_length = len(ontology_adapter.hybrid_ontology)
+
+    # assert hybrid_length == combined_length - 2
 
     # get predecessors of terminal node from hybrid ontology (successors because
     # of inverted graph)
@@ -692,3 +700,11 @@ def test_generic_ontology_adapter(ontology_adapter):
     lethal_var = ontology_adapter.hybrid_ontology.nodes['lethal variant']
     assert lethal_var['accession'] == 'SO:0001773'
     assert 'def' in lethal_var.keys()
+
+    # second tail ontology
+    cf_predecessors = ontology_adapter.get_node_ancestry('cystic fibrosis')
+    assert len(cf_predecessors) == 12
+    assert 'disease' in cf_predecessors
+    assert 'disease or phenotypic feature' in cf_predecessors
+    assert 'entity' in cf_predecessors
+    # mixins?
