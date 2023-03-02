@@ -19,23 +19,31 @@ On this page, you will find technical documentation, user experience reports
 welcome contributions and questions from everyone; see below for further links.
 
 .. grid:: 4
-    :gutter: 2 2 3 4
+   :gutter: 2 2 3 4
 
-    .. grid-item-card::
+   .. grid-item-card::
+      :link: https://github.com/saezlab/BioCypher
+      :text-align: center
 
-        A
+      GitHub: :octicon:`github;3em`
 
-    .. grid-item-card::
+   .. grid-item-card::
+      :link: https://arxiv.org/abs/2212.13543
+      :text-align: center
 
-        B
+      Paper: :octicon:`file-pdf;3em`
 
-    .. grid-item-card::
+   .. grid-item-card::
+      :link: https://biocypher.zulipchat.com/
+      :text-align: center
 
-        C
+      Chat: :octicon:`comment-discussion;3em`
 
-    .. grid-item-card::
+   .. grid-item-card::
+      :link: https://github.com/orgs/saezlab/projects/5/views/6
+      :text-align: center
 
-        D
+      Adapters: :octicon:`project;3em`
 
 .. Note::
 
