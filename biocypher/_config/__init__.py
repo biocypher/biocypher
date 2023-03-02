@@ -63,7 +63,7 @@ def read_config() -> dict:
     TODO explain path configuration
     """
 
-    defaults = module_data('module_config')
+    defaults = module_data('biocypher_config')
     user_confdir = appdirs.user_config_dir('biocypher', 'saezlab')
     user = _read_yaml(os.path.join(user_confdir, 'biocypher_config.yaml')) or {}
     # check if there is a local config file `biocypher_config.yaml` in the
@@ -84,8 +84,6 @@ def read_config() -> dict:
 def config(*args, **kwargs) -> Optional[Any]:
     """
     Set or get module config parameters.
-
-    TODO explain: is setting permanent or session-specific?
     """
 
     if args and kwargs:

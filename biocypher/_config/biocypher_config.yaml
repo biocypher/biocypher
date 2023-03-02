@@ -37,3 +37,14 @@ outdir: biocypher-out
 # BioCypher caches the ontology scaffold for performance reasons
 # Set to true to clear the cache and re-download the ontology
 clear_cache: false
+
+# # Ontology configuration
+# tail_ontologies:
+#   so:
+#     url: test/so.obo
+#     head_join_node: sequence variant
+#     tail_join_node: sequence_variant
+#   mondo:
+#     url: test/mondo.obo
+#     head_join_node: disease
+#     tail_join_node: disease
