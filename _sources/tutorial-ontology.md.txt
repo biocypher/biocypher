@@ -55,7 +55,9 @@ possible to use multiple ontologies in the same project. For instance, one might
 want to extend the rather basic classes relating to molecular interactions in
 Biolink (the most specific being `pairwise molecular interaction`) with more
 specific classes from a more domain-specific ontology, such as the EBI molecular
-interactions ontology ([PSI-MI](https://www.ebi.ac.uk/ols/ontologies/mi)).
+interactions ontology ([PSI-MI](https://www.ebi.ac.uk/ols/ontologies/mi)). The
+[OBO Foundry](https://obofoundry.org) collects many such specialised ontologies
+in a format that can readily be ingested by BioCypher (OBO Format).
 
 <!-- TODO example -->
 ## Visualising ontologies

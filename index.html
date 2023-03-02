@@ -88,21 +88,18 @@
   <img alt="_images/banner.png" src="_images/banner.png" />
 <section id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h1>
-<p>BioCypher (<a class="reference external" href="https://github.com/saezlab/BioCypher">GitHub repository</a>) is a
-framework designed to serve as guideline and translation mechanism for both the
-creation of biomedical knowledge graph databases from primary data as well as
-for the seamless integration, optimisation, and querying of these databases. Its
-purpose is to combine the computational power of graph databases with the search
-for answers of our most pressing biological questions and facilitate interfacing
-with cutting edge developments in the areas of causal reasoning, representation
-learning, and natural language processing, all of which depend on having a
-consistent descriptive vocabulary. To achieve meaningful automatic
-representations in the biomedical language space, we include the <a class="reference external" href="https://biolink.github.io/biolink-model/">Biolink model</a> as a basic underlying hierarchical
-ontology, supplying identification, filtering, and mapping capabilities. In
-addition, we provide options to implement alternative ontological systems by way
-of exchanging or extending the base model, for example using <a class="reference external" href="https://obofoundry.org">OBO Foundry</a> ontologies. Side objectives are the creation of
-human-readable graph syntax and facilitating ultra-rapid graph creation through
-the Neo4j admin-import feature.</p>
+<p>Building a knowledge graph for biomedical tasks usually takes months or years.
+What if you could do it in weeks or days? We created BioCypher to make the
+process of creating a biomedical knowledge graph easier than ever, but still
+flexible and transparent. BioCypher is built around the concept of a “trifold
+modularity”: modularity of data sources, modularity of structure-giving
+ontology, and modularity of output formats (see the Figure below). This design
+allows for a high degree of flexibility and reusability, rationalising efforts
+by leveraging the biomedical community.</p>
+<p>On this page, you will find technical documentation, user experience reports
+(soon), tutorials, and other resources for BioCypher. You can read our paper on
+[arXiv](<a class="reference external" href="https://arxiv.org/abs/2212.13543">https://arxiv.org/abs/2212.13543</a>). We are an inclusive community and
+welcome contributions and questions from everyone; see below for further links.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>BioCypher is a community-driven project. If you have any questions, specific
@@ -146,10 +143,11 @@ different views.</p>
 GitHub Projects view may be less than complete.</p>
 </div>
 <p>The project view is built from issues in the <a class="reference external" href="https://github.com/saezlab/BioCypher/issues">BioCypher GitHub repository</a>, which carry labels for adapters
-and adapter subtypes, as well as an <code class="docutils literal notranslate"><span class="pre">Adapter</span> <span class="pre">status</span></code> label to indicate the state
-of development: <code class="docutils literal notranslate"><span class="pre">Planned</span></code>, <code class="docutils literal notranslate"><span class="pre">In</span> <span class="pre">progress</span></code>, <code class="docutils literal notranslate"><span class="pre">Existing</span></code>, and <code class="docutils literal notranslate"><span class="pre">Ideas</span></code>. If you would
-like to add or request an adapter that is not yet listed, please open a new
-issue (ideally with an <code class="docutils literal notranslate"><span class="pre">adapter</span></code> label) and we will add it to the project view.</p>
+and adapter subtypes, as well as an <code class="docutils literal notranslate"><span class="pre">Adapter</span> <span class="pre">status</span></code> label to indicate the
+state of development: <code class="docutils literal notranslate"><span class="pre">Planned</span></code>, <code class="docutils literal notranslate"><span class="pre">In</span> <span class="pre">progress</span></code>, <code class="docutils literal notranslate"><span class="pre">Existing</span></code>, and <code class="docutils literal notranslate"><span class="pre">Ideas</span></code>.
+If you would like to add or request an adapter that is not yet listed, please
+open a new issue (ideally with an <code class="docutils literal notranslate"><span class="pre">adapter</span></code> label) and we will add it to the
+project view.</p>
 </section>
 
 

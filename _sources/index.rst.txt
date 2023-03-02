@@ -4,23 +4,19 @@
 Introduction
 ############
 
-BioCypher (`GitHub repository <https://github.com/saezlab/BioCypher>`_) is a
-framework designed to serve as guideline and translation mechanism for both the
-creation of biomedical knowledge graph databases from primary data as well as
-for the seamless integration, optimisation, and querying of these databases. Its
-purpose is to combine the computational power of graph databases with the search
-for answers of our most pressing biological questions and facilitate interfacing
-with cutting edge developments in the areas of causal reasoning, representation
-learning, and natural language processing, all of which depend on having a
-consistent descriptive vocabulary. To achieve meaningful automatic
-representations in the biomedical language space, we include the `Biolink model
-<https://biolink.github.io/biolink-model/>`_ as a basic underlying hierarchical
-ontology, supplying identification, filtering, and mapping capabilities. In
-addition, we provide options to implement alternative ontological systems by way
-of exchanging or extending the base model, for example using `OBO Foundry
-<https://obofoundry.org>`_ ontologies. Side objectives are the creation of
-human-readable graph syntax and facilitating ultra-rapid graph creation through
-the Neo4j admin-import feature.
+Building a knowledge graph for biomedical tasks usually takes months or years.
+What if you could do it in weeks or days? We created BioCypher to make the
+process of creating a biomedical knowledge graph easier than ever, but still
+flexible and transparent. BioCypher is built around the concept of a "trifold
+modularity": modularity of data sources, modularity of structure-giving
+ontology, and modularity of output formats (see the Figure below). This design
+allows for a high degree of flexibility and reusability, rationalising efforts
+by leveraging the biomedical community.
+
+On this page, you will find technical documentation, user experience reports
+(soon), tutorials, and other resources for BioCypher. You can read our paper on
+[arXiv](https://arxiv.org/abs/2212.13543). We are an inclusive community and
+welcome contributions and questions from everyone; see below for further links.
 
 .. Note::
 
@@ -72,7 +68,8 @@ different views.
 
 The project view is built from issues in the `BioCypher GitHub repository
 <https://github.com/saezlab/BioCypher/issues>`_, which carry labels for adapters
-and adapter subtypes, as well as an ``Adapter status`` label to indicate the state
-of development: ``Planned``, ``In progress``, ``Existing``, and ``Ideas``. If you would
-like to add or request an adapter that is not yet listed, please open a new
-issue (ideally with an ``adapter`` label) and we will add it to the project view.
+and adapter subtypes, as well as an ``Adapter status`` label to indicate the
+state of development: ``Planned``, ``In progress``, ``Existing``, and ``Ideas``.
+If you would like to add or request an adapter that is not yet listed, please
+open a new issue (ideally with an ``adapter`` label) and we will add it to the
+project view.
