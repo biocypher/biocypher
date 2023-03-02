@@ -18,6 +18,14 @@ On this page, you will find technical documentation, user experience reports
 `arXiv <https://arxiv.org/abs/2212.13543>`_. We are an inclusive community and
 welcome contributions and questions from everyone; see below for further links.
 
+.. grid::
+   :columns: 4
+
+   :octicon:`book;5em` `Documentation <https://biocypher.readthedocs.io/en/latest/>`_
+   :octicon:`mortar-board;5em` `Tutorials <https://biocypher.readthedocs.io/en/latest/tutorials.html>`_
+   :octicon:`comment-discussion;5em` `Zulip channel <https://biocypher.zulipchat.com/>`_
+   :octicon:`file-code;5em` `GitHub repository <https://github.com/saezlab/BioCypher>`_
+
 .. Note::
 
    BioCypher is a community-driven project. If you have any questions, specific
