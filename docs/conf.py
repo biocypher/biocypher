@@ -50,7 +50,7 @@ extensions = [
     'sphinx.ext.todo',  # not for output but to remove warnings
     'myst_parser',  # markdown support
     'sphinx_rtd_theme',
-    'sphinx_panels',
+    'sphinx_design',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
