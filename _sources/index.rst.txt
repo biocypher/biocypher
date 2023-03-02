@@ -18,21 +18,24 @@ On this page, you will find technical documentation, user experience reports
 `arXiv <https://arxiv.org/abs/2212.13543>`_. We are an inclusive community and
 welcome contributions and questions from everyone; see below for further links.
 
-.. panels::
+.. grid:: 4
+    :gutter: 2 2 3 4
 
-    .. link-button:: https://example.com
-        :classes: btn-success
+    .. grid-item-card::
 
-    ---
+        A
 
-    This entire panel is clickable.
+    .. grid-item-card::
 
-    +++
+        B
 
-    .. link-button:: panels/usage
-        :type: ref
-        :text: Go To Reference
-        :classes: btn-outline-primary btn-block stretched-link
+    .. grid-item-card::
+
+        C
+
+    .. grid-item-card::
+
+        D
 
 .. Note::
 
