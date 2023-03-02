@@ -491,34 +491,70 @@ biology, but Biolink only provides a generic “sequence variant” class (and i
 may exceed the scope of Biolink to provide granular classes for all thinkable
 cases). However, there are many specialist ontologies, such as the Sequence
 Ontology (SO), which provides a more granular representation of sequence
-variants.</p>
-<p>To hybridise the Biolink model with the SO, we can use the generic ontology
-adapter class of BioCypher by providing a “tail ontology” as a link to an OBO
-format ontology file, as well as a set of nodes (one in Biolink, one in SO)
-which should be joined to form the hybridised ontology. The ontology adapter
-also accepts any arbitrary “head ontology” as a base ontology, but if none is
-provided, the Biolink model is used as the default head ontology. These options
-can be provided to the BioCypher driver as parameters, or as options in the
-BioCypher configuration file.</p>
+variants, and MONDO, which provides a more granular representation of diseases.</p>
+<p>To hybridise the Biolink model with the SO and MONDO, we can use the generic
+ontology adapter class of BioCypher by providing “tail ontologies” as
+dictionaries consisting of an OBO format ontology file and a set of nodes, one
+in the head ontology (which by default is Biolink), and one in the tail
+ontology. Each of the tail ontologies will then be joined to the head ontology
+to form the hybridised ontology at the specified nodes. It is up to the user to
+make sure that the concept at which the ontologies shall be joined makes sense
+as a point of contact between the ontologies; ideally, it is the exact same
+concept.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the concept does not exist in the head ontology, but is a feasible child
+class of an existing concept, the above extension functionalities can be used to
+introduce the concept and then fuse the tail ontology there.</p>
+</div>
+<p>The ontology adapter also accepts any arbitrary “head ontology” as a base
+ontology, but if none is provided, the Biolink model is used as the default head
+ontology. These options can be provided to the BioCypher driver as parameters,
+or as options in the BioCypher configuration file, which is the preferred method
+for transparency reasons:</p>
 <div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Programmatic usage</span><a class="headerlink" href="#id11" title="Permalink to this code"></a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="o">.</span><span class="n">driver</span><span class="p">(</span>
-    <span class="c1"># ...</span>
-    <span class="n">tail_ontology_url</span><span class="o">=</span><span class="s2">&quot;http://purl.obolibrary.org/obo/so.obo&quot;</span><span class="p">,</span>
-    <span class="n">head_join_node</span><span class="o">=</span><span class="s2">&quot;sequence variant&quot;</span><span class="p">,</span>  <span class="c1"># Biolink class</span>
-    <span class="n">tail_join_node</span><span class="o">=</span><span class="s2">&quot;sequence_variant&quot;</span><span class="p">,</span>  <span class="c1"># SO class</span>
-    <span class="c1"># ...</span>
-<span class="p">)</span>
+<div class="code-block-caption"><span class="caption-text">Using biocypher_config.yaml</span><a class="headerlink" href="#id11" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<span class="c1"># Ontology configuration</span>
+<span class="nt">tail_ontologies</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">so</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/so.obo</span>
+<span class="w">    </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span>
+<span class="w">    </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence_variant</span>
+<span class="w">  </span><span class="nt">mondo</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/mondo.obo</span>
+<span class="w">    </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
+<span class="w">    </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
+<span class="c1"># ...</span>
 </pre></div>
 </div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">url</span></code> parameter can be either a local path or a URL to a remote resource.</p>
+</div>
+<p>If you need to pass the ontology configuration programmatically, you can do so
+as follows at driver instantiation:</p>
 <div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Using biocypher_config.yaml</span><a class="headerlink" href="#id12" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
-<span class="nt">tail_ontology_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/so.obo</span>
-<span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span>
-<span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence_variant</span>
-<span class="c1"># ...</span>
+<div class="code-block-caption"><span class="caption-text">Programmatic usage</span><a class="headerlink" href="#id12" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">driver</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="o">.</span><span class="n">driver</span><span class="p">(</span>
+    <span class="c1"># ...</span>
+    <span class="n">tail_ontologies</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;so&#39;</span><span class="p">:</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;test/so.obo&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;head_join_node&#39;</span><span class="p">:</span> <span class="s1">&#39;sequence variant&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;tail_join_node&#39;</span><span class="p">:</span> <span class="s1">&#39;sequence_variant&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="s1">&#39;mondo&#39;</span><span class="p">:</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;test/mondo.obo&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;head_join_node&#39;</span><span class="p">:</span> <span class="s1">&#39;disease&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;tail_join_node&#39;</span><span class="p">:</span> <span class="s1">&#39;disease&#39;</span><span class="p">,</span>
+            <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="c1"># ...</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>

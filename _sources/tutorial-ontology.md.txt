@@ -399,33 +399,71 @@ biology, but Biolink only provides a generic "sequence variant" class (and it
 may exceed the scope of Biolink to provide granular classes for all thinkable
 cases). However, there are many specialist ontologies, such as the Sequence
 Ontology (SO), which provides a more granular representation of sequence
-variants.
+variants, and MONDO, which provides a more granular representation of diseases.
 
-To hybridise the Biolink model with the SO, we can use the generic ontology
-adapter class of BioCypher by providing a "tail ontology" as a link to an OBO
-format ontology file, as well as a set of nodes (one in Biolink, one in SO)
-which should be joined to form the hybridised ontology. The ontology adapter
-also accepts any arbitrary "head ontology" as a base ontology, but if none is
-provided, the Biolink model is used as the default head ontology. These options
-can be provided to the BioCypher driver as parameters, or as options in the
-BioCypher configuration file.
+To hybridise the Biolink model with the SO and MONDO, we can use the generic
+ontology adapter class of BioCypher by providing "tail ontologies" as
+dictionaries consisting of an OBO format ontology file and a set of nodes, one
+in the head ontology (which by default is Biolink), and one in the tail
+ontology. Each of the tail ontologies will then be joined to the head ontology
+to form the hybridised ontology at the specified nodes. It is up to the user to
+make sure that the concept at which the ontologies shall be joined makes sense
+as a point of contact between the ontologies; ideally, it is the exact same
+concept.
+
+```{note}
+If the concept does not exist in the head ontology, but is a feasible child
+class of an existing concept, the above extension functionalities can be used to
+introduce the concept and then fuse the tail ontology there.
+```
+
+The ontology adapter also accepts any arbitrary "head ontology" as a base
+ontology, but if none is provided, the Biolink model is used as the default head
+ontology. These options can be provided to the BioCypher driver as parameters,
+or as options in the BioCypher configuration file, which is the preferred method
+for transparency reasons:
+
+```{code-block} yaml
+:caption: Using biocypher_config.yaml
+# ...
+# Ontology configuration
+tail_ontologies:
+  so:
+    url: test/so.obo
+    head_join_node: sequence variant
+    tail_join_node: sequence_variant
+  mondo:
+    url: test/mondo.obo
+    head_join_node: disease
+    tail_join_node: disease
+# ...
+```
+
+```{note}
+The `url` parameter can be either a local path or a URL to a remote resource.
+```
+
+If you need to pass the ontology configuration programmatically, you can do so
+as follows at driver instantiation:
 
 ```{code-block} python
 :caption: Programmatic usage
 driver = BioCypher.driver(
     # ...
-    tail_ontology_url="http://purl.obolibrary.org/obo/so.obo",
-    head_join_node="sequence variant",  # Biolink class
-    tail_join_node="sequence_variant",  # SO class
+    tail_ontologies={
+        'so':
+            {
+                'url': 'test/so.obo',
+                'head_join_node': 'sequence variant',
+                'tail_join_node': 'sequence_variant',
+            },
+        'mondo':
+            {
+                'url': 'test/mondo.obo',
+                'head_join_node': 'disease',
+                'tail_join_node': 'disease',
+            }
+    },
     # ...
 )
-```
-
-```{code-block} yaml
-:caption: Using biocypher_config.yaml
-# ...
-tail_ontology_url: http://purl.obolibrary.org/obo/so.obo
-head_join_node: sequence variant
-tail_join_node: sequence_variant
-# ...
 ```

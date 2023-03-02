@@ -63,26 +63,6 @@ Configuration files are read in the order `default -> user level -> project
 level`, with the later ones overriding the preceding. The following parameters
 are available:
 
-## Neo4j settings
-```{code-block} yaml
-:caption: biocypher_config.yaml
-# Neo4j connection credentials
-neo4j_uri: neo4j://localhost:7687   # DB URI
-neo4j_db: neo4j                     # DB name
-neo4j_user: neo4j                   # user name
-neo4j_pw: neo4j                     # password
-
-# Neo4j admin import batch writer settings
-neo4j_delimiter: '¦'                # delimiter for CSV files
-neo4j_array_delimiter: '|'          # delimiter for array values
-neo4j_quote_char: '"'               # quote character for CSV files
-neo4j_admin_import_prefix: 'bin/'   # path of admin-import executable
-
-# MultiDB functionality
-# Set to false for using community edition or older versions of Neo4j
-neo4j_multi_db: true
-```
-
 ## BioCypher settings
 ```{code-block} yaml
 :caption: biocypher_config.yaml
@@ -104,4 +84,35 @@ outdir: biocypher-out
 # BioCypher caches the ontology scaffold for performance reasons
 # Set to true to clear the cache and re-download the ontology
 clear_cache: false
+
+# Ontology configuration
+tail_ontologies:
+  so:
+    url: test/so.obo
+    head_join_node: sequence variant
+    tail_join_node: sequence_variant
+  mondo:
+    url: test/mondo.obo
+    head_join_node: disease
+    tail_join_node: disease
+```
+
+## Neo4j settings
+```{code-block} yaml
+:caption: biocypher_config.yaml
+# Neo4j connection credentials
+neo4j_uri: neo4j://localhost:7687   # DB URI
+neo4j_db: neo4j                     # DB name
+neo4j_user: neo4j                   # user name
+neo4j_pw: neo4j                     # password
+
+# Neo4j admin import batch writer settings
+neo4j_delimiter: '¦'                # delimiter for CSV files
+neo4j_array_delimiter: '|'          # delimiter for array values
+neo4j_quote_char: '"'               # quote character for CSV files
+neo4j_admin_import_prefix: 'bin/'   # path of admin-import executable
+
+# MultiDB functionality
+# Set to false for using community edition or older versions of Neo4j
+neo4j_multi_db: true
 ```

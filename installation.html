@@ -57,8 +57,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#configuration">Configuration</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#neo4j-settings">Neo4j settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#biocypher-settings">BioCypher settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#neo4j-settings">Neo4j settings</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
@@ -160,33 +160,10 @@ can create a <code class="docutils literal notranslate"><span class="pre">biocyp
 OS, this would be <code class="docutils literal notranslate"><span class="pre">~/Library/Caches/biocypher/biocypher_config.yaml</span></code>.</p>
 <p>Configuration files are read in the order <code class="docutils literal notranslate"><span class="pre">default</span> <span class="pre">-&gt;</span> <span class="pre">user</span> <span class="pre">level</span> <span class="pre">-&gt;</span> <span class="pre">project</span> <span class="pre">level</span></code>, with the later ones overriding the preceding. The following parameters
 are available:</p>
-<section id="neo4j-settings">
-<h2>Neo4j settings<a class="headerlink" href="#neo4j-settings" title="Permalink to this heading"></a></h2>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Neo4j connection credentials</span>
-<span class="nt">neo4j_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j://localhost:7687</span><span class="w">   </span><span class="c1"># DB URI</span>
-<span class="nt">neo4j_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span><span class="w">                     </span><span class="c1"># DB name</span>
-<span class="nt">neo4j_user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span><span class="w">                   </span><span class="c1"># user name</span>
-<span class="nt">neo4j_pw</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span><span class="w">                     </span><span class="c1"># password</span>
-
-<span class="c1"># Neo4j admin import batch writer settings</span>
-<span class="nt">neo4j_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;¦&#39;</span><span class="w">                </span><span class="c1"># delimiter for CSV files</span>
-<span class="nt">neo4j_array_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;|&#39;</span><span class="w">          </span><span class="c1"># delimiter for array values</span>
-<span class="nt">neo4j_quote_char</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&quot;&#39;</span><span class="w">               </span><span class="c1"># quote character for CSV files</span>
-<span class="nt">neo4j_admin_import_prefix</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;bin/&#39;</span><span class="w">   </span><span class="c1"># path of admin-import executable</span>
-
-<span class="c1"># MultiDB functionality</span>
-<span class="c1"># Set to false for using community edition or older versions of Neo4j</span>
-<span class="nt">neo4j_multi_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</pre></div>
-</div>
-</div>
-</section>
 <section id="biocypher-settings">
 <h2>BioCypher settings<a class="headerlink" href="#biocypher-settings" title="Permalink to this heading"></a></h2>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id5" title="Permalink to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Offline mode: do not connect to a running Neo4j instance</span>
 <span class="c1"># Can be used e.g. for writing CSV files for admin import</span>
 <span class="nt">offline</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -205,6 +182,40 @@ are available:</p>
 <span class="c1"># BioCypher caches the ontology scaffold for performance reasons</span>
 <span class="c1"># Set to true to clear the cache and re-download the ontology</span>
 <span class="nt">clear_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="c1"># Ontology configuration</span>
+<span class="nt">tail_ontologies</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">so</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/so.obo</span>
+<span class="w">    </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span>
+<span class="w">    </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence_variant</span>
+<span class="w">  </span><span class="nt">mondo</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/mondo.obo</span>
+<span class="w">    </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
+<span class="w">    </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="neo4j-settings">
+<h2>Neo4j settings<a class="headerlink" href="#neo4j-settings" title="Permalink to this heading"></a></h2>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id5" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Neo4j connection credentials</span>
+<span class="nt">neo4j_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j://localhost:7687</span><span class="w">   </span><span class="c1"># DB URI</span>
+<span class="nt">neo4j_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span><span class="w">                     </span><span class="c1"># DB name</span>
+<span class="nt">neo4j_user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span><span class="w">                   </span><span class="c1"># user name</span>
+<span class="nt">neo4j_pw</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span><span class="w">                     </span><span class="c1"># password</span>
+
+<span class="c1"># Neo4j admin import batch writer settings</span>
+<span class="nt">neo4j_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;¦&#39;</span><span class="w">                </span><span class="c1"># delimiter for CSV files</span>
+<span class="nt">neo4j_array_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;|&#39;</span><span class="w">          </span><span class="c1"># delimiter for array values</span>
+<span class="nt">neo4j_quote_char</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&quot;&#39;</span><span class="w">               </span><span class="c1"># quote character for CSV files</span>
+<span class="nt">neo4j_admin_import_prefix</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;bin/&#39;</span><span class="w">   </span><span class="c1"># path of admin-import executable</span>
+
+<span class="c1"># MultiDB functionality</span>
+<span class="c1"># Set to false for using community edition or older versions of Neo4j</span>
+<span class="nt">neo4j_multi_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 </div>
