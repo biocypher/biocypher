@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Search &mdash; BioCypher  documentation</title>
+  <title>Adapters &mdash; BioCypher  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" type="text/css" />
-    
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -20,10 +20,10 @@
         <script src="_static/sphinx_highlight.js"></script>
         <script src="_static/design-tabs.js"></script>
     <script src="_static/js/theme.js"></script>
-    <script src="_static/searchtools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="BioCypher Tutorial - Basics" href="tutorial.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,7 +41,7 @@
                 0.4.3
               </div>
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="#" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -49,13 +49,13 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get-involved.html">Get Involved!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html#configuration">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">BioCypher Tutorial - Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">BioCypher Tutorial - Handling Ontologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial-adapter.html">BioCypher Tutorial - Adapters</a></li>
@@ -77,8 +77,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="contents.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Search</li>
+      <li class="breadcrumb-item active">Adapters</li>
       <li class="wy-breadcrumbs-aside">
+            <a href="_sources/adapters.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -86,22 +87,37 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <noscript>
-  <div id="fallback" class="admonition warning">
-    <p class="last">
-      Please activate JavaScript to enable the search functionality.
-    </p>
-  </div>
-  </noscript>
+  <section id="adapters">
+<span id="id1"></span><h1>Adapters<a class="headerlink" href="#adapters" title="Permalink to this heading"></a></h1>
+<p>BioCypher is a modular framework, with the main purpose of avoiding redundant
+maintenance work for maintainers of secondary resources and end users alike. To
+achieve this, we use a collection of reusable “adapters” for the different
+sources of biomedical knowledge as well as for different ontologies. To see
+whether your favourite resource is already supported or currently in
+development, or if you would like to contribute to the development of a new
+adapter, please refer to <a class="reference external" href="https://github.com/orgs/saezlab/projects/5/views/6">this GitHub projects
+view</a>. Check the tabs for
+different views.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>We are currently working on adapter documentation, so the collection in the
+GitHub Projects view may be less than complete. Please get in touch if you want
+to make sure that your favourite resource is supported.</p>
+</div>
+<p>The project view is built from issues in the <a class="reference external" href="https://github.com/saezlab/BioCypher/issues">BioCypher GitHub repository</a>, which carry labels for
+adapters and adapter subtypes, as well as an <code class="docutils literal notranslate"><span class="pre">Adapter</span> <span class="pre">status</span></code> label to
+indicate the state of development: <code class="docutils literal notranslate"><span class="pre">Planned</span></code>, <code class="docutils literal notranslate"><span class="pre">In</span> <span class="pre">progress</span></code>, <code class="docutils literal notranslate"><span class="pre">Existing</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">Ideas</span></code>.  If you would like to add or request an adapter that is not yet
+listed, please open a new issue and we will add it to the project view.</p>
+</section>
 
-  
-  <div id="search-results">
-  
-  </div>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial.html" class="btn btn-neutral float-right" title="BioCypher Tutorial - Basics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
@@ -123,14 +139,7 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-  <script>
-    jQuery(function() { Search.loadIndex("searchindex.js"); });
-  </script>
-  
-  <script id="searchindexloader"></script>
-   
-
+  </script> 
 
 </body>
 </html>

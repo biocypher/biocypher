@@ -6,6 +6,7 @@
    get-involved
    installation
    quickstart
+   adapters
    tutorial
    tutorial-ontology
    tutorial-adapter
