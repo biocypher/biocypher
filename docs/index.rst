@@ -16,35 +16,27 @@ rationalising efforts by leveraging the biomedical community.
 .. grid:: 4
    :gutter: 2 2 3 4
 
-   .. grid-item-card::
+   .. grid-item-card:: Find us on GitHub
       :link: https://github.com/saezlab/BioCypher
       :text-align: center
 
-      On GitHub:
-
       :octicon:`mark-github;3em`
 
-   .. grid-item-card::
+   .. grid-item-card:: Read the paper
       :link: https://arxiv.org/abs/2212.13543
       :text-align: center
 
-      The paper:
-
       :octicon:`book;3em`
 
-   .. grid-item-card::
+   .. grid-item-card:: Get in touch
       :link: https://biocypher.zulipchat.com/
       :text-align: center
 
-      Get in touch:
-
       :octicon:`comment-discussion;3em`
 
-   .. grid-item-card::
+   .. grid-item-card:: Check out our adapters
       :link: https://github.com/orgs/saezlab/projects/5/views/6
       :text-align: center
-
-      Our adapters:
 
       :octicon:`project;3em`
 
