@@ -3,7 +3,7 @@
 ::::{grid} 3
 :gutter: 2 2 3 4
 :margin: 0 2 0 5
-:padding: 0 0 0 5
+:padding: 0 0 0 0
 
 :::{grid-item-card} Chat with us
 :link: https://biocypher.zulipchat.com/
