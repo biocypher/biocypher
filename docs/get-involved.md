@@ -2,6 +2,7 @@
 
 ::::{grid} 3
 :gutter: 2 2 3 4
+:margin: 2
 
 :::{grid-item-card} Chat with us
 :link: https://biocypher.zulipchat.com/
@@ -20,11 +21,6 @@
 :text-align: center
 {octicon}`mail;3em`
 :::
-
-::::
-
-::::{grid} 3
-:gutter: 2 2 3 4
 
 :::{grid-item-card} Code of Conduct
 :link: https://github.com/saezlab/BioCypher/blob/main/CODE_OF_CONDUCT.md
