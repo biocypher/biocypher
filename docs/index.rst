@@ -13,32 +13,32 @@ ontology, and modularity of output formats (see the graphical abstract below).
 This design allows for a high degree of flexibility and reusability,
 rationalising efforts by leveraging the biomedical community.
 
-.. grid:: 4
+.. grid:: 2
    :gutter: 2
 
    .. grid-item-card:: Find us on GitHub
       :link: https://github.com/saezlab/BioCypher
       :text-align: center
 
-      :octicon:`mark-github;3em`
+      :octicon:`mark-github;3em` :octicon:`repo;3em`
 
    .. grid-item-card:: Read the paper
       :link: https://arxiv.org/abs/2212.13543
       :text-align: center
 
-      :octicon:`book;3em`
+      :octicon:`book;3em` :octicon:`light-bulb;3em`
 
    .. grid-item-card:: Get in touch
       :link: https://biocypher.zulipchat.com/
       :text-align: center
 
-      :octicon:`comment-discussion;3em`
+      :octicon:`people;3em` :octicon:`comment-discussion;3em`
 
    .. grid-item-card:: Check out our adapters
       :link: https://github.com/orgs/saezlab/projects/5/views/6
       :text-align: center
 
-      :octicon:`project;3em`
+      :octicon:`plug;3em` :octicon:`project;3em`
 
 .. Note::
 
