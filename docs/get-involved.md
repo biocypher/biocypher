@@ -1,7 +1,7 @@
 # Get Involved!
 
 ::::{grid} 3
-:gutter: 2 2 3 4
+:gutter: 2
 :margin: 0 2 0 5
 :padding: 0 0 0 4
 

@@ -14,7 +14,7 @@ This design allows for a high degree of flexibility and reusability,
 rationalising efforts by leveraging the biomedical community.
 
 .. grid:: 4
-   :gutter: 2 2 3 4
+   :gutter: 2
 
    .. grid-item-card:: Find us on GitHub
       :link: https://github.com/saezlab/BioCypher
