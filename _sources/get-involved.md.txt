@@ -2,7 +2,7 @@
 
 ::::{grid} 3
 :gutter: 2 2 3 4
-:margin: 2
+:margin: 0 0 0 3
 
 :::{grid-item-card} Chat with us
 :link: https://biocypher.zulipchat.com/
