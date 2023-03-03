@@ -13,6 +13,17 @@ interface - are represented by simulated data containing some examples of
 differently formatted biomedical entities such as proteins and their
 interactions.
 
+```{admonition} Neo4j
+:class: warning
+
+We use the BioCypher output adapter to write CSV files meant for Neo4j admin
+import, mainly because it is the use case with the lowest amount of
+dependencies.  While you can use the files to create an actual Neo4j database,
+it is not required for this tutorial. For checking the output, you can simply
+open the CSV files in a text editor or your IDE.
+
+```
+
 ## Section 1: Adding data
 ```{admonition} Tutorial files
 :class: note
