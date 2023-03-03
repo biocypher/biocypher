@@ -9,9 +9,9 @@ What if you could do it in weeks or days? We created BioCypher to make the
 process of creating a biomedical knowledge graph easier than ever, but still
 flexible and transparent. BioCypher is built around the concept of a "trifold
 modularity": modularity of data sources, modularity of structure-giving
-ontology, and modularity of output formats (see the Figure below). This design
-allows for a high degree of flexibility and reusability, rationalising efforts
-by leveraging the biomedical community.
+ontology, and modularity of output formats (see the graphical abstract below).
+This design allows for a high degree of flexibility and reusability,
+rationalising efforts by leveraging the biomedical community.
 
 .. grid:: 4
    :gutter: 2 2 3 4
@@ -57,7 +57,7 @@ by leveraging the biomedical community.
    sebastian.lobentanzer (at) uni-heidelberg.de.
 
 .. figure:: ../graphical_abstract.png
-   :width: 70%
+   :width: 95%
    :align: center
    :alt: BioCypher graphical abstract
 
