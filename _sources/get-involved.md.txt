@@ -1,4 +1,45 @@
 # Get Involved!
+
+::::{grid} 3
+:gutter: 2 2 3 4
+
+:::{grid-item-card} Chat
+:link: https://biocypher.zulipchat.com/
+{octicon}`comment-discussion;3em`
+:::
+
+:::{grid-item-card} Issues
+:link: https://github.com/saezlab/BioCypher/issues
+{octicon}`issue-opened;3em`
+:::
+
+:::{grid-item-card} Mailing list
+:link: https://example.com
+{octicon}`mail;3em`
+:::
+
+::::
+
+::::{grid} 3
+:gutter: 2 2 3 4
+
+:::{grid-item-card} Code of Conduct
+:link: https://github.com/saezlab/BioCypher/blob/main/CODE_OF_CONDUCT.md
+{octicon}`law;3em`
+:::
+
+:::{grid-item-card} Contributing
+:link: https://github.com/saezlab/BioCypher/blob/main/CONTRIBUTING.md
+{octicon}`flame;3em`
+:::
+
+:::{grid-item-card} Developer Guide
+:link: https://github.com/saezlab/BioCypher/blob/main/DEVELOPER.md
+{octicon}`code-review;3em`
+:::
+
+::::
+
 We are always looking for new users and contributors to help us make BioCypher
 better. We are particulary interested in increasing the accessibility of
 knowledge representation to structurally disadvantaged researchers. The best
