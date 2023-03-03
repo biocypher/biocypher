@@ -3,18 +3,21 @@
 ::::{grid} 3
 :gutter: 2 2 3 4
 
-:::{grid-item-card} Chat
+:::{grid-item-card} Chat with us
 :link: https://biocypher.zulipchat.com/
+:text-align: center
 {octicon}`comment-discussion;3em`
 :::
 
-:::{grid-item-card} Issues
+:::{grid-item-card} Open an issue
 :link: https://github.com/saezlab/BioCypher/issues
+:text-align: center
 {octicon}`issue-opened;3em`
 :::
 
-:::{grid-item-card} Mailing list
+:::{grid-item-card} Join the mailing list
 :link: https://example.com
+:text-align: center
 {octicon}`mail;3em`
 :::
 
@@ -25,16 +28,19 @@
 
 :::{grid-item-card} Code of Conduct
 :link: https://github.com/saezlab/BioCypher/blob/main/CODE_OF_CONDUCT.md
+:text-align: center
 {octicon}`law;3em`
 :::
 
-:::{grid-item-card} Contributing
+:::{grid-item-card} Contributor Guide
 :link: https://github.com/saezlab/BioCypher/blob/main/CONTRIBUTING.md
+:text-align: center
 {octicon}`flame;3em`
 :::
 
 :::{grid-item-card} Developer Guide
 :link: https://github.com/saezlab/BioCypher/blob/main/DEVELOPER.md
+:text-align: center
 {octicon}`code-review;3em`
 :::
 
