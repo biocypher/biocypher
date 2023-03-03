@@ -1,15 +1,6 @@
 # Get Involved!
 
-::::{grid} 2
-:::{grid-item-card}  Title 1
-A
-:::
-:::{grid-item-card}  Title 2
-B
-:::
-::::
-
-<!-- ::::{grid} 3
+::::{grid} 3
 :gutter: 2 2 3 4
 
 :::{grid-item-card} Chat
@@ -47,7 +38,7 @@ B
 {octicon}`code-review;3em`
 :::
 
-:::: -->
+::::
 
 We are always looking for new users and contributors to help us make BioCypher
 better. We are particulary interested in increasing the accessibility of
