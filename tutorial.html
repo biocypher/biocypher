@@ -106,6 +106,14 @@ input data - which in the real-world use case could come from any type of
 interface - are represented by simulated data containing some examples of
 differently formatted biomedical entities such as proteins and their
 interactions.</p>
+<div class="warning admonition">
+<p class="admonition-title">Neo4j</p>
+<p>We use the BioCypher output adapter to write CSV files meant for Neo4j admin
+import, mainly because it is the use case with the lowest amount of
+dependencies.  While you can use the files to create an actual Neo4j database,
+it is not required for this tutorial. For checking the output, you can simply
+open the CSV files in a text editor or your IDE.</p>
+</div>
 <section id="section-1-adding-data">
 <h2>Section 1: Adding data<a class="headerlink" href="#section-1-adding-data" title="Permalink to this heading"></a></h2>
 <div class="note admonition">
