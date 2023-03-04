@@ -86,9 +86,12 @@ class Driver(neo4j_utils.Driver):
             Array delimiter for CSV exported contents.
         quote_char:
             String quotation character for CSV export.
-        import_call_prefix:
+        import_call_bin_prefix:
             Prefix for the Cypher call to the admin import shell command.
             Defaults to ``bin/``.
+        import_call_file_prefix:
+            Path prefix for the data files (headers and parts) in the admin
+            import call. Defaults to the absolute output directory path.
         skip_bad_relationships:
             Whether to skip relationships with missing source or target
             nodes in the admin import shell command.
@@ -125,7 +128,8 @@ class Driver(neo4j_utils.Driver):
         delimiter: Optional[str] = None,
         array_delimiter: Optional[str] = None,
         quote_char: Optional[str] = None,
-        import_call_prefix: Optional[str] = None,
+        import_call_bin_prefix: Optional[str] = None,
+        import_call_file_prefix: Optional[str] = None,
         biolink_model: Optional[str] = None,
         tail_ontologies: Optional[list] = None,
     ):
@@ -140,10 +144,19 @@ class Driver(neo4j_utils.Driver):
         self.db_adelim = array_delimiter or _config('neo4j_array_delimiter')
         self.db_quote = quote_char or _config('neo4j_quote_char')
 
-        if import_call_prefix is None:
-            self.import_call_prefix = _config('neo4j_import_call_prefix')
+        if import_call_bin_prefix is None:
+            self.import_call_bin_prefix = _config(
+                'neo4j_import_call_bin_prefix'
+            )
         else:
-            self.import_call_prefix = import_call_prefix
+            self.import_call_bin_prefix = import_call_bin_prefix
+
+        if import_call_file_prefix is None:
+            self.import_call_file_prefix = _config(
+                'neo4j_import_call_file_prefix'
+            )
+        else:
+            self.import_call_file_prefix = import_call_file_prefix
 
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
@@ -616,7 +629,7 @@ class Driver(neo4j_utils.Driver):
                 db_name=self._db_name,
                 skip_bad_relationships=self.skip_bad_relationships,
                 skip_duplicate_nodes=self.skip_duplicate_nodes,
-                import_call_prefix=self.import_call_prefix,
+                import_call_bin_prefix=self.import_call_bin_prefix,
                 wipe=self.wipe,
                 strict_mode=self.strict_mode,
             )

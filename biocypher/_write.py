@@ -135,8 +135,12 @@ class BatchWriter:
         skip_duplicate_nodes:
             Whether to skip duplicate nodes. (In admin import call.)
 
-        import_call_prefix:
-            Path prefix for the admin import call.
+        import_call_bin_prefix:
+            Path prefix for the admin import call binary.
+
+        import_call_file_path:
+            Path prefix for the data files (headers and parts) in the admin
+            import call.
 
         wipe:
             Whether to force import (removing existing DB content). (In
@@ -157,7 +161,8 @@ class BatchWriter:
         db_name: str = 'neo4j',
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
-        import_call_prefix: Optional[str] = None,
+        import_call_bin_prefix: Optional[str] = None,
+        import_call_file_path: Optional[str] = None,
         wipe: bool = True,
         strict_mode: bool = False,
     ):
@@ -169,10 +174,10 @@ class BatchWriter:
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
 
-        if import_call_prefix is None:
-            self.import_call_prefix = 'bin/'
+        if import_call_bin_prefix is None:
+            self.import_call_bin_prefix = 'bin/'
         else:
-            self.import_call_prefix = import_call_prefix
+            self.import_call_bin_prefix = import_call_bin_prefix
 
         self.wipe = wipe
         self.strict_mode = strict_mode
@@ -189,6 +194,11 @@ class BatchWriter:
 
         self.outdir = dirname or os.path.join(_config('outdir'), timestamp())
         self.outdir = os.path.abspath(self.outdir)
+
+        if import_call_file_path is None:
+            self.import_call_file_path = self.outdir
+        else:
+            self.import_call_file_path = import_call_file_path
 
         logger.info(f'Creating output directory `{self.outdir}`.')
         os.makedirs(self.outdir, exist_ok=True)
@@ -1071,7 +1081,7 @@ class BatchWriter:
         adelim = self.adelim.encode('unicode_escape').decode('utf-8')
 
         import_call = (
-            f'{self.import_call_prefix}neo4j-admin import '
+            f'{self.import_call_bin_prefix}neo4j-admin import '
             f'--database={self.db_name} '
             f'--delimiter="{delim}" --array-delimiter="{adelim}" '
         )

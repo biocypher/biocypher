@@ -189,7 +189,7 @@ def test_write_node_data_headers_import_call(bw):
     )
 
     # custom import call executable path
-    bw.import_call_prefix = ''
+    bw.import_call_bin_prefix = ''
 
     os.remove(call)
     bw.write_import_call()
