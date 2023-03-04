@@ -1067,8 +1067,8 @@ class BatchWriter:
         """
 
         # escape backslashes in self.delim and self.adelim
-        delim = self.delim.replace('\\', '\\\\')
-        adelim = self.adelim.replace('\\', '\\\\')
+        delim = self.delim.encode('unicode_escape').decode('utf-8')
+        adelim = self.adelim.encode('unicode_escape').decode('utf-8')
 
         import_call = (
             f'{self.import_call_prefix}neo4j-admin import '
