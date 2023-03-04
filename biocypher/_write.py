@@ -543,7 +543,7 @@ class BatchWriter:
                     row = self.delim.join(out_list)
                     f.write(row)
 
-                # import call path
+                # import call path for custom setup
                 if self.import_call_file_path:
                     header_path = os.path.join(
                         self.import_call_file_path,
