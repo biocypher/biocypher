@@ -138,7 +138,7 @@ class BatchWriter:
         import_call_bin_prefix:
             Path prefix for the admin import call binary.
 
-        import_call_file_path:
+        import_call_file_prefix:
             Path prefix for the data files (headers and parts) in the admin
             import call.
 
@@ -162,7 +162,7 @@ class BatchWriter:
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
         import_call_bin_prefix: Optional[str] = None,
-        import_call_file_path: Optional[str] = None,
+        import_call_file_prefix: Optional[str] = None,
         wipe: bool = True,
         strict_mode: bool = False,
     ):
@@ -195,10 +195,10 @@ class BatchWriter:
         self.outdir = dirname or os.path.join(_config('outdir'), timestamp())
         self.outdir = os.path.abspath(self.outdir)
 
-        if import_call_file_path is None:
-            self.import_call_file_path = self.outdir
+        if import_call_file_prefix is None:
+            self.import_call_file_prefix = self.outdir
         else:
-            self.import_call_file_path = import_call_file_path
+            self.import_call_file_prefix = import_call_file_prefix
 
         logger.info(f'Creating output directory `{self.outdir}`.')
         os.makedirs(self.outdir, exist_ok=True)
@@ -544,13 +544,13 @@ class BatchWriter:
                     f.write(row)
 
                 # import call path for custom setup
-                if self.import_call_file_path:
+                if self.import_call_file_prefix:
                     header_path = os.path.join(
-                        self.import_call_file_path,
+                        self.import_call_file_prefix,
                         f'{pascal_label}-header.csv',
                     )
                     parts_path = os.path.join(
-                        self.import_call_file_path,
+                        self.import_call_file_prefix,
                         f'{pascal_label}-part.*',
                     )
 

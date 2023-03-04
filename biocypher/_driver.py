@@ -630,6 +630,7 @@ class Driver(neo4j_utils.Driver):
                 skip_bad_relationships=self.skip_bad_relationships,
                 skip_duplicate_nodes=self.skip_duplicate_nodes,
                 import_call_bin_prefix=self.import_call_bin_prefix,
+                import_call_file_prefix=self.import_call_file_prefix,
                 wipe=self.wipe,
                 strict_mode=self.strict_mode,
             )
