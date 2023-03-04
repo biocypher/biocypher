@@ -243,7 +243,7 @@ def test_tab_delimiter(tab_bw):
 
     assert (
         passed and c ==
-        f'bin/neo4j-admin import --database=neo4j --delimiter="\t" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
+        f'bin/neo4j-admin import --database=neo4j --delimiter="\\t" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
     )
 
 
