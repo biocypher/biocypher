@@ -880,6 +880,17 @@ class BatchWriter:
                     row = self.delim.join(out_list)
                     f.write(row)
 
+                # import call path for custom setup
+                if self.import_call_file_prefix:
+                    header_path = os.path.join(
+                        self.import_call_file_prefix,
+                        f'{pascal_label}-header.csv',
+                    )
+                    parts_path = os.path.join(
+                        self.import_call_file_prefix,
+                        f'{pascal_label}-part.*',
+                    )
+
                 # add file path to neo4 admin import statement
                 self.import_call_edges += (
                     f'--relationships="{header_path},{parts_path}" '
