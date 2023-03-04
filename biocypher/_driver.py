@@ -139,9 +139,11 @@ class Driver(neo4j_utils.Driver):
         self.db_delim = delimiter or _config('neo4j_delimiter')
         self.db_adelim = array_delimiter or _config('neo4j_array_delimiter')
         self.db_quote = quote_char or _config('neo4j_quote_char')
-        self.import_call_prefix = import_call_prefix or _config(
-            'neo4j_import_call_prefix'
-        )
+
+        if import_call_prefix is None:
+            self.import_call_prefix = _config('neo4j_import_call_prefix')
+        else:
+            self.import_call_prefix = import_call_prefix
 
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes

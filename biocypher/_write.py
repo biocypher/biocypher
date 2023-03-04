@@ -135,6 +135,9 @@ class BatchWriter:
         skip_duplicate_nodes:
             Whether to skip duplicate nodes. (In admin import call.)
 
+        import_call_prefix:
+            Path prefix for the admin import call.
+
         wipe:
             Whether to force import (removing existing DB content). (In
             admin import call.)
@@ -165,7 +168,11 @@ class BatchWriter:
         self.quote = quote
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
-        self.import_call_prefix = import_call_prefix or 'bin/'
+
+        if import_call_prefix is None:
+            self.import_call_prefix = 'bin/'
+        else:
+            self.import_call_prefix = import_call_prefix
 
         self.wipe = wipe
         self.strict_mode = strict_mode
