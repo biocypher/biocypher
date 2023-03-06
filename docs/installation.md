@@ -1,5 +1,17 @@
 # Installation
 ## Install as a dependency
+
+::::{grid} 1
+:gutter: 2
+
+:::{grid-item-card} Preconfigured project with BioCypher as a dependency:
+:link: https://github.com/saezlab/biocypher-project-template
+:text-align: center
+{octicon}`mark-github;3em` {octicon}`package;3em` {octicon}`play;3em`
+:::
+
+::::
+
 BioCypher is in development; if you want to use it in your project, please use
 the *install-from-github* command of your package management system. We
 recommend Poetry, you can get it
