@@ -10,7 +10,8 @@
 :::
 
 :::{grid-item-card} New to BioCypher? Follow the tutorial!
-:link: https://github.com/saezlab/BioCypher/issues
+:link: tutorial
+:link-type: ref
 :text-align: center
 {octicon}`repo;3em` {octicon}`question;3em` {octicon}`light-bulb;3em`
 :::
