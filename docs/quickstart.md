@@ -6,14 +6,14 @@
 :::{grid-item-card} Already familiar? Get started with the template!
 :link: https://github.com/saezlab/biocypher-project-template
 :text-align: center
-{octicon}`mark-github;3em` {octicon}`package;3em` {octicon}`play;3em`
+{octicon}`mark-github;3em` {octicon}`repo;3em` {octicon}`play;3em`
 :::
 
 :::{grid-item-card} New to BioCypher? Follow the tutorial!
 :link: tutorial
 :link-type: ref
 :text-align: center
-{octicon}`repo;3em` {octicon}`question;3em` {octicon}`light-bulb;3em`
+{octicon}`package;3em` {octicon}`question;3em` {octicon}`light-bulb;3em`
 :::
 
 ::::
