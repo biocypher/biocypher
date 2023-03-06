@@ -1,5 +1,22 @@
 # Quickstart
 
+::::{grid} 2
+:gutter: 2
+
+:::{grid-item-card} Already familiar? Get started with the template!
+:link: https://github.com/saezlab/biocypher-project-template
+:text-align: center
+{octicon}`mark-github;3em` {octicon}`package;3em` {octicon}`play;3em`
+:::
+
+:::{grid-item-card} New to BioCypher? Follow the tutorial!
+:link: https://github.com/saezlab/BioCypher/issues
+:text-align: center
+{octicon}`repo;3em` {octicon}`question;3em` {octicon}`light-bulb;3em`
+:::
+
+::::
+
 ```{note}
 If you already know how BioCypher works, we provide here a quickstart into the
 knowledge graph build process. We provide a template repository on GitHub, which
@@ -11,8 +28,8 @@ If you are new to BioCypher and would like a step-by-step introduction to the
 package, please follow the [tutorial](tutorial).
 ```
 
-The main interface for interacting with the BioCypher module to create
-your own property graph consists of two components:
+The BioCypher workflow of creating your own knowledge graph consists of two
+components:
 
 1. the [host module adapter](qs_host-module-adapter), a python
    program, and
