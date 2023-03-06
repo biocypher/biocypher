@@ -27,12 +27,10 @@ should be connected.
 (qs_host-module-adapter)=
 ## The host module adapter
 
-Currently, BioCypher expects input from the user module via an adapter module.
-The adapter has the job of piping the data as it is represented in the original
-database into the BioCypher input, for instance as a {py:class}`Generator`
-object of single database entries, whether they be nodes or relationships in the
-graph to be created. Examples for current adapters can be found in several of
-our ongoing projects and the section on [adapter functions](adapter_functions).
+BioCypher follows a modular approach to data inputs; to create a knowledge
+graph, we use at least one adapter module that provides a data stream to build
+the graph from. Examples for current adapters can be found on the [GitHub
+project adapter view](https://github.com/orgs/saezlab/projects/5/views/6).
 Adapters can ingest data from many different input sources, including Python
 modules as in the [CROssBAR
 adapter](https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration) (which
@@ -41,11 +39,11 @@ advanced file management formats such as Parquet as in the [Open Targets
 adapter](https://github.com/saezlab/OTAR-BioCypher), or simple CSV files as in
 the [Dependency Map adapter](https://github.com/saezlab/DepMap-BioCypher).
 
-The recommended mode of access into BioCypher functionality is via the
-{py:class}``biocypher._driver.Driver`` class. It can be called either
-starting in "offline mode" using `offline = True`, i.e., without
-connection to a running Neo4j instance, or by providing authentication
-details via arguments or configuration file:
+The recommended way of interacting with BioCypher is via the
+{py:class}``biocypher._driver.Driver`` class. It can be called either starting
+in "offline mode" using `offline = True`, i.e., without connection to a running
+Neo4j instance, or by providing authentication details via arguments or
+configuration file:
 
 ```{code-block} python
 import biocypher
@@ -108,21 +106,19 @@ type in the schema configuration file.
 (qs_schema-config)=
 ## The schema configuration YAML file
 
-The second important component of translation into a
-BioCypher-compatible property graph is the specification of graph
-constituents and their mode of representation in the graph. For
-instance, we want to add a representation for proteins to the OmniPath
-graph, and the proteins should be represented as nodes. To make this
-known to the BioCypher module, we use the
+The second important component of translation into a BioCypher-compatible
+property graph is the specification of graph constituents and their mode of
+representation in the graph. For instance, we want to add a representation for
+proteins to the OmniPath graph, and the proteins should be represented as nodes.
+To make this known to the BioCypher module, we use the
 [schema-config.yaml](https://github.com/saezlab/BioCypher/blob/main/biocypher/_config/schema_config.yaml),
-which details *only* the immediate constituents of the desired graph.
-Since the identifier systems in the Biolink schema are not comprehensive
-and offer many alternatives, we currently use the CURIE prefixes
-directly as given by [Bioregistry](https://bioregistry.io). For
-instance, a protein could be represented, for instance, by a UniProt
-identifier, the corresponding ENSEMBL identifier, or an HGNC gene
-symbol. The CURIE prefix for "Uniprot Protein" is `uniprot`, so a
-consistent protein schema definition would be:
+which details *only* the immediate constituents of the desired graph.  Since the
+identifier systems in the Biolink schema are not comprehensive and offer many
+alternatives, we currently use the CURIE prefixes directly as given by
+[Bioregistry](https://bioregistry.io). For instance, a protein could be
+represented, for instance, by a UniProt identifier, the corresponding ENSEMBL
+identifier, or an HGNC gene symbol. The CURIE prefix for "Uniprot Protein" is
+`uniprot`, so a consistent protein schema definition would be:
 
 ```{code-block} yaml
 protein:
@@ -202,12 +198,13 @@ identifier, which will then be a named property on the
 
 ```{note}
 BioCypher accepts non-Biolink IDs since not all possible entries possess a
-systematic identifier system, whereas the entity class (``protein``,
-``post translational interaction``) has to be included in the Biolink schema and
-spelled identically. For this reason, we [extend the Biolink schema](qs_biolink)
-in cases where there exists no entry for our entity of choice. Further, we are
-specifying the source and target classes of our association (both ``protein``),
-the label we provide in the input from ``PyPath`` (``post_translational``).
+systematic identifier system, whereas the entity class (``protein``, ``post
+translational interaction``) has to be included in the Biolink schema and
+spelled identically. For this reason, we [extend the Biolink
+schema](tutorial_ontology_extension) in cases where there exists no entry for
+our entity of choice. Further, we are specifying the source and target classes
+of our association (both ``protein``), the label we provide in the input from
+``PyPath`` (``post_translational``).
 ```
 
 If we wanted the interaction to be represented in the graph as an edge,
@@ -228,116 +225,3 @@ post translational interaction:
   label_in_input: post_translational
   label_as_edge: INTERACTS_POST_TRANSLATIONALLY
 ```
-
-(qs_biolink)=
-## The Biolink model extension
-
-### Soft extensions
-
-In some cases that are not too complex, the Biolink model can be
-extended using only implicit subclasses given in the BioCypher
-schema_config.yaml file. Soft extensions can be achieved in two ways:
-- via [implicit subclasses](qs_implicit) of existing Biolink classes by supplying
-  multiple preferred ids and input labels in the `schema_config.yaml`
-- via [explicit subclasses](qs_explicit) of existing Biolink classes by supplying an
-  `is_a` parameter to any non-biolink class, referring to an existing
-  one
-
-(qs_implicit)=
-#### Implicit subclasses
-
-For instance, Pathway annotations are supplied by multiple sources,
-e.g., [KEGG](https://www.genome.jp/kegg/pathway.html) and
-[Reactome](https://reactome.org/), which do not allow direct mapping due
-to their distinct make-up. In this case, we can use the
-schema_config.yaml to implicitly extend the Biolink model by specifying
-more than one preferred_id and label_in_input (in a paired manner):
-
-```{code-block} yaml
-pathway:
-  represented_as: node
-  preferred_id: [reactome, kegg]
-  label_in_input: [reactome, kegg_pathway]
-```
-
-This pattern will be parsed by BioCypher to yield two implicit children
-of the Biolink entity "pathway" by prepending the preferred ID to the
-label (``reactome.pathway`` and ``kegg.pathway``). The input labels again are
-arbitrary and can be adjusted to fit the way these pathways are
-represented in the raw data.
-
-This will allow both datasets to be represented as pathways in the final
-graph with granular access to each one and without information loss, but
-will also enable aggregate query of all pathways by calling the parent
-entity, ``pathway``.
-
-(qs_explicit)=
-#### Explicit subclasses
-
-For example, adding the child `tissue` to the existing Biolink class
-`gross anatomical structure` as a specification:
-
-```{code-block} yaml
-tissue:
-  is_a: gross anatomical structure
-  represented_as: node
-  preferred_id: uberon
-  label_in_input: tissue
-```
-
-This will create a "faux" Biolink class at BioCypher runtime, extending
-the hierarchical tree to include `tissue` as a
-`gross anatomical structure`, preserving the entire inheritance of the
-parent class. BioCypher can create arbitrarily long inheritance
-structures by accepting lists as input to the `is_a` field, as long as
-the final entry in the list is an existant Biolink entity. All entities
-along the list will be established as virtual children of the Biolink
-parent node. For example:
-
-```{code-block} yaml
-mutation to tissue association:
-  is_a: [
-    genotype to tissue association,
-    entity to tissue association,
-    association
-  ]
-```
-
-Where only `association` is an existent class in the Biolink model.
-Generally, it is preferable to add extensions to the Biolink model to
-the original repository via a pull request to ensure compatibility with
-other DBs. Creating a hard-wired extension as described in the next
-section can be a first step towards a pull request to the Biolink repo.
-
-### Hard-wired extensions
-
-The post-translational interaction that we would like to model in
-OmniPath has no literal counterpart in the Biolink model, due to
-Biolink's design philosophy. The most granular level of interactions as
-Biolink class is the
-[PairwiseMolecularInteraction](https://biolink.github.io/biolink-model/docs/PairwiseMolecularInteraction.html);
-all more granular relationships should be encoded in the properties of
-the class, which has severe performance implications for property graph
-representation, for instance in filtering for specific relationship
-types. Briefly, it is the difference between being able to selectively
-return only relationships of a certain class (eg, post-translational),
-and having to return all relationships to filter for the ones possessing
-the correct property in a second step.
-
-Therefore, we extend the Biolink model in places where it is necessary
-for the BioCypher translation and integration to work. The extended
-model is the central Biolink YAML file with additions following the same
-[LinkML](https://linkml.io) syntax as is used in the original model.
-Depending on the extent of the modification, not only new classes are
-introduced, but also new mixin categories (eg, "microRNA or siRNA" to
-account for different types of small noncoding RNA). We provide [our
-extended version of the Biolink
-model](https://github.com/saezlab/BioCypher/blob/main/biocypher/_config/biocypher-biolink-model.yaml)
-with the BioCypher repository.
-
-Changes or additions desired by the user can be introduced locally in this file
-without having to modify remote contents. Users also have the option to create
-their own modified version of the Biolink YAML file under a different file name
-and specify that path in the ``user_schema_config_path`` argument of the
-{class}`biocypher.Driver` class, which handles all communication between
-BioCypher and Biolink.
