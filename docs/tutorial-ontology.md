@@ -126,6 +126,7 @@ protein:
   # ...
 ```
 
+(tutorial_ontology_extension)=
 ## Biolink model extensions
 There are multiple reasons why a user might want to modify the Biolink model.  A
 class that is relevant to the user's task might be missing ([Explicit
