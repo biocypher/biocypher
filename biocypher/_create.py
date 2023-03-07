@@ -40,6 +40,7 @@ import yaml
 from . import _misc
 from . import _config as config
 from ._logger import logger
+from ._mapping import OntologyMapping
 
 __all__ = [
     'BioCypherEdge',
@@ -380,12 +381,12 @@ class VersionNode:
             self._get_graph_state() if not self.offline else None
         )
         self.schema = self._get_graph_schema()
-        self.leaves = self._get_leaves()
+        self.extended_schema = self._get_leaves()
 
         self.properties = {
             'graph_state': self.graph_state,
             'schema': self.schema,
-            'leaves': self.leaves,
+            'leaves': self.extended_schema,
         }
 
     def get_id(self) -> str:

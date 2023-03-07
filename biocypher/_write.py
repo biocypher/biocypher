@@ -151,7 +151,7 @@ class BatchWriter:
     """
     def __init__(
         self,
-        leaves: dict,
+        extended_schema: dict,
         ontology_adapter: 'OntologyAdapter',
         translator: 'Translator',
         delimiter: str,
@@ -182,7 +182,7 @@ class BatchWriter:
         self.wipe = wipe
         self.strict_mode = strict_mode
 
-        self.leaves = leaves
+        self.leaves = extended_schema
         self.ontology_adapter = ontology_adapter
         self.translator = translator
         self.node_property_dict = {}
