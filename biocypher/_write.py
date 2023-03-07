@@ -6,7 +6,7 @@
 # File author(s): Sebastian Lobentanzer
 #                 ...
 #
-# Distributed under GPLv3 license, see the file `LICENSE`.
+# Distributed under MIT licence, see the file `LICENSE`.
 #
 """
 Export of CSV files for the Neo4J admin import. The admin import is able

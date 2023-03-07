@@ -5,7 +5,7 @@
 # File author(s): Sebastian Lobentanzer
 #                 ...
 #
-# Distributed under GPLv3 license, see the file `LICENSE`.
+# Distributed under MIT licence, see the file `LICENSE`.
 #
 """
 Create a property graph database for biomedical research applications.
