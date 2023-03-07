@@ -8,21 +8,6 @@ offline: true
 # specifying source, version, and license parameters
 strict_mode: false
 
-# Neo4j connection credentials
-neo4j_uri: neo4j://localhost:7687
-neo4j_db: neo4j # DB name
-neo4j_user: neo4j # user name
-neo4j_pw: neo4j # password
-
-# Neo4j admin import batch writer settings
-neo4j_delimiter: '¦'
-neo4j_array_delimiter: '|'
-neo4j_quote_char: '"'
-
-# MultiDB functionality
-# Set to false for using community edition or older versions of Neo4j
-neo4j_multi_db: true
-
 # Logging granularity
 # Set debug to true if more granular logging is desired
 debug: true
@@ -38,7 +23,10 @@ outdir: biocypher-out
 # Set to true to clear the cache and re-download the ontology
 clear_cache: false
 
-# # Ontology configuration
+# Ontology configuration
+head_ontology:
+  url: https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl
+  root_node: entity
 # tail_ontologies:
 #   so:
 #     url: test/so.obo
@@ -48,3 +36,19 @@ clear_cache: false
 #     url: test/mondo.obo
 #     head_join_node: disease
 #     tail_join_node: disease
+
+### Neo4j configuration ###
+# Neo4j connection credentials
+neo4j_uri: neo4j://localhost:7687
+neo4j_db: neo4j # DB name
+neo4j_user: neo4j # user name
+neo4j_pw: neo4j # password
+
+# Neo4j admin import batch writer settings
+neo4j_delimiter: '¦'
+neo4j_array_delimiter: '|'
+neo4j_quote_char: '"'
+
+# MultiDB functionality
+# Set to false for using community edition or older versions of Neo4j
+neo4j_multi_db: true

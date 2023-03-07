@@ -388,11 +388,11 @@ def test_custom_biolink_schema():
     driver = Driver(
         offline=True,
         user_schema_config_path='biocypher/_config/test_schema_config.yaml',
-        biolink_model='biocypher/_config/test-biolink-model.yaml',
+        head_ontology='biocypher/_config/test-biolink-model.yaml',
     )
-    driver.start_ontology_adapter()
+    driver.start_ontology()
 
-    tk = driver.ontology_adapter.biolink_adapter.toolkit
+    tk = driver.ontology.biolink_adapter.toolkit
 
     assert 'pairwise molecular interaction' in tk.get_ancestors(
         'post translational interaction'
