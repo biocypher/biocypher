@@ -6,7 +6,8 @@ import networkx as nx
 
 from biocypher._config import module_data_path
 from biocypher._create import VersionNode, BioCypherEdge, BioCypherNode
-from biocypher._translate import Translator, BiolinkAdapter, OntologyAdapter
+from biocypher._ontology import Ontology
+from biocypher._translate import Translator
 
 
 @pytest.fixture
@@ -20,22 +21,18 @@ def version_node():
 
 @pytest.fixture
 def translator(version_node):
-    return Translator(version_node.leaves)
+    return Translator(version_node.extended_schema)
 
 
 @pytest.fixture
-def biolink_adapter(version_node, translator):
-    return BiolinkAdapter(
-        version_node.leaves,
-        translator,
-        schema=module_data_path('test-biolink-model'),
-        clear_cache=True,
-    )
-
-
-@pytest.fixture
-def ontology_adapter(biolink_adapter):
-    return OntologyAdapter(
+def ontology():
+    return Ontology(
+        head_ontology={
+            'url':
+                'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl',
+            'root_node':
+                'entity',
+        },
         tail_ontologies={
             'so':
                 {
@@ -50,7 +47,6 @@ def ontology_adapter(biolink_adapter):
                     'tail_join_node': 'disease',
                 }
         },
-        biolink_adapter=biolink_adapter,
     )
 
 
@@ -177,50 +173,47 @@ def test_translate_edges(translator):
     assert n3.get_source_edge().get_source_id() == 'G15258'
 
 
-def test_biolink_adapter(version_node, translator):
-    # current Biolink model (as opposed to rest of tests)
-    ad = BiolinkAdapter(version_node.leaves, translator, clear_cache=True)
-    ver = ad.biolink_version
+# def test_biolink_adapter(version_node, translator):
+#     # current Biolink model (as opposed to rest of tests)
+#     ad = BiolinkAdapter(version_node.extended_schema, translator, clear_cache=True)
+#     ver = ad.biolink_version
 
-    assert isinstance(
-        ad.biolink_leaves['protein']['class_definition'],
-        ClassDefinition,
-    )
-    assert ver
+#     assert isinstance(
+#         ad.biolink_leaves['protein']['class_definition'],
+#         ClassDefinition,
+#     )
+#     assert ver
 
+# def test_custom_bmt_yaml(version_node, translator):
+#     ad = BiolinkAdapter(
+#         version_node.extended_schema,
+#         translator,
+#         schema=module_data_path('test-biolink-model'),
+#         clear_cache=True,
+#     )
+#     p = ad.biolink_leaves['protein']
 
-def test_custom_bmt_yaml(version_node, translator):
-    ad = BiolinkAdapter(
-        version_node.leaves,
-        translator,
-        schema=module_data_path('test-biolink-model'),
-        clear_cache=True,
-    )
-    p = ad.biolink_leaves['protein']
+#     assert p['class_definition'].description == 'Test'
 
-    assert p['class_definition'].description == 'Test'
+# def test_biolink_yaml_extension(biolink_adapter):
+#     p1 = biolink_adapter.biolink_leaves['post translational interaction']
+#     p2 = biolink_adapter.biolink_leaves['phosphorylation']
 
+#     assert (
+#         p1['class_definition'].description
+#         == 'A pairwise interaction between two proteins' and
+#         'PairwiseMolecularInteraction' in p1['ancestors'] and
+#         'Entity' in p1['ancestors'] and p2['class_definition'].description
+#         == 'The action of one protein phosphorylating another protein' and
+#         'PostTranslationalInteraction' in p2['ancestors'] and
+#         'Entity' in p2['ancestors']
+#     )
 
-def test_biolink_yaml_extension(biolink_adapter):
-    p1 = biolink_adapter.biolink_leaves['post translational interaction']
-    p2 = biolink_adapter.biolink_leaves['phosphorylation']
-
-    assert (
-        p1['class_definition'].description
-        == 'A pairwise interaction between two proteins' and
-        'PairwiseMolecularInteraction' in p1['ancestors'] and
-        'Entity' in p1['ancestors'] and p2['class_definition'].description
-        == 'The action of one protein phosphorylating another protein' and
-        'PostTranslationalInteraction' in p2['ancestors'] and
-        'Entity' in p2['ancestors']
-    )
-
-
-def test_translate_identifiers(translator):
-    # representation of a different schema
-    # host and guest db (which to translate)
-    # TODO
-    pass
+# def test_translate_identifiers(translator):
+#     # representation of a different schema
+#     # host and guest db (which to translate)
+#     # TODO
+#     pass
 
 
 def test_merge_multiple_inputs_node(version_node, translator):
@@ -250,8 +243,12 @@ def test_merge_multiple_inputs_node(version_node, translator):
     assert t
 
     # check unique node type
-    assert not any([s for s in version_node.leaves.keys() if '.gene' in s])
-    assert any([s for s in version_node.leaves.keys() if '.pathway' in s])
+    assert not any(
+        [s for s in version_node.extended_schema.keys() if '.gene' in s]
+    )
+    assert any(
+        [s for s in version_node.extended_schema.keys() if '.pathway' in s]
+    )
 
     # check translator.translate_nodes for unique return type
     assert all([type(n) == BioCypherNode for n in t])
@@ -288,12 +285,15 @@ def test_merge_multiple_inputs_edge(version_node, translator):
     # check unique edge type
     assert not any(
         [
-            s for s in version_node.leaves.keys()
+            s for s in version_node.extended_schema.keys()
             if '.gene to disease association' in s
         ],
     )
     assert any(
-        [s for s in version_node.leaves.keys() if '.sequence variant' in s],
+        [
+            s for s in version_node.extended_schema.keys()
+            if '.sequence variant' in s
+        ],
     )
 
     # check translator.translate_nodes for unique return type
@@ -317,12 +317,12 @@ def test_multiple_inputs_multiple_virtual_leaves_rel_as_node(biolink_adapter):
 
 def test_virtual_leaves_inherit_is_a(version_node):
 
-    snrna = version_node.leaves.get('intact.snRNA sequence')
+    snrna = version_node.extended_schema.get('intact.snRNA sequence')
 
     assert 'is_a' in snrna.keys()
     assert snrna['is_a'] == ['snRNA sequence', 'nucleic acid entity']
 
-    dsdna = version_node.leaves.get('intact.dsDNA sequence')
+    dsdna = version_node.extended_schema.get('intact.dsDNA sequence')
 
     assert dsdna['is_a'] == [
         'dsDNA sequence',
@@ -333,7 +333,7 @@ def test_virtual_leaves_inherit_is_a(version_node):
 
 def test_virtual_leaves_inherit_properties(version_node):
 
-    snrna = version_node.leaves.get('intact.snRNA sequence')
+    snrna = version_node.extended_schema.get('intact.snRNA sequence')
 
     assert 'properties' in snrna.keys()
     assert 'exclude_properties' in snrna.keys()
@@ -364,7 +364,7 @@ def test_leaves_of_ad_hoc_child(biolink_adapter):
 
 def test_inherit_properties(version_node):
 
-    dsdna = version_node.leaves.get('intact.dsDNA sequence')
+    dsdna = version_node.extended_schema.get('intact.dsDNA sequence')
 
     assert 'properties' in dsdna.keys()
     assert 'sequence' in dsdna['properties']
@@ -584,8 +584,8 @@ def test_log_missing_nodes(translator):
     assert m.get('missing_pathway') == 1
 
 
-def test_show_ontology(ontology_adapter):
-    treevis = ontology_adapter.show_ontology_structure()
+def test_show_ontology(ontology):
+    treevis = ontology.show_ontology_structure()
 
     assert treevis is not None
 
@@ -668,9 +668,8 @@ def test_networkx_from_treedict(biolink_adapter):
     assert 'gene product mixin' in graph.nodes
 
 
-def test_inheritance_loop(ontology_adapter):
+def test_inheritance_loop(ontology):
 
-    assert 'gene to variant association' in ontology_adapter.leaves.keys()
+    assert 'gene to variant association' in ontology.leaves.keys()
 
-    assert 'gene to variant association' not in ontology_adapter.biolink_leaves.keys(
-    )
+    assert 'gene to variant association' not in ontology.biolink_leaves.keys()

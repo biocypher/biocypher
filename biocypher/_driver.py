@@ -34,6 +34,7 @@ from . import _misc
 from ._write import BatchWriter
 from ._config import config as _config
 from ._create import VersionNode, BioCypherEdge, BioCypherNode
+from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator
 
@@ -192,11 +193,8 @@ class Driver(neo4j_utils.Driver):
 
             logger.info('Offline mode: no connection to Neo4j.')
 
-            self.db_meta = VersionNode(
-                from_config=True,
+            self._ontology_mapping = OntologyMapping(
                 config_file=self.user_schema_config_path,
-                offline=True,
-                bcy_driver=self,
             )
 
             self._db_config = {
@@ -224,7 +222,7 @@ class Driver(neo4j_utils.Driver):
                 # adapter to BioCypher); checks for existence of graph
                 # representation and returns if found, else creates new
                 # one
-                self.db_meta = VersionNode(
+                self._ontology_mapping = VersionNode(
                     from_config=offline or wipe,
                     config_file=self.user_schema_config_path,
                     bcy_driver=self,
@@ -235,7 +233,7 @@ class Driver(neo4j_utils.Driver):
 
             else:
 
-                self.db_meta = VersionNode(self)
+                self._ontology_mapping = VersionNode(self)
 
         if increment_version:
 
@@ -256,7 +254,7 @@ class Driver(neo4j_utils.Driver):
 
         logger.info('Updating Neo4j meta graph.')
         # add version node
-        self.add_biocypher_nodes(self.db_meta)
+        self.add_biocypher_nodes(self._ontology_mapping)
 
         # find current version node
         db_version = self.query(
@@ -267,8 +265,8 @@ class Driver(neo4j_utils.Driver):
         # connect version node to previous
         if db_version[0]:
             e_meta = BioCypherEdge(
-                self.db_meta.graph_state['id'],
-                self.db_meta.node_id,
+                self._ontology_mapping.graph_state['id'],
+                self._ontology_mapping.node_id,
                 'PRECEDES',
             )
             self.add_biocypher_edges(e_meta)
@@ -276,7 +274,7 @@ class Driver(neo4j_utils.Driver):
         # add structure nodes
         no_l = []
         # leaves of the hierarchy specified in schema yaml
-        for entity, params in self.db_meta.leaves.items():
+        for entity, params in self._ontology_mapping.extended_schema.items():
             no_l.append(
                 BioCypherNode(
                     node_id=entity,
@@ -293,8 +291,8 @@ class Driver(neo4j_utils.Driver):
 
         # connect structure nodes to version node
         ed_v = []
-        current_version = self.db_meta.get_id()
-        for entity in self.db_meta.leaves.keys():
+        current_version = self._ontology_mapping.get_id()
+        for entity in self._ontology_mapping.extended_schema.keys():
             ed_v.append(
                 BioCypherEdge(
                     source_id=current_version,
@@ -318,7 +316,7 @@ class Driver(neo4j_utils.Driver):
     def _update_translator(self):
 
         self.translator = Translator(
-            leaves=self.db_meta.leaves,
+            extended_schema=self._ontology_mapping.extended_schema,
             strict_mode=self.strict_mode,
         )
 
@@ -348,7 +346,7 @@ class Driver(neo4j_utils.Driver):
         logger.info('Creating constraints for node types in config.')
 
         # get structure
-        for leaf in self.db_meta.leaves.items():
+        for leaf in self._ontology_mapping.extended_schema.items():
             label = leaf[0]
             if leaf[1]['represented_as'] == 'node':
 
@@ -619,7 +617,7 @@ class Driver(neo4j_utils.Driver):
         """
         if not self.batch_writer:
             self.batch_writer = BatchWriter(
-                leaves=self.db_meta.leaves,
+                extended_schema=self._ontology_mapping.extended_schema,
                 ontology=self.ontology,
                 translator=self.translator,
                 delimiter=self.db_delim,

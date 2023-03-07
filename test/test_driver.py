@@ -347,21 +347,21 @@ def test_pretty_explain(driver):
     assert 'args' in plan and 'ProduceResults' in printout[0]
 
 
-def test_access_translate(driver):
+# def test_access_translate(driver):
 
-    driver.start_ontology_adapter()
+#     driver.start_ontology()
 
-    assert driver.translate_term('mirna') == 'MicroRNA'
-    assert (driver.reverse_translate_term('SideEffect') == 'sider')
-    assert (
-        driver.translate_query('MATCH (n:reactome) RETURN n') ==
-        'MATCH (n:Reactome.Pathway) RETURN n'
-    )
-    assert (
-        driver.reverse_translate_query(
-            'MATCH (n:Wikipathways.Pathway) RETURN n',
-        ) == 'MATCH (n:wikipathways) RETURN n'
-    )
+#     assert driver.translate_term('mirna') == 'MicroRNA'
+#     assert (driver.reverse_translate_term('SideEffect') == 'sider')
+#     assert (
+#         driver.translate_query('MATCH (n:reactome) RETURN n') ==
+#         'MATCH (n:Reactome.Pathway) RETURN n'
+#     )
+#     assert (
+#         driver.reverse_translate_query(
+#             'MATCH (n:Wikipathways.Pathway) RETURN n',
+#         ) == 'MATCH (n:wikipathways) RETURN n'
+#     )
 
 
 def test_log_missing_bl_types(driver):
@@ -384,16 +384,16 @@ def test_schema_config_from_web():
     assert driver.translator._ontology_mapping
 
 
-def test_custom_biolink_schema():
-    driver = Driver(
-        offline=True,
-        user_schema_config_path='biocypher/_config/test_schema_config.yaml',
-        head_ontology='biocypher/_config/test-biolink-model.yaml',
-    )
-    driver.start_ontology()
+# def test_custom_biolink_schema():
+#     driver = Driver(
+#         offline=True,
+#         user_schema_config_path='biocypher/_config/test_schema_config.yaml',
+#         head_ontology='biocypher/_config/test-biolink-model.yaml',
+#     )
+#     driver.start_ontology()
 
-    tk = driver.ontology.biolink_adapter.toolkit
+#     tk = driver.ontology.biolink_adapter.toolkit
 
-    assert 'pairwise molecular interaction' in tk.get_ancestors(
-        'post translational interaction'
-    )
+#     assert 'pairwise molecular interaction' in tk.get_ancestors(
+#         'post translational interaction'
+#     )

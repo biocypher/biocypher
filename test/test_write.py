@@ -15,7 +15,9 @@ from biocypher._create import (
     BioCypherRelAsNode,
 )
 from biocypher._driver import Driver
-from biocypher._translate import Translator, BiolinkAdapter, OntologyAdapter
+from biocypher._mapping import OntologyMapping
+from biocypher._ontology import Ontology
+from biocypher._translate import Translator
 
 
 def get_random_string(length):
@@ -40,30 +42,27 @@ os.makedirs(path_strict, exist_ok=True)
 
 
 @pytest.fixture
-def version_node():
-    return VersionNode(
-        from_config=True,
+def ontology_mapping():
+    return OntologyMapping(
         config_file='biocypher/_config/test_schema_config.yaml',
-        offline=True,
     )
 
 
 @pytest.fixture
-def translator(version_node):
-    return Translator(leaves=version_node.leaves)
+def translator(ontology_mapping):
+    return Translator(extended_schema=ontology_mapping.extended_schema)
 
 
 @pytest.fixture
-def bw(version_node, translator):
+def bw(ontology_mapping, translator):
 
-    biolink_adapter = BiolinkAdapter(
-        leaves=version_node.leaves,
-        translator=translator,
-        schema=module_data_path('test-biolink-model'),
-        clear_cache=True,
-    )
-
-    ontology_adapter = OntologyAdapter(
+    ontology = Ontology(
+        head_ontology={
+            'url':
+                'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl',
+            'root_node':
+                'entity',
+        },
         tail_ontologies={
             'so':
                 {
@@ -72,12 +71,11 @@ def bw(version_node, translator):
                     'tail_join_node': 'sequence_variant'
                 },
         },
-        biolink_adapter=biolink_adapter,
     )
 
     bw = BatchWriter(
-        leaves=version_node.leaves,
-        ontology_adapter=ontology_adapter,
+        extended_schema=ontology_mapping.extended_schema,
+        ontology_adapter=ontology,
         translator=translator,
         dirname=path,
         delimiter=';',
@@ -94,19 +92,28 @@ def bw(version_node, translator):
 
 
 @pytest.fixture
-def bw_strict(version_node, translator):
+def bw_strict(ontology_mapping, translator):
 
-    biolink_adapter = BiolinkAdapter(
-        leaves=version_node.leaves,
-        translator=translator,
-        schema=module_data_path('test-biolink-model'),
+    ontology = Ontology(
+        head_ontology={
+            'url':
+                'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl',
+            'root_node':
+                'entity',
+        },
+        tail_ontologies={
+            'so':
+                {
+                    'url': 'test/so.obo',
+                    'head_join_node': 'sequence variant',
+                    'tail_join_node': 'sequence_variant'
+                },
+        },
     )
 
-    ontology_adapter = OntologyAdapter(biolink_adapter=biolink_adapter, )
-
     bw = BatchWriter(
-        leaves=version_node.leaves,
-        ontology_adapter=ontology_adapter,
+        extended_schema=ontology_mapping.leaves,
+        ontology_adapter=ontology,
         translator=translator,
         dirname=path_strict,
         delimiter=';',
@@ -124,21 +131,17 @@ def bw_strict(version_node, translator):
 
 
 @pytest.fixture
-def tab_bw(version_node, translator):
+def tab_bw(ontology_mapping, translator):
 
-    tmp_biolink_adapter = BiolinkAdapter(
-        leaves=version_node.leaves,
-        translator=translator,
-        schema=module_data_path('test-biolink-model'),
-        clear_cache=True,
-    )
-
-    tmp_ontology_adapter = OntologyAdapter(
-        biolink_adapter=tmp_biolink_adapter,
+    tmp_ontology_adapter = Ontology(
+        head_ontology={
+            'url': 'test/biolink-model.owl.ttl',
+            'root_node': 'entity',
+        },
     )
 
     tab_bw = BatchWriter(
-        leaves=version_node.leaves,
+        extended_schema=ontology_mapping.leaves,
         ontology_adapter=tmp_ontology_adapter,
         translator=translator,
         dirname=path,
