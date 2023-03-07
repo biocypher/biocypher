@@ -668,56 +668,6 @@ def test_networkx_from_treedict(biolink_adapter):
     assert 'gene product mixin' in graph.nodes
 
 
-def test_generic_ontology_adapter(ontology_adapter):
-    assert isinstance(ontology_adapter, OntologyAdapter)
-
-    first_tail_ontology = ontology_adapter.tail_ontology_dict.get('so').get(
-        'tail_ontology'
-    )
-    assert len(first_tail_ontology) == 7
-    assert nx.is_directed_acyclic_graph(first_tail_ontology)
-
-    # subgraph combination
-    combined_length = len(ontology_adapter.head_ontology)
-    for onto_dict in ontology_adapter.tail_ontology_dict.values():
-        combined_length += len(onto_dict.get('tail_ontology'))
-    hybrid_length = len(ontology_adapter.hybrid_ontology)
-
-    assert hybrid_length == combined_length - (
-        len(ontology_adapter.tail_ontology_dict) + 1
-    )
-    # TODO where does the +1 come from? i would assume that by merging head and
-    # tail nodes, we remove one for each tail ontology. however, we are,
-    # somehow, losing one additional node.
-
-    # get predecessors of terminal node from hybrid ontology (successors because
-    # of inverted graph)
-    predecessors = ontology_adapter.get_node_ancestry(
-        'decreased gene product level'
-    )
-    assert len(predecessors) == 13
-    assert 'altered gene product level' in predecessors
-    assert 'sequence variant' in predecessors
-    assert 'entity' in predecessors
-
-    # test node properties
-    entity = ontology_adapter.hybrid_ontology.nodes['entity']
-    assert entity['name'] == 'entity'
-    assert 'exact_mappings' in entity.keys()
-
-    lethal_var = ontology_adapter.hybrid_ontology.nodes['lethal variant']
-    assert lethal_var['accession'] == 'SO:0001773'
-    assert 'def' in lethal_var.keys()
-
-    # second tail ontology
-    cf_predecessors = ontology_adapter.get_node_ancestry('cystic fibrosis')
-    assert len(cf_predecessors) == 12
-    assert 'disease' in cf_predecessors
-    assert 'disease or phenotypic feature' in cf_predecessors
-    assert 'entity' in cf_predecessors
-    # mixins?
-
-
 def test_inheritance_loop(ontology_adapter):
 
     assert 'gene to variant association' in ontology_adapter.leaves.keys()

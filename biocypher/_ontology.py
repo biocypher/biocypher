@@ -8,3 +8,350 @@
 #
 # Distributed under MIT licence, see the file `LICENSE`.
 #
+
+from typing import Optional
+
+import rdflib
+import networkx as nx
+
+
+class OntologyAdapter:
+    """
+    Class that represents an ontology to be used in the Biocypher framework. Can
+    read from a variety of formats, including OWL, OBO, and RDF/XML. The
+    ontology is represented by a networkx.DiGraph object; an RDFlib graph is
+    also kept. By default, the DiGraph reverses the label and identifier of the
+    nodes, such that the node name in the graph is the human-readable label. The
+    edges are oriented from child to parent. Going from the Biolink example,
+    labels are formatted in lower sentence case. In some cases, this means that
+    we replace underscores with spaces.
+    """
+    def __init__(
+        self,
+        ontology_file,
+        root_label,
+        head_join_node: Optional[str] = None,
+        reverse_labels=True,
+        remove_prefixes=True,
+    ):
+        """
+        Initialize the OntologyAdapter class.
+
+        Args:
+            ontology_file (str): Path to the ontology file. Can be local or
+                remote.
+
+            root_label (str): The label of the root node in the ontology.
+
+            head_join_node (str): Optional variable to store the label of the
+                node in the head ontology that should be used to join to the
+                root node of the tail ontology. Defaults to None.
+
+            reverse_labels (bool): If True, the node names in the graph will be
+                the human-readable labels. If False, the node names will be the
+                identifiers. Defaults to True.
+
+            remove_prefixes (bool): If True, the prefixes of the identifiers will
+                be removed. Defaults to True.
+        """
+
+        self._ontology_file = ontology_file
+        self._root_label = root_label
+        self._head_join_node = head_join_node
+        self._reverse_labels = reverse_labels
+        self._remove_prefixes = remove_prefixes
+
+        # Load the ontology into an rdflib Graph according to the file extension
+        self._rdf_graph = self._load_rdf_graph(ontology_file)
+
+        self._nx_graph = self._rdf_to_nx(
+            self._rdf_graph, root_label, reverse_labels
+        )
+
+    def _rdf_to_nx(self, g, root_label, switch_id_and_label=True):
+
+        # Loop through all labels in the ontology
+        for s, _, o in g.triples((None, rdflib.RDFS.label, None)):
+            # If the label is the root label, set the root node to the subject of the label
+            if o.eq(root_label):
+                root = s
+                break
+        else:
+            raise ValueError(
+                f'Could not find root node with label {root_label}'
+            )
+
+        # Create a directed graph to represent the ontology as a tree
+        G = nx.DiGraph()
+
+        # Define a recursive function to add subclasses to the graph
+        def add_subclasses(node):
+
+            # Only add nodes that have a label
+            if (node, rdflib.RDFS.label, None) not in g:
+                return
+
+            nx_id, nx_label = _get_nx_id_and_label(node)
+
+            if nx_id not in G:
+                G.add_node(nx_id)
+                G.nodes[nx_id]['label'] = nx_label
+
+            # Recursively add all subclasses of the node to the graph
+            for s, _, o in g.triples((None, rdflib.RDFS.subClassOf, node)):
+
+                # Only add nodes that have a label
+                if (s, rdflib.RDFS.label, None) not in g:
+                    continue
+
+                s_id, s_label = _get_nx_id_and_label(s)
+                G.add_node(s_id)
+                G.nodes[s_id]['label'] = s_label
+
+                G.add_edge(s_id, nx_id)
+                add_subclasses(s)
+                add_parents(s)
+
+        def add_parents(node):
+
+            # Only add nodes that have a label
+            if (node, rdflib.RDFS.label, None) not in g:
+                return
+
+            nx_id, nx_label = _get_nx_id_and_label(node)
+
+            # Recursively add all parents of the node to the graph
+            for s, _, o in g.triples((node, rdflib.RDFS.subClassOf, None)):
+
+                # Only add nodes that have a label
+                if (o, rdflib.RDFS.label, None) not in g:
+                    continue
+
+                o_id, o_label = _get_nx_id_and_label(o)
+
+                # Skip nodes already in the graph
+                if o_id in G:
+                    continue
+
+                G.add_node(o_id)
+                G.nodes[o_id]['label'] = o_label
+
+                G.add_edge(nx_id, o_id)
+                add_parents(o)
+
+        def _get_nx_id_and_label(node):
+            node_id_str = self._remove_prefix(str(node))
+            node_label_str = str(g.value(node,
+                                         rdflib.RDFS.label)).replace('_', ' ')
+
+            nx_id = node_label_str if switch_id_and_label else node_id_str
+            nx_label = node_id_str if switch_id_and_label else node_label_str
+            return nx_id, nx_label
+
+        # Add all subclasses of the root node to the graph
+        add_subclasses(root)
+
+        return G
+
+    def _remove_prefix(self, uri: str) -> str:
+        """
+        Remove the prefix of a URI. URIs can contain either "#" or "/" as a
+        separator between the prefix and the local name. The prefix is
+        everything before the last separator.
+        """
+        if self._remove_prefixes:
+            return uri.rsplit('#', 1)[-1].rsplit('/', 1)[-1]
+        else:
+            return uri
+
+    def _load_rdf_graph(self, ontology_file):
+        """
+        Load the ontology into an RDFlib graph. The ontology file can be in
+        OWL, OBO, or RDF/XML format.
+        """
+        g = rdflib.Graph()
+        g.parse(ontology_file, format=self._get_format(ontology_file))
+        return g
+
+    def _get_format(self, ontology_file):
+        """
+        Get the format of the ontology file.
+        """
+        if ontology_file.endswith('.owl'):
+            return 'application/rdf+xml'
+        elif ontology_file.endswith('.obo'):
+            raise NotImplementedError('OBO format not yet supported')
+        elif ontology_file.endswith('.rdf'):
+            return 'application/rdf+xml'
+        elif ontology_file.endswith('.ttl'):
+            return 'ttl'
+        else:
+            raise ValueError(
+                f'Could not determine format of ontology file {ontology_file}'
+            )
+
+    def get_nx_graph(self):
+        """
+        Get the networkx graph representing the ontology.
+        """
+        return self._nx_graph
+
+    def get_rdf_graph(self):
+        """
+        Get the RDFlib graph representing the ontology.
+        """
+        return self._rdf_graph
+
+    def get_root_label(self):
+        """
+        Get the label of the root node in the ontology.
+        """
+        return self._root_label
+
+    def get_ancestors(self, node_label):
+        """
+        Get the ancestors of a node in the ontology.
+        """
+        return nx.dfs_preorder_nodes(self._nx_graph, node_label)
+
+    def get_head_join_node(self):
+        """
+        Get the head join node of the ontology.
+        """
+        return self._head_join_node
+
+
+class Ontology:
+    """
+    A class that represents the ontological "backbone" of a BioCypher knowledge
+    graph. The ontology can be built from a single resource, or hybridised from
+    a combination of resources, with one resource being the "head" ontology,
+    while an arbitrary number of other resources can become "tail" ontologies at
+    arbitrary fusion points inside the "head" ontology.
+    """
+    def __init__(
+        self,
+        head_ontology: dict,
+        tail_ontologies: Optional[dict] = None,
+    ):
+        """
+        Initialize the Ontology class.
+
+        Args:
+            head_ontology (OntologyAdapter): The head ontology.
+
+            tail_ontologies (list): A list of OntologyAdapters that will be
+                added to the head ontology. Defaults to None.
+        """
+
+        self._head_ontology = head_ontology
+        self._tail_ontology_meta = tail_ontologies
+
+        self._tail_ontologies = None
+        self._hybrid_ontology_nx_graph = None
+
+        self._main()
+
+    def _main(self) -> None:
+        """
+        Main method to be run on instantiation. Loads the ontologies, joins
+        them, and returns the hybrid ontology. Loads only the head ontology
+        if nothing else is given.
+        """
+        self._load_ontologies()
+
+        if self._tail_ontologies:
+            for adapter in self._tail_ontologies.values():
+                self._assert_join_node(adapter)
+                self.join_ontologies(adapter)
+
+    def _load_ontologies(self) -> None:
+        """
+        For each ontology, load the OntologyAdapter object and store it as an
+        instance variable (head) or a dictionary (tail).
+        """
+
+        self._head_ontology = OntologyAdapter(
+            self._head_ontology['url'],
+            self._head_ontology['root_node'],
+        )
+
+        if self._tail_ontology_meta:
+            self._tail_ontologies = {}
+            for key, value in self._tail_ontology_meta.items():
+                self._tail_ontologies[key] = OntologyAdapter(
+                    value['url'],
+                    value['tail_join_node'],
+                    value['head_join_node'],
+                )
+
+    def _assert_join_node(self, adapter: OntologyAdapter) -> None:
+        """
+        Tries to find the head join node of the given ontology adapter in the
+        head ontology. If the join node is not found, the method will raise an
+        error.
+
+        Args:
+            adapter (OntologyAdapter): The ontology adapter of which to find the
+                join node in the head ontology.
+        """
+
+        head_join_node = adapter.get_head_join_node()
+
+        if head_join_node not in self._head_ontology.get_nx_graph().nodes:
+
+            raise ValueError(
+                f'Head join node {head_join_node} not found in '
+                f'head ontology.'
+            )
+
+    def join_ontologies(self, adapter: OntologyAdapter) -> None:
+        """
+        Joins the ontologies by adding the tail ontology as a subgraph to the
+        head ontology at the specified join nodes.
+
+        Args:
+            adapter (OntologyAdapter): The ontology adapter of the tail ontology
+                to be added to the head ontology.
+        """
+
+        if not self._hybrid_ontology_nx_graph:
+            self._hybrid_ontology_nx_graph = self._head_ontology.get_nx_graph(
+            ).copy()
+
+        head_join_node = adapter.get_head_join_node().replace('_', ' ')
+        tail_join_node = adapter.get_root_label().replace('_', ' ')
+        tail_ontology = adapter.get_nx_graph()
+
+        # subtree of tail ontology at join node
+        tail_ontology_subtree = nx.dfs_tree(
+            tail_ontology.reverse(), tail_join_node
+        ).reverse()
+
+        # transfer node attributes from tail ontology to subtree
+        for node in tail_ontology_subtree.nodes:
+            tail_ontology_subtree.nodes[node].update(tail_ontology.nodes[node])
+
+        # rename tail join node to match head join node
+        if not tail_join_node == head_join_node:
+            tail_ontology_subtree = nx.relabel_nodes(
+                tail_ontology_subtree, {tail_join_node: head_join_node}
+            )
+
+        # combine head ontology and tail subtree
+        self._hybrid_ontology_nx_graph = nx.compose(
+            self._hybrid_ontology_nx_graph, tail_ontology_subtree
+        )
+
+    def get_ancestors(self, node_label: str) -> list:
+        """
+        Get the ancestors of a node in the ontology.
+
+        Args:
+            node_label (str): The label of the node in the ontology.
+
+        Returns:
+            list: A list of the ancestors of the node.
+        """
+
+        return nx.dfs_preorder_nodes(self._hybrid_ontology_nx_graph, node_label)

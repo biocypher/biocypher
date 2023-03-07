@@ -34,7 +34,8 @@ from . import _misc
 from ._write import BatchWriter
 from ._config import config as _config
 from ._create import VersionNode, BioCypherEdge, BioCypherNode
-from ._translate import Translator, BiolinkAdapter, OntologyAdapter
+from ._ontology import Ontology
+from ._translate import Translator
 
 __all__ = ['Driver']
 
@@ -130,8 +131,8 @@ class Driver(neo4j_utils.Driver):
         quote_char: Optional[str] = None,
         import_call_bin_prefix: Optional[str] = None,
         import_call_file_prefix: Optional[str] = None,
-        biolink_model: Optional[str] = None,
-        tail_ontologies: Optional[list] = None,
+        head_ontology: Optional[dict] = None,
+        tail_ontologies: Optional[dict] = None,
     ):
 
         # Neo4j options
@@ -175,7 +176,7 @@ class Driver(neo4j_utils.Driver):
         self.output_directory = output_directory or _config('output_directory')
         self.clear_cache = clear_cache or _config('clear_cache')
 
-        self.biolink_model = biolink_model or _config('biolink_model')
+        self.head_ontology = head_ontology or _config('head_ontology')
 
         self.tail_ontologies = tail_ontologies or _config('tail_ontologies')
 
@@ -241,7 +242,7 @@ class Driver(neo4j_utils.Driver):
             # set new current version node
             self.update_meta_graph()
 
-        self.ontology_adapter = None
+        self.ontology = None
         self.batch_writer = None
         self._update_translator()
 
@@ -595,9 +596,8 @@ class Driver(neo4j_utils.Driver):
                 :class:`biocypher.create.BioCypherNode`.
         """
 
-        # instantiate adapter on demand because it takes time to load
-        # the biolink model toolkit
-        self.start_ontology_adapter()
+        # instantiate ontology on demand because it takes time to load
+        self.start_ontology()
 
         self.start_batch_writer()
 
@@ -620,7 +620,7 @@ class Driver(neo4j_utils.Driver):
         if not self.batch_writer:
             self.batch_writer = BatchWriter(
                 leaves=self.db_meta.leaves,
-                ontology_adapter=self.ontology_adapter,
+                ontology=self.ontology,
                 translator=self.translator,
                 delimiter=self.db_delim,
                 array_delimiter=self.db_adelim,
@@ -635,21 +635,14 @@ class Driver(neo4j_utils.Driver):
                 strict_mode=self.strict_mode,
             )
 
-    def start_ontology_adapter(self) -> None:
+    def start_ontology(self) -> None:
         """
-        Instantiate the :class:`biocypher._translate.OntologyAdapter` if not
+        Instantiate the :class:`biocypher._ontology.Ontology` if not
         existing.
         """
-        if not self.ontology_adapter:
-            biolink_adapter = BiolinkAdapter(
-                leaves=self.db_meta.leaves,
-                schema=self.biolink_model,
-                translator=self.translator,
-                clear_cache=self.clear_cache,
-            )
-            # only simple one-hybrid case; TODO generalise
-            self.ontology_adapter = OntologyAdapter(
-                biolink_adapter=biolink_adapter,
+        if not self.ontology:
+            self.ontology = Ontology(
+                head_ontology=self.head_ontology,
                 tail_ontologies=self.tail_ontologies,
             )
 
@@ -671,7 +664,7 @@ class Driver(neo4j_utils.Driver):
 
         # instantiate adapter on demand because it takes time to load
         # the biolink model toolkit
-        self.start_ontology_adapter()
+        self.start_ontology()
 
         self.start_batch_writer()
 
@@ -790,9 +783,9 @@ class Driver(neo4j_utils.Driver):
         treelib.
         """
 
-        self.start_ontology_adapter()
+        self.start_ontology()
 
-        self.ontology_adapter.show_ontology_structure()
+        self.ontology.show_ontology_structure()
 
     # TRANSLATION METHODS ###
 
@@ -802,7 +795,7 @@ class Driver(neo4j_utils.Driver):
         """
 
         # instantiate adapter if not exists
-        self.start_ontology_adapter()
+        self.start_ontology()
 
         return self.translator.translate_term(term)
 
@@ -812,7 +805,7 @@ class Driver(neo4j_utils.Driver):
         """
 
         # instantiate adapter if not exists
-        self.start_ontology_adapter()
+        self.start_ontology()
 
         return self.translator.reverse_translate_term(term)
 
@@ -822,7 +815,7 @@ class Driver(neo4j_utils.Driver):
         """
 
         # instantiate adapter if not exists
-        self.start_ontology_adapter()
+        self.start_ontology()
 
         return self.translator.translate(query)
 
@@ -832,7 +825,7 @@ class Driver(neo4j_utils.Driver):
         """
 
         # instantiate adapter if not exists
-        self.start_ontology_adapter()
+        self.start_ontology()
 
         return self.translator.reverse_translate(query)
 
