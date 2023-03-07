@@ -263,7 +263,7 @@ class Ontology:
         if self._tail_ontologies:
             for adapter in self._tail_ontologies.values():
                 self._assert_join_node(adapter)
-                self.join_ontologies(adapter)
+                self._join_ontologies(adapter)
 
     def _load_ontologies(self) -> None:
         """
@@ -305,7 +305,7 @@ class Ontology:
                 f'head ontology.'
             )
 
-    def join_ontologies(self, adapter: OntologyAdapter) -> None:
+    def _join_ontologies(self, adapter: OntologyAdapter) -> None:
         """
         Joins the ontologies by adding the tail ontology as a subgraph to the
         head ontology at the specified join nodes.
@@ -355,3 +355,35 @@ class Ontology:
         """
 
         return nx.dfs_preorder_nodes(self._hybrid_ontology_nx_graph, node_label)
+
+    def show_ontology_structure(self):
+        """
+        Show the ontology structure using treelib.
+        """
+
+        msg = 'Showing ontology structure,'
+
+        if self.hybrid_ontology:
+
+            ontology = self.hybrid_ontology
+
+        else:
+
+            ontology = self.head_ontology
+
+        tree = _misc.create_tree_visualisation(ontology)
+
+        msg += f' based on Biolink {self.biolink_adapter.biolink_version}:'
+        print(msg)
+
+        # add synonym information
+        for class_name in self.leaves:
+            if self.leaves[class_name].get('synonym_for'):
+                tree.nodes[class_name].tag = (
+                    f'{class_name} = '
+                    f"{self.leaves[class_name].get('synonym_for')}"
+                )
+
+        tree.show()
+
+        return tree
