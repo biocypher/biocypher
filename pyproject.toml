@@ -6,7 +6,7 @@ authors = [
     "Sebastian Lobentanzer <sebastian.lobentanzer@uni-heidelberg.de>",
     "Denes Turei <turei.denes@gmail.com>"
 ]
-license = "GPL-3.0-only"
+license = "MIT"
 packages = [
     { include = "biocypher" }
 ]
@@ -14,7 +14,7 @@ classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "License :: OSI Approved :: The MIT License (MIT)",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Natural Language :: English",
