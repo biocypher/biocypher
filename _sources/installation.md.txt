@@ -4,7 +4,7 @@
 ::::{grid} 1
 :gutter: 2
 
-:::{grid-item-card} Preconfigured project with BioCypher as a dependency:
+:::{grid-item-card} Preconfigured project with BioCypher as a dependency, including docker integration:
 :link: https://github.com/saezlab/biocypher-project-template
 :text-align: center
 {octicon}`mark-github;3em` {octicon}`repo;3em` {octicon}`play;3em` {octicon}`container;3em`
