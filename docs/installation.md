@@ -7,7 +7,7 @@
 :::{grid-item-card} Preconfigured project with BioCypher as a dependency:
 :link: https://github.com/saezlab/biocypher-project-template
 :text-align: center
-{octicon}`mark-github;3em` {octicon}`repo;3em` {octicon}`play;3em` {material-regular}`docker;3em`
+{octicon}`mark-github;3em` {octicon}`repo;3em` {octicon}`play;3em` {material-regular}`data_exploration;3em`
 :::
 
 ::::
