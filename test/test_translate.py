@@ -1,11 +1,6 @@
-from networkx.classes.graph import Graph
-from linkml_runtime.linkml_model.meta import ClassDefinition
-from networkx.algorithms.traversal.depth_first_search import dfs_tree
 import pytest
-import networkx as nx
 
-from biocypher._config import module_data_path
-from biocypher._create import VersionNode, BioCypherEdge, BioCypherNode
+from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._mapping import OntologyMapping
 from biocypher._ontology import Ontology
 from biocypher._translate import Translator

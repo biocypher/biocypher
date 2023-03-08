@@ -18,11 +18,6 @@ logdir: biocypher-log
 # Set to change the output directory
 outdir: biocypher-out
 
-# Clear ontology cache
-# BioCypher caches the ontology scaffold for performance reasons
-# Set to true to clear the cache and re-download the ontology
-clear_cache: false
-
 # Ontology configuration
 head_ontology:
   url: https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl
@@ -52,3 +47,7 @@ neo4j_quote_char: '"'
 # MultiDB functionality
 # Set to false for using community edition or older versions of Neo4j
 neo4j_multi_db: true
+
+# Import call prefixes
+# neo4j_import_call_bin_prefix: bin/
+# neo4j_import_call_file_prefix: path/to/files/

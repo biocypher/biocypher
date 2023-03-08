@@ -40,7 +40,6 @@ import yaml
 from . import _misc
 from . import _config as config
 from ._logger import logger
-from ._mapping import OntologyMapping
 
 __all__ = [
     'BioCypherEdge',

@@ -32,8 +32,7 @@ Todo:
     - import ID types from pypath dictionary (later, externalised
       dictionary)? biolink?
 """
-from collections.abc import Mapping, Iterable, Generator
-import itertools
+from collections.abc import Iterable, Generator
 
 from ._logger import logger
 
@@ -41,9 +40,7 @@ logger.debug(f'Loading module {__name__}.')
 
 from typing import Any, Union, Optional
 
-from bmt.utils import sentencecase_to_camelcase
 from more_itertools import peekable
-from networkx.algorithms.traversal.depth_first_search import dfs_tree
 
 from . import _misc
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
@@ -516,7 +513,7 @@ class Translator:
         # split on dots if dot is present
         if '.' in name:
             return '.'.join(
-                [sentencecase_to_camelcase(n) for n in name.split('.')],
+                [_misc.sentencecase_to_pascalcase(n) for n in name.split('.')],
             )
         else:
-            return sentencecase_to_camelcase(name)
+            return _misc.sentencecase_to_pascalcase(name)

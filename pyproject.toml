@@ -11,10 +11,10 @@ packages = [
     { include = "biocypher" }
 ]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: The MIT License (MIT)",
+    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Natural Language :: English",
@@ -25,26 +25,19 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-neo4j = ">=4.4.0"
 PyYAML = ">=5.0"
-click = ">=7.0"
-bmt = "0.8.12"
-# bmt = { path = "../biolink-model-toolkit/", develop = true }
 more_itertools = "*"
-toml = "*"
 appdirs = "*"
 neo4j-utils = { git = "https://github.com/saezlab/neo4j-utils.git", tag = "v0.0.6" }
 # for local development one can switch to local path:
 # neo4j-utils = { path = "../neo4j-utils/", develop = true }
-myst-parser = "^0.18.0"
-matplotlib = "^3.5.2"
-yapf = "^0.32.0"
-pre-commit = "^2.20.0"
 treelib = "^1.6.1"
-obonet = "^0.3.1"
 rdflib = "^6.2.0"
+networkx = "^3.0"
+stringcase = "^1.2.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+yapf = "^0.32.0"
 pytest = ">=6.0"
 tox = ">=3.20.1"
 pre-commit = ">=2.17.0"
@@ -54,11 +47,10 @@ sphinx = ">=5.0.0"
 sphinx-rtd-theme = ">=1.0.0"
 sphinx-last-updated-by-git = ">=0.3"
 sphinx-autodoc-typehints = ">=1.18.0"
+myst-parser = "^0.18.0"
 pytest-cov = "^3.0.0"
 hypothesis = "^6.50.1"
 isort = "^5.10.1"
-
-[tool.poetry.group.dev.dependencies]
 ipython = "^8.7.0"
 sphinx-design = "^0.3.0"
 

@@ -8,9 +8,11 @@ from typing import (
     ValuesView,
 )
 from collections.abc import Iterable
+import re
 
 from treelib import Tree
 import networkx as nx
+import stringcase
 
 __all__ = ['LIST_LIKE', 'SIMPLE_TYPES', 'ensure_iterable', 'to_list']
 
@@ -108,3 +110,69 @@ def create_tree_visualisation(inheritance_tree: Union[dict, nx.Graph]) -> str:
                 classes.remove(node)
 
     return tree
+
+
+# string conversion, adapted from Biolink Model Toolkit
+lowercase_pattern = re.compile(r'[a-zA-Z]*[a-z][a-zA-Z]*')
+underscore_pattern = re.compile(r'(?<!^)(?=[A-Z][a-z])')
+
+
+def from_pascal(s: str, sep: str = ' ') -> str:
+    underscored = underscore_pattern.sub(sep, s)
+    lowercased = lowercase_pattern.sub(
+        lambda match: match.group(0).lower(),
+        underscored,
+    )
+    return lowercased
+
+
+def pascalcase_to_sentencecase(s: str) -> str:
+    """
+    Convert PascalCase to sentence case.
+
+    Args:
+        s: Input string in PascalCase
+
+    Returns:
+        string in sentence case form
+    """
+    return from_pascal(s, sep=' ')
+
+
+def snakecase_to_sentencecase(s: str) -> str:
+    """
+    Convert snake_case to sentence case.
+
+    Args:
+        s: Input string in snake_case
+
+    Returns:
+        string in sentence case form
+    """
+    return stringcase.sentencecase(s).lower()
+
+
+def sentencecase_to_snakecase(s: str) -> str:
+    """
+    Convert sentence case to snake_case.
+
+    Args:
+        s: Input string in sentence case
+
+    Returns:
+        string in snake_case form
+    """
+    return stringcase.snakecase(s).lower()
+
+
+def sentencecase_to_pascalcase(s: str) -> str:
+    """
+    Convert sentence case to PascalCase.
+
+    Args:
+        s: Input string in sentence case
+
+    Returns:
+        string in PascalCase form
+    """
+    return re.sub(r'(?:^| )([a-zA-Z])', lambda match: match.group(1).upper(), s)

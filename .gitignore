@@ -21,3 +21,5 @@ dist/*
 *.kate-swp
 .hypothesis/
 .venv/
+.empty
+.pytest_cache

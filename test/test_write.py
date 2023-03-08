@@ -907,8 +907,10 @@ def test_write_offline(path):
         array_delimiter='|',
         output_directory=path,
         head_ontology={
-            'url': '/Users/slobentanzer/Downloads/biolink-model.owl.ttl',
-            'root_node': 'entity',
+            'url':
+                'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
+            'root_node':
+                'entity',
         },
     )
 

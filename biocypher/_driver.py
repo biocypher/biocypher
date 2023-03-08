@@ -18,8 +18,7 @@ from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
-from typing import TYPE_CHECKING, List, Optional, Generator
-import importlib as imp
+from typing import TYPE_CHECKING, Optional
 import itertools
 
 from more_itertools import peekable
