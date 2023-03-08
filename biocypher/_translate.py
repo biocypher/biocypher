@@ -40,23 +40,12 @@ from ._logger import logger
 logger.debug(f'Loading module {__name__}.')
 
 from typing import Any, Union, Optional
-import os
-import re
-import json
-import pickle
-import hashlib
 
 from bmt.utils import sentencecase_to_camelcase
 from more_itertools import peekable
-from linkml_runtime.linkml_model.meta import TypeDefinition, ClassDefinition
 from networkx.algorithms.traversal.depth_first_search import dfs_tree
-import bmt
-import obonet
-import appdirs
-import networkx as nx
 
 from . import _misc
-from ._config import _read_yaml, module_data_path
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 __all__ = ['BiolinkAdapter', 'Translator']
@@ -92,7 +81,6 @@ class Translator:
 
         self.extended_schema = extended_schema
         self.strict_mode = strict_mode
-        self._update_ontology_types()
 
         # record nodes without biolink type configured in schema_config.yaml
         self.notype = {}
@@ -100,6 +88,8 @@ class Translator:
         # mapping functionality for translating terms and queries
         self.mappings = {}
         self.reverse_mappings = {}
+
+        self._update_ontology_types()
 
     def translate_nodes(
         self,
@@ -414,11 +404,23 @@ class Translator:
         for key, value in self.extended_schema.items():
 
             if isinstance(value.get('label_in_input'), str):
+
                 self._ontology_mapping[value.get('label_in_input')] = key
 
             elif isinstance(value.get('label_in_input'), list):
+
                 for label in value['label_in_input']:
                     self._ontology_mapping[label] = key
+
+            if value.get('label_as_edge'):
+
+                self._add_translation_mappings(
+                    value['label_in_input'], value['label_as_edge']
+                )
+
+            else:
+
+                self._add_translation_mappings(value['label_in_input'], key)
 
     def _get_ontology_mapping(self, label: str) -> Optional[str]:
         """

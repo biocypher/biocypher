@@ -63,10 +63,11 @@ def bw(ontology_mapping, translator):
             'root_node':
                 'entity',
         },
+        mapping=ontology_mapping,
         tail_ontologies={
             'so':
                 {
-                    'url': 'test/so.obo',
+                    'url': 'test/so.owl',
                     'head_join_node': 'sequence variant',
                     'tail_join_node': 'sequence_variant'
                 },
@@ -75,7 +76,7 @@ def bw(ontology_mapping, translator):
 
     bw = BatchWriter(
         extended_schema=ontology_mapping.extended_schema,
-        ontology_adapter=ontology,
+        ontology=ontology,
         translator=translator,
         dirname=path,
         delimiter=';',
@@ -113,7 +114,7 @@ def bw_strict(ontology_mapping, translator):
 
     bw = BatchWriter(
         extended_schema=ontology_mapping.leaves,
-        ontology_adapter=ontology,
+        ontology=ontology,
         translator=translator,
         dirname=path_strict,
         delimiter=';',
@@ -142,7 +143,7 @@ def tab_bw(ontology_mapping, translator):
 
     tab_bw = BatchWriter(
         extended_schema=ontology_mapping.leaves,
-        ontology_adapter=tmp_ontology_adapter,
+        ontology=tmp_ontology_adapter,
         translator=translator,
         dirname=path,
         delimiter='\t',

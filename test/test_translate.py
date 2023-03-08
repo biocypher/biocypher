@@ -461,7 +461,7 @@ def test_exclude_properties(translator):
 # we need to load the adapter because the mappings are passed from the adapter
 # to the translator
 def test_translate_term(translator):
-    assert translator.translate_term('hgnc') == 'gene'
+    assert translator.translate_term('hgnc') == 'Gene'
     assert (
         translator.translate_term('protein_disease') == 'PERTURBED_IN_DISEASE'
     )
@@ -518,12 +518,6 @@ def test_log_missing_nodes(translator):
     m = translator.get_missing_biolink_types()
     assert m.get('missing_protein') == 2
     assert m.get('missing_pathway') == 1
-
-
-def test_show_ontology(ontology):
-    treevis = ontology.show_ontology_structure()
-
-    assert treevis is not None
 
 
 def test_strict_mode_error(translator):
@@ -591,21 +585,3 @@ def test_strict_mode_property_filter(translator):
     assert 'source' in l[0].get_properties().keys()
     assert 'licence' in l[0].get_properties().keys()
     assert 'version' in l[0].get_properties().keys()
-
-
-def test_networkx_from_treedict(biolink_adapter):
-    graph = biolink_adapter.get_networkx_graph()
-
-    assert isinstance(graph, Graph)
-    assert 'sequence variant' in graph.nodes
-
-    # make sure the mixins don't get lost
-    assert 'physical essence or occurrent' in graph.nodes
-    assert 'gene product mixin' in graph.nodes
-
-
-def test_inheritance_loop(ontology):
-
-    assert 'gene to variant association' in ontology.leaves.keys()
-
-    assert 'gene to variant association' not in ontology.biolink_leaves.keys()

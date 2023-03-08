@@ -163,3 +163,9 @@ def test_hybridise(hybrid_ontology):
     assert 'taxon' in protein['properties'].keys()
 
     # synonyms
+
+
+def test_show_ontology(ontology):
+    treevis = ontology.show_ontology_structure()
+
+    assert treevis is not None
