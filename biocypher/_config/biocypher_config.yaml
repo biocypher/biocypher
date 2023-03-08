@@ -29,11 +29,11 @@ head_ontology:
   root_node: entity
 # tail_ontologies:
 #   so:
-#     url: test/so.obo
+#     url: test/so.owl
 #     head_join_node: sequence variant
 #     tail_join_node: sequence_variant
 #   mondo:
-#     url: test/mondo.obo
+#     url: test/mondo.owl
 #     head_join_node: disease
 #     tail_join_node: disease
 
