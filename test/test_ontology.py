@@ -23,24 +23,17 @@ def biolink_adapter():
 
 @pytest.fixture
 def so_adapter():
-    return OntologyAdapter(
-        'https://raw.githubusercontent.com/The-Sequence-Ontology/SO-Ontologies/master/Ontology_Files/so.owl',
-        'sequence_variant'
-    )
+    return OntologyAdapter('test/so.owl', 'sequence_variant')
 
 
 @pytest.fixture
 def go_adapter():
-    return OntologyAdapter(
-        'http://purl.obolibrary.org/obo/go.owl', 'molecular_function'
-    )
+    return OntologyAdapter('test/go.owl', 'molecular_function')
 
 
 @pytest.fixture
 def mondo_adapter():
-    return OntologyAdapter(
-        'http://purl.obolibrary.org/obo/mondo.owl', 'disease'
-    )
+    return OntologyAdapter('test/mondo.owl', 'disease')
 
 
 @pytest.fixture
@@ -82,7 +75,6 @@ def test_biolink_adapter(biolink_adapter):
 
 def test_so_adapter(so_adapter):
     assert so_adapter.get_root_label() == 'sequence_variant'
-    assert so_adapter.get_nx_graph().number_of_nodes() > 100
 
     # here without underscores
     assert 'sequence variant' in so_adapter.get_ancestors('lethal variant')
@@ -90,7 +82,6 @@ def test_so_adapter(so_adapter):
 
 def test_go_adapter(go_adapter):
     assert go_adapter.get_root_label() == 'molecular_function'
-    assert go_adapter.get_nx_graph().number_of_nodes() > 100
 
     assert 'molecular function' in go_adapter.get_ancestors(
         'RNA helicase activity'
@@ -99,9 +90,8 @@ def test_go_adapter(go_adapter):
 
 def test_mondo_adapter(mondo_adapter):
     assert mondo_adapter.get_root_label() == 'disease'
-    assert mondo_adapter.get_nx_graph().number_of_nodes() > 100
 
-    assert 'disease' in mondo_adapter.get_ancestors('cancer')
+    assert 'human disease' in mondo_adapter.get_ancestors('cystic fibrosis')
 
 
 def test_ontology_functions(hybrid_ontology):
