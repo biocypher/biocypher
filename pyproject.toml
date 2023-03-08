@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "biocypher"
 version = "0.4.4"
-description = "Graph database standard for molecular biology"
+description = "A unifying framework for biomedical research knowledge graphs"
 authors = [
-    "Sebastian Lobentanzer <sebastian.lobentanzer@uni-heidelberg.de>",
+    "Sebastian Lobentanzer <sebastian.lobentanzer@gmail.com>",
     "Denes Turei <turei.denes@gmail.com>"
 ]
 license = "MIT"
