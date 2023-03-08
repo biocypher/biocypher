@@ -6,22 +6,21 @@ import networkx as nx
 
 from biocypher._config import module_data_path
 from biocypher._create import VersionNode, BioCypherEdge, BioCypherNode
+from biocypher._mapping import OntologyMapping
 from biocypher._ontology import Ontology
 from biocypher._translate import Translator
 
 
 @pytest.fixture
-def version_node():
-    return VersionNode(
-        from_config=True,
+def mapping():
+    return OntologyMapping(
         config_file='biocypher/_config/test_schema_config.yaml',
-        offline=True,
     )
 
 
 @pytest.fixture
-def translator(version_node):
-    return Translator(version_node.extended_schema)
+def translator(mapping):
+    return Translator(mapping.extended_schema)
 
 
 @pytest.fixture
@@ -216,7 +215,7 @@ def test_translate_edges(translator):
 #     pass
 
 
-def test_merge_multiple_inputs_node(version_node, translator):
+def test_merge_multiple_inputs_node(mapping, translator):
     # Gene has two input labels and one preferred ID
     # no virtual leaves should be created
     # both inputs should lead to creation of the same node type
@@ -243,19 +242,15 @@ def test_merge_multiple_inputs_node(version_node, translator):
     assert t
 
     # check unique node type
-    assert not any(
-        [s for s in version_node.extended_schema.keys() if '.gene' in s]
-    )
-    assert any(
-        [s for s in version_node.extended_schema.keys() if '.pathway' in s]
-    )
+    assert not any([s for s in mapping.extended_schema.keys() if '.gene' in s])
+    assert any([s for s in mapping.extended_schema.keys() if '.pathway' in s])
 
     # check translator.translate_nodes for unique return type
     assert all([type(n) == BioCypherNode for n in t])
     assert all([n.get_label() == 'gene' for n in t])
 
 
-def test_merge_multiple_inputs_edge(version_node, translator):
+def test_merge_multiple_inputs_edge(mapping, translator):
     # GeneToDiseaseAssociation has two input labels and one preferred ID
     # no virtual leaves should be created
     # both inputs should lead to creation of the same edge type
@@ -285,15 +280,12 @@ def test_merge_multiple_inputs_edge(version_node, translator):
     # check unique edge type
     assert not any(
         [
-            s for s in version_node.extended_schema.keys()
+            s for s in mapping.extended_schema.keys()
             if '.gene to disease association' in s
         ],
     )
     assert any(
-        [
-            s for s in version_node.extended_schema.keys()
-            if '.sequence variant' in s
-        ],
+        [s for s in mapping.extended_schema.keys() if '.sequence variant' in s],
     )
 
     # check translator.translate_nodes for unique return type
@@ -301,28 +293,14 @@ def test_merge_multiple_inputs_edge(version_node, translator):
     assert all([e.get_label() == 'PERTURBED_IN_DISEASE' for e in t])
 
 
-def test_multiple_inputs_multiple_virtual_leaves_rel_as_node(biolink_adapter):
-    vtg = biolink_adapter.biolink_leaves['variant to gene association']
-    kvtg = biolink_adapter.biolink_leaves[
-        'known.sequence variant.variant to gene association']
-    svtg = biolink_adapter.biolink_leaves[
-        'known.sequence variant.variant to gene association']
+def test_virtual_leaves_inherit_is_a(mapping):
 
-    assert (
-        isinstance(vtg['class_definition'], ClassDefinition) and
-        'VariantToGeneAssociation' in kvtg['ancestors'] and
-        'VariantToGeneAssociation' in svtg['ancestors']
-    )
-
-
-def test_virtual_leaves_inherit_is_a(version_node):
-
-    snrna = version_node.extended_schema.get('intact.snRNA sequence')
+    snrna = mapping.extended_schema.get('intact.snRNA sequence')
 
     assert 'is_a' in snrna.keys()
     assert snrna['is_a'] == ['snRNA sequence', 'nucleic acid entity']
 
-    dsdna = version_node.extended_schema.get('intact.dsDNA sequence')
+    dsdna = mapping.extended_schema.get('intact.dsDNA sequence')
 
     assert dsdna['is_a'] == [
         'dsDNA sequence',
@@ -331,62 +309,20 @@ def test_virtual_leaves_inherit_is_a(version_node):
     ]
 
 
-def test_virtual_leaves_inherit_properties(version_node):
+def test_virtual_leaves_inherit_properties(mapping):
 
-    snrna = version_node.extended_schema.get('intact.snRNA sequence')
+    snrna = mapping.extended_schema.get('intact.snRNA sequence')
 
     assert 'properties' in snrna.keys()
     assert 'exclude_properties' in snrna.keys()
 
 
-def test_ad_hoc_children_node(biolink_adapter):
+def test_inherit_properties(mapping):
 
-    se = biolink_adapter.biolink_leaves['side effect']
-
-    assert 'PhenotypicFeature' in se['ancestors']
-
-
-def test_leaves_of_ad_hoc_child(biolink_adapter):
-
-    snrna = biolink_adapter.biolink_leaves.get('intact.snRNA sequence')
-
-    assert snrna
-    assert 'SnRNASequence' in snrna['ancestors']
-
-    dsdna = biolink_adapter.biolink_leaves.get('intact.dsDNA sequence')
-
-    assert dsdna['ancestors'][1:4] == [
-        'DsDNASequence',
-        'DNASequence',
-        'NucleicAcidEntity',
-    ]
-
-
-def test_inherit_properties(version_node):
-
-    dsdna = version_node.extended_schema.get('intact.dsDNA sequence')
+    dsdna = mapping.extended_schema.get('intact.dsDNA sequence')
 
     assert 'properties' in dsdna.keys()
     assert 'sequence' in dsdna['properties']
-
-
-def test_multiple_inheritance(biolink_adapter):
-
-    mta = biolink_adapter.biolink_leaves.get('mutation to tissue association')
-
-    assert 'MutationToTissueAssociation' in mta['ancestors']
-    assert 'GenotypeToTissueAssociation' in mta['ancestors']
-    assert 'EntityToTissueAssociation' in mta['ancestors']
-    assert 'Association' in mta['ancestors']
-
-
-def test_synonym(biolink_adapter):
-
-    comp = biolink_adapter.biolink_leaves.get('complex')
-
-    assert comp
-    assert 'Complex' in comp['ancestors']
-    assert 'MacromolecularComplexMixin' in comp['ancestors']
 
 
 def test_properties_from_config(translator):
@@ -524,21 +460,21 @@ def test_exclude_properties(translator):
 
 # we need to load the adapter because the mappings are passed from the adapter
 # to the translator
-def test_translate_term(translator, biolink_adapter):
-    assert translator.translate_term('hgnc') == 'Gene'
+def test_translate_term(translator):
+    assert translator.translate_term('hgnc') == 'gene'
     assert (
         translator.translate_term('protein_disease') == 'PERTURBED_IN_DISEASE'
     )
 
 
-def test_reverse_translate_term(translator, biolink_adapter):
+def test_reverse_translate_term(translator):
     assert 'hgnc' in translator.reverse_translate_term('Gene')
     assert 'protein_disease' in translator.reverse_translate_term(
         'PERTURBED_IN_DISEASE',
     )
 
 
-def test_translate_query(translator, biolink_adapter):
+def test_translate_query(translator):
     # we translate to PascalCase for cypher queries, not to internal
     # sentence case
     query = 'MATCH (n:hgnc)-[r:gene_disease]->(d:Disease) RETURN n'
@@ -548,7 +484,7 @@ def test_translate_query(translator, biolink_adapter):
     )
 
 
-def test_reverse_translate_query(translator, biolink_adapter):
+def test_reverse_translate_query(translator):
     # TODO cannot use sentence case in this context. include sentence to
     # pascal case and back in translation?
     query = 'MATCH (n:Known.SequenceVariant)-[r:Known.SequenceVariant.VariantToGeneAssociation]->(g:Gene) RETURN n'

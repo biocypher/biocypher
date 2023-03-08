@@ -116,7 +116,7 @@ def test_hybridise(hybrid_ontology):
     combined_length = len(hybrid_ontology._head_ontology.get_nx_graph())
     for adapter in hybrid_ontology._tail_ontologies.values():
         combined_length += len(adapter.get_nx_graph())
-    hybrid_length = len(hybrid_ontology._hybrid_ontology_nx_graph)
+    hybrid_length = len(hybrid_ontology._nx_graph)
 
     # subtract number of tail ontologies
     num_tail = len(hybrid_ontology._tail_ontologies)
@@ -139,8 +139,7 @@ def test_hybridise(hybrid_ontology):
     assert 'sequence variant' in dgpl_ancestors
     assert 'entity' in dgpl_ancestors
 
-    lethal_var = hybrid_ontology._hybrid_ontology_nx_graph.nodes[
-        'lethal variant']
+    lethal_var = hybrid_ontology._nx_graph.nodes['lethal variant']
     assert lethal_var['label'] == 'SO_0001773'
 
     # second tail ontology
@@ -157,3 +156,10 @@ def test_hybridise(hybrid_ontology):
     assert 'association' in hybrid_ontology.get_ancestors(
         'mutation to tissue association'
     )
+
+    # properties
+    protein = hybrid_ontology._nx_graph.nodes['protein']
+    assert protein['label'] == 'Protein'
+    assert 'taxon' in protein['properties'].keys()
+
+    # synonyms
