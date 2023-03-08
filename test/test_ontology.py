@@ -1,7 +1,16 @@
 import pytest
 import networkx as nx
 
+from biocypher import _misc
+from biocypher._mapping import OntologyMapping
 from biocypher._ontology import Ontology, OntologyAdapter
+
+
+@pytest.fixture
+def ontology_mapping():
+    return OntologyMapping(
+        config_file='biocypher/_config/test_schema_config.yaml'
+    )
 
 
 @pytest.fixture
@@ -35,7 +44,7 @@ def mondo_adapter():
 
 
 @pytest.fixture
-def hybrid_ontology():
+def hybrid_ontology(ontology_mapping):
     return Ontology(
         head_ontology={
             'url':
@@ -43,6 +52,7 @@ def hybrid_ontology():
             'root_node':
                 'entity',
         },
+        mapping=ontology_mapping,
         tail_ontologies={
             'so':
                 {
@@ -108,9 +118,12 @@ def test_hybridise(hybrid_ontology):
         combined_length += len(adapter.get_nx_graph())
     hybrid_length = len(hybrid_ontology._hybrid_ontology_nx_graph)
 
-    assert hybrid_length == combined_length - len(
-        hybrid_ontology._tail_ontologies
-    )
+    # subtract number of tail ontologies
+    num_tail = len(hybrid_ontology._tail_ontologies)
+    # subtract user extensions
+    num_ext = len(hybrid_ontology._extended_nodes)
+
+    assert hybrid_length - num_ext == combined_length - num_tail
 
     # TODO where does the +1 come from? i would assume that by merging head and
     # tail nodes, we remove one for each tail ontology. however, we are,
@@ -118,22 +131,29 @@ def test_hybridise(hybrid_ontology):
 
     # get predecessors of terminal node from hybrid ontology (successors because
     # of inverted graph)
-    predecessors = list(
+    dgpl_ancestors = list(
         hybrid_ontology.get_ancestors('decreased gene product level')
     )
-    assert len(predecessors) == 8
-    assert 'altered gene product level' in predecessors
-    assert 'sequence variant' in predecessors
-    assert 'entity' in predecessors
+    assert len(dgpl_ancestors) == 8
+    assert 'altered gene product level' in dgpl_ancestors
+    assert 'sequence variant' in dgpl_ancestors
+    assert 'entity' in dgpl_ancestors
 
     lethal_var = hybrid_ontology._hybrid_ontology_nx_graph.nodes[
         'lethal variant']
     assert lethal_var['label'] == 'SO_0001773'
 
     # second tail ontology
-    cf_predecessors = list(hybrid_ontology.get_ancestors('cystic fibrosis'))
-    assert len(cf_predecessors) == 11
-    assert 'disease' in cf_predecessors
-    assert 'disease or phenotypic feature' in cf_predecessors
-    assert 'entity' in cf_predecessors
+    cf_ancestors = list(hybrid_ontology.get_ancestors('cystic fibrosis'))
+    assert len(cf_ancestors) == 11
+    assert 'disease' in cf_ancestors
+    assert 'disease or phenotypic feature' in cf_ancestors
+    assert 'entity' in cf_ancestors
     # mixins?
+
+    # user extensions
+    dsdna_ancestors = list(hybrid_ontology.get_ancestors('dsDNA sequence'))
+    assert 'chemical entity' in dsdna_ancestors
+    assert 'association' in hybrid_ontology.get_ancestors(
+        'mutation to tissue association'
+    )

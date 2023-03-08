@@ -641,6 +641,7 @@ class Driver(neo4j_utils.Driver):
         if not self.ontology:
             self.ontology = Ontology(
                 head_ontology=self.head_ontology,
+                mapping=self._ontology_mapping,
                 tail_ontologies=self.tail_ontologies,
             )
 
