@@ -83,8 +83,9 @@ import os
 
 from more_itertools import peekable
 
-from biocypher._config import config as _config
+from ._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from ._ontology import Ontology
 
 __all__ = ['BatchWriter']
 
@@ -108,8 +109,8 @@ class BatchWriter:
         leaves:
             The BioCypher graph schema leaves (ontology classes).
 
-        ontology_adapter:
-            Instance of :py:class:`OntologyAdapter` to enable translation and
+        ontology:
+            Instance of :py:class:`Ontology` to enable translation and
             ontology queries
 
         delimiter:
@@ -152,7 +153,7 @@ class BatchWriter:
     def __init__(
         self,
         extended_schema: dict,
-        ontology_adapter: 'OntologyAdapter',
+        ontology: 'Ontology',
         translator: 'Translator',
         delimiter: str,
         array_delimiter: str,
@@ -183,7 +184,7 @@ class BatchWriter:
         self.strict_mode = strict_mode
 
         self.leaves = extended_schema
-        self.ontology_adapter = ontology_adapter
+        self.ontology_adapter = ontology
         self.translator = translator
         self.node_property_dict = {}
         self.edge_property_dict = {}
