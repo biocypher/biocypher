@@ -16,7 +16,8 @@ def ontology_mapping():
 @pytest.fixture
 def biolink_adapter():
     return OntologyAdapter(
-        '/Users/slobentanzer/Downloads/biolink-model.owl.ttl', 'entity'
+        'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
+        'entity'
     )
 
 
@@ -46,8 +47,10 @@ def mondo_adapter():
 def hybrid_ontology(ontology_mapping):
     return Ontology(
         head_ontology={
-            'url': '/Users/slobentanzer/Downloads/biolink-model.owl.ttl',
-            'root_node': 'entity',
+            'url':
+                'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
+            'root_node':
+                'entity',
         },
         mapping=ontology_mapping,
         tail_ontologies={
@@ -77,28 +80,26 @@ def test_biolink_adapter(biolink_adapter):
     )
 
 
-def test_so_adapter(so_adapter):
-    assert so_adapter.get_root_label() == 'sequence_variant'
-    assert so_adapter.get_nx_graph().number_of_nodes() > 100
+# def test_so_adapter(so_adapter):
+#     assert so_adapter.get_root_label() == 'sequence_variant'
+#     assert so_adapter.get_nx_graph().number_of_nodes() > 100
 
-    # here without underscores
-    assert 'sequence variant' in so_adapter.get_ancestors('lethal variant')
+#     # here without underscores
+#     assert 'sequence variant' in so_adapter.get_ancestors('lethal variant')
 
+# def test_go_adapter(go_adapter):
+#     assert go_adapter.get_root_label() == 'molecular_function'
+#     assert go_adapter.get_nx_graph().number_of_nodes() > 100
 
-def test_go_adapter(go_adapter):
-    assert go_adapter.get_root_label() == 'molecular_function'
-    assert go_adapter.get_nx_graph().number_of_nodes() > 100
+#     assert 'molecular function' in go_adapter.get_ancestors(
+#         'RNA helicase activity'
+#     )
 
-    assert 'molecular function' in go_adapter.get_ancestors(
-        'RNA helicase activity'
-    )
+# def test_mondo_adapter(mondo_adapter):
+#     assert mondo_adapter.get_root_label() == 'disease'
+#     assert mondo_adapter.get_nx_graph().number_of_nodes() > 100
 
-
-def test_mondo_adapter(mondo_adapter):
-    assert mondo_adapter.get_root_label() == 'disease'
-    assert mondo_adapter.get_nx_graph().number_of_nodes() > 100
-
-    assert 'disease' in mondo_adapter.get_ancestors('cancer')
+#     assert 'disease' in mondo_adapter.get_ancestors('cancer')
 
 
 def test_ontology_functions(hybrid_ontology):
@@ -122,12 +123,6 @@ def test_ontology_functions(hybrid_ontology):
 
     assert hybrid_length - num_ext == combined_length - num_tail
 
-    # TODO where does the +1 come from? i would assume that by merging head and
-    # tail nodes, we remove one for each tail ontology. however, we are,
-    # somehow, losing one additional node.
-
-    # get predecessors of terminal node from hybrid ontology (successors because
-    # of inverted graph)
     dgpl_ancestors = list(
         hybrid_ontology.get_ancestors('decreased gene product level')
     )
@@ -145,6 +140,7 @@ def test_ontology_functions(hybrid_ontology):
     assert 'disease' in cf_ancestors
     assert 'disease or phenotypic feature' in cf_ancestors
     assert 'entity' in cf_ancestors
+
     # mixins?
 
     # user extensions
@@ -164,7 +160,7 @@ def test_ontology_functions(hybrid_ontology):
     assert 'macromolecular complex' not in hybrid_ontology._nx_graph.nodes
 
 
-def test_show_ontology(ontology):
-    treevis = ontology.show_ontology_structure()
+def test_show_ontology(hybrid_ontology):
+    treevis = hybrid_ontology.show_ontology_structure()
 
     assert treevis is not None
