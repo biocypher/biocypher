@@ -16,21 +16,12 @@ import yaml
 
 from . import _misc
 from ._config import config as _config
+from ._logger import logger
 
 
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton,
-                                        cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-
-class OntologyMapping(metaclass=Singleton):
+class OntologyMapping:
     """
-    Singleton class to store the ontology mapping and extensions.
+    Class to store the ontology mapping and extensions.
     """
     def __init__(self, config_file: str = None):
 
@@ -77,7 +68,7 @@ class OntologyMapping(metaclass=Singleton):
 
         d = d or self.schema
 
-        leaves = dict()
+        extended_schema = dict()
 
         # first pass: get parent leaves with direct representation in ontology
         for k, v in d.items():
@@ -92,11 +83,23 @@ class OntologyMapping(metaclass=Singleton):
 
             # k is an entity that is present in the ontology
             if 'is_a' not in v:
-                leaves[k] = v
+                extended_schema[k] = v
 
         # second pass: "vertical" inheritance
         d = self._vertical_property_inheritance(d)
-        leaves.update({k: v for k, v in d.items() if 'is_a' in v})
+        for k, v in d.items():
+            if 'is_a' in v:
+
+                # prevent loops
+                if k == v['is_a']:
+                    logger.warning(
+                        f'Loop detected in ontology mapping: {k} -> {v}. '
+                        'Removing item. Please fix the inheritance if you want '
+                        'to use this item.'
+                    )
+                    continue
+
+                extended_schema[k] = v
 
         # "horizontal" inheritance: create siblings for multiple identifiers or
         # sources -> virtual leaves or implicit children
@@ -110,13 +113,13 @@ class OntologyMapping(metaclass=Singleton):
 
             if isinstance(v.get('preferred_id'), list):
                 mi_leaves = self._horizontal_inheritance_pid(k, v)
-                leaves.update(mi_leaves)
+                extended_schema.update(mi_leaves)
 
             elif isinstance(v.get('source'), list):
                 ms_leaves = self._horizontal_inheritance_source(k, v)
-                leaves.update(ms_leaves)
+                extended_schema.update(ms_leaves)
 
-        return leaves
+        return extended_schema
 
     def _vertical_property_inheritance(self, d):
         """
@@ -141,12 +144,22 @@ class OntologyMapping(metaclass=Singleton):
                 else:
                     parent = v['is_a']
 
+                # ensure child has properties and exclude_properties
+                if 'properties' not in v:
+                    v['properties'] = {}
+                if 'exclude_properties' not in v:
+                    v['exclude_properties'] = {}
+
                 # update properties of child
-                if self.schema[parent].get('properties'):
-                    v['properties'] = self.schema[parent]['properties']
-                if self.schema[parent].get('exclude_properties'):
-                    v['exclude_properties'] = self.schema[parent][
-                        'exclude_properties']
+                parent_props = self.schema[parent].get('properties', {})
+                if parent_props:
+                    v['properties'].update(parent_props)
+
+                parent_excl_props = self.schema[parent].get(
+                    'exclude_properties', {}
+                )
+                if parent_excl_props:
+                    v['exclude_properties'].update(parent_excl_props)
 
                 # update schema (d)
                 d[k] = v

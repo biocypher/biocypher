@@ -151,6 +151,7 @@ post translational interaction:
 
 # auto label as edge
 phosphorylation:
+  is_a: post translational interaction
   represented_as: edge
   label_in_input: phosphorylation
 

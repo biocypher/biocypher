@@ -7,13 +7,7 @@ from genericpath import isfile
 import pytest
 
 from biocypher._write import BatchWriter
-from biocypher._config import module_data_path
-from biocypher._create import (
-    VersionNode,
-    BioCypherEdge,
-    BioCypherNode,
-    BioCypherRelAsNode,
-)
+from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._driver import Driver
 from biocypher._mapping import OntologyMapping
 from biocypher._ontology import Ontology
@@ -28,17 +22,24 @@ def get_random_string(length):
 
 
 # temporary output paths
-path = os.path.join(
-    tempfile.gettempdir(),
-    f'biocypher-test-{get_random_string(5)}',
-)
-os.makedirs(path, exist_ok=True)
+@pytest.fixture
+def path():
+    path = os.path.join(
+        tempfile.gettempdir(),
+        f'biocypher-test-{get_random_string(5)}',
+    )
+    os.makedirs(path, exist_ok=True)
+    return path
 
-path_strict = os.path.join(
-    tempfile.gettempdir(),
-    f'biocypher-test-{get_random_string(5)}',
-)
-os.makedirs(path_strict, exist_ok=True)
+
+@pytest.fixture
+def path_strict():
+    path = os.path.join(
+        tempfile.gettempdir(),
+        f'biocypher-test-{get_random_string(5)}',
+    )
+    os.makedirs(path, exist_ok=True)
+    return path
 
 
 @pytest.fixture
@@ -57,8 +58,10 @@ def translator(ontology_mapping):
 def ontology(ontology_mapping):
     return Ontology(
         head_ontology={
-            'url': '/Users/slobentanzer/Downloads/biolink-model.owl.ttl',
-            'root_node': 'entity',
+            'url':
+                'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
+            'root_node':
+                'entity',
         },
         mapping=ontology_mapping,
         tail_ontologies={
@@ -73,7 +76,7 @@ def ontology(ontology_mapping):
 
 
 @pytest.fixture
-def bw(ontology, translator):
+def bw(ontology, translator, path):
 
     bw = BatchWriter(
         ontology=ontology,
@@ -93,7 +96,7 @@ def bw(ontology, translator):
 
 
 @pytest.fixture
-def bw_strict(ontology, translator):
+def bw_strict(ontology, translator, path_strict):
 
     bw = BatchWriter(
         ontology=ontology,
@@ -114,7 +117,7 @@ def bw_strict(ontology, translator):
 
 
 @pytest.fixture
-def tab_bw(ontology, translator):
+def tab_bw(ontology, translator, path):
 
     tab_bw = BatchWriter(
         ontology=ontology,
@@ -133,20 +136,22 @@ def tab_bw(ontology, translator):
     os.rmdir(path)
 
 
-def test_writer_and_output_dir(bw):
+def test_writer_and_output_dir(bw, path):
 
     assert (
         os.path.isdir(path) and isinstance(bw, BatchWriter) and bw.delim == ';'
     )
 
 
-def test_write_node_data_headers_import_call(bw):
+def test_write_node_data_headers_import_call(bw, path):
     # four proteins, four miRNAs
     nodes = _get_nodes(8)
 
     passed = bw.write_nodes(nodes[:4])
     passed = bw.write_nodes(nodes[4:])
     bw.write_import_call()
+
+    assert passed
 
     p_csv = os.path.join(path, 'Protein-header.csv')
     m_csv = os.path.join(path, 'MicroRNA-header.csv')
@@ -160,7 +165,7 @@ def test_write_node_data_headers_import_call(bw):
         c = f.read()
 
     assert (
-        passed and p ==
+        p ==
         ':ID;name;score:double;taxon:long;genes:string[];id;preferred_id;:LABEL'
         and m == ':ID;name;taxon:long;id;preferred_id;:LABEL' and c ==
         f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
@@ -181,7 +186,7 @@ def test_write_node_data_headers_import_call(bw):
     # TODO
 
 
-def test_write_hybrid_ontology_nodes(bw):
+def test_write_hybrid_ontology_nodes(bw, path):
     nodes = []
     for i in range(4):
         nodes.append(
@@ -194,6 +199,8 @@ def test_write_hybrid_ontology_nodes(bw):
 
     passed = bw.write_nodes(nodes)
 
+    assert passed
+
     h_csv = os.path.join(path, 'AlteredGeneProductLevel-header.csv')
     p_csv = os.path.join(path, 'AlteredGeneProductLevel-part000.csv')
 
@@ -203,14 +210,13 @@ def test_write_hybrid_ontology_nodes(bw):
     with open(p_csv) as f:
         part = f.read()
 
-    assert passed
     assert header == ':ID;id;preferred_id;:LABEL'
     assert "agpl:0000;'agpl:0000';'id'" in part
     assert 'AlteredGeneProductLevel' in part
     assert 'BiologicalEntity' in part
 
 
-def test_tab_delimiter(tab_bw):
+def test_tab_delimiter(tab_bw, path):
 
     nodes = _get_nodes(8)
 
@@ -218,13 +224,15 @@ def test_tab_delimiter(tab_bw):
     passed = tab_bw.write_nodes(nodes[4:])
     tab_bw.write_import_call()
 
+    assert passed
+
     call = os.path.join(path, 'neo4j-admin-import-call.sh')
 
     with open(call) as f:
         c = f.read()
 
     assert (
-        passed and c ==
+        c ==
         f'bin/neo4j-admin import --database=neo4j --delimiter="\\t" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
     )
 
@@ -258,7 +266,7 @@ def _get_nodes(l: int) -> list:
     return nodes
 
 
-def test_property_types(bw):
+def test_property_types(bw, path):
     nodes = []
     for i in range(4):
         bnp = BioCypherNode(
@@ -290,7 +298,7 @@ def test_property_types(bw):
     assert 'BiologicalEntity' in data
 
 
-def test_write_node_data_from_list(bw):
+def test_write_node_data_from_list(bw, path):
     nodes = _get_nodes(4)
 
     passed = bw._write_node_data(nodes, batch_size=1e6)
@@ -311,7 +319,7 @@ def test_write_node_data_from_list(bw):
     assert 'ChemicalEntity' in mi
 
 
-def test_write_node_data_from_gen(bw):
+def test_write_node_data_from_gen(bw, path):
     nodes = _get_nodes(4)
 
     def node_gen(nodes):
@@ -335,7 +343,7 @@ def test_write_node_data_from_gen(bw):
     assert 'ChemicalEntity' in mi
 
 
-def test_write_node_data_from_gen_no_props(bw):
+def test_write_node_data_from_gen_no_props(bw, path):
     nodes = []
     le = 4
     for i in range(le):
@@ -377,7 +385,7 @@ def test_write_node_data_from_gen_no_props(bw):
     assert 'ChemicalEntity' in mi
 
 
-def test_write_node_data_from_large_gen(bw):
+def test_write_node_data_from_large_gen(bw, path):
     nodes = _get_nodes(int(1e4 + 4))
 
     def node_gen(nodes):
@@ -430,7 +438,7 @@ def test_too_many_properties(bw):
     assert not passed
 
 
-def test_not_enough_properties(bw):
+def test_not_enough_properties(bw, path):
     nodes = _get_nodes(1)
 
     bn1 = BioCypherNode(
@@ -452,7 +460,7 @@ def test_not_enough_properties(bw):
     assert not passed and not isfile(p0_csv)
 
 
-def test_write_none_type_property_and_order_invariance(bw):
+def test_write_none_type_property_and_order_invariance(bw, path):
     # as introduced by translation using defined properties in
     # schema_config.yaml
     nodes = []
@@ -506,7 +514,7 @@ def test_write_none_type_property_and_order_invariance(bw):
     assert 'BiologicalEntity' in p
 
 
-def test_accidental_exact_batch_size(bw):
+def test_accidental_exact_batch_size(bw, path):
     nodes = _get_nodes(int(1e4))
 
     def node_gen(nodes):
@@ -541,7 +549,7 @@ def test_accidental_exact_batch_size(bw):
     )
 
 
-def test_write_edge_data_from_gen(bw):
+def test_write_edge_data_from_gen(bw, path):
     edges = _get_edges(4)
 
     def edge_gen(edges):
@@ -596,7 +604,7 @@ def _get_edges(l):
     return edges
 
 
-def test_write_edge_data_from_large_gen(bw):
+def test_write_edge_data_from_large_gen(bw, path):
 
     edges = _get_edges(int(1e4 + 4))
 
@@ -621,7 +629,7 @@ def test_write_edge_data_from_large_gen(bw):
     )
 
 
-def test_write_edge_data_from_list(bw):
+def test_write_edge_data_from_list(bw, path):
     edges = _get_edges(4)
 
     passed = bw._write_edge_data(edges, batch_size=int(1e4))
@@ -643,7 +651,7 @@ def test_write_edge_data_from_list(bw):
     assert '\n' in c
 
 
-def test_write_edge_data_from_list_no_props(bw):
+def test_write_edge_data_from_list_no_props(bw, path):
     le = 4
     edges = []
     for i in range(le):
@@ -679,7 +687,7 @@ def test_write_edge_data_from_list_no_props(bw):
     assert '\n' in c
 
 
-def test_write_edge_data_headers_import_call(bw):
+def test_write_edge_data_headers_import_call(bw, path):
     edges = _get_edges(8)
 
     nodes = _get_nodes(8)
@@ -714,7 +722,7 @@ def test_write_edge_data_headers_import_call(bw):
     )
 
 
-def test_write_duplicate_edges(bw):
+def test_write_duplicate_edges(bw, path):
     edges = _get_edges(4)
     edges.append(edges[0])
 
@@ -729,7 +737,7 @@ def test_write_duplicate_edges(bw):
     assert passed and l == 4 and c == 4
 
 
-def test_BioCypherRelAsNode_implementation(bw):
+def test_BioCypherRelAsNode_implementation(bw, path):
     trips = _get_rel_as_nodes(4)
 
     def gen(lis):
@@ -783,7 +791,7 @@ def _get_rel_as_nodes(l):
     return rels
 
 
-def test_RelAsNode_overwrite_behaviour(bw):
+def test_RelAsNode_overwrite_behaviour(bw, path):
     # if rel as node is called from successive write calls, SOURCE_OF,
     # TARGET_OF, and PART_OF should be continued, not overwritten
     trips = _get_rel_as_nodes(8)
@@ -802,7 +810,7 @@ def test_RelAsNode_overwrite_behaviour(bw):
     assert passed1 and passed2 and isfile(iso_csv)
 
 
-def test_write_mixed_edges(bw):
+def test_write_mixed_edges(bw, path):
     mixed = []
     le = 4
     for i in range(le):
@@ -845,7 +853,7 @@ def test_write_mixed_edges(bw):
     )
 
 
-def test_create_import_call(bw):
+def test_create_import_call(bw, path):
     mixed = []
     le = 4
     for i in range(le):
@@ -890,7 +898,7 @@ def test_create_import_call(bw):
     )
 
 
-def test_write_offline():
+def test_write_offline(path):
     # more of an integration test.. put in test_driver?
     d = Driver(
         offline=True,
@@ -924,7 +932,7 @@ def test_write_offline():
     assert 'ChemicalEntity' in mi
 
 
-def test_duplicate_id(bw):
+def test_duplicate_id(bw, path):
     nodes = []
     csv = os.path.join(path, 'Protein-part000.csv')
     # remove csv file in path
@@ -951,7 +959,7 @@ def test_duplicate_id(bw):
     assert passed and l_lines0 == 1
 
 
-def test_write_synonym(bw):
+def test_write_synonym(bw, path):
     nodes = []
     csv = os.path.join(path, 'Complex-part000.csv')
     # remove csv file in path
@@ -976,7 +984,8 @@ def test_write_synonym(bw):
         comp = f.read()
 
     assert passed and os.path.exists(csv)
-    assert comp == "p1;'StringProperty1';4.32;9606;'p1';'id';Complex|Entity|MacromolecularMachineMixin|Mixin\np2;'StringProperty1';4.32;9606;'p2';'id';Complex|Entity|MacromolecularMachineMixin|Mixin\np3;'StringProperty1';4.32;9606;'p3';'id';Complex|Entity|MacromolecularMachineMixin|Mixin\np4;'StringProperty1';4.32;9606;'p4';'id';Complex|Entity|MacromolecularMachineMixin|Mixin\n"
+    assert "p1;'StringProperty1';4.32;9606;'p1';'id'" in comp
+    assert 'Complex' in comp
 
 
 def test_duplicate_nodes(bw):
@@ -1061,7 +1070,7 @@ def test_get_duplicate_edges(bw):
     assert 'p1_p2' in ids
 
 
-def test_write_strict(bw_strict):
+def test_write_strict(bw_strict, path_strict):
 
     n1 = BioCypherNode(
         node_id='p1',

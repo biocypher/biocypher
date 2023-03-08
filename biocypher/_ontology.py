@@ -397,7 +397,8 @@ class Ontology:
     def _add_properties(self) -> None:
         """
         For each entity in the mapping, update the ontology with the properties
-        specified in the mapping.
+        specified in the mapping. Updates synonym information in the graph,
+        setting the synonym as the primary node label.
         """
 
         for key, value in self.extended_schema.items():
@@ -405,6 +406,18 @@ class Ontology:
             if key in self._nx_graph.nodes:
 
                 self._nx_graph.nodes[key].update(value)
+
+            if value.get('synonym_for'):
+
+                # change node label to synonym
+                if value['synonym_for'] not in self._nx_graph.nodes:
+                    raise ValueError(
+                        f'Node {value["synonym_for"]} not found in ontology.'
+                    )
+
+                self._nx_graph = nx.relabel_nodes(
+                    self._nx_graph, {value['synonym_for']: key}
+                )
 
     def get_ancestors(self, node_label: str) -> list:
         """
@@ -417,34 +430,42 @@ class Ontology:
             list: A list of the ancestors of the node.
         """
 
-        return nx.dfs_preorder_nodes(self._nx_graph, node_label)
+        return nx.dfs_tree(self._nx_graph, node_label)
 
     def show_ontology_structure(self):
         """
         Show the ontology structure using treelib.
         """
 
-        msg = 'Showing ontology structure,'
+        if not self._nx_graph:
+            raise ValueError('Ontology not loaded.')
 
-        if self.hybrid_ontology:
-
-            ontology = self.hybrid_ontology
+        if not self._tail_ontologies:
+            msg = f'Showing ontology structure based on {self._head_ontology._ontology_file}'
 
         else:
+            msg = f'Showing ontology structure based on {len(self._tail_ontology_meta)+1} ontologies: '
 
-            ontology = self.head_ontology
-
-        tree = _misc.create_tree_visualisation(ontology)
-
-        msg += f' based on Biolink {self.biolink_adapter.biolink_version}:'
         print(msg)
 
+        # set of leaves and their intermediate parents up to the root
+        filter_nodes = set(self.extended_schema.keys())
+
+        for node in self.extended_schema.keys():
+            filter_nodes.update(self.get_ancestors(node).nodes)
+
+        # filter graph
+        graph = self._nx_graph.subgraph(filter_nodes)
+
+        # create tree
+        tree = _misc.create_tree_visualisation(graph)
+
         # add synonym information
-        for class_name in self.leaves:
-            if self.leaves[class_name].get('synonym_for'):
-                tree.nodes[class_name].tag = (
-                    f'{class_name} = '
-                    f"{self.leaves[class_name].get('synonym_for')}"
+        for node in self.extended_schema:
+            if self.extended_schema[node].get('synonym_for'):
+                tree.nodes[node].tag = (
+                    f'{node} = '
+                    f"{self.extended_schema[node].get('synonym_for')}"
                 )
 
         tree.show()
