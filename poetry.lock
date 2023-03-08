@@ -495,24 +495,17 @@ pytz = "*"
 
 [[package]]
 name = "neo4j-utils"
-version = "0.0.6"
+version = "0.0.7"
 description = ""
 category = "main"
 optional = false
-python-versions = "^3.8"
-develop = false
+python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
 colorlog = "*"
-neo4j = "^4.4"
+neo4j = ">=4.4,<5.0"
 PyYAML = ">=5.0"
 toml = "*"
-
-[package.source]
-type = "git"
-url = "https://github.com/saezlab/neo4j-utils.git"
-reference = "v0.0.6"
-resolved_reference = "d07b09769c4c5cb3b16224060ad9524fa81b9248"
 
 [[package]]
 name = "networkx"
@@ -1146,7 +1139,7 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "e8d0d170ea63427f328e5625533a24c356a196edf379f7372961c36822a52468"
+content-hash = "a1d9ba6a0e315df2b7ba88e0f21bd227b35afd8b2c77b6ed28c761ed262c2713"
 
 [metadata.files]
 alabaster = [
@@ -1485,7 +1478,10 @@ myst-parser = [
 neo4j = [
     {file = "neo4j-4.4.10.tar.gz", hash = "sha256:26db4f9c8f628e53bda62f15cf2a7bfac6e2073e962da761c7164b6b122fca44"},
 ]
-neo4j-utils = []
+neo4j-utils = [
+    {file = "neo4j-utils-0.0.7.tar.gz", hash = "sha256:c50e1e6cc3fd852dceadb93320718271afc6ae4efba662bde0cadd9d591ce031"},
+    {file = "neo4j_utils-0.0.7-py3-none-any.whl", hash = "sha256:afb49258e60e9123c93dae99eef86fd5f8572997b5edaccaaae95b8826e02f42"},
+]
 networkx = [
     {file = "networkx-3.0-py3-none-any.whl", hash = "sha256:58058d66b1818043527244fab9d41a51fcd7dcc271748015f3c181b8a90c8e2e"},
     {file = "networkx-3.0.tar.gz", hash = "sha256:9a9992345353618ae98339c2b63d8201c381c2944f38a2ab49cb45a4c667e412"},

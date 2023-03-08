@@ -164,9 +164,9 @@ class Driver(neo4j_utils.Driver):
         self.wipe = wipe
 
         if offline is None:
-            self.offline = _config('offline')
+            self._offline = _config('offline')
         else:
-            self.offline = offline
+            self._offline = offline
 
         # BioCypher options
         self.user_schema_config_path = user_schema_config_path or _config(
@@ -180,7 +180,7 @@ class Driver(neo4j_utils.Driver):
 
         self.tail_ontologies = tail_ontologies or _config('tail_ontologies')
 
-        if self.offline:
+        if self._offline:
 
             if not self.user_schema_config_path:
                 raise ValueError(
@@ -248,7 +248,7 @@ class Driver(neo4j_utils.Driver):
 
     def update_meta_graph(self):
 
-        if self.offline:
+        if self._offline:
             return
 
         logger.info('Updating Neo4j meta graph.')

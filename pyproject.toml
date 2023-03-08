@@ -28,13 +28,11 @@ python = "^3.9"
 PyYAML = ">=5.0"
 more_itertools = "*"
 appdirs = "*"
-neo4j-utils = { git = "https://github.com/saezlab/neo4j-utils.git", tag = "v0.0.6" }
-# for local development one can switch to local path:
-# neo4j-utils = { path = "../neo4j-utils/", develop = true }
 treelib = "^1.6.1"
 rdflib = "^6.2.0"
 networkx = "^3.0"
 stringcase = "^1.2.0"
+neo4j-utils = "0.0.7"
 
 [tool.poetry.group.dev.dependencies]
 yapf = "^0.32.0"
