@@ -617,7 +617,6 @@ class Driver(neo4j_utils.Driver):
         """
         if not self.batch_writer:
             self.batch_writer = BatchWriter(
-                extended_schema=self._ontology_mapping.extended_schema,
                 ontology=self.ontology,
                 translator=self.translator,
                 delimiter=self.db_delim,

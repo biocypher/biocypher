@@ -39,7 +39,7 @@ microRNA:
   label_in_input: mirna
 
 complex:
-  synonym_for: macromolecular complex mixin
+  synonym_for: macromolecular complex
   represented_as: node
   preferred_id: complexportal
   label_in_input: complex
@@ -144,6 +144,7 @@ dsDNA sequence:
 
 # added to custom biolink
 post translational interaction:
+  is_a: pairwise molecular interaction
   represented_as: node
   label_as_edge: INTERACTS_POST_TRANSLATIONAL
   label_in_input: post_translational

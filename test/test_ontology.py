@@ -16,8 +16,7 @@ def ontology_mapping():
 @pytest.fixture
 def biolink_adapter():
     return OntologyAdapter(
-        'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl',
-        'entity'
+        '/Users/slobentanzer/Downloads/biolink-model.owl.ttl', 'entity'
     )
 
 
@@ -47,10 +46,8 @@ def mondo_adapter():
 def hybrid_ontology(ontology_mapping):
     return Ontology(
         head_ontology={
-            'url':
-                'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl',
-            'root_node':
-                'entity',
+            'url': '/Users/slobentanzer/Downloads/biolink-model.owl.ttl',
+            'root_node': 'entity',
         },
         mapping=ontology_mapping,
         tail_ontologies={
@@ -104,7 +101,7 @@ def test_mondo_adapter(mondo_adapter):
     assert 'disease' in mondo_adapter.get_ancestors('cancer')
 
 
-def test_hybridise(hybrid_ontology):
+def test_ontology_functions(hybrid_ontology):
     assert isinstance(hybrid_ontology, Ontology)
 
     first_tail_ontology = hybrid_ontology._tail_ontologies.get('so'
@@ -163,6 +160,8 @@ def test_hybridise(hybrid_ontology):
     assert 'taxon' in protein['properties'].keys()
 
     # synonyms
+    assert 'complex' in hybrid_ontology._nx_graph.nodes
+    assert 'macromolecular complex' not in hybrid_ontology._nx_graph.nodes
 
 
 def test_show_ontology(ontology):

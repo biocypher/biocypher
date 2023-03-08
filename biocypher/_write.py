@@ -106,12 +106,13 @@ class BatchWriter:
     to convert and extend the hierarchy.
 
     Args:
-        leaves:
-            The BioCypher graph schema leaves (ontology classes).
-
         ontology:
             Instance of :py:class:`Ontology` to enable translation and
             ontology queries
+
+        translator:
+            Instance of :py:class:`Translator` to enable translation of
+            nodes and manipulation of properties.
 
         delimiter:
             The delimiter to use for the CSV files.
@@ -152,7 +153,6 @@ class BatchWriter:
     """
     def __init__(
         self,
-        extended_schema: dict,
         ontology: 'Ontology',
         translator: 'Translator',
         delimiter: str,
@@ -183,8 +183,8 @@ class BatchWriter:
         self.wipe = wipe
         self.strict_mode = strict_mode
 
-        self.leaves = extended_schema
-        self.ontology_adapter = ontology
+        self.extended_schema = ontology.extended_schema
+        self.ontology = ontology
         self.translator = translator
         self.node_property_dict = {}
         self.edge_property_dict = {}
@@ -370,9 +370,7 @@ class BatchWriter:
                     bin_l[label] = 1
 
                     # get properties from config if present
-                    cprops = self.ontology_adapter.leaves.get(label).get(
-                        'properties',
-                    )
+                    cprops = self.extended_schema.get(label).get('properties', )
                     if cprops:
                         d = dict(cprops)
 
@@ -405,7 +403,7 @@ class BatchWriter:
 
                     # get label hierarchy
                     # multiple labels:
-                    all_labels = self.ontology_adapter.get_node_ancestry(label)
+                    all_labels = self.ontology.get_ancestors(label)
 
                     if all_labels:
                         # convert to pascal case
@@ -734,13 +732,13 @@ class BatchWriter:
                     # (may not be if it is an edge that carries the
                     # "label_as_edge" property)
                     cprops = None
-                    if label in self.ontology_adapter.leaves:
-                        cprops = self.ontology_adapter.leaves.get(label).get(
+                    if label in self.extended_schema:
+                        cprops = self.extended_schema.get(label).get(
                             'properties',
                         )
                     else:
                         # try via "label_as_edge"
-                        for k, v in self.ontology_adapter.leaves.items():
+                        for k, v in self.extended_schema.items():
                             if isinstance(v, dict):
                                 if v.get('label_as_edge') == label:
                                     cprops = v.get('properties')
