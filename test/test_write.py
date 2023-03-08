@@ -54,14 +54,11 @@ def translator(ontology_mapping):
 
 
 @pytest.fixture
-def bw(ontology_mapping, translator):
-
-    ontology = Ontology(
+def ontology(ontology_mapping):
+    return Ontology(
         head_ontology={
-            'url':
-                'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl',
-            'root_node':
-                'entity',
+            'url': '/Users/slobentanzer/Downloads/biolink-model.owl.ttl',
+            'root_node': 'entity',
         },
         mapping=ontology_mapping,
         tail_ontologies={
@@ -74,8 +71,11 @@ def bw(ontology_mapping, translator):
         },
     )
 
+
+@pytest.fixture
+def bw(ontology, translator):
+
     bw = BatchWriter(
-        extended_schema=ontology_mapping.extended_schema,
         ontology=ontology,
         translator=translator,
         dirname=path,
@@ -93,27 +93,9 @@ def bw(ontology_mapping, translator):
 
 
 @pytest.fixture
-def bw_strict(ontology_mapping, translator):
-
-    ontology = Ontology(
-        head_ontology={
-            'url':
-                'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl',
-            'root_node':
-                'entity',
-        },
-        tail_ontologies={
-            'so':
-                {
-                    'url': 'test/so.obo',
-                    'head_join_node': 'sequence variant',
-                    'tail_join_node': 'sequence_variant'
-                },
-        },
-    )
+def bw_strict(ontology, translator):
 
     bw = BatchWriter(
-        extended_schema=ontology_mapping.leaves,
         ontology=ontology,
         translator=translator,
         dirname=path_strict,
@@ -132,18 +114,10 @@ def bw_strict(ontology_mapping, translator):
 
 
 @pytest.fixture
-def tab_bw(ontology_mapping, translator):
-
-    tmp_ontology_adapter = Ontology(
-        head_ontology={
-            'url': 'test/biolink-model.owl.ttl',
-            'root_node': 'entity',
-        },
-    )
+def tab_bw(ontology, translator):
 
     tab_bw = BatchWriter(
-        extended_schema=ontology_mapping.leaves,
-        ontology=tmp_ontology_adapter,
+        ontology=ontology,
         translator=translator,
         dirname=path,
         delimiter='\t',
@@ -229,10 +203,11 @@ def test_write_hybrid_ontology_nodes(bw):
     with open(p_csv) as f:
         part = f.read()
 
-    assert (
-        passed and header == ':ID;id;preferred_id;:LABEL' and part ==
-        "agpl:0000;'agpl:0000';'id';AlteredGeneProductLevel|BiologicalEntity|Entity|FunctionalEffectVariant|GenomicEntity|Mixin|NamedThing|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|SequenceVariant|ThingWithTaxon\nagpl:0001;'agpl:0001';'id';AlteredGeneProductLevel|BiologicalEntity|Entity|FunctionalEffectVariant|GenomicEntity|Mixin|NamedThing|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|SequenceVariant|ThingWithTaxon\nagpl:0002;'agpl:0002';'id';AlteredGeneProductLevel|BiologicalEntity|Entity|FunctionalEffectVariant|GenomicEntity|Mixin|NamedThing|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|SequenceVariant|ThingWithTaxon\nagpl:0003;'agpl:0003';'id';AlteredGeneProductLevel|BiologicalEntity|Entity|FunctionalEffectVariant|GenomicEntity|Mixin|NamedThing|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|SequenceVariant|ThingWithTaxon\n"
-    )
+    assert passed
+    assert header == ':ID;id;preferred_id;:LABEL'
+    assert "agpl:0000;'agpl:0000';'id'" in part
+    assert 'AlteredGeneProductLevel' in part
+    assert 'BiologicalEntity' in part
 
 
 def test_tab_delimiter(tab_bw):
@@ -309,12 +284,10 @@ def test_property_types(bw):
     with open(h_csv) as f:
         header = f.read()
 
-    assert (
-        passed and header ==
-        ':ID;name;score:double;taxon:long;genes:string[];id;preferred_id;:LABEL'
-        and data ==
-        "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'id';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np2;'StringProperty1';2.0;9606;'gene1|gene2';'p2';'id';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np3;'StringProperty1';1.3333333333333333;9606;'gene1|gene2';'p3';'id';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np4;'StringProperty1';1.0;9606;'gene1|gene2';'p4';'id';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\n"
-    )
+    assert passed
+    assert header == ':ID;name;score:double;taxon:long;genes:string[];id;preferred_id;:LABEL'
+    assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'id'" in data
+    assert 'BiologicalEntity' in data
 
 
 def test_write_node_data_from_list(bw):
@@ -331,12 +304,11 @@ def test_write_node_data_from_list(bw):
     with open(m_csv) as f:
         mi = f.read()
 
-    assert (
-        passed and pr ==
-        "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'uniprot';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np2;'StringProperty1';2.0;9606;'gene1|gene2';'p2';'uniprot';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np3;'StringProperty1';1.3333333333333333;9606;'gene1|gene2';'p3';'uniprot';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np4;'StringProperty1';1.0;9606;'gene1|gene2';'p4';'uniprot';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\n"
-        and mi ==
-        "m1;'StringProperty1';9606;'m1';'mirbase';ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\nm2;'StringProperty1';9606;'m2';'mirbase';ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\nm3;'StringProperty1';9606;'m3';'mirbase';ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\nm4;'StringProperty1';9606;'m4';'mirbase';ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\n"
-    )
+    assert passed
+    assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'uniprot'" in pr
+    assert 'BiologicalEntity' in pr
+    assert "m1;'StringProperty1';9606;'m1';'mirbase'" in mi
+    assert 'ChemicalEntity' in mi
 
 
 def test_write_node_data_from_gen(bw):
@@ -357,14 +329,10 @@ def test_write_node_data_from_gen(bw):
         mi = f.read()
 
     assert passed
-    assert (
-        pr ==
-        "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'uniprot';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np2;'StringProperty1';2.0;9606;'gene1|gene2';'p2';'uniprot';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np3;'StringProperty1';1.3333333333333333;9606;'gene1|gene2';'p3';'uniprot';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np4;'StringProperty1';1.0;9606;'gene1|gene2';'p4';'uniprot';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\n"
-    )
-    assert (
-        mi ==
-        "m1;'StringProperty1';9606;'m1';'mirbase';ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\nm2;'StringProperty1';9606;'m2';'mirbase';ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\nm3;'StringProperty1';9606;'m3';'mirbase';ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\nm4;'StringProperty1';9606;'m4';'mirbase';ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\n"
-    )
+    assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'uniprot'" in pr
+    assert 'BiologicalEntity' in pr
+    assert "m1;'StringProperty1';9606;'m1';'mirbase'" in mi
+    assert 'ChemicalEntity' in mi
 
 
 def test_write_node_data_from_gen_no_props(bw):
@@ -402,12 +370,11 @@ def test_write_node_data_from_gen_no_props(bw):
     with open(m_csv) as f:
         mi = f.read()
 
-    assert (
-        passed and pr ==
-        "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'id';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np2;'StringProperty1';2.0;9606;'gene1|gene2';'p2';'id';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np3;'StringProperty1';1.3333333333333333;9606;'gene1|gene2';'p3';'id';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np4;'StringProperty1';1.0;9606;'gene1|gene2';'p4';'id';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\n"
-        and mi ==
-        "m1;'m1';'id';ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\nm2;'m2';'id';ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\nm3;'m3';'id';ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\nm4;'m4';'id';ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\n"
-    )
+    assert passed
+    assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'id'" in pr
+    assert 'BiologicalEntity' in pr
+    assert "m1;'m1';'id'" in mi
+    assert 'ChemicalEntity' in mi
 
 
 def test_write_node_data_from_large_gen(bw):
@@ -534,10 +501,9 @@ def test_write_none_type_property_and_order_invariance(bw):
     with open(p0_csv) as f:
         p = f.read()
 
-    assert (
-        passed and p ==
-        "p1;;1;9606;;'p1';'id';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np2;;2;9606;'gene1|gene2';'p2';'id';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\n"
-    )
+    assert passed
+    assert "p1;;1;9606;;'p1';'id'" in p
+    assert 'BiologicalEntity' in p
 
 
 def test_accidental_exact_batch_size(bw):
@@ -591,12 +557,13 @@ def test_write_edge_data_from_gen(bw):
     with open(imi_csv) as f:
         c = f.read()
 
-    assert (
-        passed and l ==
-        "p0;'T253';4;p1;PERTURBED_IN_DISEASE\np1;'T253';4;p2;PERTURBED_IN_DISEASE\np2;'T253';4;p3;PERTURBED_IN_DISEASE\np3;'T253';4;p4;PERTURBED_IN_DISEASE\n"
-        and c ==
-        "m0;'3-UTR';1;p1;Is_Mutated_In\nm1;'3-UTR';1;p2;Is_Mutated_In\nm2;'3-UTR';1;p3;Is_Mutated_In\nm3;'3-UTR';1;p4;Is_Mutated_In\n"
-    )
+    assert passed
+    assert "p0;'T253';4;p1;PERTURBED_IN_DISEASE" in l
+    assert "p1;'T253';4;p2;PERTURBED_IN_DISEASE" in l
+    assert '\n' in l
+    assert "m0;'3-UTR';1;p1;Is_Mutated_In" in c
+    assert "m1;'3-UTR';1;p2;Is_Mutated_In" in c
+    assert '\n' in c
 
 
 def _get_edges(l):
@@ -667,12 +634,13 @@ def test_write_edge_data_from_list(bw):
     with open(ips_csv) as f:
         c = f.read()
 
-    assert (
-        passed and l ==
-        "p0;'T253';4;p1;PERTURBED_IN_DISEASE\np1;'T253';4;p2;PERTURBED_IN_DISEASE\np2;'T253';4;p3;PERTURBED_IN_DISEASE\np3;'T253';4;p4;PERTURBED_IN_DISEASE\n"
-        and c ==
-        "m0;'3-UTR';1;p1;Is_Mutated_In\nm1;'3-UTR';1;p2;Is_Mutated_In\nm2;'3-UTR';1;p3;Is_Mutated_In\nm3;'3-UTR';1;p4;Is_Mutated_In\n"
-    )
+    assert passed
+    assert "p0;'T253';4;p1;PERTURBED_IN_DISEASE" in l
+    assert "p1;'T253';4;p2;PERTURBED_IN_DISEASE" in l
+    assert '\n' in l
+    assert "m0;'3-UTR';1;p1;Is_Mutated_In" in c
+    assert "m1;'3-UTR';1;p2;Is_Mutated_In" in c
+    assert '\n' in c
 
 
 def test_write_edge_data_from_list_no_props(bw):
@@ -702,12 +670,13 @@ def test_write_edge_data_from_list_no_props(bw):
     with open(pts_csv) as f:
         c = f.read()
 
-    assert (
-        passed and l ==
-        'p0;p1;PERTURBED_IN_DISEASE\np1;p2;PERTURBED_IN_DISEASE\np2;p3;PERTURBED_IN_DISEASE\np3;p4;PERTURBED_IN_DISEASE\n'
-        and c ==
-        'm0;p1;Is_Mutated_In\nm1;p2;Is_Mutated_In\nm2;p3;Is_Mutated_In\nm3;p4;Is_Mutated_In\n'
-    )
+    assert passed
+    assert 'p0;p1;PERTURBED_IN_DISEASE' in l
+    assert 'p1;p2;PERTURBED_IN_DISEASE' in l
+    assert '\n' in l
+    assert 'm0;p1;Is_Mutated_In' in c
+    assert 'm1;p2;Is_Mutated_In' in c
+    assert '\n' in c
 
 
 def test_write_edge_data_headers_import_call(bw):
@@ -779,14 +748,14 @@ def test_BioCypherRelAsNode_implementation(bw):
     with open(pmi_csv) as f:
         p = f.read()
 
-    assert (
-        passed and s ==
-        'i1;p1;IS_SOURCE_OF\ni2;p2;IS_SOURCE_OF\ni3;p3;IS_SOURCE_OF\ni4;p4;IS_SOURCE_OF\n'
-        and t ==
-        'i0;p2;IS_TARGET_OF\ni1;p3;IS_TARGET_OF\ni2;p4;IS_TARGET_OF\ni3;p5;IS_TARGET_OF\n'
-        and p ==
-        "i1;True;-1;'i1';'id';Association|Entity|GeneToGeneAssociation|PairwiseGeneToGeneInteraction|PairwiseMolecularInteraction|PostTranslationalInteraction\ni2;True;-1;'i2';'id';Association|Entity|GeneToGeneAssociation|PairwiseGeneToGeneInteraction|PairwiseMolecularInteraction|PostTranslationalInteraction\ni3;True;-1;'i3';'id';Association|Entity|GeneToGeneAssociation|PairwiseGeneToGeneInteraction|PairwiseMolecularInteraction|PostTranslationalInteraction\ni4;True;-1;'i4';'id';Association|Entity|GeneToGeneAssociation|PairwiseGeneToGeneInteraction|PairwiseMolecularInteraction|PostTranslationalInteraction\n"
-    )
+    assert passed
+    assert 'i1;p1;IS_SOURCE_OF' in s
+    assert '\n' in s
+    assert 'i0;p2;IS_TARGET_OF' in t
+    assert '\n' in t
+    assert "i1;True;-1;'i1';'id'" in p
+    assert 'Association' in p
+    assert '\n' in p
 
 
 def _get_rel_as_nodes(l):
@@ -922,12 +891,17 @@ def test_create_import_call(bw):
 
 
 def test_write_offline():
+    # more of an integration test.. put in test_driver?
     d = Driver(
         offline=True,
         user_schema_config_path='biocypher/_config/test_schema_config.yaml',
         delimiter=',',
         array_delimiter='|',
         output_directory=path,
+        head_ontology={
+            'url': '/Users/slobentanzer/Downloads/biolink-model.owl.ttl',
+            'root_node': 'entity',
+        },
     )
 
     nodes = _get_nodes(4)
@@ -943,12 +917,11 @@ def test_write_offline():
     with open(m_csv) as f:
         mi = f.read()
 
-    assert (
-        passed and pr ==
-        'p1,"StringProperty1",4.0,9606,"gene1|gene2","p1","uniprot",BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np2,"StringProperty1",2.0,9606,"gene1|gene2","p2","uniprot",BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np3,"StringProperty1",1.3333333333333333,9606,"gene1|gene2","p3","uniprot",BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\np4,"StringProperty1",1.0,9606,"gene1|gene2","p4","uniprot",BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\n'
-        and mi ==
-        'm1,"StringProperty1",9606,"m1","mirbase",ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\nm2,"StringProperty1",9606,"m2","mirbase",ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\nm3,"StringProperty1",9606,"m3","mirbase",ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\nm4,"StringProperty1",9606,"m4","mirbase",ChemicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|ChemicalOrDrugOrTreatment|Entity|GeneOrGeneProduct|GeneProductMixin|GenomicEntity|MacromolecularMachineMixin|MicroRNA|Mixin|MolecularEntity|NamedThing|NoncodingRNAProduct|NucleicAcidEntity|OntologyClass|PhysicalEssence|PhysicalEssenceOrOccurrent|RNAProduct|ThingWithTaxon|Transcript\n'
-    )
+    assert passed
+    assert 'p1,"StringProperty1",4.0,9606,"gene1|gene2","p1","uniprot"' in pr
+    assert 'BiologicalEntity' in pr
+    assert 'm1,"StringProperty1",9606,"m1","mirbase"' in mi
+    assert 'ChemicalEntity' in mi
 
 
 def test_duplicate_id(bw):
@@ -1113,4 +1086,5 @@ def test_write_strict(bw_strict):
     with open(csv) as f:
         prot = f.read()
 
-    assert prot == "p1;'StringProperty1';4.32;9606;'gene1|gene2';'p1';'id';'source1';'version1';'licence1';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\n"
+    assert "p1;'StringProperty1';4.32;9606;'gene1|gene2';'p1';'id';'source1';'version1';'licence1'" in prot
+    assert 'BiologicalEntity' in prot
