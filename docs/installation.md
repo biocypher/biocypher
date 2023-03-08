@@ -92,19 +92,23 @@ logdir: biocypher-log
 # Set to change the output directory
 outdir: biocypher-out
 
-# Clear ontology cache
-# BioCypher caches the ontology scaffold for performance reasons
-# Set to true to clear the cache and re-download the ontology
-clear_cache: false
-
 # Ontology configuration
+# We need to define a head ontology (default format OWL) and which node should
+# be the root of the ontology tree.
+head_ontology:
+  url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
+  root_node: 'entity'
+
+# Optionally, we can define an arbitrary number of tail ontologies, using local
+# or online files. For each tail ontology, we need to define the join nodes in
+# the head and tail ontology, at which the two trees will be fused.
 tail_ontologies:
   so:
-    url: test/so.obo
+    url: test/so.owl
     head_join_node: sequence variant
     tail_join_node: sequence_variant
   mondo:
-    url: test/mondo.obo
+    url: test/mondo.owl
     head_join_node: disease
     tail_join_node: disease
 ```

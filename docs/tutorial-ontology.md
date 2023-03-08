@@ -46,20 +46,48 @@ For a more in-depth explanation of ontologies, we recommend [this
 introduction](https://oboacademy.github.io/obook/explanation/intro-to-ontologies/).
 
 ## How BioCypher uses ontologies
-BioCypher is — in principle — agnostic to the choice of ontology. Practically,
-however, we have built our initial projects around the [Biolink
-model](https://biolink.github.io/biolink-model/), because it comprises a large
-part of concepts that are relevant to the biomedical domain.  This does not mean
-that it is the only ontology that can be used with BioCypher. In fact, it is
-possible to use multiple ontologies in the same project. For instance, one might
-want to extend the rather basic classes relating to molecular interactions in
-Biolink (the most specific being `pairwise molecular interaction`) with more
-specific classes from a more domain-specific ontology, such as the EBI molecular
-interactions ontology ([PSI-MI](https://www.ebi.ac.uk/ols/ontologies/mi)). The
-[OBO Foundry](https://obofoundry.org) collects many such specialised ontologies
-in a format that can readily be ingested by BioCypher (OBO Format).
+BioCypher is agnostic to the choice of ontology. Practically, we have built our
+initial projects around the [Biolink
+model](https://biolink.github.io/biolink-model/), because it provides a large
+but shallow collection of concepts that are relevant to the biomedical domain.
+Other examples of generalist ontologies are the [Experimental Factor Ontology](
+https://www.ebi.ac.uk/ols/ontologies/efo) and the [Basic Formal Ontology](
+https://obofoundry.org/ontology/bfo.html). To account for the specific
+requirements of expert systems, it is possible to use multiple ontologies in the
+same project. For instance, one might want to extend the rather basic classes
+relating to molecular interactions in Biolink (the most specific being `pairwise
+molecular interaction`) with more specific classes from a more domain-specific
+ontology, such as the EBI molecular interactions ontology
+([PSI-MI](https://www.ebi.ac.uk/ols/ontologies/mi)).  A different project may
+need to define very specific genetics concepts, and thus extend the Biolink
+model at the terminal node ``sequence variant`` with the corresponding subtree
+of the [Sequence Ontology](http://www.sequenceontology.org/). The [OBO
+Foundry](https://obofoundry.org) collects many such specialised ontologies.
 
-<!-- TODO example -->
+The default format for ingesting ontology definitions into BioCypher is the Web
+Ontology Language (OWL); BioCypher can read ``.owl``, ``.rdf``, and ``.ttl``
+files. The preferred way to specify the ontology or ontologies to be used in a
+project is to specify them in the biocypher configuration file
+(`biocypher_config.yaml`). This file is used to specify the location of the
+ontology files, as well as the root node of the main ("head") ontology and join
+nodes as fusion points for all "tail" ontologies.
+
+```{code-block} yaml
+:caption: biocypher_config.yaml
+head_ontology:
+  url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
+  root_node: 'entity'
+tail_ontologies:
+  so:
+    url: https://raw.githubusercontent.com/The-Sequence-Ontology/SO-Ontologies/master/Ontology_Files/so.ow
+    head_join_node: sequence variant
+    tail_join_node: sequence_variant
+  mondo:
+    url: http://purl.obolibrary.org/obo/mondo.owl
+    head_join_node: disease
+    tail_join_node: disease
+```
+
 ## Visualising ontologies
 BioCypher provides a simple way of visualising the ontology hierarchy. This is
 useful for debugging and for getting a quick overview of the ontology and which
@@ -127,28 +155,29 @@ protein:
 ```
 
 (tutorial_ontology_extension)=
-## Biolink model extensions
-There are multiple reasons why a user might want to modify the Biolink model.  A
-class that is relevant to the user's task might be missing ([Explicit
-inheritance](tut_explicit)). A class might not be granular enough, and the user
-would like to split it into subclasses based on distinct inputs ([Implicit
-inheritance](tut_implicit)). The name of a Biolink model class may be too
-unwieldy for the use inside the desired knowledge graph, and the user would like
-to introduce a synonym ([Synonyms](tut_synonyms)). For some very common use
-cases, we recommend going one step further and, maybe after some testing,
-proposing the introduction of a new class to the Biolink model itself. Biolink
-is an open source community project, and new classes can be requested by opening
-an issue or filing a pull request directly on the [Biolink model GitHub
-repository](https://github.com/biolink/biolink-model). To prepare this pull
-request (or to maintain a local version of the Biolink model), BioCypher allows
-building the Biolink model from a modified YAML file ([Custom Biolink
-model](tut_custom)). Or, the user might want to extend the Biolink model with
-another ontology, such as the EBI molecular interactions ontology ([Hybridising
+## Model extensions
+There are multiple reasons why a user might want to modify the basic model of
+the ontology or ontologies used. A class that is relevant to the user's task
+might be missing ([Explicit inheritance](tut_explicit)). A class might not be
+granular enough, and the user would like to split it into subclasses based on
+distinct inputs ([Implicit inheritance](tut_implicit)). For some very common use
+cases, we recommend going one step further and, maybe after some testing using
+the above "soft" model extensions, proposing the introduction of a new class to
+the model itself. For instance, Biolink is an open source community project, and
+new classes can be requested by opening an issue or filing a pull request
+directly on the [Biolink model GitHub
+repository](https://github.com/biolink/biolink-model).
+
+BioCypher provides further methods for ontology manipulation. The name of a
+class of the model may be too unwieldy for the use inside the desired knowledge
+graph, and the user would like to introduce a synonym/alias
+([Synonyms](tut_synonyms)). Finally, the user might want to extend the basic
+model with another, more specialised ontology ([Hybridising
 ontologies](tut_hybridising)).
 
 (tut_explicit)=
 ### Explicit inheritance
-Explicit inheritance is the most straightforward way of extending the Biolink
+Explicit inheritance is the most straightforward way of extending the basic
 model. It is also the most common use case. For instance, the Biolink model
 does not contain a class for `protein isoform`, and neither does it contain a
 relationship class for `protein protein interaction`, both of which we have
@@ -259,33 +288,6 @@ identifiers but the sources (defined in the `source` field) are used to
 create the subclasses.
 ```
 
-For instance, if we wanted to create subclasses for pathway membership
-relationships of proteins from two different sources, such as the above Reactome
-and Wikipathways pathways, we could do so as follows:
-
-```{code-block} yaml
-:caption: schema_config.yaml
-pathway to protein association:
-  is_a: association
-  represented_as: node
-  source: [reactome.pathway, wikipathways.pathway]
-  target: protein
-  label_in_input: [react_protein_membership, wiki_protein_membership]
-  # ...
-```
-
-Like in the above example, this will prompt BioCypher to create two subclasses
-of `pathway to protein association`, one for each input, and to map the input
-data to these subclasses. In the resulting knowledge graph, pathway to protein
-associations from Reactome and Wikipathways will be represented as distinct
-subclasses by prepending the source to the relationship label, i.e., as
-`Reactome.PathwayToProteinAssociation` and
-`Wikipathways.PathwayToProteinAssociation`.
-
-<!-- TODO tutorial code -->
-<!-- TODO are these really the labels? do the sources need to be provided in
-sentence case or PascalCase? -->
-
 (tut_synonyms)=
 ### Synonyms
 ```{admonition} Tutorial files
@@ -295,12 +297,12 @@ files are at `tutorial/07_schema_config.yaml`. Data generation happens in
 `tutorial/data_generator.py`.
 ```
 
-In some cases, Biolink may contain a biological concept, but the name of the
-concept in Biolink does for some reason not agree with the users desired
+In some cases, an ontology may contain a biological concept, but the name of the
+concept does for some reason not agree with the users desired
 knowledge graph structure. For instance, the user may not want to represent
-protein complexes in the graph as `macromolecular complex mixin` nodes due to
+protein complexes in the graph as `macromolecular complex` nodes due to
 ease of use and/or readability criteria and rather call these nodes `complex`.
-In such cases, the user can introduce a synonym for the Biolink class. This is
+In such cases, the user can introduce a synonym for the ontology class. This is
 done by selecting another, more desirable name for the respective class(es) and
 specifying the `synonym_for` field in their schema configuration.  In this case,
 as we would like to represent protein complexes as `complex` nodes, we can do so
@@ -309,27 +311,27 @@ as follows:
 ```{code-block} yaml
 :caption: schema_config.yaml
 complex:
-  synonym_for: macromolecular complex mixin
+  synonym_for: macromolecular complex
   represented_as: node
   # ...
 ```
 
 Importantly, BioCypher preserves these mappings to enable compatibility between
-different structural instantiations of the Biolink model. All entities that are
-mapped to Biolink classes in any way can be harmonised even between different
-types of concrete representations.
+different structural instantiations of the ontology (or combination of
+ontologies). All entities that are mapped to ontology classes in any way can be
+harmonised even between different types of concrete representations.
 
 ```{note}
-It is essential that the desired class name is used as the main class key in
-the schema configuration, and the Biolink class name is given in the
-`synonym_for` field. The name given in the `synonym_for` field must be an
-existing Biolink class name.
+It is essential that the desired class name is used as the main class key in the
+schema configuration, and the ontology class name is given in the `synonym_for`
+field. The name given in the `synonym_for` field must be an existing class name
+(in this example, a real Biolink class).
 ```
 
 We can visualise the structure of the ontology as we have before using
 `driver.show_ontology_structure()`, and we observe that the `complex` class is
-now a synonym for the `macromolecular complex mixin` class and has taken its
-place as the child of `macromolecular machine mixin` (their being synonyms
+now a synonym for the `macromolecular complex` class and has taken its
+place as the child of `macromolecular machine` (their being synonyms
 indicated as an equals sign):
 
 ```{code-block} text
@@ -342,7 +344,7 @@ entity
 │               └── protein protein interaction
 ├── mixin
 │   └── macromolecular machine mixin
-│       └── complex = macromolecular complex mixin
+│       └── complex = macromolecular complex
 └── named thing
     └── biological entity
         └── polypeptide
@@ -352,46 +354,6 @@ entity
                 └── uniprot.protein
 ```
 
-(tut_custom)=
-### Custom Biolink model
-The Biolink model is a living entity, and it is constantly being updated and
-extended. However, it is not always possible to wait for the Biolink model to
-be updated to include a new concept or relationship. In such cases, it is
-possible to create a custom Biolink model that can be used in BioCypher. This
-is done by specifying a custom Biolink model to be built using the [Biolink
-Model Toolkit (BMT)](https://github.com/biolink/biolink-model-toolkit) in the
-BioCypher workflow. We provide one such model with BioCypher directly
-(`biocypher/_config/test-biolink-model.yaml`), which is a modified version
-of the original Biolink model that includes a *post translational interaction*
-class as well as a custom mixin (so far only for demonstration purposes).
-
-```{caution}
-The custom Biolink model provided by BioCypher is built using an older version
-of the Biolink model and as such is not 100% compatible with the current
-version. BioCypher defaults to the standard Biolink model to enable highest
-possible compatibility. However, if a custom Biolink model is specified, it is
-useful to record the version of the Biolink model that the custom model is based
-on.
-```
-
-You can specify an absolute or relative path to load the custom Biolink model
-from, either by setting the `biolink_model` parameter at `Driver` class
-instantiation, or by setting it in the `biocypher_config.yaml` file.
-
-```{code-block} python
-:caption: At Driver class instantiation
-driver = Driver(
-  biolink_model="/path/to/custom-biolink-model.yaml",
-  ..., # other parameters
-)
-```
-
-```{code-block} yaml
-:caption: biocypher_config.yaml
-biolink_model: /path/to/custom-biolink-model.yaml
-... # other settings
-```
-
 (tut_hybridising)=
 ## Hybridising ontologies
 A broad, general ontology is a useful tool for knowledge representation, but
@@ -399,14 +361,15 @@ often the task at hand requires more specific and granular concepts. In such
 cases, it is possible to hybridise the general ontology with a more specific
 one. For instance, there are many different types of sequence variants in
 biology, but Biolink only provides a generic "sequence variant" class (and it
-may exceed the scope of Biolink to provide granular classes for all thinkable
-cases). However, there are many specialist ontologies, such as the Sequence
-Ontology (SO), which provides a more granular representation of sequence
-variants, and MONDO, which provides a more granular representation of diseases.
+clearly exceeds the scope of Biolink to provide granular classes for all
+thinkable cases). However, there are many specialist ontologies, such as the
+Sequence Ontology (SO), which provides a more granular representation of
+sequence variants, and MONDO, which provides a more granular representation of
+diseases.
 
 To hybridise the Biolink model with the SO and MONDO, we can use the generic
 ontology adapter class of BioCypher by providing "tail ontologies" as
-dictionaries consisting of an OBO format ontology file and a set of nodes, one
+dictionaries consisting of an OWL format ontology file and a set of nodes, one
 in the head ontology (which by default is Biolink), and one in the tail
 ontology. Each of the tail ontologies will then be joined to the head ontology
 to form the hybridised ontology at the specified nodes. It is up to the user to
@@ -430,13 +393,16 @@ for transparency reasons:
 :caption: Using biocypher_config.yaml
 # ...
 # Ontology configuration
+head_ontology:
+  url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
+  root_node: 'entity'
 tail_ontologies:
   so:
-    url: test/so.obo
+    url: https://raw.githubusercontent.com/The-Sequence-Ontology/SO-Ontologies/master/Ontology_Files/so.ow
     head_join_node: sequence variant
     tail_join_node: sequence_variant
   mondo:
-    url: test/mondo.obo
+    url: http://purl.obolibrary.org/obo/mondo.owl
     head_join_node: disease
     tail_join_node: disease
 # ...
@@ -456,13 +422,13 @@ driver = BioCypher.driver(
     tail_ontologies={
         'so':
             {
-                'url': 'test/so.obo',
+                'url': 'test/so.owl',
                 'head_join_node': 'sequence variant',
                 'tail_join_node': 'sequence_variant',
             },
         'mondo':
             {
-                'url': 'test/mondo.obo',
+                'url': 'test/mondo.owl',
                 'head_join_node': 'disease',
                 'tail_join_node': 'disease',
             }
