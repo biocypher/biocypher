@@ -25,7 +25,7 @@ protein protein interaction:
         source: str
 
 complex:
-    synonym_for: macromolecular complex mixin
+    synonym_for: macromolecular complex
     represented_as: node
     preferred_id: complexportal
     label_in_input: complex

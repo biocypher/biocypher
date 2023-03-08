@@ -330,23 +330,20 @@ field. The name given in the `synonym_for` field must be an existing class name
 
 We can visualise the structure of the ontology as we have before using
 `driver.show_ontology_structure()`, and we observe that the `complex` class is
-now a synonym for the `macromolecular complex` class and has taken its
-place as the child of `macromolecular machine` (their being synonyms
+now a synonym for the `macromolecular complex` class (their being synonyms
 indicated as an equals sign):
 
 ```{code-block} text
-Showing ontology structure, based on Biolink 3.0.3:
+Showing ontology structure based on https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl
 entity
 ├── association
 │   └── gene to gene association
 │       └── pairwise gene to gene interaction
 │           └── pairwise molecular interaction
 │               └── protein protein interaction
-├── mixin
-│   └── macromolecular machine mixin
-│       └── complex = macromolecular complex
 └── named thing
     └── biological entity
+        ├── complex = macromolecular complex
         └── polypeptide
             └── protein
                 ├── entrez.protein
