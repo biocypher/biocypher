@@ -221,8 +221,8 @@ translational interaction``) has to be included in the Biolink schema and
 spelled identically. For this reason, we [extend the Biolink
 schema](tutorial_ontology_extension) in cases where there exists no entry for
 our entity of choice. Further, we are specifying the source and target classes
-of our association (both ``protein``), the label we provide in the input from
-``PyPath`` (``post_translational``).
+of our association (both ``protein``), which are optional, and the label we
+provide in the input from ``PyPath`` (``post_translational``).
 ```
 
 If we wanted the interaction to be represented in the graph as an edge,

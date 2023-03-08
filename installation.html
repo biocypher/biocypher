@@ -193,19 +193,23 @@ are available:</p>
 <span class="c1"># Set to change the output directory</span>
 <span class="nt">outdir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">biocypher-out</span>
 
-<span class="c1"># Clear ontology cache</span>
-<span class="c1"># BioCypher caches the ontology scaffold for performance reasons</span>
-<span class="c1"># Set to true to clear the cache and re-download the ontology</span>
-<span class="nt">clear_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-
 <span class="c1"># Ontology configuration</span>
+<span class="c1"># We need to define a head ontology (default format OWL) and which node should</span>
+<span class="c1"># be the root of the ontology tree.</span>
+<span class="nt">head_ontology</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl</span>
+<span class="w">  </span><span class="nt">root_node</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;entity&#39;</span>
+
+<span class="c1"># Optionally, we can define an arbitrary number of tail ontologies, using local</span>
+<span class="c1"># or online files. For each tail ontology, we need to define the join nodes in</span>
+<span class="c1"># the head and tail ontology, at which the two trees will be fused.</span>
 <span class="nt">tail_ontologies</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">so</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/so.obo</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/so.owl</span>
 <span class="w">    </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span>
 <span class="w">    </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence_variant</span>
 <span class="w">  </span><span class="nt">mondo</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/mondo.obo</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/mondo.owl</span>
 <span class="w">    </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
 <span class="w">    </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
 </pre></div>

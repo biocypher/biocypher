@@ -187,23 +187,6 @@ stream to the `write_nodes` function. The driver will then create the graph and
 write it to the output directory, which is set to `biocypher-out/` by default,
 creating a subfolder with the current datetime for each driver instance.
 
-```{note}
-If you run the above code more than once (back to back), you will notice that
-the second time is much faster than the first. This is because the driver will
-cache the ontological hierarchy that needs to be parsed by LinkML from the
-schema configuration and the Biolink model. This is done to avoid unnecessary
-waiting time for parsing and validating the same information, for reducing the
-number of API requests to the Biolink API, and for enabling a "soft" pinning of
-the Biolink model version used for a particular graph.
-
-The ontological hierarchy is automatically re-parsed if BioCypher notices a
-change in the schema configuration. For instance, if you run another tutorial
-file and then return to this one, the schema will be different, and thus the
-hierarchy re-parsed. If you want to force the driver to re-parse the ontological
-hierarchy without changing the schema, you can pass `clear_cache=True` at driver
-instantiation.
-```
-
 ### Importing data into Neo4j
 The graph can now be imported into Neo4j using the `neo4j-admin` command line
 tool. This is not necessary if the graph is created in online mode. For
@@ -471,7 +454,9 @@ protein isoform:
   label_in_input: uniprot_isoform
 ```
 
-This allows maintenance of property lists for many classes at once.
+This allows maintenance of property lists for many classes at once. If the child
+class has properties already, they will be kept (if they are not present in the
+parent class) or replaced by the parent class properties (if they are present).
 
 ```{note}
 Again, apart from adding the protein isoforms to the input stream, the code
