@@ -90,7 +90,7 @@ class Translator:
                 carry source, licence, and version information.
         """
 
-        self.leaves = extended_schema
+        self.extended_schema = extended_schema
         self.strict_mode = strict_mode
         self._update_ontology_types()
 
@@ -167,8 +167,8 @@ class Translator:
         """
 
         return (
-            self.leaves[_bl_type]['preferred_id']
-            if 'preferred_id' in self.leaves.get(_bl_type, {}) else 'id'
+            self.extended_schema[_bl_type]['preferred_id'] if 'preferred_id'
+            in self.extended_schema.get(_bl_type, {}) else 'id'
         )
 
     def _filter_props(self, bl_type: str, props: dict) -> dict:
@@ -176,7 +176,7 @@ class Translator:
         Filters properties for those specified in schema_config if any.
         """
 
-        filter_props = self.leaves[bl_type].get('properties', {})
+        filter_props = self.extended_schema[bl_type].get('properties', {})
 
         # strict mode: add required properties (only if there is a whitelist)
         if self.strict_mode and filter_props:
@@ -188,7 +188,9 @@ class Translator:
                 },
             )
 
-        exclude_props = self.leaves[bl_type].get('exclude_properties', [])
+        exclude_props = self.extended_schema[bl_type].get(
+            'exclude_properties', []
+        )
 
         if isinstance(exclude_props, str):
             exclude_props = [exclude_props]
@@ -248,9 +250,6 @@ class Translator:
                 is translated to BioCypher notation using the `leaves`.
                 Can optionally possess its own ID.
         """
-        # TODO:
-        #    - id of interactions (now simple concat with "_")
-        #    - do we even need one?
 
         self._log_begin_translate(id_src_tar_type_prop_tuples, 'edges')
 
@@ -287,7 +286,7 @@ class Translator:
                 # filter properties for those specified in schema_config if any
                 _filtered_props = self._filter_props(bl_type, _props)
 
-                rep = self.leaves[bl_type]['represented_as']
+                rep = self.extended_schema[bl_type]['represented_as']
 
                 if rep == 'node':
 
@@ -345,7 +344,9 @@ class Translator:
 
                 else:
 
-                    edge_label = self.leaves[bl_type].get('label_as_edge')
+                    edge_label = self.extended_schema[bl_type].get(
+                        'label_as_edge'
+                    )
 
                     if edge_label is None:
 
@@ -410,7 +411,7 @@ class Translator:
 
         self._ontology_mapping = {}
 
-        for key, value in self.leaves.items():
+        for key, value in self.extended_schema.items():
 
             if isinstance(value.get('label_in_input'), str):
                 self._ontology_mapping[value.get('label_in_input')] = key
