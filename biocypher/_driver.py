@@ -191,7 +191,7 @@ class Driver(neo4j_utils.Driver):
                     ' configuration variable.'
                 )
 
-            logger.info('Offline mode: no connection to Neo4j.')
+            logger.info('Offline mode: no connection to DBMS.')
 
             self._ontology_mapping = OntologyMapping(
                 config_file=self.user_schema_config_path,

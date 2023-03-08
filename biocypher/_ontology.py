@@ -16,6 +16,7 @@ import networkx as nx
 
 from . import _misc
 from ._create import VersionNode
+from ._logger import logger
 from ._mapping import OntologyMapping
 
 
@@ -58,6 +59,8 @@ class OntologyAdapter:
             remove_prefixes (bool): If True, the prefixes of the identifiers will
                 be removed. Defaults to True.
         """
+
+        logger.info(f'Instantiating OntologyAdapter class for {ontology_file}.')
 
         self._ontology_file = ontology_file
         self._root_label = root_label
@@ -285,6 +288,8 @@ class Ontology:
         For each ontology, load the OntologyAdapter object and store it as an
         instance variable (head) or a dictionary (tail).
         """
+
+        logger.info('Loading ontologies...')
 
         self._head_ontology = OntologyAdapter(
             self._head_ontology['url'],
