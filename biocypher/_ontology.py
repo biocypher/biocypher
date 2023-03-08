@@ -9,10 +9,14 @@
 # Distributed under MIT licence, see the file `LICENSE`.
 #
 
-from typing import Optional
+from typing import Union, Optional
 
 import rdflib
 import networkx as nx
+
+from . import _misc
+from ._create import VersionNode
+from ._mapping import OntologyMapping
 
 
 class OntologyAdapter:
@@ -232,6 +236,7 @@ class Ontology:
     def __init__(
         self,
         head_ontology: dict,
+        mapping: Union[OntologyMapping, VersionNode],
         tail_ontologies: Optional[dict] = None,
     ):
         """
@@ -245,10 +250,14 @@ class Ontology:
         """
 
         self._head_ontology = head_ontology
+        self.extended_schema = mapping.extended_schema
         self._tail_ontology_meta = tail_ontologies
 
         self._tail_ontologies = None
         self._hybrid_ontology_nx_graph = None
+
+        # keep track of nodes that have been extended
+        self._extended_nodes = set()
 
         self._main()
 
@@ -256,7 +265,8 @@ class Ontology:
         """
         Main method to be run on instantiation. Loads the ontologies, joins
         them, and returns the hybrid ontology. Loads only the head ontology
-        if nothing else is given.
+        if nothing else is given. Adds user extensions and properties from
+        the mapping.
         """
         self._load_ontologies()
 
@@ -264,6 +274,9 @@ class Ontology:
             for adapter in self._tail_ontologies.values():
                 self._assert_join_node(adapter)
                 self._join_ontologies(adapter)
+
+        self._extend_ontology()
+        # TODO add properties from mapping
 
     def _load_ontologies(self) -> None:
         """
@@ -342,6 +355,48 @@ class Ontology:
         self._hybrid_ontology_nx_graph = nx.compose(
             self._hybrid_ontology_nx_graph, tail_ontology_subtree
         )
+
+    def _extend_ontology(self) -> None:
+        """
+        Adds the user extensions to the ontology. Tries to find the parent in
+        the ontology, adds it if necessary, and adds the child and a directed
+        edge from child to parent. Can handle multiple parents.
+        """
+
+        if not self._hybrid_ontology_nx_graph:
+            self._hybrid_ontology_nx_graph = self._head_ontology.get_nx_graph(
+            ).copy()
+
+        for key, value in self.extended_schema.items():
+
+            if not value.get('is_a'):
+                continue
+
+            parents = _misc.to_list(value.get('is_a'))
+            child = key
+
+            while parents:
+                parent = parents.pop(0)
+
+                if parent not in self._hybrid_ontology_nx_graph.nodes:
+
+                    self._hybrid_ontology_nx_graph.add_node(parent)
+
+                    # mark parent as user extension
+                    self._hybrid_ontology_nx_graph.nodes[parent][
+                        'user_extension'] = True
+                    self._extended_nodes.add(parent)
+
+                if child not in self._hybrid_ontology_nx_graph.nodes:
+                    self._hybrid_ontology_nx_graph.add_node(child)
+                    # mark child as user extension
+                    self._hybrid_ontology_nx_graph.nodes[child]['user_extension'
+                                                               ] = True
+                    self._extended_nodes.add(child)
+
+                self._hybrid_ontology_nx_graph.add_edge(child, parent)
+
+                child = parent
 
     def get_ancestors(self, node_label: str) -> list:
         """
