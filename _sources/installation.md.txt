@@ -57,9 +57,15 @@ are available:
 ## BioCypher settings
 ```{code-block} yaml
 :caption: biocypher_config.yaml
-# Offline mode: do not connect to a running Neo4j instance
+# Offline mode: do not connect to a running DBMS instance
 # Can be used e.g. for writing CSV files for admin import
 offline: true
+
+# Ontology mapping: `schema_config.yaml` path
+user_schema_config_path: config/schema_config.yaml
+
+# Strict mode: ensure source, version, and licence
+strict_mode: true
 
 # Logging granularity
 # Set debug to true if more granular logging is desired

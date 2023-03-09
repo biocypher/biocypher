@@ -157,9 +157,15 @@ are available:</p>
 <h2>BioCypher settings<a class="headerlink" href="#biocypher-settings" title="Permalink to this heading"></a></h2>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Offline mode: do not connect to a running Neo4j instance</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Offline mode: do not connect to a running DBMS instance</span>
 <span class="c1"># Can be used e.g. for writing CSV files for admin import</span>
 <span class="nt">offline</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="c1"># Ontology mapping: `schema_config.yaml` path</span>
+<span class="nt">user_schema_config_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/schema_config.yaml</span>
+
+<span class="c1"># Strict mode: ensure source, version, and licence</span>
+<span class="nt">strict_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 
 <span class="c1"># Logging granularity</span>
 <span class="c1"># Set debug to true if more granular logging is desired</span>
