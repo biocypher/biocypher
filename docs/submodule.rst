@@ -4,9 +4,19 @@ Submodule documentation
 
 .. _driver:
 
-``_driver.py``: the BioCypher Neo4j Driver
+``_driver.py``: the main BioCypher interface
 ========================================
 .. automodule:: biocypher._driver
+   :members:
+
+``_mapping.py``: Mapping of data inputs to KG ontology
+===================================================
+.. automodule:: biocypher._mapping
+   :members:
+
+``_ontology.py``: Ontology parsing and manipulation
+=================================================
+.. automodule:: biocypher._ontology
    :members:
 
 ``_create.py``: Base Classes for Node and Edge Representations in BioCypher
@@ -27,4 +37,9 @@ Submodule documentation
 ``_logger.py``: Logging
 =====================
 .. automodule:: biocypher._logger
+   :members:
+
+``_misc.py``: Miscellaneous utility functions
+===========================================
+.. automodule:: biocypher._misc
    :members:
