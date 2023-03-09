@@ -53,8 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get-involved.html">Get Involved!</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#install-as-a-dependency">Install as a dependency</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#standalone-installation">Standalone installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-as-a-dependency-for-your-kg-pipeline">Install as a dependency for your KG pipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#configuration">Configuration</a><ul>
@@ -62,6 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#neo4j-settings">Neo4j settings</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="#developers">Developers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">BioCypher Tutorial - Basics</a></li>
@@ -97,8 +97,8 @@
              
   <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
-<section id="install-as-a-dependency">
-<h2>Install as a dependency<a class="headerlink" href="#install-as-a-dependency" title="Permalink to this heading"></a></h2>
+<section id="install-as-a-dependency-for-your-kg-pipeline">
+<h2>Install as a dependency for your KG pipeline<a class="headerlink" href="#install-as-a-dependency-for-your-kg-pipeline" title="Permalink to this heading"></a></h2>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-1 sd-row-cols-lg-1 sd-g-2 sd-g-xs-2 sd-g-sm-2 sd-g-md-2 sd-g-lg-2 docutils">
 <div class="sd-col sd-d-flex-row docutils">
@@ -112,26 +112,25 @@ Preconfigured project with BioCypher as a dependency, including docker integrati
 </div>
 </div>
 </div>
-<p>BioCypher is in development; if you want to use it in your project, please use
-the <em>install-from-github</em> command of your package management system. We
-recommend Poetry, you can get it
-<a class="reference external" href="https://python-poetry.org/docs/#installation">here</a>. We
-will provide a pip package in the future. You can install BioCypher as a
-dependency as follows:</p>
+<p>The recommended way of installing BioCypher is through the PyPI distribution.
+You can use any package manager that can install from PyPI, such as pip, conda,
+poetry, etc. We recommend Poetry, you can get it
+<a class="reference external" href="https://python-poetry.org/docs/#installation">here</a>. You can install BioCypher
+as a dependency as follows:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">pyproject.toml</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">[</span><span class="nv">tool.poetry.dependencies</span><span class="p p-Indicator">]</span>
-<span class="l l-Scalar l-Scalar-Plain">python = &quot;^3.9&quot;</span>
-<span class="l l-Scalar l-Scalar-Plain">biocypher = { git = &quot;https://github.com/saezlab/BioCypher.git&quot;, branch = &quot;main&quot; }</span>
+<div class="code-block-caption"><span class="caption-text">poetry install</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>new<span class="w"> </span>my-awesome-kg-project
+<span class="nb">cd</span><span class="w"> </span>my-awesome-kg-project
+poetry<span class="w"> </span>add<span class="w"> </span>biocypher
 </pre></div>
 </div>
 </div>
 <p>Alternatively, using conda/pip:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">pip install</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>biocypher<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>biocypher<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10
 conda<span class="w"> </span>activate<span class="w"> </span>biocypher
-pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/saezlab/BioCypher.git
+pip<span class="w"> </span>install<span class="w"> </span>biocypher
 </pre></div>
 </div>
 </div>
@@ -141,27 +140,6 @@ pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com
 encounter any issues with a specific Python version, please open an issue on
 GitHub.</p>
 </div>
-</section>
-<section id="standalone-installation">
-<h2>Standalone installation<a class="headerlink" href="#standalone-installation" title="Permalink to this heading"></a></h2>
-<p>If you want to directly install BioCypher, here are the steps (requires
-<a class="reference external" href="https://python-poetry.org/docs/#installation">Poetry</a>):</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Execute in bash</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/saezlab/BioCypher
-<span class="nb">cd</span><span class="w"> </span>BioCypher
-poetry<span class="w"> </span>install
-</pre></div>
-</div>
-</div>
-<p>Poetry creates a virtual environment for you (starting with <code class="docutils literal notranslate"><span class="pre">biocypher-</span></code>;
-alternatively you can name it yourself) and installs all dependencies.</p>
-<ul class="simple">
-<li><p>Make sure that you have a Neo4j instance with the APOC plugin installed and a database named <code class="docutils literal notranslate"><span class="pre">test</span></code> running on standard bolt port <code class="docutils literal notranslate"><span class="pre">7687</span></code></p></li>
-<li><p>Enter your Neo4j DBMS password in <code class="docutils literal notranslate"><span class="pre">./test/test_driver.py</span></code>: <code class="docutils literal notranslate"><span class="pre">db_passwd='your_password_here'</span></code></p></li>
-<li><p>Activate the virtual environment by running <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">poetry</span> <span class="pre">shell</span></code> and then run the tests by running <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">pytest</span></code> in the root directory of the repository.</p></li>
-</ul>
-<p>Once this is set up, you can go through the <a class="reference internal" href="tutorial.html#tutorial"><span class="std std-ref">tutorial</span></a> or use it in your project as a local dependency.</p>
 </section>
 </section>
 <section id="configuration">
@@ -177,8 +155,8 @@ OS, this would be <code class="docutils literal notranslate"><span class="pre">~
 are available:</p>
 <section id="biocypher-settings">
 <h2>BioCypher settings<a class="headerlink" href="#biocypher-settings" title="Permalink to this heading"></a></h2>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Offline mode: do not connect to a running Neo4j instance</span>
 <span class="c1"># Can be used e.g. for writing CSV files for admin import</span>
 <span class="nt">offline</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -218,8 +196,8 @@ are available:</p>
 </section>
 <section id="neo4j-settings">
 <h2>Neo4j settings<a class="headerlink" href="#neo4j-settings" title="Permalink to this heading"></a></h2>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id5" title="Permalink to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Neo4j connection credentials</span>
 <span class="nt">neo4j_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j://localhost:7687</span><span class="w">   </span><span class="c1"># DB URI</span>
 <span class="nt">neo4j_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span><span class="w">                     </span><span class="c1"># DB name</span>
@@ -240,6 +218,31 @@ are available:</p>
 </div>
 </div>
 </section>
+</section>
+<section id="developers">
+<h1>Developers<a class="headerlink" href="#developers" title="Permalink to this heading"></a></h1>
+<p>If you want to directly install BioCypher, here are the steps (requires
+<a class="reference external" href="https://python-poetry.org/docs/#installation">Poetry</a>):</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Execute in bash</span><a class="headerlink" href="#id5" title="Permalink to this code"></a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/saezlab/BioCypher
+<span class="nb">cd</span><span class="w"> </span>BioCypher
+poetry<span class="w"> </span>install
+</pre></div>
+</div>
+</div>
+<p>Poetry creates a virtual environment for you (starting with <code class="docutils literal notranslate"><span class="pre">biocypher-</span></code>;
+alternatively you can name it yourself) and installs all dependencies.</p>
+<ul class="simple">
+<li><p>Make sure that you have a Neo4j instance with the APOC plugin installed and a
+database named <code class="docutils literal notranslate"><span class="pre">test</span></code> running on standard bolt port <code class="docutils literal notranslate"><span class="pre">7687</span></code></p></li>
+<li><p>Enter your Neo4j DBMS password in <code class="docutils literal notranslate"><span class="pre">./test/test_driver.py</span></code>:
+<code class="docutils literal notranslate"><span class="pre">db_passwd='your_password_here'</span></code></p></li>
+<li><p>Activate the virtual environment by running <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">poetry</span> <span class="pre">shell</span></code> and then run the
+tests by running <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">pytest</span></code> in the root directory of the repository.</p></li>
+</ul>
+<p>Once this is set up, you can go through the <a class="reference internal" href="tutorial.html#tutorial"><span class="std std-ref">tutorial</span></a> or use it in
+your project as a local dependency.</p>
 </section>
 
 
