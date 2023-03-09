@@ -1,5 +1,5 @@
 # Installation
-## Install as a dependency
+## Install as a dependency for your KG pipeline
 
 ::::{grid} 1
 :gutter: 2
@@ -12,27 +12,26 @@
 
 ::::
 
-BioCypher is in development; if you want to use it in your project, please use
-the *install-from-github* command of your package management system. We
-recommend Poetry, you can get it
-[here](https://python-poetry.org/docs/#installation). We
-will provide a pip package in the future. You can install BioCypher as a
-dependency as follows:
+The recommended way of installing BioCypher is through the PyPI distribution.
+You can use any package manager that can install from PyPI, such as pip, conda,
+poetry, etc. We recommend Poetry, you can get it
+[here](https://python-poetry.org/docs/#installation). You can install BioCypher
+as a dependency as follows:
 
-```{code-block} yaml
-:caption: pyproject.toml
-[tool.poetry.dependencies]
-python = "^3.9"
-biocypher = { git = "https://github.com/saezlab/BioCypher.git", branch = "main" }
+```{code-block} bash
+:caption: poetry install
+poetry new my-awesome-kg-project
+cd my-awesome-kg-project
+poetry add biocypher
 ```
 
 Alternatively, using conda/pip:
 
 ```{code-block} bash
 :caption: pip install
-conda create --name biocypher python=3.9
+conda create --name biocypher python=3.10
 conda activate biocypher
-pip install git+https://github.com/saezlab/BioCypher.git
+pip install biocypher
 ```
 
 ```{note}
@@ -40,26 +39,6 @@ BioCypher generally supports the most recent three Python versions. If you
 encounter any issues with a specific Python version, please open an issue on
 GitHub.
 ```
-
-## Standalone installation
-If you want to directly install BioCypher, here are the steps (requires
-[Poetry](https://python-poetry.org/docs/#installation)):
-
-```{code-block} bash
-:caption: Execute in bash
-git clone https://github.com/saezlab/BioCypher
-cd BioCypher
-poetry install
-```
-
-Poetry creates a virtual environment for you (starting with `biocypher-`;
-alternatively you can name it yourself) and installs all dependencies.
-
-* Make sure that you have a Neo4j instance with the APOC plugin installed and a database named `test` running on standard bolt port `7687`
-* Enter your Neo4j DBMS password in `./test/test_driver.py`: `db_passwd='your_password_here'`
-* Activate the virtual environment by running `% poetry shell` and then run the tests by running `% pytest` in the root directory of the repository.
-
-Once this is set up, you can go through the [tutorial](tutorial) or use it in your project as a local dependency.
 
 (config)=
 # Configuration
@@ -133,3 +112,27 @@ neo4j_import_call_file_prefix: 'import/'  # path of files in admin-import call
 # Set to false for using community edition or older versions of Neo4j
 neo4j_multi_db: true
 ```
+
+# Developers
+If you want to directly install BioCypher, here are the steps (requires
+[Poetry](https://python-poetry.org/docs/#installation)):
+
+```{code-block} bash
+:caption: Execute in bash
+git clone https://github.com/saezlab/BioCypher
+cd BioCypher
+poetry install
+```
+
+Poetry creates a virtual environment for you (starting with `biocypher-`;
+alternatively you can name it yourself) and installs all dependencies.
+
+- Make sure that you have a Neo4j instance with the APOC plugin installed and a
+database named `test` running on standard bolt port `7687`
+- Enter your Neo4j DBMS password in `./test/test_driver.py`:
+`db_passwd='your_password_here'`
+- Activate the virtual environment by running `% poetry shell` and then run the
+tests by running `% pytest` in the root directory of the repository.
+
+Once this is set up, you can go through the [tutorial](tutorial) or use it in
+your project as a local dependency.
