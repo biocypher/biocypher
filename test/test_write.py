@@ -6,9 +6,9 @@ import tempfile
 from genericpath import isfile
 import pytest
 
-from biocypher._write import BatchWriter
+from biocypher._core import BioCypher
+from biocypher._write import _Neo4jBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from biocypher._driver import Driver
 from biocypher._mapping import OntologyMapping
 from biocypher._ontology import Ontology
 from biocypher._translate import Translator
@@ -51,7 +51,7 @@ def ontology_mapping():
 
 @pytest.fixture
 def translator(ontology_mapping):
-    return Translator(extended_schema=ontology_mapping.extended_schema)
+    return Translator(ontology_mapping=ontology_mapping.extended_schema)
 
 
 @pytest.fixture
@@ -63,7 +63,7 @@ def ontology(ontology_mapping):
             'root_node':
                 'entity',
         },
-        mapping=ontology_mapping,
+        ontology_mapping=ontology_mapping,
         tail_ontologies={
             'so':
                 {
@@ -78,7 +78,7 @@ def ontology(ontology_mapping):
 @pytest.fixture
 def bw(ontology, translator, path):
 
-    bw = BatchWriter(
+    bw = _Neo4jBatchWriter(
         ontology=ontology,
         translator=translator,
         dirname=path,
@@ -98,7 +98,7 @@ def bw(ontology, translator, path):
 @pytest.fixture
 def bw_strict(ontology, translator, path_strict):
 
-    bw = BatchWriter(
+    bw = _Neo4jBatchWriter(
         ontology=ontology,
         translator=translator,
         dirname=path_strict,
@@ -119,7 +119,7 @@ def bw_strict(ontology, translator, path_strict):
 @pytest.fixture
 def tab_bw(ontology, translator, path):
 
-    tab_bw = BatchWriter(
+    tab_bw = _Neo4jBatchWriter(
         ontology=ontology,
         translator=translator,
         dirname=path,
@@ -139,7 +139,8 @@ def tab_bw(ontology, translator, path):
 def test_writer_and_output_dir(bw, path):
 
     assert (
-        os.path.isdir(path) and isinstance(bw, BatchWriter) and bw.delim == ';'
+        os.path.isdir(path) and isinstance(bw, _Neo4jBatchWriter) and
+        bw.delim == ';'
     )
 
 

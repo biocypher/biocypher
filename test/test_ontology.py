@@ -45,7 +45,7 @@ def hybrid_ontology(ontology_mapping):
             'root_node':
                 'entity',
         },
-        mapping=ontology_mapping,
+        ontology_mapping=ontology_mapping,
         tail_ontologies={
             'so':
                 {

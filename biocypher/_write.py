@@ -85,18 +85,16 @@ from more_itertools import peekable
 
 from ._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from ._ontology import Ontology
 
-__all__ = ['BatchWriter']
+__all__ = ['get_writer']
 
 if TYPE_CHECKING:
 
-    from ._translate import Translator, OntologyAdapter
+    from ._ontology import Ontology
+    from ._translate import Translator
 
-# TODO retrospective check of written csvs?
 
-
-class BatchWriter:
+class _Neo4jBatchWriter:
     """
     Class for writing node and edge representations to disk using the
     format specified by Neo4j for the use of admin import. Each batch
@@ -1150,3 +1148,42 @@ class BatchWriter:
             return (self.duplicate_edge_types, self.duplicate_edge_ids)
         else:
             return None
+
+
+DBMS_TO_CLASS = {
+    'neo4j': _Neo4jBatchWriter,
+}
+
+
+def get_writer(
+    dbms: str,
+    translator: 'Translator',
+    ontology: 'Ontology',
+    output_directory: str,
+    strict_mode: bool,
+):
+    """
+    Function to return the writer class.
+
+    Returns:
+        class: the writer class
+    """
+
+    dbms_config = _config(dbms)
+
+    if dbms == 'neo4j':
+        return _Neo4jBatchWriter(
+            ontology=ontology,
+            translator=translator,
+            delimiter=dbms_config['delimiter'],
+            array_delimiter=dbms_config['array_delimiter'],
+            quote=dbms_config['quote_character'],
+            dirname=output_directory,
+            db_name=dbms_config['database_name'],
+            skip_bad_relationships=dbms_config['skip_bad_relationships'],
+            skip_duplicate_nodes=dbms_config['skip_duplicate_nodes'],
+            wipe=dbms_config['wipe'],
+            strict_mode=strict_mode,
+        )
+
+    return None

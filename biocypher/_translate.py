@@ -44,6 +44,7 @@ from more_itertools import peekable
 
 from . import _misc
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from ._mapping import OntologyMapping
 
 __all__ = ['BiolinkAdapter', 'Translator']
 
@@ -61,7 +62,7 @@ class Translator:
     and cypher queries.
     """
     def __init__(
-        self, extended_schema: dict[str, dict], strict_mode: bool = False
+        self, ontology_mapping: 'OntologyMapping', strict_mode: bool = False
     ):
         """
         Args:
@@ -76,7 +77,7 @@ class Translator:
                 carry source, licence, and version information.
         """
 
-        self.extended_schema = extended_schema
+        self.extended_schema = ontology_mapping.extended_schema
         self.strict_mode = strict_mode
 
         # record nodes without biolink type configured in schema_config.yaml

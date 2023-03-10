@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 import neo4j_utils
 
 from . import _misc
-from ._write import BatchWriter
+from ._write import get_writer, _Neo4jBatchWriter
 from ._config import config as _config
 from ._create import VersionNode, BioCypherEdge, BioCypherNode
 from ._mapping import OntologyMapping
@@ -99,14 +99,12 @@ class Driver(neo4j_utils.Driver):
         skip_duplicate_nodes:
             Whether to skip duplicate nodes in the admin import shell
             command.
-        biolink_model:
-            Path to the custom Biolink model YAML file.
-        tail_ontology_url:
-            URL of the ontology to hybridise to the head ontology.
-        head_join_node:
-            Biolink class of the node to join the tail ontology to.
-        tail_join_node:
-            Ontology class of the node to join the head ontology to.
+        head_ontology:
+            Ontology to use as the head of the ontology hierarchy. URL and root
+            node are required.
+        tail_ontologies:
+            Ontologies to use as the tail of the ontology hierarchy. URL and
+            join nodes (for head and tail) are required.
     """
     def __init__(
         self,
@@ -315,7 +313,7 @@ class Driver(neo4j_utils.Driver):
     def _update_translator(self):
 
         self.translator = Translator(
-            extended_schema=self._ontology_mapping.extended_schema,
+            ontology_mapping=self._ontology_mapping.extended_schema,
             strict_mode=self.strict_mode,
         )
 
@@ -615,7 +613,7 @@ class Driver(neo4j_utils.Driver):
             db_name (str): the name of the database to write the files to
         """
         if not self.batch_writer:
-            self.batch_writer = BatchWriter(
+            self.batch_writer = _Neo4jBatchWriter(
                 ontology=self.ontology,
                 translator=self.translator,
                 delimiter=self.db_delim,
@@ -639,7 +637,7 @@ class Driver(neo4j_utils.Driver):
         if not self.ontology:
             self.ontology = Ontology(
                 head_ontology=self.head_ontology,
-                mapping=self._ontology_mapping,
+                ontology_mapping=self._ontology_mapping,
                 tail_ontologies=self.tail_ontologies,
             )
 

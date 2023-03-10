@@ -20,9 +20,19 @@ __all__ = [
     'logfile',
     'log',
     'Driver',
+    'BioCypher',
 ]
 
+from ._core import BioCypher
 from ._config import config, module_data
-from ._driver import Driver
-from ._logger import log, logfile
+from ._logger import log, logger, logfile
 from ._metadata import __author__, __version__
+
+
+class Driver(BioCypher):
+    logger.warning(
+        "The 'Driver' class is deprecated. Please use 'BioCypher' instead."
+    )
+
+    def __init__(args, kwargs):
+        super().__init__(args, kwargs)

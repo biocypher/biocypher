@@ -239,7 +239,7 @@ class Ontology:
     def __init__(
         self,
         head_ontology: dict,
-        mapping: Union[OntologyMapping, VersionNode],
+        ontology_mapping: Union[OntologyMapping, VersionNode],
         tail_ontologies: Optional[dict] = None,
     ):
         """
@@ -253,7 +253,7 @@ class Ontology:
         """
 
         self._head_ontology = head_ontology
-        self.extended_schema = mapping.extended_schema
+        self.extended_schema = ontology_mapping.extended_schema
         self._tail_ontology_meta = tail_ontologies
 
         self._tail_ontologies = None
