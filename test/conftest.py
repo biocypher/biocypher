@@ -1,8 +1,32 @@
+import os
+import random
+import string
+import tempfile
+
 import pytest
 
-from biocypher import Driver
 from biocypher import config as bcy_config
-from biocypher._config import neo4j_config
+from biocypher._core import BioCypher
+from biocypher._driver import Driver
+
+
+def get_random_string(length):
+
+    # choose from all lowercase letter
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for _ in range(length))
+
+
+# temporary output paths
+@pytest.fixture(name='path', scope='session')
+def path():
+    path = os.path.join(
+        tempfile.gettempdir(),
+        f'biocypher-test-{get_random_string(5)}',
+    )
+    os.makedirs(path, exist_ok=True)
+    return path
+
 
 __all__ = [
     'create_driver', 'neo4j_param', 'pytest_addoption', 'skip_if_offline'
@@ -12,10 +36,10 @@ __all__ = [
 def pytest_addoption(parser):
 
     options = (
-        ('neo4j_db', 'The Neo4j database to be used for tests.'),
-        ('neo4j_user', 'Tests access Neo4j as this user.'),
-        ('neo4j_pw', 'Password to access Neo4j.'),
-        ('neo4j_uri', 'URI of the Neo4j server.'),
+        ('db', 'The Neo4j database to be used for tests.'),
+        ('user', 'Tests access Neo4j as this user.'),
+        ('pw', 'Password to access Neo4j.'),
+        ('uri', 'URI of the Neo4j server.'),
     )
 
     for name, help_ in options:
@@ -28,14 +52,43 @@ def pytest_addoption(parser):
         )
 
 
+@pytest.fixture(name='core', scope='session')
+def create_core(request, path):
+
+    marker = request.node.get_closest_marker('inject_core_args')
+
+    marker_args = {}
+    # check if marker has attribute param
+    if marker and hasattr(marker, 'param'):
+
+        marker_args = marker.param
+
+    if not marker_args and 'CORE' in globals():
+
+        c = globals()['CORE']
+
+    else:
+
+        core_args = {'output_directory': path}
+        core_args.update(marker_args)
+
+        c = BioCypher(**core_args)
+
+        if not marker_args:
+
+            globals()['CORE'] = c
+
+    yield c
+
+
 @pytest.fixture(scope='session')
 def neo4j_param(request):
 
     keys = (
-        'neo4j_db',
-        'neo4j_user',
-        'neo4j_pw',
-        'neo4j_uri',
+        'db',
+        'user',
+        'pw',
+        'uri',
     )
 
     param = {
@@ -43,12 +96,7 @@ def neo4j_param(request):
         for key in keys
     }
 
-    return neo4j_config(config=param)
-
-
-@pytest.fixture(name='core', scope='session')
-def create_core(request):
-    pass
+    return bcy_config('neo4j')
 
 
 @pytest.fixture(name='driver', scope='session')

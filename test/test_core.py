@@ -1,19 +1,8 @@
 import os
-import random
-import string
-import tempfile
 
 import pytest
 
-from biocypher._core import BioCypher
 from biocypher._create import BioCypherNode
-
-
-def get_random_string(length):
-
-    # choose from all lowercase letter
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for _ in range(length))
 
 
 def _get_nodes(l: int) -> list:
@@ -45,28 +34,10 @@ def _get_nodes(l: int) -> list:
     return nodes
 
 
-# temporary output paths
-@pytest.fixture
-def path():
-    path = os.path.join(
-        tempfile.gettempdir(),
-        f'biocypher-test-{get_random_string(5)}',
-    )
-    os.makedirs(path, exist_ok=True)
-    return path
-
-
-@pytest.fixture
-def core(path):
-    bc = BioCypher()
-    bc.output_directory = path
-    return bc
-
-
 def test_biocypher(core):
-    assert core.dbms == 'neo4j'
-    assert core.offline == True
-    assert core.strict_mode == False
+    assert core._dbms == 'neo4j'
+    assert core._offline == True
+    assert core._strict_mode == False
 
 
 def test_write_node_data_from_gen(core, path):

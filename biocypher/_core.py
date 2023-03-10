@@ -21,10 +21,48 @@ REQUIRED_CONFIG = [
 
 
 class BioCypher:
-    """
-    Orchestration of BioCypher database operations.
-    """
-    def __init__(self, ):
+    def __init__(
+        self,
+        dbms: str = None,
+        offline: bool = None,
+        strict_mode: bool = None,
+        user_schema_config_path: str = None,
+        head_ontology: dict = None,
+        tail_ontologies: dict = None,
+        output_directory: str = 'biocypher-out',
+        log_directory: str = 'biocypher-log',
+    ):
+        """
+        Orchestration of BioCypher operations.
+
+        Args:
+
+            dbms (str): The database management system to use. For supported
+                systems see SUPPORTED_DBMS.
+
+            offline (bool): Whether to run in offline mode. If True, no
+                connection to the database will be made.
+
+            strict_mode (bool): Whether to run in strict mode. If True, the
+                translator will raise an error if a node or edge does not
+                provide source, version, and licence information.
+
+            user_schema_config_path (str): Path to the user schema config
+                file.
+
+            head_ontology (dict): The head ontology defined by URL and root
+                node.
+
+            tail_ontologies (dict): The tail ontologies defined by URL and
+                join nodes for both head and tail ontology.
+
+            output_directory (str): Path to the output directory. If not
+                provided, the default value 'biocypher-out' will be used.
+
+            log_directory (str): Path to the log directory. If not provided,
+                the default value 'biocypher-log' will be used.
+
+        """
 
         # Load configuration
         self.base_config = _config('biocypher')
@@ -35,74 +73,98 @@ class BioCypher:
                 raise ValueError(f'Configuration key {key} is required.')
 
         # Set configuration - mandatory
-        self.dbms = self.base_config['dbms']
-        self.offline = self.base_config['offline']
-        self.strict_mode = self.base_config['strict_mode']
-        self.user_schema_config_path = self.base_config[
+        self._dbms = dbms or self.base_config['dbms']
+
+        if offline is None:
+            self._offline = self.base_config['offline']
+        else:
+            self._offline = offline
+
+        if strict_mode is None:
+            self._strict_mode = self.base_config['strict_mode']
+        else:
+            self._strict_mode = strict_mode
+
+        self._user_schema_config_path = user_schema_config_path or self.base_config[
             'user_schema_config_path']
-        self.head_ontology = self.base_config['head_ontology']
+
+        self._head_ontology = head_ontology or self.base_config['head_ontology']
 
         # Set configuration - optional
-        self.output_directory = self.base_config.get(
+        self._output_directory = output_directory or self.base_config.get(
             'output_directory'
-        ) or 'biocypher-out'
-        self.log_directory = self.base_config.get(
+        )
+        self._log_directory = log_directory or self.base_config.get(
             'log_directory'
-        ) or 'biocypher-log'
-        self.tail_ontologies = self.base_config.get('tail_ontologies')
+        )
+        self._tail_ontologies = tail_ontologies or self.base_config.get(
+            'tail_ontologies'
+        )
 
-        if self.dbms not in SUPPORTED_DBMS:
+        if self._dbms not in SUPPORTED_DBMS:
             raise ValueError(
-                f'DBMS {self.dbms} not supported. '
+                f'DBMS {self._dbms} not supported. '
                 f'Please select from {SUPPORTED_DBMS}.'
             )
 
         # Initialize
-        self.ontology_mapping = None
-        self.translator = None
-        self.ontology = None
-        self.writer = None
+        self._ontology_mapping = None
+        self._translator = None
+        self._ontology = None
+        self._writer = None
 
     def _get_ontology_mapping(self):
+        """
+        Create ontology mapping if not exists and return.
+        """
 
-        if not self.ontology_mapping:
-            self.ontology_mapping = OntologyMapping(
-                config_file=self.user_schema_config_path,
+        if not self._ontology_mapping:
+            self._ontology_mapping = OntologyMapping(
+                config_file=self._user_schema_config_path,
             )
 
-        return self.ontology_mapping
+        return self._ontology_mapping
 
     def _get_translator(self):
+        """
+        Create translator if not exists and return.
+        """
 
-        if not self.translator:
-            self.translator = Translator(
+        if not self._translator:
+            self._translator = Translator(
                 ontology_mapping=self._get_ontology_mapping(),
-                strict_mode=self.strict_mode,
+                strict_mode=self._strict_mode,
             )
 
-        return self.translator
+        return self._translator
 
     def _get_ontology(self):
+        """
+        Create ontology if not exists and return.
+        """
 
-        if not self.ontology:
-            self.ontology = Ontology(
+        if not self._ontology:
+            self._ontology = Ontology(
                 ontology_mapping=self._get_ontology_mapping(),
-                head_ontology=self.head_ontology,
-                tail_ontologies=self.tail_ontologies,
+                head_ontology=self._head_ontology,
+                tail_ontologies=self._tail_ontologies,
             )
 
-        return self.ontology
+        return self._ontology
 
     def _get_writer(self):
+        """
+        Create writer if not online.
+        """
 
         # Get worker
-        if self.offline:
-            self.writer = get_writer(
-                dbms=self.dbms,
+        if self._offline:
+            self._writer = get_writer(
+                dbms=self._dbms,
                 translator=self._get_translator(),
                 ontology=self._get_ontology(),
-                output_directory=self.output_directory,
-                strict_mode=self.strict_mode,
+                output_directory=self._output_directory,
+                strict_mode=self._strict_mode,
             )
         else:
             raise NotImplementedError('Online mode not implemented yet.')
@@ -112,16 +174,16 @@ class BioCypher:
         Write nodes to database.
         """
 
-        if not self.writer:
+        if not self._writer:
             self._get_writer()
 
         nodes = peekable(nodes)
         if not isinstance(nodes.peek(), BioCypherNode):
-            tnodes = self.translator.translate_nodes(nodes)
+            tnodes = self._translator.translate_nodes(nodes)
         else:
             tnodes = nodes
         # write node files
-        return self.writer.write_nodes(tnodes)
+        return self._writer.write_nodes(tnodes)
 
     def write_edges(self, edges):
         """
@@ -130,8 +192,8 @@ class BioCypher:
 
         edges = peekable(edges)
         if not isinstance(edges.peek(), BioCypherEdge):
-            tedges = self.translator.translate_edges(edges)
+            tedges = self._translator.translate_edges(edges)
         else:
             tedges = edges
         # write edge files
-        return self.writer.write_edges(tedges)
+        return self._writer.write_edges(tedges)
