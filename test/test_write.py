@@ -6,9 +6,9 @@ import tempfile
 from genericpath import isfile
 import pytest
 
-from biocypher._core import BioCypher
 from biocypher._write import _Neo4jBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from biocypher._driver import Driver
 from biocypher._mapping import OntologyMapping
 from biocypher._ontology import Ontology
 from biocypher._translate import Translator
