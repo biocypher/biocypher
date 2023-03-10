@@ -28,9 +28,37 @@ def path():
     return path
 
 
-__all__ = [
-    'create_driver', 'neo4j_param', 'pytest_addoption', 'skip_if_offline'
-]
+from biocypher._create import BioCypherNode
+
+
+@pytest.fixture(scope='function')
+def _get_nodes(l: int) -> list:
+    nodes = []
+    for i in range(l):
+        bnp = BioCypherNode(
+            node_id=f'p{i+1}',
+            node_label='protein',
+            preferred_id='uniprot',
+            properties={
+                'score': 4 / (i + 1),
+                'name': 'StringProperty1',
+                'taxon': 9606,
+                'genes': ['gene1', 'gene2'],
+            },
+        )
+        nodes.append(bnp)
+        bnm = BioCypherNode(
+            node_id=f'm{i+1}',
+            node_label='microRNA',
+            preferred_id='mirbase',
+            properties={
+                'name': 'StringProperty1',
+                'taxon': 9606,
+            },
+        )
+        nodes.append(bnm)
+
+    return nodes
 
 
 def pytest_addoption(parser):
