@@ -33,6 +33,4 @@ class Driver(BioCypher):
     logger.warning(
         "The 'Driver' class is deprecated. Please use 'BioCypher' instead."
     )
-
-    def __init__(args, kwargs):
-        super().__init__(args, kwargs)
+    pass
