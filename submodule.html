@@ -148,10 +148,10 @@ import call. Defaults to the absolute output directory path.</p></li>
 nodes in the admin import shell command.</p></li>
 <li><p><strong>skip_duplicate_nodes</strong> – Whether to skip duplicate nodes in the admin import shell
 command.</p></li>
-<li><p><strong>biolink_model</strong> – Path to the custom Biolink model YAML file.</p></li>
-<li><p><strong>tail_ontology_url</strong> – URL of the ontology to hybridise to the head ontology.</p></li>
-<li><p><strong>head_join_node</strong> – Biolink class of the node to join the tail ontology to.</p></li>
-<li><p><strong>tail_join_node</strong> – Ontology class of the node to join the head ontology to.</p></li>
+<li><p><strong>head_ontology</strong> – Ontology to use as the head of the ontology hierarchy. URL and root
+node are required.</p></li>
+<li><p><strong>tail_ontologies</strong> – Ontologies to use as the tail of the ontology hierarchy. URL and
+join nodes (for head and tail) are required.</p></li>
 </ul>
 </dd>
 </dl>
@@ -444,7 +444,7 @@ BioCypher-compatible CSV format; can be any compatible
 <h2><code class="docutils literal notranslate"><span class="pre">_ontology.py</span></code>: Ontology parsing and manipulation<a class="headerlink" href="#ontology-py-ontology-parsing-and-manipulation" title="Permalink to this heading"></a></h2>
 <span class="target" id="module-biocypher._ontology"></span><dl class="py class">
 <dt class="sig sig-object py" id="biocypher._ontology.Ontology">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._ontology.</span></span><span class="sig-name descname"><span class="pre">Ontology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">head_ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#biocypher._mapping.OntologyMapping" title="biocypher._mapping.OntologyMapping"><span class="pre">OntologyMapping</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#biocypher._create.VersionNode" title="biocypher._create.VersionNode"><span class="pre">VersionNode</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail_ontologies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._ontology.Ontology" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._ontology.</span></span><span class="sig-name descname"><span class="pre">Ontology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">head_ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#biocypher._mapping.OntologyMapping" title="biocypher._mapping.OntologyMapping"><span class="pre">OntologyMapping</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#biocypher._create.VersionNode" title="biocypher._create.VersionNode"><span class="pre">VersionNode</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail_ontologies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._ontology.Ontology" title="Permalink to this definition"></a></dt>
 <dd><p>A class that represents the ontological “backbone” of a BioCypher knowledge
 graph. The ontology can be built from a single resource, or hybridised from
 a combination of resources, with one resource being the “head” ontology,
@@ -814,7 +814,7 @@ properties as second-level dict.</p>
 <span class="target" id="module-biocypher._translate"></span><p>Lookup and storage of entity IDs that are part of the BioCypher schema.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._translate.Translator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">Translator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extended_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">Translator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._mapping.OntologyMapping" title="biocypher._mapping.OntologyMapping"><span class="pre">OntologyMapping</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator" title="Permalink to this definition"></a></dt>
 <dd><p>Class responsible for exacting the translation process that is configured in
 the schema_config.yaml file. Creates a mapping dictionary from that file,
 and, given nodes and edges, translates them into BioCypherNodes and
@@ -951,137 +951,18 @@ for ordering of the earlier part files (“01, 02”).</p>
 <ol class="arabic simple" start="3">
 <li><p>start db, test for consistency</p></li>
 </ol>
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._write.BatchWriter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._write.</span></span><span class="sig-name descname"><span class="pre">BatchWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._ontology.Ontology" title="biocypher._ontology.Ontology"><span class="pre">Ontology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quote</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'neo4j'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_bad_relationships</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_duplicate_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">import_call_bin_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">import_call_file_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wipe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.BatchWriter" title="Permalink to this definition"></a></dt>
-<dd><p>Class for writing node and edge representations to disk using the
-format specified by Neo4j for the use of admin import. Each batch
-writer instance has a fixed representation that needs to be passed
-at instantiation via the <code class="xref py py-attr docutils literal notranslate"><span class="pre">schema</span></code> argument. The instance
-also expects an ontology adapter via <code class="xref py py-attr docutils literal notranslate"><span class="pre">ontology_adapter</span></code> to be able
-to convert and extend the hierarchy.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ontology</strong> – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Ontology</span></code> to enable translation and
-ontology queries</p></li>
-<li><p><strong>translator</strong> – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Translator</span></code> to enable translation of
-nodes and manipulation of properties.</p></li>
-<li><p><strong>delimiter</strong> – The delimiter to use for the CSV files.</p></li>
-<li><p><strong>array_delimiter</strong> – The delimiter to use for array properties.</p></li>
-<li><p><strong>quote</strong> – The quote character to use for the CSV files.</p></li>
-<li><p><strong>dirname</strong> – Path for exporting CSV files.</p></li>
-<li><p><strong>db_name</strong> – Name of the Neo4j database that will be used in the generated
-commands.</p></li>
-<li><p><strong>skip_bad_relationships</strong> – Whether to skip relationships that do not have a valid
-start and end node. (In admin import call.)</p></li>
-<li><p><strong>skip_duplicate_nodes</strong> – Whether to skip duplicate nodes. (In admin import call.)</p></li>
-<li><p><strong>import_call_bin_prefix</strong> – Path prefix for the admin import call binary.</p></li>
-<li><p><strong>import_call_file_prefix</strong> – Path prefix for the data files (headers and parts) in the admin
-import call.</p></li>
-<li><p><strong>wipe</strong> – Whether to force import (removing existing DB content). (In
-admin import call.)</p></li>
-<li><p><strong>strict_mode</strong> – Whether to enforce source, version, and license properties.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._write.BatchWriter.get_duplicate_edges">
-<span class="sig-name descname"><span class="pre">get_duplicate_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.BatchWriter.get_duplicate_edges" title="Permalink to this definition"></a></dt>
-<dd><p>Function to return a list of duplicate edges.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="biocypher._write.get_writer">
+<span class="sig-prename descclassname"><span class="pre">biocypher._write.</span></span><span class="sig-name descname"><span class="pre">get_writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._ontology.Ontology" title="biocypher._ontology.Ontology"><span class="pre">Ontology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.get_writer" title="Permalink to this definition"></a></dt>
+<dd><p>Function to return the writer class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list of duplicate edges</p>
+<dd class="field-odd"><p>the writer class</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
+<dd class="field-even"><p>class</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._write.BatchWriter.get_duplicate_nodes">
-<span class="sig-name descname"><span class="pre">get_duplicate_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.BatchWriter.get_duplicate_nodes" title="Permalink to this definition"></a></dt>
-<dd><p>Function to return a list of duplicate nodes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list of duplicate nodes</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._write.BatchWriter.get_import_call">
-<span class="sig-name descname"><span class="pre">get_import_call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._write.BatchWriter.get_import_call" title="Permalink to this definition"></a></dt>
-<dd><p>Function to return the import call detailing folder and
-individual node and edge headers and data files, as well as
-delimiters and database name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>a bash command for neo4j-admin import</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._write.BatchWriter.write_edges">
-<span class="sig-name descname"><span class="pre">write_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">generator</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#biocypher._write.BatchWriter.write_edges" title="Permalink to this definition"></a></dt>
-<dd><p>Wrapper for writing edges and their headers.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>edges</strong> (<a class="reference internal" href="#biocypher._create.BioCypherEdge" title="biocypher._create.BioCypherEdge"><em>BioCypherEdge</em></a>) – a list or generator of edges in
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BioCypherEdge</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">BioCypherRelAsNode</span></code>
-format</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The return value. True for success, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._write.BatchWriter.write_import_call">
-<span class="sig-name descname"><span class="pre">write_import_call</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#biocypher._write.BatchWriter.write_import_call" title="Permalink to this definition"></a></dt>
-<dd><p>Function to write the import call detailing folder and
-individual node and edge headers and data files, as well as
-delimiters and database name, to the export folder as txt.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The return value. True for success, False otherwise.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._write.BatchWriter.write_nodes">
-<span class="sig-name descname"><span class="pre">write_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.BatchWriter.write_nodes" title="Permalink to this definition"></a></dt>
-<dd><p>Wrapper for writing nodes and their headers.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>nodes</strong> (<a class="reference internal" href="#biocypher._create.BioCypherNode" title="biocypher._create.BioCypherNode"><em>BioCypherNode</em></a>) – a list or generator of nodes in
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BioCypherNode</span></code> format</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The return value. True for success, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>
