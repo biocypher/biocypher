@@ -7,17 +7,16 @@ import pytest
 
 from biocypher import config as bcy_config
 from biocypher._core import BioCypher
+from biocypher._create import BioCypherNode
 from biocypher._driver import Driver
 
 
+# temporary output paths
 def get_random_string(length):
-
-    # choose from all lowercase letter
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for _ in range(length))
 
 
-# temporary output paths
 @pytest.fixture(name='path', scope='session')
 def path():
     path = os.path.join(
@@ -28,9 +27,7 @@ def path():
     return path
 
 
-from biocypher._create import BioCypherNode
-
-
+# biocypher node generator
 @pytest.fixture(scope='function')
 def _get_nodes(l: int) -> list:
     nodes = []
@@ -61,6 +58,7 @@ def _get_nodes(l: int) -> list:
     return nodes
 
 
+# option parser
 def pytest_addoption(parser):
 
     options = (
@@ -80,6 +78,7 @@ def pytest_addoption(parser):
         )
 
 
+# core instance fixture
 @pytest.fixture(name='core', scope='session')
 def create_core(request, path):
 
@@ -109,6 +108,7 @@ def create_core(request, path):
     yield c
 
 
+# neo4j parameters
 @pytest.fixture(scope='session')
 def neo4j_param(request):
 
@@ -127,6 +127,7 @@ def neo4j_param(request):
     return bcy_config('neo4j')
 
 
+# neo4j driver fixture
 @pytest.fixture(name='driver', scope='session')
 def create_driver(request, neo4j_param):
 
@@ -182,6 +183,7 @@ def create_driver(request, neo4j_param):
     d.close()
 
 
+# skip test if neo4j is offline
 @pytest.fixture(autouse=True)
 def skip_if_offline(request):
 
