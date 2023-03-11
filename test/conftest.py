@@ -7,11 +7,32 @@ import pytest
 
 from biocypher import config as bcy_config
 from biocypher._core import BioCypher
+from biocypher._write import _Neo4jBatchWriter
 from biocypher._create import BioCypherNode
 from biocypher._driver import _Driver
 from biocypher._mapping import OntologyMapping
 from biocypher._ontology import Ontology, OntologyAdapter
 from biocypher._translate import Translator
+
+
+# CLI option parser
+def pytest_addoption(parser):
+
+    options = (
+        ('database_name', 'The Neo4j database to be used for tests.'),
+        ('user', 'Tests access Neo4j as this user.'),
+        ('password', 'Password to access Neo4j.'),
+        ('uri', 'URI of the Neo4j server.'),
+    )
+
+    for name, help_ in options:
+
+        parser.addoption(
+            f'--{name}',
+            action='store',
+            default=None,
+            help=help_,
+        )
 
 
 # temporary output paths
@@ -22,6 +43,16 @@ def get_random_string(length):
 
 @pytest.fixture(name='path', scope='session')
 def path():
+    path = os.path.join(
+        tempfile.gettempdir(),
+        f'biocypher-test-{get_random_string(5)}',
+    )
+    os.makedirs(path, exist_ok=True)
+    return path
+
+
+@pytest.fixture(name='path_strict', scope='session')
+def path_strict():
     path = os.path.join(
         tempfile.gettempdir(),
         f'biocypher-test-{get_random_string(5)}',
@@ -118,24 +149,66 @@ def hybrid_ontology(ontology_mapping):
     )
 
 
-# CLI option parser
-def pytest_addoption(parser):
+# neo4j batch writer fixtures
+@pytest.fixture(scope='function')
+def bw(hybrid_ontology, translator, path):
 
-    options = (
-        ('database_name', 'The Neo4j database to be used for tests.'),
-        ('user', 'Tests access Neo4j as this user.'),
-        ('password', 'Password to access Neo4j.'),
-        ('uri', 'URI of the Neo4j server.'),
+    bw = _Neo4jBatchWriter(
+        ontology=hybrid_ontology,
+        translator=translator,
+        dirname=path,
+        delimiter=';',
+        array_delimiter='|',
+        quote="'",
     )
 
-    for name, help_ in options:
+    yield bw
 
-        parser.addoption(
-            f'--{name}',
-            action='store',
-            default=None,
-            help=help_,
-        )
+    # teardown
+    for f in os.listdir(path):
+        os.remove(os.path.join(path, f))
+    os.rmdir(path)
+
+
+@pytest.fixture(scope='function')
+def bw_strict(hybrid_ontology, translator, path_strict):
+
+    bw = _Neo4jBatchWriter(
+        ontology=hybrid_ontology,
+        translator=translator,
+        dirname=path_strict,
+        delimiter=';',
+        array_delimiter='|',
+        quote="'",
+        strict_mode=True,
+    )
+
+    yield bw
+
+    # teardown
+    for f in os.listdir(path_strict):
+        os.remove(os.path.join(path_strict, f))
+    os.rmdir(path_strict)
+
+
+@pytest.fixture
+def tab_bw(hybrid_ontology, translator, path):
+
+    tab_bw = _Neo4jBatchWriter(
+        ontology=hybrid_ontology,
+        translator=translator,
+        dirname=path,
+        delimiter='\t',
+        array_delimiter='|',
+        quote="'",
+    )
+
+    yield tab_bw
+
+    # teardown
+    for f in os.listdir(path):
+        os.remove(os.path.join(path, f))
+    os.rmdir(path)
 
 
 # core instance fixture

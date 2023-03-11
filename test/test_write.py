@@ -1,7 +1,4 @@
 import os
-import random
-import string
-import tempfile
 
 from genericpath import isfile
 import pytest
@@ -9,131 +6,6 @@ import pytest
 from biocypher._write import _Neo4jBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._driver import _Driver
-from biocypher._mapping import OntologyMapping
-from biocypher._ontology import Ontology
-from biocypher._translate import Translator
-
-
-def get_random_string(length):
-
-    # choose from all lowercase letter
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for _ in range(length))
-
-
-# temporary output paths
-@pytest.fixture
-def path():
-    path = os.path.join(
-        tempfile.gettempdir(),
-        f'biocypher-test-{get_random_string(5)}',
-    )
-    os.makedirs(path, exist_ok=True)
-    return path
-
-
-@pytest.fixture
-def path_strict():
-    path = os.path.join(
-        tempfile.gettempdir(),
-        f'biocypher-test-{get_random_string(5)}',
-    )
-    os.makedirs(path, exist_ok=True)
-    return path
-
-
-@pytest.fixture
-def ontology_mapping():
-    return OntologyMapping(
-        config_file='biocypher/_config/test_schema_config.yaml',
-    )
-
-
-@pytest.fixture
-def translator(ontology_mapping):
-    return Translator(ontology_mapping=ontology_mapping.extended_schema)
-
-
-@pytest.fixture
-def ontology(ontology_mapping):
-    return Ontology(
-        head_ontology={
-            'url':
-                'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
-            'root_node':
-                'entity',
-        },
-        ontology_mapping=ontology_mapping,
-        tail_ontologies={
-            'so':
-                {
-                    'url': 'test/so.owl',
-                    'head_join_node': 'sequence variant',
-                    'tail_join_node': 'sequence_variant'
-                },
-        },
-    )
-
-
-@pytest.fixture
-def bw(ontology, translator, path):
-
-    bw = _Neo4jBatchWriter(
-        ontology=ontology,
-        translator=translator,
-        dirname=path,
-        delimiter=';',
-        array_delimiter='|',
-        quote="'",
-    )
-
-    yield bw
-
-    # teardown
-    for f in os.listdir(path):
-        os.remove(os.path.join(path, f))
-    os.rmdir(path)
-
-
-@pytest.fixture
-def bw_strict(ontology, translator, path_strict):
-
-    bw = _Neo4jBatchWriter(
-        ontology=ontology,
-        translator=translator,
-        dirname=path_strict,
-        delimiter=';',
-        array_delimiter='|',
-        quote="'",
-        strict_mode=True,
-    )
-
-    yield bw
-
-    # teardown
-    for f in os.listdir(path_strict):
-        os.remove(os.path.join(path_strict, f))
-    os.rmdir(path_strict)
-
-
-@pytest.fixture
-def tab_bw(ontology, translator, path):
-
-    tab_bw = _Neo4jBatchWriter(
-        ontology=ontology,
-        translator=translator,
-        dirname=path,
-        delimiter='\t',
-        array_delimiter='|',
-        quote="'",
-    )
-
-    yield tab_bw
-
-    # teardown
-    for f in os.listdir(path):
-        os.remove(os.path.join(path, f))
-    os.rmdir(path)
 
 
 def test_writer_and_output_dir(bw, path):
@@ -420,10 +292,10 @@ def test_too_many_properties(bw):
         node_id='p0',
         node_label='protein',
         properties={
-            'p1': get_random_string(4),
-            'p2': get_random_string(8),
-            'p3': get_random_string(16),
-            'p4': get_random_string(16),
+            'p1': 'StringProperty1',
+            'p2': 'StringProperty2',
+            'p3': 'StringProperty3',
+            'p4': 'StringProperty4',
         },
     )
     nodes.append(bn1)
@@ -445,7 +317,7 @@ def test_not_enough_properties(bw, path):
     bn1 = BioCypherNode(
         node_id='p0',
         node_label='protein',
-        properties={'p1': get_random_string(4)},
+        properties={'p1': 'StringProperty1'},
     )
     nodes.append(bn1)
 
@@ -897,42 +769,6 @@ def test_create_import_call(bw, path):
         f'--relationships="{path}/IS_TARGET_OF-header.csv,{path}/IS_TARGET_OF-part.*" '
         f'--relationships="{path}/PERTURBED_IN_DISEASE-header.csv,{path}/PERTURBED_IN_DISEASE-part.*" '
     )
-
-
-def test_write_offline(path):
-    # more of an integration test.. put in test_driver?
-    d = _Driver(
-        offline=True,
-        user_schema_config_path='biocypher/_config/test_schema_config.yaml',
-        delimiter=',',
-        array_delimiter='|',
-        output_directory=path,
-        head_ontology={
-            'url':
-                'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
-            'root_node':
-                'entity',
-        },
-    )
-
-    nodes = _get_nodes(4)
-
-    passed = d.write_nodes(nodes)
-
-    p_csv = os.path.join(path, 'Protein-part000.csv')
-    m_csv = os.path.join(path, 'MicroRNA-part000.csv')
-
-    with open(p_csv) as f:
-        pr = f.read()
-
-    with open(m_csv) as f:
-        mi = f.read()
-
-    assert passed
-    assert 'p1,"StringProperty1",4.0,9606,"gene1|gene2","p1","uniprot"' in pr
-    assert 'BiologicalEntity' in pr
-    assert 'm1,"StringProperty1",9606,"m1","mirbase"' in mi
-    assert 'ChemicalEntity' in mi
 
 
 def test_duplicate_id(bw, path):

@@ -19,7 +19,7 @@ def translator(mapping):
 
 
 @pytest.fixture
-def ontology():
+def hybrid_ontology():
     return Ontology(
         head_ontology={
             'url':
