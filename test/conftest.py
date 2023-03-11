@@ -9,7 +9,7 @@ from biocypher import config as bcy_config
 from biocypher._core import BioCypher
 from biocypher._write import _Neo4jBatchWriter
 from biocypher._create import BioCypherNode
-from biocypher._driver import _Driver
+from biocypher._connect import _Driver
 from biocypher._mapping import OntologyMapping
 from biocypher._ontology import Ontology, OntologyAdapter
 from biocypher._translate import Translator

@@ -1,9 +1,23 @@
+#!/usr/bin/env python
+
+#
+# Copyright 2021, Heidelberg University Clinic
+#
+# File author(s): Sebastian Lobentanzer
+#                 ...
+#
+# Distributed under MIT licence, see the file `LICENSE`.
+#
+"""
+BioCypher core module. Interfaces with the user and distributes tasks to
+submodules.
+"""
 from more_itertools import peekable
 
 from ._write import get_writer
 from ._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode
-from ._driver import get_driver
+from ._connect import get_driver
 from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator

@@ -8,25 +8,8 @@
 # Distributed under MIT licence, see the file `LICENSE`.
 #
 """
-Create a property graph database for biomedical research applications.
-Transforms ordered collections of biomedical entities and relationships
-to BioCypher objects that represent property graph nodes and edges.
-
-Todo:
-
-    - Calls to the classes are independent, so there is no way to
-      check directly; nodes can be created at any point in time
-      previous to edge creation. We could require a pass of all
-      the nodes in the graph when creating edges. Pro: this would
-      also allow a check whether the existing graph adheres to
-      BioCypher, at least in the node domain. If it doesn't,
-      the call does not make much sense.
-
-    - establish a dictionary lookup with the id types to be used / basic
-      type checking of the input
-
-    - translation of id types using pypath translation facilities (to be
-      later externalised)
+BioCypher 'create' module. Handles the creation of BioCypher node and edge
+dataclasses.
 """
 
 from typing import Union, Optional

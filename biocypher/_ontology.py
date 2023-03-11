@@ -8,7 +8,11 @@
 #
 # Distributed under MIT licence, see the file `LICENSE`.
 #
-
+"""
+BioCypher 'ontology' module. Contains classes and functions to handle parsing
+and representation of single ontologies as well as their hybridisation and
+other advanced operations.
+"""
 from typing import Union, Optional
 from datetime import datetime
 

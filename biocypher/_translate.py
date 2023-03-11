@@ -9,28 +9,8 @@
 # Distributed under MIT licence, see the file `LICENSE`.
 #
 """
-Lookup and storage of entity IDs that are part of the BioCypher schema.
-
-Todo:
-
-    - genericise: standardise input data to BioCypher specifications or,
-      optionally, user specifications.
-
-        - if the database exists, read biocypher info node
-        - if newly created, ask for user input (?) as to which IDs to
-          use etc
-        - default scenario -> YAML?
-        - the consensus representation ("target" of translation) is
-          the literal Biolink class, which is assigned to database
-          content using user input for each class to be represented
-          in the graph ("source" of translation). currently,
-          implemented by assigning source nomenclature explicitly in
-          the schema_config.yaml file ("label_in_input").
-
-    - type checking: use biolink classes for typing directly?
-
-    - import ID types from pypath dictionary (later, externalised
-      dictionary)? biolink?
+BioCypher 'translation' module. Responsible for translating between the raw
+input data and the BioCypherNode and BioCypherEdge objects.
 """
 from collections.abc import Iterable, Generator
 

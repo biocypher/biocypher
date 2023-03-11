@@ -2,7 +2,7 @@ import neo4j
 import pytest
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from biocypher._driver import _Driver
+from biocypher._connect import _Driver
 
 
 def test_create_driver(driver):

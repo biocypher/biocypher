@@ -5,7 +5,7 @@ import pytest
 
 from biocypher._write import _Neo4jBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from biocypher._driver import _Driver
+from biocypher._connect import _Driver
 
 
 def test_writer_and_output_dir(bw, path):

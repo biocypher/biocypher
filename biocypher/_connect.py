@@ -9,8 +9,7 @@
 # Distributed under MIT licence, see the file `LICENSE`.
 #
 """
-A wrapper around the Neo4j driver which handles the DBMS connection and
-provides basic management methods.
+BioCypher 'online' mode. Handles connection and manipulation of a running DBMS.
 """
 from collections.abc import Iterable
 

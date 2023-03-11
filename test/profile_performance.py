@@ -8,7 +8,7 @@ import cProfile
 from neo4j_utils._print import bcolors
 
 from biocypher._create import BioCypherEdge, BioCypherNode
-from biocypher._driver import _Driver
+from biocypher._connect import _Driver
 
 __all__ = [
     'create_network_by_gen',

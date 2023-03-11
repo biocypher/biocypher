@@ -9,7 +9,7 @@
 # Distributed under MIT licence, see the file `LICENSE`.
 #
 """
-Graph database standard for molecular biology
+BioCypher: a unifying framework for biomedical knowledge graphs.
 """
 
 __all__ = [

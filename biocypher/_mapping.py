@@ -8,7 +8,10 @@
 #
 # Distributed under MIT licence, see the file `LICENSE`.
 #
-
+"""
+BioCypher 'mapping' module. Handles the mapping of user-defined schema to the
+underlying ontology.
+"""
 from typing import Optional
 from urllib.request import urlopen
 
