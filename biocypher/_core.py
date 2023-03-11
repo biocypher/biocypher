@@ -180,8 +180,6 @@ class BioCypher:
                 dbms=self._dbms,
                 translator=self._get_translator(),
                 ontology=self._get_ontology(),
-                output_directory=self._output_directory,
-                strict_mode=self._strict_mode,
             )
         else:
             raise NotImplementedError('Cannot get driver in offline mode.')

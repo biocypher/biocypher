@@ -10,6 +10,7 @@
 #
 
 from typing import Union, Optional
+from datetime import datetime
 
 import rdflib
 import networkx as nx
@@ -476,3 +477,31 @@ class Ontology:
         tree.show()
 
         return tree
+
+    def get_dict(self) -> dict:
+        """
+        Returns a dictionary compatible with a BioCypher node for compatibility
+        with the Neo4j driver.
+        """
+
+        d = {
+            'id': self._get_current_id(),
+            'label': 'BioCypher',
+            'properties': {
+                'schema': self.extended_schema,
+            },
+        }
+
+        return d
+
+    def _get_current_id(self):
+        """
+        Instantiate a version ID for the current session. For now does simple
+        versioning using datetime.
+
+        Can later implement incremental versioning, versioning from
+        config file, or manual specification via argument.
+        """
+
+        now = datetime.now()
+        return now.strftime('v%Y%m%d-%H%M%S')

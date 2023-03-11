@@ -9,6 +9,9 @@ from biocypher import config as bcy_config
 from biocypher._core import BioCypher
 from biocypher._create import BioCypherNode
 from biocypher._driver import _Driver
+from biocypher._mapping import OntologyMapping
+from biocypher._ontology import Ontology, OntologyAdapter
+from biocypher._translate import Translator
 
 
 # temporary output paths
@@ -58,13 +61,72 @@ def _get_nodes(l: int) -> list:
     return nodes
 
 
-# option parser
+@pytest.fixture(scope='session')
+def ontology_mapping():
+    return OntologyMapping(
+        config_file='biocypher/_config/test_schema_config.yaml'
+    )
+
+
+@pytest.fixture(scope='session')
+def translator(ontology_mapping):
+    return Translator(ontology_mapping)
+
+
+@pytest.fixture(scope='session')
+def biolink_adapter():
+    return OntologyAdapter(
+        '/Users/slobentanzer/Downloads/biolink-model.owl.ttl', 'entity'
+    )
+
+
+@pytest.fixture(scope='session')
+def so_adapter():
+    return OntologyAdapter('test/so.owl', 'sequence_variant')
+
+
+@pytest.fixture(scope='session')
+def go_adapter():
+    return OntologyAdapter('test/go.owl', 'molecular_function')
+
+
+@pytest.fixture(scope='session')
+def mondo_adapter():
+    return OntologyAdapter('test/mondo.owl', 'disease')
+
+
+@pytest.fixture(scope='session')
+def hybrid_ontology(ontology_mapping):
+    return Ontology(
+        head_ontology={
+            'url': '/Users/slobentanzer/Downloads/biolink-model.owl.ttl',
+            'root_node': 'entity',
+        },
+        ontology_mapping=ontology_mapping,
+        tail_ontologies={
+            'so':
+                {
+                    'url': 'test/so.owl',
+                    'head_join_node': 'sequence variant',
+                    'tail_join_node': 'sequence_variant',
+                },
+            'mondo':
+                {
+                    'url': 'test/mondo.owl',
+                    'head_join_node': 'disease',
+                    'tail_join_node': 'disease',
+                }
+        },
+    )
+
+
+# CLI option parser
 def pytest_addoption(parser):
 
     options = (
-        ('db', 'The Neo4j database to be used for tests.'),
+        ('database_name', 'The Neo4j database to be used for tests.'),
         ('user', 'Tests access Neo4j as this user.'),
-        ('pw', 'Password to access Neo4j.'),
+        ('password', 'Password to access Neo4j.'),
         ('uri', 'URI of the Neo4j server.'),
     )
 
@@ -113,23 +175,25 @@ def create_core(request, path):
 def neo4j_param(request):
 
     keys = (
-        'db',
+        'database_name',
         'user',
-        'pw',
+        'password',
         'uri',
     )
 
-    param = {
-        key: request.config.getoption(f'--{key}') or bcy_config(key)
+    param = bcy_config('neo4j')
+
+    cli = {
+        key: request.config.getoption(f'--{key}') or param[key]
         for key in keys
     }
 
-    return bcy_config('neo4j')
+    return cli
 
 
 # neo4j driver fixture
 @pytest.fixture(name='driver', scope='session')
-def create_driver(request, neo4j_param):
+def create_driver(request, neo4j_param, translator, hybrid_ontology):
 
     marker = request.node.get_closest_marker('inject_driver_args')
 
@@ -146,14 +210,8 @@ def create_driver(request, neo4j_param):
     else:
 
         driver_args = {
-            'wipe':
-                True,
-            'increment_version':
-                False,
-            'user_schema_config_path':
-                'biocypher/_config/test_schema_config.yaml',
-            'clear_cache':
-                True,
+            'translator': translator,
+            'ontology': hybrid_ontology,
         }
         driver_args.update(marker_args)
         driver_args.update(neo4j_param)
@@ -167,20 +225,20 @@ def create_driver(request, neo4j_param):
     yield d
 
     # teardown
-    d.query('MATCH (n:Test)'
-            'DETACH DELETE n')
-    d.query('MATCH (n:Int1)'
-            'DETACH DELETE n')
-    d.query('MATCH (n:Int2)'
-            'DETACH DELETE n')
+    d._driver.query('MATCH (n:Test)'
+                    'DETACH DELETE n')
+    d._driver.query('MATCH (n:Int1)'
+                    'DETACH DELETE n')
+    d._driver.query('MATCH (n:Int2)'
+                    'DETACH DELETE n')
 
     # to deal with merging on non-existing nodes
     # see test_add_single_biocypher_edge_missing_nodes()
-    d.query("MATCH (n2) WHERE n2.id = 'src'"
-            'DETACH DELETE n2')
-    d.query("MATCH (n3) WHERE n3.id = 'tar'"
-            'DETACH DELETE n3')
-    d.close()
+    d._driver.query("MATCH (n2) WHERE n2.id = 'src'"
+                    'DETACH DELETE n2')
+    d._driver.query("MATCH (n3) WHERE n3.id = 'tar'"
+                    'DETACH DELETE n3')
+    d._driver.close()
 
 
 # skip test if neo4j is offline

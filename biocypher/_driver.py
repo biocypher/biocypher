@@ -40,7 +40,7 @@ from ._translate import Translator
 __all__ = ['_Driver']
 
 
-class _Driver(neo4j_utils.Driver):
+class _Driver():
     """
     Manages a connection to a biocypher database.
 
@@ -67,28 +67,23 @@ class _Driver(neo4j_utils.Driver):
         password: Optional[str] = None,
         multi_db: Optional[bool] = None,
         fetch_size: int = 1000,
-        skip_duplicate_nodes: bool = False,
-        skip_bad_relationships: bool = False,
         increment_version: bool = True,
-        import_call_bin_prefix: Optional[str] = None,
-        import_call_file_prefix: Optional[str] = None,
-        strict_mode: Optional[bool] = None,
         ontology: Optional[Ontology] = None,
+        translator: Optional[Translator] = None,
     ):
 
-        # Neo4j options
-        self._wipe = wipe
-        self._import_call_bin_prefix = import_call_bin_prefix
-        self._import_call_file_prefix = import_call_file_prefix
-        self._skip_bad_relationships = skip_bad_relationships
-        self._skip_duplicate_nodes = skip_duplicate_nodes
-
-        # BioCypher options
-        self._strict_mode = strict_mode or _config('strict_mode')
-
         self._ontology = ontology
+        self._translator = translator
 
-        neo4j_utils.Driver.__init__(**locals())
+        self._driver = neo4j_utils.Driver(
+            db_name=database_name,
+            db_uri=uri,
+            db_user=user,
+            db_passwd=password,
+            fetch_size=fetch_size,
+            wipe=wipe,
+            multi_db=multi_db,
+        )
 
         # check for biocypher config in connected graph
 
@@ -108,7 +103,7 @@ class _Driver(neo4j_utils.Driver):
         self.add_biocypher_nodes(self._ontology)
 
         # find current version node
-        db_version = self.query(
+        db_version = self._driver.query(
             'MATCH (v:BioCypher) '
             'WHERE NOT (v)-[:PRECEDES]->() '
             'RETURN v',
@@ -125,17 +120,17 @@ class _Driver(neo4j_utils.Driver):
 
     def init_db(self):
         """
-        Used to initialise a property graph database by deleting
-        contents and constraints and setting up new constraints.
+        Used to initialise a property graph database by setting up new
+        constraints. Wipe has been performed by the ``neo4j_utils.Driver``
+        class` already.
 
         Todo:
             - set up constraint creation interactively depending on the
                 need of the database
         """
 
-        self.wipe_db()
-        self._create_constraints()
         logger.info('Initialising database.')
+        self._create_constraints()
 
     def _create_constraints(self):
         """
@@ -158,7 +153,7 @@ class _Driver(neo4j_utils.Driver):
                     f'IF NOT EXISTS ON (n:`{label}`) '
                     'ASSERT n.id IS UNIQUE'
                 )
-                self.query(s)
+                self._driver.query(s)
 
     def add_nodes(self, id_type_tuples: Iterable[tuple]) -> tuple:
         """
@@ -180,7 +175,7 @@ class _Driver(neo4j_utils.Driver):
                 - second entry: Neo4j summary.
         """
 
-        bn = self.translator.translate_nodes(id_type_tuples)
+        bn = self._translator.translate_nodes(id_type_tuples)
         return self.add_biocypher_nodes(bn)
 
     def add_edges(self, id_src_tar_type_tuples: Iterable[tuple]) -> tuple:
@@ -212,7 +207,7 @@ class _Driver(neo4j_utils.Driver):
                 - second entry: Neo4j summary.
         """
 
-        bn = self.translator.translate_edges(id_src_tar_type_tuples)
+        bn = self._translator.translate_edges(id_src_tar_type_tuples)
         return self.add_biocypher_edges(bn)
 
     def add_biocypher_nodes(
@@ -249,9 +244,9 @@ class _Driver(neo4j_utils.Driver):
 
         try:
 
-            entities = [
-                node.get_dict() for node in _misc.ensure_iterable(nodes)
-            ]
+            nodes = _misc.to_list(nodes)
+
+            entities = [node.get_dict() for node in nodes]
 
         except AttributeError:
 
@@ -272,7 +267,7 @@ class _Driver(neo4j_utils.Driver):
 
         method = 'explain' if explain else 'profile' if profile else 'query'
 
-        result = getattr(self, method)(
+        result = getattr(self._driver, method)(
             entity_query,
             parameters={
                 'entities': entities,
@@ -362,7 +357,7 @@ class _Driver(neo4j_utils.Driver):
             'MERGE (tar {id: r.target_id}) '
         )
 
-        self.query(node_query, parameters={'rels': rels})
+        self._driver.query(node_query, parameters={'rels': rels})
 
         edge_query = (
             'UNWIND $rels AS r '
@@ -378,127 +373,14 @@ class _Driver(neo4j_utils.Driver):
 
         method = 'explain' if explain else 'profile' if profile else 'query'
 
-        result = getattr(self, method)(edge_query, parameters={'rels': rels})
+        result = getattr(self._driver,
+                         method)(edge_query, parameters={
+                             'rels': rels
+                         })
 
         logger.info('Finished merging edges.')
 
         return result
-
-    def write_nodes(self, nodes):
-        """
-        Write BioCypher nodes to disk using the :mod:`write` module,
-        formatting the CSV to enable Neo4j admin import from the target
-        directory.
-
-        Args:
-            nodes (iterable): collection of nodes to be written in
-                BioCypher-compatible CSV format; can be any compatible
-                (ie, translatable) input format or already as
-                :class:`biocypher.create.BioCypherNode`.
-        """
-
-        # instantiate ontology on demand because it takes time to load
-        self.start_ontology()
-
-        self.start_batch_writer()
-
-        nodes = peekable(nodes)
-        if not isinstance(nodes.peek(), BioCypherNode):
-            tnodes = self.translator.translate_nodes(nodes)
-        else:
-            tnodes = nodes
-        # write node files
-        return self.batch_writer.write_nodes(tnodes)
-
-    def start_batch_writer(self) -> None:
-        """
-        Instantiate the batch writer if it does not exist.
-
-        Args:
-            dirname (str): the directory to write the files to
-            db_name (str): the name of the database to write the files to
-        """
-        if not self.batch_writer:
-            self.batch_writer = _Neo4jBatchWriter(
-                ontology=self.ontology,
-                translator=self.translator,
-                delimiter=self.db_delim,
-                array_delimiter=self.db_adelim,
-                quote=self.db_quote,
-                dirname=self._output_directory,
-                db_name=self._db_name,
-                skip_bad_relationships=self._skip_bad_relationships,
-                skip_duplicate_nodes=self._skip_duplicate_nodes,
-                import_call_bin_prefix=self._import_call_bin_prefix,
-                import_call_file_prefix=self._import_call_file_prefix,
-                wipe=self._wipe,
-                strict_mode=self._strict_mode,
-            )
-
-    def start_ontology(self) -> None:
-        """
-        Instantiate the :class:`biocypher._ontology.Ontology` if not
-        existing.
-        """
-        if not self.ontology:
-            self.ontology = Ontology(
-                head_ontology=self.head_ontology,
-                ontology_mapping=self._ontology,
-                tail_ontologies=self.tail_ontologies,
-            )
-
-    def write_edges(
-        self,
-        edges,
-    ) -> None:
-        """
-        Write BioCypher edges to disk using the :mod:`write` module,
-        formatting the CSV to enable Neo4j admin import from the target
-        directory.
-
-        Args:
-            edges (iterable): collection of edges to be written in
-                BioCypher-compatible CSV format; can be any compatible
-                (ie, translatable) input format or already as
-                :class:`biocypher.create.BioCypherEdge`.
-        """
-
-        # instantiate adapter on demand because it takes time to load
-        # the biolink model toolkit
-        self.start_ontology()
-
-        self.start_batch_writer()
-
-        edges = peekable(edges)
-        if not isinstance(edges.peek(), BioCypherEdge):
-            tedges = self.translator.translate_edges(edges)
-        else:
-            tedges = edges
-        # write edge files
-        self.batch_writer.write_edges(tedges)
-
-    def get_import_call(self):
-        """
-        Upon using the batch writer for writing admin import CSV files,
-        return a string containing the neo4j admin import call with
-        delimiters, database name, and paths of node and edge files.
-
-        Returns:
-            str: a neo4j-admin import call
-        """
-        return self.batch_writer.get_import_call()
-
-    def write_import_call(self):
-        """
-        Upon using the batch writer for writing admin import CSV files,
-        write a string containing the neo4j admin import call with
-        delimiters, database name, and paths of node and edge files, to
-        the export directory.
-
-        Returns:
-            bool: The return value. True for success, False otherwise.
-        """
-        return self.batch_writer.write_import_call()
 
     def log_missing_bl_types(self):
         """
@@ -509,7 +391,7 @@ class _Driver(neo4j_utils.Driver):
             set: a set of missing Biolink types
         """
 
-        mt = self.translator.get_missing_biolink_types()
+        mt = self._translator.get_missing_biolink_types()
 
         if mt:
             msg = (
@@ -598,7 +480,7 @@ class _Driver(neo4j_utils.Driver):
         # instantiate adapter if not exists
         self.start_ontology()
 
-        return self.translator.translate_term(term)
+        return self._translator.translate_term(term)
 
     def reverse_translate_term(self, term: str) -> str:
         """
@@ -608,7 +490,7 @@ class _Driver(neo4j_utils.Driver):
         # instantiate adapter if not exists
         self.start_ontology()
 
-        return self.translator.reverse_translate_term(term)
+        return self._translator.reverse_translate_term(term)
 
     def translate_query(self, query: str) -> str:
         """
@@ -618,7 +500,7 @@ class _Driver(neo4j_utils.Driver):
         # instantiate adapter if not exists
         self.start_ontology()
 
-        return self.translator.translate(query)
+        return self._translator.translate(query)
 
     def reverse_translate_query(self, query: str) -> str:
         """
@@ -628,18 +510,13 @@ class _Driver(neo4j_utils.Driver):
         # instantiate adapter if not exists
         self.start_ontology()
 
-        return self.translator.reverse_translate(query)
-
-    def __repr__(self):
-
-        return f'<BioCypher {neo4j_utils.Driver.__repr__(self)[1:]}'
+        return self._translator.reverse_translate(query)
 
 
-def get_writer(
+def get_driver(
     dbms: str,
     translator: 'Translator',
     ontology: 'Ontology',
-    strict_mode: bool,
 ):
     """
     Function to return the writer class.
@@ -658,10 +535,8 @@ def get_writer(
             user=dbms_config['user'],
             password=dbms_config['password'],
             multi_db=dbms_config['multi_db'],
-            skip_duplicate_nodes=dbms_config['skip_duplicate_nodes'],
-            skip_bad_relationships=dbms_config['skip_bad_relationships'],
-            strict_mode=strict_mode,
             ontology=ontology,
+            translator=translator,
         )
 
     return None
