@@ -8,7 +8,7 @@ import pytest
 from biocypher import config as bcy_config
 from biocypher._core import BioCypher
 from biocypher._create import BioCypherNode
-from biocypher._driver import Driver
+from biocypher._driver import _Driver
 
 
 # temporary output paths
@@ -158,7 +158,7 @@ def create_driver(request, neo4j_param):
         driver_args.update(marker_args)
         driver_args.update(neo4j_param)
 
-        d = Driver(**driver_args)
+        d = _Driver(**driver_args)
 
         if not marker_args:
 

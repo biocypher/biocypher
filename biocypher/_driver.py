@@ -37,221 +37,75 @@ from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator
 
-__all__ = ['Driver']
+__all__ = ['_Driver']
 
 
-class Driver(neo4j_utils.Driver):
+class _Driver(neo4j_utils.Driver):
     """
     Manages a connection to a biocypher database.
 
-    The connection can be defined in three ways:
-        * Providing a ready ``neo4j.Driver`` instance
-        * By URI and authentication data
-        * By a YAML config file
-
     Args:
-        driver:
-            A ``neo4j.Driver`` instance, created by, for example,
-            ``neo4j.GraphDatabase.driver``.
-        db_name:
-            Name of the database (Neo4j graph) to use.
-        db_uri:
-            Protocol, host and port to access the Neo4j server.
-        db_user:
-            Neo4j user name.
-        db_passwd:
-            Password of the Neo4j user.
-        fetch_size:
-            Optional; the fetch size to use in database transactions.
-        wipe:
-            Wipe the database after connection, ensuring the data is
-            loaded into an empty database.
-        offline:
-            Do not connect to the database, but use the provided
-            schema to create a graph representation and write CSVs for
-            admin import.
-        output_directory:
-            Directory to write CSV files to.
-        increment_version:
-            Whether to increase version number automatically and create a
-            new BioCypher version node in the graph.
-        user_schema_config_path:
-            Path to the graph database schema configuration file.
-        clear_cache:
-            Whether to clear the ontological hierarchy cache at driver
-            instantiation. The cache is used to speed up the translation
-            of Biolink classes to the database schema.
-        delimiter:
-            Delimiter for CSV export.
-        array_delimiter:
-            Array delimiter for CSV exported contents.
-        quote_char:
-            String quotation character for CSV export.
-        import_call_bin_prefix:
-            Prefix for the Cypher call to the admin import shell command.
-            Defaults to ``bin/``.
-        import_call_file_prefix:
-            Path prefix for the data files (headers and parts) in the admin
-            import call. Defaults to the absolute output directory path.
-        skip_bad_relationships:
-            Whether to skip relationships with missing source or target
-            nodes in the admin import shell command.
-        skip_duplicate_nodes:
-            Whether to skip duplicate nodes in the admin import shell
-            command.
-        head_ontology:
-            Ontology to use as the head of the ontology hierarchy. URL and root
-            node are required.
-        tail_ontologies:
-            Ontologies to use as the tail of the ontology hierarchy. URL and
-            join nodes (for head and tail) are required.
+
+        database_name (str): The name of the database to connect to.
+
+        wipe (bool): Whether to wipe the database before importing.
+
+        uri (str): The URI of the database.
+
+        user (str): The username to use for authentication.
+
+        password (str): The password to use for authentication.
+
+
     """
     def __init__(
         self,
-        driver: Optional['neo4j.Driver'] = None,
-        db_name: Optional[str] = None,
-        db_uri: Optional[str] = None,
-        db_user: Optional[str] = None,
-        db_passwd: Optional[str] = None,
+        database_name: Optional[str] = None,
+        wipe: bool = False,
+        uri: Optional[str] = None,
+        user: Optional[str] = None,
+        password: Optional[str] = None,
         multi_db: Optional[bool] = None,
         fetch_size: int = 1000,
-        skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
-        wipe: bool = False,
-        strict_mode: Optional[bool] = None,
-        offline: Optional[bool] = None,
-        output_directory: Optional[str] = None,
+        skip_bad_relationships: bool = False,
         increment_version: bool = True,
-        clear_cache: Optional[bool] = None,
-        user_schema_config_path: Optional[str] = None,
-        delimiter: Optional[str] = None,
-        array_delimiter: Optional[str] = None,
-        quote_char: Optional[str] = None,
         import_call_bin_prefix: Optional[str] = None,
         import_call_file_prefix: Optional[str] = None,
-        head_ontology: Optional[dict] = None,
-        tail_ontologies: Optional[dict] = None,
+        strict_mode: Optional[bool] = None,
+        ontology: Optional[Ontology] = None,
     ):
 
         # Neo4j options
-        db_name = db_name or _config('neo4j_db')
-        db_uri = db_uri or _config('neo4j_uri')
-        db_user = db_user or _config('neo4j_user')
-        db_passwd = db_passwd or _config('neo4j_pw')
-        multi_db = multi_db or _config('neo4j_multi_db')
-        self.db_delim = delimiter or _config('neo4j_delimiter')
-        self.db_adelim = array_delimiter or _config('neo4j_array_delimiter')
-        self.db_quote = quote_char or _config('neo4j_quote_char')
-
-        if import_call_bin_prefix is None:
-            self.import_call_bin_prefix = _config(
-                'neo4j_import_call_bin_prefix'
-            )
-        else:
-            self.import_call_bin_prefix = import_call_bin_prefix
-
-        if import_call_file_prefix is None:
-            self.import_call_file_prefix = _config(
-                'neo4j_import_call_file_prefix'
-            )
-        else:
-            self.import_call_file_prefix = import_call_file_prefix
-
-        self.skip_bad_relationships = skip_bad_relationships
-        self.skip_duplicate_nodes = skip_duplicate_nodes
-        self.wipe = wipe
-
-        if offline is None:
-            self._offline = _config('offline')
-        else:
-            self._offline = offline
+        self._wipe = wipe
+        self._import_call_bin_prefix = import_call_bin_prefix
+        self._import_call_file_prefix = import_call_file_prefix
+        self._skip_bad_relationships = skip_bad_relationships
+        self._skip_duplicate_nodes = skip_duplicate_nodes
 
         # BioCypher options
-        self.user_schema_config_path = user_schema_config_path or _config(
-            'user_schema_config_path'
-        )
-        self.strict_mode = strict_mode or _config('strict_mode')
-        self.output_directory = output_directory or _config('output_directory')
-        self.clear_cache = clear_cache or _config('clear_cache')
+        self._strict_mode = strict_mode or _config('strict_mode')
 
-        self.head_ontology = head_ontology or _config('head_ontology')
+        self._ontology = ontology
 
-        self.tail_ontologies = tail_ontologies or _config('tail_ontologies')
+        neo4j_utils.Driver.__init__(**locals())
 
-        if self._offline:
+        # check for biocypher config in connected graph
 
-            if not self.user_schema_config_path:
-                raise ValueError(
-                    'Offline mode requires a user schema config file.'
-                    ' Please provide one with the `user_schema_config_path`'
-                    ' argument or set the `user_schema_config_path`'
-                    ' configuration variable.'
-                )
+        if wipe:
 
-            logger.info('Offline mode: no connection to DBMS.')
-
-            self._ontology_mapping = OntologyMapping(
-                config_file=self.user_schema_config_path,
-            )
-
-            self._db_config = {
-                'uri': db_uri,
-                'user': db_user,
-                'passwd': db_passwd,
-                'db': db_name,
-                'fetch_size': fetch_size,
-            }
-
-            self.driver = None
-            self._db_name = db_name
-
-        else:
-
-            neo4j_utils.Driver.__init__(**locals())
-
-            # if db representation node does not exist or explicitly
-            # asked for wipe, create new graph representation: default
-            # yaml, interactive?
-            if wipe:
-
-                # get database version node ('check' module) immutable
-                # variable of each instance (ie, each call from the
-                # adapter to BioCypher); checks for existence of graph
-                # representation and returns if found, else creates new
-                # one
-                self._ontology_mapping = VersionNode(
-                    from_config=offline or wipe,
-                    config_file=self.user_schema_config_path,
-                    bcy_driver=self,
-                )
-
-                # init requires db_meta to be set
-                self.init_db()
-
-            else:
-
-                self._ontology_mapping = VersionNode(self)
+            self.init_db()
 
         if increment_version:
 
             # set new current version node
-            self.update_meta_graph()
+            self._update_meta_graph()
 
-        self.ontology = None
-        self.batch_writer = None
-        self._update_translator()
-
-        # TODO: implement passing a driver instance
-        # I am not sure, but seems like it should work from driver
-
-    def update_meta_graph(self):
-
-        if self._offline:
-            return
+    def _update_meta_graph(self):
 
         logger.info('Updating Neo4j meta graph.')
         # add version node
-        self.add_biocypher_nodes(self._ontology_mapping)
+        self.add_biocypher_nodes(self._ontology)
 
         # find current version node
         db_version = self.query(
@@ -259,63 +113,15 @@ class Driver(neo4j_utils.Driver):
             'WHERE NOT (v)-[:PRECEDES]->() '
             'RETURN v',
         )
+
         # connect version node to previous
         if db_version[0]:
             e_meta = BioCypherEdge(
-                self._ontology_mapping.graph_state['id'],
-                self._ontology_mapping.node_id,
+                self._ontology.graph_state['id'],
+                self._ontology.node_id,
                 'PRECEDES',
             )
             self.add_biocypher_edges(e_meta)
-
-        # add structure nodes
-        no_l = []
-        # leaves of the hierarchy specified in schema yaml
-        for entity, params in self._ontology_mapping.extended_schema.items():
-            no_l.append(
-                BioCypherNode(
-                    node_id=entity,
-                    node_label='MetaNode',
-                    properties=params,
-                ),
-            )
-        self.add_biocypher_nodes(no_l)
-
-        # remove connection of structure nodes from previous version
-        # node(s)
-        self.query('MATCH ()-[r:CONTAINS]-()'
-                   'DELETE r', )
-
-        # connect structure nodes to version node
-        ed_v = []
-        current_version = self._ontology_mapping.get_id()
-        for entity in self._ontology_mapping.extended_schema.keys():
-            ed_v.append(
-                BioCypherEdge(
-                    source_id=current_version,
-                    target_id=entity,
-                    relationship_label='CONTAINS',
-                ),
-            )
-        self.add_biocypher_edges(ed_v)
-
-        # add graph structure between MetaNodes
-        ed = []
-        for no in no_l:
-            id = no.get_id()
-            src = no.get_properties().get('source')
-            tar = no.get_properties().get('target')
-            if None not in [id, src, tar]:
-                ed.append(BioCypherEdge(id, src, 'IS_SOURCE_OF'))
-                ed.append(BioCypherEdge(id, tar, 'IS_TARGET_OF'))
-        self.add_biocypher_edges(ed)
-
-    def _update_translator(self):
-
-        self.translator = Translator(
-            ontology_mapping=self._ontology_mapping.extended_schema,
-            strict_mode=self.strict_mode,
-        )
 
     def init_db(self):
         """
@@ -343,7 +149,7 @@ class Driver(neo4j_utils.Driver):
         logger.info('Creating constraints for node types in config.')
 
         # get structure
-        for leaf in self._ontology_mapping.extended_schema.items():
+        for leaf in self._ontology.extended_schema.items():
             label = leaf[0]
             if leaf[1]['represented_as'] == 'node':
 
@@ -619,14 +425,14 @@ class Driver(neo4j_utils.Driver):
                 delimiter=self.db_delim,
                 array_delimiter=self.db_adelim,
                 quote=self.db_quote,
-                dirname=self.output_directory,
+                dirname=self._output_directory,
                 db_name=self._db_name,
-                skip_bad_relationships=self.skip_bad_relationships,
-                skip_duplicate_nodes=self.skip_duplicate_nodes,
-                import_call_bin_prefix=self.import_call_bin_prefix,
-                import_call_file_prefix=self.import_call_file_prefix,
-                wipe=self.wipe,
-                strict_mode=self.strict_mode,
+                skip_bad_relationships=self._skip_bad_relationships,
+                skip_duplicate_nodes=self._skip_duplicate_nodes,
+                import_call_bin_prefix=self._import_call_bin_prefix,
+                import_call_file_prefix=self._import_call_file_prefix,
+                wipe=self._wipe,
+                strict_mode=self._strict_mode,
             )
 
     def start_ontology(self) -> None:
@@ -637,7 +443,7 @@ class Driver(neo4j_utils.Driver):
         if not self.ontology:
             self.ontology = Ontology(
                 head_ontology=self.head_ontology,
-                ontology_mapping=self._ontology_mapping,
+                ontology_mapping=self._ontology,
                 tail_ontologies=self.tail_ontologies,
             )
 
@@ -827,3 +633,35 @@ class Driver(neo4j_utils.Driver):
     def __repr__(self):
 
         return f'<BioCypher {neo4j_utils.Driver.__repr__(self)[1:]}'
+
+
+def get_writer(
+    dbms: str,
+    translator: 'Translator',
+    ontology: 'Ontology',
+    strict_mode: bool,
+):
+    """
+    Function to return the writer class.
+
+    Returns:
+        class: the writer class
+    """
+
+    dbms_config = _config(dbms)
+
+    if dbms == 'neo4j':
+        return _Driver(
+            database_name=dbms_config['database_name'],
+            wipe=dbms_config['wipe'],
+            uri=dbms_config['uri'],
+            user=dbms_config['user'],
+            password=dbms_config['password'],
+            multi_db=dbms_config['multi_db'],
+            skip_duplicate_nodes=dbms_config['skip_duplicate_nodes'],
+            skip_bad_relationships=dbms_config['skip_bad_relationships'],
+            strict_mode=strict_mode,
+            ontology=ontology,
+        )
+
+    return None

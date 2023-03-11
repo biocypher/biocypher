@@ -2,17 +2,17 @@ import neo4j
 import pytest
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from biocypher._driver import Driver
+from biocypher._driver import _Driver
 
 
 @pytest.fixture
 def driver():
     # neo4j database needs to be running!
     # there needs to be a database called "test" in the neo4j instance
-    d = Driver(
+    d = _Driver(
         offline=False,
-        db_name='test',
-        db_passwd='your_password_here',
+        database_name='test',
+        password='your_password_here',
         wipe=True,
         clear_cache=True,
         increment_version=False,
@@ -41,9 +41,9 @@ def driver():
 
 def test_wipe():
     # just convenience function to wipe the database in testing env
-    d = Driver(
-        db_name='test',
-        db_passwd='your_password_here',
+    d = _Driver(
+        database_name='test',
+        password='your_password_here',
         wipe=True,
         user_schema_config_path='biocypher/_config/test_schema_config.yaml',
     )
@@ -54,15 +54,15 @@ def test_wipe():
 
 def test_create_driver(driver):
 
-    assert isinstance(driver, Driver)
+    assert isinstance(driver, _Driver)
 
 
 def test_create_offline():
-    d = Driver(
+    d = _Driver(
         offline=True,
         user_schema_config_path='biocypher/_config/test_schema_config.yaml',
     )
-    assert isinstance(d, Driver)
+    assert isinstance(d, _Driver)
     d.close()
 
 
@@ -375,7 +375,7 @@ def test_log_missing_bl_types(driver):
 
 
 def test_schema_config_from_web():
-    driver = Driver(
+    driver = _Driver(
         offline=True,
         user_schema_config_path=
         'https://raw.githubusercontent.com/saezlab/BioCypher/main/biocypher/_config/test_schema_config.yaml'

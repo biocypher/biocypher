@@ -8,7 +8,7 @@ import pytest
 
 from biocypher._write import _Neo4jBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from biocypher._driver import Driver
+from biocypher._driver import _Driver
 from biocypher._mapping import OntologyMapping
 from biocypher._ontology import Ontology
 from biocypher._translate import Translator
@@ -901,7 +901,7 @@ def test_create_import_call(bw, path):
 
 def test_write_offline(path):
     # more of an integration test.. put in test_driver?
-    d = Driver(
+    d = _Driver(
         offline=True,
         user_schema_config_path='biocypher/_config/test_schema_config.yaml',
         delimiter=',',

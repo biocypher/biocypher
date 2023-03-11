@@ -3,6 +3,7 @@ from more_itertools import peekable
 from ._write import get_writer
 from ._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode
+from ._driver import get_driver
 from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator
@@ -167,7 +168,23 @@ class BioCypher:
                 strict_mode=self._strict_mode,
             )
         else:
-            raise NotImplementedError('Online mode not implemented yet.')
+            raise NotImplementedError('Cannot get writer in online mode.')
+
+    def _get_driver(self):
+        """
+        Create driver if not exists and return.
+        """
+
+        if not self._offline:
+            self._driver = get_driver(
+                dbms=self._dbms,
+                translator=self._get_translator(),
+                ontology=self._get_ontology(),
+                output_directory=self._output_directory,
+                strict_mode=self._strict_mode,
+            )
+        else:
+            raise NotImplementedError('Cannot get driver in offline mode.')
 
     def write_nodes(self, nodes):
         """
@@ -190,6 +207,9 @@ class BioCypher:
         Write edges to database.
         """
 
+        if not self._writer:
+            self._get_writer()
+
         edges = peekable(edges)
         if not isinstance(edges.peek(), BioCypherEdge):
             tedges = self._translator.translate_edges(edges)
@@ -197,3 +217,28 @@ class BioCypher:
             tedges = edges
         # write edge files
         return self._writer.write_edges(tedges)
+
+    def add_nodes(self, nodes):
+        pass
+
+    def add_edges(self, edges):
+        pass
+
+    def merge_nodes(self, nodes):
+        """
+        Merge nodes into database.
+        """
+
+        if not self._driver:
+            self._get_driver()
+
+        nodes = peekable(nodes)
+        if not isinstance(nodes.peek(), BioCypherNode):
+            tnodes = self._translator.translate_nodes(nodes)
+        else:
+            tnodes = nodes
+        # write node files
+        return self._driver.merge_nodes(tnodes)
+
+    def merge_edges(self, edges):
+        pass

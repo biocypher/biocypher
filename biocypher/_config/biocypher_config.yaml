@@ -52,11 +52,10 @@ neo4j:
   # Wipe DB before import (offline mode: --force)
   wipe: true
 
-  # Neo4j connection credentials
+  # Neo4j authentication
   uri: neo4j://localhost:7687
-  db: neo4j # DB name
-  user: neo4j # user name
-  pw: neo4j # password
+  user: neo4j
+  password: neo4j
 
   # Neo4j admin import batch writer settings
   delimiter: ';'
@@ -68,8 +67,8 @@ neo4j:
   multi_db: true
 
   # Import options
-  skip_bad_relationships: false
   skip_duplicate_nodes: false
+  skip_bad_relationships: false
 
   # Import call prefixes
   # import_call_bin_prefix: bin/
