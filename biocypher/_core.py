@@ -16,7 +16,7 @@ from more_itertools import peekable
 
 from ._write import get_writer
 from ._config import config as _config
-from ._config import update_from_file as _update
+from ._config import update_from_file as _file_update
 from ._create import BioCypherEdge, BioCypherNode
 from ._logger import logger
 from ._connect import get_driver
@@ -48,6 +48,8 @@ class BioCypher:
         head_ontology: dict = None,
         tail_ontologies: dict = None,
         output_directory: str = None,
+        # legacy params
+        db_name: str = None,
     ):
         """
         Orchestration of BioCypher operations.
@@ -80,7 +82,15 @@ class BioCypher:
 
         # Update configuration if custom path is provided
         if biocypher_config_path:
-            _update(biocypher_config_path)
+            _file_update(biocypher_config_path)
+
+        if db_name:
+            logger.warning(
+                'The parameter `db_name` is deprecated. Please set the '
+                '`database_name` setting in the `biocypher_config.yaml` file '
+                'instead.'
+            )
+            _config(**{'neo4j': {'database_name': db_name}})
 
         # Load configuration
         self.base_config = _config('biocypher')
@@ -339,9 +349,7 @@ class BioCypher:
         treelib.
         """
 
-        self.start_ontology()
-
-        self.ontology.show_ontology_structure()
+        self._ontology.show_ontology_structure()
 
     def write_import_call(self) -> None:
         """
