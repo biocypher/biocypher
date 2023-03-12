@@ -19,7 +19,7 @@ def main():
 
     # Create BioCypher driver
     bc = BioCypher(
-        biocypher_config_path='tutorial/01_basic_config.yaml',
+        biocypher_config_path='tutorial/01_biocypher_config.yaml',
         schema_config_path='tutorial/01_schema_config.yaml',
     )
     # Run the import

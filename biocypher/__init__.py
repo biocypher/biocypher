@@ -30,7 +30,11 @@ from ._metadata import __author__, __version__
 
 
 class Driver(BioCypher):
-    logger.warning(
-        "The 'Driver' class is deprecated. Please use 'BioCypher' instead."
-    )
-    pass
+
+    # initialise parent class but log a warning
+    def __init__(self, *args, **kwargs):
+        logger.warning(
+            'The class `Driver` is deprecated and will be removed in a future '
+            'release. Please use `BioCypher` instead.'
+        )
+        super().__init__(*args, **kwargs)
