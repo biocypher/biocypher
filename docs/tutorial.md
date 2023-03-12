@@ -366,7 +366,7 @@ to our schema configuration:
 protein:
   represented_as: node
   preferred_id: [uniprot, entrez]
-  label_in_input: [uniprot_protein, entrez_protein]
+  input_label: [uniprot_protein, entrez_protein]
   properties:
     sequence: str
     description: str
@@ -420,7 +420,7 @@ protein isoform:
   inherit_properties: true
   represented_as: node
   preferred_id: uniprot
-  label_in_input: uniprot_isoform
+  input_label: uniprot_isoform
 ```
 
 This allows maintenance of property lists for many classes at once. If the child

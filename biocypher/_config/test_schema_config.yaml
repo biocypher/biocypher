@@ -48,7 +48,7 @@ complex:
 pathway:
   represented_as: node
   preferred_id: [reactome, wikipathways]
-  label_in_input: [reactome, wikipathways]
+  input_label: [reactome, wikipathways]
 
 # merge muliple inputs
 gene:
@@ -159,7 +159,7 @@ phosphorylation:
 gene to disease association:
   represented_as: edge
   label_as_edge: PERTURBED_IN_DISEASE
-  label_in_input: [protein_disease, gene_disease]
+  input_label: [protein_disease, gene_disease]
   exclude_properties: accession
 
 # multiple inheritance
