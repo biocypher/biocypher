@@ -11,6 +11,10 @@
 """
 Handy functions for use in various places.
 """
+from ._logger import logger
+
+logger.debug(f'Loading module {__name__}.')
+
 from typing import (
     Any,
     Union,

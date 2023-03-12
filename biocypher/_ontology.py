@@ -13,6 +13,10 @@ BioCypher 'ontology' module. Contains classes and functions to handle parsing
 and representation of single ontologies as well as their hybridisation and
 other advanced operations.
 """
+from ._logger import logger
+
+logger.debug(f'Loading module {__name__}.')
+
 from typing import Union, Optional
 from datetime import datetime
 
@@ -21,7 +25,6 @@ import networkx as nx
 
 from . import _misc
 from ._create import VersionNode
-from ._logger import logger
 from ._mapping import OntologyMapping
 
 

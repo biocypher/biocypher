@@ -14,11 +14,14 @@ submodules.
 """
 from more_itertools import peekable
 
+from ._logger import logger
+
+logger.debug(f'Loading module {__name__}.')
+
 from ._write import get_writer
 from ._config import config as _config
 from ._config import update_from_file as _file_update
 from ._create import BioCypherEdge, BioCypherNode
-from ._logger import logger
 from ._connect import get_driver
 from ._mapping import OntologyMapping
 from ._ontology import Ontology

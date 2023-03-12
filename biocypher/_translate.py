@@ -12,13 +12,12 @@
 BioCypher 'translation' module. Responsible for translating between the raw
 input data and the BioCypherNode and BioCypherEdge objects.
 """
-from collections.abc import Iterable, Generator
-
 from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
 from typing import Any, Union, Optional
+from collections.abc import Iterable, Generator
 
 from more_itertools import peekable
 

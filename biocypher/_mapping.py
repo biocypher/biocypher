@@ -12,6 +12,10 @@
 BioCypher 'mapping' module. Handles the mapping of user-defined schema to the
 underlying ontology.
 """
+from ._logger import logger
+
+logger.debug(f'Loading module {__name__}.')
+
 from typing import Optional
 from urllib.request import urlopen
 
@@ -19,7 +23,6 @@ import yaml
 
 from . import _misc
 from ._config import config as _config
-from ._logger import logger
 
 
 class OntologyMapping:

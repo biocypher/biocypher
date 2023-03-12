@@ -11,13 +11,12 @@
 """
 BioCypher 'online' mode. Handles connection and manipulation of a running DBMS.
 """
-from collections.abc import Iterable
-
 from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
 from typing import Optional
+from collections.abc import Iterable
 import itertools
 
 import neo4j_utils

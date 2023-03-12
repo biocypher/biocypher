@@ -11,6 +11,9 @@
 BioCypher 'create' module. Handles the creation of BioCypher node and edge
 dataclasses.
 """
+from ._logger import logger
+
+logger.debug(f'Loading module {__name__}.')
 
 from typing import Union, Optional
 from datetime import datetime
@@ -22,7 +25,6 @@ import yaml
 
 from . import _misc
 from . import _config as config
-from ._logger import logger
 
 __all__ = [
     'BioCypherEdge',
@@ -30,8 +32,6 @@ __all__ = [
     'BioCypherRelAsNode',
     'VersionNode',
 ]
-
-logger.debug(f'Loading module {__name__}.')
 
 
 @dataclass(frozen=True)
