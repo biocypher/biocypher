@@ -138,7 +138,10 @@ def translator(ontology_mapping):
 
 @pytest.fixture(scope='module')
 def biolink_adapter():
-    return OntologyAdapter('biocypher/_config/biolink-model.owl.ttl', 'entity')
+    return OntologyAdapter(
+        'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
+        'entity'
+    )
 
 
 @pytest.fixture(scope='module')
@@ -160,8 +163,10 @@ def mondo_adapter():
 def hybrid_ontology(ontology_mapping):
     return Ontology(
         head_ontology={
-            'url': 'biocypher/_config/biolink-model.owl.ttl',
-            'root_node': 'entity',
+            'url':
+                'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
+            'root_node':
+                'entity',
         },
         ontology_mapping=ontology_mapping,
         tail_ontologies={
