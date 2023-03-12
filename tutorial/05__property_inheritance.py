@@ -1,7 +1,9 @@
-from tutorial.data_generator import EntrezProtein, RandomPropertyProtein
-import biocypher
-
-__all__ = ['main']
+from biocypher import BioCypher
+from tutorial.data_generator import (
+    EntrezProtein,
+    RandomPropertyProtein,
+    RandomPropertyProteinIsoform,
+)
 
 
 def main():
@@ -9,6 +11,7 @@ def main():
     proteins = [
         p for sublist in zip(
             [RandomPropertyProtein() for _ in range(10)],
+            [RandomPropertyProteinIsoform() for _ in range(10)],
             [EntrezProtein() for _ in range(10)],
         ) for p in sublist
     ]
@@ -23,16 +26,15 @@ def main():
             )
 
     # Create BioCypher driver
-    driver = biocypher.Driver(
-        offline=True,  # start without connecting to Neo4j instance
-        db_name='properties',  # name of database for import call
-        schema_config_path='tutorial/04_schema_config.yaml',
+    bc = BioCypher(
+        biocypher_config_path='tutorial/05_biocypher_config.yaml',
+        schema_config_path='tutorial/05_schema_config.yaml',
     )
     # Run the import
-    driver.write_nodes(node_generator())
+    bc.write_nodes(node_generator())
 
     # Write command line call
-    driver.write_import_call()
+    bc.write_import_call()
 
 
 if __name__ == '__main__':
