@@ -99,7 +99,7 @@ class _Neo4jBatchWriter:
         delimiter: str,
         array_delimiter: str,
         quote: str,
-        dirname: Optional[str] = None,
+        output_directory: Optional[str] = None,
         db_name: str = 'neo4j',
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
@@ -132,18 +132,21 @@ class _Neo4jBatchWriter:
         self.import_call_nodes = ''
         self.import_call_edges = ''
 
-        timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M')
-
-        self.outdir = dirname or os.path.join(_config('outdir'), timestamp())
-        self.outdir = os.path.abspath(self.outdir)
+        self.outdir = output_directory
 
         if import_call_file_prefix is None:
             self.import_call_file_prefix = self.outdir
         else:
             self.import_call_file_prefix = import_call_file_prefix
 
-        logger.info(f'Creating output directory `{self.outdir}`.')
-        os.makedirs(self.outdir, exist_ok=True)
+        if os.path.exists(self.outdir):
+            logger.warning(
+                f'Output directory `{self.outdir}` already exists. '
+                'If this is not planned, file consistency may be compromised.'
+            )
+        else:
+            logger.info(f'Creating output directory `{self.outdir}`.')
+            os.makedirs(self.outdir)
 
         self.seen_node_ids = set()  # set to store the ids of nodes that have
         # already been written; to avoid duplicates
@@ -1114,6 +1117,10 @@ def get_writer(
 
     dbms_config = _config(dbms)
 
+    timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M')
+    outdir = output_directory or os.path.join('biocypher-out', timestamp())
+    outdir = os.path.abspath(outdir)
+
     if dbms == 'neo4j':
         return _Neo4jBatchWriter(
             ontology=ontology,
@@ -1121,7 +1128,7 @@ def get_writer(
             delimiter=dbms_config['delimiter'],
             array_delimiter=dbms_config['array_delimiter'],
             quote=dbms_config['quote_character'],
-            dirname=output_directory,
+            output_directory=outdir,
             db_name=dbms_config['database_name'],
             skip_bad_relationships=dbms_config['skip_bad_relationships'],
             skip_duplicate_nodes=dbms_config['skip_duplicate_nodes'],

@@ -188,7 +188,7 @@ def bw(hybrid_ontology, translator, path):
     bw = _Neo4jBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
-        dirname=path,
+        output_directory=path,
         delimiter=';',
         array_delimiter='|',
         quote="'",
@@ -208,7 +208,7 @@ def bw_strict(hybrid_ontology, translator, path_strict):
     bw = _Neo4jBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
-        dirname=path_strict,
+        output_directory=path_strict,
         delimiter=';',
         array_delimiter='|',
         quote="'",
@@ -229,7 +229,7 @@ def tab_bw(hybrid_ontology, translator, path):
     tab_bw = _Neo4jBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
-        dirname=path,
+        output_directory=path,
         delimiter='\t',
         array_delimiter='|',
         quote="'",

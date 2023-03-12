@@ -47,8 +47,7 @@ class BioCypher:
         schema_config_path: str = None,
         head_ontology: dict = None,
         tail_ontologies: dict = None,
-        output_directory: str = 'biocypher-out',
-        log_directory: str = 'biocypher-log',
+        output_directory: str = None,
     ):
         """
         Orchestration of BioCypher operations.
@@ -76,9 +75,6 @@ class BioCypher:
 
             output_directory (str): Path to the output directory. If not
                 provided, the default value 'biocypher-out' will be used.
-
-            log_directory (str): Path to the log directory. If not provided,
-                the default value 'biocypher-log' will be used.
 
         """
 
@@ -113,12 +109,7 @@ class BioCypher:
         self._head_ontology = head_ontology or self.base_config['head_ontology']
 
         # Set configuration - optional
-        self._output_directory = output_directory or self.base_config.get(
-            'output_directory'
-        )
-        self._log_directory = log_directory or self.base_config.get(
-            'log_directory'
-        )
+        self._output_directory = output_directory
         self._tail_ontologies = tail_ontologies or self.base_config.get(
             'tail_ontologies'
         )
@@ -262,6 +253,8 @@ class BioCypher:
     def merge_edges(self, edges):
         pass
 
+    # OVERVIEW AND CONVENIENCE METHODS ###
+
     def log_missing_bl_types(self):
         """
         Get the set of Biolink types encountered without an entry in
@@ -349,6 +342,19 @@ class BioCypher:
         self.start_ontology()
 
         self.ontology.show_ontology_structure()
+
+    def write_import_call(self) -> None:
+        """
+        Write a shell script to import the database depending on the chosen
+        DBMS.
+        """
+
+        if not self._offline:
+            raise NotImplementedError(
+                'Cannot write import call in online mode.'
+            )
+
+        self._writer.write_import_call()
 
     # TRANSLATION METHODS ###
 
