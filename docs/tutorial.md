@@ -28,9 +28,12 @@ written to the ``biocypher-out`` directory.
 ## Section 1: Adding data
 ```{admonition} Tutorial files
 :class: note
-The code for this tutorial can be found at `tutorial/01_basic_import.py`. The
-schema is at `tutorial/01_schema_config.yaml`. Data generation happens in
+
+The code for this tutorial can be found at `tutorial/01__basic_import.py`. The
+schema is at `tutorial/01_schema_config.yaml`, configuration in
+`tutorial/01_biocypher_config.yaml`. Data generation happens in
 `tutorial/data_generator.py`.
+
 ```
 
 ### Input data stream ("adapter")
@@ -40,8 +43,10 @@ for the resulting desired output (the schema configuration). The former will be
 simulated by calling the `Protein` class of our data generator 10 times.
 
 ```{code-block} python
+
 from data_generator import Protein
 proteins = [Protein() for _ in range(10)]
+
 ```
 
 Each protein in our simulated data has a UniProt ID, a label
@@ -51,11 +56,11 @@ purely by coincidence - very close to the input BioCypher expects (for nodes):
 - an input label (to allow mapping to the ontology, see the second step below)
 - a dictionary of further properties (which can be empty)
 
-These should be presented to the BioCypher driver in the form of a tuple. To
-achieve this representation, we can use a generator function that iterates
-through our simulated input data and, for each entity, forms the corresponding
-tuple. The use of a generator allows for efficient streaming of larger datasets
-where required.
+These should be presented to BioCypher in the form of a tuple. To achieve this
+representation, we can use a generator function that iterates through our
+simulated input data and, for each entity, forms the corresponding tuple. The
+use of a generator allows for efficient streaming of larger datasets where
+required.
 
 ```{code-block} python
 def node_generator():
@@ -71,7 +76,8 @@ The concept of an adapter can become arbitrarily complex and involve
 programmatic access to databases, API requests, asynchronous queries, context
 managers, and other complicating factors. However, it always boils down to
 providing the BioCypher driver with a collection of tuples, one for each entity
-in the input data.
+in the input data. For more info, see the section on
+[Adapters](adapter_functions).
 
 As descibed above, *nodes* possess:
 
@@ -86,17 +92,17 @@ while *edges* possess:
 - a mandatory label, and
 - a property dictionary.
 
-How these entities are mapped to the ontological hierarchy
-underlying a BioCypher graph is determined by their mandatory labels, which
-connect the input data stream to the schema configuration. This we will see in
-the following section.
+How these entities are mapped to the ontological hierarchy underlying a
+BioCypher graph is determined by their mandatory labels, which connect the input
+data stream to the schema configuration. This we will see in the following
+section.
 
 <!-- Figure for ID, label, prop of nodes and edges? -->
 
 (tut_01_schema)=
 ### Schema configuration
-How each BioCypher graph is structured is determined by the schema
-configuration YAML file that is given to the driver. This also serves to ground
+How each BioCypher graph is structured is determined by the schema configuration
+YAML file that is given to the BioCypher interface. This also serves to ground
 the entities of the graph in the biomedical realm by using an ontological
 hierarchy. In this tutorial, we refer to the Biolink model as the general
 backbone of our ontological hierarchy. The basic premise of the schema
@@ -105,14 +111,14 @@ output should be configured here; if (and only if) an entity is represented in
 the schema configuration *and* is present in the input data stream, will it be
 part of our knowledge graph.
 
-In our case, since we only import proteins, we
-only require few lines of configuration:
+In our case, since we only import proteins, we only require few lines of
+configuration:
 
 ```{code-block} yaml
 protein:                            # mapping
   represented_as: node              # schema configuration
   preferred_id: uniprot             # uniqueness
-  label_in_input: uniprot_protein   # connection to input stream
+  input_label: uniprot_protein      # connection to input stream
 ```
 
 The first line (`protein`) identifies our entity and connects to the
@@ -129,8 +135,6 @@ ontologies](biolink). However, every entity should at some point be connected
 to the underlying ontology, otherwise the multiple hierarchical labels will not
 be populated. Following this first line are three indented values of the
 protein class.
-
-<!-- TODO link to ontology manipulation -->
 
 The second line (`represented_as`) tells BioCypher in which way each entity
 should be represented in the graph; the only options are `node` and `edge`.
@@ -157,104 +161,55 @@ also dealing with parsing of namespace prefixes and validation, we refer to the
 [Bioregistry](https://bioregistry.io) project namespaces, which should be
 preferred values for this field.
 
-Finally, the fourth line (`label_in_input`) connects the input data stream to
-the configuration; here we indicate which label to expect in the input tuple
-for each class in the graph. In our case, we expect "uniprot_protein" as the
-label for each protein in the input data stream; all other input entities that
-do not carry this label are ignored as long as they are not in the schema
+Finally, the fourth line (`input_label`) connects the input data stream to the
+configuration; here we indicate which label to expect in the input tuple for
+each class in the graph. In our case, we expect "uniprot_protein" as the label
+for each protein in the input data stream; all other input entities that do not
+carry this label are ignored as long as they are not in the schema
 configuration.
 
-### Creating the graph (using the BioCypher driver)
-All that remains to be done now is to instantiate the BioCypher driver (as the
+### Creating the graph (using the BioCypher interface)
+All that remains to be done now is to instantiate the BioCypher interface (as the
 main means of communicating with BioCypher) and call the function to create the
-graph. While this can be done "online", i.e., by connecting to a running Neo4j
+graph. While this can be done "online", i.e., by connecting to a running DBMS
 instance, we will in this example use the offline mode of BioCypher, which does
 not require setting up a graph database instance. The following code will use
 the data stream and configuration set up above to write the files for knowledge
 graph creation:
 
 ```{code-block} python
-import biocypher
-driver = biocypher.Driver(
-    offline=True,
-    user_schema_config_path="tutorial/01_schema_config.yaml",
+from biocypher import BioCypher
+bc = BioCypher(
+    biocypher_config_path='tutorial/01_biocypher_config.yaml',
+    schema_config_path="tutorial/01_schema_config.yaml",
 )
-driver.write_nodes(node_generator())
+bc.write_nodes(node_generator())
 ```
 
-We pass our configuration file at driver instantiation, and we pass the data
-stream to the `write_nodes` function. The driver will then create the graph and
-write it to the output directory, which is set to `biocypher-out/` by default,
-creating a subfolder with the current datetime for each driver instance.
-
-### Importing data into Neo4j
-The graph can now be imported into Neo4j using the `neo4j-admin` command line
-tool. This is not necessary if the graph is created in online mode. For
-convenience, BioCypher provides the command line call required to import the
-data into Neo4j:
-
-```{code-block} python
-driver.write_import_call()
-```
-
-This creates an executable shell script in the output directory that can be
-executed from the location of the database folder (or copied into the Neo4j
-terminal) to import the graph into Neo4j. Since BioCypher creates separate
-header and data files for each entity type, the import call conveniently
-aggregates this information into one command, detailing the location of all
-files on disk, so no data need to be copied around.
-
-```{caution}
-The generated import call is currently only compatible with Neo4j version 4.
-Version 5 support coming soon!
-```
-
-Neo4j can manage multiple projects, each with multiple DBMS (database management
-system) instances, each of which can house multiple databases. The screenshot
-below shows a project managed by Neo4j Desktop (project name "BioCypher")
-containing a DBMS instance (called "Test DBMS") with multiple named databases in
-it: the non-removable "system" DB, the default "neo4j" DB, and several
-user-created databases.
-
-![Neo4j Desktop](DBMS.png)
-
-Crucially, the import call generated by BioCypher needs to be executed by the
-`neo4j-admin` binary in the DBMS folder (in the `bin/` directory of the root of
-the DBMS folder). The DBMS folder is the folder that contains the `data/`
-directory, which in turn contains the `databases/` folder, which is where the
-graph data is stored in individual folders corresponding to the DB names in the
-DBMS. On Neo4j Desktop, you can open a terminal at the DBMS root location by
-clicking on the three dots next to the DBMS name and selecting "Terminal" (see
-screenshot below).
-
-![Neo4j Desktop](DBMS-Terminal.png)
-
-Since the import call should be executed in the root of the DMBS folder,
-BioCypher generates the import call starting with `bin/neo4j-admin`, which can
-be copied into the terminal opened at the DBMS root location. For other
-operating systems and Neo4j installations (e.g. in Docker containers), please
-refer to the Neo4j documentation to find the correct location of your DMBS. We
-are working on extensions of the BioCypher process to improve interoperability
-with Neo4j as well as other storage systems.
+We pass our configuration files at instantiation of the interface, and we pass
+the data stream to the `write_nodes` function. BioCypher will then create the
+graph and write it to the output directory, which is set to `biocypher-out/` by
+default, creating a subfolder with the current datetime for each driver
+instance.
 
 ```{note}
-Neo4j provide a [Neo4j Desktop
-application](https://neo4j.com/download-center/#desktop) that can be used to
-create a local instance of Neo4j. The desktop application provides information
-about the DBMS folder and can open a terminal at the DBMS root location. The
-import call generated by BioCypher can then be copied into the terminal of the
-Neo4j Desktop application for each corresponding DBMS.
 
-Neo4j is also available as a command line interface (CLI) tool. To use the CLI
-with the BioCypher admin import call, directory structures and permissions need
-to be set up correctly. The Neo4j CLI tool can be downloaded from the [Neo4j
-download center](https://neo4j.com/download-center/#community). Please follow
-the [Neo4j documentation](https://neo4j.com/docs/) for correct setup and usage
-on your system.
+The `biocypher_config_path` parameter at instantiation of the `BioCypher` class
+should in most cases not be needed; we are using it here to increase convenience
+of the tutorial and to showcase its use. We are overriding the default value of
+only two settings: the offline mode (`offline` in `biocypher`) and the database
+name (`database_name` in `neo4j`).
 
-Be mindful that different versions of Neo4j may differ in features and thus are
-also documented differently.
+By default, BioCypher will look for a file named `biocypher_config.yaml` in the
+current working directory and in its subfolder `config`, as well as in various
+user directories. For more information, see the section on
+[configuration](config).
+
 ```
+
+### Importing data into Neo4j
+If you want to build an actual Neo4j graph from the tutorial output files,
+please follow the [Neo4j import tutorial](neo4j_tut).
 
 ### Quality control and convenience functions
 BioCypher provides a number of convenience functions for quality control and
@@ -266,9 +221,9 @@ also print the ontological hierarchy derived from the underlying model(s)
 according to the classes that were given in the schema configuration:
 
 ```{code-block} python
-driver.log_missing_bl_types()     # show input unaccounted for in the schema
-driver.log_duplicates()           # show duplicates in the input data
-driver.show_ontology_structure()  # show ontological hierarchy
+bc.log_missing_bl_types()     # show input unaccounted for in the schema
+bc.log_duplicates()           # show duplicates in the input data
+bc.show_ontology_structure()  # show ontological hierarchy
 ```
 
 ## Section 2: Merging data
@@ -277,9 +232,12 @@ driver.show_ontology_structure()  # show ontological hierarchy
 ### Plain merge
 ```{admonition} Tutorial files
 :class: note
-The code for this tutorial can be found at `tutorial/02_merge.py`.
-Schema files are at `tutorial/02_schema_config.yaml`. Data generation happens
-in `tutorial/data_generator.py`.
+
+The code for this tutorial can be found at `tutorial/02__merge.py`.  Schema
+files are at `tutorial/02_schema_config.yaml`, configuration in
+`tutorial/02_biocypher_config.yaml`. Data generation happens in
+`tutorial/data_generator.py`.
+
 ```
 
 Using the workflow described above with minor changes, we can merge data from
@@ -293,7 +251,7 @@ configuration:
 protein:
   represented_as: node
   preferred_id: uniprot
-  label_in_input: [uniprot_protein, entrez_protein]
+  input_label: [uniprot_protein, entrez_protein]
 ```
 
 This again creates a single output file, now for both protein types, including
@@ -311,9 +269,12 @@ hoc* subclasses.
 ### *Ad hoc* subclassing
 ```{admonition} Tutorial files
 :class: note
-The code for this tutorial can be found at `tutorial/03_implicit_subclass.py`.
-Schema files are at `tutorial/03_schema_config.yaml`. Data generation happens
-in `tutorial/data_generator.py`.
+
+The code for this tutorial can be found at `tutorial/03__implicit_subclass.py`.
+Schema files are at `tutorial/03_schema_config.yaml`, configuration in
+`tutorial/03_biocypher_config.yaml`. Data generation happens in
+`tutorial/data_generator.py`.
+
 ```
 
 In the previous section, we saw how to merge data from different sources into
@@ -331,7 +292,7 @@ identifiers. In our case, we update our schema configuration as follows:
 protein:
   represented_as: node
   preferred_id: [uniprot, entrez]
-  label_in_input: [uniprot_protein, entrez_protein]
+  input_label: [uniprot_protein, entrez_protein]
 ```
 
 This will "implicitly" create two subclasses of the `protein` class, which will
@@ -363,11 +324,13 @@ Thus, it is often desirable to filter out properties that are not needed to
 save time, disk space, and memory.
 
 ```{note}
+
 Maintaining consistent properties per entity type is particularly important
 when using the admin import feature of Neo4j, which requires consistency
 between the header and data files. Properties that are introduced into only
 some of the rows will lead to column misalignment and import failure. In
 "online mode", this is not an issue.
+
 ```
 
 We will take a look at how to handle property selection in BioCypher in a
@@ -376,9 +339,12 @@ way that is flexible and easy to maintain.
 ### Designated properties
 ```{admonition} Tutorial files
 :class: note
-The code for this tutorial can be found at `tutorial/04_properties.py`. Schema
-files are at `tutorial/04_schema_config.yaml`. Data generation happens in
+
+The code for this tutorial can be found at `tutorial/04__properties.py`. Schema
+files are at `tutorial/04_schema_config.yaml`, configuration in
+`tutorial/04_biocypher_config.yaml`. Data generation happens in
 `tutorial/data_generator.py`.
+
 ```
 
 The simplest and most straightforward way to ensure that properties are
@@ -389,8 +355,8 @@ standard case the keys are the names of the properties that the entity type
 should possess, and the values give the type of the property (`int`, `str`,
 `bool`). In the case of properties that are not present in (some of) the source
 data, BioCypher will add them to the output with a default value of `None`.
-Additional properties in the input, that are not represented in these
-designated property names, will be ignored.
+Additional properties in the input that are not represented in these
+designated property names will be ignored.
 
 Let's imagine that some, but not all, of our protein nodes have a `mass` value.
 If we want to include the mass value on all proteins, we can add the following
@@ -421,17 +387,20 @@ remove the `mass` key from the `properties` dictionary.
 
 ```{tip}
 BioCypher provides feedback about property conflicts; try running the code
-for this example (`04_properties.py`) with the schema configuration of the
+for this example (`04__properties.py`) with the schema configuration of the
 previous section (`03_schema_config.yaml`) and see what happens.
 ```
 
 ### Inheriting properties
 ```{admonition} Tutorial files
 :class: note
+
 The code for this tutorial can be found at
-`tutorial/05_property_inheritance.py`. Schema files are at
-`tutorial/05_schema_config.yaml`. Data generation happens in
+`tutorial/05__property_inheritance.py`. Schema files are at
+`tutorial/05_schema_config.yaml`, configuration in
+`tutorial/05_biocypher_config.yaml`. Data generation happens in
 `tutorial/data_generator.py`.
+
 ```
 
 Sometimes, explicit designation of properties requires a lot of maintenance
@@ -474,9 +443,12 @@ and one explicit child (`protein isoform`).
 ## Section 4: Handling relationships
 ```{admonition} Tutorial files
 :class: note
-The code for this tutorial can be found at `tutorial/06_relationships.py`.
-Schema files are at `tutorial/06_schema_config.yaml`. Data generation happens
-in `tutorial/data_generator.py`.
+
+The code for this tutorial can be found at `tutorial/06__relationships.py`.
+Schema files are at `tutorial/06_schema_config.yaml`, configuration in
+`tutorial/06_biocypher_config.yaml`. Data generation happens in
+`tutorial/data_generator.py`.
+
 ```
 
 Naturally, we do not only want nodes in our knowledge graph, but also edges. In
@@ -484,9 +456,9 @@ BioCypher, the configuration of relationships is very similar to that of nodes,
 with some key differences. First the similarities: the top-level class
 configuration of edges is the same; class names refer to ontological classes or
 are an extension thereof. Similarly, the `is_a` key is used to define
-inheritance, and the `inherit_properties` key is used to inherit properties
-from a parent class. Relationships also possess a `preferred_id` key, a
-`label_in_input` key, and a `properties` key, which work in the same way as for
+inheritance, and the `inherit_properties` key is used to inherit properties from
+a parent class. Relationships also possess a `preferred_id` key, an
+`input_label` key, and a `properties` key, which work in the same way as for
 nodes.
 
 Relationships also have a `represented_as` key, which in this case can be
@@ -504,7 +476,7 @@ protein protein interaction:
   is_a: pairwise molecular interaction
   represented_as: node
   preferred_id: intact
-  label_in_input: interacts_with
+  input_label: interacts_with
   properties:
     method: str
     source: str
