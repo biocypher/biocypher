@@ -72,8 +72,15 @@ def read_config() -> dict:
     local = _read_yaml('biocypher_config.yaml'
                       ) or _read_yaml('config/biocypher_config.yaml') or {}
 
-    defaults.update(user)
-    defaults.update(local)
+    for key in defaults:
+
+        if key in user:
+
+            defaults[key].update(user[key])
+
+        if key in local:
+
+            defaults[key].update(local[key])
 
     return defaults
 
