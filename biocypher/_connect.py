@@ -60,16 +60,16 @@ class _Neo4jDriver():
     """
     def __init__(
         self,
-        database_name: Optional[str] = None,
+        database_name: str,
+        uri: str,
+        user: str,
+        password: str,
+        multi_db: bool,
+        ontology: Ontology,
+        translator: Translator,
         wipe: bool = False,
-        uri: Optional[str] = None,
-        user: Optional[str] = None,
-        password: Optional[str] = None,
-        multi_db: Optional[bool] = None,
         fetch_size: int = 1000,
         increment_version: bool = True,
-        ontology: Optional[Ontology] = None,
-        translator: Optional[Translator] = None,
     ):
 
         self._ontology = ontology
@@ -83,6 +83,7 @@ class _Neo4jDriver():
             fetch_size=fetch_size,
             wipe=wipe,
             multi_db=multi_db,
+            raise_errors=True,
         )
 
         # check for biocypher config in connected graph

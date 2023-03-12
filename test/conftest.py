@@ -315,11 +315,14 @@ def create_driver(request, neo4j_param, translator, hybrid_ontology):
     else:
 
         driver_args = {
+            'multi_db': True,
             'translator': translator,
             'ontology': hybrid_ontology,
         }
         driver_args.update(marker_args)
         driver_args.update(neo4j_param)
+
+        driver_args['database_name'] = 'test'
 
         d = _Neo4jDriver(**driver_args)
 

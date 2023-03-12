@@ -494,7 +494,7 @@ class Ontology:
             'id': self._get_current_id(),
             'label': 'BioCypher',
             'properties': {
-                'schema': self.extended_schema,
+                'schema': 'self.extended_schema',
             },
         }
 
