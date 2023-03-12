@@ -315,6 +315,7 @@ def create_driver(request, neo4j_param, translator, hybrid_ontology):
     else:
 
         driver_args = {
+            'wipe': True,
             'multi_db': True,
             'translator': translator,
             'ontology': hybrid_ontology,

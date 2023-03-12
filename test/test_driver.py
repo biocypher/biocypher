@@ -15,6 +15,18 @@ def test_connect_to_db(driver):
     assert isinstance(driver._driver.driver, neo4j.Neo4jDriver)
 
 
+def test_increment_version(driver):
+    driver._driver.wipe_db()
+    query = "CREATE (n:BioCypher {id: 'v19700101-000000'})"
+    driver._driver.query(query)
+    driver._update_meta_graph()
+
+    r, summary = driver._driver.query('MATCH (n:BioCypher) '
+                                      'RETURN n', )
+
+    assert len(r) == 2
+
+
 def test_explain(driver):
     query = 'MATCH (n) WITH n LIMIT 25 MATCH (n)--(m)--(f) RETURN n, m, f'
     e = driver._driver.explain(query)

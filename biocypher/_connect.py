@@ -100,8 +100,6 @@ class _Neo4jDriver():
     def _update_meta_graph(self):
 
         logger.info('Updating Neo4j meta graph.')
-        # add version node
-        self.add_biocypher_nodes(self._ontology)
 
         # find current version node
         db_version = self._driver.query(
@@ -109,12 +107,16 @@ class _Neo4jDriver():
             'WHERE NOT (v)-[:PRECEDES]->() '
             'RETURN v',
         )
+        # add version node
+        self.add_biocypher_nodes(self._ontology)
 
         # connect version node to previous
         if db_version[0]:
+            previous = db_version[0][0]
+            previous_id = previous['v']['id']
             e_meta = BioCypherEdge(
-                self._ontology.graph_state['id'],
-                self._ontology.node_id,
+                previous_id,
+                self._ontology.get_dict().get('node_id'),
                 'PRECEDES',
             )
             self.add_biocypher_edges(e_meta)
@@ -146,7 +148,7 @@ class _Neo4jDriver():
 
         # get structure
         for leaf in self._ontology.extended_schema.items():
-            label = leaf[0]
+            label = _misc.sentencecase_to_pascalcase(leaf[0])
             if leaf[1]['represented_as'] == 'node':
 
                 s = (

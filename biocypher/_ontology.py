@@ -491,8 +491,8 @@ class Ontology:
         """
 
         d = {
-            'id': self._get_current_id(),
-            'label': 'BioCypher',
+            'node_id': self._get_current_id(),
+            'node_label': 'BioCypher',
             'properties': {
                 'schema': 'self.extended_schema',
             },
