@@ -176,20 +176,21 @@ class OntologyMapping:
         """
         Create virtual leaves for multiple preferred id types or sources.
 
-        If we create virtual leaves, label_in_input always has to be a list.
+        If we create virtual leaves, input_label/label_in_input always has to be
+        a list.
         """
 
         leaves = {}
 
         preferred_id = value['preferred_id']
-        label_in_input = value['label_in_input']
+        input_label = value.get('input_label') or value['label_in_input']
         represented_as = value['represented_as']
 
         # adjust lengths
         max_l = max(
             [
                 len(_misc.to_list(preferred_id)),
-                len(_misc.to_list(label_in_input)),
+                len(_misc.to_list(input_label)),
                 len(_misc.to_list(represented_as)),
             ],
         )
@@ -206,12 +207,12 @@ class OntologyMapping:
         else:
             reps = represented_as
 
-        for pid, lab, rep in zip(pids, label_in_input, reps):
+        for pid, lab, rep in zip(pids, input_label, reps):
 
             skey = pid + '.' + key
             svalue = {
                 'preferred_id': pid,
-                'label_in_input': lab,
+                'input_label': lab,
                 'represented_as': rep,
                 # mark as virtual
                 'virtual': True,
@@ -238,6 +239,7 @@ class OntologyMapping:
                 if k not in [
                     'is_a',
                     'preferred_id',
+                    'input_label',
                     'label_in_input',
                     'represented_as',
                 ]:
@@ -251,23 +253,24 @@ class OntologyMapping:
         """
         Create virtual leaves for multiple sources.
 
-        If we create virtual leaves, label_in_input always has to be a list.
+        If we create virtual leaves, input_label/label_in_input always has to be
+        a list.
         """
 
         leaves = {}
 
         source = value['source']
-        label_in_input = value['label_in_input']
+        input_label = value.get('input_label') or value['label_in_input']
         represented_as = value['represented_as']
 
         # adjust lengths
         src_l = len(source)
 
         # adjust label length if necessary
-        if isinstance(label_in_input, str):
-            labels = [label_in_input] * src_l
+        if isinstance(input_label, str):
+            labels = [input_label] * src_l
         else:
-            labels = label_in_input
+            labels = input_label
 
         # adjust rep length if necessary
         if isinstance(represented_as, str):
@@ -280,7 +283,7 @@ class OntologyMapping:
             skey = src + '.' + key
             svalue = {
                 'source': src,
-                'label_in_input': lab,
+                'input_label': lab,
                 'represented_as': rep,
                 # mark as virtual
                 'virtual': True,
@@ -307,6 +310,7 @@ class OntologyMapping:
                 if k not in [
                     'is_a',
                     'source',
+                    'input_label',
                     'label_in_input',
                     'represented_as',
                 ]:

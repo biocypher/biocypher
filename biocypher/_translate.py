@@ -380,33 +380,34 @@ class Translator:
 
         for key, value in self.extended_schema.items():
 
-            if isinstance(value.get('label_in_input'), str):
+            labels = value.get('input_label') or value.get('label_in_input')
 
-                self._ontology_mapping[value.get('label_in_input')] = key
+            if isinstance(labels, str):
 
-            elif isinstance(value.get('label_in_input'), list):
+                self._ontology_mapping[labels] = key
 
-                for label in value['label_in_input']:
+            elif isinstance(labels, list):
+
+                for label in labels:
                     self._ontology_mapping[label] = key
 
             if value.get('label_as_edge'):
 
-                self._add_translation_mappings(
-                    value['label_in_input'], value['label_as_edge']
-                )
+                self._add_translation_mappings(labels, value['label_as_edge'])
 
             else:
 
-                self._add_translation_mappings(value['label_in_input'], key)
+                self._add_translation_mappings(labels, key)
 
     def _get_ontology_mapping(self, label: str) -> Optional[str]:
         """
-        For each given input type ("label_in_input"), find the corresponding
-        ontology class in the leaves dictionary (from the `schema_config.yam`).
+        For each given input type ("input_label" or "label_in_input"), find the
+        corresponding ontology class in the leaves dictionary (from the
+        `schema_config.yam`).
 
         Args:
             label:
-                The input type to find (`label_in_input` in
+                The input type to find (`input_label` or `label_in_input` in
                 `schema_config.yaml`).
         """
 
