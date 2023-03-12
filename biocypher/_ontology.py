@@ -17,14 +17,13 @@ from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
-from typing import Union, Optional
+from typing import Optional
 from datetime import datetime
 
 import rdflib
 import networkx as nx
 
 from . import _misc
-from ._create import VersionNode
 from ._mapping import OntologyMapping
 
 
@@ -247,7 +246,7 @@ class Ontology:
     def __init__(
         self,
         head_ontology: dict,
-        ontology_mapping: Union[OntologyMapping, VersionNode],
+        ontology_mapping: 'OntologyMapping',
         tail_ontologies: Optional[dict] = None,
     ):
         """
