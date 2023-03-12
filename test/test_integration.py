@@ -3,7 +3,7 @@ import os
 import pytest
 
 
-@pytest.mark.parametrize('l', [4])
+@pytest.mark.parametrize('l', [4], scope='module')
 def test_write_node_data_from_gen(core, path, _get_nodes):
     nodes = _get_nodes
 

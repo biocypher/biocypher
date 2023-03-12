@@ -5,7 +5,6 @@ import pytest
 
 from biocypher._write import _Neo4jBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from biocypher._connect import _Driver
 
 
 def test_writer_and_output_dir(bw, path):
@@ -16,9 +15,10 @@ def test_writer_and_output_dir(bw, path):
     )
 
 
-def test_write_node_data_headers_import_call(bw, path):
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_write_node_data_headers_import_call(bw, path, _get_nodes):
     # four proteins, four miRNAs
-    nodes = _get_nodes(8)
+    nodes = _get_nodes
 
     passed = bw.write_nodes(nodes[:4])
     passed = bw.write_nodes(nodes[4:])
@@ -89,9 +89,10 @@ def test_write_hybrid_ontology_nodes(bw, path):
     assert 'BiologicalEntity' in part
 
 
-def test_tab_delimiter(tab_bw, path):
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_tab_delimiter(tab_bw, path, _get_nodes):
 
-    nodes = _get_nodes(8)
+    nodes = _get_nodes
 
     passed = tab_bw.write_nodes(nodes[:4])
     passed = tab_bw.write_nodes(nodes[4:])
@@ -108,35 +109,6 @@ def test_tab_delimiter(tab_bw, path):
         c ==
         f'bin/neo4j-admin import --database=neo4j --delimiter="\\t" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
     )
-
-
-def _get_nodes(l: int) -> list:
-    nodes = []
-    for i in range(l):
-        bnp = BioCypherNode(
-            node_id=f'p{i+1}',
-            node_label='protein',
-            preferred_id='uniprot',
-            properties={
-                'score': 4 / (i + 1),
-                'name': 'StringProperty1',
-                'taxon': 9606,
-                'genes': ['gene1', 'gene2'],
-            },
-        )
-        nodes.append(bnp)
-        bnm = BioCypherNode(
-            node_id=f'm{i+1}',
-            node_label='microRNA',
-            preferred_id='mirbase',
-            properties={
-                'name': 'StringProperty1',
-                'taxon': 9606,
-            },
-        )
-        nodes.append(bnm)
-
-    return nodes
 
 
 def test_property_types(bw, path):
@@ -171,8 +143,9 @@ def test_property_types(bw, path):
     assert 'BiologicalEntity' in data
 
 
-def test_write_node_data_from_list(bw, path):
-    nodes = _get_nodes(4)
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_write_node_data_from_list(bw, path, _get_nodes):
+    nodes = _get_nodes
 
     passed = bw._write_node_data(nodes, batch_size=1e6)
 
@@ -192,8 +165,9 @@ def test_write_node_data_from_list(bw, path):
     assert 'ChemicalEntity' in mi
 
 
-def test_write_node_data_from_gen(bw, path):
-    nodes = _get_nodes(4)
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_write_node_data_from_gen(bw, path, _get_nodes):
+    nodes = _get_nodes
 
     def node_gen(nodes):
         yield from nodes
@@ -258,8 +232,9 @@ def test_write_node_data_from_gen_no_props(bw, path):
     assert 'ChemicalEntity' in mi
 
 
-def test_write_node_data_from_large_gen(bw, path):
-    nodes = _get_nodes(int(1e4 + 4))
+@pytest.mark.parametrize('l', [int(1e4 + 4)], scope='module')
+def test_write_node_data_from_large_gen(bw, path, _get_nodes):
+    nodes = _get_nodes
 
     def node_gen(nodes):
         yield from nodes
@@ -285,8 +260,9 @@ def test_write_node_data_from_large_gen(bw, path):
     )
 
 
-def test_too_many_properties(bw):
-    nodes = _get_nodes(1)
+@pytest.mark.parametrize('l', [1], scope='module')
+def test_too_many_properties(bw, _get_nodes):
+    nodes = _get_nodes
 
     bn1 = BioCypherNode(
         node_id='p0',
@@ -311,8 +287,9 @@ def test_too_many_properties(bw):
     assert not passed
 
 
-def test_not_enough_properties(bw, path):
-    nodes = _get_nodes(1)
+@pytest.mark.parametrize('l', [1], scope='module')
+def test_not_enough_properties(bw, path, _get_nodes):
+    nodes = _get_nodes
 
     bn1 = BioCypherNode(
         node_id='p0',
@@ -387,8 +364,9 @@ def test_write_none_type_property_and_order_invariance(bw, path):
     assert 'BiologicalEntity' in p
 
 
-def test_accidental_exact_batch_size(bw, path):
-    nodes = _get_nodes(int(1e4))
+@pytest.mark.parametrize('l', [int(1e4)], scope='module')
+def test_accidental_exact_batch_size(bw, path, _get_nodes):
+    nodes = _get_nodes
 
     def node_gen(nodes):
         yield from nodes
@@ -422,8 +400,9 @@ def test_accidental_exact_batch_size(bw, path):
     )
 
 
-def test_write_edge_data_from_gen(bw, path):
-    edges = _get_edges(4)
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_write_edge_data_from_gen(bw, path, _get_edges):
+    edges = _get_edges
 
     def edge_gen(edges):
         yield from edges
@@ -447,39 +426,10 @@ def test_write_edge_data_from_gen(bw, path):
     assert '\n' in c
 
 
-def _get_edges(l):
-    edges = []
-    for i in range(l):
-        e1 = BioCypherEdge(
-            source_id=f'p{i}',
-            target_id=f'p{i + 1}',
-            relationship_label='PERTURBED_IN_DISEASE',
-            properties={
-                'residue': 'T253',
-                'level': 4,
-            },
-            # we suppose the verb-form relationship label is created by
-            # translation functionality in translate.py
-        )
-        edges.append(e1)
-        e2 = BioCypherEdge(
-            source_id=f'm{i}',
-            target_id=f'p{i + 1}',
-            relationship_label='Is_Mutated_In',
-            properties={
-                'site': '3-UTR',
-                'confidence': 1,
-            },
-            # we suppose the verb-form relationship label is created by
-            # translation functionality in translate.py
-        )
-        edges.append(e2)
-    return edges
+@pytest.mark.parametrize('l', [int(1e4 + 4)], scope='module')
+def test_write_edge_data_from_large_gen(bw, path, _get_edges):
 
-
-def test_write_edge_data_from_large_gen(bw, path):
-
-    edges = _get_edges(int(1e4 + 4))
+    edges = _get_edges
 
     def edge_gen(edges):
         yield from edges
@@ -502,8 +452,9 @@ def test_write_edge_data_from_large_gen(bw, path):
     )
 
 
-def test_write_edge_data_from_list(bw, path):
-    edges = _get_edges(4)
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_write_edge_data_from_list(bw, path, _get_edges):
+    edges = _get_edges
 
     passed = bw._write_edge_data(edges, batch_size=int(1e4))
 
@@ -560,10 +511,11 @@ def test_write_edge_data_from_list_no_props(bw, path):
     assert '\n' in c
 
 
-def test_write_edge_data_headers_import_call(bw, path):
-    edges = _get_edges(8)
+@pytest.mark.parametrize('l', [8], scope='module')
+def test_write_edge_data_headers_import_call(bw, path, _get_nodes, _get_edges):
+    edges = _get_edges
 
-    nodes = _get_nodes(8)
+    nodes = _get_nodes
 
     def edge_gen1(edges):
         yield from edges[:4]
@@ -595,8 +547,9 @@ def test_write_edge_data_headers_import_call(bw, path):
     )
 
 
-def test_write_duplicate_edges(bw, path):
-    edges = _get_edges(4)
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_write_duplicate_edges(bw, path, _get_edges):
+    edges = _get_edges
     edges.append(edges[0])
 
     passed = bw.write_edges(edges)
@@ -827,8 +780,9 @@ def test_write_synonym(bw, path):
     assert 'Complex' in comp
 
 
-def test_duplicate_nodes(bw):
-    nodes = _get_nodes(4)
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_duplicate_nodes(bw, _get_nodes):
+    nodes = _get_nodes
     nodes.append(
         BioCypherNode(
             node_id='p1',
@@ -848,8 +802,9 @@ def test_duplicate_nodes(bw):
     assert 'p1' in bw.duplicate_node_ids
 
 
-def test_get_duplicate_nodes(bw):
-    nodes = _get_nodes(4)
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_get_duplicate_nodes(bw, _get_nodes):
+    nodes = _get_nodes
     nodes.append(
         BioCypherNode(
             node_id='p1',
@@ -873,8 +828,9 @@ def test_get_duplicate_nodes(bw):
     assert 'p1' in ids
 
 
-def test_duplicate_edges(bw):
-    edges = _get_edges(4)
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_duplicate_edges(bw, _get_edges):
+    edges = _get_edges
     edges.append(
         BioCypherEdge(
             source_id='p1',
@@ -889,8 +845,9 @@ def test_duplicate_edges(bw):
     assert 'p1_p2' in bw.duplicate_edge_ids
 
 
-def test_get_duplicate_edges(bw):
-    edges = _get_edges(4)
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_get_duplicate_edges(bw, _get_edges):
+    edges = _get_edges
     edges.append(
         BioCypherEdge(
             source_id='p1',

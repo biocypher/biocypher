@@ -8,7 +8,7 @@ import pytest
 from biocypher import config as bcy_config
 from biocypher._core import BioCypher
 from biocypher._write import _Neo4jBatchWriter
-from biocypher._create import BioCypherNode
+from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._connect import _Driver
 from biocypher._mapping import OntologyMapping
 from biocypher._ontology import Ontology, OntologyAdapter
@@ -51,7 +51,7 @@ def path():
     return path
 
 
-@pytest.fixture(name='path_strict', scope='session')
+@pytest.fixture(name='path_strict', scope='module')
 def path_strict():
     path = os.path.join(
         tempfile.gettempdir(),
@@ -62,7 +62,7 @@ def path_strict():
 
 
 # biocypher node generator
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='module')
 def _get_nodes(l: int) -> list:
     nodes = []
     for i in range(l):
@@ -92,39 +92,71 @@ def _get_nodes(l: int) -> list:
     return nodes
 
 
-@pytest.fixture(scope='session')
+# biocypher edge generator
+@pytest.fixture(scope='module')
+def _get_edges(l):
+    edges = []
+    for i in range(l):
+        e1 = BioCypherEdge(
+            source_id=f'p{i}',
+            target_id=f'p{i + 1}',
+            relationship_label='PERTURBED_IN_DISEASE',
+            properties={
+                'residue': 'T253',
+                'level': 4,
+            },
+            # we suppose the verb-form relationship label is created by
+            # translation functionality in translate.py
+        )
+        edges.append(e1)
+        e2 = BioCypherEdge(
+            source_id=f'm{i}',
+            target_id=f'p{i + 1}',
+            relationship_label='Is_Mutated_In',
+            properties={
+                'site': '3-UTR',
+                'confidence': 1,
+            },
+            # we suppose the verb-form relationship label is created by
+            # translation functionality in translate.py
+        )
+        edges.append(e2)
+    return edges
+
+
+@pytest.fixture(scope='module')
 def ontology_mapping():
     return OntologyMapping(
         config_file='biocypher/_config/test_schema_config.yaml'
     )
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def translator(ontology_mapping):
     return Translator(ontology_mapping)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def biolink_adapter():
     return OntologyAdapter('biocypher/_config/biolink-model.owl.ttl', 'entity')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def so_adapter():
     return OntologyAdapter('test/so.owl', 'sequence_variant')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def go_adapter():
     return OntologyAdapter('test/go.owl', 'molecular_function')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def mondo_adapter():
     return OntologyAdapter('test/mondo.owl', 'disease')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def hybrid_ontology(ontology_mapping):
     return Ontology(
         head_ontology={
@@ -212,7 +244,7 @@ def tab_bw(hybrid_ontology, translator, path):
 
 
 # core instance fixture
-@pytest.fixture(name='core', scope='session')
+@pytest.fixture(name='core', scope='module')
 def create_core(request, path):
 
     marker = request.node.get_closest_marker('inject_core_args')
@@ -242,7 +274,7 @@ def create_core(request, path):
 
 
 # neo4j parameters
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def neo4j_param(request):
 
     keys = (
@@ -263,7 +295,7 @@ def neo4j_param(request):
 
 
 # neo4j driver fixture
-@pytest.fixture(name='driver', scope='session')
+@pytest.fixture(name='driver', scope='module')
 def create_driver(request, neo4j_param, translator, hybrid_ontology):
 
     marker = request.node.get_closest_marker('inject_driver_args')

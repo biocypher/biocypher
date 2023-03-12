@@ -1,47 +1,6 @@
 import pytest
 
 from biocypher._create import BioCypherEdge, BioCypherNode
-from biocypher._mapping import OntologyMapping
-from biocypher._ontology import Ontology
-from biocypher._translate import Translator
-
-
-@pytest.fixture
-def mapping():
-    return OntologyMapping(
-        config_file='biocypher/_config/test_schema_config.yaml',
-    )
-
-
-@pytest.fixture
-def translator(mapping):
-    return Translator(mapping.extended_schema)
-
-
-@pytest.fixture
-def hybrid_ontology():
-    return Ontology(
-        head_ontology={
-            'url':
-                'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl',
-            'root_node':
-                'entity',
-        },
-        tail_ontologies={
-            'so':
-                {
-                    'url': 'test/so.obo',
-                    'head_join_node': 'sequence variant',
-                    'tail_join_node': 'sequence_variant',
-                },
-            'mondo':
-                {
-                    'url': 'test/mondo.obo',
-                    'head_join_node': 'disease',
-                    'tail_join_node': 'disease',
-                }
-        },
-    )
 
 
 def test_translate_nodes(translator):
@@ -210,7 +169,7 @@ def test_translate_edges(translator):
 #     pass
 
 
-def test_merge_multiple_inputs_node(mapping, translator):
+def test_merge_multiple_inputs_node(ontology_mapping, translator):
     # Gene has two input labels and one preferred ID
     # no virtual leaves should be created
     # both inputs should lead to creation of the same node type
@@ -237,15 +196,19 @@ def test_merge_multiple_inputs_node(mapping, translator):
     assert t
 
     # check unique node type
-    assert not any([s for s in mapping.extended_schema.keys() if '.gene' in s])
-    assert any([s for s in mapping.extended_schema.keys() if '.pathway' in s])
+    assert not any(
+        [s for s in ontology_mapping.extended_schema.keys() if '.gene' in s]
+    )
+    assert any(
+        [s for s in ontology_mapping.extended_schema.keys() if '.pathway' in s]
+    )
 
     # check translator.translate_nodes for unique return type
     assert all([type(n) == BioCypherNode for n in t])
     assert all([n.get_label() == 'gene' for n in t])
 
 
-def test_merge_multiple_inputs_edge(mapping, translator):
+def test_merge_multiple_inputs_edge(ontology_mapping, translator):
     # GeneToDiseaseAssociation has two input labels and one preferred ID
     # no virtual leaves should be created
     # both inputs should lead to creation of the same edge type
@@ -275,12 +238,15 @@ def test_merge_multiple_inputs_edge(mapping, translator):
     # check unique edge type
     assert not any(
         [
-            s for s in mapping.extended_schema.keys()
+            s for s in ontology_mapping.extended_schema.keys()
             if '.gene to disease association' in s
         ],
     )
     assert any(
-        [s for s in mapping.extended_schema.keys() if '.sequence variant' in s],
+        [
+            s for s in ontology_mapping.extended_schema.keys()
+            if '.sequence variant' in s
+        ],
     )
 
     # check translator.translate_nodes for unique return type
@@ -288,14 +254,14 @@ def test_merge_multiple_inputs_edge(mapping, translator):
     assert all([e.get_label() == 'PERTURBED_IN_DISEASE' for e in t])
 
 
-def test_virtual_leaves_inherit_is_a(mapping):
+def test_virtual_leaves_inherit_is_a(ontology_mapping):
 
-    snrna = mapping.extended_schema.get('intact.snRNA sequence')
+    snrna = ontology_mapping.extended_schema.get('intact.snRNA sequence')
 
     assert 'is_a' in snrna.keys()
     assert snrna['is_a'] == ['snRNA sequence', 'nucleic acid entity']
 
-    dsdna = mapping.extended_schema.get('intact.dsDNA sequence')
+    dsdna = ontology_mapping.extended_schema.get('intact.dsDNA sequence')
 
     assert dsdna['is_a'] == [
         'dsDNA sequence',
@@ -304,17 +270,17 @@ def test_virtual_leaves_inherit_is_a(mapping):
     ]
 
 
-def test_virtual_leaves_inherit_properties(mapping):
+def test_virtual_leaves_inherit_properties(ontology_mapping):
 
-    snrna = mapping.extended_schema.get('intact.snRNA sequence')
+    snrna = ontology_mapping.extended_schema.get('intact.snRNA sequence')
 
     assert 'properties' in snrna.keys()
     assert 'exclude_properties' in snrna.keys()
 
 
-def test_inherit_properties(mapping):
+def test_inherit_properties(ontology_mapping):
 
-    dsdna = mapping.extended_schema.get('intact.dsDNA sequence')
+    dsdna = ontology_mapping.extended_schema.get('intact.dsDNA sequence')
 
     assert 'properties' in dsdna.keys()
     assert 'sequence' in dsdna['properties']
