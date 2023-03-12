@@ -51,7 +51,7 @@ def main():
     driver = biocypher.Driver(
         offline=True,  # start without connecting to Neo4j instance
         db_name='synonyms',  # name of database for import call
-        user_schema_config_path='tutorial/07_schema_config.yaml',
+        schema_config_path='tutorial/07_schema_config.yaml',
     )
     # Run the import
     driver.write_nodes(node_generator())

@@ -16,6 +16,7 @@ from more_itertools import peekable
 
 from ._write import get_writer
 from ._config import config as _config
+from ._config import update_from_file as _update
 from ._create import BioCypherEdge, BioCypherNode
 from ._connect import get_driver
 from ._mapping import OntologyMapping
@@ -41,7 +42,8 @@ class BioCypher:
         dbms: str = None,
         offline: bool = None,
         strict_mode: bool = None,
-        user_schema_config_path: str = None,
+        biocypher_config_path: str = None,
+        schema_config_path: str = None,
         head_ontology: dict = None,
         tail_ontologies: dict = None,
         output_directory: str = 'biocypher-out',
@@ -79,6 +81,10 @@ class BioCypher:
 
         """
 
+        # Update configuration if custom path is provided
+        if biocypher_config_path:
+            _update(biocypher_config_path)
+
         # Load configuration
         self.base_config = _config('biocypher')
 
@@ -100,7 +106,7 @@ class BioCypher:
         else:
             self._strict_mode = strict_mode
 
-        self._user_schema_config_path = user_schema_config_path or self.base_config[
+        self._schema_config_path = schema_config_path or self.base_config[
             'user_schema_config_path']
 
         self._head_ontology = head_ontology or self.base_config['head_ontology']
@@ -135,7 +141,7 @@ class BioCypher:
 
         if not self._ontology_mapping:
             self._ontology_mapping = OntologyMapping(
-                config_file=self._user_schema_config_path,
+                config_file=self._schema_config_path,
             )
 
         return self._ontology_mapping

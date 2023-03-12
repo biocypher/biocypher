@@ -23,6 +23,9 @@ import appdirs
 
 __all__ = ['module_data', 'module_data_path', 'read_config', 'config', 'reset']
 
+_USER_CONFIG_DIR = appdirs.user_config_dir('biocypher', 'saezlab')
+_USER_CONFIG_FILE = os.path.join(_USER_CONFIG_DIR, 'conf.yaml')
+
 
 def module_data_path(name: str) -> str:
     """
@@ -58,22 +61,16 @@ def read_config() -> dict:
     Read the module config.
 
     Read and merge the built-in default, the user level and directory level
-    configuration.
+    configuration, with the later taking precendence over the former.
 
     TODO explain path configuration
     """
 
     defaults = module_data('biocypher_config')
-    user_confdir = appdirs.user_config_dir('biocypher', 'saezlab')
-    user = _read_yaml(os.path.join(user_confdir, 'biocypher_config.yaml')) or {}
-    # check if there is a local config file `biocypher_config.yaml` in the
-    # current working directory # TODO account for .yml?
-    if os.path.exists('biocypher_config.yaml'):
-        local = _read_yaml('biocypher_config.yaml')
-    elif os.path.exists('config/biocypher_config.yaml'):
-        local = _read_yaml('config/biocypher_config.yaml')
-    else:
-        local = {}
+    user = _read_yaml(_USER_CONFIG_FILE) or {}
+    # TODO account for .yml?
+    local = _read_yaml('biocypher_config.yaml'
+                      ) or _read_yaml('config/biocypher_config.yaml') or {}
 
     defaults.update(user)
     defaults.update(local)
@@ -98,7 +95,9 @@ def config(*args, **kwargs) -> Optional[Any]:
 
         return result[0] if len(result) == 1 else result
 
-    globals()['_config'].update(kwargs)
+    for key, value in kwargs.items():
+
+        globals()['_config'][key].update(value)
 
 
 def reset():
@@ -110,3 +109,11 @@ def reset():
 
 
 reset()
+
+
+def update_from_file(path: str):
+    """
+    Update the module configuration from a YAML file.
+    """
+
+    config(**_read_yaml(path))
