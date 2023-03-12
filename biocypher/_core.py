@@ -18,6 +18,7 @@ from ._write import get_writer
 from ._config import config as _config
 from ._config import update_from_file as _update
 from ._create import BioCypherEdge, BioCypherNode
+from ._logger import logger
 from ._connect import get_driver
 from ._mapping import OntologyMapping
 from ._ontology import Ontology
@@ -260,3 +261,133 @@ class BioCypher:
 
     def merge_edges(self, edges):
         pass
+
+    def log_missing_bl_types(self):
+        """
+        Get the set of Biolink types encountered without an entry in
+        the `schema_config.yaml` and print them to the logger.
+
+        Returns:
+            set: a set of missing Biolink types
+        """
+
+        mt = self._translator.get_missing_biolink_types()
+
+        if mt:
+            msg = (
+                'Input entities not accounted for due to them not being '
+                'present in the `schema_config.yaml` configuration file '
+                '(this is not necessarily a problem, if you did not intend '
+                'to include them in the database; see the log for details): \n'
+            )
+            for k, v in mt.items():
+                msg += f'    {k}: {v} \n'
+
+            logger.info(msg)
+            return mt
+
+        else:
+            logger.info('No missing Biolink types in input.')
+            return None
+
+    def log_duplicates(self):
+        """
+        Get the set of duplicate nodes and edges encountered and print them to
+        the logger.
+        """
+
+        dn = self.batch_writer.get_duplicate_nodes()
+
+        if dn:
+
+            ntypes = dn[0]
+            nids = dn[1]
+
+            msg = ('Duplicate node types encountered (IDs in log): \n')
+            for typ in ntypes:
+                msg += f'    {typ}\n'
+
+            logger.info(msg)
+
+            idmsg = ('Duplicate node IDs encountered: \n')
+            for _id in nids:
+                idmsg += f'    {_id}\n'
+
+            logger.debug(idmsg)
+
+        else:
+            logger.info('No duplicate nodes in input.')
+
+        de = self.batch_writer.get_duplicate_edges()
+
+        if de:
+
+            etypes = de[0]
+            eids = de[1]
+
+            msg = ('Duplicate edge types encountered (IDs in log): \n')
+            for typ in etypes:
+                msg += f'    {typ}\n'
+
+            logger.info(msg)
+
+            idmsg = ('Duplicate edge IDs encountered: \n')
+            for _id in eids:
+                idmsg += f'    {_id}\n'
+
+            logger.debug(idmsg)
+
+        else:
+            logger.info('No duplicate edges in input.')
+
+    def show_ontology_structure(self) -> None:
+        """
+        Show the ontology structure of the database using the Biolink schema and
+        treelib.
+        """
+
+        self.start_ontology()
+
+        self.ontology.show_ontology_structure()
+
+    # TRANSLATION METHODS ###
+
+    def translate_term(self, term: str) -> str:
+        """
+        Translate a term to its BioCypher equivalent.
+        """
+
+        # instantiate adapter if not exists
+        self.start_ontology()
+
+        return self._translator.translate_term(term)
+
+    def reverse_translate_term(self, term: str) -> str:
+        """
+        Reverse translate a term from its BioCypher equivalent.
+        """
+
+        # instantiate adapter if not exists
+        self.start_ontology()
+
+        return self._translator.reverse_translate_term(term)
+
+    def translate_query(self, query: str) -> str:
+        """
+        Translate a query to its BioCypher equivalent.
+        """
+
+        # instantiate adapter if not exists
+        self.start_ontology()
+
+        return self._translator.translate(query)
+
+    def reverse_translate_query(self, query: str) -> str:
+        """
+        Reverse translate a query from its BioCypher equivalent.
+        """
+
+        # instantiate adapter if not exists
+        self.start_ontology()
+
+        return self._translator.reverse_translate(query)

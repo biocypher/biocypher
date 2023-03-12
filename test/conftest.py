@@ -9,7 +9,7 @@ from biocypher import config as bcy_config
 from biocypher._core import BioCypher
 from biocypher._write import _Neo4jBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode
-from biocypher._connect import _Driver
+from biocypher._connect import _Neo4jDriver
 from biocypher._mapping import OntologyMapping
 from biocypher._ontology import Ontology, OntologyAdapter
 from biocypher._translate import Translator
@@ -245,7 +245,7 @@ def tab_bw(hybrid_ontology, translator, path):
 
 # core instance fixture
 @pytest.fixture(name='core', scope='module')
-def create_core(request, path):
+def create_core(request, path, translator):
 
     marker = request.node.get_closest_marker('inject_core_args')
 
@@ -261,7 +261,9 @@ def create_core(request, path):
 
     else:
 
-        core_args = {'output_directory': path}
+        core_args = {
+            'output_directory': path,
+        }
         core_args.update(marker_args)
 
         c = BioCypher(**core_args)
@@ -319,7 +321,7 @@ def create_driver(request, neo4j_param, translator, hybrid_ontology):
         driver_args.update(marker_args)
         driver_args.update(neo4j_param)
 
-        d = _Driver(**driver_args)
+        d = _Neo4jDriver(**driver_args)
 
         if not marker_args:
 

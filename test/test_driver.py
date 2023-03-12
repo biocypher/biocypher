@@ -2,12 +2,12 @@ import neo4j
 import pytest
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from biocypher._connect import _Driver
+from biocypher._connect import _Neo4jDriver
 
 
 def test_create_driver(driver):
 
-    assert isinstance(driver, _Driver)
+    assert isinstance(driver, _Neo4jDriver)
 
 
 def test_connect_to_db(driver):
@@ -289,38 +289,3 @@ def test_pretty_explain(driver):
     )
 
     assert 'args' in plan and 'ProduceResults' in printout[0]
-
-
-# def test_access_translate(driver):
-
-#     driver.start_ontology()
-
-#     assert driver.translate_term('mirna') == 'MicroRNA'
-#     assert (driver.reverse_translate_term('SideEffect') == 'sider')
-#     assert (
-#         driver.translate_query('MATCH (n:reactome) RETURN n') ==
-#         'MATCH (n:Reactome.Pathway) RETURN n'
-#     )
-#     assert (
-#         driver.reverse_translate_query(
-#             'MATCH (n:Wikipathways.Pathway) RETURN n',
-#         ) == 'MATCH (n:wikipathways) RETURN n'
-#     )
-
-# def test_log_missing_bl_types(driver):
-#     driver.translator.notype = {}
-#     assert driver.log_missing_bl_types() == None
-
-#     driver.translator.notype = {'a': 1, 'b': 2}
-#     mt = driver.log_missing_bl_types()
-
-#     assert mt.get('a') == 1 and mt.get('b') == 2
-
-# def test_schema_config_from_web():
-#     driver = _Driver(
-#         offline=True,
-#         user_schema_config_path=
-#         'https://raw.githubusercontent.com/saezlab/BioCypher/main/biocypher/_config/test_schema_config.yaml'
-#     )
-
-#     assert driver._translator._ontology_mapping
