@@ -352,6 +352,9 @@ class BioCypher:
         treelib.
         """
 
+        if not self._ontology:
+            self._get_ontology()
+
         self._ontology.show_ontology_structure()
 
     def write_import_call(self) -> None:
