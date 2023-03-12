@@ -38,7 +38,7 @@
             BioCypher
           </a>
               <div class="version">
-                0.5.1
+                0.5.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -54,20 +54,20 @@
 <li class="toctree-l1"><a class="reference internal" href="get-involved.html">Get Involved!</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#install-as-a-dependency-for-your-kg-pipeline">Install as a dependency for your KG pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#for-developers">For developers</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#configuration">Configuration</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#biocypher-settings">BioCypher settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#neo4j-settings">Neo4j settings</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#developers">Developers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">BioCypher Tutorial - Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">BioCypher Tutorial - Handling Ontologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial-adapter.html">BioCypher Tutorial - Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
 <li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
 </ul>
 
@@ -141,6 +141,31 @@ encounter any issues with a specific Python version, please open an issue on
 GitHub.</p>
 </div>
 </section>
+<section id="for-developers">
+<h2>For developers<a class="headerlink" href="#for-developers" title="Permalink to this heading"></a></h2>
+<p>If you want to directly install BioCypher, here are the steps (requires
+<a class="reference external" href="https://python-poetry.org/docs/#installation">Poetry</a>):</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Execute in bash</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/saezlab/BioCypher
+<span class="nb">cd</span><span class="w"> </span>BioCypher
+poetry<span class="w"> </span>install
+</pre></div>
+</div>
+</div>
+<p>Poetry creates a virtual environment for you (starting with <code class="docutils literal notranslate"><span class="pre">biocypher-</span></code>;
+alternatively you can name it yourself) and installs all dependencies.</p>
+<p>If you want to run the tests that use a Neo4j DBMS instance:</p>
+<ul class="simple">
+<li><p>Make sure that you have a Neo4j instance with the APOC plugin installed and a
+database named <code class="docutils literal notranslate"><span class="pre">test</span></code> running on standard bolt port <code class="docutils literal notranslate"><span class="pre">7687</span></code></p></li>
+<li><p>Activate the virtual environment by running <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">poetry</span> <span class="pre">shell</span></code> and then run the
+tests by running <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">pytest</span></code> in the root directory of the repository with the
+command line argument <code class="docutils literal notranslate"><span class="pre">--password=&lt;your</span> <span class="pre">DBMS</span> <span class="pre">password&gt;</span></code>.</p></li>
+</ul>
+<p>Once this is set up, you can go through the <a class="reference internal" href="tutorial.html#tutorial"><span class="std std-ref">tutorial</span></a> or use it in
+your project as a local dependency.</p>
+</section>
 </section>
 <section id="configuration">
 <span id="config"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h1>
@@ -151,104 +176,101 @@ wish to override from default. If you want to create global user settings, you
 can create a <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> in your default BioCypher user directory
 (as found using <code class="docutils literal notranslate"><span class="pre">appdirs.user_config_dir('biocypher')</span></code>). For instance, on Mac
 OS, this would be <code class="docutils literal notranslate"><span class="pre">~/Library/Caches/biocypher/biocypher_config.yaml</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is important to follow the rules of indentation in the YAML file. BioCypher
+module configuration is found under the top-level keyword <code class="docutils literal notranslate"><span class="pre">biocypher</span></code>, while
+the settings for DBMS systems (e.g., Neo4j) are found under their respective
+keywords (e.g., <code class="docutils literal notranslate"><span class="pre">neo4j</span></code>).</p>
 <p>Configuration files are read in the order <code class="docutils literal notranslate"><span class="pre">default</span> <span class="pre">-&gt;</span> <span class="pre">user</span> <span class="pre">level</span> <span class="pre">-&gt;</span> <span class="pre">project</span> <span class="pre">level</span></code>, with the later ones overriding the preceding. The following parameters
 are available:</p>
-<section id="biocypher-settings">
-<h2>BioCypher settings<a class="headerlink" href="#biocypher-settings" title="Permalink to this heading"></a></h2>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Offline mode: do not connect to a running DBMS instance</span>
-<span class="c1"># Can be used e.g. for writing CSV files for admin import</span>
-<span class="nt">offline</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-
-<span class="c1"># Ontology mapping: `schema_config.yaml` path</span>
-<span class="nt">user_schema_config_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/schema_config.yaml</span>
-
-<span class="c1"># Strict mode: ensure source, version, and licence</span>
-<span class="nt">strict_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-
-<span class="c1"># Logging granularity</span>
-<span class="c1"># Set debug to true if more granular logging is desired</span>
-<span class="nt">debug</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-
-<span class="c1"># Set to change the log directory</span>
-<span class="nt">logdir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">biocypher-log</span>
-
-<span class="c1"># Set to change the output directory</span>
-<span class="nt">outdir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">biocypher-out</span>
-
-<span class="c1"># Ontology configuration</span>
-<span class="c1"># We need to define a head ontology (default format OWL) and which node should</span>
-<span class="c1"># be the root of the ontology tree.</span>
-<span class="nt">head_ontology</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl</span>
-<span class="w">  </span><span class="nt">root_node</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;entity&#39;</span>
-
-<span class="c1"># Optionally, we can define an arbitrary number of tail ontologies, using local</span>
-<span class="c1"># or online files. For each tail ontology, we need to define the join nodes in</span>
-<span class="c1"># the head and tail ontology, at which the two trees will be fused.</span>
-<span class="nt">tail_ontologies</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">so</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/so.owl</span>
-<span class="w">    </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span>
-<span class="w">    </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence_variant</span>
-<span class="w">  </span><span class="nt">mondo</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/mondo.owl</span>
-<span class="w">    </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
-<span class="w">    </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
-</pre></div>
-</div>
-</div>
-</section>
-<section id="neo4j-settings">
-<h2>Neo4j settings<a class="headerlink" href="#neo4j-settings" title="Permalink to this heading"></a></h2>
+<p class="rubric">BioCypher settings</p>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Neo4j connection credentials</span>
-<span class="nt">neo4j_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j://localhost:7687</span><span class="w">   </span><span class="c1"># DB URI</span>
-<span class="nt">neo4j_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span><span class="w">                     </span><span class="c1"># DB name</span>
-<span class="nt">neo4j_user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span><span class="w">                   </span><span class="c1"># user name</span>
-<span class="nt">neo4j_pw</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span><span class="w">                     </span><span class="c1"># password</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">biocypher</span><span class="p">:</span><span class="w">  </span><span class="c1">### BioCypher module configuration ###</span>
 
-<span class="c1"># Neo4j admin import batch writer settings</span>
-<span class="nt">neo4j_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;¦&#39;</span><span class="w">                      </span><span class="c1"># delimiter for CSV files</span>
-<span class="nt">neo4j_array_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;|&#39;</span><span class="w">                </span><span class="c1"># delimiter for array values</span>
-<span class="nt">neo4j_quote_char</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&quot;&#39;</span><span class="w">                     </span><span class="c1"># quote character for CSV files</span>
-<span class="nt">neo4j_import_call_bin_prefix</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;bin/&#39;</span><span class="w">      </span><span class="c1"># path of admin-import executable</span>
-<span class="nt">neo4j_import_call_file_prefix</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;import/&#39;</span><span class="w">  </span><span class="c1"># path of files in admin-import call</span>
+<span class="w">  </span><span class="c1">### Required parameters ###</span>
+<span class="w">  </span><span class="c1"># DBMS type</span>
+<span class="w">  </span><span class="nt">dbms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span>
 
-<span class="c1"># MultiDB functionality</span>
-<span class="c1"># Set to false for using community edition or older versions of Neo4j</span>
-<span class="nt">neo4j_multi_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="c1"># Offline mode: do not connect to a running DBMS instance</span>
+<span class="w">  </span><span class="c1"># Can be used e.g. for writing batch import files</span>
+<span class="w">  </span><span class="nt">offline</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="w">  </span><span class="c1"># Strict mode: do not allow to create new nodes or relationships without</span>
+<span class="w">  </span><span class="c1"># specifying source, version, and license parameters</span>
+<span class="w">  </span><span class="nt">strict_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="w">  </span><span class="c1"># Schema configuration: mapping of inputs to ontology</span>
+<span class="w">  </span><span class="nt">user_schema_config_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">biocypher/_config/test_schema_config.yaml</span>
+
+<span class="w">  </span><span class="c1"># Ontology configuration</span>
+<span class="w">  </span><span class="nt">head_ontology</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">biocypher/_config/biolink-model.owl.ttl</span>
+<span class="w">    </span><span class="nt">root_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">entity</span>
+
+<span class="w">  </span><span class="c1">### Optional parameters ###</span>
+<span class="w">  </span><span class="c1"># Logging granularity</span>
+<span class="w">  </span><span class="c1"># Set debug to true if more granular logging is desired</span>
+<span class="w">  </span><span class="nt">debug</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="w">  </span><span class="c1"># Set to change the log directory</span>
+<span class="w">  </span><span class="nt">log_directory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">biocypher-log</span>
+
+<span class="w">  </span><span class="c1"># Set to change the output directory</span>
+<span class="w">  </span><span class="nt">output_directory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">biocypher-out</span>
+
+<span class="w">  </span><span class="c1"># Optional tail ontologies</span>
+<span class="w">  </span><span class="nt">tail_ontologies</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">so</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/so.owl</span>
+<span class="w">      </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span>
+<span class="w">      </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence_variant</span>
+<span class="w">    </span><span class="nt">mondo</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/mondo.owl</span>
+<span class="w">      </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
+<span class="w">      </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
 </pre></div>
 </div>
 </div>
-</section>
-</section>
-<section id="developers">
-<h1>Developers<a class="headerlink" href="#developers" title="Permalink to this heading"></a></h1>
-<p>If you want to directly install BioCypher, here are the steps (requires
-<a class="reference external" href="https://python-poetry.org/docs/#installation">Poetry</a>):</p>
+</div>
+<section id="neo4j-settings">
+<h2>Neo4j settings<a class="headerlink" href="#neo4j-settings" title="Permalink to this heading"></a></h2>
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Execute in bash</span><a class="headerlink" href="#id5" title="Permalink to this code"></a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/saezlab/BioCypher
-<span class="nb">cd</span><span class="w"> </span>BioCypher
-poetry<span class="w"> </span>install
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id5" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">neo4j</span><span class="p">:</span><span class="w">  </span><span class="c1">### Neo4j configuration ###</span>
+
+<span class="w">  </span><span class="c1"># Database name</span>
+<span class="w">  </span><span class="nt">database_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span>
+
+<span class="w">  </span><span class="c1"># Wipe DB before import (offline mode: --force)</span>
+<span class="w">  </span><span class="nt">wipe</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="w">  </span><span class="c1"># Neo4j authentication</span>
+<span class="w">  </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j://localhost:7687</span>
+<span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span>
+<span class="w">  </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span>
+
+<span class="w">  </span><span class="c1"># Neo4j admin import batch writer settings</span>
+<span class="w">  </span><span class="nt">delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;;&#39;</span>
+<span class="w">  </span><span class="nt">array_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;|&#39;</span>
+<span class="w">  </span><span class="nt">quote_character</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&#39;&quot;</span>
+
+<span class="w">  </span><span class="c1"># MultiDB functionality</span>
+<span class="w">  </span><span class="c1"># Set to false for using community edition or older versions of Neo4j</span>
+<span class="w">  </span><span class="nt">multi_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="w">  </span><span class="c1"># Import options</span>
+<span class="w">  </span><span class="nt">skip_duplicate_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">skip_bad_relationships</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="w">  </span><span class="c1"># Import call prefixes to adjust the autogenerated shell script</span>
+<span class="w">  </span><span class="nt">import_call_bin_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bin/</span>
+<span class="w">  </span><span class="nt">import_call_file_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">path/to/files/</span>
 </pre></div>
 </div>
 </div>
-<p>Poetry creates a virtual environment for you (starting with <code class="docutils literal notranslate"><span class="pre">biocypher-</span></code>;
-alternatively you can name it yourself) and installs all dependencies.</p>
-<ul class="simple">
-<li><p>Make sure that you have a Neo4j instance with the APOC plugin installed and a
-database named <code class="docutils literal notranslate"><span class="pre">test</span></code> running on standard bolt port <code class="docutils literal notranslate"><span class="pre">7687</span></code></p></li>
-<li><p>Enter your Neo4j DBMS password in <code class="docutils literal notranslate"><span class="pre">./test/test_driver.py</span></code>:
-<code class="docutils literal notranslate"><span class="pre">db_passwd='your_password_here'</span></code></p></li>
-<li><p>Activate the virtual environment by running <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">poetry</span> <span class="pre">shell</span></code> and then run the
-tests by running <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">pytest</span></code> in the root directory of the repository.</p></li>
-</ul>
-<p>Once this is set up, you can go through the <a class="reference internal" href="tutorial.html#tutorial"><span class="std std-ref">tutorial</span></a> or use it in
-your project as a local dependency.</p>
+</section>
 </section>
 
 

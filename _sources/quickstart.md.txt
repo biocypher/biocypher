@@ -142,7 +142,7 @@ identifier, or an HGNC gene symbol. The CURIE prefix for "Uniprot Protein" is
 protein:
   represented_as: node
   preferred_id: uniprot
-  label_in_input: protein
+  input_label: protein
 ```
 
 ```{note}
@@ -162,7 +162,7 @@ case, `ensembl`, can be substituted.
 protein:
   represented_as: node
   preferred_id: ensembl
-  label_in_input: protein
+  input_label: protein
 ```
 
 If there exists no identifier system that is suitable for coverage of
@@ -192,7 +192,7 @@ post translational interaction:
   preferred_id: id
   source: protein
   target: protein
-  label_in_input: post_translational
+  input_label: post_translational
 ```
 
 For the post-translational interaction, which is an association, we are
@@ -240,6 +240,6 @@ post translational interaction:
   preferred_id: id
   source: protein
   target: protein
-  label_in_input: post_translational
+  input_label: post_translational
   label_as_edge: INTERACTS_POST_TRANSLATIONALLY
 ```

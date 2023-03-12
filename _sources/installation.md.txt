@@ -40,86 +40,7 @@ encounter any issues with a specific Python version, please open an issue on
 GitHub.
 ```
 
-(config)=
-# Configuration
-BioCypher comes with a default set of configuration parameters. You can
-overwrite them by creating a `biocypher_config.yaml` file in the root directory
-or the `config` directory of your project. You only need to specify the ones you
-wish to override from default. If you want to create global user settings, you
-can create a `biocypher_config.yaml` in your default BioCypher user directory
-(as found using `appdirs.user_config_dir('biocypher')`). For instance, on Mac
-OS, this would be `~/Library/Caches/biocypher/biocypher_config.yaml`.
-
-Configuration files are read in the order `default -> user level -> project
-level`, with the later ones overriding the preceding. The following parameters
-are available:
-
-## BioCypher settings
-```{code-block} yaml
-:caption: biocypher_config.yaml
-# Offline mode: do not connect to a running DBMS instance
-# Can be used e.g. for writing CSV files for admin import
-offline: true
-
-# Ontology mapping: `schema_config.yaml` path
-user_schema_config_path: config/schema_config.yaml
-
-# Strict mode: ensure source, version, and licence
-strict_mode: true
-
-# Logging granularity
-# Set debug to true if more granular logging is desired
-debug: true
-
-# Set to change the log directory
-logdir: biocypher-log
-
-# Set to change the output directory
-outdir: biocypher-out
-
-# Ontology configuration
-# We need to define a head ontology (default format OWL) and which node should
-# be the root of the ontology tree.
-head_ontology:
-  url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
-  root_node: 'entity'
-
-# Optionally, we can define an arbitrary number of tail ontologies, using local
-# or online files. For each tail ontology, we need to define the join nodes in
-# the head and tail ontology, at which the two trees will be fused.
-tail_ontologies:
-  so:
-    url: test/so.owl
-    head_join_node: sequence variant
-    tail_join_node: sequence_variant
-  mondo:
-    url: test/mondo.owl
-    head_join_node: disease
-    tail_join_node: disease
-```
-
-## Neo4j settings
-```{code-block} yaml
-:caption: biocypher_config.yaml
-# Neo4j connection credentials
-neo4j_uri: neo4j://localhost:7687   # DB URI
-neo4j_db: neo4j                     # DB name
-neo4j_user: neo4j                   # user name
-neo4j_pw: neo4j                     # password
-
-# Neo4j admin import batch writer settings
-neo4j_delimiter: '¦'                      # delimiter for CSV files
-neo4j_array_delimiter: '|'                # delimiter for array values
-neo4j_quote_char: '"'                     # quote character for CSV files
-neo4j_import_call_bin_prefix: 'bin/'      # path of admin-import executable
-neo4j_import_call_file_prefix: 'import/'  # path of files in admin-import call
-
-# MultiDB functionality
-# Set to false for using community edition or older versions of Neo4j
-neo4j_multi_db: true
-```
-
-# Developers
+## For developers
 If you want to directly install BioCypher, here are the steps (requires
 [Poetry](https://python-poetry.org/docs/#installation)):
 
@@ -133,12 +54,119 @@ poetry install
 Poetry creates a virtual environment for you (starting with `biocypher-`;
 alternatively you can name it yourself) and installs all dependencies.
 
+If you want to run the tests that use a Neo4j DBMS instance:
 - Make sure that you have a Neo4j instance with the APOC plugin installed and a
 database named `test` running on standard bolt port `7687`
-- Enter your Neo4j DBMS password in `./test/test_driver.py`:
-`db_passwd='your_password_here'`
 - Activate the virtual environment by running `% poetry shell` and then run the
-tests by running `% pytest` in the root directory of the repository.
+tests by running `% pytest` in the root directory of the repository with the
+command line argument `--password=<your DBMS password>`.
 
 Once this is set up, you can go through the [tutorial](tutorial) or use it in
 your project as a local dependency.
+
+(config)=
+# Configuration
+BioCypher comes with a default set of configuration parameters. You can
+overwrite them by creating a `biocypher_config.yaml` file in the root directory
+or the `config` directory of your project. You only need to specify the ones you
+wish to override from default. If you want to create global user settings, you
+can create a `biocypher_config.yaml` in your default BioCypher user directory
+(as found using `appdirs.user_config_dir('biocypher')`). For instance, on Mac
+OS, this would be `~/Library/Caches/biocypher/biocypher_config.yaml`.
+
+```{note}
+
+It is important to follow the rules of indentation in the YAML file. BioCypher
+module configuration is found under the top-level keyword `biocypher`, while
+the settings for DBMS systems (e.g., Neo4j) are found under their respective
+keywords (e.g., `neo4j`).
+
+Configuration files are read in the order `default -> user level -> project
+level`, with the later ones overriding the preceding. The following parameters
+are available:
+
+## BioCypher settings
+```{code-block} yaml
+:caption: biocypher_config.yaml
+
+biocypher:  ### BioCypher module configuration ###
+
+  ### Required parameters ###
+  # DBMS type
+  dbms: neo4j
+
+  # Offline mode: do not connect to a running DBMS instance
+  # Can be used e.g. for writing batch import files
+  offline: true
+
+  # Strict mode: do not allow to create new nodes or relationships without
+  # specifying source, version, and license parameters
+  strict_mode: false
+
+  # Schema configuration: mapping of inputs to ontology
+  user_schema_config_path: biocypher/_config/test_schema_config.yaml
+
+  # Ontology configuration
+  head_ontology:
+    url: biocypher/_config/biolink-model.owl.ttl
+    root_node: entity
+
+  ### Optional parameters ###
+  # Logging granularity
+  # Set debug to true if more granular logging is desired
+  debug: false
+
+  # Set to change the log directory
+  log_directory: biocypher-log
+
+  # Set to change the output directory
+  output_directory: biocypher-out
+
+  # Optional tail ontologies
+  tail_ontologies:
+    so:
+      url: test/so.owl
+      head_join_node: sequence variant
+      tail_join_node: sequence_variant
+    mondo:
+      url: test/mondo.owl
+      head_join_node: disease
+      tail_join_node: disease
+
+```
+
+## Neo4j settings
+```{code-block} yaml
+:caption: biocypher_config.yaml
+
+neo4j:  ### Neo4j configuration ###
+
+  # Database name
+  database_name: neo4j
+
+  # Wipe DB before import (offline mode: --force)
+  wipe: true
+
+  # Neo4j authentication
+  uri: neo4j://localhost:7687
+  user: neo4j
+  password: neo4j
+
+  # Neo4j admin import batch writer settings
+  delimiter: ';'
+  array_delimiter: '|'
+  quote_character: "'"
+
+  # MultiDB functionality
+  # Set to false for using community edition or older versions of Neo4j
+  multi_db: true
+
+  # Import options
+  skip_duplicate_nodes: false
+  skip_bad_relationships: false
+
+  # Import call prefixes to adjust the autogenerated shell script
+  import_call_bin_prefix: bin/
+  import_call_file_prefix: path/to/files/
+
+```
