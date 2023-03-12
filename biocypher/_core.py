@@ -302,7 +302,7 @@ class BioCypher:
         the logger.
         """
 
-        dn = self.batch_writer.get_duplicate_nodes()
+        dn = self._writer.get_duplicate_nodes()
 
         if dn:
 
@@ -324,7 +324,7 @@ class BioCypher:
         else:
             logger.info('No duplicate nodes in input.')
 
-        de = self.batch_writer.get_duplicate_edges()
+        de = self._writer.get_duplicate_edges()
 
         if de:
 
