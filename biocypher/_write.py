@@ -1117,7 +1117,7 @@ def get_writer(
 
     dbms_config = _config(dbms)
 
-    timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M')
+    timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M%S')
     outdir = output_directory or os.path.join('biocypher-out', timestamp())
     outdir = os.path.abspath(outdir)
 
