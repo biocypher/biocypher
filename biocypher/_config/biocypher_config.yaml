@@ -1,35 +1,46 @@
 Title: BioCypher python module configuration file
 
+## Some options are not used by default. Uncomment them to use them.
+
 biocypher:
+
   ### Required parameters ###
-  # DBMS type
+  ## DBMS type
+
   dbms: neo4j
 
-  # Offline mode: do not connect to a running DBMS instance
-  # Can be used e.g. for writing batch import files
+  ## Offline mode: do not connect to a running DBMS instance
+  ## Can be used e.g. for writing batch import files
+
   offline: true
 
-  # Strict mode: do not allow to create new nodes or relationships without
-  # specifying source, version, and license parameters
+  ## Strict mode: do not allow to create new nodes or relationships without
+  ## specifying source, version, and license parameters
+
   strict_mode: false
 
-  # Ontology configuration
+  ## Ontology configuration
+
   head_ontology:
     url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
     root_node: entity
 
   ### Optional parameters ###
-  # Logging granularity
-  # Set debug to true if more granular logging is desired
+  ## Logging granularity
+  ## Set debug to true if more granular logging is desired
+
   debug: false
 
-  # Set to change the log directory
-  log_directory: biocypher-log
+  ## Set to change the log directory
 
-  # Set to change the output directory
-  output_directory: biocypher-out
+  # log_directory: biocypher-log
 
-  # Optional tail ontologies
+  ## Set to change the output directory
+
+  # output_directory: biocypher-out
+
+  ## Optional tail ontologies
+
   # tail_ontologies:
   #   so:
   #     url: test/so.owl
@@ -41,32 +52,41 @@ biocypher:
   #     tail_join_node: disease
 
 ### DBMS configuration ###
+
 neo4j:
+
   ### Neo4j configuration ###
-  # Database name
+  ## Database name
+
   database_name: neo4j
 
-  # Wipe DB before import (offline mode: --force)
+  ## Wipe DB before import (offline mode: --force)
+
   wipe: true
 
-  # Neo4j authentication
+  ## Neo4j authentication
+
   uri: neo4j://localhost:7687
   user: neo4j
   password: neo4j
 
-  # Neo4j admin import batch writer settings
+  ## Neo4j admin import batch writer settings
+
   delimiter: ';'
   array_delimiter: '|'
   quote_character: "'"
 
-  # MultiDB functionality
-  # Set to false for using community edition or older versions of Neo4j
+  ## MultiDB functionality
+  ## Set to false for using community edition or older versions of Neo4j
+
   multi_db: true
 
-  # Import options
+  ## Import options
+
   skip_duplicate_nodes: false
   skip_bad_relationships: false
 
-  # Import call prefixes
+  ## Import call prefixes
+
   # import_call_bin_prefix: bin/
   # import_call_file_prefix: path/to/files/
