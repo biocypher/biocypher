@@ -35,7 +35,6 @@ REQUIRED_CONFIG = [
     'dbms',
     'offline',
     'strict_mode',
-    'user_schema_config_path',
     'head_ontology',
 ]
 
