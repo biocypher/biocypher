@@ -1132,6 +1132,8 @@ def get_writer(
             db_name=dbms_config['database_name'],
             skip_bad_relationships=dbms_config['skip_bad_relationships'],
             skip_duplicate_nodes=dbms_config['skip_duplicate_nodes'],
+            import_call_bin_prefix=dbms_config['import_call_bin_prefix'],
+            import_call_file_prefix=dbms_config['import_call_file_prefix'],
             wipe=dbms_config['wipe'],
             strict_mode=strict_mode,
         )
