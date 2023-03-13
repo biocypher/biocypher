@@ -5,6 +5,7 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
         steps:
         -   name: Check out main
             uses: actions/checkout@main
