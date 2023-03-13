@@ -97,7 +97,7 @@ represented as 3-tuples, containing:
 - the node ID (unique in the space of the knowledge graph, ideally a CURIE with
   a prefix registered in the Bioregistry)
 - the node type, i.e., its label (this is the string that is mapped to an
-  ontological class via the `input_label` field in the schema configuration)
+  ontological class via the `label_in_input` field in the schema configuration)
 - a dictionary of node attributes
 
 While edges are represented as 5-tuples, containing:
@@ -105,7 +105,7 @@ While edges are represented as 5-tuples, containing:
 - the source node ID (referring to a unique node ID in the KG)
 - the target node ID (referring to a unique node ID in the KG)
 - the relationship type, i.e., its label (this is the string that is mapped to
-  an ontological class via the `input_label` field in the schema configuration)
+  an ontological class via the `label_in_input` field in the schema configuration)
 - a dictionary of relationship attributes
 
 ```{note}

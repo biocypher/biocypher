@@ -38,7 +38,7 @@
             BioCypher
           </a>
               <div class="version">
-                0.5.2
+                0.4.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="get-involved.html">Get Involved!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html#configuration">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#developers">Developers</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#the-host-module-adapter">The host module adapter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#the-schema-configuration-yaml-file">The schema configuration YAML file</a></li>
@@ -64,7 +65,6 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">BioCypher Tutorial - Handling Ontologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial-adapter.html">BioCypher Tutorial - Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
-<li class="toctree-l1"><a class="reference internal" href="neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
 <li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
 </ul>
 
@@ -152,7 +152,7 @@ advanced file management formats such as Parquet as in the <a class="reference e
 adapter</a>, or simple CSV files as in
 the <a class="reference external" href="https://github.com/saezlab/DepMap-BioCypher">Dependency Map adapter</a>.</p>
 <p>The recommended way of interacting with BioCypher is via the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher._driver.Driver</span></code> class. It can be called either starting
+<a class="reference internal" href="submodule.html#biocypher._driver.Driver" title="biocypher._driver.Driver"><code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher._driver.Driver</span></code></a> class. It can be called either starting
 in “offline mode” using <code class="docutils literal notranslate"><span class="pre">offline</span> <span class="pre">=</span> <span class="pre">True</span></code>, i.e., without connection to a running
 Neo4j instance, or by providing authentication details via arguments or
 configuration file:</p>
@@ -228,7 +228,7 @@ identifier, or an HGNC gene symbol. The CURIE prefix for “Uniprot Protein” i
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
 <span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span>
-<span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -245,7 +245,7 @@ case, <code class="docutils literal notranslate"><span class="pre">ensembl</span
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
 <span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ensembl</span>
-<span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
 </pre></div>
 </div>
 <p>If there exists no identifier system that is suitable for coverage of
@@ -272,7 +272,7 @@ and target attribute in the <code class="docutils literal notranslate"><span cla
 <span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
 <span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
 <span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
-<span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">post_translational</span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">post_translational</span>
 </pre></div>
 </div>
 <p>For the post-translational interaction, which is an association, we are
@@ -315,7 +315,7 @@ the above example to the following:</p>
 <span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
 <span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
 <span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
-<span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">post_translational</span>
+<span class="w">  </span><span class="nt">label_in_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">post_translational</span>
 <span class="w">  </span><span class="nt">label_as_edge</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INTERACTS_POST_TRANSLATIONALLY</span>
 </pre></div>
 </div>

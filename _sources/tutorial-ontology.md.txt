@@ -22,7 +22,6 @@ BioCypher, these nodes would additionally inherit the *PieceOfFurniture* label
 from the ontological hierarchy of things.
 
 ```{note}
-
 Why is the class called *piece of furniture* but the label is
 *PieceOfFurniture*?
 
@@ -36,7 +35,6 @@ PascalCase is more suitable; Neo4j labels and system file names don't deal well
 with spaces and special characters. We also remove the "biolink:"
 [CURIE](https://en.wikipedia.org/wiki/CURIE) prefix for use in file names and
 Neo4j labels.
-
 ```
 
 The relations between concepts can also be organized into a hierarchy. In the
@@ -72,8 +70,23 @@ files. The preferred way to specify the ontology or ontologies to be used in a
 project is to specify them in the biocypher configuration file
 (`biocypher_config.yaml`). This file is used to specify the location of the
 ontology files, as well as the root node of the main ("head") ontology and join
-nodes as fusion points for all "tail" ontologies. For more info, see the
-[section on hybridising ontologies](tut_hybridising).
+nodes as fusion points for all "tail" ontologies.
+
+```{code-block} yaml
+:caption: biocypher_config.yaml
+head_ontology:
+  url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
+  root_node: 'entity'
+tail_ontologies:
+  so:
+    url: https://raw.githubusercontent.com/The-Sequence-Ontology/SO-Ontologies/master/Ontology_Files/so.ow
+    head_join_node: sequence variant
+    tail_join_node: sequence_variant
+  mondo:
+    url: http://purl.obolibrary.org/obo/mondo.owl
+    head_join_node: disease
+    tail_join_node: disease
+```
 
 ## Visualising ontologies
 BioCypher provides a simple way of visualising the ontology hierarchy. This is
@@ -84,14 +97,12 @@ driver:
 
 ```{code-block} python
 :caption: Visualising the ontology hierarchy
-
-from biocypher import BioCypher
-bc = BioCypher(
+import biocypher
+driver = biocypher.Driver(
     offline=True,  # no need to connect or to load data
-    schema_config_path="tutorial/06_schema_config.yaml",
+    user_schema_config_path="tutorial/06_schema_config.yaml",
 )
-bc.show_ontology_structure()
-
+driver.show_ontology_structure()
 ```
 
 This will build the ontology scaffold and print a tree visualisation of its
@@ -131,18 +142,16 @@ Biolink model. This mapping is defined in the schema configuration
 (`schema_config.yaml`, see also [here](qs_schema-config)). In the simplest case,
 the representation of a concept in the knowledge graph to be built and the
 Biolink model class representing this concept are synonymous. For instance, the
-concept *protein* is represented by the Biolink class *protein*. To introduce
-proteins into the knowledge graph, one would simply define a node constituent
-with the class label *protein*. This is the mechanism we implicitly used for
-proteins in the basic tutorial ([part 1](tut_01_schema)); to reiterate:
+concept *protein* is represented by the Biolink class [*protein*](). To
+introduce proteins into the knowledge graph, one would simply define a node
+constituent with the class label *protein*. This is the mechanism we implicitly
+used for proteins in the basic tutorial ([part 1](tut_01_schema)); to reiterate:
 
 ```{code-block} yaml
 :caption: schema_config.yaml
-
 protein:
   represented_as: node
   # ...
-
 ```
 
 (tutorial_ontology_extension)=
@@ -157,8 +166,7 @@ the above "soft" model extensions, proposing the introduction of a new class to
 the model itself. For instance, Biolink is an open source community project, and
 new classes can be requested by opening an issue or filing a pull request
 directly on the [Biolink model GitHub
-repository](https://github.com/biolink/biolink-model). Similar mechanisms apply
-for OBO Foundry ontologies.
+repository](https://github.com/biolink/biolink-model).
 
 BioCypher provides further methods for ontology manipulation. The name of a
 class of the model may be too unwieldy for the use inside the desired knowledge
@@ -181,12 +189,10 @@ of `protein` using the (optional) `is_a` field:
 
 ```{code-block} yaml
 :caption: schema_config.yaml
-
 protein isoform:
   is_a: protein
   represented_as: node
   # ...
-
 ```
 
 Explicit inheritance can also be used to introduce new relationship classes.
@@ -202,12 +208,10 @@ class `pairwise molecular interaction`. To reiterate:
 
 ```{code-block} yaml
 :caption: schema_config.yaml
-
 protein protein interaction:
   is_a: pairwise molecular interaction
   represented_as: node
   # ...
-
 ```
 
 The `is_a` field can be used to specify multiple inheritance, i.e., multiple
@@ -218,22 +222,18 @@ wanted to further extend the protein-protein interaction with a more specific
 
 ```{code-block} yaml
 :caption: schema_config.yaml
-
 enzymatic interaction:
   is_a: [protein protein interaction, pairwise molecular interaction]
   represented_as: node
   # ...
-
 ```
 
 ```{note}
-
 To create this multiple inheritance chain, we do not require the creation of a
 `protein protein interaction` class as shown above; all intermediary classes are
 automatically created by BioCypher and inserted into the ontological hierarchy.
 To obtain a continuous ontology tree, the target class (i.e., the last in the
 list) must be a real Biolink model class.
-
 ```
 
 (tut_implicit)=
@@ -241,18 +241,16 @@ list) must be a real Biolink model class.
 The base model (in the standard case, Biolink) can also be extended without
 specifying an explicit `is_a` field. This "implicit" inheritance happens when
 a class has multiple input labels that each refer to a distinct preferred
-identifier. In other words, if both the `input_label` and the `preferred_id`
+identifier. In other words, if both the `label_in_input` and the `preferred_id`
 fields of a schema configuration class are lists, BioCypher will automatically
 create a subclass for each of the preferred identifiers. This is demonstrated in
 [part 3](implicit_subclass) of the basic tutorial.
 
 ```{caution}
-
-If only the `input_label` field - but not the `preferred_id` field - is a
+If only the `label_in_input` field - but not the `preferred_id` field - is a
 list, BioCypher will merge the inputs instead. This is useful for cases where
 different input streams should be unified under the same class label. See
 [part 2](merging) of the basic tutorial for more information.
-
 ```
 
 To make this more concrete, let's consider the example of `pathway` annotations.
@@ -267,13 +265,11 @@ preferred identifiers in the `preferred_id` field:
 
 ```{code-block} yaml
 :caption: schema_config.yaml
-
 pathway:
   represented_as: node
   preferred_id: [reactome, wikipathways]
-  input_label: [react, wiki]
+  label_in_input: [react, wiki]
   # ...
-
 ```
 
 This will prompt BioCypher to create two subclasses of `pathway`, one for each
@@ -287,43 +283,37 @@ This allows us to query the graph for all `Pathway` nodes as well as for
 specific datasets depending on the desired granularity.
 
 ```{note}
-
 This also works for relationships, but in this case, not the preferred
 identifiers but the sources (defined in the `source` field) are used to
 create the subclasses.
-
 ```
 
 (tut_synonyms)=
 ### Synonyms
 ```{admonition} Tutorial files
 :class: note
-
-The code for this tutorial can be found at `tutorial/07__synonyms.py`. Schema
-files are at `tutorial/07_schema_config.yaml`, configuration in
-`tutorial/07_biocypher_config.yaml`. Data generation happens in
+The code for this tutorial can be found at `tutorial/07_synonyms.py`. Schema
+files are at `tutorial/07_schema_config.yaml`. Data generation happens in
 `tutorial/data_generator.py`.
-
 ```
 
 In some cases, an ontology may contain a biological concept, but the name of the
-concept does for some reason not agree with the users desired knowledge graph
-structure. For instance, the user may not want to represent protein complexes in
-the graph as `macromolecular complex` nodes due to ease of use and/or
-readability criteria and rather call these nodes `complex`.  In such cases, the
-user can introduce a synonym for the ontology class. This is done by selecting
-another, more desirable name for the respective class(es) and specifying the
-`synonym_for` field in their schema configuration.  In this case, as we would
-like to represent protein complexes as `complex` nodes, we can do so as follows:
+concept does for some reason not agree with the users desired
+knowledge graph structure. For instance, the user may not want to represent
+protein complexes in the graph as `macromolecular complex` nodes due to
+ease of use and/or readability criteria and rather call these nodes `complex`.
+In such cases, the user can introduce a synonym for the ontology class. This is
+done by selecting another, more desirable name for the respective class(es) and
+specifying the `synonym_for` field in their schema configuration.  In this case,
+as we would like to represent protein complexes as `complex` nodes, we can do so
+as follows:
 
 ```{code-block} yaml
 :caption: schema_config.yaml
-
 complex:
   synonym_for: macromolecular complex
   represented_as: node
   # ...
-
 ```
 
 Importantly, BioCypher preserves these mappings to enable compatibility between
@@ -332,12 +322,10 @@ ontologies). All entities that are mapped to ontology classes in any way can be
 harmonised even between different types of concrete representations.
 
 ```{note}
-
 It is essential that the desired class name is used as the main class key in the
 schema configuration, and the ontology class name is given in the `synonym_for`
 field. The name given in the `synonym_for` field must be an existing class name
 (in this example, a real Biolink class).
-
 ```
 
 We can visualise the structure of the ontology as we have before using
@@ -346,7 +334,6 @@ now a synonym for the `macromolecular complex` class (their being synonyms
 indicated as an equals sign):
 
 ```{code-block} text
-
 Showing ontology structure based on https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl
 entity
 ├── association
@@ -362,7 +349,6 @@ entity
                 ├── entrez.protein
                 ├── protein isoform
                 └── uniprot.protein
-
 ```
 
 (tut_hybridising)=
@@ -388,12 +374,10 @@ make sure that the concept at which the ontologies shall be joined makes sense
 as a point of contact between the ontologies; ideally, it is the exact same
 concept.
 
-```{hint}
-
+```{note}
 If the concept does not exist in the head ontology, but is a feasible child
 class of an existing concept, the above extension functionalities can be used to
 introduce the concept and then fuse the tail ontology there.
-
 ```
 
 The ontology adapter also accepts any arbitrary "head ontology" as a base
@@ -405,26 +389,19 @@ for transparency reasons:
 ```{code-block} yaml
 :caption: Using biocypher_config.yaml
 # ...
-
-biocypher:  # biocypher settings
-
-  # Ontology configuration
-  head_ontology:
-    url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
-    root_node: entity
-
-  tail_ontologies:
-
-    so:
-      url: data/so.owl
-      head_join_node: sequence variant
-      tail_join_node: sequence_variant
-
-    mondo:
-      url: http://purl.obolibrary.org/obo/mondo.owl
-      head_join_node: disease
-      tail_join_node: disease
-
+# Ontology configuration
+head_ontology:
+  url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
+  root_node: 'entity'
+tail_ontologies:
+  so:
+    url: https://raw.githubusercontent.com/The-Sequence-Ontology/SO-Ontologies/master/Ontology_Files/so.ow
+    head_join_node: sequence variant
+    tail_join_node: sequence_variant
+  mondo:
+    url: http://purl.obolibrary.org/obo/mondo.owl
+    head_join_node: disease
+    tail_join_node: disease
 # ...
 ```
 
@@ -433,19 +410,12 @@ The `url` parameter can be either a local path or a URL to a remote resource.
 ```
 
 If you need to pass the ontology configuration programmatically, you can do so
-as follows at BioCypher interface instantiation:
+as follows at driver instantiation:
 
 ```{code-block} python
 :caption: Programmatic usage
-
-bc = BioCypher(
+driver = BioCypher.driver(
     # ...
-
-    head_ontology={
-      'url': 'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
-      'root_node': 'entity',
-    },
-
     tail_ontologies={
         'so':
             {
@@ -460,7 +430,6 @@ bc = BioCypher(
                 'tail_join_node': 'disease',
             }
     },
-
     # ...
 )
 ```

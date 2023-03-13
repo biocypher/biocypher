@@ -38,7 +38,7 @@
             BioCypher
           </a>
               <div class="version">
-                0.5.2
+                0.4.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="get-involved.html">Get Involved!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html#configuration">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#developers">Developers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">BioCypher Tutorial - Basics</a></li>
@@ -65,7 +66,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
-<li class="toctree-l1"><a class="reference internal" href="neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
 <li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
 </ul>
 
@@ -186,7 +186,7 @@ represented as 3-tuples, containing:</p>
 <li><p>the node ID (unique in the space of the knowledge graph, ideally a CURIE with
 a prefix registered in the Bioregistry)</p></li>
 <li><p>the node type, i.e., its label (this is the string that is mapped to an
-ontological class via the <code class="docutils literal notranslate"><span class="pre">input_label</span></code> field in the schema configuration)</p></li>
+ontological class via the <code class="docutils literal notranslate"><span class="pre">label_in_input</span></code> field in the schema configuration)</p></li>
 <li><p>a dictionary of node attributes</p></li>
 </ul>
 <p>While edges are represented as 5-tuples, containing:</p>
@@ -195,7 +195,7 @@ ontological class via the <code class="docutils literal notranslate"><span class
 <li><p>the source node ID (referring to a unique node ID in the KG)</p></li>
 <li><p>the target node ID (referring to a unique node ID in the KG)</p></li>
 <li><p>the relationship type, i.e., its label (this is the string that is mapped to
-an ontological class via the <code class="docutils literal notranslate"><span class="pre">input_label</span></code> field in the schema configuration)</p></li>
+an ontological class via the <code class="docutils literal notranslate"><span class="pre">label_in_input</span></code> field in the schema configuration)</p></li>
 <li><p>a dictionary of relationship attributes</p></li>
 </ul>
 <div class="admonition note">
