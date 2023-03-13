@@ -129,7 +129,9 @@ class BioCypher:
         self._head_ontology = head_ontology or self.base_config['head_ontology']
 
         # Set configuration - optional
-        self._output_directory = output_directory
+        self._output_directory = output_directory or self.base_config.get(
+            'output_directory'
+        )
         self._tail_ontologies = tail_ontologies or self.base_config.get(
             'tail_ontologies'
         )
