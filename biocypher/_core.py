@@ -115,8 +115,9 @@ class BioCypher:
         else:
             self._strict_mode = strict_mode
 
-        self._schema_config_path = schema_config_path or self.base_config[
-            'schema_config_path']
+        self._schema_config_path = schema_config_path or self.base_config.get(
+            'schema_config_path'
+        )
 
         if not self._schema_config_path:
             raise ValueError(
