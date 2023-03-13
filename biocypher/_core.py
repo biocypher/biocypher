@@ -117,7 +117,14 @@ class BioCypher:
             self._strict_mode = strict_mode
 
         self._schema_config_path = schema_config_path or self.base_config[
-            'user_schema_config_path']
+            'schema_config_path']
+
+        if not self._schema_config_path:
+            raise ValueError(
+                'BioCypher requires a schema configuration; please provide a '
+                'path to the schema configuration YAML file via '
+                '`biocypher_config.yaml` or `BioCypher` class parameter.'
+            )
 
         self._head_ontology = head_ontology or self.base_config['head_ontology']
 
