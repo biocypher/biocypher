@@ -13,9 +13,6 @@ biocypher:
   # specifying source, version, and license parameters
   strict_mode: false
 
-  # Schema configuration
-  user_schema_config_path: biocypher/_config/test_schema_config.yaml
-
   # Ontology configuration
   head_ontology:
     url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
