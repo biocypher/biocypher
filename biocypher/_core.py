@@ -355,7 +355,7 @@ class BioCypher:
         else:
             logger.info('No duplicate edges in input.')
 
-    def show_ontology_structure(self) -> None:
+    def show_ontology_structure(self, **kwargs):
         """
         Show the ontology structure of the database using the Biolink schema and
         treelib.
@@ -364,7 +364,7 @@ class BioCypher:
         if not self._ontology:
             self._get_ontology()
 
-        self._ontology.show_ontology_structure()
+        return self._ontology.show_ontology_structure(**kwargs)
 
     def write_import_call(self) -> None:
         """

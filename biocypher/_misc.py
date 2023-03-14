@@ -203,3 +203,24 @@ def sentencecase_to_pascalcase(s: str) -> str:
         string in PascalCase form
     """
     return re.sub(r'(?:^| )([a-zA-Z])', lambda match: match.group(1).upper(), s)
+
+
+def to_lower_sentence_case(s: str) -> str:
+    """
+    Convert any string to lower sentence case. Works with snake_case,
+    PascalCase, and sentence case.
+
+    Args:
+        s: Input string
+
+    Returns:
+        string in lower sentence case form
+    """
+    if '_' in s:
+        return snakecase_to_sentencecase(s)
+    elif ' ' in s:
+        return s.lower()
+    elif s[0].isupper():
+        return pascalcase_to_sentencecase(s)
+    else:
+        return s

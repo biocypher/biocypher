@@ -159,6 +159,7 @@ class OntologyAdapter:
             node_id_str = self._remove_prefix(str(node))
             node_label_str = str(g.value(node,
                                          rdflib.RDFS.label)).replace('_', ' ')
+            node_label_str = _misc.to_lower_sentence_case(node_label_str)
 
             nx_id = node_label_str if switch_id_and_label else node_id_str
             nx_label = node_id_str if switch_id_and_label else node_label_str
@@ -351,8 +352,10 @@ class Ontology:
         if not self._nx_graph:
             self._nx_graph = self._head_ontology.get_nx_graph().copy()
 
-        head_join_node = adapter.get_head_join_node().replace('_', ' ')
-        tail_join_node = adapter.get_root_label().replace('_', ' ')
+        head_join_node = _misc.to_lower_sentence_case(
+            adapter.get_head_join_node()
+        )
+        tail_join_node = _misc.to_lower_sentence_case(adapter.get_root_label())
         tail_ontology = adapter.get_nx_graph()
 
         # subtree of tail ontology at join node
@@ -424,6 +427,9 @@ class Ontology:
 
         if not self._nx_graph:
             self._nx_graph = self._head_ontology.get_nx_graph().copy()
+
+        if 'entity' not in self._nx_graph.nodes:
+            return
 
         # biolink classes that are disjoint from entity
         disjoint_classes = [
