@@ -433,6 +433,7 @@ class Ontology:
             'relationship quantifier',
             'physical essence or occurrent',
             'gene or gene product',
+            'subject of investigation',
         ]
 
         for node in disjoint_classes:
