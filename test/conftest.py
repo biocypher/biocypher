@@ -228,26 +228,6 @@ def bw_strict(hybrid_ontology, translator, path_strict):
     os.rmdir(path_strict)
 
 
-@pytest.fixture
-def tab_bw(hybrid_ontology, translator, path):
-
-    tab_bw = _Neo4jBatchWriter(
-        ontology=hybrid_ontology,
-        translator=translator,
-        output_directory=path,
-        delimiter='\t',
-        array_delimiter='|',
-        quote="'",
-    )
-
-    yield tab_bw
-
-    # teardown
-    for f in os.listdir(path):
-        os.remove(os.path.join(path, f))
-    os.rmdir(path)
-
-
 # core instance fixture
 @pytest.fixture(name='core', scope='module')
 def create_core(request, path):

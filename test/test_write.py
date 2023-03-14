@@ -89,28 +89,6 @@ def test_write_hybrid_ontology_nodes(bw, path):
     assert 'BiologicalEntity' in part
 
 
-@pytest.mark.parametrize('l', [4], scope='module')
-def test_tab_delimiter(tab_bw, path, _get_nodes):
-
-    nodes = _get_nodes
-
-    passed = tab_bw.write_nodes(nodes[:4])
-    passed = tab_bw.write_nodes(nodes[4:])
-    tab_bw.write_import_call()
-
-    assert passed
-
-    call = os.path.join(path, 'neo4j-admin-import-call.sh')
-
-    with open(call) as f:
-        c = f.read()
-
-    assert (
-        c ==
-        f'bin/neo4j-admin import --database=neo4j --delimiter="\\t" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" '
-    )
-
-
 def test_property_types(bw, path):
     nodes = []
     for i in range(4):

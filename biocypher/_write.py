@@ -1041,14 +1041,10 @@ class _Neo4jBatchWriter:
             str: a bash command for neo4j-admin import
         """
 
-        # escape backslashes in self.delim and self.adelim
-        delim = self.delim.encode('unicode_escape').decode('utf-8')
-        adelim = self.adelim.encode('unicode_escape').decode('utf-8')
-
         import_call = (
             f'{self.import_call_bin_prefix}neo4j-admin import '
             f'--database={self.db_name} '
-            f'--delimiter="{delim}" --array-delimiter="{adelim}" '
+            f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
         )
 
         if self.quote == "'":
