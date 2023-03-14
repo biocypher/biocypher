@@ -2,5 +2,5 @@ biocypher:
   offline: true
 
 neo4j:
-  database_name: "synonyms"
-  delimiter: "\t"
+  database_name: synonyms
+  delimiter: '\t'
