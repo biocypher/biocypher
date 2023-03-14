@@ -93,7 +93,11 @@ def test_add_biocypher_node_generator(driver):
         'WITH n, n.id AS id '
         'RETURN id ',
     )
-    assert r[0]['id'] == 'test_id1' and r[1]['id'] == 'test_id2'
+
+    ids = [n['id'] for n in r]
+
+    assert 'test_id1' in ids
+    assert 'test_id2' in ids
 
 
 def test_add_specific_id_node(driver):
