@@ -97,13 +97,13 @@ def read_config() -> dict:
 
     for key in defaults:
 
-        if key in user:
+        value = local[key] if key in local else user[key] if key in user else None
 
-            defaults[key].update(user[key])
-
-        if key in local:
-
-            defaults[key].update(local[key])
+        if value is not None:
+            if type(defaults[key]) == str: # first level config (like title)
+                defaults[key] = value
+            else:
+                defaults[key].update(value)
 
     return defaults
 
