@@ -159,6 +159,7 @@ class OntologyAdapter:
             node_id_str = self._remove_prefix(str(node))
             node_label_str = str(g.value(node,
                                          rdflib.RDFS.label)).replace('_', ' ')
+            node_label_str = _misc.to_lower_sentence_case(node_label_str)
 
             nx_id = node_label_str if switch_id_and_label else node_id_str
             nx_label = node_id_str if switch_id_and_label else node_label_str

@@ -26,7 +26,7 @@ def test_go_adapter(go_adapter):
     assert go_adapter.get_root_label() == 'molecular_function'
 
     assert 'molecular function' in go_adapter.get_ancestors(
-        'RNA helicase activity'
+        'rna helicase activity'
     )
 
 
