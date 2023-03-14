@@ -110,8 +110,10 @@ class _Neo4jBatchWriter:
     ):
         self.db_name = db_name
 
-        self.delim = delimiter
-        self.adelim = array_delimiter
+        self.delim, self.escaped_delim = self._process_delimiter(delimiter)
+        self.adelim, self.escaped_adelim = self._process_delimiter(
+            array_delimiter
+        )
         self.quote = quote
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
@@ -167,6 +169,20 @@ class _Neo4jBatchWriter:
 
         # TODO not memory efficient, but should be fine for most cases; is
         # there a more elegant solution?
+
+    def _process_delimiter(self, delimiter: str) -> str:
+        """
+        Return escaped characters in case of receiving their string
+        representation (e.g. tab for '\t').
+        """
+
+        if delimiter == '\\t':
+
+            return '\t', '\\t'
+
+        else:
+
+            return delimiter, delimiter
 
     def write_nodes(self, nodes, batch_size=int(1e6)):
         """
@@ -1044,7 +1060,8 @@ class _Neo4jBatchWriter:
         import_call = (
             f'{self.import_call_bin_prefix}neo4j-admin import '
             f'--database={self.db_name} '
-            f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
+            f'--delimiter="{self.escaped_delim}" '
+            f'--array-delimiter="{self.escaped_adelim}" '
         )
 
         if self.quote == "'":
