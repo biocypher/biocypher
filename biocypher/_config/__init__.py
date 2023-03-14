@@ -53,7 +53,7 @@ def _read_yaml(path: str) -> Optional[dict]:
 
         with open(path, 'r') as fp:
 
-            return yaml.load(fp.read(), Loader=yaml.FullLoader)
+            return yaml.load(fp.read(), Loader=yaml.SafeLoader)
 
 
 def read_config() -> dict:

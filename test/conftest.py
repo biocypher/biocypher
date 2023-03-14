@@ -250,7 +250,7 @@ def tab_bw(hybrid_ontology, translator, path):
 
 # core instance fixture
 @pytest.fixture(name='core', scope='module')
-def create_core(request, path, translator):
+def create_core(request, path):
 
     marker = request.node.get_closest_marker('inject_core_args')
 
@@ -267,6 +267,7 @@ def create_core(request, path, translator):
     else:
 
         core_args = {
+            'schema_config_path': 'biocypher/_config/test_schema_config.yaml',
             'output_directory': path,
         }
         core_args.update(marker_args)
