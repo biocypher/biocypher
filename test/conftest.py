@@ -207,6 +207,27 @@ def bw(hybrid_ontology, translator, path):
     os.rmdir(path)
 
 
+# neo4j batch writer fixtures
+@pytest.fixture(scope='function')
+def bw_tab(hybrid_ontology, translator, path):
+
+    bw_tab = _Neo4jBatchWriter(
+        ontology=hybrid_ontology,
+        translator=translator,
+        output_directory=path,
+        delimiter='\\t',
+        array_delimiter='|',
+        quote="'",
+    )
+
+    yield bw_tab
+
+    # teardown
+    for f in os.listdir(path):
+        os.remove(os.path.join(path, f))
+    os.rmdir(path)
+
+
 @pytest.fixture(scope='function')
 def bw_strict(hybrid_ontology, translator, path_strict):
 

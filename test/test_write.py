@@ -871,3 +871,22 @@ def test_write_strict(bw_strict, path_strict):
 
     assert "p1;'StringProperty1';4.32;9606;'gene1|gene2';'p1';'id';'source1';'version1';'licence1'" in prot
     assert 'BiologicalEntity' in prot
+
+
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_tab_delimiter(bw_tab, path, _get_nodes):
+
+    passed = bw_tab.write_nodes(_get_nodes)
+
+    assert passed
+
+    header = os.path.join(path, 'Protein-header.csv')
+
+    with open(header) as f:
+        prot = f.read()
+
+    assert '\t' in prot
+
+    call = bw_tab._construct_import_call()
+
+    assert '--delimiter="\\t"' in call
