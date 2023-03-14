@@ -11,6 +11,7 @@ def test_translate_nodes(translator):
             {
                 'taxon': 9606,
             },
+            {},
         ),
         (
             'hsa-miR-132-3p',
@@ -18,6 +19,7 @@ def test_translate_nodes(translator):
             {
                 'taxon': 9606,
             },
+            {},
         ),
         (
             'ASDB_OSBS',
@@ -25,9 +27,10 @@ def test_translate_nodes(translator):
             {
                 'taxon': 9606,
             },
+            {},
         ),
-        ('REACT:25520', 'reactome', {}),
-        ('agpl:001524', 'agpl', {}),
+        ('REACT:25520', 'reactome', {}, {}),
+        ('agpl:001524', 'agpl', {}, {}),
     ]
     t = translator.translate_nodes(id_type)
 
@@ -49,8 +52,9 @@ def test_specific_and_generic_ids(translator):
             {
                 'taxon': 9606,
             },
+            {},
         ),
-        ('REACT:25520', 'reactome', {}),
+        ('REACT:25520', 'reactome', {}, {}),
     ]
     t = list(translator.translate_nodes(id_type))
 
@@ -182,6 +186,7 @@ def test_merge_multiple_inputs_node(ontology_mapping, translator):
             {
                 'taxon': 9606,
             },
+            {},
         ),
         (
             'CHRNA4',
@@ -189,6 +194,7 @@ def test_merge_multiple_inputs_node(ontology_mapping, translator):
             {
                 'taxon': 9606,
             },
+            {},
         ),
     ]
     t = list(translator.translate_nodes(id_type))
@@ -295,6 +301,7 @@ def test_properties_from_config(translator):
                 'taxon': 9606,
                 'name': 'test',
             },
+            {},
         ),
         (
             'G92035',
@@ -302,6 +309,7 @@ def test_properties_from_config(translator):
             {
                 'taxon': 9606,
             },
+            {},
         ),
         (
             'G92205',
@@ -311,6 +319,7 @@ def test_properties_from_config(translator):
                 'name': 'test2',
                 'test': 'should_not_be_returned',
             },
+            {},
         ),
     ]
     t = translator.translate_nodes(id_type)
@@ -367,6 +376,7 @@ def test_exclude_properties(translator):
                 'taxon': 9606,
                 'accession': 'should_not_be_returned',
             },
+            {},
         ),
         (
             'ACHE',
@@ -374,6 +384,7 @@ def test_exclude_properties(translator):
             {
                 'taxon': 9606,
             },
+            {},
         ),
     ]
     t = translator.translate_nodes(id_type)
@@ -468,9 +479,10 @@ def test_log_missing_nodes(translator):
                 {
                     'taxon': 9606,
                 },
+                {},
             ),
-            ('G92035', 'missing_protein', {}),
-            ('REACT:25520', 'missing_pathway', {}),
+            ('G92035', 'missing_protein', {}, {}),
+            ('REACT:25520', 'missing_pathway', {}, {}),
         ],
     )
 
@@ -490,7 +502,8 @@ def test_strict_mode_error(translator):
             'source': 'test',
             'licence': 'test',
             'version': 'test'
-        }
+        },
+        {}
     )
 
     assert list(translator.translate_nodes([n1])) is not None
@@ -502,7 +515,8 @@ def test_strict_mode_error(translator):
             'source': 'test',
             'license': 'test',
             'version': 'test'
-        }
+        },
+        {}
     )
 
     assert list(translator.translate_nodes([n2])) is not None
@@ -538,7 +552,8 @@ def test_strict_mode_property_filter(translator):
             'source': 'test',
             'licence': 'test',
             'version': 'test',
-        }
+        },
+        {}
     )
 
     l = list(translator.translate_nodes([p1]))

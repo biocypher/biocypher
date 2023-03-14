@@ -87,7 +87,7 @@ class Translator:
 
         self._log_begin_translate(id_type_prop_tuples, 'nodes')
 
-        for _id, _type, _props in id_type_prop_tuples:
+        for _id, _type, _props, _edges in id_type_prop_tuples:
 
             # check for strict mode requirements
             required_props = ['source', 'licence', 'version']
@@ -112,6 +112,9 @@ class Translator:
                 # filter properties for those specified in schema_config if any
                 _filtered_props = self._filter_props(_ontology_class, _props)
 
+                # filter edges for those specified in schema_config if any
+                _filtered_edges = self._filter_edges(_ontology_class, _edges)
+
                 # preferred id
                 _preferred_id = self._get_preferred_id(_ontology_class)
 
@@ -120,6 +123,7 @@ class Translator:
                     node_label=_ontology_class,
                     preferred_id=_preferred_id,
                     properties=_filtered_props,
+                    edges=_filtered_edges,
                 )
 
             else:
@@ -162,41 +166,47 @@ class Translator:
         if isinstance(exclude_props, str):
             exclude_props = [exclude_props]
 
-        if filter_props and exclude_props:
+        filtered_props = {
+            k: v for k, v in props.items() if (
+                (not filter_props or k in filter_props.keys())
+                and (not exclude_props or k not in exclude_props))
+        }            
 
-            filtered_props = {
-                k: v
-                for k, v in props.items()
-                if (k in filter_props.keys() and k not in exclude_props)
-            }
-
-        elif filter_props:
-
-            filtered_props = {
-                k: v
-                for k, v in props.items() if k in filter_props.keys()
-            }
-
-        elif exclude_props:
-
-            filtered_props = {
-                k: v
-                for k, v in props.items() if k not in exclude_props
-            }
-
-        else:
-
-            return props
-
+        # add missing properties with default values
         missing_props = [
             k for k in filter_props.keys() if k not in filtered_props.keys()
         ]
-        # add missing properties with default values
         for k in missing_props:
-
             filtered_props[k] = None
 
         return filtered_props
+
+    def _filter_edges(self, bl_type: str, edges: dict) -> dict:
+        """
+        Filters edges for those specified in schema_config if any.
+        """
+
+        filter_edges = self.extended_schema[bl_type].get('edges', {})
+
+        exclude_edges = self.extended_schema[bl_type].get('exclude_edges', [])
+
+        if isinstance(exclude_edges, str):
+            exclude_edges = [exclude_edges]
+
+        filtered_edges = {
+            k: v for k, v in edges.items() if (
+                (not filter_edges or k in filter_edges.keys())
+                and (not exclude_edges or k not in exclude_edges))
+        }            
+
+        # add missing properties with default values
+        missing_edges = [
+            k for k in filter_edges.keys() if k not in filtered_edges.keys()
+        ]
+        for k in missing_edges:
+            filtered_edges[k] = None
+
+        return filtered_edges
 
     def translate_edges(
         self,
@@ -272,6 +282,7 @@ class Translator:
                         node_id=node_id,
                         node_label=bl_type,
                         properties=_filtered_props,
+                        edges={},
                     )
 
                     # directionality check TODO generalise to account for

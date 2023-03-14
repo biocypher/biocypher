@@ -181,6 +181,8 @@ class _Neo4jBatchWriter:
         """
         # TODO check represented_as
 
+        nodes = list(nodes)  # force evaluation to handle empty generator
+
         # write node data
         passed = self._write_node_data(nodes, batch_size)
         if not passed:
@@ -191,6 +193,14 @@ class _Neo4jBatchWriter:
         if not passed:
             logger.error('Error while writing node headers.')
             return False
+
+        # write node edges
+        edges = [
+                BioCypherEdge(source.get_id(),target_id,label)                          
+                for source in nodes for label, target_id in source.get_edges().items()
+            ]
+
+        self.write_edges(edges, batch_size)
 
         return True
 

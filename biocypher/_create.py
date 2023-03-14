@@ -42,6 +42,8 @@ class BioCypherNode:
         node_label (string): primary type of entity, capitalised
         **properties (kwargs): collection of all other properties to be
             passed to neo4j for the respective node (dict)
+        **edges (kwargs): collection of all "simple" edges to be
+            passed to neo4j for the respective node (dict)
 
     Todo:
         - check and correct small inconsistencies such as capitalisation
@@ -55,6 +57,21 @@ class BioCypherNode:
     node_label: str
     preferred_id: str = 'id'
     properties: dict = field(default_factory=dict)
+    edges: dict = field(default_factory=dict)
+
+    def _normalize_name(self, propertyName):
+        return propertyName.replace(
+                os.linesep,
+                ' ',
+            ).replace(
+                '\n',
+                ' ',
+            ).replace(
+                '\r',
+                ' ',
+            ).replace('"', 
+                "'",
+            )
 
     def __post_init__(self):
         """
@@ -62,7 +79,7 @@ class BioCypherNode:
 
         Check for reserved keywords.
 
-        Replace unwanted characters in properties.
+        Replace unwanted characters in properties and edges
         """
         self.properties['id'] = self.node_id
         self.properties['preferred_id'] = self.preferred_id or None
@@ -81,28 +98,24 @@ class BioCypherNode:
         for k, v in self.properties.items():
             if isinstance(v, str):
                 self.properties[k] = (
-                    v.replace(
-                        os.linesep,
-                        ' ',
-                    ).replace(
-                        '\n',
-                        ' ',
-                    ).replace(
-                        '\r',
-                        ' ',
-                    ).replace('"', "'")
+                    self._normalize_name(v)
                 )
-
             elif isinstance(v, list):
                 self.properties[k] = (
                     [
-                        val.replace(
-                            os.linesep,
-                            ' ',
-                        ).replace(
-                            '\n',
-                            ' ',
-                        ).replace('\r', ' ') for val in v
+                        self._normalize_name(val) for val in v
+                    ]
+                )
+
+        for k, v in self.edges.items():
+            if isinstance(v, str):
+                self.properties[k] = (
+                    self._normalize_name(v)
+                )
+            elif isinstance(v, list):
+                self.properties[k] = (
+                    [
+                        self._normalize_name(val) for val in v
                     ]
                 )
 
@@ -143,6 +156,15 @@ class BioCypherNode:
         """
         return self.properties
 
+    def get_edges(self) -> dict:
+        """
+        Returns all simple edges.
+
+        Returns:
+            dict: edges
+        """
+        return self.edges        
+
     def get_dict(self) -> dict:
         """
         Return dict of id, labels, and properties.
@@ -155,6 +177,7 @@ class BioCypherNode:
             'node_id': self.node_id,
             'node_label': self.node_label,
             'properties': self.properties,
+            'edges': self.edges,
         }
 
 
