@@ -33,6 +33,7 @@ rdflib = "^6.2.0"
 networkx = "^3.0"
 stringcase = "^1.2.0"
 neo4j-utils = "0.0.7"
+matplotlib = "^3.7.1"
 
 [tool.poetry.group.dev.dependencies]
 yapf = "^0.32.0"

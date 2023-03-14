@@ -13,6 +13,8 @@ BioCypher 'ontology' module. Contains classes and functions to handle parsing
 and representation of single ontologies as well as their hybridisation and
 other advanced operations.
 """
+import os
+
 from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
@@ -288,6 +290,10 @@ class Ontology:
             self._nx_graph = self._head_ontology.get_nx_graph()
 
         self._extend_ontology()
+
+        # experimental: add connections of disjoint classes to entity
+        self._connect_biolink_classes()
+
         self._add_properties()
 
     def _load_ontologies(self) -> None:
@@ -391,6 +397,8 @@ class Ontology:
                 if parent not in self._nx_graph.nodes:
 
                     self._nx_graph.add_node(parent)
+                    self._nx_graph.nodes[parent][
+                        'label'] = _misc.sentencecase_to_pascalcase(parent)
 
                     # mark parent as user extension
                     self._nx_graph.nodes[parent]['user_extension'] = True
@@ -398,6 +406,9 @@ class Ontology:
 
                 if child not in self._nx_graph.nodes:
                     self._nx_graph.add_node(child)
+                    self._nx_graph.nodes[child][
+                        'label'] = _misc.sentencecase_to_pascalcase(child)
+
                     # mark child as user extension
                     self._nx_graph.nodes[child]['user_extension'] = True
                     self._extended_nodes.add(child)
@@ -405,6 +416,34 @@ class Ontology:
                 self._nx_graph.add_edge(child, parent)
 
                 child = parent
+
+    def _connect_biolink_classes(self) -> None:
+        """
+        Experimental: Adds edges from disjoint classes to the entity node.
+        """
+
+        if not self._nx_graph:
+            self._nx_graph = self._head_ontology.get_nx_graph().copy()
+
+        # biolink classes that are disjoint from entity
+        disjoint_classes = [
+            'frequency qualifier mixin',
+            'chemical entity to entity association mixin',
+            'ontology class',
+            'relationship quantifier',
+            'physical essence or occurrent',
+            'gene or gene product',
+        ]
+
+        for node in disjoint_classes:
+
+            if not self._nx_graph.nodes.get(node):
+
+                self._nx_graph.add_node(node)
+                self._nx_graph.nodes[node][
+                    'label'] = _misc.sentencecase_to_pascalcase(node)
+
+            self._nx_graph.add_edge(node, 'entity')
 
     def _add_properties(self) -> None:
         """
@@ -444,7 +483,7 @@ class Ontology:
 
         return nx.dfs_tree(self._nx_graph, node_label)
 
-    def show_ontology_structure(self):
+    def show_ontology_structure(self, to_disk: str = None, full: bool = False):
         """
         Show the ontology structure using treelib.
         """
@@ -460,29 +499,63 @@ class Ontology:
 
         print(msg)
 
-        # set of leaves and their intermediate parents up to the root
-        filter_nodes = set(self.extended_schema.keys())
+        if not full:
 
-        for node in self.extended_schema.keys():
-            filter_nodes.update(self.get_ancestors(node).nodes)
+            # set of leaves and their intermediate parents up to the root
+            filter_nodes = set(self.extended_schema.keys())
 
-        # filter graph
-        graph = self._nx_graph.subgraph(filter_nodes)
+            for node in self.extended_schema.keys():
+                filter_nodes.update(self.get_ancestors(node).nodes)
 
-        # create tree
-        tree = _misc.create_tree_visualisation(graph)
+            # filter graph
+            G = self._nx_graph.subgraph(filter_nodes)
 
-        # add synonym information
-        for node in self.extended_schema:
-            if self.extended_schema[node].get('synonym_for'):
-                tree.nodes[node].tag = (
-                    f'{node} = '
-                    f"{self.extended_schema[node].get('synonym_for')}"
-                )
+        else:
 
-        tree.show()
+            G = self._nx_graph
 
-        return tree
+        if not to_disk:
+
+            # create tree
+            tree = _misc.create_tree_visualisation(G)
+
+            # add synonym information
+            for node in self.extended_schema:
+                if self.extended_schema[node].get('synonym_for'):
+                    tree.nodes[node].tag = (
+                        f'{node} = '
+                        f"{self.extended_schema[node].get('synonym_for')}"
+                    )
+
+            tree.show()
+
+            return tree
+
+        else:
+
+            # convert lists/dicts to strings for vis only
+            for node in G.nodes:
+
+                # rename node and use former id as label
+                label = G.nodes[node].get('label')
+
+                if not label:
+                    label = node
+
+                G = nx.relabel_nodes(G, {node: label})
+                G.nodes[label]['label'] = node
+
+                for attrib in G.nodes[label]:
+                    if type(G.nodes[label][attrib]) in [list, dict]:
+                        G.nodes[label][attrib] = str(G.nodes[label][attrib])
+
+            path = os.path.join(to_disk, 'ontology_structure.graphml')
+
+            logger.info(f'Writing ontology structure to {path}.')
+
+            nx.write_graphml(G, path)
+
+            return True
 
     def get_dict(self) -> dict:
         """

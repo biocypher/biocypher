@@ -1,3 +1,5 @@
+import os
+
 import networkx as nx
 
 from biocypher._ontology import Ontology
@@ -96,3 +98,18 @@ def test_show_ontology(hybrid_ontology):
     treevis = hybrid_ontology.show_ontology_structure()
 
     assert treevis is not None
+
+
+def test_show_full_ontology(hybrid_ontology):
+    treevis = hybrid_ontology.show_ontology_structure(full=True)
+
+    assert treevis is not None
+
+
+def test_write_ontology(hybrid_ontology, path):
+    passed = hybrid_ontology.show_ontology_structure(to_disk=path)
+
+    f = os.path.join(path, 'ontology_structure.graphml')
+
+    assert passed
+    assert os.path.isfile(f)

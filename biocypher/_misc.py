@@ -95,10 +95,20 @@ def create_tree_visualisation(inheritance_tree: Union[dict, nx.Graph]) -> str:
     root = list(parents - classes)
 
     if len(root) > 1:
-        raise ValueError(
-            'Inheritance tree cannot have more than one root node.'
-        )
+
+        if 'entity' in root:
+
+            root = 'entity'  # default: good standard? TODO
+
+        else:
+
+            raise ValueError(
+                'Inheritance tree cannot have more than one root node. '
+                f'Found {len(root)}: {root}.'
+            )
+
     else:
+
         root = root[0]
 
     if not root:
