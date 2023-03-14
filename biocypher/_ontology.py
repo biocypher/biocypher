@@ -352,8 +352,10 @@ class Ontology:
         if not self._nx_graph:
             self._nx_graph = self._head_ontology.get_nx_graph().copy()
 
-        head_join_node = adapter.get_head_join_node().replace('_', ' ')
-        tail_join_node = adapter.get_root_label().replace('_', ' ')
+        head_join_node = _misc.to_lower_sentence_case(
+            adapter.get_head_join_node()
+        )
+        tail_join_node = _misc.to_lower_sentence_case(adapter.get_root_label())
         tail_ontology = adapter.get_nx_graph()
 
         # subtree of tail ontology at join node
