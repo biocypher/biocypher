@@ -26,3 +26,9 @@ def test_write_node_data_from_gen(core, path, _get_nodes):
     assert 'BiologicalEntity' in pr
     assert "m1;'StringProperty1';9606;'m1';'mirbase'" in mi
     assert 'ChemicalEntity' in mi
+
+
+def test_show_ontology_structure_kwargs(core):
+    treevis = core.show_ontology_structure(full=True)
+
+    assert treevis is not None
