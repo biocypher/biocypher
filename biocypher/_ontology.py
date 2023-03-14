@@ -425,6 +425,9 @@ class Ontology:
         if not self._nx_graph:
             self._nx_graph = self._head_ontology.get_nx_graph().copy()
 
+        if 'entity' not in self._nx_graph.nodes:
+            return
+
         # biolink classes that are disjoint from entity
         disjoint_classes = [
             'frequency qualifier mixin',
