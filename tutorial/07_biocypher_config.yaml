@@ -3,4 +3,4 @@ biocypher:
 
 neo4j:
   database_name: synonyms
-  delimiter: '\t'
+  delimiter: "\t"

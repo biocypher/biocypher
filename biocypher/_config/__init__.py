@@ -17,6 +17,8 @@ Module data directory, including:
 
 from typing import Any, Optional
 import os
+import re
+import warnings
 
 import yaml
 import appdirs
@@ -25,6 +27,27 @@ __all__ = ['module_data', 'module_data_path', 'read_config', 'config', 'reset']
 
 _USER_CONFIG_DIR = appdirs.user_config_dir('biocypher', 'saezlab')
 _USER_CONFIG_FILE = os.path.join(_USER_CONFIG_DIR, 'conf.yaml')
+
+
+class MyLoader(yaml.SafeLoader):
+    def construct_scalar(self, node):
+        # Check if the scalar contains double quotes and an escape sequence
+        value = super().construct_scalar(node)
+        q = bool(node.style == '"')
+        b = bool('\\' in value.encode('unicode_escape').decode('utf-8'))
+        if q and b:
+            warnings.warn(
+                (
+                    'Double quotes detected in YAML configuration scalar: '
+                    f"{value.encode('unicode_escape')}. "
+                    'These allow escape sequences and may cause problems, for '
+                    "instance with the Neo4j admin import files (e.g. '\\t'). "
+                    'Make sure you wanted to do this, and use single quotes '
+                    'whenever possible.'
+                ),
+                category=UserWarning
+            )
+        return value
 
 
 def module_data_path(name: str) -> str:
@@ -53,7 +76,7 @@ def _read_yaml(path: str) -> Optional[dict]:
 
         with open(path, 'r') as fp:
 
-            return yaml.load(fp.read(), Loader=yaml.SafeLoader)
+            return yaml.load(fp.read(), Loader=MyLoader)
 
 
 def read_config() -> dict:
