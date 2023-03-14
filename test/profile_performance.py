@@ -8,7 +8,7 @@ import cProfile
 from neo4j_utils._print import bcolors
 
 from biocypher._create import BioCypherEdge, BioCypherNode
-from biocypher._driver import Driver
+from biocypher._connect import _Neo4jDriver
 
 __all__ = [
     'create_network_by_gen',
@@ -24,7 +24,7 @@ __all__ = [
 
 
 def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
-    d = Driver(increment_version=False)
+    d = _Neo4jDriver(increment_version=False)
 
     def node_gen(num_nodes):
         for i in range(num_nodes):
@@ -77,7 +77,7 @@ def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
 
 
 def create_network_by_list(num_nodes, num_edges):
-    d = Driver(increment_version=False)
+    d = _Neo4jDriver(increment_version=False)
 
     def node_list(num_nodes):
         ls = []
@@ -102,7 +102,7 @@ def create_network_by_list(num_nodes, num_edges):
 
 
 def setup_constraint():
-    d = Driver(increment_version=False)
+    d = _Neo4jDriver(increment_version=False)
     d.query(
         'CREATE CONSTRAINT test_id '
         'IF NOT EXISTS ON (n:test) '
@@ -112,13 +112,13 @@ def setup_constraint():
 
 
 def remove_constraint():
-    d = Driver(increment_version=False)
+    d = _Neo4jDriver(increment_version=False)
     d.query('DROP CONSTRAINT test_id')
     d.close()
 
 
 def delete_test_network():
-    d = Driver(increment_version=False)
+    d = _Neo4jDriver(increment_version=False)
     d.query('MATCH (n)-[:test]-() DETACH DELETE n')
     d.query('MATCH (n:test) DETACH DELETE n')
     d.close()

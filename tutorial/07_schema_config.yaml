@@ -1,7 +1,7 @@
 protein:
     represented_as: node
     preferred_id: [uniprot, entrez]
-    label_in_input: [uniprot_protein, entrez_protein]
+    input_label: [uniprot_protein, entrez_protein]
     properties:
         sequence: str
         description: str
@@ -13,13 +13,13 @@ protein isoform:
     inherit_properties: true
     represented_as: node
     preferred_id: uniprot
-    label_in_input: uniprot_isoform
+    input_label: uniprot_isoform
 
 protein protein interaction:
     is_a: pairwise molecular interaction
     represented_as: node
     preferred_id: intact
-    label_in_input: interacts_with
+    input_label: interacts_with
     properties:
         method: str
         source: str
@@ -28,4 +28,4 @@ complex:
     synonym_for: macromolecular complex
     represented_as: node
     preferred_id: complexportal
-    label_in_input: complex
+    input_label: complex

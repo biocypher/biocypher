@@ -1,54 +1,96 @@
 Title: BioCypher python module configuration file
 
-# Offline mode: do not connect to a running Neo4j instance
-# Can be used e.g. for writing CSV files for admin import
-offline: true
+## Some options are not used by default. Uncomment them to use them.
 
-# Strict mode: do not allow to create new nodes or relationships without
-# specifying source, version, and license parameters
-strict_mode: false
+biocypher:
 
-# Logging granularity
-# Set debug to true if more granular logging is desired
-debug: true
+  ### Required parameters ###
+  ## DBMS type
 
-# Set to change the log directory
-logdir: biocypher-log
+  dbms: neo4j
 
-# Set to change the output directory
-outdir: biocypher-out
+  ## Schema configuration
 
-# Ontology configuration
-head_ontology:
-  url: https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl
-  root_node: entity
-# tail_ontologies:
-#   so:
-#     url: test/so.owl
-#     head_join_node: sequence variant
-#     tail_join_node: sequence_variant
-#   mondo:
-#     url: test/mondo.owl
-#     head_join_node: disease
-#     tail_join_node: disease
+  schema_config_path: config/schema_config.yaml
 
-### Neo4j configuration ###
-# Neo4j connection credentials
-neo4j_uri: neo4j://localhost:7687
-neo4j_db: neo4j # DB name
-neo4j_user: neo4j # user name
-neo4j_pw: neo4j # password
+  ## Offline mode: do not connect to a running DBMS instance
+  ## Can be used e.g. for writing batch import files
 
-# Neo4j admin import batch writer settings
-neo4j_delimiter: '¦'
-neo4j_array_delimiter: '|'
-neo4j_quote_char: '"'
+  offline: true
 
-# MultiDB functionality
-# Set to false for using community edition or older versions of Neo4j
-neo4j_multi_db: true
+  ## Strict mode: do not allow to create new nodes or relationships without
+  ## specifying source, version, and license parameters
 
+  strict_mode: false
 
-# Import call prefixes
-# neo4j_import_call_bin_prefix: bin/
-# neo4j_import_call_file_prefix: path/to/files/
+  ## Ontology configuration
+
+  head_ontology:
+    url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
+    root_node: entity
+
+  ### Optional parameters ###
+  ## Logging granularity
+  ## Set debug to true if more granular logging is desired
+
+  debug: false
+
+  ## Set to change the log directory
+
+  # log_directory: biocypher-log
+
+  ## Set to change the output directory
+
+  # output_directory: biocypher-out
+
+  ## Optional tail ontologies
+
+  # tail_ontologies:
+  #   so:
+  #     url: test/so.owl
+  #     head_join_node: sequence variant
+  #     tail_join_node: sequence_variant
+  #   mondo:
+  #     url: test/mondo.owl
+  #     head_join_node: disease
+  #     tail_join_node: disease
+
+### DBMS configuration ###
+
+neo4j:
+
+  ### Neo4j configuration ###
+  ## Database name
+
+  database_name: neo4j
+
+  ## Wipe DB before import (offline mode: --force)
+
+  wipe: true
+
+  ## Neo4j authentication
+
+  uri: neo4j://localhost:7687
+  user: neo4j
+  password: neo4j
+
+  ## Neo4j admin import batch writer settings
+
+  delimiter: ';'
+  array_delimiter: '|'
+  quote_character: "'"
+
+  ## MultiDB functionality
+  ## Set to false for using community edition or older versions of Neo4j
+
+  multi_db: true
+
+  ## Import options
+
+  skip_duplicate_nodes: false
+  skip_bad_relationships: false
+
+  ## Import call prefixes
+
+  # import_call_bin_prefix: bin/
+  # import_call_file_prefix: path/to/files/

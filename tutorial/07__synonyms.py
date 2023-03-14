@@ -1,3 +1,4 @@
+from biocypher import BioCypher
 from tutorial.data_generator import (
     Complex,
     EntrezProtein,
@@ -5,9 +6,6 @@ from tutorial.data_generator import (
     RandomPropertyProtein,
     RandomPropertyProteinIsoform,
 )
-import biocypher
-
-__all__ = ['main']
 
 
 def main():
@@ -48,20 +46,19 @@ def main():
             )
 
     # Create BioCypher driver
-    driver = biocypher.Driver(
-        offline=True,  # start without connecting to Neo4j instance
-        db_name='synonyms',  # name of database for import call
-        user_schema_config_path='tutorial/07_schema_config.yaml',
+    bc = BioCypher(
+        biocypher_config_path='tutorial/07_biocypher_config.yaml',
+        schema_config_path='tutorial/07_schema_config.yaml',
     )
     # Run the import
-    driver.write_nodes(node_generator())
-    driver.write_edges(edge_generator())
+    bc.write_nodes(node_generator())
+    bc.write_edges(edge_generator())
 
     # Write command line call
-    driver.write_import_call()
+    bc.write_import_call()
 
     # Visualise ontology schema
-    driver.show_ontology_structure()
+    bc.show_ontology_structure()
 
 
 if __name__ == '__main__':

@@ -17,11 +17,37 @@ Module data directory, including:
 
 from typing import Any, Optional
 import os
+import re
+import warnings
 
 import yaml
 import appdirs
 
 __all__ = ['module_data', 'module_data_path', 'read_config', 'config', 'reset']
+
+_USER_CONFIG_DIR = appdirs.user_config_dir('biocypher', 'saezlab')
+_USER_CONFIG_FILE = os.path.join(_USER_CONFIG_DIR, 'conf.yaml')
+
+
+class MyLoader(yaml.SafeLoader):
+    def construct_scalar(self, node):
+        # Check if the scalar contains double quotes and an escape sequence
+        value = super().construct_scalar(node)
+        q = bool(node.style == '"')
+        b = bool('\\' in value.encode('unicode_escape').decode('utf-8'))
+        if q and b:
+            warnings.warn(
+                (
+                    'Double quotes detected in YAML configuration scalar: '
+                    f"{value.encode('unicode_escape')}. "
+                    'These allow escape sequences and may cause problems, for '
+                    "instance with the Neo4j admin import files (e.g. '\\t'). "
+                    'Make sure you wanted to do this, and use single quotes '
+                    'whenever possible.'
+                ),
+                category=UserWarning
+            )
+        return value
 
 
 def module_data_path(name: str) -> str:
@@ -50,7 +76,7 @@ def _read_yaml(path: str) -> Optional[dict]:
 
         with open(path, 'r') as fp:
 
-            return yaml.load(fp.read(), Loader=yaml.FullLoader)
+            return yaml.load(fp.read(), Loader=MyLoader)
 
 
 def read_config() -> dict:
@@ -58,25 +84,26 @@ def read_config() -> dict:
     Read the module config.
 
     Read and merge the built-in default, the user level and directory level
-    configuration.
+    configuration, with the later taking precendence over the former.
 
     TODO explain path configuration
     """
 
     defaults = module_data('biocypher_config')
-    user_confdir = appdirs.user_config_dir('biocypher', 'saezlab')
-    user = _read_yaml(os.path.join(user_confdir, 'biocypher_config.yaml')) or {}
-    # check if there is a local config file `biocypher_config.yaml` in the
-    # current working directory # TODO account for .yml?
-    if os.path.exists('biocypher_config.yaml'):
-        local = _read_yaml('biocypher_config.yaml')
-    elif os.path.exists('config/biocypher_config.yaml'):
-        local = _read_yaml('config/biocypher_config.yaml')
-    else:
-        local = {}
+    user = _read_yaml(_USER_CONFIG_FILE) or {}
+    # TODO account for .yml?
+    local = _read_yaml('biocypher_config.yaml'
+                      ) or _read_yaml('config/biocypher_config.yaml') or {}
 
-    defaults.update(user)
-    defaults.update(local)
+    for key in defaults:
+
+        value = local[key] if key in local else user[key] if key in user else None
+
+        if value is not None:
+            if type(defaults[key]) == str: # first level config (like title)
+                defaults[key] = value
+            else:
+                defaults[key].update(value)
 
     return defaults
 
@@ -98,7 +125,9 @@ def config(*args, **kwargs) -> Optional[Any]:
 
         return result[0] if len(result) == 1 else result
 
-    globals()['_config'].update(kwargs)
+    for key, value in kwargs.items():
+
+        globals()['_config'][key].update(value)
 
 
 def reset():
@@ -110,3 +139,11 @@ def reset():
 
 
 reset()
+
+
+def update_from_file(path: str):
+    """
+    Update the module configuration from a YAML file.
+    """
+
+    config(**_read_yaml(path))

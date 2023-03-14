@@ -9,66 +9,9 @@
 # Distributed under MIT licence, see the file `LICENSE`.
 #
 """
-Export of CSV files for the Neo4J admin import. The admin import is able
-to quickly transfer large amounts of content into an unused database. For more
-explanation, see https://neo4j.com/docs/operations-manual/current/tuto\
-rial/neo4j-admin-import/.
-
-Import like that:
-https://community.neo4j.com/t/how-can-i-use-a-database-created-with-neo4j-\
-admin-import-in-neo4j-desktop/40594
-
-    - Can properties the node/relationship does not own be left blank?
-
-Formatting: --delimiter=";"
-            --array-delimiter="|"
-            --quote="'"
-
-The header contains information for each field, for ID and properties
-in the format <name>: <field_type>. E.g.:
-`UniProtKB:ID;genesymbol;entrez_id:int;:LABEL`. Multiple labels can
-be given by separating with the array delimiter.
-
-There are three mandatory fields for relationship data:
-:START_ID — ID referring to a node.
-:END_ID — ID referring to a node.
-:TYPE — The relationship type.
-
-E.g.: `:START_ID;relationship_id;residue;:END_ID;:TYPE`.
-
-Headers would best be separate files, data files with similar name but
-different ending. Example from Neo4j documentation:
-
-.. code-block:: bash
-
-   bin/neo4j-admin import --database=neo4j
-   --nodes=import/entities-header.csv,import/entities-part1.csv,
-    import/entities-part2.csv
-   --nodes=import/interactions-header.csv,import/interactions-part1.csv,
-    import/interaction-part2.csv
-   --relationships=import/rels-header.csv,import/rels-part1.csv,
-    import/rels-part2.csv
-
-Can use regex, e.g., [..] import/rels-part*. In this case, use padding
-for ordering of the earlier part files ("01, 02").
-
-# How to import:
-
-1. stop the db
-
-2. shell command:
-
-.. code-block:: bash
-
-   bin/neo4j-admin import --database=neo4j
-   # nodes per type, separate header, regex for parts:
-   --nodes="<path>/<node_type>-header.csv,<path>/<node_type>-part.*"
-   # edges per type, separate header, regex for parts:
-   --relationships="<path>/<edge_type>-header.csv,<path>/<edge_type>-part.*"
-
-3. start db, test for consistency
+BioCypher 'offline' module. Handles the writing of node and edge representations
+suitable for import into a DBMS.
 """
-
 import glob
 
 from ._logger import logger
@@ -85,18 +28,16 @@ from more_itertools import peekable
 
 from ._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from ._ontology import Ontology
 
-__all__ = ['BatchWriter']
+__all__ = ['get_writer']
 
 if TYPE_CHECKING:
 
-    from ._translate import Translator, OntologyAdapter
+    from ._ontology import Ontology
+    from ._translate import Translator
 
-# TODO retrospective check of written csvs?
 
-
-class BatchWriter:
+class _Neo4jBatchWriter:
     """
     Class for writing node and edge representations to disk using the
     format specified by Neo4j for the use of admin import. Each batch
@@ -158,7 +99,7 @@ class BatchWriter:
         delimiter: str,
         array_delimiter: str,
         quote: str,
-        dirname: Optional[str] = None,
+        output_directory: Optional[str] = None,
         db_name: str = 'neo4j',
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
@@ -191,18 +132,21 @@ class BatchWriter:
         self.import_call_nodes = ''
         self.import_call_edges = ''
 
-        timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M')
-
-        self.outdir = dirname or os.path.join(_config('outdir'), timestamp())
-        self.outdir = os.path.abspath(self.outdir)
+        self.outdir = output_directory
 
         if import_call_file_prefix is None:
             self.import_call_file_prefix = self.outdir
         else:
             self.import_call_file_prefix = import_call_file_prefix
 
-        logger.info(f'Creating output directory `{self.outdir}`.')
-        os.makedirs(self.outdir, exist_ok=True)
+        if os.path.exists(self.outdir):
+            logger.warning(
+                f'Output directory `{self.outdir}` already exists. '
+                'If this is not planned, file consistency may be compromised.'
+            )
+        else:
+            logger.info(f'Creating output directory `{self.outdir}`.')
+            os.makedirs(self.outdir)
 
         self.seen_node_ids = set()  # set to store the ids of nodes that have
         # already been written; to avoid duplicates
@@ -1097,22 +1041,10 @@ class BatchWriter:
             str: a bash command for neo4j-admin import
         """
 
-        # escape backslashes in self.delim and self.adelim
-        # only escape for specific delimiters that cause problems
-        if self.delim in ['\t', '\r', '\n']:
-            delim = self.delim.encode('unicode_escape').decode('utf-8')
-        else:
-            delim = self.delim
-
-        if self.adelim in ['\t', '\r', '\n']:
-            adelim = self.adelim.encode('unicode_escape').decode('utf-8')
-        else:
-            adelim = self.adelim
-
         import_call = (
             f'{self.import_call_bin_prefix}neo4j-admin import '
             f'--database={self.db_name} '
-            f'--delimiter="{delim}" --array-delimiter="{adelim}" '
+            f'--delimiter="{self.delim}" --array-delimiter="{self.adelim}" '
         )
 
         if self.quote == "'":
@@ -1158,3 +1090,48 @@ class BatchWriter:
             return (self.duplicate_edge_types, self.duplicate_edge_ids)
         else:
             return None
+
+
+DBMS_TO_CLASS = {
+    'neo4j': _Neo4jBatchWriter,
+}
+
+
+def get_writer(
+    dbms: str,
+    translator: 'Translator',
+    ontology: 'Ontology',
+    output_directory: str,
+    strict_mode: bool,
+):
+    """
+    Function to return the writer class.
+
+    Returns:
+        class: the writer class
+    """
+
+    dbms_config = _config(dbms)
+
+    timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M%S')
+    outdir = output_directory or os.path.join('biocypher-out', timestamp())
+    outdir = os.path.abspath(outdir)
+
+    if dbms == 'neo4j':
+        return _Neo4jBatchWriter(
+            ontology=ontology,
+            translator=translator,
+            delimiter=dbms_config.get('delimiter'),
+            array_delimiter=dbms_config.get('array_delimiter'),
+            quote=dbms_config.get('quote_character'),
+            output_directory=outdir,
+            db_name=dbms_config.get('database_name'),
+            skip_bad_relationships=dbms_config.get('skip_bad_relationships'),
+            skip_duplicate_nodes=dbms_config.get('skip_duplicate_nodes'),
+            import_call_bin_prefix=dbms_config.get('import_call_bin_prefix'),
+            import_call_file_prefix=dbms_config.get('import_call_file_prefix'),
+            wipe=dbms_config.get('wipe'),
+            strict_mode=strict_mode,
+        )
+
+    return None

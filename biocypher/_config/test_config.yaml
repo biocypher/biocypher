@@ -1,0 +1,5 @@
+# We test the quote detection
+
+valid: 'This is a valid string'
+also_valid: "This is also a valid string"
+invalid: "\t"

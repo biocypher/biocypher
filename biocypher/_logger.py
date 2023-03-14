@@ -61,7 +61,8 @@ def get_logger(name: str = 'biocypher') -> logging.Logger:
         now = datetime.now()
         date_time = now.strftime('%Y%m%d-%H%M%S')
 
-        logdir = _config.config('logdir')
+        logdir = _config.config('biocypher'
+                               ).get('log_directory') or 'biocypher-log'
         os.makedirs(logdir, exist_ok=True)
         logfile = os.path.join(logdir, f'biocypher-{date_time}.log')
 

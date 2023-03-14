@@ -9,7 +9,7 @@
 # Distributed under MIT licence, see the file `LICENSE`.
 #
 """
-Graph database standard for molecular biology
+BioCypher: a unifying framework for biomedical knowledge graphs.
 """
 
 __all__ = [
@@ -20,9 +20,21 @@ __all__ = [
     'logfile',
     'log',
     'Driver',
+    'BioCypher',
 ]
 
+from ._core import BioCypher
 from ._config import config, module_data
-from ._driver import Driver
-from ._logger import log, logfile
+from ._logger import log, logger, logfile
 from ._metadata import __author__, __version__
+
+
+class Driver(BioCypher):
+
+    # initialise parent class but log a warning
+    def __init__(self, *args, **kwargs):
+        logger.warning(
+            'The class `Driver` is deprecated and will be removed in a future '
+            'release. Please use `BioCypher` instead.'
+        )
+        super().__init__(*args, **kwargs)

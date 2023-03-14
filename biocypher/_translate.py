@@ -9,41 +9,21 @@
 # Distributed under MIT licence, see the file `LICENSE`.
 #
 """
-Lookup and storage of entity IDs that are part of the BioCypher schema.
-
-Todo:
-
-    - genericise: standardise input data to BioCypher specifications or,
-      optionally, user specifications.
-
-        - if the database exists, read biocypher info node
-        - if newly created, ask for user input (?) as to which IDs to
-          use etc
-        - default scenario -> YAML?
-        - the consensus representation ("target" of translation) is
-          the literal Biolink class, which is assigned to database
-          content using user input for each class to be represented
-          in the graph ("source" of translation). currently,
-          implemented by assigning source nomenclature explicitly in
-          the schema_config.yaml file ("label_in_input").
-
-    - type checking: use biolink classes for typing directly?
-
-    - import ID types from pypath dictionary (later, externalised
-      dictionary)? biolink?
+BioCypher 'translation' module. Responsible for translating between the raw
+input data and the BioCypherNode and BioCypherEdge objects.
 """
-from collections.abc import Iterable, Generator
-
 from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
 from typing import Any, Union, Optional
+from collections.abc import Iterable, Generator
 
 from more_itertools import peekable
 
 from . import _misc
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from ._mapping import OntologyMapping
 
 __all__ = ['BiolinkAdapter', 'Translator']
 
@@ -61,7 +41,7 @@ class Translator:
     and cypher queries.
     """
     def __init__(
-        self, extended_schema: dict[str, dict], strict_mode: bool = False
+        self, ontology_mapping: 'OntologyMapping', strict_mode: bool = False
     ):
         """
         Args:
@@ -76,7 +56,7 @@ class Translator:
                 carry source, licence, and version information.
         """
 
-        self.extended_schema = extended_schema
+        self.extended_schema = ontology_mapping.extended_schema
         self.strict_mode = strict_mode
 
         # record nodes without biolink type configured in schema_config.yaml
@@ -400,33 +380,34 @@ class Translator:
 
         for key, value in self.extended_schema.items():
 
-            if isinstance(value.get('label_in_input'), str):
+            labels = value.get('input_label') or value.get('label_in_input')
 
-                self._ontology_mapping[value.get('label_in_input')] = key
+            if isinstance(labels, str):
 
-            elif isinstance(value.get('label_in_input'), list):
+                self._ontology_mapping[labels] = key
 
-                for label in value['label_in_input']:
+            elif isinstance(labels, list):
+
+                for label in labels:
                     self._ontology_mapping[label] = key
 
             if value.get('label_as_edge'):
 
-                self._add_translation_mappings(
-                    value['label_in_input'], value['label_as_edge']
-                )
+                self._add_translation_mappings(labels, value['label_as_edge'])
 
             else:
 
-                self._add_translation_mappings(value['label_in_input'], key)
+                self._add_translation_mappings(labels, key)
 
     def _get_ontology_mapping(self, label: str) -> Optional[str]:
         """
-        For each given input type ("label_in_input"), find the corresponding
-        ontology class in the leaves dictionary (from the `schema_config.yam`).
+        For each given input type ("input_label" or "label_in_input"), find the
+        corresponding ontology class in the leaves dictionary (from the
+        `schema_config.yam`).
 
         Args:
             label:
-                The input type to find (`label_in_input` in
+                The input type to find (`input_label` or `label_in_input` in
                 `schema_config.yaml`).
         """
 

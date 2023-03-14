@@ -199,15 +199,15 @@ tests = ["asttokens", "littleutils", "pytest", "rich"]
 
 [[package]]
 name = "filelock"
-version = "3.9.0"
+version = "3.9.1"
 description = "A platform independent file lock."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 
 [package.extras]
-docs = ["furo (>=2022.12.7)", "sphinx (>=5.3)", "sphinx-autodoc-typehints (>=1.19.5)"]
-testing = ["covdefaults (>=2.2.2)", "coverage (>=7.0.1)", "pytest (>=7.2)", "pytest-cov (>=4)", "pytest-timeout (>=2.1)"]
+docs = ["furo (>=2022.12.7)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.22,!=1.23.4)"]
+testing = ["covdefaults (>=2.3)", "coverage (>=7.2.1)", "pytest (>=7.2.2)", "pytest-cov (>=4)", "pytest-timeout (>=2.1)"]
 
 [[package]]
 name = "future"
@@ -939,14 +939,14 @@ test = ["html5lib", "pytest"]
 
 [[package]]
 name = "sphinxcontrib-jquery"
-version = "2.0.0"
+version = "4.1"
 description = "Extension to include jQuery on newer Sphinx releases"
 category = "dev"
 optional = false
 python-versions = ">=2.7"
 
 [package.dependencies]
-setuptools = "*"
+Sphinx = ">=1.8"
 
 [[package]]
 name = "sphinxcontrib-jsmath"
@@ -1349,8 +1349,8 @@ executing = [
     {file = "executing-1.2.0.tar.gz", hash = "sha256:19da64c18d2d851112f09c287f8d3dbbdf725ab0e569077efb6cdcbd3497c107"},
 ]
 filelock = [
-    {file = "filelock-3.9.0-py3-none-any.whl", hash = "sha256:f58d535af89bb9ad5cd4df046f741f8553a418c01a7856bf0d173bbc9f6bd16d"},
-    {file = "filelock-3.9.0.tar.gz", hash = "sha256:7b319f24340b51f55a2bf7a12ac0755a9b03e718311dac567a0f4f7fabd2f5de"},
+    {file = "filelock-3.9.1-py3-none-any.whl", hash = "sha256:4427cdda14a1c68e264845142842d6de2d0fa2c15ba31571a3d9c9a1ec9d191c"},
+    {file = "filelock-3.9.1.tar.gz", hash = "sha256:e393782f76abea324dee598d2ea145b857a20df0e0ee4f80fcf35e72a341d2c7"},
 ]
 future = [
     {file = "future-0.18.3.tar.gz", hash = "sha256:34a17436ed1e96697a86f9de3d15a3b0be01d8bc8de9c1dffd59fb8234ed5307"},
@@ -1653,8 +1653,8 @@ sphinxcontrib-htmlhelp = [
     {file = "sphinxcontrib_htmlhelp-2.0.1-py3-none-any.whl", hash = "sha256:c38cb46dccf316c79de6e5515e1770414b797162b23cd3d06e67020e1d2a6903"},
 ]
 sphinxcontrib-jquery = [
-    {file = "sphinxcontrib-jquery-2.0.0.tar.gz", hash = "sha256:8fb65f6dba84bf7bcd1aea1f02ab3955ac34611d838bcc95d4983b805b234daa"},
-    {file = "sphinxcontrib_jquery-2.0.0-py3-none-any.whl", hash = "sha256:ed47fa425c338ffebe3c37e1cdb56e30eb806116b85f01055b158c7057fdb995"},
+    {file = "sphinxcontrib-jquery-4.1.tar.gz", hash = "sha256:1620739f04e36a2c779f1a131a2dfd49b2fd07351bf1968ced074365933abc7a"},
+    {file = "sphinxcontrib_jquery-4.1-py2.py3-none-any.whl", hash = "sha256:f936030d7d0147dd026a4f2b5a57343d233f1fc7b363f68b3d4f1cb0993878ae"},
 ]
 sphinxcontrib-jsmath = [
     {file = "sphinxcontrib-jsmath-1.0.1.tar.gz", hash = "sha256:a9925e4a4587247ed2191a22df5f6970656cb8ca2bd6284309578f2153e0c4b8"},

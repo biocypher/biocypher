@@ -1,3 +1,20 @@
+#!/usr/bin/env python
+
+#
+# Copyright 2021, Heidelberg University Clinic
+#
+# File author(s): Sebastian Lobentanzer
+#                 ...
+#
+# Distributed under MIT licence, see the file `LICENSE`.
+#
+"""
+Handy functions for use in various places.
+"""
+from ._logger import logger
+
+logger.debug(f'Loading module {__name__}.')
+
 from typing import (
     Any,
     Union,
@@ -78,10 +95,20 @@ def create_tree_visualisation(inheritance_tree: Union[dict, nx.Graph]) -> str:
     root = list(parents - classes)
 
     if len(root) > 1:
-        raise ValueError(
-            'Inheritance tree cannot have more than one root node.'
-        )
+
+        if 'entity' in root:
+
+            root = 'entity'  # default: good standard? TODO
+
+        else:
+
+            raise ValueError(
+                'Inheritance tree cannot have more than one root node. '
+                f'Found {len(root)}: {root}.'
+            )
+
     else:
+
         root = root[0]
 
     if not root:

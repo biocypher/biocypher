@@ -1,11 +1,9 @@
+from biocypher import BioCypher
 from tutorial.data_generator import (
     EntrezProtein,
     RandomPropertyProtein,
     RandomPropertyProteinIsoform,
 )
-import biocypher
-
-__all__ = ['main']
 
 
 def main():
@@ -28,16 +26,15 @@ def main():
             )
 
     # Create BioCypher driver
-    driver = biocypher.Driver(
-        offline=True,  # start without connecting to Neo4j instance
-        db_name='propertyinheritance',  # name of database for import call
-        user_schema_config_path='tutorial/05_schema_config.yaml',
+    bc = BioCypher(
+        biocypher_config_path='tutorial/05_biocypher_config.yaml',
+        schema_config_path='tutorial/05_schema_config.yaml',
     )
     # Run the import
-    driver.write_nodes(node_generator())
+    bc.write_nodes(node_generator())
 
     # Write command line call
-    driver.write_import_call()
+    bc.write_import_call()
 
 
 if __name__ == '__main__':

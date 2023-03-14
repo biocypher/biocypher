@@ -1,37 +1,8 @@
-from typing import Union
-
 from hypothesis import given
 from hypothesis import strategies as st
 import pytest
 
-from biocypher._create import (
-    VersionNode,
-    BioCypherEdge,
-    BioCypherNode,
-    BioCypherRelAsNode,
-)
-
-
-@pytest.fixture
-def version_node():
-    yield VersionNode(
-        offline=True,
-        from_config=True,
-        config_file='biocypher/_config/test_schema_config.yaml',
-    )
-
-
-def test_version_node(version_node):
-    assert version_node.get_label() == 'BioCypher'
-
-
-def test_virtual_leaves_node(version_node):
-    assert 'wikipathways.pathway' in version_node.extended_schema
-
-
-def test_getting_properties_via_config(version_node):
-    assert 'name' in version_node.extended_schema['protein'].get('properties'
-                                                                ).keys()
+from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 
 @given(st.builds(BioCypherNode))
@@ -64,9 +35,3 @@ def test_rel_as_node(rel_as_node):
 def test_rel_as_node_invalid_node():
     with pytest.raises(TypeError):
         BioCypherRelAsNode('str', 1, 2.5122)
-
-
-def test_preferred_id_optional(version_node):
-    pti = version_node.extended_schema.get('post translational interaction')
-
-    assert pti.get('preferred_id') == 'id'

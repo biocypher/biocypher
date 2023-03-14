@@ -1,0 +1,5 @@
+biocypher:
+  offline: true
+
+neo4j:
+  database_name: basicimport

@@ -1,0 +1,1374 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="virtual" for="node" attr.name="virtual" attr.type="boolean" />
+  <key id="inherit_properties" for="node" attr.name="inherit_properties" attr.type="boolean" />
+  <key id="is_a" for="node" attr.name="is_a" attr.type="string" />
+  <key id="user_extension" for="node" attr.name="user_extension" attr.type="boolean" />
+  <key id="properties" for="node" attr.name="properties" attr.type="string" />
+  <key id="exclude_properties" for="node" attr.name="exclude_properties" attr.type="string" />
+  <key id="input_label" for="node" attr.name="input_label" attr.type="string" />
+  <key id="label_as_edge" for="node" attr.name="label_as_edge" attr.type="string" />
+  <key id="preferred_id" for="node" attr.name="preferred_id" attr.type="string" />
+  <key id="label_in_input" for="node" attr.name="label_in_input" attr.type="string" />
+  <key id="target" for="node" attr.name="target" attr.type="string" />
+  <key id="source" for="node" attr.name="source" attr.type="string" />
+  <key id="represented_as" for="node" attr.name="represented_as" attr.type="string" />
+  <key id="label" for="node" attr.name="label" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="Entity">
+      <data key="label">entity</data>
+    </node>
+    <node id="Association">
+      <data key="label">association</data>
+    </node>
+    <node id="BehaviorToBehavioralFeatureAssociation">
+      <data key="label">behavior to behavioral feature association</data>
+    </node>
+    <node id="EntityToPhenotypicFeatureAssociationMixin">
+      <data key="label">entity to phenotypic feature association mixin</data>
+    </node>
+    <node id="EntityToFeatureOrDiseaseQualifiersMixin">
+      <data key="label">entity to feature or disease qualifiers mixin</data>
+    </node>
+    <node id="FrequencyQualifierMixin">
+      <data key="label">frequency qualifier mixin</data>
+    </node>
+    <node id="FrequencyQuantifier">
+      <data key="label">frequency quantifier</data>
+    </node>
+    <node id="RelationshipQuantifier">
+      <data key="label">relationship quantifier</data>
+    </node>
+    <node id="CaseToPhenotypicFeatureAssociation">
+      <data key="label">case to phenotypic feature association</data>
+    </node>
+    <node id="CaseToEntityAssociationMixin">
+      <data key="label">case to entity association mixin</data>
+    </node>
+    <node id="ChemicalAffectsGeneAssociation">
+      <data key="label">chemical affects gene association</data>
+    </node>
+    <node id="ChemicalEntityAssessesNamedThingAssociation">
+      <data key="label">chemical entity assesses named thing association</data>
+    </node>
+    <node id="ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation">
+      <data key="label">chemical entity or gene or gene product regulates gene association</data>
+    </node>
+    <node id="ChemicalGeneInteractionAssociation">
+      <data key="label">chemical gene interaction association</data>
+    </node>
+    <node id="ChemicalToEntityAssociationMixin">
+      <data key="label">chemical to entity association mixin</data>
+    </node>
+    <node id="ChemicalEntityToEntityAssociationMixin">
+      <data key="label">chemical entity to entity association mixin</data>
+    </node>
+    <node id="ChemicalToDiseaseOrPhenotypicFeatureAssociation">
+      <data key="label">chemical to disease or phenotypic feature association</data>
+    </node>
+    <node id="EntityToDiseaseOrPhenotypicFeatureAssociationMixin">
+      <data key="label">entity to disease or phenotypic feature association mixin</data>
+    </node>
+    <node id="ChemicalToPathwayAssociation">
+      <data key="label">chemical to pathway association</data>
+    </node>
+    <node id="ContributorAssociation">
+      <data key="label">contributor association</data>
+    </node>
+    <node id="DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation">
+      <data key="label">disease or phenotypic feature to genetic inheritance association</data>
+    </node>
+    <node id="DiseaseOrPhenotypicFeatureToEntityAssociationMixin">
+      <data key="label">disease or phenotypic feature to entity association mixin</data>
+    </node>
+    <node id="DiseaseOrPhenotypicFeatureToLocationAssociation">
+      <data key="label">disease or phenotypic feature to location association</data>
+    </node>
+    <node id="DiseaseToExposureEventAssociation">
+      <data key="label">disease to exposure event association</data>
+    </node>
+    <node id="DiseaseToEntityAssociationMixin">
+      <data key="label">disease to entity association mixin</data>
+    </node>
+    <node id="EntityToExposureEventAssociationMixin">
+      <data key="label">entity to exposure event association mixin</data>
+    </node>
+    <node id="DiseaseToPhenotypicFeatureAssociation">
+      <data key="label">disease to phenotypic feature association</data>
+    </node>
+    <node id="DrugToGeneAssociation">
+      <data key="label">drug to gene association</data>
+    </node>
+    <node id="DrugToEntityAssociationMixin">
+      <data key="label">drug to entity association mixin</data>
+    </node>
+    <node id="EntityToDiseaseAssociation">
+      <data key="label">entity to disease association</data>
+    </node>
+    <node id="EntityToPhenotypicFeatureAssociation">
+      <data key="label">entity to phenotypic feature association</data>
+    </node>
+    <node id="ExposureEventToOutcomeAssociation">
+      <data key="label">exposure event to outcome association</data>
+    </node>
+    <node id="EntityToOutcomeAssociationMixin">
+      <data key="label">entity to outcome association mixin</data>
+    </node>
+    <node id="ExposureEventToPhenotypicFeatureAssociation">
+      <data key="label">exposure event to phenotypic feature association</data>
+    </node>
+    <node id="GeneToExpressionSiteAssociation">
+      <data key="label">gene to expression site association</data>
+    </node>
+    <node id="GeneToGeneFamilyAssociation">
+      <data key="label">gene to gene family association</data>
+    </node>
+    <node id="GeneToPathwayAssociation">
+      <data key="label">gene to pathway association</data>
+    </node>
+    <node id="GeneToEntityAssociationMixin">
+      <data key="label">gene to entity association mixin</data>
+    </node>
+    <node id="GeneToPhenotypicFeatureAssociation">
+      <data key="label">gene to phenotypic feature association</data>
+    </node>
+    <node id="GenotypeToGeneAssociation">
+      <data key="label">genotype to gene association</data>
+    </node>
+    <node id="GenotypeToGenotypePartAssociation">
+      <data key="label">genotype to genotype part association</data>
+    </node>
+    <node id="GenotypeToPhenotypicFeatureAssociation">
+      <data key="label">genotype to phenotypic feature association</data>
+    </node>
+    <node id="GenotypeToEntityAssociationMixin">
+      <data key="label">genotype to entity association mixin</data>
+    </node>
+    <node id="GenotypeToVariantAssociation">
+      <data key="label">genotype to variant association</data>
+    </node>
+    <node id="InformationContentEntityToNamedThingAssociation">
+      <data key="label">information content entity to named thing association</data>
+    </node>
+    <node id="MaterialSampleDerivationAssociation">
+      <data key="label">material sample derivation association</data>
+    </node>
+    <node id="MaterialSampleToDiseaseOrPhenotypicFeatureAssociation">
+      <data key="label">material sample to disease or phenotypic feature association</data>
+    </node>
+    <node id="MaterialSampleToEntityAssociationMixin">
+      <data key="label">material sample to entity association mixin</data>
+    </node>
+    <node id="MolecularActivityToChemicalEntityAssociation">
+      <data key="label">molecular activity to chemical entity association</data>
+    </node>
+    <node id="MolecularActivityToMolecularActivityAssociation">
+      <data key="label">molecular activity to molecular activity association</data>
+    </node>
+    <node id="MolecularActivityToPathwayAssociation">
+      <data key="label">molecular activity to pathway association</data>
+    </node>
+    <node id="NamedThingAssociatedWithLikelihoodOfNamedThingAssociation">
+      <data key="label">named thing associated with likelihood of named thing association</data>
+    </node>
+    <node id="OrganismTaxonToEnvironmentAssociation">
+      <data key="label">organism taxon to environment association</data>
+    </node>
+    <node id="OrganismTaxonToEntityAssociation">
+      <data key="label">organism taxon to entity association</data>
+    </node>
+    <node id="OrganismToOrganismAssociation">
+      <data key="label">organism to organism association</data>
+    </node>
+    <node id="OrganismalEntityAsAModelOfDiseaseAssociation">
+      <data key="label">organismal entity as a model of disease association</data>
+    </node>
+    <node id="EntityToDiseaseAssociationMixin">
+      <data key="label">entity to disease association mixin</data>
+    </node>
+    <node id="ModelToDiseaseAssociationMixin">
+      <data key="label">model to disease association mixin</data>
+    </node>
+    <node id="PopulationToPopulationAssociation">
+      <data key="label">population to population association</data>
+    </node>
+    <node id="SequenceVariantModulatesTreatmentAssociation">
+      <data key="label">sequence variant modulates treatment association</data>
+    </node>
+    <node id="TaxonToTaxonAssociation">
+      <data key="label">taxon to taxon association</data>
+    </node>
+    <node id="VariantToPhenotypicFeatureAssociation">
+      <data key="label">variant to phenotypic feature association</data>
+    </node>
+    <node id="VariantToEntityAssociationMixin">
+      <data key="label">variant to entity association mixin</data>
+    </node>
+    <node id="VariantToPopulationAssociation">
+      <data key="label">variant to population association</data>
+    </node>
+    <node id="CellLineToDiseaseOrPhenotypicFeatureAssociation">
+      <data key="label">cell line to disease or phenotypic feature association</data>
+    </node>
+    <node id="CellLineAsAModelOfDiseaseAssociation">
+      <data key="label">cell line as a model of disease association</data>
+    </node>
+    <node id="CellLineToEntityAssociationMixin">
+      <data key="label">cell line to entity association mixin</data>
+    </node>
+    <node id="ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation">
+      <data key="label">chemical or drug or treatment to disease or phenotypic feature association</data>
+    </node>
+    <node id="ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation">
+      <data key="label">chemical or drug or treatment side effect disease or phenotypic feature association</data>
+    </node>
+    <node id="GenotypeToDiseaseAssociation">
+      <data key="label">genotype to disease association</data>
+    </node>
+    <node id="GenotypeAsAModelOfDiseaseAssociation">
+      <data key="label">genotype as a model of disease association</data>
+    </node>
+    <node id="SequenceAssociation">
+      <data key="label">sequence association</data>
+    </node>
+    <node id="GenomicSequenceLocalization">
+      <data key="label">genomic sequence localization</data>
+    </node>
+    <node id="VariantToDiseaseAssociation">
+      <data key="label">variant to disease association</data>
+    </node>
+    <node id="VariantAsAModelOfDiseaseAssociation">
+      <data key="label">variant as a model of disease association</data>
+    </node>
+    <node id="VariantToGeneAssociation">
+      <data key="label">variant to gene association</data>
+      <data key="represented_as">edge</data>
+      <data key="source">['known.sequence variant', 'somatic.sequence variant']</data>
+      <data key="target">gene</data>
+      <data key="label_in_input">['VARIANT_FOUND_IN_GENE_Known_variant_Gene', 'VARIANT_FOUND_IN_GENE_Somatic_mutation_Gene']</data>
+      <data key="preferred_id">id</data>
+    </node>
+    <node id="VariantToGeneExpressionAssociation">
+      <data key="label">variant to gene expression association</data>
+    </node>
+    <node id="GeneExpressionMixin">
+      <data key="label">gene expression mixin</data>
+    </node>
+    <node id="AnatomicalEntityToAnatomicalEntityAssociation">
+      <data key="label">anatomical entity to anatomical entity association</data>
+    </node>
+    <node id="AnatomicalEntityToAnatomicalEntityOntogenicAssociation">
+      <data key="label">anatomical entity to anatomical entity ontogenic association</data>
+    </node>
+    <node id="AnatomicalEntityToAnatomicalEntityPartOfAssociation">
+      <data key="label">anatomical entity to anatomical entity part of association</data>
+    </node>
+    <node id="ChemicalToChemicalAssociation">
+      <data key="label">chemical to chemical association</data>
+    </node>
+    <node id="ChemicalToChemicalDerivationAssociation">
+      <data key="label">chemical to chemical derivation association</data>
+    </node>
+    <node id="ReactionToParticipantAssociation">
+      <data key="label">reaction to participant association</data>
+    </node>
+    <node id="ReactionToCatalystAssociation">
+      <data key="label">reaction to catalyst association</data>
+    </node>
+    <node id="OrganismTaxonToOrganismTaxonAssociation">
+      <data key="label">organism taxon to organism taxon association</data>
+    </node>
+    <node id="OrganismTaxonToOrganismTaxonInteraction">
+      <data key="label">organism taxon to organism taxon interaction</data>
+    </node>
+    <node id="OrganismTaxonToOrganismTaxonSpecialization">
+      <data key="label">organism taxon to organism taxon specialization</data>
+    </node>
+    <node id="GeneToDiseaseAssociation">
+      <data key="label">gene to disease association</data>
+      <data key="represented_as">edge</data>
+      <data key="label_as_edge">PERTURBED_IN_DISEASE</data>
+      <data key="input_label">['protein_disease', 'gene_disease']</data>
+      <data key="exclude_properties">accession</data>
+      <data key="preferred_id">id</data>
+    </node>
+    <node id="DruggableGeneToDiseaseAssociation">
+      <data key="label">druggable gene to disease association</data>
+    </node>
+    <node id="GeneAsAModelOfDiseaseAssociation">
+      <data key="label">gene as a model of disease association</data>
+    </node>
+    <node id="GeneHasVariantThatContributesToDiseaseAssociation">
+      <data key="label">gene has variant that contributes to disease association</data>
+    </node>
+    <node id="GeneToGeneAssociation">
+      <data key="label">gene to gene association</data>
+      <data key="represented_as">edge</data>
+      <data key="label_in_input">gene_gene</data>
+      <data key="properties">{'directional': 'bool', 'curated': 'bool', 'score': 'float'}</data>
+      <data key="preferred_id">id</data>
+    </node>
+    <node id="GeneToGeneCoexpressionAssociation">
+      <data key="label">gene to gene coexpression association</data>
+    </node>
+    <node id="GeneToGeneHomologyAssociation">
+      <data key="label">gene to gene homology association</data>
+    </node>
+    <node id="PairwiseGeneToGeneInteraction">
+      <data key="label">pairwise gene to gene interaction</data>
+    </node>
+    <node id="PairwiseMolecularInteraction">
+      <data key="label">pairwise molecular interaction</data>
+    </node>
+    <node id="SequenceFeatureRelationship">
+      <data key="label">sequence feature relationship</data>
+    </node>
+    <node id="ExonToTranscriptRelationship">
+      <data key="label">exon to transcript relationship</data>
+    </node>
+    <node id="GeneToGeneProductRelationship">
+      <data key="label">gene to gene product relationship</data>
+    </node>
+    <node id="TranscriptToGeneRelationship">
+      <data key="label">transcript to gene relationship</data>
+    </node>
+    <node id="FunctionalAssociation">
+      <data key="label">functional association</data>
+    </node>
+    <node id="GeneToGoTermAssociation">
+      <data key="label">gene to go term association</data>
+    </node>
+    <node id="MacromolecularMachineToBiologicalProcessAssociation">
+      <data key="label">macromolecular machine to biological process association</data>
+    </node>
+    <node id="MacromolecularMachineToEntityAssociationMixin">
+      <data key="label">macromolecular machine to entity association mixin</data>
+    </node>
+    <node id="MacromolecularMachineToCellularComponentAssociation">
+      <data key="label">macromolecular machine to cellular component association</data>
+    </node>
+    <node id="MacromolecularMachineToMolecularActivityAssociation">
+      <data key="label">macromolecular machine to molecular activity association</data>
+    </node>
+    <node id="NamedThing">
+      <data key="label">named thing</data>
+    </node>
+    <node id="Activity">
+      <data key="label">activity</data>
+    </node>
+    <node id="ActivityAndBehavior">
+      <data key="label">activity and behavior</data>
+    </node>
+    <node id="Occurrent">
+      <data key="label">occurrent</data>
+    </node>
+    <node id="PhysicalEssenceOrOccurrent">
+      <data key="label">physical essence or occurrent</data>
+    </node>
+    <node id="Event">
+      <data key="label">event</data>
+    </node>
+    <node id="Phenomenon">
+      <data key="label">phenomenon</data>
+    </node>
+    <node id="AdministrativeEntity">
+      <data key="label">administrative entity</data>
+    </node>
+    <node id="Agent">
+      <data key="label">agent</data>
+    </node>
+    <node id="Treatment">
+      <data key="label">treatment</data>
+    </node>
+    <node id="ChemicalOrDrugOrTreatment">
+      <data key="label">chemical or drug or treatment</data>
+    </node>
+    <node id="ExposureEvent">
+      <data key="label">exposure event</data>
+    </node>
+    <node id="OntologyClass">
+      <data key="label">ontology class</data>
+    </node>
+    <node id="ClinicalEntity">
+      <data key="label">clinical entity</data>
+    </node>
+    <node id="ClinicalTrial">
+      <data key="label">clinical trial</data>
+    </node>
+    <node id="ClinicalIntervention">
+      <data key="label">clinical intervention</data>
+    </node>
+    <node id="Hospitalization">
+      <data key="label">hospitalization</data>
+    </node>
+    <node id="Device">
+      <data key="label">device</data>
+    </node>
+    <node id="Procedure">
+      <data key="label">procedure</data>
+    </node>
+    <node id="PlanetaryEntity">
+      <data key="label">planetary entity</data>
+    </node>
+    <node id="EnvironmentalFeature">
+      <data key="label">environmental feature</data>
+    </node>
+    <node id="EnvironmentalProcess">
+      <data key="label">environmental process</data>
+    </node>
+    <node id="GeographicLocation">
+      <data key="label">geographic location</data>
+    </node>
+    <node id="GeographicLocationAtTime">
+      <data key="label">geographic location at time</data>
+    </node>
+    <node id="PhysicalEntity">
+      <data key="label">physical entity</data>
+    </node>
+    <node id="MaterialSample">
+      <data key="label">material sample</data>
+    </node>
+    <node id="SubjectOfInvestigation">
+      <data key="label">subject of investigation</data>
+    </node>
+    <node id="PhysicalEssence">
+      <data key="label">physical essence</data>
+    </node>
+    <node id="OrganismTaxon">
+      <data key="label">organism taxon</data>
+    </node>
+    <node id="InformationContentEntity">
+      <data key="label">information content entity</data>
+    </node>
+    <node id="CommonDataElement">
+      <data key="label">common data element</data>
+    </node>
+    <node id="Study">
+      <data key="label">study</data>
+    </node>
+    <node id="StudyVariable">
+      <data key="label">study variable</data>
+    </node>
+    <node id="ConfidenceLevel">
+      <data key="label">confidence level</data>
+    </node>
+    <node id="EvidenceType">
+      <data key="label">evidence type</data>
+    </node>
+    <node id="DatasetDistribution">
+      <data key="label">dataset distribution</data>
+    </node>
+    <node id="DatasetSummary">
+      <data key="label">dataset summary</data>
+    </node>
+    <node id="DatasetVersion">
+      <data key="label">dataset version</data>
+    </node>
+    <node id="Dataset">
+      <data key="label">dataset</data>
+    </node>
+    <node id="StudyResult">
+      <data key="label">study result</data>
+    </node>
+    <node id="ChiSquaredAnalysisResult">
+      <data key="label">chi squared analysis result</data>
+    </node>
+    <node id="ConceptCountAnalysisResult">
+      <data key="label">concept count analysis result</data>
+    </node>
+    <node id="ObservedExpectedFrequencyAnalysisResult">
+      <data key="label">observed expected frequency analysis result</data>
+    </node>
+    <node id="RelativeFrequencyAnalysisResult">
+      <data key="label">relative frequency analysis result</data>
+    </node>
+    <node id="TextMiningResult">
+      <data key="label">text mining result</data>
+    </node>
+    <node id="InformationResource">
+      <data key="label">information resource</data>
+    </node>
+    <node id="Publication">
+      <data key="label">publication</data>
+    </node>
+    <node id="Article">
+      <data key="label">article</data>
+    </node>
+    <node id="Book">
+      <data key="label">book</data>
+    </node>
+    <node id="Serial">
+      <data key="label">serial</data>
+    </node>
+    <node id="BookChapter">
+      <data key="label">book chapter</data>
+    </node>
+    <node id="BiologicalEntity">
+      <data key="label">biological entity</data>
+    </node>
+    <node id="Genome">
+      <data key="label">genome</data>
+    </node>
+    <node id="GenomicEntity">
+      <data key="label">genomic entity</data>
+    </node>
+    <node id="Haplotype">
+      <data key="label">haplotype</data>
+    </node>
+    <node id="MacromolecularComplex">
+      <data key="label">complex</data>
+    </node>
+    <node id="MacromolecularMachineMixin">
+      <data key="label">macromolecular machine mixin</data>
+    </node>
+    <node id="NucleicAcidSequenceMotif">
+      <data key="label">nucleic acid sequence motif</data>
+    </node>
+    <node id="NucleosomeModification">
+      <data key="label">nucleosome modification</data>
+    </node>
+    <node id="EpigenomicEntity">
+      <data key="label">epigenomic entity</data>
+    </node>
+    <node id="GeneProductIsoformMixin">
+      <data key="label">gene product isoform mixin</data>
+    </node>
+    <node id="GeneProductMixin">
+      <data key="label">gene product mixin</data>
+    </node>
+    <node id="GeneOrGeneProduct">
+      <data key="label">gene or gene product</data>
+    </node>
+    <node id="PosttranslationalModification">
+      <data key="label">posttranslational modification</data>
+    </node>
+    <node id="ProteinDomain">
+      <data key="label">protein domain</data>
+    </node>
+    <node id="ChemicalEntityOrGeneOrGeneProduct">
+      <data key="label">chemical entity or gene or gene product</data>
+    </node>
+    <node id="GeneGroupingMixin">
+      <data key="label">gene grouping mixin</data>
+    </node>
+    <node id="ProteinFamily">
+      <data key="label">protein family</data>
+    </node>
+    <node id="ReagentTargetedGene">
+      <data key="label">reagent targeted gene</data>
+    </node>
+    <node id="GeneFamily">
+      <data key="label">gene family</data>
+    </node>
+    <node id="Polypeptide">
+      <data key="label">polypeptide</data>
+    </node>
+    <node id="Protein">
+      <data key="label">protein</data>
+      <data key="represented_as">node</data>
+      <data key="preferred_id">uniprot</data>
+      <data key="input_label">protein</data>
+      <data key="properties">{'name': 'str', 'score': 'float', 'taxon': 'int', 'genes': 'str[]'}</data>
+    </node>
+    <node id="ProteinIsoform">
+      <data key="label">protein isoform</data>
+    </node>
+    <node id="ChemicalEntityOrProteinOrPolypeptide">
+      <data key="label">chemical entity or protein or polypeptide</data>
+    </node>
+    <node id="GeneticInheritance">
+      <data key="label">genetic inheritance</data>
+    </node>
+    <node id="Genotype">
+      <data key="label">genotype</data>
+    </node>
+    <node id="OrganismalEntity">
+      <data key="label">organismal entity</data>
+    </node>
+    <node id="CellularOrganism">
+      <data key="label">cellular organism</data>
+    </node>
+    <node id="Virus">
+      <data key="label">virus</data>
+    </node>
+    <node id="CellLine">
+      <data key="label">cell line</data>
+    </node>
+    <node id="IndividualOrganism">
+      <data key="label">individual organism</data>
+    </node>
+    <node id="Case">
+      <data key="label">case</data>
+    </node>
+    <node id="LifeStage">
+      <data key="label">life stage</data>
+    </node>
+    <node id="PopulationOfIndividualOrganisms">
+      <data key="label">population of individual organisms</data>
+    </node>
+    <node id="StudyPopulation">
+      <data key="label">study population</data>
+    </node>
+    <node id="Cohort">
+      <data key="label">cohort</data>
+    </node>
+    <node id="AnatomicalEntity">
+      <data key="label">anatomical entity</data>
+    </node>
+    <node id="Cell">
+      <data key="label">cell</data>
+    </node>
+    <node id="GrossAnatomicalStructure">
+      <data key="label">gross anatomical structure</data>
+    </node>
+    <node id="PathologicalAnatomicalStructure">
+      <data key="label">pathological anatomical structure</data>
+    </node>
+    <node id="PathologicalEntityMixin">
+      <data key="label">pathological entity mixin</data>
+    </node>
+    <node id="CellularComponent">
+      <data key="label">cellular component</data>
+    </node>
+    <node id="BiologicalProcessOrActivity">
+      <data key="label">biological process or activity</data>
+    </node>
+    <node id="MolecularActivity">
+      <data key="label">molecular activity</data>
+    </node>
+    <node id="BiologicalProcess">
+      <data key="label">biological process</data>
+    </node>
+    <node id="PathologicalProcess">
+      <data key="label">pathological process</data>
+    </node>
+    <node id="PhysiologicalProcess">
+      <data key="label">physiological process</data>
+    </node>
+    <node id="Behavior">
+      <data key="label">behavior</data>
+    </node>
+    <node id="Pathway">
+      <data key="label">pathway</data>
+      <data key="represented_as">node</data>
+      <data key="preferred_id">['reactome', 'wikipathways']</data>
+      <data key="input_label">['reactome', 'wikipathways']</data>
+    </node>
+    <node id="SO_0001060">
+      <data key="label">sequence variant</data>
+      <data key="represented_as">node</data>
+      <data key="preferred_id">['clinically relevant', 'known', 'somatic']</data>
+      <data key="label_in_input">['Clinically_relevant_variant', 'Known_variant', 'Somatic_mutation']</data>
+      <data key="properties">{'source': 'str', 'original_source': 'str', 'effect': 'str', 'biotype': 'str'}</data>
+    </node>
+    <node id="Snv">
+      <data key="label">snv</data>
+    </node>
+    <node id="Gene">
+      <data key="label">gene</data>
+      <data key="represented_as">node</data>
+      <data key="preferred_id">hgnc</data>
+      <data key="label_in_input">['hgnc', 'ensg']</data>
+      <data key="exclude_properties">accession</data>
+    </node>
+    <node id="DiseaseOrPhenotypicFeature">
+      <data key="label">disease or phenotypic feature</data>
+    </node>
+    <node id="PhenotypicFeature">
+      <data key="label">phenotypic feature</data>
+    </node>
+    <node id="ClinicalFinding">
+      <data key="label">clinical finding</data>
+    </node>
+    <node id="BehavioralFeature">
+      <data key="label">behavioral feature</data>
+    </node>
+    <node id="MONDO_0000001">
+      <data key="label">disease</data>
+      <data key="represented_as">node</data>
+      <data key="preferred_id">doid</data>
+      <data key="label_in_input">Disease</data>
+    </node>
+    <node id="ThingWithTaxon">
+      <data key="label">thing with taxon</data>
+    </node>
+    <node id="Attribute">
+      <data key="label">attribute</data>
+    </node>
+    <node id="BehavioralExposure">
+      <data key="label">behavioral exposure</data>
+    </node>
+    <node id="BioticExposure">
+      <data key="label">biotic exposure</data>
+    </node>
+    <node id="ComplexChemicalExposure">
+      <data key="label">complex chemical exposure</data>
+    </node>
+    <node id="DiseaseOrPhenotypicFeatureExposure">
+      <data key="label">disease or phenotypic feature exposure</data>
+    </node>
+    <node id="GenomicBackgroundExposure">
+      <data key="label">genomic background exposure</data>
+    </node>
+    <node id="PathologicalAnatomicalExposure">
+      <data key="label">pathological anatomical exposure</data>
+    </node>
+    <node id="PathologicalProcessExposure">
+      <data key="label">pathological process exposure</data>
+    </node>
+    <node id="SocioeconomicExposure">
+      <data key="label">socioeconomic exposure</data>
+    </node>
+    <node id="ChemicalExposure">
+      <data key="label">chemical exposure</data>
+    </node>
+    <node id="DrugExposure">
+      <data key="label">drug exposure</data>
+    </node>
+    <node id="DrugToGeneInteractionExposure">
+      <data key="label">drug to gene interaction exposure</data>
+    </node>
+    <node id="EnvironmentalExposure">
+      <data key="label">environmental exposure</data>
+    </node>
+    <node id="GeographicExposure">
+      <data key="label">geographic exposure</data>
+    </node>
+    <node id="OrganismAttribute">
+      <data key="label">organism attribute</data>
+    </node>
+    <node id="PhenotypicQuality">
+      <data key="label">phenotypic quality</data>
+    </node>
+    <node id="ChemicalRole">
+      <data key="label">chemical role</data>
+    </node>
+    <node id="SocioeconomicAttribute">
+      <data key="label">socioeconomic attribute</data>
+    </node>
+    <node id="Zygosity">
+      <data key="label">zygosity</data>
+    </node>
+    <node id="ClinicalAttribute">
+      <data key="label">clinical attribute</data>
+    </node>
+    <node id="ClinicalMeasurement">
+      <data key="label">clinical measurement</data>
+    </node>
+    <node id="ClinicalCourse">
+      <data key="label">clinical course</data>
+    </node>
+    <node id="Onset">
+      <data key="label">onset</data>
+    </node>
+    <node id="ClinicalModifier">
+      <data key="label">clinical modifier</data>
+    </node>
+    <node id="BiologicalSex">
+      <data key="label">biological sex</data>
+    </node>
+    <node id="GenotypicSex">
+      <data key="label">genotypic sex</data>
+    </node>
+    <node id="PhenotypicSex">
+      <data key="label">phenotypic sex</data>
+    </node>
+    <node id="SeverityValue">
+      <data key="label">severity value</data>
+    </node>
+    <node id="ChemicalEntity">
+      <data key="label">chemical entity</data>
+    </node>
+    <node id="EnvironmentalFoodContaminant">
+      <data key="label">environmental food contaminant</data>
+    </node>
+    <node id="FoodAdditive">
+      <data key="label">food additive</data>
+    </node>
+    <node id="ChemicalMixture">
+      <data key="label">chemical mixture</data>
+    </node>
+    <node id="ComplexMolecularMixture">
+      <data key="label">complex molecular mixture</data>
+    </node>
+    <node id="Food">
+      <data key="label">food</data>
+    </node>
+    <node id="ProcessedMaterial">
+      <data key="label">processed material</data>
+    </node>
+    <node id="MolecularMixture">
+      <data key="label">molecular mixture</data>
+    </node>
+    <node id="Drug">
+      <data key="label">drug</data>
+    </node>
+    <node id="MolecularEntity">
+      <data key="label">molecular entity</data>
+    </node>
+    <node id="SmallMolecule">
+      <data key="label">small molecule</data>
+    </node>
+    <node id="NucleicAcidEntity">
+      <data key="label">nucleic acid entity</data>
+    </node>
+    <node id="CodingSequence">
+      <data key="label">coding sequence</data>
+    </node>
+    <node id="Exon">
+      <data key="label">exon</data>
+    </node>
+    <node id="Transcript">
+      <data key="label">transcript</data>
+    </node>
+    <node id="RNAProduct">
+      <data key="label">RNA product</data>
+    </node>
+    <node id="RNAProductIsoform">
+      <data key="label">RNA product isoform</data>
+    </node>
+    <node id="NoncodingRNAProduct">
+      <data key="label">noncoding RNA product</data>
+    </node>
+    <node id="MicroRNA">
+      <data key="label">microRNA</data>
+      <data key="represented_as">node</data>
+      <data key="preferred_id">mirbase.mature</data>
+      <data key="label_in_input">mirna</data>
+    </node>
+    <node id="SiRNA">
+      <data key="label">siRNA</data>
+    </node>
+    <node id="SO_0001536">
+      <data key="label">functional effect variant</data>
+    </node>
+    <node id="SO_0002218">
+      <data key="label">functionally abnormal</data>
+    </node>
+    <node id="SO_0001773">
+      <data key="label">lethal variant</data>
+      <data key="represented_as">node</data>
+      <data key="label_in_input">lethal</data>
+      <data key="preferred_id">id</data>
+    </node>
+    <node id="SO_0002314">
+      <data key="label">altered gene product level</data>
+      <data key="represented_as">node</data>
+      <data key="label_in_input">agpl</data>
+      <data key="preferred_id">id</data>
+    </node>
+    <node id="SO_0002316">
+      <data key="label">decreased gene product level</data>
+      <data key="represented_as">node</data>
+      <data key="label_in_input">agpl_decreased</data>
+      <data key="preferred_id">id</data>
+    </node>
+    <node id="MONDO_0700096">
+      <data key="label">human disease</data>
+    </node>
+    <node id="MONDO_0002025">
+      <data key="label">psychiatric disorder</data>
+    </node>
+    <node id="MONDO_0024429">
+      <data key="label">Alice in Wonderland syndrome</data>
+    </node>
+    <node id="MONDO_0800105">
+      <data key="label">catatonia</data>
+    </node>
+    <node id="MONDO_0003847">
+      <data key="label">hereditary disease</data>
+    </node>
+    <node id="MONDO_0000429">
+      <data key="label">autosomal genetic disease</data>
+    </node>
+    <node id="MONDO_0006025">
+      <data key="label">autosomal recessive disease</data>
+    </node>
+    <node id="MONDO_0009061">
+      <data key="label">cystic fibrosis</data>
+    </node>
+    <node id="SideEffect">
+      <data key="label">side effect</data>
+      <data key="user_extension">True</data>
+      <data key="is_a">phenotypic feature</data>
+      <data key="represented_as">node</data>
+      <data key="preferred_id">sider.effect</data>
+      <data key="label_in_input">sider</data>
+    </node>
+    <node id="SnRNASequence">
+      <data key="label">snRNA sequence</data>
+      <data key="user_extension">True</data>
+      <data key="is_a">nucleic acid entity</data>
+      <data key="represented_as">node</data>
+      <data key="preferred_id">['intact', 'rnacentral']</data>
+      <data key="label_in_input">['intact_snrna', 'rnacentral_snrna']</data>
+      <data key="properties">{'ac': 'str', 'fullName': 'str', 'shortName': 'str', 'preferredName': 'str'}</data>
+      <data key="exclude_properties">sequence</data>
+    </node>
+    <node id="DNASequence">
+      <data key="label">DNA sequence</data>
+      <data key="user_extension">True</data>
+      <data key="is_a">nucleic acid entity</data>
+      <data key="represented_as">node</data>
+      <data key="preferred_id">ensembl</data>
+      <data key="label_in_input">dna</data>
+      <data key="properties">{'ac': 'str', 'fullName': 'str', 'shortName': 'str', 'preferredName': 'str', 'sequence': 'str'}</data>
+    </node>
+    <node id="DsDNASequence">
+      <data key="label">dsDNA sequence</data>
+      <data key="user_extension">True</data>
+      <data key="is_a">['DNA sequence', 'nucleic acid entity']</data>
+      <data key="inherit_properties">True</data>
+      <data key="represented_as">node</data>
+      <data key="preferred_id">['intact', 'uniparc']</data>
+      <data key="label_in_input">['intact_dsdna', 'uniprot_archive_dsdna']</data>
+      <data key="properties">{'ac': 'str', 'fullName': 'str', 'shortName': 'str', 'preferredName': 'str', 'sequence': 'str'}</data>
+      <data key="exclude_properties">{}</data>
+    </node>
+    <node id="PostTranslationalInteraction">
+      <data key="label">post translational interaction</data>
+      <data key="user_extension">True</data>
+      <data key="is_a">pairwise molecular interaction</data>
+      <data key="represented_as">node</data>
+      <data key="label_as_edge">INTERACTS_POST_TRANSLATIONAL</data>
+      <data key="label_in_input">post_translational</data>
+      <data key="preferred_id">id</data>
+    </node>
+    <node id="Phosphorylation">
+      <data key="label">phosphorylation</data>
+      <data key="user_extension">True</data>
+      <data key="is_a">post translational interaction</data>
+      <data key="represented_as">edge</data>
+      <data key="label_in_input">phosphorylation</data>
+      <data key="preferred_id">id</data>
+    </node>
+    <node id="GenotypeToTissueAssociation">
+      <data key="label">genotype to tissue association</data>
+      <data key="user_extension">True</data>
+    </node>
+    <node id="MutationToTissueAssociation">
+      <data key="label">mutation to tissue association</data>
+      <data key="user_extension">True</data>
+      <data key="is_a">['genotype to tissue association', 'entity to tissue association', 'association']</data>
+      <data key="represented_as">edge</data>
+      <data key="label_as_edge">Is_Mutated_In</data>
+      <data key="label_in_input">Gene_Is_Mutated_In_Cell_Tissue</data>
+      <data key="preferred_id">id</data>
+    </node>
+    <node id="EntityToTissueAssociation">
+      <data key="label">entity to tissue association</data>
+      <data key="user_extension">True</data>
+    </node>
+    <node id="Reactome.pathway">
+      <data key="label">reactome.pathway</data>
+      <data key="user_extension">True</data>
+      <data key="preferred_id">reactome</data>
+      <data key="input_label">reactome</data>
+      <data key="represented_as">node</data>
+      <data key="virtual">True</data>
+      <data key="is_a">pathway</data>
+    </node>
+    <node id="Wikipathways.pathway">
+      <data key="label">wikipathways.pathway</data>
+      <data key="user_extension">True</data>
+      <data key="preferred_id">wikipathways</data>
+      <data key="input_label">wikipathways</data>
+      <data key="represented_as">node</data>
+      <data key="virtual">True</data>
+      <data key="is_a">pathway</data>
+    </node>
+    <node id="ClinicallyRelevant.sequenceVariant">
+      <data key="label">clinically relevant.sequence variant</data>
+      <data key="user_extension">True</data>
+      <data key="preferred_id">clinically relevant</data>
+      <data key="input_label">Clinically_relevant_variant</data>
+      <data key="represented_as">node</data>
+      <data key="virtual">True</data>
+      <data key="is_a">sequence variant</data>
+      <data key="properties">{'source': 'str', 'original_source': 'str', 'effect': 'str', 'biotype': 'str'}</data>
+    </node>
+    <node id="Known.sequenceVariant">
+      <data key="label">known.sequence variant</data>
+      <data key="user_extension">True</data>
+      <data key="preferred_id">known</data>
+      <data key="input_label">Known_variant</data>
+      <data key="represented_as">node</data>
+      <data key="virtual">True</data>
+      <data key="is_a">sequence variant</data>
+      <data key="properties">{'source': 'str', 'original_source': 'str', 'effect': 'str', 'biotype': 'str'}</data>
+    </node>
+    <node id="Somatic.sequenceVariant">
+      <data key="label">somatic.sequence variant</data>
+      <data key="user_extension">True</data>
+      <data key="preferred_id">somatic</data>
+      <data key="input_label">Somatic_mutation</data>
+      <data key="represented_as">node</data>
+      <data key="virtual">True</data>
+      <data key="is_a">sequence variant</data>
+      <data key="properties">{'source': 'str', 'original_source': 'str', 'effect': 'str', 'biotype': 'str'}</data>
+    </node>
+    <node id="Intact.snRNASequence">
+      <data key="label">intact.snRNA sequence</data>
+      <data key="user_extension">True</data>
+      <data key="preferred_id">intact</data>
+      <data key="input_label">intact_snrna</data>
+      <data key="represented_as">node</data>
+      <data key="virtual">True</data>
+      <data key="is_a">['snRNA sequence', 'nucleic acid entity']</data>
+      <data key="properties">{'ac': 'str', 'fullName': 'str', 'shortName': 'str', 'preferredName': 'str'}</data>
+      <data key="exclude_properties">sequence</data>
+    </node>
+    <node id="Rnacentral.snRNASequence">
+      <data key="label">rnacentral.snRNA sequence</data>
+      <data key="user_extension">True</data>
+      <data key="preferred_id">rnacentral</data>
+      <data key="input_label">rnacentral_snrna</data>
+      <data key="represented_as">node</data>
+      <data key="virtual">True</data>
+      <data key="is_a">['snRNA sequence', 'nucleic acid entity']</data>
+      <data key="properties">{'ac': 'str', 'fullName': 'str', 'shortName': 'str', 'preferredName': 'str'}</data>
+      <data key="exclude_properties">sequence</data>
+    </node>
+    <node id="Intact.dsDNASequence">
+      <data key="label">intact.dsDNA sequence</data>
+      <data key="user_extension">True</data>
+      <data key="preferred_id">intact</data>
+      <data key="input_label">intact_dsdna</data>
+      <data key="represented_as">node</data>
+      <data key="virtual">True</data>
+      <data key="is_a">['dsDNA sequence', 'DNA sequence', 'nucleic acid entity']</data>
+      <data key="inherit_properties">True</data>
+      <data key="properties">{'ac': 'str', 'fullName': 'str', 'shortName': 'str', 'preferredName': 'str', 'sequence': 'str'}</data>
+      <data key="exclude_properties">{}</data>
+    </node>
+    <node id="Uniparc.dsDNASequence">
+      <data key="label">uniparc.dsDNA sequence</data>
+      <data key="user_extension">True</data>
+      <data key="preferred_id">uniparc</data>
+      <data key="input_label">uniprot_archive_dsdna</data>
+      <data key="represented_as">node</data>
+      <data key="virtual">True</data>
+      <data key="is_a">['dsDNA sequence', 'DNA sequence', 'nucleic acid entity']</data>
+      <data key="inherit_properties">True</data>
+      <data key="properties">{'ac': 'str', 'fullName': 'str', 'shortName': 'str', 'preferredName': 'str', 'sequence': 'str'}</data>
+      <data key="exclude_properties">{}</data>
+    </node>
+    <node id="Known.sequenceVariant.variantToGeneAssociation">
+      <data key="label">known.sequence variant.variant to gene association</data>
+      <data key="user_extension">True</data>
+      <data key="source">known.sequence variant</data>
+      <data key="input_label">VARIANT_FOUND_IN_GENE_Known_variant_Gene</data>
+      <data key="represented_as">edge</data>
+      <data key="virtual">True</data>
+      <data key="is_a">variant to gene association</data>
+      <data key="target">gene</data>
+      <data key="preferred_id">id</data>
+    </node>
+    <node id="Somatic.sequenceVariant.variantToGeneAssociation">
+      <data key="label">somatic.sequence variant.variant to gene association</data>
+      <data key="user_extension">True</data>
+      <data key="source">somatic.sequence variant</data>
+      <data key="input_label">VARIANT_FOUND_IN_GENE_Somatic_mutation_Gene</data>
+      <data key="represented_as">edge</data>
+      <data key="virtual">True</data>
+      <data key="is_a">variant to gene association</data>
+      <data key="target">gene</data>
+      <data key="preferred_id">id</data>
+    </node>
+    <edge source="Association" target="Entity" />
+    <edge source="BehaviorToBehavioralFeatureAssociation" target="Association" />
+    <edge source="BehaviorToBehavioralFeatureAssociation" target="EntityToPhenotypicFeatureAssociationMixin" />
+    <edge source="EntityToPhenotypicFeatureAssociationMixin" target="EntityToFeatureOrDiseaseQualifiersMixin" />
+    <edge source="EntityToPhenotypicFeatureAssociationMixin" target="FrequencyQuantifier" />
+    <edge source="EntityToFeatureOrDiseaseQualifiersMixin" target="FrequencyQualifierMixin" />
+    <edge source="FrequencyQuantifier" target="RelationshipQuantifier" />
+    <edge source="CaseToPhenotypicFeatureAssociation" target="Association" />
+    <edge source="CaseToPhenotypicFeatureAssociation" target="CaseToEntityAssociationMixin" />
+    <edge source="ChemicalAffectsGeneAssociation" target="Association" />
+    <edge source="ChemicalEntityAssessesNamedThingAssociation" target="Association" />
+    <edge source="ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation" target="Association" />
+    <edge source="ChemicalGeneInteractionAssociation" target="Association" />
+    <edge source="ChemicalGeneInteractionAssociation" target="ChemicalToEntityAssociationMixin" />
+    <edge source="ChemicalToEntityAssociationMixin" target="ChemicalEntityToEntityAssociationMixin" />
+    <edge source="ChemicalToDiseaseOrPhenotypicFeatureAssociation" target="Association" />
+    <edge source="ChemicalToDiseaseOrPhenotypicFeatureAssociation" target="EntityToDiseaseOrPhenotypicFeatureAssociationMixin" />
+    <edge source="ChemicalToPathwayAssociation" target="Association" />
+    <edge source="ContributorAssociation" target="Association" />
+    <edge source="DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation" target="Association" />
+    <edge source="DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation" target="DiseaseOrPhenotypicFeatureToEntityAssociationMixin" />
+    <edge source="DiseaseOrPhenotypicFeatureToLocationAssociation" target="Association" />
+    <edge source="DiseaseToExposureEventAssociation" target="Association" />
+    <edge source="DiseaseToExposureEventAssociation" target="DiseaseToEntityAssociationMixin" />
+    <edge source="DiseaseToExposureEventAssociation" target="EntityToExposureEventAssociationMixin" />
+    <edge source="DiseaseToPhenotypicFeatureAssociation" target="Association" />
+    <edge source="DrugToGeneAssociation" target="Association" />
+    <edge source="DrugToGeneAssociation" target="DrugToEntityAssociationMixin" />
+    <edge source="EntityToDiseaseAssociation" target="Association" />
+    <edge source="EntityToPhenotypicFeatureAssociation" target="Association" />
+    <edge source="ExposureEventToOutcomeAssociation" target="Association" />
+    <edge source="ExposureEventToOutcomeAssociation" target="EntityToOutcomeAssociationMixin" />
+    <edge source="ExposureEventToPhenotypicFeatureAssociation" target="Association" />
+    <edge source="GeneToExpressionSiteAssociation" target="Association" />
+    <edge source="GeneToGeneFamilyAssociation" target="Association" />
+    <edge source="GeneToPathwayAssociation" target="Association" />
+    <edge source="GeneToPathwayAssociation" target="GeneToEntityAssociationMixin" />
+    <edge source="GeneToPhenotypicFeatureAssociation" target="Association" />
+    <edge source="GenotypeToGeneAssociation" target="Association" />
+    <edge source="GenotypeToGenotypePartAssociation" target="Association" />
+    <edge source="GenotypeToPhenotypicFeatureAssociation" target="Association" />
+    <edge source="GenotypeToPhenotypicFeatureAssociation" target="GenotypeToEntityAssociationMixin" />
+    <edge source="GenotypeToVariantAssociation" target="Association" />
+    <edge source="InformationContentEntityToNamedThingAssociation" target="Association" />
+    <edge source="MaterialSampleDerivationAssociation" target="Association" />
+    <edge source="MaterialSampleToDiseaseOrPhenotypicFeatureAssociation" target="Association" />
+    <edge source="MaterialSampleToDiseaseOrPhenotypicFeatureAssociation" target="MaterialSampleToEntityAssociationMixin" />
+    <edge source="MolecularActivityToChemicalEntityAssociation" target="Association" />
+    <edge source="MolecularActivityToMolecularActivityAssociation" target="Association" />
+    <edge source="MolecularActivityToPathwayAssociation" target="Association" />
+    <edge source="NamedThingAssociatedWithLikelihoodOfNamedThingAssociation" target="Association" />
+    <edge source="OrganismTaxonToEnvironmentAssociation" target="Association" />
+    <edge source="OrganismTaxonToEnvironmentAssociation" target="OrganismTaxonToEntityAssociation" />
+    <edge source="OrganismToOrganismAssociation" target="Association" />
+    <edge source="OrganismalEntityAsAModelOfDiseaseAssociation" target="Association" />
+    <edge source="OrganismalEntityAsAModelOfDiseaseAssociation" target="EntityToDiseaseAssociationMixin" />
+    <edge source="OrganismalEntityAsAModelOfDiseaseAssociation" target="ModelToDiseaseAssociationMixin" />
+    <edge source="PopulationToPopulationAssociation" target="Association" />
+    <edge source="SequenceVariantModulatesTreatmentAssociation" target="Association" />
+    <edge source="TaxonToTaxonAssociation" target="Association" />
+    <edge source="VariantToPhenotypicFeatureAssociation" target="Association" />
+    <edge source="VariantToPhenotypicFeatureAssociation" target="VariantToEntityAssociationMixin" />
+    <edge source="VariantToPopulationAssociation" target="Association" />
+    <edge source="CellLineToDiseaseOrPhenotypicFeatureAssociation" target="Association" />
+    <edge source="CellLineToDiseaseOrPhenotypicFeatureAssociation" target="CellLineToEntityAssociationMixin" />
+    <edge source="CellLineAsAModelOfDiseaseAssociation" target="CellLineToDiseaseOrPhenotypicFeatureAssociation" />
+    <edge source="ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation" target="Association" />
+    <edge source="ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation" target="ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation" />
+    <edge source="GenotypeToDiseaseAssociation" target="Association" />
+    <edge source="GenotypeAsAModelOfDiseaseAssociation" target="GenotypeToDiseaseAssociation" />
+    <edge source="SequenceAssociation" target="Association" />
+    <edge source="GenomicSequenceLocalization" target="SequenceAssociation" />
+    <edge source="VariantToDiseaseAssociation" target="Association" />
+    <edge source="VariantAsAModelOfDiseaseAssociation" target="VariantToDiseaseAssociation" />
+    <edge source="VariantToGeneAssociation" target="Association" />
+    <edge source="VariantToGeneExpressionAssociation" target="VariantToGeneAssociation" />
+    <edge source="VariantToGeneExpressionAssociation" target="GeneExpressionMixin" />
+    <edge source="AnatomicalEntityToAnatomicalEntityAssociation" target="Association" />
+    <edge source="AnatomicalEntityToAnatomicalEntityOntogenicAssociation" target="AnatomicalEntityToAnatomicalEntityAssociation" />
+    <edge source="AnatomicalEntityToAnatomicalEntityPartOfAssociation" target="AnatomicalEntityToAnatomicalEntityAssociation" />
+    <edge source="ChemicalToChemicalAssociation" target="Association" />
+    <edge source="ChemicalToChemicalDerivationAssociation" target="ChemicalToChemicalAssociation" />
+    <edge source="ReactionToParticipantAssociation" target="ChemicalToChemicalAssociation" />
+    <edge source="ReactionToCatalystAssociation" target="ReactionToParticipantAssociation" />
+    <edge source="OrganismTaxonToOrganismTaxonAssociation" target="Association" />
+    <edge source="OrganismTaxonToOrganismTaxonInteraction" target="OrganismTaxonToOrganismTaxonAssociation" />
+    <edge source="OrganismTaxonToOrganismTaxonSpecialization" target="OrganismTaxonToOrganismTaxonAssociation" />
+    <edge source="GeneToDiseaseAssociation" target="Association" />
+    <edge source="DruggableGeneToDiseaseAssociation" target="GeneToDiseaseAssociation" />
+    <edge source="GeneAsAModelOfDiseaseAssociation" target="GeneToDiseaseAssociation" />
+    <edge source="GeneHasVariantThatContributesToDiseaseAssociation" target="GeneToDiseaseAssociation" />
+    <edge source="GeneToGeneAssociation" target="Association" />
+    <edge source="GeneToGeneCoexpressionAssociation" target="GeneToGeneAssociation" />
+    <edge source="GeneToGeneHomologyAssociation" target="GeneToGeneAssociation" />
+    <edge source="PairwiseGeneToGeneInteraction" target="GeneToGeneAssociation" />
+    <edge source="PairwiseMolecularInteraction" target="PairwiseGeneToGeneInteraction" />
+    <edge source="SequenceFeatureRelationship" target="Association" />
+    <edge source="ExonToTranscriptRelationship" target="SequenceFeatureRelationship" />
+    <edge source="GeneToGeneProductRelationship" target="SequenceFeatureRelationship" />
+    <edge source="TranscriptToGeneRelationship" target="SequenceFeatureRelationship" />
+    <edge source="FunctionalAssociation" target="Association" />
+    <edge source="GeneToGoTermAssociation" target="FunctionalAssociation" />
+    <edge source="MacromolecularMachineToBiologicalProcessAssociation" target="FunctionalAssociation" />
+    <edge source="MacromolecularMachineToBiologicalProcessAssociation" target="MacromolecularMachineToEntityAssociationMixin" />
+    <edge source="MacromolecularMachineToCellularComponentAssociation" target="FunctionalAssociation" />
+    <edge source="MacromolecularMachineToMolecularActivityAssociation" target="FunctionalAssociation" />
+    <edge source="NamedThing" target="Entity" />
+    <edge source="Activity" target="NamedThing" />
+    <edge source="Activity" target="ActivityAndBehavior" />
+    <edge source="ActivityAndBehavior" target="Occurrent" />
+    <edge source="Occurrent" target="PhysicalEssenceOrOccurrent" />
+    <edge source="Event" target="NamedThing" />
+    <edge source="Phenomenon" target="NamedThing" />
+    <edge source="AdministrativeEntity" target="NamedThing" />
+    <edge source="Agent" target="AdministrativeEntity" />
+    <edge source="Treatment" target="NamedThing" />
+    <edge source="Treatment" target="ChemicalOrDrugOrTreatment" />
+    <edge source="Treatment" target="ExposureEvent" />
+    <edge source="ExposureEvent" target="OntologyClass" />
+    <edge source="ClinicalEntity" target="NamedThing" />
+    <edge source="ClinicalTrial" target="ClinicalEntity" />
+    <edge source="ClinicalIntervention" target="ClinicalEntity" />
+    <edge source="Hospitalization" target="ClinicalIntervention" />
+    <edge source="Device" target="NamedThing" />
+    <edge source="Procedure" target="NamedThing" />
+    <edge source="PlanetaryEntity" target="NamedThing" />
+    <edge source="EnvironmentalFeature" target="PlanetaryEntity" />
+    <edge source="EnvironmentalProcess" target="PlanetaryEntity" />
+    <edge source="GeographicLocation" target="PlanetaryEntity" />
+    <edge source="GeographicLocationAtTime" target="GeographicLocation" />
+    <edge source="PhysicalEntity" target="NamedThing" />
+    <edge source="PhysicalEntity" target="PhysicalEssence" />
+    <edge source="MaterialSample" target="PhysicalEntity" />
+    <edge source="MaterialSample" target="SubjectOfInvestigation" />
+    <edge source="OrganismTaxon" target="NamedThing" />
+    <edge source="InformationContentEntity" target="NamedThing" />
+    <edge source="CommonDataElement" target="InformationContentEntity" />
+    <edge source="Study" target="InformationContentEntity" />
+    <edge source="StudyVariable" target="InformationContentEntity" />
+    <edge source="ConfidenceLevel" target="InformationContentEntity" />
+    <edge source="EvidenceType" target="InformationContentEntity" />
+    <edge source="DatasetDistribution" target="InformationContentEntity" />
+    <edge source="DatasetSummary" target="InformationContentEntity" />
+    <edge source="DatasetVersion" target="InformationContentEntity" />
+    <edge source="Dataset" target="InformationContentEntity" />
+    <edge source="StudyResult" target="InformationContentEntity" />
+    <edge source="ChiSquaredAnalysisResult" target="StudyResult" />
+    <edge source="ConceptCountAnalysisResult" target="StudyResult" />
+    <edge source="ObservedExpectedFrequencyAnalysisResult" target="StudyResult" />
+    <edge source="RelativeFrequencyAnalysisResult" target="StudyResult" />
+    <edge source="TextMiningResult" target="StudyResult" />
+    <edge source="InformationResource" target="InformationContentEntity" />
+    <edge source="Publication" target="InformationContentEntity" />
+    <edge source="Article" target="Publication" />
+    <edge source="Book" target="Publication" />
+    <edge source="Serial" target="Publication" />
+    <edge source="BookChapter" target="Publication" />
+    <edge source="BiologicalEntity" target="NamedThing" />
+    <edge source="BiologicalEntity" target="ThingWithTaxon" />
+    <edge source="Genome" target="BiologicalEntity" />
+    <edge source="Genome" target="GenomicEntity" />
+    <edge source="Haplotype" target="BiologicalEntity" />
+    <edge source="MacromolecularComplex" target="BiologicalEntity" />
+    <edge source="MacromolecularComplex" target="MacromolecularMachineMixin" />
+    <edge source="NucleicAcidSequenceMotif" target="BiologicalEntity" />
+    <edge source="NucleosomeModification" target="BiologicalEntity" />
+    <edge source="NucleosomeModification" target="EpigenomicEntity" />
+    <edge source="NucleosomeModification" target="GeneProductIsoformMixin" />
+    <edge source="GeneProductIsoformMixin" target="GeneProductMixin" />
+    <edge source="GeneProductMixin" target="GeneOrGeneProduct" />
+    <edge source="PosttranslationalModification" target="BiologicalEntity" />
+    <edge source="ProteinDomain" target="BiologicalEntity" />
+    <edge source="ProteinDomain" target="ChemicalEntityOrGeneOrGeneProduct" />
+    <edge source="ProteinDomain" target="GeneGroupingMixin" />
+    <edge source="ProteinFamily" target="BiologicalEntity" />
+    <edge source="ReagentTargetedGene" target="BiologicalEntity" />
+    <edge source="GeneFamily" target="BiologicalEntity" />
+    <edge source="Polypeptide" target="BiologicalEntity" />
+    <edge source="Polypeptide" target="ChemicalEntityOrProteinOrPolypeptide" />
+    <edge source="Protein" target="Polypeptide" />
+    <edge source="ProteinIsoform" target="Protein" />
+    <edge source="GeneticInheritance" target="BiologicalEntity" />
+    <edge source="Genotype" target="BiologicalEntity" />
+    <edge source="OrganismalEntity" target="BiologicalEntity" />
+    <edge source="CellularOrganism" target="OrganismalEntity" />
+    <edge source="Virus" target="OrganismalEntity" />
+    <edge source="CellLine" target="OrganismalEntity" />
+    <edge source="IndividualOrganism" target="OrganismalEntity" />
+    <edge source="Case" target="IndividualOrganism" />
+    <edge source="LifeStage" target="OrganismalEntity" />
+    <edge source="PopulationOfIndividualOrganisms" target="OrganismalEntity" />
+    <edge source="StudyPopulation" target="PopulationOfIndividualOrganisms" />
+    <edge source="Cohort" target="StudyPopulation" />
+    <edge source="AnatomicalEntity" target="OrganismalEntity" />
+    <edge source="Cell" target="AnatomicalEntity" />
+    <edge source="GrossAnatomicalStructure" target="AnatomicalEntity" />
+    <edge source="PathologicalAnatomicalStructure" target="AnatomicalEntity" />
+    <edge source="PathologicalAnatomicalStructure" target="PathologicalEntityMixin" />
+    <edge source="CellularComponent" target="AnatomicalEntity" />
+    <edge source="BiologicalProcessOrActivity" target="BiologicalEntity" />
+    <edge source="MolecularActivity" target="BiologicalProcessOrActivity" />
+    <edge source="BiologicalProcess" target="BiologicalProcessOrActivity" />
+    <edge source="PathologicalProcess" target="BiologicalProcess" />
+    <edge source="PhysiologicalProcess" target="BiologicalProcess" />
+    <edge source="Behavior" target="BiologicalProcess" />
+    <edge source="Pathway" target="BiologicalProcess" />
+    <edge source="SO_0001060" target="BiologicalEntity" />
+    <edge source="Snv" target="SO_0001060" />
+    <edge source="Gene" target="BiologicalEntity" />
+    <edge source="DiseaseOrPhenotypicFeature" target="BiologicalEntity" />
+    <edge source="PhenotypicFeature" target="DiseaseOrPhenotypicFeature" />
+    <edge source="ClinicalFinding" target="PhenotypicFeature" />
+    <edge source="BehavioralFeature" target="PhenotypicFeature" />
+    <edge source="MONDO_0000001" target="DiseaseOrPhenotypicFeature" />
+    <edge source="Attribute" target="NamedThing" />
+    <edge source="BehavioralExposure" target="Attribute" />
+    <edge source="BioticExposure" target="Attribute" />
+    <edge source="ComplexChemicalExposure" target="Attribute" />
+    <edge source="DiseaseOrPhenotypicFeatureExposure" target="Attribute" />
+    <edge source="GenomicBackgroundExposure" target="Attribute" />
+    <edge source="PathologicalAnatomicalExposure" target="Attribute" />
+    <edge source="PathologicalProcessExposure" target="Attribute" />
+    <edge source="SocioeconomicExposure" target="Attribute" />
+    <edge source="ChemicalExposure" target="Attribute" />
+    <edge source="DrugExposure" target="ChemicalExposure" />
+    <edge source="DrugToGeneInteractionExposure" target="DrugExposure" />
+    <edge source="EnvironmentalExposure" target="Attribute" />
+    <edge source="GeographicExposure" target="EnvironmentalExposure" />
+    <edge source="OrganismAttribute" target="Attribute" />
+    <edge source="PhenotypicQuality" target="OrganismAttribute" />
+    <edge source="ChemicalRole" target="Attribute" />
+    <edge source="SocioeconomicAttribute" target="Attribute" />
+    <edge source="Zygosity" target="Attribute" />
+    <edge source="ClinicalAttribute" target="Attribute" />
+    <edge source="ClinicalMeasurement" target="ClinicalAttribute" />
+    <edge source="ClinicalCourse" target="ClinicalAttribute" />
+    <edge source="Onset" target="ClinicalCourse" />
+    <edge source="ClinicalModifier" target="ClinicalAttribute" />
+    <edge source="BiologicalSex" target="Attribute" />
+    <edge source="GenotypicSex" target="BiologicalSex" />
+    <edge source="PhenotypicSex" target="BiologicalSex" />
+    <edge source="SeverityValue" target="Attribute" />
+    <edge source="ChemicalEntity" target="NamedThing" />
+    <edge source="EnvironmentalFoodContaminant" target="ChemicalEntity" />
+    <edge source="FoodAdditive" target="ChemicalEntity" />
+    <edge source="ChemicalMixture" target="ChemicalEntity" />
+    <edge source="ComplexMolecularMixture" target="ChemicalMixture" />
+    <edge source="Food" target="ChemicalMixture" />
+    <edge source="ProcessedMaterial" target="ChemicalMixture" />
+    <edge source="MolecularMixture" target="ChemicalMixture" />
+    <edge source="Drug" target="MolecularMixture" />
+    <edge source="MolecularEntity" target="ChemicalEntity" />
+    <edge source="SmallMolecule" target="MolecularEntity" />
+    <edge source="NucleicAcidEntity" target="MolecularEntity" />
+    <edge source="CodingSequence" target="NucleicAcidEntity" />
+    <edge source="Exon" target="NucleicAcidEntity" />
+    <edge source="Transcript" target="NucleicAcidEntity" />
+    <edge source="RNAProduct" target="Transcript" />
+    <edge source="RNAProductIsoform" target="RNAProduct" />
+    <edge source="NoncodingRNAProduct" target="RNAProduct" />
+    <edge source="MicroRNA" target="NoncodingRNAProduct" />
+    <edge source="SiRNA" target="NoncodingRNAProduct" />
+    <edge source="SO_0001536" target="SO_0001060" />
+    <edge source="SO_0002218" target="SO_0001536" />
+    <edge source="SO_0001773" target="SO_0002218" />
+    <edge source="SO_0002314" target="SO_0001536" />
+    <edge source="SO_0002316" target="SO_0002314" />
+    <edge source="MONDO_0700096" target="MONDO_0000001" />
+    <edge source="MONDO_0002025" target="MONDO_0700096" />
+    <edge source="MONDO_0024429" target="MONDO_0002025" />
+    <edge source="MONDO_0800105" target="MONDO_0002025" />
+    <edge source="MONDO_0003847" target="MONDO_0700096" />
+    <edge source="MONDO_0000429" target="MONDO_0003847" />
+    <edge source="MONDO_0006025" target="MONDO_0000429" />
+    <edge source="MONDO_0009061" target="MONDO_0006025" />
+    <edge source="SideEffect" target="PhenotypicFeature" />
+    <edge source="SnRNASequence" target="NucleicAcidEntity" />
+    <edge source="DNASequence" target="NucleicAcidEntity" />
+    <edge source="DsDNASequence" target="DNASequence" />
+    <edge source="PostTranslationalInteraction" target="PairwiseMolecularInteraction" />
+    <edge source="Phosphorylation" target="PostTranslationalInteraction" />
+    <edge source="GenotypeToTissueAssociation" target="EntityToTissueAssociation" />
+    <edge source="MutationToTissueAssociation" target="GenotypeToTissueAssociation" />
+    <edge source="EntityToTissueAssociation" target="Association" />
+    <edge source="Reactome.pathway" target="Pathway" />
+    <edge source="Wikipathways.pathway" target="Pathway" />
+    <edge source="ClinicallyRelevant.sequenceVariant" target="SO_0001060" />
+    <edge source="Known.sequenceVariant" target="SO_0001060" />
+    <edge source="Somatic.sequenceVariant" target="SO_0001060" />
+    <edge source="Intact.snRNASequence" target="SnRNASequence" />
+    <edge source="Rnacentral.snRNASequence" target="SnRNASequence" />
+    <edge source="Intact.dsDNASequence" target="DsDNASequence" />
+    <edge source="Uniparc.dsDNASequence" target="DsDNASequence" />
+    <edge source="Known.sequenceVariant.variantToGeneAssociation" target="VariantToGeneAssociation" />
+    <edge source="Somatic.sequenceVariant.variantToGeneAssociation" target="VariantToGeneAssociation" />
+  </graph>
+</graphml>

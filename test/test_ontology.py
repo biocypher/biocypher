@@ -1,66 +1,8 @@
-import pytest
+import os
+
 import networkx as nx
 
-from biocypher import _misc
-from biocypher._mapping import OntologyMapping
-from biocypher._ontology import Ontology, OntologyAdapter
-
-
-@pytest.fixture
-def ontology_mapping():
-    return OntologyMapping(
-        config_file='biocypher/_config/test_schema_config.yaml'
-    )
-
-
-@pytest.fixture
-def biolink_adapter():
-    return OntologyAdapter(
-        'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
-        'entity'
-    )
-
-
-@pytest.fixture
-def so_adapter():
-    return OntologyAdapter('test/so.owl', 'sequence_variant')
-
-
-@pytest.fixture
-def go_adapter():
-    return OntologyAdapter('test/go.owl', 'molecular_function')
-
-
-@pytest.fixture
-def mondo_adapter():
-    return OntologyAdapter('test/mondo.owl', 'disease')
-
-
-@pytest.fixture
-def hybrid_ontology(ontology_mapping):
-    return Ontology(
-        head_ontology={
-            'url':
-                'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
-            'root_node':
-                'entity',
-        },
-        mapping=ontology_mapping,
-        tail_ontologies={
-            'so':
-                {
-                    'url': 'test/so.owl',
-                    'head_join_node': 'sequence variant',
-                    'tail_join_node': 'sequence_variant',
-                },
-            'mondo':
-                {
-                    'url': 'test/mondo.owl',
-                    'head_join_node': 'disease',
-                    'tail_join_node': 'disease',
-                }
-        },
-    )
+from biocypher._ontology import Ontology
 
 
 def test_biolink_adapter(biolink_adapter):
@@ -156,3 +98,18 @@ def test_show_ontology(hybrid_ontology):
     treevis = hybrid_ontology.show_ontology_structure()
 
     assert treevis is not None
+
+
+def test_show_full_ontology(hybrid_ontology):
+    treevis = hybrid_ontology.show_ontology_structure(full=True)
+
+    assert treevis is not None
+
+
+def test_write_ontology(hybrid_ontology, path):
+    passed = hybrid_ontology.show_ontology_structure(to_disk=path)
+
+    f = os.path.join(path, 'ontology_structure.graphml')
+
+    assert passed
+    assert os.path.isfile(f)
