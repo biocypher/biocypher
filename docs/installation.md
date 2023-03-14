@@ -81,6 +81,19 @@ module configuration is found under the top-level keyword `biocypher`, while
 the settings for DBMS systems (e.g., Neo4j) are found under their respective
 keywords (e.g., `neo4j`).
 
+```
+
+```{admonition} Quote characters
+:class: warning
+
+If possible, avoid using quote characters in your YAML files. If you need to
+quote, for instance a tab delimiter (`\t`), use single quotes (`'`), since
+double quotes (`"`) allow parsing of escape characters in YAML, which can cause
+issues downstream. It is safe to use double quotes to quote a single quote
+character (`"'"`).
+
+```
+
 Configuration files are read in the order `default -> user level -> project
 level`, with the later ones overriding the preceding. The following parameters
 are available:
