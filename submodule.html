@@ -153,7 +153,19 @@ with the Neo4j driver.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._ontology.Ontology.show_ontology_structure">
 <span class="sig-name descname"><span class="pre">show_ontology_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to_disk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._ontology.Ontology.show_ontology_structure" title="Permalink to this definition"></a></dt>
-<dd><p>Show the ontology structure using treelib.</p>
+<dd><p>Show the ontology structure using treelib or write to GRAPHML file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>to_disk</strong> (<em>str</em>) – If specified, the ontology structure will be saved
+to disk as a GRAPHML file, to be opened in your favourite
+graph visualisation tool.</p></li>
+<li><p><strong>full</strong> (<em>bool</em>) – If True, the full ontology structure will be shown,
+including all nodes and edges. If False, only the nodes and
+edges that are relevant to the extended schema will be shown.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

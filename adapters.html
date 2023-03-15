@@ -55,7 +55,10 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html#configuration">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Adapters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#biocypher-meta-graph">BioCypher meta-graph</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">BioCypher Tutorial - Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">BioCypher Tutorial - Handling Ontologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial-adapter.html">BioCypher Tutorial - Adapters</a></li>
@@ -99,8 +102,8 @@ development, or if you would like to contribute to the development of a new
 adapter, please refer to <a class="reference external" href="https://github.com/orgs/saezlab/projects/5/views/6">this GitHub projects
 view</a>. Check the tabs for
 different views.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>We are currently working on adapter documentation, so the collection in the
 GitHub Projects view may be less than complete. Please get in touch if you want
 to make sure that your favourite resource is supported.</p>
@@ -110,6 +113,30 @@ adapters and adapter subtypes, as well as an <code class="docutils literal notra
 indicate the state of development: <code class="docutils literal notranslate"><span class="pre">Planned</span></code>, <code class="docutils literal notranslate"><span class="pre">In</span> <span class="pre">progress</span></code>, <code class="docutils literal notranslate"><span class="pre">Existing</span></code>,
 and <code class="docutils literal notranslate"><span class="pre">Ideas</span></code>.  If you would like to add or request an adapter that is not yet
 listed, please open a new issue and we will add it to the project view.</p>
+<section id="biocypher-meta-graph">
+<h2>BioCypher meta-graph<a class="headerlink" href="#biocypher-meta-graph" title="Permalink to this heading"></a></h2>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-1 sd-row-cols-lg-1 sd-g-2 sd-g-xs-2 sd-g-sm-2 sd-g-md-2 sd-g-lg-2 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover sd-text-center docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+BioCypher meta-graph with docker setup:</div>
+<p class="sd-card-text"><svg version="1.1" width="3.0em" height="3.0em" class="sd-octicon sd-octicon-plug" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M7 11.5v3.848a1.75 1.75 0 001.57 1.74l6.055.627 1.006 1.174a1.75 1.75 0 001.329.611h1.29A1.75 1.75 0 0020 17.75V15.5h3.25a.75.75 0 000-1.5H20V7.5h3.25a.75.75 0 000-1.5H20V3.75A1.75 1.75 0 0018.25 2h-1.29c-.51 0-.996.223-1.329.611l-1.006 1.174-6.055.626A1.75 1.75 0 007 6.151V10H2.937A2.938 2.938 0 000 12.938v8.312a.75.75 0 001.5 0v-8.313c0-.793.644-1.437 1.438-1.437H7zm9.77-7.913a.25.25 0 01.19-.087h1.29a.25.25 0 01.25.25v14a.25.25 0 01-.25.25h-1.29a.25.25 0 01-.19-.087l-1.2-1.401a.75.75 0 00-.493-.258l-6.353-.657a.25.25 0 01-.224-.249V6.152a.25.25 0 01.224-.249l6.353-.657a.75.75 0 00.492-.258l1.201-1.4z"></path></svg> <svg version="1.1" width="3.0em" height="3.0em" class="sd-octicon sd-octicon-project" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.25 6a.75.75 0 00-.75.75v7.5a.75.75 0 001.5 0v-7.5A.75.75 0 007.25 6zM12 6a.75.75 0 00-.75.75v4.5a.75.75 0 001.5 0v-4.5A.75.75 0 0012 6zm4 .75a.75.75 0 011.5 0v9.5a.75.75 0 01-1.5 0v-9.5z"></path><path fill-rule="evenodd" d="M3.75 2A1.75 1.75 0 002 3.75v16.5c0 .966.784 1.75 1.75 1.75h16.5A1.75 1.75 0 0022 20.25V3.75A1.75 1.75 0 0020.25 2H3.75zM3.5 3.75a.25.25 0 01.25-.25h16.5a.25.25 0 01.25.25v16.5a.25.25 0 01-.25.25H3.75a.25.25 0 01-.25-.25V3.75z"></path></svg> <svg version="1.1" width="3.0em" height="3.0em" class="sd-octicon sd-octicon-share-android" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M20 5.5a3.5 3.5 0 01-6.062 2.385l-5.112 3.021a3.497 3.497 0 010 2.188l5.112 3.021a3.5 3.5 0 11-.764 1.29l-5.112-3.02a3.5 3.5 0 110-4.77l5.112-3.021v.001A3.5 3.5 0 1120 5.5zm-1.5 0a2 2 0 11-4 0 2 2 0 014 0zM5.5 14a2 2 0 100-4 2 2 0 000 4zm13 4.5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> <svg version="1.1" width="3.0em" height="3.0em" class="sd-octicon sd-octicon-container" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M13.152.682a2.25 2.25 0 012.269 0l.007.004 6.957 4.276a2.276 2.276 0 011.126 1.964v7.516c0 .81-.432 1.56-1.133 1.968l-.002.001-11.964 7.037-.004.003a2.276 2.276 0 01-2.284 0l-.026-.015-6.503-4.502a2.268 2.268 0 01-1.096-1.943V9.438c0-.392.1-.77.284-1.1l.003-.006.014-.026a2.28 2.28 0 01.82-.827h.002L13.152.681zm.757 1.295h-.001L2.648 8.616l6.248 4.247a.776.776 0 00.758-.01h.001l11.633-6.804-6.629-4.074a.75.75 0 00-.75.003zM18 9.709l-3.25 1.9v7.548L18 17.245V9.709zm1.5-.878v7.532l2.124-1.25a.777.777 0 00.387-.671V7.363L19.5 8.831zm-9.09 5.316l2.84-1.66v7.552l-3.233 1.902v-7.612c.134-.047.265-.107.391-.18l.002-.002zm-1.893 7.754V14.33a2.277 2.277 0 01-.393-.18l-.023-.014-6.102-4.147v7.003c0 .275.145.528.379.664l.025.014 6.114 4.232z"></path></svg></p>
+</div>
+<a class="sd-stretched-link reference external" href="https://github.com/saezlab/biocypher-meta-graph"></a></div>
+</div>
+</div>
+</div>
+<p>We have built a BioCypher pipeline (from the <a class="reference external" href="https://github.com/saezlab/biocypher-project-template">template
+repository</a>) that fetches
+information about all adapters from the BioCypher GitHub repository via the
+GitHub API and builds a graph of all adapters and their dependencies.  Browsing
+this graph can give an overview of the current state of the adapters supported
+by BioCypher and the pipelines they are used in. Currently, the graph must be
+built locally by cloning the repository and running the pipeline using <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span></code>. The graph is then available at <code class="docutils literal notranslate"><span class="pre">localhost:7474/browser/</span></code> in the
+Neo4j Browser. We plan on making it available online soon.</p>
+</section>
 </section>
 
 
