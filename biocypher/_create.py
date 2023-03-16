@@ -212,6 +212,7 @@ class BioCypherEdge:
     relationship_label: str
     relationship_id: str = None
     properties: dict = field(default_factory=dict)
+    is_simple_edge: bool = False
 
     def __post_init__(self):
         """
@@ -290,6 +291,15 @@ class BioCypherEdge:
             'properties': self.properties,
         }
 
+    def get_is_simple_edge(self) -> bool:
+        """
+        Returns true if the relationship is a simple edge from a slot
+        rather than an association
+
+        Returns:
+            bool: is_simple_edge
+        """
+        return self.is_simple_edge
 
 @dataclass(frozen=True)
 class BioCypherRelAsNode:

@@ -12,7 +12,7 @@ def test_create_driver(driver):
 
 def test_connect_to_db(driver):
 
-    assert isinstance(driver._driver.driver, neo4j.Neo4jDriver)
+    assert isinstance(driver._driver.driver, neo4j.Neo4jDriver) or isinstance(driver._driver.driver, neo4j.BoltDriver)
 
 
 def test_increment_version(driver):

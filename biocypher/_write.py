@@ -212,7 +212,7 @@ class _Neo4jBatchWriter:
 
         # write node edges
         edges = [
-                BioCypherEdge(source.get_id(),target_id,label)                          
+                BioCypherEdge(source.get_id(),target_id,label,is_simple_edge=True)                          
                 for source in nodes for label, target_id in source.get_edges().items()
             ]
 
@@ -902,6 +902,9 @@ class _Neo4jBatchWriter:
             e_props = e.get_properties()
             e_keys = list(e_props.keys())
             ref_props = list(prop_dict.keys())
+            translated_label = e.get_label()
+            if not e.get_is_simple_edge():
+                translated_label = self.translator.name_sentence_to_pascal(translated_label, )
 
             # compare list order invariant
             if not set(ref_props) == set(e_keys):
@@ -957,8 +960,7 @@ class _Neo4jBatchWriter:
                             # the same order as in the header
                             self.delim.join(plist),
                             e.get_target_id(),
-                            self.translator.
-                            name_sentence_to_pascal(e.get_label(), ),
+                            translated_label,
                         ],
                     ) + '\n',
                 )
@@ -968,8 +970,7 @@ class _Neo4jBatchWriter:
                         [
                             e.get_source_id(),
                             e.get_target_id(),
-                            self.translator.
-                            name_sentence_to_pascal(e.get_label(), ),
+                            translated_label,
                         ],
                     ) + '\n',
                 )
