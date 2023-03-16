@@ -492,7 +492,17 @@ class Ontology:
 
     def show_ontology_structure(self, to_disk: str = None, full: bool = False):
         """
-        Show the ontology structure using treelib.
+        Show the ontology structure using treelib or write to GRAPHML file.
+
+        Args:
+
+            to_disk (str): If specified, the ontology structure will be saved
+                to disk as a GRAPHML file, to be opened in your favourite
+                graph visualisation tool.
+
+            full (bool): If True, the full ontology structure will be shown,
+                including all nodes and edges. If False, only the nodes and
+                edges that are relevant to the extended schema will be shown.
         """
 
         if not self._nx_graph:
