@@ -40,6 +40,13 @@ rationalising efforts by leveraging the biomedical community.
 
       :octicon:`plug;3em` :octicon:`project;3em`
 
+   .. grid-item-card:: Preconfigured project with BioCypher as a dependency, including docker integration
+      :columns: 2
+      :link: https://github.com/saezlab/biocypher-project-template
+      :text-align: center
+
+      :octicon:`mark-github;3em` :octicon:`repo;3em` :octicon:`play;3em` :octicon:`container;3em`
+
 .. Note::
 
    BioCypher is an inclusive community-driven project. If you have any
