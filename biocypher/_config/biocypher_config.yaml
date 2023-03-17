@@ -99,7 +99,6 @@ postgresql:
   ### PostgreSQL configuration ###
 
   # PostgreSQL connection credentials
-  uri: '' # DB URI
   database_name: test # DB name
   user: postgres  # user name
   password: test  # password
