@@ -2,12 +2,13 @@ import os
 import random
 import string
 import tempfile
+import subprocess
 
 import pytest
 
 from biocypher import config as bcy_config
 from biocypher._core import BioCypher
-from biocypher._write import _Neo4jBatchWriter
+from biocypher._write import _Neo4jBatchWriter, _PostgreSQLBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._connect import _Neo4jDriver
 from biocypher._mapping import OntologyMapping
@@ -370,3 +371,71 @@ def skip_if_offline(request):
         if driver.status != 'db online':
 
             pytest.skip('Requires connection to Neo4j server.')
+
+
+### postgresql ###
+@pytest.fixture
+def credentials_postgres(bcy_config):
+    params = bcy_config['postgresql']
+    password = params['password']
+    user = params['user']
+    port = params['port']
+    dbname = params['database_name']
+    return dbname, user, port, password
+
+@pytest.fixture(scope='function')
+def bw_comma_postgresql(hybrid_ontology, translator, path):
+    bw_comma = _PostgreSQLBatchWriter(
+        ontology=hybrid_ontology,
+        translator=translator,
+        output_directory=path,
+        delimiter=','
+    )
+
+    yield bw_comma
+
+    # teardown
+    for f in os.listdir(path):
+        os.remove(os.path.join(path, f))
+    os.rmdir(path)
+
+@pytest.fixture(scope='function')
+def bw_tab_postgresql(hybrid_ontology, translator, path):
+    bw_tab = _PostgreSQLBatchWriter(
+        ontology=hybrid_ontology,
+        translator=translator,
+        output_directory=path,
+        delimiter='\\t'
+    )
+
+    yield bw_tab
+
+    # teardown
+    for f in os.listdir(path):
+        os.remove(os.path.join(path, f))
+    os.rmdir(path)
+
+@pytest.fixture
+def create_database_postgres(path, credentials_postgres):
+    # use path as database name
+    dbname, user, port, password = credentials_postgres
+
+    # create the database
+    command = f'PGPASSWORD={password} psql -c "CREATE DATABASE {path}" --dbname {dbname} --port {port} --user {user}'
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    process.wait()
+    try:
+        process.check_returncode() # raise CalledProcessError is process did not succeed
+    except subprocess.CalledProcessError as e:
+        raise subprocess.CalledProcessError('Failed to create postgresql test database.')
+
+    yield True
+    
+    # teardown
+    # command = f'PGPASSWORD={password} psql -c "DROP DATABASE {path}" --dbname {dbname} --port {port} --user {user}'
+    # process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    # process.wait()
+    # try:
+    #     process.check_returncode() # raise CalledProcessError is process did not succeed
+    # except subprocess.CalledProcessError as e:
+    #     raise subprocess.CalledProcessError('Failed to drop postgresql test database.')

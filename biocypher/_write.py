@@ -162,8 +162,8 @@ class _BatchWriter(ABC):
         ontology: 'Ontology',
         translator: 'Translator',
         delimiter: str,
-        array_delimiter: str,
-        quote: str,
+        array_delimiter: str = ',',
+        quote: str = '"',
         output_directory: Optional[str] = None,
         db_name: str = 'neo4j',
         import_call_bin_prefix: Optional[str] = None,
@@ -992,6 +992,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         - _write_node_headers
         - _write_edge_headers
         - _construct_import_call
+        - _write_array_string
     """
 
     def _write_array_string(self, string_list):
@@ -1216,6 +1217,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         - _write_node_headers
         - _write_edge_headers
         - _construct_import_call
+        - _write_array_string
     """
 
     DATA_TYPE_LOOKUP = {
@@ -1299,15 +1301,11 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                     
                 # concatenate key:value in props
                 columns = ['_ID VARCHAR']
-                # array_columns = []
                 for col_name, col_type in props.items():
                     col_type = self._get_data_type(col_type)
                     col_name = self._adjust_pascal_to_psql(col_name)
                     columns.append(f'{col_name} {col_type}')
-                    # if col_type[:-2] == '[]':
-                    #     array_columns.append(col_name)
                 columns.append('_LABEL VARCHAR[]')
-                # array_columns.append('_LABEL')
 
                 with open(import_file_path, 'w', encoding='utf-8') as f:
                     command = ''
@@ -1318,11 +1316,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                     command += f'CREATE TABLE {pascal_label}({",".join(columns)});\n'
 
                     for parts_path in parts_paths:
-                        command += f'COPY {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV HEADER;\n'
-
-                    # split array columns after COPY on adelim
-                    # for array_column in array_columns:
-                    #     command += f'UPDATE {pascal_label} SET {array_column} = STRING_TO_ARRAY({array_column}[1], \'{self.adelim}\') WHERE STRPOS({array_column}[1], \'{self.adelim}\') > 0;\n'
+                        command += f'COPY {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;\n'
 
                     f.write(command)
 
@@ -1368,18 +1362,14 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             if not os.path.exists(import_file_path):
                 # concatenate key:value in props
                 columns = []
-                # array_columns = []
                 for col_name, col_type in props.items():
                     col_type = self._get_data_type(col_type)
                     col_name = self._adjust_pascal_to_psql(col_name)
                     columns.append(f'{col_name} {col_type}')
-                    # if col_type[:-2] == '[]':
-                    #     array_columns.append(col_name)
 
                 # create list of lists and flatten
                 # removes need for empty check of property list
                 out_list = ['_START_ID VARCHAR', *columns, '_END_ID VARCHAR', '_TYPE VARCHAR']
-                # array_columns.append('_TYPE')
                 
                 with open(import_file_path, 'w', encoding='utf-8') as f:
                     command = ''
@@ -1390,11 +1380,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                     command += f'CREATE TABLE {pascal_label}({",".join(out_list)});\n'
 
                     for parts_path in parts_paths:
-                        command += f'COPY {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV HEADER;\n'
-
-                    # split array columns after COPY on adelim
-                    # for array_column in array_columns:
-                    #     command += f'UPDATE {pascal_label} SET {array_column} = STRING_TO_ARRAY({array_column}[1], \'{self.adelim}\') WHERE STRPOS({array_column}[1], \'{self.adelim}\') > 0;\n'
+                        command += f'COPY {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;\n'
 
                     f.write(command)
                     
