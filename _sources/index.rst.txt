@@ -41,7 +41,7 @@ rationalising efforts by leveraging the biomedical community.
       :octicon:`plug;3em` :octicon:`project;3em`
 
    .. grid-item-card:: Preconfigured project with BioCypher as a dependency, including docker integration
-      :columns: 2
+      :columns: 12
       :link: https://github.com/saezlab/biocypher-project-template
       :text-align: center
 
