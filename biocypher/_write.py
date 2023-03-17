@@ -1310,7 +1310,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 with open(import_file_path, 'w', encoding='utf-8') as f:
                     command = ''
                     if self.wipe:
-                        command += f'DROP TABLE {pascal_label};\n'
+                        command += f'DROP TABLE IF EXISTS {pascal_label};\n'
 
                     # table creation requires comma separation
                     command += f'CREATE TABLE {pascal_label}({",".join(columns)});\n'
@@ -1374,7 +1374,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 with open(import_file_path, 'w', encoding='utf-8') as f:
                     command = ''
                     if self.wipe:
-                        command += f'DROP TABLE {pascal_label};\n'
+                        command += f'DROP TABLE IF EXISTS {pascal_label};\n'
 
                     # table creation requires comma separation
                     command += f'CREATE TABLE {pascal_label}({",".join(out_list)});\n'

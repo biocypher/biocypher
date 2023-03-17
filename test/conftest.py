@@ -374,22 +374,27 @@ def skip_if_offline(request):
 
 
 ### postgresql ###
-@pytest.fixture
-def credentials_postgres(bcy_config):
-    params = bcy_config['postgresql']
-    password = params['password']
-    user = params['user']
-    port = params['port']
-    dbname = params['database_name']
-    return dbname, user, port, password
+def params_postgresql(bcy_config):
+    params = bcy_config('postgresql')
+    return {
+        'db_name': 'postgresql-biocypher-test-TG2C7GsdNw',
+        'db_password': params['password'],
+        'db_user': params['user'],
+        'db_port': params['port'],
+        'import_call_bin_prefix': params['import_call_bin_prefix']
+    }
+
 
 @pytest.fixture(scope='function')
 def bw_comma_postgresql(hybrid_ontology, translator, path):
+    params = params_postgresql(bcy_config)
+
     bw_comma = _PostgreSQLBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
         output_directory=path,
-        delimiter=','
+        delimiter=',',
+        **params
     )
 
     yield bw_comma
@@ -399,13 +404,17 @@ def bw_comma_postgresql(hybrid_ontology, translator, path):
         os.remove(os.path.join(path, f))
     os.rmdir(path)
 
+
 @pytest.fixture(scope='function')
 def bw_tab_postgresql(hybrid_ontology, translator, path):
+    params = params_postgresql(bcy_config)
+
     bw_tab = _PostgreSQLBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
         output_directory=path,
-        delimiter='\\t'
+        delimiter='\\t',
+        **params
     )
 
     yield bw_tab
@@ -415,27 +424,18 @@ def bw_tab_postgresql(hybrid_ontology, translator, path):
         os.remove(os.path.join(path, f))
     os.rmdir(path)
 
+
 @pytest.fixture
-def create_database_postgres(path, credentials_postgres):
-    # use path as database name
-    dbname, user, port, password = credentials_postgres
+def create_database_postgres(path):
+    params = params_postgresql(bcy_config)
+    dbname, user, port, password = params['db_name'], params['db_user'], params['db_port'], params['db_password']
 
     # create the database
-    command = f'PGPASSWORD={password} psql -c "CREATE DATABASE {path}" --dbname {dbname} --port {port} --user {user}'
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-    process.wait()
-    try:
-        process.check_returncode() # raise CalledProcessError is process did not succeed
-    except subprocess.CalledProcessError as e:
-        raise subprocess.CalledProcessError('Failed to create postgresql test database.')
+    command = f'PGPASSWORD={password} psql -c \'CREATE DATABASE "{dbname}";\' --port {port} --user {user}'
+    process = subprocess.run(command, shell=True)
 
-    yield True
+    yield dbname, user, port, password, process.returncode == 0 # 0 if success
     
     # teardown
-    # command = f'PGPASSWORD={password} psql -c "DROP DATABASE {path}" --dbname {dbname} --port {port} --user {user}'
-    # process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-    # process.wait()
-    # try:
-    #     process.check_returncode() # raise CalledProcessError is process did not succeed
-    # except subprocess.CalledProcessError as e:
-    #     raise subprocess.CalledProcessError('Failed to drop postgresql test database.')
+    command = f'PGPASSWORD={password} psql -c \'DROP DATABASE "{dbname}";\' --port {port} --user {user}'
+    process = subprocess.run(command, shell=True)
