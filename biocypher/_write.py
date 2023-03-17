@@ -55,6 +55,7 @@ class _BatchWriter(ABC):
         - _write_edge_headers
         - _construct_import_call
         - _write_array_string
+        - _get_import_script_name
 
     Args:
         ontology:
@@ -151,10 +152,23 @@ class _BatchWriter(ABC):
         processed to ensure that nodes are called before any edges.
 
         Returns:
-            str: a bash command for csv import
+            str: A bash command for csv import.
         """
         raise NotImplementedError(
             "Database writer must override '_construct_import_call'"
+        )
+    
+    @abstractmethod
+    def _get_import_script_name(self) -> str:
+        """
+        Returns the name of the import script. 
+        The name will be chosen based on the used database.
+
+        Returns:
+            str: The name of the import script (ending in .sh)
+        """
+        raise NotImplementedError(
+            "Database writer must override '_get_import_script_name'"
         )
     
     def __init__(
@@ -931,7 +945,7 @@ class _BatchWriter(ABC):
         """
 
         return self._construct_import_call()
-    
+       
     def write_import_call(self) -> bool:
         """
         Function to write the import call detailing folder and
@@ -942,7 +956,7 @@ class _BatchWriter(ABC):
             bool: The return value. True for success, False otherwise.
         """
 
-        file_path = os.path.join(self.outdir, f'{self.db_name}-import-call.sh')
+        file_path = os.path.join(self.outdir, self._get_import_script_name())
         logger.info(f'Writing {self.db_name} import call to `{file_path}`.')
 
         with open(file_path, 'w', encoding='utf-8') as f:
@@ -1159,6 +1173,15 @@ class _Neo4jBatchWriter(_BatchWriter):
                 self.import_call_edges.append([header_path, parts_path])
 
         return True
+    
+    def _get_import_script_name(self) -> str:
+        """
+        Returns the name of the neo4j admin import script
+
+        Returns:
+            str: The name of the import script (ending in .sh)
+        """
+        return f'{self.db_name}-admin-import-call.sh'
 
     def _construct_import_call(self) -> str:
         """
@@ -1232,7 +1255,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         'string[]': 'VARCHAR[]'
     }
 
-    def _get_data_type(self, string):
+    def _get_data_type(self, string) -> str:
         try:
             return self.DATA_TYPE_LOOKUP[string]
         except KeyError:
@@ -1240,7 +1263,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             return "VARCHAR"
         
     
-    def _write_array_string(self, string_list):
+    def _write_array_string(self, string_list) -> str:
         """
         Abstract method to write the string representation of an array into a .csv file
         as required by the postgresql COPY command, with '{','}' brackets and ',' separation.
@@ -1254,11 +1277,23 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         string = ','.join(string_list)
         string = f'"{{{string}}}"'
         return string
-        
+    
+
+    def _get_import_script_name(self) -> str:
+        """
+        Returns the name of the psql import script
+
+        Returns:
+            str: The name of the import script (ending in .sh)
+        """
+        return f'{self.db_name}-import-call.sh'
+            
+
     def _adjust_pascal_to_psql(self, string):
         string = string.replace('.', '_')
         string = string.lower()
         return string
+
 
     def _write_node_headers(self):
         """
