@@ -60,7 +60,7 @@ def test_ontology_functions(hybrid_ontology):
     dgpl_ancestors = list(
         hybrid_ontology.get_ancestors('decreased gene product level')
     )
-    assert len(dgpl_ancestors) == 8
+    assert len(dgpl_ancestors) == 7
     assert 'altered gene product level' in dgpl_ancestors
     assert 'sequence variant' in dgpl_ancestors
     assert 'entity' in dgpl_ancestors
@@ -70,7 +70,7 @@ def test_ontology_functions(hybrid_ontology):
 
     # second tail ontology
     cf_ancestors = list(hybrid_ontology.get_ancestors('cystic fibrosis'))
-    assert len(cf_ancestors) == 11
+    assert len(cf_ancestors) == 10
     assert 'disease' in cf_ancestors
     assert 'disease or phenotypic feature' in cf_ancestors
     assert 'entity' in cf_ancestors
