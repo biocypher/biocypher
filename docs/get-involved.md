@@ -18,7 +18,7 @@
 :::
 
 :::{grid-item-card} Join the mailing list
-:link: https://example.com
+:link: https://biocypher.zulipchat.com/#narrow/stream/371279-announcements
 :text-align: center
 {octicon}`mail;3em`
 :::
@@ -45,13 +45,14 @@
 
 We are always looking for new users and contributors to help us make BioCypher
 better. We are particulary interested in increasing the accessibility of
-knowledge representation to structurally disadvantaged researchers. The best
-way to get in contact for help, general questions, or to contribute is to join
-our [Zulip channel](https://biocypher.zulipchat.com/) (free of charge). It also
+knowledge representation to structurally disadvantaged researchers. The best way
+to get in contact for help, general questions, or to contribute is to join our
+[Zulip channel](https://biocypher.zulipchat.com/) (free of charge). It also
 doubles as our "mailing list"; in the `#announcements` channel, you can stay
-informed about seminars, workshops, and other events. In the `#help` channel,
-you can ask questions and get help. In the `#general` channel, you can introduce
-yourselves, discuss ideas, and share your work.
+informed about seminars, workshops, and other events (you can set up Zulip to
+notify about new posts via email). In the `#help` channel, you can ask questions
+and get help. In the `#general` channel, you can introduce yourselves, discuss
+ideas, and share your work.
 
 We chose [Zulip](https://zulip.com/) because it is a modern, open-source
 alternative to Slack. It is organised by topics, which helps in keeping the
