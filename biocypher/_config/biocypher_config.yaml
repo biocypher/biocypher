@@ -105,9 +105,7 @@ postgresql:
   password: test  # password
   port: 5432 # port
 
-  # PostgreSQL admin import batch writer settings
+  # PostgreSQL import batch writer settings
   delimiter: '\t'
-  # array_delimiter: '|'
-  # quote_character: '"'
   import_call_bin_prefix: ''
   
