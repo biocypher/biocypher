@@ -105,6 +105,7 @@ postgresql:
   port: 5432 # port
 
   # PostgreSQL import batch writer settings
+  quote_character: '"'
   delimiter: '\t'
   import_call_bin_prefix: ''
   
