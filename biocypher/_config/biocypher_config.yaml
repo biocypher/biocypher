@@ -26,7 +26,7 @@ biocypher:
   ## Ontology configuration
 
   head_ontology:
-    url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
+    url: https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
     root_node: entity
 
   ### Optional parameters ###
