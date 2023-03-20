@@ -1105,3 +1105,4 @@ def test_write_strict(bw_strict):
         prot = f.read()
 
     assert prot == "p1;'StringProperty1';4.32;9606;'gene1|gene2';'p1';'id';'source1';'version1';'licence1';BiologicalEntity|ChemicalEntityOrGeneOrGeneProduct|ChemicalEntityOrProteinOrPolypeptide|Entity|GeneOrGeneProduct|GeneProductMixin|MacromolecularMachineMixin|Mixin|NamedThing|Polypeptide|Protein|ThingWithTaxon\n"
+    
