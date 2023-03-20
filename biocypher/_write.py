@@ -469,6 +469,9 @@ class BatchWriter:
         Returns:
             bool: The return value. True for success, False otherwise.
         """
+        # define allowed data types
+        allowed_data_types = ['int', 'long', 'integer', 'float', 'double', 'dbl', 'bool', 'boolean', 'str', 'string']
+
         # load headers from data parse
         if not self.node_property_dict:
             logger.error(
@@ -501,13 +504,23 @@ class BatchWriter:
                 # concatenate key:value in props
                 props_list = []
                 for k, v in props.items():
-                    if v in ['int', 'long']:
+                    if v.replace('[]', '') not in allowed_data_types:
+                        logger.error(f'Invalid property data type in configuration file. Property -> {k}: {v}')
+                        return False           
+
+                    if v in ['int', 'long', 'integer']:
                         props_list.append(f'{k}:long')
+                    elif v in ['int[]', 'long[]', 'integer[]']:
+                        props_list.append(f'{k}:long[]')
                     elif v in ['float', 'double', 'dbl']:
                         props_list.append(f'{k}:double')
+                    elif v in ['float[]', 'double[]', 'dbl[]']:
+                        props_list.append(f'{k}:double[]')
                     elif v in ['bool', 'boolean']:
                         # TODO Neo4j boolean support / spelling?
                         props_list.append(f'{k}:boolean')
+                    elif v in ['bool[]', 'boolean[]']:
+                        props_list.append(f'{k}:boolean[]')
                     elif v in ['str[]', 'string[]']:
                         props_list.append(f'{k}:string[]')
                     else:
@@ -811,6 +824,9 @@ class BatchWriter:
         Returns:
             bool: The return value. True for success, False otherwise.
         """
+        # define allowed data types
+        allowed_data_types = ['int', 'long', 'integer', 'float', 'double', 'dbl', 'bool', 'boolean', 'str', 'string']
+
         # load headers from data parse
         if not self.edge_property_dict:
             logger.error(
@@ -837,15 +853,25 @@ class BatchWriter:
                 # concatenate key:value in props
                 props_list = []
                 for k, v in props.items():
-                    if v in ['int', 'long']:
+                    if v.replace('[]', '') not in allowed_data_types:
+                        logger.error(f'Invalid property data type in configuration file. Property -> {k}: {v}')
+                        return False            
+
+                    if v in ['int', 'long', 'integer']:
                         props_list.append(f'{k}:long')
-                    elif v in ['float', 'double']:
+                    elif v in ['int[]', 'long[]', 'integer[]']:
+                        props_list.append(f'{k}:long[]')
+                    elif v in ['float', 'double', 'dbl']:
                         props_list.append(f'{k}:double')
-                    elif v in [
-                        'bool',
-                        'boolean',
-                    ]:  # TODO does Neo4j support bool?
+                    elif v in ['float[]', 'double[]', 'dbl[]']:
+                        props_list.append(f'{k}:double[]')
+                    elif v in ['bool', 'boolean']:
+                        # TODO Neo4j boolean support / spelling?
                         props_list.append(f'{k}:boolean')
+                    elif v in ['bool[]', 'boolean[]']:
+                        props_list.append(f'{k}:boolean[]')
+                    elif v in ['str[]', 'string[]']:
+                        props_list.append(f'{k}:string[]')
                     else:
                         props_list.append(f'{k}')
 
