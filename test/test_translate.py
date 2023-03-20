@@ -105,8 +105,8 @@ def test_specific_and_generic_ids(translator):
 def test_translate_edges(translator):
     # edge type association (defined in `schema_config.yaml`)
     src_tar_type_edge = [
-        ('G15258', 'MONDO1', 'gene_disease', {}),
-        ('G15258', 'MONDO2', 'protein_disease', {}),
+        ('G15258', 'MONDO1', 'gene_PERTURBED_IN_DISEASE_disease', {}),
+        ('G15258', 'MONDO2', 'protein_PERTURBED_IN_DISEASE_disease', {}),
         ('G15258', 'G15242', 'phosphorylation', {}),
     ]
 
@@ -117,14 +117,14 @@ def test_translate_edges(translator):
 
     assert type(next(t)) == BioCypherEdge
     assert next(t).get_label() == 'PERTURBED_IN_DISEASE'
-    assert next(t).get_label() == 'phosphorylation'
+    assert next(t).get_input_label() == 'phosphorylation'
 
     # node type association (defined in `schema_config.yaml`)
     src_tar_type_node = [
         (
             'G21058',
             'G50127',
-            'post_translational',
+            'protein_interacts_with_protein',
             {
                 'prop1': 'test',
             },
@@ -132,7 +132,7 @@ def test_translate_edges(translator):
         (
             'G22418',
             'G50123',
-            'post_translational',
+            'protein_interacts_with_protein',
             {
                 'directed': 'arbitrary_string',
             },
@@ -140,7 +140,7 @@ def test_translate_edges(translator):
         (
             'G15258',
             'G16347',
-            'post_translational',
+            'protein_interacts_with_protein',
             {
                 'directed': True,
                 'effect': -1,
@@ -481,7 +481,7 @@ def test_exclude_properties(translator):
         (
             'G49205',
             'AD',
-            'gene_disease',
+            'gene_PERTURBED_IN_DISEASE_disease',
             {
                 'directional': True,
                 'score': 0.5,
@@ -490,7 +490,7 @@ def test_exclude_properties(translator):
         (
             'G92035',
             'AD',
-            'gene_disease',
+            'gene_PERTURBED_IN_DISEASE_disease',
             {
                 'directional': False,
                 'score': 0.5,
@@ -516,13 +516,13 @@ def test_exclude_properties(translator):
 def test_translate_term(translator, biolink_adapter):
     assert translator.translate_term('hgnc') == 'Gene'
     assert (
-        translator.translate_term('protein_disease') == 'PERTURBED_IN_DISEASE'
+        translator.translate_term('protein_PERTURBED_IN_DISEASE_disease') == 'PERTURBED_IN_DISEASE'
     )
 
 
 def test_reverse_translate_term(translator, biolink_adapter):
     assert 'hgnc' in translator.reverse_translate_term('Gene')
-    assert 'protein_disease' in translator.reverse_translate_term(
+    assert 'gene_PERTURBED_IN_DISEASE_disease' in translator.reverse_translate_term(
         'PERTURBED_IN_DISEASE',
     )
 
@@ -530,7 +530,7 @@ def test_reverse_translate_term(translator, biolink_adapter):
 def test_translate_query(translator, biolink_adapter):
     # we translate to PascalCase for cypher queries, not to internal
     # sentence case
-    query = 'MATCH (n:hgnc)-[r:gene_disease]->(d:Disease) RETURN n'
+    query = 'MATCH (n:hgnc)-[r:gene_PERTURBED_IN_DISEASE_disease]->(d:Disease) RETURN n'
     assert (
         translator.translate(query) ==
         'MATCH (n:Gene)-[r:PERTURBED_IN_DISEASE]->(d:Disease) RETURN n'
