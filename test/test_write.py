@@ -987,7 +987,7 @@ def test_database_import_node_data_from_gen_comma_postgresql(bw_comma_postgresql
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     # subprocess success
     assert result.returncode == 0
-    # 4 entires in db
+    # 4 entires in table
     assert '4' in result.stdout.decode()
 
     # check data in the databases
@@ -995,7 +995,7 @@ def test_database_import_node_data_from_gen_comma_postgresql(bw_comma_postgresql
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     # subprocess success
     assert result.returncode == 0
-    # 4 entires in db
+    # 4 entires in table
     assert '4' in result.stdout.decode()
 
 
@@ -1033,7 +1033,7 @@ def test_database_import_node_data_from_gen_tab_postgresql(bw_tab_postgresql, pa
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     # subprocess success
     assert result.returncode == 0
-    # 5 entires in db
+    # 5 entires in table
     assert '5' in result.stdout.decode()
 
     # check data in the databases
@@ -1041,5 +1041,111 @@ def test_database_import_node_data_from_gen_tab_postgresql(bw_tab_postgresql, pa
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     # subprocess success
     assert result.returncode == 0
-    # 5 entires in db
+    # 5 entires in table
     assert '5' in result.stdout.decode()
+
+
+@pytest.mark.parametrize('l', [8], scope='module')
+def test_database_import_edge_data_from_gen_comma_postgresql(bw_comma_postgresql, path, _get_nodes, create_database_postgres, _get_edges):
+    dbname, user, port, password, create_database_success = create_database_postgres
+    assert create_database_success
+
+    edges = _get_edges
+
+    nodes = _get_nodes
+
+    def edge_gen1(edges):
+        yield from edges[:4]
+
+    def edge_gen2(edges):
+        yield from edges[4:]
+
+    p1 = bw_comma_postgresql.write_edges(edge_gen1(edges))
+    p2 = bw_comma_postgresql.write_edges(edge_gen2(edges))
+    p3 = bw_comma_postgresql.write_nodes(nodes)
+
+    assert all([p1, p2, p3])
+
+    bw_comma_postgresql.write_import_call()
+
+    # verify that import call has been created
+    import_scripts = [name for name in os.listdir(path) if name.endswith('-import-call.sh')]
+    assert len(import_scripts) == 1
+
+    import_script = import_scripts[0]
+    script = os.path.join(path, import_script)
+    with open(script) as f:
+        commands =  f.readlines()
+        assert len(commands) == 32
+    
+    for command in commands:
+        result = subprocess.run(command, shell=True)
+        assert result.returncode == 0
+
+    # check data in the databases
+    command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM is_mutated_in;\' --dbname {dbname} --port {port} --user {user}'
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # subprocess success
+    assert result.returncode == 0
+    # 2 entires in table
+    assert '2' in result.stdout.decode()
+
+    command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM perturbed_in_disease;\' --dbname {dbname} --port {port} --user {user}'
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # subprocess success
+    assert result.returncode == 0
+    # 2 entires in table
+    assert '2' in result.stdout.decode()
+
+
+@pytest.mark.parametrize('l', [8], scope='module')
+def test_database_import_edge_data_from_gen_tab_postgresql(bw_tab_postgresql, path, _get_nodes, create_database_postgres, _get_edges):
+    dbname, user, port, password, create_database_success = create_database_postgres
+    assert create_database_success
+
+    edges = _get_edges
+
+    nodes = _get_nodes
+
+    def edge_gen1(edges):
+        yield from edges[:4]
+
+    def edge_gen2(edges):
+        yield from edges[4:]
+
+    p1 = bw_tab_postgresql.write_edges(edge_gen1(edges))
+    p2 = bw_tab_postgresql.write_edges(edge_gen2(edges))
+    p3 = bw_tab_postgresql.write_nodes(nodes)
+
+    assert all([p1, p2, p3])
+
+    bw_tab_postgresql.write_import_call()
+
+    # verify that import call has been created
+    import_scripts = [name for name in os.listdir(path) if name.endswith('-import-call.sh')]
+    assert len(import_scripts) == 1
+
+    import_script = import_scripts[0]
+    script = os.path.join(path, import_script)
+    with open(script) as f:
+        commands =  f.readlines()
+        assert len(commands) == 32
+    
+    for command in commands:
+        result = subprocess.run(command, shell=True)
+        assert result.returncode == 0
+
+    # check data in the databases
+    command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM is_mutated_in;\' --dbname {dbname} --port {port} --user {user}'
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # subprocess success
+    assert result.returncode == 0
+    # 2 entires in table
+    assert '2' in result.stdout.decode()
+
+    command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM perturbed_in_disease;\' --dbname {dbname} --port {port} --user {user}'
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # subprocess success
+    assert result.returncode == 0
+    # 2 entires in table
+    assert '2' in result.stdout.decode()
