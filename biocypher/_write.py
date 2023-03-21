@@ -1181,7 +1181,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         Returns:
             str: The name of the import script (ending in .sh)
         """
-        return f'{self.db_name}-admin-import-call.sh'
+        return f'neo4j-admin-import-call.sh'
 
     def _construct_import_call(self) -> str:
         """
