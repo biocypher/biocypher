@@ -975,21 +975,71 @@ def test_database_import_node_data_from_gen_comma_postgresql(bw_comma_postgresql
     import_script = import_scripts[0]
     script = os.path.join(path, import_script)
     with open(script) as f:
-        content =  f.readlines()
-        assert len(content) == 8
+        commands =  f.readlines()
+        assert len(commands) == 16
 
-    # TODO fill database
-    # Due to permission issues when reading files with subprocesses, it is difficult to test the scripts.
-    # # change working directory to find sql files
-    # cwd = os.getcwd()
-    # os.chdir(path)
-    # for command in commands:
-    #     result = subprocess.run(command, shell=True)
-    #     assert result.returncode == 0
-    # # change working directory back to original
-    # os.chdir(cwd)
+    for command in commands:
+        result = subprocess.run(command, shell=True)
+        assert result.returncode == 0
 
     # check data in the databases
-    # command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM protein;\' --dbname {dbname} --port {port} --user {user}'
-    # result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    # assert result.returncode == 0
+    command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM protein;\' --dbname {dbname} --port {port} --user {user}'
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # subprocess success
+    assert result.returncode == 0
+    # 4 entires in db
+    assert '4' in result.stdout.decode()
+
+    # check data in the databases
+    command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM microrna;\' --dbname {dbname} --port {port} --user {user}'
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # subprocess success
+    assert result.returncode == 0
+    # 4 entires in db
+    assert '4' in result.stdout.decode()
+
+
+@pytest.mark.parametrize('l', [5], scope='module')
+def test_database_import_node_data_from_gen_tab_postgresql(bw_tab_postgresql, path, _get_nodes, create_database_postgres):
+    dbname, user, port, password, create_database_success = create_database_postgres
+    assert create_database_success
+
+    nodes = _get_nodes
+
+    def node_gen(nodes):
+        yield from nodes
+
+    bw_tab_postgresql.write_nodes(node_gen(nodes))
+    # verify that all files have been created
+    assert set(os.listdir(path)) == set(['protein-create_table.sql', 'Protein-part000.csv', 'microrna-create_table.sql', 'MicroRNA-part000.csv'])
+
+    bw_tab_postgresql.write_import_call()
+    # verify that import call has been created
+    import_scripts = [name for name in os.listdir(path) if name.endswith('-import-call.sh')]
+    assert len(import_scripts) == 1
+
+    import_script = import_scripts[0]
+    script = os.path.join(path, import_script)
+    with open(script) as f:
+        commands =  f.readlines()
+        assert len(commands) == 16
+    
+    for command in commands:
+        result = subprocess.run(command, shell=True)
+        assert result.returncode == 0
+    
+    # check data in the databases
+    command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM protein;\' --dbname {dbname} --port {port} --user {user}'
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # subprocess success
+    assert result.returncode == 0
+    # 5 entires in db
+    assert '5' in result.stdout.decode()
+
+    # check data in the databases
+    command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM microrna;\' --dbname {dbname} --port {port} --user {user}'
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # subprocess success
+    assert result.returncode == 0
+    # 5 entires in db
+    assert '5' in result.stdout.decode()

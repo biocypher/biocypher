@@ -1255,6 +1255,12 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         'string[]': 'VARCHAR[]'
     }
 
+
+    def __init__(self, *args, **kwargs):
+        self._copy_from_csv_commands = []
+        super().__init__(*args, **kwargs)
+
+
     def _get_data_type(self, string) -> str:
         try:
             return self.DATA_TYPE_LOOKUP[string]
@@ -1349,11 +1355,12 @@ class _PostgreSQLBatchWriter(_BatchWriter):
 
                     # table creation requires comma separation
                     command += f'CREATE TABLE {pascal_label}({",".join(columns)});\n'
-
-                    for parts_path in parts_paths:
-                        command += f'COPY {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;\n'
-
                     f.write(command)
+
+                    copy_commands = []
+                    for parts_path in parts_paths:
+                        copy_commands.append(f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;')
+                    self._copy_from_csv_commands.append(copy_commands)
 
                 # add file path to import statement
                 self.import_call_nodes.append(import_file_path)
@@ -1413,11 +1420,12 @@ class _PostgreSQLBatchWriter(_BatchWriter):
 
                     # table creation requires comma separation
                     command += f'CREATE TABLE {pascal_label}({",".join(out_list)});\n'
-
-                    for parts_path in parts_paths:
-                        command += f'COPY {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;\n'
-
                     f.write(command)
+
+                    copy_commands = []
+                    for parts_path in parts_paths:
+                        copy_commands.append(f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;')
+                    self._copy_from_csv_commands.append(copy_commands)
                     
                 # add file path to import statement
                 self.import_call_edges.append(import_file_path)
@@ -1436,9 +1444,10 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         """
         import_call = ''
 
+        # create tables
         # At this point, csv files of nodes and edges do not require differentiation
         for import_file_path in [*self.import_call_nodes, *self.import_call_edges]:
-            import_call += f'echo "Importing {import_file_path}..."\n'
+            import_call += f'echo "Setup {import_file_path}..."\n'
             if {self.db_password}:
                 # set password variable inline
                 import_call += f'PGPASSWORD={self.db_password} '
@@ -1448,6 +1457,21 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             import_call += f' --user {self.db_user}'
             import_call += '\necho "Done!"\n'
             import_call += '\n'
+
+        # copy data to tables
+        for commands in self._copy_from_csv_commands:
+            for command in commands:
+                table_part = command.split(' ')[3]
+                import_call += f'echo "Importing {table_part}..."\n'
+                if {self.db_password}:
+                    # set password variable inline
+                    import_call += f'PGPASSWORD={self.db_password} '
+                import_call += f'{self.import_call_bin_prefix}psql -c "{command}"'
+                import_call += f' --dbname {self.db_name}'
+                import_call += f' --port {self.db_port}'
+                import_call += f' --user {self.db_user}'
+                import_call += '\necho "Done!"\n'
+                import_call += '\n'
         
         return import_call
 
