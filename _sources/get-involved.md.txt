@@ -47,18 +47,22 @@ We are always looking for new users and contributors to help us make BioCypher
 better. We are particulary interested in increasing the accessibility of
 knowledge representation to structurally disadvantaged researchers. The best way
 to get in contact for help, general questions, or to contribute is to join our
-[Zulip channel](https://biocypher.zulipchat.com/) (free of charge). It also
-doubles as our "mailing list"; in the `#announcements` channel, you can stay
-informed about seminars, workshops, and other events (you can set up Zulip to
-notify about new posts via email). In the `#help` channel, you can ask questions
-and get help. In the `#general` channel, you can introduce yourselves, discuss
-ideas, and share your work.
+[Zulip channel](https://biocypher.zulipchat.com/) (free of charge). In the
+`#announcements` channel, you can stay informed about seminars, workshops, and
+other events. In the `#help` channel, you can ask questions and get help. In the
+`#general` channel, you can introduce yourselves, discuss ideas, and share your
+work.
 
 We chose [Zulip](https://zulip.com/) because it is a modern, open-source
 alternative to Slack. It is organised by topics, which helps in keeping the
 discussions focused. It also is free of charge for open-source and academic
 projects, which means that they sponsor the cloud hosting for our channel (as
 for many other open-source projects) - thanks!
+
+If you prefer to only be updated about the most important announcements and
+events, you can also subscribe to our [mailing
+list](https://dashboard.mailerlite.com/forms/374012/83295282984387838/share). We
+will only post there with low frequency, and you can unsubscribe at any time.
 
 If you want to contribute, please have a look at our [contribution
 guidelines](https://github.com/saezlab/BioCypher/blob/main/CONTRIBUTING.md),
