@@ -20,7 +20,7 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Scientific/Engineering :: Bio-Informatics"
 ]
-repository = "https://github.com/saezlab/biocypher"
+repository = "https://github.com/biocypher/biocypher"
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -57,7 +57,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.urls]
-"Bug Tracker" = "https://github.com/saezlab/biocypher/issues"
+"Bug Tracker" = "https://github.com/biocypher/biocypher/issues"
 
 [tool.pytest.ini_options]
 log_cli = true
