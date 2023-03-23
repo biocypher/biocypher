@@ -106,7 +106,7 @@
 repository that can be used as a starting point for your own adapter. It
 contains a basic structure for an adapter, as well as a script that can be used
 as a blueprint for a build pipeline. The repository can be found
-<a class="reference external" href="https://github.com/saezlab/biocypher-project-template">here</a>.</p>
+<a class="reference external" href="https://github.com/biocypher/project-template">here</a>.</p>
 </div>
 <p>A “BioCypher adapter” is a python program responsible for connecting to the
 BioCypher core and providing it with the data from its associated resource.
@@ -130,11 +130,11 @@ adapters.</p>
 <li><p>Load the data from the primary resource, for instance by using pypath
 download / caching functions (as in the <a class="reference external" href="https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration">UniProt example
 adapter</a>), by
-using columnar distributed data formats such as Parquet (as in the <a class="reference external" href="https://github.com/saezlab/OTAR-BioCypher">Open Targets
+using columnar distributed data formats such as Parquet (as in the <a class="reference external" href="https://github.com/biocypher/open-targets">Open Targets
 example adapter</a>), by using a running
-database instance (as in the <a class="reference external" href="https://github.com/saezlab/CKG-BioCypher/">CKG example
-adapter</a>), or by simply reading a
-file from disk (as in the <a class="reference external" href="https://github.com/saezlab/DepMap-BioCypher">Dependency Map example
+database instance (as in the <a class="reference external" href="https://github.com/biocypher/clinical-knowledge-graph">CKG example
+adapter</a>), or by simply
+reading a file from disk (as in the <a class="reference external" href="https://github.com/biocypher/dependency-map">Dependency Map example
 adapter</a>). Generally, any method
 that allows the efficient transfer of the data from adapter to BioCypher core is
 acceptable.</p></li>
@@ -173,10 +173,10 @@ below. This is made possible by the “pre-harmonised” form in which the data
 is represented within <code class="docutils literal notranslate"><span class="pre">PyPath</span></code>. For more heterogeneous data representations,
 additional transformations may be necessary before piping into BioCypher.</p>
 <p>For larger datasets, it can be beneficial to adopt a streaming approach or batch
-processing, as demonstrated in the <a class="reference external" href="https://github.com/saezlab/OTAR-BioCypher">Open Targets
-adapter</a> and the <a class="reference external" href="https://github.com/saezlab/CKG-BioCypher/">CKG
-adapter</a>. BioCypher can handle input
-streams of arbitrary length via Python generators.</p>
+processing, as demonstrated in the <a class="reference external" href="https://github.com/biocypher/open-targets">Open Targets
+adapter</a> and the <a class="reference external" href="https://github.com/biocypher/clinical-knowledge-graph">CKG
+adapter</a>. BioCypher can
+handle input streams of arbitrary length via Python generators.</p>
 </section>
 <section id="passing-the-data">
 <h2>2. Passing the Data<a class="headerlink" href="#passing-the-data" title="Permalink to this heading"></a></h2>

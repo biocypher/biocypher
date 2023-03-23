@@ -12,7 +12,7 @@
 :::
 
 :::{grid-item-card} Open an issue
-:link: https://github.com/saezlab/BioCypher/issues
+:link: https://github.com/biocypher/biocypher/issues
 :text-align: center
 {octicon}`issue-opened;3em`
 :::
@@ -24,19 +24,19 @@
 :::
 
 :::{grid-item-card} Code of Conduct
-:link: https://github.com/saezlab/BioCypher/blob/main/CODE_OF_CONDUCT.md
+:link: https://github.com/biocypher/biocypher/blob/main/CODE_OF_CONDUCT.md
 :text-align: center
 {octicon}`law;3em`
 :::
 
 :::{grid-item-card} Contributor Guide
-:link: https://github.com/saezlab/BioCypher/blob/main/CONTRIBUTING.md
+:link: https://github.com/biocypher/biocypher/blob/main/CONTRIBUTING.md
 :text-align: center
 {octicon}`flame;3em`
 :::
 
 :::{grid-item-card} Developer Guide
-:link: https://github.com/saezlab/BioCypher/blob/main/DEVELOPER.md
+:link: https://github.com/biocypher/biocypher/blob/main/DEVELOPER.md
 :text-align: center
 {octicon}`code-review;3em`
 :::
@@ -65,13 +65,13 @@ list](https://dashboard.mailerlite.com/forms/374012/83295282984387838/share). We
 will only post there with low frequency, and you can unsubscribe at any time.
 
 If you want to contribute, please have a look at our [contribution
-guidelines](https://github.com/saezlab/BioCypher/blob/main/CONTRIBUTING.md),
+guidelines](https://github.com/biocypher/biocypher/blob/main/CONTRIBUTING.md),
 including our [code of
-conduct](https://github.com/saezlab/BioCypher/blob/main/CODE_OF_CONDUCT.md) and
-[developer guide](https://github.com/saezlab/BioCypher/blob/main/DEVELOPER.md).
+conduct](https://github.com/biocypher/biocypher/blob/main/CODE_OF_CONDUCT.md) and
+[developer guide](https://github.com/biocypher/biocypher/blob/main/DEVELOPER.md).
 For simple communication, join the `#development` channel on Zulip, where you
 can ask questions and discuss ideas. You can also open an issue on
-[GitHub](https://github.com/saezlab/BioCypher/issues) for feature requests
+[GitHub](https://github.com/biocypher/biocypher/issues) for feature requests
 including adapters. If you want to find out whether you favourite resource or
 database is already supported, planned, or in progress, have a look at our
-[Github project](https://github.com/orgs/saezlab/projects/5/views/6).
+[Github project](https://github.com/orgs/biocypher/projects/3/views/2).

@@ -12,7 +12,7 @@ To facilitate the creation of a BioCypher pipeline, we have created a template
 repository that can be used as a starting point for your own adapter. It
 contains a basic structure for an adapter, as well as a script that can be used
 as a blueprint for a build pipeline. The repository can be found
-[here](https://github.com/saezlab/biocypher-project-template).
+[here](https://github.com/biocypher/project-template).
 ```
 
 A "BioCypher adapter" is a python program responsible for connecting to the
@@ -39,11 +39,11 @@ In general, one adapter fulfils the following tasks:
 download / caching functions (as in the [UniProt example
 adapter](https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration)), by
 using columnar distributed data formats such as Parquet (as in the [Open Targets
-example adapter](https://github.com/saezlab/OTAR-BioCypher)), by using a running
+example adapter](https://github.com/biocypher/open-targets)), by using a running
 database instance (as in the [CKG example
-adapter](https://github.com/saezlab/CKG-BioCypher/)), or by simply reading a
-file from disk (as in the [Dependency Map example
-adapter](https://github.com/saezlab/DepMap-BioCypher)). Generally, any method
+adapter](https://github.com/biocypher/clinical-knowledge-graph)), or by simply
+reading a file from disk (as in the [Dependency Map example
+adapter](https://github.com/biocypher/dependency-map)). Generally, any method
 that allows the efficient transfer of the data from adapter to BioCypher core is
 acceptable.
 
@@ -86,9 +86,9 @@ additional transformations may be necessary before piping into BioCypher.
 
 For larger datasets, it can be beneficial to adopt a streaming approach or batch
 processing, as demonstrated in the [Open Targets
-adapter](https://github.com/saezlab/OTAR-BioCypher) and the [CKG
-adapter](https://github.com/saezlab/CKG-BioCypher/). BioCypher can handle input
-streams of arbitrary length via Python generators.
+adapter](https://github.com/biocypher/open-targets) and the [CKG
+adapter](https://github.com/biocypher/clinical-knowledge-graph). BioCypher can
+handle input streams of arbitrary length via Python generators.
 
 ## 2. Passing the Data
 
