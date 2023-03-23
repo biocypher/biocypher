@@ -4,7 +4,7 @@
 :gutter: 2
 
 :::{grid-item-card} Already familiar? Here's a template:
-:link: https://github.com/saezlab/biocypher-project-template
+:link: https://github.com/biocypher/project-template
 :text-align: center
 {octicon}`mark-github;3em` {octicon}`repo;3em` {octicon}`play;3em` {octicon}`container;3em`
 :::
@@ -22,7 +22,7 @@
 If you already know how BioCypher works, we provide here a quickstart into the
 knowledge graph build process. We provide a template repository on GitHub, which
 you can use to get started with your own project.  You can get it
-[here](https://github.com/saezlab/biocypher-project-template).  To set up a new
+[here](https://github.com/biocypher/project-template).  To set up a new
 project, simply follow the instructions in the README.
 
 If you are new to BioCypher and would like a step-by-step introduction to the
@@ -48,14 +48,14 @@ should be connected.
 BioCypher follows a modular approach to data inputs; to create a knowledge
 graph, we use at least one adapter module that provides a data stream to build
 the graph from. Examples for current adapters can be found on the [GitHub
-project adapter view](https://github.com/orgs/saezlab/projects/5/views/6).
+project adapter view](https://github.com/orgs/biocypher/projects/3/views/2).
 Adapters can ingest data from many different input sources, including Python
 modules as in the [CROssBAR
 adapter](https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration) (which
 uses the OmniPath backend software, PyPath, for downloading and caching data),
 advanced file management formats such as Parquet as in the [Open Targets
-adapter](https://github.com/saezlab/OTAR-BioCypher), or simple CSV files as in
-the [Dependency Map adapter](https://github.com/saezlab/DepMap-BioCypher).
+adapter](https://github.com/biocypher/open-targets), or simple CSV files as in
+the [Dependency Map adapter](https://github.com/biocypher/dependency-map).
 
 The recommended way of interacting with BioCypher is via the
 {py:class}``biocypher._driver.Driver`` class. It can be called either starting
@@ -129,7 +129,7 @@ property graph is the specification of graph constituents and their mode of
 representation in the graph. For instance, we want to add a representation for
 proteins to the OmniPath graph, and the proteins should be represented as nodes.
 To make this known to the BioCypher module, we use the
-[schema-config.yaml](https://github.com/saezlab/BioCypher/blob/main/biocypher/_config/schema_config.yaml),
+[schema-config.yaml](https://github.com/biocypher/biocypher/blob/main/biocypher/_config/schema_config.yaml),
 which details *only* the immediate constituents of the desired graph.  Since the
 identifier systems in the Biolink schema are not comprehensive and offer many
 alternatives, we currently use the CURIE prefixes directly as given by
