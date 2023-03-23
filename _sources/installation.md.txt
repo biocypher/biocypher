@@ -121,7 +121,7 @@ biocypher:  ### BioCypher module configuration ###
 
   # Ontology configuration
   head_ontology:
-    url: biocypher/_config/biolink-model.owl.ttl
+    url: https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
     root_node: entity
 
   ### Optional parameters ###
