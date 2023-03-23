@@ -48,6 +48,7 @@ jobs:
     # using https://github.com/marketplace/actions/push-git-subdirectory-as-branch
         -   name: Deploy
             uses: s0/git-publish-subdir-action@develop
+            permissions: write-all
             env:
                 REPO: self
                 BRANCH: gh-pages
