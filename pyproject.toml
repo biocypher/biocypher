@@ -33,14 +33,14 @@ rdflib = "^6.2.0"
 networkx = "^3.0"
 stringcase = "^1.2.0"
 neo4j-utils = "0.0.7"
+
+[tool.poetry.group.dev.dependencies]
 sphinx = ">=5.0.0"
 sphinx-design = "^0.3.0"
 sphinx-rtd-theme = ">=1.0.0"
 sphinx-last-updated-by-git = ">=0.3"
 sphinx-autodoc-typehints = ">=1.18.0"
 myst-parser = "^0.18.0"
-
-[tool.poetry.group.dev.dependencies]
 yapf = "^0.32.0"
 pytest = ">=6.0"
 tox = ">=3.20.1"
