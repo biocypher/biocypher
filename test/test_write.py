@@ -1,9 +1,14 @@
 import os
 import subprocess
+
 from genericpath import isfile
 import pytest
 
-from biocypher._write import get_writer, _Neo4jBatchWriter, _PostgreSQLBatchWriter
+from biocypher._write import (
+    get_writer,
+    _Neo4jBatchWriter,
+    _PostgreSQLBatchWriter,
+)
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 
@@ -894,23 +899,22 @@ def test_tab_delimiter(bw_tab, path, _get_nodes):
 
 ### postgresql ###
 def test_get_writer_postgresql(hybrid_ontology, translator, path):
-    writer = get_writer(
-        'postgresql',
-        translator,
-        hybrid_ontology,
-        path,
-        False
-    )
+    writer = get_writer('postgresql', translator, hybrid_ontology, path, False)
     assert isinstance(writer, _PostgreSQLBatchWriter)
 
+
 @pytest.mark.parametrize('l', [4], scope='module')
-def test_write_node_data_from_gen_comma_postgresql(bw_comma_postgresql, path, _get_nodes):
+def test_write_node_data_from_gen_comma_postgresql(
+    bw_comma_postgresql, path, _get_nodes
+):
     nodes = _get_nodes
 
     def node_gen(nodes):
         yield from nodes
 
-    passed = bw_comma_postgresql._write_node_data(node_gen(nodes), batch_size=1e6)
+    passed = bw_comma_postgresql._write_node_data(
+        node_gen(nodes), batch_size=1e6
+    )
 
     p_csv = os.path.join(path, 'Protein-part000.csv')
     m_csv = os.path.join(path, 'MicroRNA-part000.csv')
@@ -929,7 +933,9 @@ def test_write_node_data_from_gen_comma_postgresql(bw_comma_postgresql, path, _g
 
 
 @pytest.mark.parametrize('l', [4], scope='module')
-def test_write_node_data_from_gen_tab_postgresql(bw_tab_postgresql, path, _get_nodes):
+def test_write_node_data_from_gen_tab_postgresql(
+    bw_tab_postgresql, path, _get_nodes
+):
     nodes = _get_nodes
 
     def node_gen(nodes):
@@ -953,8 +959,12 @@ def test_write_node_data_from_gen_tab_postgresql(bw_tab_postgresql, path, _get_n
     assert 'ChemicalEntity' in mi
 
 
+@pytest.mark.requires_postgresql
 @pytest.mark.parametrize('l', [4], scope='module')
-def test_database_import_node_data_from_gen_comma_postgresql(skip_if_offline_postgresql, bw_comma_postgresql, path, _get_nodes, create_database_postgres):
+def test_database_import_node_data_from_gen_comma_postgresql(
+    skip_if_offline_postgresql, bw_comma_postgresql, path, _get_nodes,
+    create_database_postgres
+):
     dbname, user, port, password, create_database_success = create_database_postgres
     assert create_database_success
 
@@ -965,17 +975,24 @@ def test_database_import_node_data_from_gen_comma_postgresql(skip_if_offline_pos
 
     bw_comma_postgresql.write_nodes(node_gen(nodes))
     # verify that all files have been created
-    assert set(os.listdir(path)) == set(['protein-create_table.sql', 'Protein-part000.csv', 'microrna-create_table.sql', 'MicroRNA-part000.csv'])
+    assert set(os.listdir(path)) == set(
+        [
+            'protein-create_table.sql', 'Protein-part000.csv',
+            'microrna-create_table.sql', 'MicroRNA-part000.csv'
+        ]
+    )
 
     bw_comma_postgresql.write_import_call()
     # verify that import call has been created
-    import_scripts = [name for name in os.listdir(path) if name.endswith('-import-call.sh')]
+    import_scripts = [
+        name for name in os.listdir(path) if name.endswith('-import-call.sh')
+    ]
     assert len(import_scripts) == 1
 
     import_script = import_scripts[0]
     script = os.path.join(path, import_script)
     with open(script) as f:
-        commands =  f.readlines()
+        commands = f.readlines()
         assert len(commands) == 16
 
     for command in commands:
@@ -984,7 +1001,9 @@ def test_database_import_node_data_from_gen_comma_postgresql(skip_if_offline_pos
 
     # check data in the databases
     command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM protein;\' --dbname {dbname} --port {port} --user {user}'
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    result = subprocess.run(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
     # subprocess success
     assert result.returncode == 0
     # 4 entires in table
@@ -992,15 +1011,21 @@ def test_database_import_node_data_from_gen_comma_postgresql(skip_if_offline_pos
 
     # check data in the databases
     command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM microrna;\' --dbname {dbname} --port {port} --user {user}'
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    result = subprocess.run(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
     # subprocess success
     assert result.returncode == 0
     # 4 entires in table
     assert '4' in result.stdout.decode()
 
 
+@pytest.mark.requires_postgresql
 @pytest.mark.parametrize('l', [5], scope='module')
-def test_database_import_node_data_from_gen_tab_postgresql(skip_if_offline_postgresql, bw_tab_postgresql, path, _get_nodes, create_database_postgres):
+def test_database_import_node_data_from_gen_tab_postgresql(
+    skip_if_offline_postgresql, bw_tab_postgresql, path, _get_nodes,
+    create_database_postgres
+):
     dbname, user, port, password, create_database_success = create_database_postgres
     assert create_database_success
 
@@ -1011,26 +1036,35 @@ def test_database_import_node_data_from_gen_tab_postgresql(skip_if_offline_postg
 
     bw_tab_postgresql.write_nodes(node_gen(nodes))
     # verify that all files have been created
-    assert set(os.listdir(path)) == set(['protein-create_table.sql', 'Protein-part000.csv', 'microrna-create_table.sql', 'MicroRNA-part000.csv'])
+    assert set(os.listdir(path)) == set(
+        [
+            'protein-create_table.sql', 'Protein-part000.csv',
+            'microrna-create_table.sql', 'MicroRNA-part000.csv'
+        ]
+    )
 
     bw_tab_postgresql.write_import_call()
     # verify that import call has been created
-    import_scripts = [name for name in os.listdir(path) if name.endswith('-import-call.sh')]
+    import_scripts = [
+        name for name in os.listdir(path) if name.endswith('-import-call.sh')
+    ]
     assert len(import_scripts) == 1
 
     import_script = import_scripts[0]
     script = os.path.join(path, import_script)
     with open(script) as f:
-        commands =  f.readlines()
+        commands = f.readlines()
         assert len(commands) == 16
-    
+
     for command in commands:
         result = subprocess.run(command, shell=True)
         assert result.returncode == 0
-    
+
     # check data in the databases
     command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM protein;\' --dbname {dbname} --port {port} --user {user}'
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    result = subprocess.run(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
     # subprocess success
     assert result.returncode == 0
     # 5 entires in table
@@ -1038,15 +1072,21 @@ def test_database_import_node_data_from_gen_tab_postgresql(skip_if_offline_postg
 
     # check data in the databases
     command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM microrna;\' --dbname {dbname} --port {port} --user {user}'
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    result = subprocess.run(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
     # subprocess success
     assert result.returncode == 0
     # 5 entires in table
     assert '5' in result.stdout.decode()
 
 
+@pytest.mark.requires_postgresql
 @pytest.mark.parametrize('l', [8], scope='module')
-def test_database_import_edge_data_from_gen_comma_postgresql(skip_if_offline_postgresql, bw_comma_postgresql, path, _get_nodes, create_database_postgres, _get_edges):
+def test_database_import_edge_data_from_gen_comma_postgresql(
+    skip_if_offline_postgresql, bw_comma_postgresql, path, _get_nodes,
+    create_database_postgres, _get_edges
+):
     dbname, user, port, password, create_database_success = create_database_postgres
     assert create_database_success
 
@@ -1069,37 +1109,47 @@ def test_database_import_edge_data_from_gen_comma_postgresql(skip_if_offline_pos
     bw_comma_postgresql.write_import_call()
 
     # verify that import call has been created
-    import_scripts = [name for name in os.listdir(path) if name.endswith('-import-call.sh')]
+    import_scripts = [
+        name for name in os.listdir(path) if name.endswith('-import-call.sh')
+    ]
     assert len(import_scripts) == 1
 
     import_script = import_scripts[0]
     script = os.path.join(path, import_script)
     with open(script) as f:
-        commands =  f.readlines()
+        commands = f.readlines()
         assert len(commands) == 32
-    
+
     for command in commands:
         result = subprocess.run(command, shell=True)
         assert result.returncode == 0
 
     # check data in the databases
     command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM is_mutated_in;\' --dbname {dbname} --port {port} --user {user}'
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    result = subprocess.run(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
     # subprocess success
     assert result.returncode == 0
     # 2 entires in table
     assert '2' in result.stdout.decode()
 
     command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM perturbed_in_disease;\' --dbname {dbname} --port {port} --user {user}'
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    result = subprocess.run(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
     # subprocess success
     assert result.returncode == 0
     # 2 entires in table
     assert '2' in result.stdout.decode()
 
 
+@pytest.mark.requires_postgresql
 @pytest.mark.parametrize('l', [8], scope='module')
-def test_database_import_edge_data_from_gen_tab_postgresql(skip_if_offline_postgresql, bw_tab_postgresql, path, _get_nodes, create_database_postgres, _get_edges):
+def test_database_import_edge_data_from_gen_tab_postgresql(
+    skip_if_offline_postgresql, bw_tab_postgresql, path, _get_nodes,
+    create_database_postgres, _get_edges
+):
     dbname, user, port, password, create_database_success = create_database_postgres
     assert create_database_success
 
@@ -1122,29 +1172,35 @@ def test_database_import_edge_data_from_gen_tab_postgresql(skip_if_offline_postg
     bw_tab_postgresql.write_import_call()
 
     # verify that import call has been created
-    import_scripts = [name for name in os.listdir(path) if name.endswith('-import-call.sh')]
+    import_scripts = [
+        name for name in os.listdir(path) if name.endswith('-import-call.sh')
+    ]
     assert len(import_scripts) == 1
 
     import_script = import_scripts[0]
     script = os.path.join(path, import_script)
     with open(script) as f:
-        commands =  f.readlines()
+        commands = f.readlines()
         assert len(commands) == 32
-    
+
     for command in commands:
         result = subprocess.run(command, shell=True)
         assert result.returncode == 0
 
     # check data in the databases
     command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM is_mutated_in;\' --dbname {dbname} --port {port} --user {user}'
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    result = subprocess.run(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
     # subprocess success
     assert result.returncode == 0
     # 2 entires in table
     assert '2' in result.stdout.decode()
 
     command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM perturbed_in_disease;\' --dbname {dbname} --port {port} --user {user}'
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    result = subprocess.run(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
     # subprocess success
     assert result.returncode == 0
     # 2 entires in table
