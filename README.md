@@ -3,10 +3,10 @@
 ## 📖 Documentation
 Tutorial and developer docs at https://biocypher.org. For a quickstart into your
 own pipeline, you can refer to our [project
-template](https://github.com/saezlab/biocypher-project-template), and for an 
+template](https://github.com/biocypher/project-template), and for an
 overview of existing and planned adapters for resources and outputs, as well
-as other features, visit our [GitHub Project 
-Board](https://github.com/orgs/saezlab/projects/5/views/6).
+as other features, visit our [GitHub Project
+Board](https://github.com/orgs/biocypher/projects/3/views/2).
 
 ## ❓ Description
 This is the development repository for BioCypher, our proposal for a unifying
@@ -25,13 +25,11 @@ overview, usage notes, and a tutorial, read the docs
 
 ## ⚙️ Usage
 BioCypher is currently in prototype stage. Installation instructions can be
-found [here](https://saezlab.github.io/BioCypher/installation.html).
+found [here](https://biocypher.org/installation.html).
 
 Exemplary usage of BioCypher to build a graph database is shown in various
-adapters we have created. For instance, interested users can refer to the
-[migration of the Clinical Knowledge Graph](https://github.com/saezlab/CKG-BioCypher), or
-the [adapters created for the CROssBAR project](https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration/blob/main/scripts/create_crossbar.py).
-As the project evolves, more of these examples will be directly included in the documentation.
+pipelines we have created. You can find these on the [Components Project
+Board](https://github.com/orgs/biocypher/projects/3/views/2).
 
 ## 🤝 Getting involved
 We are very happy about contributions from the community, large and small!
