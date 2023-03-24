@@ -4,6 +4,7 @@ import string
 import tempfile
 import subprocess
 
+from neo4j.exceptions import ServiceUnavailable
 import pytest
 
 from biocypher import config as bcy_config
@@ -314,11 +315,45 @@ def neo4j_param(request):
     return cli
 
 
+# skip test if neo4j is offline
+@pytest.fixture(autouse=True)
+def skip_if_offline_neo4j(request, neo4j_param, translator, hybrid_ontology):
+
+    marker = request.node.get_closest_marker('requires_neo4j')
+
+    if marker:
+
+        try:
+
+            marker_args = {}
+            # check if marker has attribute param
+            if marker and hasattr(marker, 'param'):
+
+                marker_args = marker.param
+
+            driver_args = {
+                'wipe': True,
+                'multi_db': True,
+                'translator': translator,
+                'ontology': hybrid_ontology,
+            }
+            driver_args.update(marker_args)
+            driver_args.update(neo4j_param)
+
+            driver_args['database_name'] = 'test'
+
+            _Neo4jDriver(**driver_args)
+
+        except ServiceUnavailable as e:
+
+            pytest.skip(f'Neo4j is offline: {e}')
+
+
 # neo4j driver fixture
-@pytest.fixture(name='driver', scope='module')
+@pytest.fixture(name='driver', scope='function')
 def create_driver(request, neo4j_param, translator, hybrid_ontology):
 
-    marker = request.node.get_closest_marker('inject_driver_args')
+    marker = None  # request.node.get_closest_marker('inject_driver_args')
 
     marker_args = {}
     # check if marker has attribute param
@@ -366,21 +401,6 @@ def create_driver(request, neo4j_param, translator, hybrid_ontology):
     d._driver.query("MATCH (n3) WHERE n3.id = 'tar'"
                     'DETACH DELETE n3')
     d._driver.close()
-
-
-# skip test if neo4j is offline
-@pytest.fixture(autouse=True)
-def skip_if_offline_neo4j(request):
-
-    marker = request.node.get_closest_marker('requires_neo4j')
-
-    if marker:
-
-        driver = request.getfixturevalue('driver')
-
-        if driver.status != 'db online':
-
-            pytest.skip('Requires connection to Neo4j server.')
 
 
 ### postgresql ###
