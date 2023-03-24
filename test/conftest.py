@@ -20,10 +20,17 @@ from biocypher._translate import Translator
 def pytest_addoption(parser):
 
     options = (
+        # neo4j
         ('database_name', 'The Neo4j database to be used for tests.'),
         ('user', 'Tests access Neo4j as this user.'),
         ('password', 'Password to access Neo4j.'),
         ('uri', 'URI of the Neo4j server.'),
+
+        # postgresl
+        ('database_name_postgresql', 'The PostgreSQL database to be used for tests. Defaults to "postgresql-biocypher-test-TG2C7GsdNw".'),
+        ('user_postgresql', 'Tests access PostgreSQL as this user.'),
+        ('password_postgresql', 'Password to access PostgreSQL.'),
+        ('port_postgresql', 'Port of the PostgreSQL server.'),
     )
 
     for name, help_ in options:
@@ -374,27 +381,57 @@ def skip_if_offline(request):
 
 
 ### postgresql ###
-def params_postgresql(bcy_config):
-    params = bcy_config('postgresql')
-    return {
-        'db_name': 'postgresql-biocypher-test-TG2C7GsdNw',
-        'db_password': params['password'],
-        'db_user': params['user'],
-        'db_port': params['port'],
-        'import_call_bin_prefix': params['import_call_bin_prefix']
-    }
+
+@pytest.fixture(scope='module')
+def postgresql_param(request):
+
+    keys = (
+        'user_postgresql',
+        'password_postgresql',
+        'port_postgresql',
+    )
+
+    # get fallback parameters from biocypher config
+    param = bcy_config('postgresql')
+    print('paramsdsd', param)
+    cli = {}
+    for key in keys:
+        # remove '_postgresql' suffix
+        key_short = key[:-11]
+        # change into format of input parameters
+        cli[f'db_{key_short}'] = request.config.getoption(f'--{key}') or param[key_short]
+
+    # hardcoded string for test-db name. test-db will be created for testing and droped after testing.
+    # Do not take db_name from config to avoid accidental testing on the production database
+    cli['db_name'] = request.config.getoption('--database_name_postgresql') or 'postgresql-biocypher-test-TG2C7GsdNw'
+
+    return cli
+
+
+# skip test if postgresql is offline
+@pytest.fixture(autouse=True,)
+def skip_if_offline_postgresql(postgresql_param):
+    params = postgresql_param
+    user, port, password = params['db_user'], params['db_port'], params['db_password']
+
+    # an empty command, just to test if connection is possible
+    command = f'PGPASSWORD={password} psql -c \'\' --port {port} --user {user}'
+    process = subprocess.run(command, shell=True)
+
+    # returncode is 0 when success
+    if process.returncode != 0:
+        pytest.skip('Requires psql and connection to Postgresql server.')
 
 
 @pytest.fixture(scope='function')
-def bw_comma_postgresql(hybrid_ontology, translator, path):
-    params = params_postgresql(bcy_config)
+def bw_comma_postgresql(postgresql_param, hybrid_ontology, translator, path):
 
     bw_comma = _PostgreSQLBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
         output_directory=path,
         delimiter=',',
-        **params
+        **postgresql_param
     )
 
     yield bw_comma
@@ -406,15 +443,14 @@ def bw_comma_postgresql(hybrid_ontology, translator, path):
 
 
 @pytest.fixture(scope='function')
-def bw_tab_postgresql(hybrid_ontology, translator, path):
-    params = params_postgresql(bcy_config)
+def bw_tab_postgresql(postgresql_param, hybrid_ontology, translator, path):
 
     bw_tab = _PostgreSQLBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
         output_directory=path,
         delimiter='\\t',
-        **params
+        **postgresql_param
     )
 
     yield bw_tab
@@ -426,8 +462,9 @@ def bw_tab_postgresql(hybrid_ontology, translator, path):
 
 
 @pytest.fixture
-def create_database_postgres(path):
-    params = params_postgresql(bcy_config)
+def create_database_postgres(postgresql_param):
+    print('postgresql_param', postgresql_param)
+    params = postgresql_param
     dbname, user, port, password = params['db_name'], params['db_user'], params['db_port'], params['db_password']
 
     # create the database

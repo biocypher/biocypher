@@ -62,7 +62,7 @@ neo4j:
   ### Neo4j configuration ###
   ## Database name
 
-  database_name: neo4j
+  database_name: neo4jtest
 
   ## Wipe DB before import (offline mode: --force)
 
@@ -72,7 +72,7 @@ neo4j:
 
   uri: neo4j://localhost:7687
   user: neo4j
-  password: neo4j
+  password: neo4jtest
 
   ## Neo4j admin import batch writer settings
 
@@ -99,13 +99,15 @@ postgresql:
   ### PostgreSQL configuration ###
 
   # PostgreSQL connection credentials
-  database_name: test # DB name
+  database_name: postgres # DB name
   user: postgres  # user name
-  password: test  # password
+  password: postgres  # password
   port: 5432 # port
 
   # PostgreSQL import batch writer settings
   quote_character: '"'
   delimiter: '\t'
-  import_call_bin_prefix: ''
+  # import_call_bin_prefix: '' # path to "psql"
+  # import_call_file_prefix: '/path/to/files'
+
   

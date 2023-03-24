@@ -104,6 +104,17 @@ class _BatchWriter(ABC):
     """
 
     @abstractmethod
+    def _get_default_import_call_bin_prefix(self):
+        """
+        Abstract method to provide the default string for the import call bin prefix.
+
+        Returns:
+            str: The database-specific string for the path to the import call bin prefix
+        """
+        raise NotImplementedError(
+            "Database writer must override '_get_default_import_call_bin_prefix'")
+
+    @abstractmethod
     def _write_array_string(self, string_list):
         """
         Abstract method to write the string representation of an array into a .csv file. 
@@ -204,7 +215,7 @@ class _BatchWriter(ABC):
         self.skip_duplicate_nodes = skip_duplicate_nodes
 
         if import_call_bin_prefix is None:
-            self.import_call_bin_prefix = 'bin/'
+            self.import_call_bin_prefix = self._get_default_import_call_bin_prefix()
         else:
             self.import_call_bin_prefix = import_call_bin_prefix
 
@@ -1009,6 +1020,15 @@ class _Neo4jBatchWriter(_BatchWriter):
         - _write_array_string
     """
 
+    def _get_default_import_call_bin_prefix(self):
+        """
+        Method to provide the default string for the import call bin prefix.
+
+        Returns:
+            str: The default location for the neo4j admin import location
+        """
+        return 'bin/'
+
     def _write_array_string(self, string_list):
         """
         Abstract method to write the string representation of an array into a .csv file
@@ -1085,16 +1105,7 @@ class _Neo4jBatchWriter(_BatchWriter):
                     row = self.delim.join(out_list)
                     f.write(row)
 
-                # import call path for custom setup
-                if self.import_call_file_prefix:
-                    header_path = os.path.join(
-                        self.import_call_file_prefix,
-                        f'{pascal_label}-header.csv',
-                    )
-                    parts_path = os.path.join(
-                        self.import_call_file_prefix,
-                        f'{pascal_label}-part.*',
-                    )
+
 
                 # add file path to neo4 admin import statement
                 self.import_call_nodes.append([header_path, parts_path])
@@ -1261,6 +1272,16 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         super().__init__(*args, **kwargs)
 
 
+    def _get_default_import_call_bin_prefix(self):
+        """
+        Method to provide the default string for the import call bin prefix.
+
+        Returns:
+            str: The default location for the psql command
+        """
+        return ''
+
+
     def _get_data_type(self, string) -> str:
         try:
             return self.DATA_TYPE_LOOKUP[string]
@@ -1328,7 +1349,13 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)            
 
-            parts_paths = os.path.join(self.outdir, f'{pascal_label}-part*.csv')
+            if self.import_call_file_prefix:
+                parts_paths = os.path.join(
+                    self.import_call_file_prefix,
+                    f'{pascal_label}-part*.csv',
+                )
+            else:
+                parts_paths = os.path.join(self.outdir, f'{pascal_label}-part*.csv')
             parts_paths = glob.glob(parts_paths)
 
             # adjust label for import to psql
@@ -1391,7 +1418,13 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
-            parts_paths = os.path.join(self.outdir, f'{pascal_label}-part*.csv')
+            if self.import_call_file_prefix:
+                parts_paths = os.path.join(
+                    self.import_call_file_prefix,
+                    f'{pascal_label}-part*.csv',
+                )
+            else:
+                parts_paths = os.path.join(self.outdir, f'{pascal_label}-part*.csv')
             parts_paths = glob.glob(parts_paths)
 
             # adjust label for import to psql
