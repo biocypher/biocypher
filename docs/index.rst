@@ -17,7 +17,7 @@ rationalising efforts by leveraging the biomedical community.
    :gutter: 2
 
    .. grid-item-card:: Find us on GitHub
-      :link: https://github.com/saezlab/BioCypher
+      :link: https://github.com/biocypher/biocypher
       :text-align: center
 
       :octicon:`mark-github;3em` :octicon:`repo;3em`
@@ -35,14 +35,14 @@ rationalising efforts by leveraging the biomedical community.
       :octicon:`people;3em` :octicon:`comment-discussion;3em`
 
    .. grid-item-card:: Check out our adapters
-      :link: https://github.com/orgs/saezlab/projects/5/views/6
+      :link: https://github.com/orgs/biocypher/projects/3/views/2
       :text-align: center
 
       :octicon:`plug;3em` :octicon:`project;3em`
 
    .. grid-item-card:: Preconfigured project with BioCypher as a dependency, including docker integration
-      :columns: 2
-      :link: https://github.com/saezlab/biocypher-project-template
+      :columns: 12
+      :link: https://github.com/biocypher/project-template
       :text-align: center
 
       :octicon:`mark-github;3em` :octicon:`repo;3em` :octicon:`play;3em` :octicon:`container;3em`
@@ -52,7 +52,7 @@ rationalising efforts by leveraging the biomedical community.
    BioCypher is an inclusive community-driven project. If you have any
    questions, specific needs, or want to contribute to the project, please
    contact us over on our `Zulip channel <https://biocypher.zulipchat.com/>`_,
-   on `GitHub <https://github.com/saezlab/BioCypher>`_ or via email at
+   on `GitHub <https://github.com/biocypher/biocypher>`_ or via email at
    sebastian.lobentanzer (at) uni-heidelberg.de.
 
 .. figure:: ../graphical_abstract.png

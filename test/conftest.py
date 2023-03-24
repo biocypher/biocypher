@@ -2,12 +2,13 @@ import os
 import random
 import string
 import tempfile
+import subprocess
 
 import pytest
 
 from biocypher import config as bcy_config
 from biocypher._core import BioCypher
-from biocypher._write import _Neo4jBatchWriter
+from biocypher._write import _Neo4jBatchWriter, _PostgreSQLBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._connect import _Neo4jDriver
 from biocypher._mapping import OntologyMapping
@@ -19,10 +20,20 @@ from biocypher._translate import Translator
 def pytest_addoption(parser):
 
     options = (
+        # neo4j
         ('database_name', 'The Neo4j database to be used for tests.'),
         ('user', 'Tests access Neo4j as this user.'),
         ('password', 'Password to access Neo4j.'),
         ('uri', 'URI of the Neo4j server.'),
+
+        # postgresl
+        (
+            'database_name_postgresql',
+            'The PostgreSQL database to be used for tests. Defaults to "postgresql-biocypher-test-TG2C7GsdNw".'
+        ),
+        ('user_postgresql', 'Tests access PostgreSQL as this user.'),
+        ('password_postgresql', 'Password to access PostgreSQL.'),
+        ('port_postgresql', 'Port of the PostgreSQL server.'),
     )
 
     for name, help_ in options:
@@ -370,3 +381,110 @@ def skip_if_offline(request):
         if driver.status != 'db online':
 
             pytest.skip('Requires connection to Neo4j server.')
+
+
+### postgresql ###
+
+
+@pytest.fixture(scope='module')
+def postgresql_param(request):
+
+    keys = (
+        'user_postgresql',
+        'password_postgresql',
+        'port_postgresql',
+    )
+
+    # get fallback parameters from biocypher config
+    param = bcy_config('postgresql')
+    cli = {}
+    for key in keys:
+        # remove '_postgresql' suffix
+        key_short = key[:-11]
+        # change into format of input parameters
+        cli[f'db_{key_short}'] = request.config.getoption(f'--{key}'
+                                                         ) or param[key_short]
+
+    # hardcoded string for test-db name. test-db will be created for testing and droped after testing.
+    # Do not take db_name from config to avoid accidental testing on the production database
+    cli['db_name'] = request.config.getoption(
+        '--database_name_postgresql'
+    ) or 'postgresql-biocypher-test-TG2C7GsdNw'
+
+    return cli
+
+
+# skip test if postgresql is offline
+@pytest.fixture(autouse=True)
+def skip_if_offline_postgresql(request, postgresql_param):
+
+    marker = request.node.get_closest_marker('requires_postgresql')
+
+    if marker:
+
+        params = postgresql_param
+        user, port, password = params['db_user'], params['db_port'], params[
+            'db_password']
+
+        # an empty command, just to test if connection is possible
+        command = f'PGPASSWORD={password} psql -c \'\' --port {port} --user {user}'
+        process = subprocess.run(command, shell=True)
+
+        # returncode is 0 when success
+        if process.returncode != 0:
+            pytest.skip('Requires psql and connection to Postgresql server.')
+
+
+@pytest.fixture(scope='function')
+def bw_comma_postgresql(postgresql_param, hybrid_ontology, translator, path):
+
+    bw_comma = _PostgreSQLBatchWriter(
+        ontology=hybrid_ontology,
+        translator=translator,
+        output_directory=path,
+        delimiter=',',
+        **postgresql_param
+    )
+
+    yield bw_comma
+
+    # teardown
+    for f in os.listdir(path):
+        os.remove(os.path.join(path, f))
+    os.rmdir(path)
+
+
+@pytest.fixture(scope='function')
+def bw_tab_postgresql(postgresql_param, hybrid_ontology, translator, path):
+
+    bw_tab = _PostgreSQLBatchWriter(
+        ontology=hybrid_ontology,
+        translator=translator,
+        output_directory=path,
+        delimiter='\\t',
+        **postgresql_param
+    )
+
+    yield bw_tab
+
+    # teardown
+    for f in os.listdir(path):
+        os.remove(os.path.join(path, f))
+    os.rmdir(path)
+
+
+@pytest.fixture
+def create_database_postgres(postgresql_param):
+    params = postgresql_param
+    dbname, user, port, password = params['db_name'], params['db_user'], params[
+        'db_port'], params['db_password']
+
+    # create the database
+    command = f'PGPASSWORD={password} psql -c \'CREATE DATABASE "{dbname}";\' --port {port} --user {user}'
+    process = subprocess.run(command, shell=True)
+
+    yield dbname, user, port, password, process.returncode == 0  # 0 if success
+
+    # teardown
+    command = f'PGPASSWORD={password} psql -c \'DROP DATABASE "{dbname}";\' --port {port} --user {user}'
+    process = subprocess.run(command, shell=True)
