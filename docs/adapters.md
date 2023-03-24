@@ -8,7 +8,7 @@ sources of biomedical knowledge as well as for different ontologies. To see
 whether your favourite resource is already supported or currently in
 development, or if you would like to contribute to the development of a new
 adapter, please refer to [this GitHub projects
-view](https://github.com/orgs/saezlab/projects/5/views/6). Check the tabs for
+view](https://github.com/orgs/biocypher/projects/3/views/2). Check the tabs for
 different views.
 
 ```{note}
@@ -18,7 +18,7 @@ to make sure that your favourite resource is supported.
 ```
 
 The project view is built from issues in the [BioCypher GitHub repository](
-https://github.com/saezlab/BioCypher/issues), which carry labels for
+https://github.com/biocypher/biocypher/issues), which carry labels for
 adapters and adapter subtypes, as well as an ``Adapter status`` label to
 indicate the state of development: ``Planned``, ``In progress``, ``Existing``,
 and ``Ideas``.  If you would like to add or request an adapter that is not yet
@@ -30,7 +30,7 @@ listed, please open a new issue and we will add it to the project view.
 :gutter: 2
 
 :::{grid-item-card} BioCypher meta-graph with docker setup:
-:link: https://github.com/saezlab/biocypher-meta-graph
+:link: https://github.com/biocypher/meta-graph
 :text-align: center
 {octicon}`plug;3em` {octicon}`project;3em` {octicon}`share-android;3em` {octicon}`container;3em`
 :::
@@ -38,7 +38,7 @@ listed, please open a new issue and we will add it to the project view.
 ::::
 
 We have built a BioCypher pipeline (from the [template
-repository](https://github.com/saezlab/biocypher-project-template)) that fetches
+repository](https://github.com/biocypher/project-template)) that fetches
 information about all adapters from the BioCypher GitHub repository via the
 GitHub API and builds a graph of all adapters and their dependencies.  Browsing
 this graph can give an overview of the current state of the adapters supported
