@@ -393,7 +393,6 @@ def postgresql_param(request):
 
     # get fallback parameters from biocypher config
     param = bcy_config('postgresql')
-    print('paramsdsd', param)
     cli = {}
     for key in keys:
         # remove '_postgresql' suffix
@@ -463,7 +462,6 @@ def bw_tab_postgresql(postgresql_param, hybrid_ontology, translator, path):
 
 @pytest.fixture
 def create_database_postgres(postgresql_param):
-    print('postgresql_param', postgresql_param)
     params = postgresql_param
     dbname, user, port, password = params['db_name'], params['db_user'], params['db_port'], params['db_password']
 
