@@ -962,8 +962,7 @@ def test_write_node_data_from_gen_tab_postgresql(
 @pytest.mark.requires_postgresql
 @pytest.mark.parametrize('l', [4], scope='module')
 def test_database_import_node_data_from_gen_comma_postgresql(
-    skip_if_offline_postgresql, bw_comma_postgresql, path, _get_nodes,
-    create_database_postgres
+    bw_comma_postgresql, path, _get_nodes, create_database_postgres
 ):
     dbname, user, port, password, create_database_success = create_database_postgres
     assert create_database_success
@@ -1023,8 +1022,7 @@ def test_database_import_node_data_from_gen_comma_postgresql(
 @pytest.mark.requires_postgresql
 @pytest.mark.parametrize('l', [5], scope='module')
 def test_database_import_node_data_from_gen_tab_postgresql(
-    skip_if_offline_postgresql, bw_tab_postgresql, path, _get_nodes,
-    create_database_postgres
+    bw_tab_postgresql, path, _get_nodes, create_database_postgres
 ):
     dbname, user, port, password, create_database_success = create_database_postgres
     assert create_database_success
@@ -1084,8 +1082,7 @@ def test_database_import_node_data_from_gen_tab_postgresql(
 @pytest.mark.requires_postgresql
 @pytest.mark.parametrize('l', [8], scope='module')
 def test_database_import_edge_data_from_gen_comma_postgresql(
-    skip_if_offline_postgresql, bw_comma_postgresql, path, _get_nodes,
-    create_database_postgres, _get_edges
+    bw_comma_postgresql, path, _get_nodes, create_database_postgres, _get_edges
 ):
     dbname, user, port, password, create_database_success = create_database_postgres
     assert create_database_success
@@ -1147,8 +1144,7 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
 @pytest.mark.requires_postgresql
 @pytest.mark.parametrize('l', [8], scope='module')
 def test_database_import_edge_data_from_gen_tab_postgresql(
-    skip_if_offline_postgresql, bw_tab_postgresql, path, _get_nodes,
-    create_database_postgres, _get_edges
+    bw_tab_postgresql, path, _get_nodes, create_database_postgres, _get_edges
 ):
     dbname, user, port, password, create_database_success = create_database_postgres
     assert create_database_success

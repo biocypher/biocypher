@@ -370,7 +370,7 @@ def create_driver(request, neo4j_param, translator, hybrid_ontology):
 
 # skip test if neo4j is offline
 @pytest.fixture(autouse=True)
-def skip_if_offline(request):
+def skip_if_offline_neo4j(request):
 
     marker = request.node.get_closest_marker('requires_neo4j')
 
