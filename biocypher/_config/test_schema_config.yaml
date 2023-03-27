@@ -8,6 +8,7 @@ protein:
   represented_as: node
   preferred_id: uniprot
   input_label: protein
+  db_collection_name: proteins
   properties:
     name: str
     score: float

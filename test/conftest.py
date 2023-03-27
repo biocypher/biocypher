@@ -9,7 +9,11 @@ import pytest
 
 from biocypher import config as bcy_config
 from biocypher._core import BioCypher
-from biocypher._write import _Neo4jBatchWriter, _PostgreSQLBatchWriter
+from biocypher._write import (
+    _Neo4jBatchWriter,
+    _ArangoDBBatchWriter,
+    _PostgreSQLBatchWriter,
+)
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._connect import _Neo4jDriver
 from biocypher._mapping import OntologyMapping
@@ -508,3 +512,21 @@ def create_database_postgres(postgresql_param):
     # teardown
     command = f'PGPASSWORD={password} psql -c \'DROP DATABASE "{dbname}";\' --port {port} --user {user}'
     process = subprocess.run(command, shell=True)
+
+
+@pytest.fixture(scope='function')
+def bw_arango(hybrid_ontology, translator, path):
+
+    bw_arango = _ArangoDBBatchWriter(
+        ontology=hybrid_ontology,
+        translator=translator,
+        output_directory=path,
+        delimiter=',',
+    )
+
+    yield bw_arango
+
+    # teardown
+    for f in os.listdir(path):
+        os.remove(os.path.join(path, f))
+    os.rmdir(path)
