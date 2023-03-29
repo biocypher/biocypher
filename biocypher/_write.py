@@ -268,6 +268,9 @@ class _BatchWriter(ABC):
         )  # set to store the types of edges that
         # have been found to have duplicates
 
+        self.parts = {}  # dict to store the number of parts of the import file
+        # for each label
+
         # TODO not memory efficient, but should be fine for most cases; is
         # there a more elegant solution?
 
@@ -922,12 +925,21 @@ class _BatchWriter(ABC):
             bool: The return value. True for success, False otherwise.
         """
         # translate label to PascalCase
-        label = self.translator.name_sentence_to_pascal(label)
+        label_pascal = self.translator.name_sentence_to_pascal(label)
 
         # list files in self.outdir
-        files = glob.glob(os.path.join(self.outdir, f'{label}-part*.csv'))
+        files = glob.glob(
+            os.path.join(self.outdir, f'{label_pascal}-part*.csv')
+        )
         # find file with highest part number
-        if files:
+        if not files:
+
+            next_part = 0
+
+            self.parts[label] = 1
+
+        else:
+
             next_part = (
                 max(
                     [
@@ -937,15 +949,17 @@ class _BatchWriter(ABC):
                     ],
                 ) + 1
             )
-        else:
-            next_part = 0
+
+            self.parts[label] += 1
 
         # write to file
         padded_part = str(next_part).zfill(3)
         logger.info(
-            f'Writing {len(lines)} entries to {label}-part{padded_part}.csv',
+            f'Writing {len(lines)} entries to {label_pascal}-part{padded_part}.csv',
         )
-        file_path = os.path.join(self.outdir, f'{label}-part{padded_part}.csv')
+        file_path = os.path.join(
+            self.outdir, f'{label_pascal}-part{padded_part}.csv'
+        )
 
         with open(file_path, 'w', encoding='utf-8') as f:
 
@@ -1294,7 +1308,6 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                 self.outdir,
                 f'{pascal_label}-header.csv',
             )
-            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
 
             # check if file already exists
             if not os.path.exists(header_path):
@@ -1336,9 +1349,24 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                 )
 
                 # add file path to neo4 admin import statement
-                self.import_call_nodes.append(
-                    [header_path, parts_path, collection]
-                )
+                # do once for each part file
+                num_parts = self.parts.get(label, 0)
+
+                if not num_parts:
+                    raise ValueError(
+                        f'No parts found for node label {label}. '
+                        f'Check that the data was parsed first.',
+                    )
+
+                for i in range(num_parts):
+
+                    parts_path = os.path.join(
+                        self.outdir, f'{pascal_label}-part.{i:03d}'
+                    )
+
+                    self.import_call_nodes.append(
+                        [header_path, parts_path, collection]
+                    )
 
         return True
 
@@ -1434,7 +1462,6 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
         import_call = (
             f'{self.import_call_bin_prefix}arangoimp '
             f'--type csv '
-            f'--create-collection '
             f'--separator="{self.escaped_delim}" '
         )
 
@@ -1455,7 +1482,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
             )
 
             if collection:
-                line += f'--collection {collection} '
+                line += f'--create-collection --collection {collection} '
 
             node_lines += f'{line}\n'
 
