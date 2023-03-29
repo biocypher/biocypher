@@ -31,9 +31,11 @@ repository on your machine. We recommend using
 [Poetry](https://python-poetry.org/):
 
 ```{code-block} bash
+
 git clone https://github.com/biocypher/biocypher.git
 cd biocypher
 poetry install
+
 ```
 
 ```{admonition} Poetry environment
