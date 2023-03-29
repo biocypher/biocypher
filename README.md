@@ -28,10 +28,8 @@ BioCypher is currently in prototype stage. Installation instructions can be
 found [here](https://biocypher.org/installation.html).
 
 Exemplary usage of BioCypher to build a graph database is shown in various
-adapters we have created. For instance, interested users can refer to the
-[migration of the Clinical Knowledge Graph](https://github.com/biocypher/clinical-knowledge-graph), or
-the [adapters created for the CROssBAR project](https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration/blob/main/scripts/create_crossbar.py).
-As the project evolves, more of these examples will be directly included in the documentation.
+pipelines we have created. You can find these on the [Components Project
+Board](https://github.com/orgs/biocypher/projects/3/views/2).
 
 ## 🤝 Getting involved
 We are very happy about contributions from the community, large and small!
