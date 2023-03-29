@@ -57,6 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher Tutorial - Basics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#section-1-adding-data">Section 1: Adding data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#section-2-merging-data">Section 2: Merging data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#section-3-handling-properties">Section 3: Handling properties</a></li>
@@ -116,6 +117,30 @@ it is not required for this tutorial. For checking the output, you can simply
 open the CSV files in a text editor or your IDE; by default, they will be
 written to the <code class="docutils literal notranslate"><span class="pre">biocypher-out</span></code> directory.</p>
 </div>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading"></a></h2>
+<p>To run this tutorial, you will need to have cloned and installed the BioCypher
+repository on your machine. We recommend using
+<a class="reference external" href="https://python-poetry.org/">Poetry</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/biocypher/biocypher.git
+<span class="nb">cd</span><span class="w"> </span>biocypher
+poetry<span class="w"> </span>install
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Poetry environment</p>
+<p>In order to run the tutorial code, you will need to activate the Poetry
+environment. This can be done by running <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">shell</span></code> in the <code class="docutils literal notranslate"><span class="pre">biocypher</span></code>
+directory. Alternatively, you can run the code from within the Poetry
+environment by prepending <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">run</span></code> to the command. For example, to run the
+tutorial code, you can run <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">run</span> <span class="pre">python</span> <span class="pre">tutorial/01__basic_import.py</span></code>.</p>
+</div>
+<p>In the <code class="docutils literal notranslate"><span class="pre">biocypher</span></code> root directory, you will find a <code class="docutils literal notranslate"><span class="pre">tutorial</span></code> directory with
+the files for this tutorial. The <code class="docutils literal notranslate"><span class="pre">data_generator.py</span></code> file contains the
+simulated data generation code, and the other files are named according to the
+tutorial step they are used in. The <code class="docutils literal notranslate"><span class="pre">biocypher-out</span></code> directory will be created
+automatically when you run the tutorial code.</p>
+</section>
 <section id="section-1-adding-data">
 <h2>Section 1: Adding data<a class="headerlink" href="#section-1-adding-data" title="Permalink to this heading"></a></h2>
 <div class="note admonition">
