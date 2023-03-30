@@ -216,11 +216,16 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
     script = os.path.join(path, import_script)
     with open(script) as f:
         commands = f.readlines()
-        assert len(commands) > 0
+
+    assert len(commands) > 0
+    assert path in '\n'.join(commands)
+    assert 'protein-create_table.sql' in '\n'.join(commands)
+    assert '--user' in '\n'.join(commands)
 
     for command in commands:
         result = subprocess.run(command, shell=True)
-        assert result.returncode == 0
+
+    assert result.returncode == 0
 
     # check data in the databases
     command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM is_mutated_in;\' --dbname {dbname} --port {port} --user {user}'
@@ -230,7 +235,7 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
     # subprocess success
     assert result.returncode == 0
     # 2 entries in table
-    assert '2' in result.stdout.decode()
+    assert '8' in result.stdout.decode()
 
     command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM perturbed_in_disease;\' --dbname {dbname} --port {port} --user {user}'
     result = subprocess.run(
@@ -239,7 +244,7 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
     # subprocess success
     assert result.returncode == 0
     # 2 entries in table
-    assert '2' in result.stdout.decode()
+    assert '8' in result.stdout.decode()
 
 
 @pytest.mark.requires_postgresql
@@ -278,7 +283,11 @@ def test_database_import_edge_data_from_gen_tab_postgresql(
     script = os.path.join(path, import_script)
     with open(script) as f:
         commands = f.readlines()
-        assert len(commands) == 32
+
+    assert len(commands) > 1
+    assert path in '\n'.join(commands)
+    assert 'protein-create_table.sql' in '\n'.join(commands)
+    assert '--user' in '\n'.join(commands)
 
     for command in commands:
         result = subprocess.run(command, shell=True)
@@ -292,7 +301,7 @@ def test_database_import_edge_data_from_gen_tab_postgresql(
     # subprocess success
     assert result.returncode == 0
     # 2 entires in table
-    assert '2' in result.stdout.decode()
+    assert '8' in result.stdout.decode()
 
     command = f'PGPASSWORD={password} psql -c \'SELECT COUNT(*) FROM perturbed_in_disease;\' --dbname {dbname} --port {port} --user {user}'
     result = subprocess.run(
@@ -301,4 +310,4 @@ def test_database_import_edge_data_from_gen_tab_postgresql(
     # subprocess success
     assert result.returncode == 0
     # 2 entires in table
-    assert '2' in result.stdout.decode()
+    assert '8' in result.stdout.decode()

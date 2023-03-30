@@ -1566,15 +1566,15 @@ class _PostgreSQLBatchWriter(_BatchWriter):
 
             # adjust label for import to psql
             pascal_label = self._adjust_pascal_to_psql(pascal_label)
-            import_file_path = os.path.join(
+            import_call = os.path.join(
                 self.outdir,
                 f'{pascal_label}-create_table.sql',
             )
 
             # check if file already exists
-            if os.path.exists(import_file_path):
+            if os.path.exists(import_call):
                 logger.warning(
-                    f'File {import_file_path} already exists. Overwriting.',
+                    f'File {import_call} already exists. Overwriting.',
                 )
 
             # concatenate key:value in props
@@ -1585,7 +1585,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 columns.append(f'{col_name} {col_type}')
             columns.append('_LABEL VARCHAR[]')
 
-            with open(import_file_path, 'w', encoding='utf-8') as f:
+            with open(import_call, 'w', encoding='utf-8') as f:
 
                 command = ''
                 if self.wipe:
@@ -1601,7 +1601,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                     )
 
             # add file path to import statement
-            self.import_call_nodes.add(import_file_path)
+            self.import_call_nodes.add(import_call)
 
         return True
 
@@ -1633,15 +1633,15 @@ class _PostgreSQLBatchWriter(_BatchWriter):
 
             # adjust label for import to psql
             pascal_label = self._adjust_pascal_to_psql(pascal_label)
-            import_file_path = os.path.join(
+            import_call = os.path.join(
                 self.outdir,
                 f'{pascal_label}-create_table.sql',
             )
 
             # check for file exists
-            if os.path.exists(import_file_path):
+            if os.path.exists(import_call):
                 logger.warning(
-                    f'File {import_file_path} already exists. Overwriting.',
+                    f'File {import_call} already exists. Overwriting.',
                 )
 
             # concatenate key:value in props
@@ -1658,7 +1658,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 '_TYPE VARCHAR'
             ]
 
-            with open(import_file_path, 'w', encoding='utf-8') as f:
+            with open(import_call, 'w', encoding='utf-8') as f:
                 command = ''
                 if self.wipe:
                     command += f'DROP TABLE IF EXISTS {pascal_label};\n'
@@ -1673,7 +1673,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                     )
 
             # add file path to import statement
-            self.import_call_edges.add(import_file_path)
+            self.import_call_edges.add(import_call)
 
         return True
 
