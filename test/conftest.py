@@ -139,7 +139,7 @@ def translator(ontology_mapping):
 @pytest.fixture(scope='module')
 def biolink_adapter():
     return OntologyAdapter(
-        'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
+        'https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl',
         'entity'
     )
 
