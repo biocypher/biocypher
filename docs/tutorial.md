@@ -25,6 +25,34 @@ written to the ``biocypher-out`` directory.
 
 ```
 
+## Setup
+To run this tutorial, you will need to have cloned and installed the BioCypher
+repository on your machine. We recommend using
+[Poetry](https://python-poetry.org/):
+
+```{code-block} bash
+
+git clone https://github.com/biocypher/biocypher.git
+cd biocypher
+poetry install
+
+```
+
+```{admonition} Poetry environment
+:class: note
+In order to run the tutorial code, you will need to activate the Poetry
+environment. This can be done by running `poetry shell` in the `biocypher`
+directory. Alternatively, you can run the code from within the Poetry
+environment by prepending `poetry run` to the command. For example, to run the
+tutorial code, you can run `poetry run python tutorial/01__basic_import.py`.
+```
+
+In the `biocypher` root directory, you will find a `tutorial` directory with
+the files for this tutorial. The `data_generator.py` file contains the
+simulated data generation code, and the other files are named according to the
+tutorial step they are used in. The `biocypher-out` directory will be created
+automatically when you run the tutorial code.
+
 ## Section 1: Adding data
 ```{admonition} Tutorial files
 :class: note
