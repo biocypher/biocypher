@@ -1563,18 +1563,19 @@ class _PostgreSQLBatchWriter(_BatchWriter):
 
             parts_paths = os.path.join(self.outdir, f'{pascal_label}-part*.csv')
             parts_paths = glob.glob(parts_paths)
+            parts_paths.sort()
 
             # adjust label for import to psql
             pascal_label = self._adjust_pascal_to_psql(pascal_label)
-            import_call = os.path.join(
+            table_create_command_path = os.path.join(
                 self.outdir,
                 f'{pascal_label}-create_table.sql',
             )
 
             # check if file already exists
-            if os.path.exists(import_call):
+            if os.path.exists(table_create_command_path):
                 logger.warning(
-                    f'File {import_call} already exists. Overwriting.',
+                    f'File {table_create_command_path} already exists. Overwriting.',
                 )
 
             # concatenate key:value in props
@@ -1585,7 +1586,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 columns.append(f'{col_name} {col_type}')
             columns.append('_LABEL VARCHAR[]')
 
-            with open(import_call, 'w', encoding='utf-8') as f:
+            with open(table_create_command_path, 'w', encoding='utf-8') as f:
 
                 command = ''
                 if self.wipe:
@@ -1601,7 +1602,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                     )
 
             # add file path to import statement
-            self.import_call_nodes.add(import_call)
+            self.import_call_nodes.add(table_create_command_path)
 
         return True
 
@@ -1622,26 +1623,25 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             return False
 
         for label, props in self.edge_property_dict.items():
-            # create header CSV with :START_ID, (optional) properties,
-            # :END_ID, :TYPE
 
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
             parts_paths = os.path.join(self.outdir, f'{pascal_label}-part*.csv')
             parts_paths = glob.glob(parts_paths)
+            parts_paths.sort()
 
             # adjust label for import to psql
             pascal_label = self._adjust_pascal_to_psql(pascal_label)
-            import_call = os.path.join(
+            table_create_command_path = os.path.join(
                 self.outdir,
                 f'{pascal_label}-create_table.sql',
             )
 
             # check for file exists
-            if os.path.exists(import_call):
+            if os.path.exists(table_create_command_path):
                 logger.warning(
-                    f'File {import_call} already exists. Overwriting.',
+                    f'File {table_create_command_path} already exists. Overwriting.',
                 )
 
             # concatenate key:value in props
@@ -1658,7 +1658,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 '_TYPE VARCHAR'
             ]
 
-            with open(import_call, 'w', encoding='utf-8') as f:
+            with open(table_create_command_path, 'w', encoding='utf-8') as f:
                 command = ''
                 if self.wipe:
                     command += f'DROP TABLE IF EXISTS {pascal_label};\n'
@@ -1673,7 +1673,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                     )
 
             # add file path to import statement
-            self.import_call_edges.add(import_call)
+            self.import_call_edges.add(table_create_command_path)
 
         return True
 
