@@ -1107,34 +1107,38 @@ class _Neo4jBatchWriter(_BatchWriter):
             parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
 
             # check if file already exists
-            if not os.path.exists(header_path):
-                # concatenate key:value in props
-                props_list = []
-                for k, v in props.items():
-                    if v in ['int', 'long']:
-                        props_list.append(f'{k}:long')
-                    elif v in ['float', 'double', 'dbl']:
-                        props_list.append(f'{k}:double')
-                    elif v in ['bool', 'boolean']:
-                        # TODO Neo4j boolean support / spelling?
-                        props_list.append(f'{k}:boolean')
-                    elif v in ['str[]', 'string[]']:
-                        props_list.append(f'{k}:string[]')
-                    else:
-                        props_list.append(f'{k}')
+            if os.path.exists(header_path):
+                logger.warning(
+                    f'Header file `{header_path}` already exists. Overwriting.',
+                )
 
-                # create list of lists and flatten
-                # removes need for empty check of property list
-                out_list = [[_id], props_list, [':LABEL']]
-                out_list = [val for sublist in out_list for val in sublist]
+            # concatenate key:value in props
+            props_list = []
+            for k, v in props.items():
+                if v in ['int', 'long']:
+                    props_list.append(f'{k}:long')
+                elif v in ['float', 'double', 'dbl']:
+                    props_list.append(f'{k}:double')
+                elif v in ['bool', 'boolean']:
+                    # TODO Neo4j boolean support / spelling?
+                    props_list.append(f'{k}:boolean')
+                elif v in ['str[]', 'string[]']:
+                    props_list.append(f'{k}:string[]')
+                else:
+                    props_list.append(f'{k}')
 
-                with open(header_path, 'w', encoding='utf-8') as f:
-                    # concatenate with delimiter
-                    row = self.delim.join(out_list)
-                    f.write(row)
+            # create list of lists and flatten
+            # removes need for empty check of property list
+            out_list = [[_id], props_list, [':LABEL']]
+            out_list = [val for sublist in out_list for val in sublist]
 
-                # add file path to neo4 admin import statement
-                self.import_call_nodes.append([header_path, parts_path])
+            with open(header_path, 'w', encoding='utf-8') as f:
+                # concatenate with delimiter
+                row = self.delim.join(out_list)
+                f.write(row)
+
+            # add file path to neo4 admin import statement
+            self.import_call_nodes.append([header_path, parts_path])
 
         return True
 
@@ -1169,34 +1173,37 @@ class _Neo4jBatchWriter(_BatchWriter):
             parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
 
             # check for file exists
-            if not os.path.exists(header_path):
+            if os.path.exists(header_path):
+                logger.warning(
+                    f'File {header_path} already exists. Overwriting.'
+                )
 
-                # concatenate key:value in props
-                props_list = []
-                for k, v in props.items():
-                    if v in ['int', 'long']:
-                        props_list.append(f'{k}:long')
-                    elif v in ['float', 'double']:
-                        props_list.append(f'{k}:double')
-                    elif v in [
-                        'bool',
-                        'boolean',
-                    ]:  # TODO does Neo4j support bool?
-                        props_list.append(f'{k}:boolean')
-                    else:
-                        props_list.append(f'{k}')
+            # concatenate key:value in props
+            props_list = []
+            for k, v in props.items():
+                if v in ['int', 'long']:
+                    props_list.append(f'{k}:long')
+                elif v in ['float', 'double']:
+                    props_list.append(f'{k}:double')
+                elif v in [
+                    'bool',
+                    'boolean',
+                ]:  # TODO does Neo4j support bool?
+                    props_list.append(f'{k}:boolean')
+                else:
+                    props_list.append(f'{k}')
 
-                # create list of lists
-                # removes need for empty check of property list
-                out_list = [':START_ID', *props_list, ':END_ID', ':TYPE']
+            # create list of lists
+            # removes need for empty check of property list
+            out_list = [':START_ID', *props_list, ':END_ID', ':TYPE']
 
-                with open(header_path, 'w', encoding='utf-8') as f:
-                    # concatenate with delimiter
-                    row = self.delim.join(out_list)
-                    f.write(row)
+            with open(header_path, 'w', encoding='utf-8') as f:
+                # concatenate with delimiter
+                row = self.delim.join(out_list)
+                f.write(row)
 
-                # add file path to neo4 admin import statement
-                self.import_call_edges.append([header_path, parts_path])
+            # add file path to neo4 admin import statement
+            self.import_call_edges.append([header_path, parts_path])
 
         return True
 
@@ -1307,60 +1314,62 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
             )
 
             # check if file already exists
-            if not os.path.exists(header_path):
-                # concatenate key:value in props
-                props_list = []
-                for k, v in props.items():
-
-                    # if v in ['int', 'long']:
-                    #     props_list.append(f'{k}:long')
-                    # elif v in ['float', 'double', 'dbl']:
-                    #     props_list.append(f'{k}:double')
-                    # elif v in ['bool', 'boolean']:
-                    #     # TODO Neo4j boolean support / spelling?
-                    #     props_list.append(f'{k}:boolean')
-                    # elif v in ['str[]', 'string[]']:
-                    #     props_list.append(f'{k}:string[]')
-                    # else:
-
-                    # the field type specification can happen as CLI attribute
-                    # --datatype, would need to be passed to the import call
-                    # constructor
-
-                    # here, we just concatenate the keys (fields)
-                    props_list.append(f'{k}')
-
-                # create list of lists and flatten
-                # removes need for empty check of property list
-                out_list = [[_id], props_list]
-                out_list = [val for sublist in out_list for val in sublist]
-
-                with open(header_path, 'w', encoding='utf-8') as f:
-                    # concatenate with delimiter
-                    row = self.delim.join(out_list)
-                    f.write(row)
-
-                # add collection from schema config
-                collection = self.extended_schema[label].get(
-                    'db_collection_name', None
+            if os.path.exists(header_path):
+                logger.warning(
+                    f'File {header_path} already exists. Overwriting.'
                 )
 
-                # add file path to neo4 admin import statement
-                # do once for each part file
-                parts = self.parts.get(label, [])
+            # concatenate key:value in props
+            props_list = []
+            for k, v in props.items():
 
-                if not parts:
+                # if v in ['int', 'long']:
+                #     props_list.append(f'{k}:long')
+                # elif v in ['float', 'double', 'dbl']:
+                #     props_list.append(f'{k}:double')
+                # elif v in ['bool', 'boolean']:
+                #     # TODO Neo4j boolean support / spelling?
+                #     props_list.append(f'{k}:boolean')
+                # elif v in ['str[]', 'string[]']:
+                #     props_list.append(f'{k}:string[]')
+                # else:
 
-                    raise ValueError(
-                        f'No parts found for node label {label}. '
-                        f'Check that the data was parsed first.',
-                    )
+                # the field type specification can happen as CLI attribute
+                # --datatype, would need to be passed to the import call
+                # constructor
 
-                for part in parts:
+                # here, we just concatenate the keys (fields)
+                props_list.append(f'{k}')
 
-                    self.import_call_nodes.append(
-                        [header_path, part, collection]
-                    )
+            # create list of lists and flatten
+            # removes need for empty check of property list
+            out_list = [[_id], props_list]
+            out_list = [val for sublist in out_list for val in sublist]
+
+            with open(header_path, 'w', encoding='utf-8') as f:
+                # concatenate with delimiter
+                row = self.delim.join(out_list)
+                f.write(row)
+
+            # add collection from schema config
+            collection = self.extended_schema[label].get(
+                'db_collection_name', None
+            )
+
+            # add file path to neo4 admin import statement
+            # do once for each part file
+            parts = self.parts.get(label, [])
+
+            if not parts:
+
+                raise ValueError(
+                    f'No parts found for node label {label}. '
+                    f'Check that the data was parsed first.',
+                )
+
+            for part in parts:
+
+                self.import_call_nodes.append([header_path, part, collection])
 
         return True
 
@@ -1393,42 +1402,43 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
             parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
 
             # check for file exists
-            if not os.path.exists(header_path):
-
-                # concatenate key:value in props
-                props_list = []
-                for k, v in props.items():
-                    # if v in ['int', 'long']:
-                    #     props_list.append(f'{k}:long')
-                    # elif v in ['float', 'double']:
-                    #     props_list.append(f'{k}:double')
-                    # elif v in [
-                    #     'bool',
-                    #     'boolean',
-                    # ]:  # TODO does Neo4j support bool?
-                    #     props_list.append(f'{k}:boolean')
-                    # else:
-
-                    # same as nodes, only concatenate fields
-
-                    props_list.append(f'{k}')
-
-                out_list = ['_from', *props_list, '_to']
-
-                with open(header_path, 'w', encoding='utf-8') as f:
-                    # concatenate with delimiter
-                    row = self.delim.join(out_list)
-                    f.write(row)
-
-                # add collection from schema config
-                collection = self.extended_schema[label].get(
-                    'db_collection_name', None
+            if os.path.exists(header_path):
+                logger.warning(
+                    f'Header file {header_path} already exists. Overwriting.'
                 )
 
-                # add file path to neo4 admin import statement
-                self.import_call_edges.append(
-                    [header_path, parts_path, collection]
-                )
+            # concatenate key:value in props
+            props_list = []
+            for k, v in props.items():
+                # if v in ['int', 'long']:
+                #     props_list.append(f'{k}:long')
+                # elif v in ['float', 'double']:
+                #     props_list.append(f'{k}:double')
+                # elif v in [
+                #     'bool',
+                #     'boolean',
+                # ]:  # TODO does Neo4j support bool?
+                #     props_list.append(f'{k}:boolean')
+                # else:
+
+                # same as nodes, only concatenate fields
+
+                props_list.append(f'{k}')
+
+            out_list = ['_from', *props_list, '_to']
+
+            with open(header_path, 'w', encoding='utf-8') as f:
+                # concatenate with delimiter
+                row = self.delim.join(out_list)
+                f.write(row)
+
+            # add collection from schema config
+            collection = self.extended_schema[label].get(
+                'db_collection_name', None
+            )
+
+            # add file path to neo4 admin import statement
+            self.import_call_edges.append([header_path, parts_path, collection])
 
         return True
 
@@ -1594,35 +1604,39 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 self.outdir,
                 f'{pascal_label}-create_table.sql',
             )
+
             # check if file already exists
-            if not os.path.exists(import_file_path):
+            if os.path.exists(import_file_path):
+                logger.warning(
+                    f'File {import_file_path} already exists. Overwriting.',
+                )
 
-                # concatenate key:value in props
-                columns = ['_ID VARCHAR']
-                for col_name, col_type in props.items():
-                    col_type = self._get_data_type(col_type)
-                    col_name = self._adjust_pascal_to_psql(col_name)
-                    columns.append(f'{col_name} {col_type}')
-                columns.append('_LABEL VARCHAR[]')
+            # concatenate key:value in props
+            columns = ['_ID VARCHAR']
+            for col_name, col_type in props.items():
+                col_type = self._get_data_type(col_type)
+                col_name = self._adjust_pascal_to_psql(col_name)
+                columns.append(f'{col_name} {col_type}')
+            columns.append('_LABEL VARCHAR[]')
 
-                with open(import_file_path, 'w', encoding='utf-8') as f:
-                    command = ''
-                    if self.wipe:
-                        command += f'DROP TABLE IF EXISTS {pascal_label};\n'
+            with open(import_file_path, 'w', encoding='utf-8') as f:
+                command = ''
+                if self.wipe:
+                    command += f'DROP TABLE IF EXISTS {pascal_label};\n'
 
-                    # table creation requires comma separation
-                    command += f'CREATE TABLE {pascal_label}({",".join(columns)});\n'
-                    f.write(command)
+                # table creation requires comma separation
+                command += f'CREATE TABLE {pascal_label}({",".join(columns)});\n'
+                f.write(command)
 
-                    copy_commands = []
-                    for parts_path in parts_paths:
-                        copy_commands.append(
-                            f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;'
-                        )
-                    self._copy_from_csv_commands.append(copy_commands)
+                copy_commands = []
+                for parts_path in parts_paths:
+                    copy_commands.append(
+                        f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;'
+                    )
+                self._copy_from_csv_commands.append(copy_commands)
 
-                # add file path to import statement
-                self.import_call_nodes.append(import_file_path)
+            # add file path to import statement
+            self.import_call_nodes.append(import_file_path)
 
         return True
 
@@ -1658,40 +1672,45 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 self.outdir,
                 f'{pascal_label}-create_table.sql',
             )
+
             # check for file exists
-            if not os.path.exists(import_file_path):
-                # concatenate key:value in props
-                columns = []
-                for col_name, col_type in props.items():
-                    col_type = self._get_data_type(col_type)
-                    col_name = self._adjust_pascal_to_psql(col_name)
-                    columns.append(f'{col_name} {col_type}')
+            if os.path.exists(import_file_path):
+                logger.warning(
+                    f'File {import_file_path} already exists. Overwriting.',
+                )
 
-                # create list of lists and flatten
-                # removes need for empty check of property list
-                out_list = [
-                    '_START_ID VARCHAR', *columns, '_END_ID VARCHAR',
-                    '_TYPE VARCHAR'
-                ]
+            # concatenate key:value in props
+            columns = []
+            for col_name, col_type in props.items():
+                col_type = self._get_data_type(col_type)
+                col_name = self._adjust_pascal_to_psql(col_name)
+                columns.append(f'{col_name} {col_type}')
 
-                with open(import_file_path, 'w', encoding='utf-8') as f:
-                    command = ''
-                    if self.wipe:
-                        command += f'DROP TABLE IF EXISTS {pascal_label};\n'
+            # create list of lists and flatten
+            # removes need for empty check of property list
+            out_list = [
+                '_START_ID VARCHAR', *columns, '_END_ID VARCHAR',
+                '_TYPE VARCHAR'
+            ]
 
-                    # table creation requires comma separation
-                    command += f'CREATE TABLE {pascal_label}({",".join(out_list)});\n'
-                    f.write(command)
+            with open(import_file_path, 'w', encoding='utf-8') as f:
+                command = ''
+                if self.wipe:
+                    command += f'DROP TABLE IF EXISTS {pascal_label};\n'
 
-                    copy_commands = []
-                    for parts_path in parts_paths:
-                        copy_commands.append(
-                            f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;'
-                        )
-                    self._copy_from_csv_commands.append(copy_commands)
+                # table creation requires comma separation
+                command += f'CREATE TABLE {pascal_label}({",".join(out_list)});\n'
+                f.write(command)
 
-                # add file path to import statement
-                self.import_call_edges.append(import_file_path)
+                copy_commands = []
+                for parts_path in parts_paths:
+                    copy_commands.append(
+                        f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;'
+                    )
+                self._copy_from_csv_commands.append(copy_commands)
+
+            # add file path to import statement
+            self.import_call_edges.append(import_file_path)
 
         return True
 

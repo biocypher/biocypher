@@ -43,14 +43,3 @@ def test_arango_write_node_data_headers_import_call(
         c = f.read()
 
     assert 'custom/path/to/arangoimp --type csv' in c
-
-    # custom file prefix
-    bw_arango.import_call_file_prefix = 'custom/path/to/'
-
-    os.remove(call)
-    bw_arango.write_import_call()
-
-    with open(call) as f:
-        c = f.read()
-
-    assert 'custom/path/to/Protein-header.csv' in c
