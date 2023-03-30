@@ -244,6 +244,7 @@ post translational interaction:
   label_as_edge: INTERACTS_POST_TRANSLATIONALLY
 ```
 
+(quick_config)=
 ## The biocypher configuration YAML file
 Most of the configuration options for BioCypher can and should be specified in
 the configuration YAML file, `biocypher_config.yaml`. While BioCypher comes with
