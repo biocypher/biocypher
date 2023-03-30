@@ -1088,14 +1088,8 @@ class _Neo4jBatchWriter(_BatchWriter):
             return False
 
         for label, props in self.node_property_dict.items():
-            # create header CSV with ID, properties, labels
 
             _id = ':ID'
-
-            # to programmatically define properties to be written, the
-            # data would have to be parsed before writing the header.
-            # alternatively, desired properties can also be provided
-            # via the schema_config.yaml.
 
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
@@ -1128,7 +1122,6 @@ class _Neo4jBatchWriter(_BatchWriter):
                     props_list.append(f'{k}')
 
             # create list of lists and flatten
-            # removes need for empty check of property list
             out_list = [[_id], props_list, [':LABEL']]
             out_list = [val for sublist in out_list for val in sublist]
 
@@ -1159,8 +1152,6 @@ class _Neo4jBatchWriter(_BatchWriter):
             return False
 
         for label, props in self.edge_property_dict.items():
-            # create header CSV with :START_ID, (optional) properties,
-            # :END_ID, :TYPE
 
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
@@ -1193,8 +1184,6 @@ class _Neo4jBatchWriter(_BatchWriter):
                 else:
                     props_list.append(f'{k}')
 
-            # create list of lists
-            # removes need for empty check of property list
             out_list = [':START_ID', *props_list, ':END_ID', ':TYPE']
 
             with open(header_path, 'w', encoding='utf-8') as f:
@@ -1246,14 +1235,10 @@ class _Neo4jBatchWriter(_BatchWriter):
             import_call += '--skip-duplicate-nodes=true '
 
         # append node import calls
-        #Format the neo4j admin import statement for all node-files in
-        # 'self.import_call_nodes'
         for header_path, parts_path in self.import_call_nodes:
             import_call += f'--nodes="{header_path},{parts_path}" '
 
         # append edge import calls
-        # Format the neo4j admin import statement for all edge-files in
-        # 'self.import_call_nodes'
         for header_path, parts_path in self.import_call_edges:
             import_call += f'--relationships="{header_path},{parts_path}" '
 

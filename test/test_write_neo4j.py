@@ -15,6 +15,49 @@ def test_neo4j_writer_and_output_dir(bw, path):
     )
 
 
+def test_create_import_call(bw, path):
+    mixed = []
+    le = 4
+    for i in range(le):
+        n = BioCypherNode(
+            f'i{i+1}',
+            'post translational interaction',
+        )
+        e1 = BioCypherEdge(
+            source_id=f'i{i+1}',
+            target_id=f'p{i+1}',
+            relationship_label='IS_SOURCE_OF',
+        )
+        e2 = BioCypherEdge(
+            source_id=f'i{i}',
+            target_id=f'p{i+2}',
+            relationship_label='IS_TARGET_OF',
+        )
+        mixed.append(BioCypherRelAsNode(n, e1, e2))
+
+        e3 = BioCypherEdge(
+            source_id=f'p{i+1}',
+            target_id=f'p{i+1}',
+            relationship_label='PERTURBED_IN_DISEASE',
+        )
+        mixed.append(e3)
+
+    def gen(lis):
+        yield from lis
+
+    passed = bw.write_edges(gen(mixed))
+
+    call = bw.get_import_call()
+
+    assert passed
+    assert 'bin/neo4j-admin import --database=neo4j --delimiter=";" ' in call
+    assert '--array-delimiter="|" --quote="\'" --force=true ' in call
+    assert f'--nodes="{path}/PostTranslationalInteraction-header.csv,{path}/PostTranslationalInteraction-part.*" ' in call
+    assert f'--relationships="{path}/IS_SOURCE_OF-header.csv,{path}/IS_SOURCE_OF-part.*" ' in call
+    assert f'--relationships="{path}/IS_TARGET_OF-header.csv,{path}/IS_TARGET_OF-part.*" ' in call
+    assert f'--relationships="{path}/PERTURBED_IN_DISEASE-header.csv,{path}/PERTURBED_IN_DISEASE-part.*" ' in call
+
+
 @pytest.mark.parametrize('l', [4], scope='module')
 def test_neo4j_write_node_data_headers_import_call(bw, path, _get_nodes):
     # four proteins, four miRNAs
@@ -669,51 +712,6 @@ def test_write_mixed_edges(bw, path):
     assert (
         passed and os.path.isfile(pmi_csv) and os.path.isfile(iso_csv) and
         os.path.isfile(ito_csv) and os.path.isfile(ipt_csv)
-    )
-
-
-def test_create_import_call(bw, path):
-    mixed = []
-    le = 4
-    for i in range(le):
-        n = BioCypherNode(
-            f'i{i+1}',
-            'post translational interaction',
-        )
-        e1 = BioCypherEdge(
-            source_id=f'i{i+1}',
-            target_id=f'p{i+1}',
-            relationship_label='IS_SOURCE_OF',
-        )
-        e2 = BioCypherEdge(
-            source_id=f'i{i}',
-            target_id=f'p{i+2}',
-            relationship_label='IS_TARGET_OF',
-        )
-        mixed.append(BioCypherRelAsNode(n, e1, e2))
-
-        e3 = BioCypherEdge(
-            source_id=f'p{i+1}',
-            target_id=f'p{i+1}',
-            relationship_label='PERTURBED_IN_DISEASE',
-        )
-        mixed.append(e3)
-
-    def gen(lis):
-        yield from lis
-
-    passed = bw.write_edges(gen(mixed))
-
-    call = bw.get_import_call()
-
-    assert (
-        passed and
-        call == 'bin/neo4j-admin import --database=neo4j --delimiter=";" '
-        '--array-delimiter="|" --quote="\'" --force=true '
-        f'--nodes="{path}/PostTranslationalInteraction-header.csv,{path}/PostTranslationalInteraction-part.*" '
-        f'--relationships="{path}/IS_SOURCE_OF-header.csv,{path}/IS_SOURCE_OF-part.*" '
-        f'--relationships="{path}/IS_TARGET_OF-header.csv,{path}/IS_TARGET_OF-part.*" '
-        f'--relationships="{path}/PERTURBED_IN_DISEASE-header.csv,{path}/PERTURBED_IN_DISEASE-part.*" '
     )
 
 
