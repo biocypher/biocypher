@@ -1321,24 +1321,8 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
 
             # concatenate key:value in props
             props_list = []
-            for k, v in props.items():
+            for k in props.keys():
 
-                # if v in ['int', 'long']:
-                #     props_list.append(f'{k}:long')
-                # elif v in ['float', 'double', 'dbl']:
-                #     props_list.append(f'{k}:double')
-                # elif v in ['bool', 'boolean']:
-                #     # TODO Neo4j boolean support / spelling?
-                #     props_list.append(f'{k}:boolean')
-                # elif v in ['str[]', 'string[]']:
-                #     props_list.append(f'{k}:string[]')
-                # else:
-
-                # the field type specification can happen as CLI attribute
-                # --datatype, would need to be passed to the import call
-                # constructor
-
-                # here, we just concatenate the keys (fields)
                 props_list.append(f'{k}')
 
             # create list of lists and flatten
@@ -1409,19 +1393,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
 
             # concatenate key:value in props
             props_list = []
-            for k, v in props.items():
-                # if v in ['int', 'long']:
-                #     props_list.append(f'{k}:long')
-                # elif v in ['float', 'double']:
-                #     props_list.append(f'{k}:double')
-                # elif v in [
-                #     'bool',
-                #     'boolean',
-                # ]:  # TODO does Neo4j support bool?
-                #     props_list.append(f'{k}:boolean')
-                # else:
-
-                # same as nodes, only concatenate fields
+            for k in props.keys():
 
                 props_list.append(f'{k}')
 
@@ -1435,7 +1407,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
             # add collection from schema config
             if not self.extended_schema.get(label):
 
-                for k, v in self.extended_schema.items():
+                for _, v in self.extended_schema.items():
                     if v.get('label_as_edge') == label:
                         collection = v.get('db_collection_name', None)
                         break
