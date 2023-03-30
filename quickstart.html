@@ -38,7 +38,7 @@
             BioCypher
           </a>
               <div class="version">
-                0.5.6
+                0.5.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -57,6 +57,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#the-host-module-adapter">The host module adapter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#the-schema-configuration-yaml-file">The schema configuration YAML file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-biocypher-configuration-yaml-file">The biocypher configuration YAML file</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a></li>
@@ -319,6 +320,50 @@ the above example to the following:</p>
 <span class="w">  </span><span class="nt">label_as_edge</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INTERACTS_POST_TRANSLATIONALLY</span>
 </pre></div>
 </div>
+</section>
+<section id="the-biocypher-configuration-yaml-file">
+<span id="quick-config"></span><h2>The biocypher configuration YAML file<a class="headerlink" href="#the-biocypher-configuration-yaml-file" title="Permalink to this heading"></a></h2>
+<p>Most of the configuration options for BioCypher can and should be specified in
+the configuration YAML file, <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code>. While BioCypher comes with
+default settings (the ones you can see in the <a class="reference internal" href="installation.html#config"><span class="std std-ref">Configuration</span></a> section),
+we can override them by specifying the desired settings in the local
+configuration in the root or the <code class="docutils literal notranslate"><span class="pre">config</span></code> directory of the project. The
+primary BioCypher settings are found in the top-level entry <code class="docutils literal notranslate"><span class="pre">biocypher</span></code>. For
+instance, you can select your output format (<code class="docutils literal notranslate"><span class="pre">dbms</span></code>) and output path, the
+location of the schema configuration file, and the ontology to be used.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">biocypher</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">dbms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgresql</span>
+<span class="w">  </span><span class="nt">output_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres_out/</span>
+<span class="w">  </span><span class="nt">schema_config</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/schema-config.yaml</span>
+<span class="w">  </span><span class="nt">head_ontology</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl</span>
+<span class="w">    </span><span class="nt">root_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">entity</span>
+</pre></div>
+</div>
+<p>You can currently select between <code class="docutils literal notranslate"><span class="pre">postgresql</span></code>, <code class="docutils literal notranslate"><span class="pre">neo4j</span></code>, and <code class="docutils literal notranslate"><span class="pre">arangodb</span></code> (beta) as
+your output format; more options will be added in the future. The <code class="docutils literal notranslate"><span class="pre">output_path</span></code>
+is relative to your working directory, as is the schema-config path. The
+<code class="docutils literal notranslate"><span class="pre">ontology</span></code> should be specified as a (preferably persistent) URL to the ontology
+file, and a <code class="docutils literal notranslate"><span class="pre">root_node</span></code> to specify the node from which the ontology should be
+traversed.  We recommend using a URL that specifies the exact version of the
+ontology, as in the example above.</p>
+<section id="dbms-specific-settings">
+<h3>DBMS-specific settings<a class="headerlink" href="#dbms-specific-settings" title="Permalink to this heading"></a></h3>
+<p>In addition to the general settings, you can specify DBMS-specific settings
+under the <code class="docutils literal notranslate"><span class="pre">postgresql</span></code>, <code class="docutils literal notranslate"><span class="pre">arangodb</span></code>, or <code class="docutils literal notranslate"><span class="pre">neo4j</span></code> entry. For instance, you can
+specify the database name, the host, the port, and the credentials for your
+database. You can also set delimiters for the entities and arrays in your import
+files. For a list of all settings, please refer to the <a class="reference internal" href="installation.html#config"><span class="std std-ref">Configuration</span></a>
+section.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">neo4j</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">database_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">biocypher</span>
+<span class="w">  </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j://localhost:7687</span>
+<span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span>
+<span class="w">  </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span>
+<span class="w">  </span><span class="nt">delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;,&#39;</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 

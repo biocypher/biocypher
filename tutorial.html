@@ -38,7 +38,7 @@
             BioCypher
           </a>
               <div class="version">
-                0.5.6
+                0.5.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -58,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher Tutorial - Basics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#section-1-adding-data">Section 1: Adding data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#section-2-merging-data">Section 2: Merging data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#section-3-handling-properties">Section 3: Handling properties</a></li>
@@ -140,6 +141,17 @@ the files for this tutorial. The <code class="docutils literal notranslate"><spa
 simulated data generation code, and the other files are named according to the
 tutorial step they are used in. The <code class="docutils literal notranslate"><span class="pre">biocypher-out</span></code> directory will be created
 automatically when you run the tutorial code.</p>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h2>
+<p>BioCypher is configured using a YAML file; it comes with a default (which you
+can see in the <a class="reference internal" href="installation.html#config"><span class="std std-ref">Configuration</span></a> section). You can use it, for instance,
+to select an output format, the output directory, separators, logging level, and
+other options. For this tutorial, we will use a dedicated configuration file for
+each of the steps. The configuration files are located in the <code class="docutils literal notranslate"><span class="pre">tutorial</span></code>
+directory, and are called using the <code class="docutils literal notranslate"><span class="pre">biocypher_config_path</span></code> argument at
+instantiation of the BioCypher interface. For more information, see also the
+<a class="reference internal" href="quickstart.html#quick-config"><span class="std std-ref">Quickstart Configuration</span></a> section.</p>
 </section>
 <section id="section-1-adding-data">
 <h2>Section 1: Adding data<a class="headerlink" href="#section-1-adding-data" title="Permalink to this heading"></a></h2>

@@ -53,6 +53,16 @@ simulated data generation code, and the other files are named according to the
 tutorial step they are used in. The `biocypher-out` directory will be created
 automatically when you run the tutorial code.
 
+## Configuration
+BioCypher is configured using a YAML file; it comes with a default (which you
+can see in the [Configuration](config) section). You can use it, for instance,
+to select an output format, the output directory, separators, logging level, and
+other options. For this tutorial, we will use a dedicated configuration file for
+each of the steps. The configuration files are located in the `tutorial`
+directory, and are called using the `biocypher_config_path` argument at
+instantiation of the BioCypher interface. For more information, see also the
+[Quickstart Configuration](quick_config) section.
+
 ## Section 1: Adding data
 ```{admonition} Tutorial files
 :class: note
