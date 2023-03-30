@@ -235,12 +235,9 @@ class _BatchWriter(ABC):
         self.import_call_nodes = []
         self.import_call_edges = []
 
-        self.outdir = output_directory
+        self._outdir = output_directory
 
-        if import_call_file_prefix is None:
-            self.import_call_file_prefix = self.outdir
-        else:
-            self.import_call_file_prefix = import_call_file_prefix
+        self._import_call_file_prefix = import_call_file_prefix
 
         if os.path.exists(self.outdir):
             logger.warning(
@@ -268,11 +265,21 @@ class _BatchWriter(ABC):
         )  # set to store the types of edges that
         # have been found to have duplicates
 
-        self.parts = {}  # dict to store the number of parts of the import file
-        # for each label
+        self.parts = {}  # dict to store the paths of part files for each label
 
         # TODO not memory efficient, but should be fine for most cases; is
         # there a more elegant solution?
+
+    @property
+    def outdir(self):
+        """
+        Property for output directory path.
+        """
+
+        if self._import_call_file_prefix is None:
+            return self._outdir
+        else:
+            return self._import_call_file_prefix
 
     def _process_delimiter(self, delimiter: str) -> str:
         """
@@ -936,8 +943,6 @@ class _BatchWriter(ABC):
 
             next_part = 0
 
-            self.parts[label] = 1
-
         else:
 
             next_part = (
@@ -949,8 +954,6 @@ class _BatchWriter(ABC):
                     ],
                 ) + 1
             )
-
-            self.parts[label] += 1
 
         # write to file
         padded_part = str(next_part).zfill(3)
@@ -965,6 +968,11 @@ class _BatchWriter(ABC):
 
             # concatenate with delimiter
             f.writelines(lines)
+
+        if not self.parts.get(label):
+            self.parts[label] = [file_path]
+        else:
+            self.parts[label].append(file_path)
 
     def get_import_call(self) -> str:
         """
@@ -1187,17 +1195,6 @@ class _Neo4jBatchWriter(_BatchWriter):
                     row = self.delim.join(out_list)
                     f.write(row)
 
-                # import call path for custom setup
-                if self.import_call_file_prefix:
-                    header_path = os.path.join(
-                        self.import_call_file_prefix,
-                        f'{pascal_label}-header.csv',
-                    )
-                    parts_path = os.path.join(
-                        self.import_call_file_prefix,
-                        f'{pascal_label}-part.*',
-                    )
-
                 # add file path to neo4 admin import statement
                 self.import_call_edges.append([header_path, parts_path])
 
@@ -1350,22 +1347,19 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
 
                 # add file path to neo4 admin import statement
                 # do once for each part file
-                num_parts = self.parts.get(label, 0)
+                parts = self.parts.get(label, [])
 
-                if not num_parts:
+                if not parts:
+
                     raise ValueError(
                         f'No parts found for node label {label}. '
                         f'Check that the data was parsed first.',
                     )
 
-                for i in range(num_parts):
-
-                    parts_path = os.path.join(
-                        self.outdir, f'{pascal_label}-part.{i:03d}'
-                    )
+                for part in parts:
 
                     self.import_call_nodes.append(
-                        [header_path, parts_path, collection]
+                        [header_path, part, collection]
                     )
 
         return True
@@ -1425,17 +1419,6 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                     # concatenate with delimiter
                     row = self.delim.join(out_list)
                     f.write(row)
-
-                # import call path for custom setup
-                if self.import_call_file_prefix:
-                    header_path = os.path.join(
-                        self.import_call_file_prefix,
-                        f'{pascal_label}-header.csv',
-                    )
-                    parts_path = os.path.join(
-                        self.import_call_file_prefix,
-                        f'{pascal_label}-part.*',
-                    )
 
                 # add collection from schema config
                 collection = self.extended_schema[label].get(
@@ -1602,15 +1585,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
-            if self.import_call_file_prefix:
-                parts_paths = os.path.join(
-                    self.import_call_file_prefix,
-                    f'{pascal_label}-part*.csv',
-                )
-            else:
-                parts_paths = os.path.join(
-                    self.outdir, f'{pascal_label}-part*.csv'
-                )
+            parts_paths = os.path.join(self.outdir, f'{pascal_label}-part*.csv')
             parts_paths = glob.glob(parts_paths)
 
             # adjust label for import to psql
@@ -1674,15 +1649,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
-            if self.import_call_file_prefix:
-                parts_paths = os.path.join(
-                    self.import_call_file_prefix,
-                    f'{pascal_label}-part*.csv',
-                )
-            else:
-                parts_paths = os.path.join(
-                    self.outdir, f'{pascal_label}-part*.csv'
-                )
+            parts_paths = os.path.join(self.outdir, f'{pascal_label}-part*.csv')
             parts_paths = glob.glob(parts_paths)
 
             # adjust label for import to psql
