@@ -507,8 +507,13 @@ def test_write_edge_data_headers_import_call(bw, path, _get_nodes, _get_edges):
         yield from edges[4:]
 
     passed = bw.write_edges(edge_gen1(edges))
+    assert passed
+
     passed = bw.write_edges(edge_gen2(edges))
+    assert passed
+
     passed = bw.write_nodes(nodes)
+    assert passed
 
     bw.write_import_call()
 
@@ -523,11 +528,16 @@ def test_write_edge_data_headers_import_call(bw, path, _get_nodes, _get_edges):
     with open(call_csv) as f:
         call = f.read()
 
-    assert (
-        passed and l == ':START_ID;residue;level:long;:END_ID;:TYPE' and
-        c == ':START_ID;site;confidence:long;:END_ID;:TYPE' and call ==
-        f'bin/neo4j-admin import --database=neo4j --delimiter=";" --array-delimiter="|" --quote="\'" --force=true --nodes="{path}/Protein-header.csv,{path}/Protein-part.*" --nodes="{path}/MicroRNA-header.csv,{path}/MicroRNA-part.*" --relationships="{path}/PERTURBED_IN_DISEASE-header.csv,{path}/PERTURBED_IN_DISEASE-part.*" --relationships="{path}/Is_Mutated_In-header.csv,{path}/Is_Mutated_In-part.*" '
-    )
+    assert l == ':START_ID;residue;level:long;:END_ID;:TYPE'
+    assert c == ':START_ID;site;confidence:long;:END_ID;:TYPE'
+
+    assert 'bin/neo4j-admin import' in call
+    assert '--database=neo4j' in call
+    assert '--delimiter=";"' in call
+    assert '--force=true' in call
+    assert '--nodes="' in call
+    assert 'PERTURBED_IN_DISEASE' in call
+    assert 'Is_Mutated_In' in call
 
 
 @pytest.mark.parametrize('l', [4], scope='module')

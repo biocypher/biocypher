@@ -232,8 +232,8 @@ class _BatchWriter(ABC):
         self.translator = translator
         self.node_property_dict = {}
         self.edge_property_dict = {}
-        self.import_call_nodes = []
-        self.import_call_edges = []
+        self.import_call_nodes = set()
+        self.import_call_edges = set()
 
         self._outdir = output_directory
 
@@ -1138,7 +1138,7 @@ class _Neo4jBatchWriter(_BatchWriter):
                 f.write(row)
 
             # add file path to neo4 admin import statement
-            self.import_call_nodes.append([header_path, parts_path])
+            self.import_call_nodes.add((header_path, parts_path))
 
         return True
 
@@ -1203,7 +1203,7 @@ class _Neo4jBatchWriter(_BatchWriter):
                 f.write(row)
 
             # add file path to neo4 admin import statement
-            self.import_call_edges.append([header_path, parts_path])
+            self.import_call_edges.add((header_path, parts_path))
 
         return True
 
@@ -1369,7 +1369,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
 
             for part in parts:
 
-                self.import_call_nodes.append([header_path, part, collection])
+                self.import_call_nodes.add((header_path, part, collection))
 
         return True
 
@@ -1438,7 +1438,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
             )
 
             # add file path to neo4 admin import statement
-            self.import_call_edges.append([header_path, parts_path, collection])
+            self.import_call_edges.add((header_path, parts_path, collection))
 
         return True
 
@@ -1518,7 +1518,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
     }
 
     def __init__(self, *args, **kwargs):
-        self._copy_from_csv_commands = []
+        self._copy_from_csv_commands = set()
         super().__init__(*args, **kwargs)
 
     def _get_default_import_call_bin_prefix(self):
@@ -1620,6 +1620,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             columns.append('_LABEL VARCHAR[]')
 
             with open(import_file_path, 'w', encoding='utf-8') as f:
+
                 command = ''
                 if self.wipe:
                     command += f'DROP TABLE IF EXISTS {pascal_label};\n'
@@ -1628,15 +1629,13 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 command += f'CREATE TABLE {pascal_label}({",".join(columns)});\n'
                 f.write(command)
 
-                copy_commands = []
                 for parts_path in parts_paths:
-                    copy_commands.append(
+                    self._copy_from_csv_commands.add(
                         f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;'
                     )
-                self._copy_from_csv_commands.append(copy_commands)
 
             # add file path to import statement
-            self.import_call_nodes.append(import_file_path)
+            self.import_call_nodes.add(import_file_path)
 
         return True
 
@@ -1702,15 +1701,13 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 command += f'CREATE TABLE {pascal_label}({",".join(out_list)});\n'
                 f.write(command)
 
-                copy_commands = []
                 for parts_path in parts_paths:
-                    copy_commands.append(
+                    self._copy_from_csv_commands.add(
                         f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;'
                     )
-                self._copy_from_csv_commands.append(copy_commands)
 
             # add file path to import statement
-            self.import_call_edges.append(import_file_path)
+            self.import_call_edges.add(import_file_path)
 
         return True
 
@@ -1743,19 +1740,18 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             import_call += '\n'
 
         # copy data to tables
-        for commands in self._copy_from_csv_commands:
-            for command in commands:
-                table_part = command.split(' ')[3]
-                import_call += f'echo "Importing {table_part}..."\n'
-                if {self.db_password}:
-                    # set password variable inline
-                    import_call += f'PGPASSWORD={self.db_password} '
-                import_call += f'{self.import_call_bin_prefix}psql -c "{command}"'
-                import_call += f' --dbname {self.db_name}'
-                import_call += f' --port {self.db_port}'
-                import_call += f' --user {self.db_user}'
-                import_call += '\necho "Done!"\n'
-                import_call += '\n'
+        for command in self._copy_from_csv_commands:
+            table_part = command.split(' ')[3]
+            import_call += f'echo "Importing {table_part}..."\n'
+            if {self.db_password}:
+                # set password variable inline
+                import_call += f'PGPASSWORD={self.db_password} '
+            import_call += f'{self.import_call_bin_prefix}psql -c "{command}"'
+            import_call += f' --dbname {self.db_name}'
+            import_call += f' --port {self.db_port}'
+            import_call += f' --user {self.db_user}'
+            import_call += '\necho "Done!"\n'
+            import_call += '\n'
 
         return import_call
 
