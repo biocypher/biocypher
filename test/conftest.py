@@ -57,28 +57,8 @@ def get_random_string(length):
     return ''.join(random.choice(letters) for _ in range(length))
 
 
-@pytest.fixture(name='path', scope='session')
-def path():
-    path = os.path.join(
-        tempfile.gettempdir(),
-        f'biocypher-test-{get_random_string(5)}',
-    )
-    os.makedirs(path, exist_ok=True)
-    return path
-
-
-@pytest.fixture(name='path_strict', scope='module')
-def path_strict():
-    path = os.path.join(
-        tempfile.gettempdir(),
-        f'biocypher-test-{get_random_string(5)}',
-    )
-    os.makedirs(path, exist_ok=True)
-    return path
-
-
 # biocypher node generator
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def _get_nodes(l: int) -> list:
     nodes = []
     for i in range(l):
@@ -109,7 +89,7 @@ def _get_nodes(l: int) -> list:
 
 
 # biocypher edge generator
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def _get_edges(l):
     edges = []
     for i in range(l):
@@ -204,12 +184,12 @@ def hybrid_ontology(ontology_mapping):
 
 # neo4j batch writer fixtures
 @pytest.fixture(scope='function')
-def bw(hybrid_ontology, translator, path):
+def bw(hybrid_ontology, translator, tmp_path):
 
     bw = _Neo4jBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
-        output_directory=path,
+        output_directory=tmp_path,
         delimiter=';',
         array_delimiter='|',
         quote="'",
@@ -218,19 +198,19 @@ def bw(hybrid_ontology, translator, path):
     yield bw
 
     # teardown
-    for f in os.listdir(path):
-        os.remove(os.path.join(path, f))
-    os.rmdir(path)
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)
 
 
 # neo4j batch writer fixtures
 @pytest.fixture(scope='function')
-def bw_tab(hybrid_ontology, translator, path):
+def bw_tab(hybrid_ontology, translator, tmp_path):
 
     bw_tab = _Neo4jBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
-        output_directory=path,
+        output_directory=tmp_path,
         delimiter='\\t',
         array_delimiter='|',
         quote="'",
@@ -239,18 +219,18 @@ def bw_tab(hybrid_ontology, translator, path):
     yield bw_tab
 
     # teardown
-    for f in os.listdir(path):
-        os.remove(os.path.join(path, f))
-    os.rmdir(path)
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)
 
 
 @pytest.fixture(scope='function')
-def bw_strict(hybrid_ontology, translator, path_strict):
+def bw_strict(hybrid_ontology, translator, tmp_path):
 
     bw = _Neo4jBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
-        output_directory=path_strict,
+        output_directory=tmp_path,
         delimiter=';',
         array_delimiter='|',
         quote="'",
@@ -260,14 +240,16 @@ def bw_strict(hybrid_ontology, translator, path_strict):
     yield bw
 
     # teardown
-    for f in os.listdir(path_strict):
-        os.remove(os.path.join(path_strict, f))
-    os.rmdir(path_strict)
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)
 
 
 # core instance fixture
-@pytest.fixture(name='core', scope='module')
-def create_core(request, path):
+@pytest.fixture(name='core', scope='function')
+def create_core(request, tmp_path):
+
+    # TODO why does the integration test use a different path than this fixture?
 
     marker = request.node.get_closest_marker('inject_core_args')
 
@@ -285,7 +267,7 @@ def create_core(request, path):
 
         core_args = {
             'schema_config_path': 'biocypher/_config/test_schema_config.yaml',
-            'output_directory': path,
+            'output_directory': tmp_path,
         }
         core_args.update(marker_args)
 
@@ -297,9 +279,14 @@ def create_core(request, path):
 
     yield c
 
+    # teardown
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)
+
 
 # neo4j parameters
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def neo4j_param(request):
 
     keys = (
@@ -410,7 +397,7 @@ def create_driver(request, neo4j_param, translator, hybrid_ontology):
 ### postgresql ###
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def postgresql_param(request):
 
     keys = (
@@ -460,12 +447,14 @@ def skip_if_offline_postgresql(request, postgresql_param):
 
 
 @pytest.fixture(scope='function')
-def bw_comma_postgresql(postgresql_param, hybrid_ontology, translator, path):
+def bw_comma_postgresql(
+    postgresql_param, hybrid_ontology, translator, tmp_path
+):
 
     bw_comma = _PostgreSQLBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
-        output_directory=path,
+        output_directory=tmp_path,
         delimiter=',',
         **postgresql_param
     )
@@ -473,18 +462,18 @@ def bw_comma_postgresql(postgresql_param, hybrid_ontology, translator, path):
     yield bw_comma
 
     # teardown
-    for f in os.listdir(path):
-        os.remove(os.path.join(path, f))
-    os.rmdir(path)
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)
 
 
 @pytest.fixture(scope='function')
-def bw_tab_postgresql(postgresql_param, hybrid_ontology, translator, path):
+def bw_tab_postgresql(postgresql_param, hybrid_ontology, translator, tmp_path):
 
     bw_tab = _PostgreSQLBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
-        output_directory=path,
+        output_directory=tmp_path,
         delimiter='\\t',
         **postgresql_param
     )
@@ -492,12 +481,12 @@ def bw_tab_postgresql(postgresql_param, hybrid_ontology, translator, path):
     yield bw_tab
 
     # teardown
-    for f in os.listdir(path):
-        os.remove(os.path.join(path, f))
-    os.rmdir(path)
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def create_database_postgres(postgresql_param):
     params = postgresql_param
     dbname, user, port, password = params['db_name'], params['db_user'], params[
@@ -515,18 +504,18 @@ def create_database_postgres(postgresql_param):
 
 
 @pytest.fixture(scope='function')
-def bw_arango(hybrid_ontology, translator, path):
+def bw_arango(hybrid_ontology, translator, tmp_path):
 
     bw_arango = _ArangoDBBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
-        output_directory=path,
+        output_directory=tmp_path,
         delimiter=',',
     )
 
     yield bw_arango
 
     # teardown
-    for f in os.listdir(path):
-        os.remove(os.path.join(path, f))
-    os.rmdir(path)
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)

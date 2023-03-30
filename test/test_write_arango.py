@@ -3,10 +3,9 @@ import os
 import pytest
 
 
-@pytest.mark.parametrize('l', [4], scope='module')
+@pytest.mark.parametrize('l', [4], scope='function')
 def test_arango_write_data_headers_import_call(
     bw_arango,
-    path,
     _get_nodes,
     _get_edges,
 ):
@@ -24,19 +23,21 @@ def test_arango_write_data_headers_import_call(
 
     bw_arango.write_import_call()
 
-    ph_csv = os.path.join(path, 'Protein-header.csv')
-    pp_1_csv = os.path.join(path, 'Protein-part000.csv')
-    pp_2_csv = os.path.join(path, 'Protein-part001.csv')
-    mh_csv = os.path.join(path, 'MicroRNA-header.csv')
-    mp_1_csv = os.path.join(path, 'MicroRNA-part000.csv')
-    mp_2_csv = os.path.join(path, 'MicroRNA-part001.csv')
-    dh_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-header.csv')
-    dp_1_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part000.csv')
-    dp_2_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part001.csv')
-    muh_csv = os.path.join(path, 'Is_Mutated_In-header.csv')
-    mup_1_csv = os.path.join(path, 'Is_Mutated_In-part000.csv')
-    mup_2_csv = os.path.join(path, 'Is_Mutated_In-part001.csv')
-    call_csv = os.path.join(path, 'arangodb-import-call.sh')
+    tmp_path = bw_arango.outdir
+
+    ph_csv = os.path.join(tmp_path, 'Protein-header.csv')
+    pp_1_csv = os.path.join(tmp_path, 'Protein-part000.csv')
+    pp_2_csv = os.path.join(tmp_path, 'Protein-part001.csv')
+    mh_csv = os.path.join(tmp_path, 'MicroRNA-header.csv')
+    mp_1_csv = os.path.join(tmp_path, 'MicroRNA-part000.csv')
+    mp_2_csv = os.path.join(tmp_path, 'MicroRNA-part001.csv')
+    dh_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-header.csv')
+    dp_1_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-part000.csv')
+    dp_2_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-part001.csv')
+    muh_csv = os.path.join(tmp_path, 'Is_Mutated_In-header.csv')
+    mup_1_csv = os.path.join(tmp_path, 'Is_Mutated_In-part000.csv')
+    mup_2_csv = os.path.join(tmp_path, 'Is_Mutated_In-part001.csv')
+    call_csv = os.path.join(tmp_path, 'arangodb-import-call.sh')
 
     with open(ph_csv) as f:
         ph = f.read()

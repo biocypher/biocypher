@@ -7,15 +7,17 @@ from biocypher._write import _Neo4jBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 
-def test_neo4j_writer_and_output_dir(bw, path):
+def test_neo4j_writer_and_output_dir(bw):
+
+    tmp_path = bw.outdir
 
     assert (
-        os.path.isdir(path) and isinstance(bw, _Neo4jBatchWriter) and
+        os.path.isdir(tmp_path) and isinstance(bw, _Neo4jBatchWriter) and
         bw.delim == ';'
     )
 
 
-def test_create_import_call(bw, path):
+def test_create_import_call(bw):
     mixed = []
     le = 4
     for i in range(le):
@@ -49,17 +51,19 @@ def test_create_import_call(bw, path):
 
     call = bw.get_import_call()
 
+    tmp_path = bw.outdir
+
     assert passed
     assert 'bin/neo4j-admin import --database=neo4j --delimiter=";" ' in call
     assert '--array-delimiter="|" --quote="\'" --force=true ' in call
-    assert f'--nodes="{path}/PostTranslationalInteraction-header.csv,{path}/PostTranslationalInteraction-part.*" ' in call
-    assert f'--relationships="{path}/IS_SOURCE_OF-header.csv,{path}/IS_SOURCE_OF-part.*" ' in call
-    assert f'--relationships="{path}/IS_TARGET_OF-header.csv,{path}/IS_TARGET_OF-part.*" ' in call
-    assert f'--relationships="{path}/PERTURBED_IN_DISEASE-header.csv,{path}/PERTURBED_IN_DISEASE-part.*" ' in call
+    assert f'--nodes="{tmp_path}/PostTranslationalInteraction-header.csv,{tmp_path}/PostTranslationalInteraction-part.*" ' in call
+    assert f'--relationships="{tmp_path}/IS_SOURCE_OF-header.csv,{tmp_path}/IS_SOURCE_OF-part.*" ' in call
+    assert f'--relationships="{tmp_path}/IS_TARGET_OF-header.csv,{tmp_path}/IS_TARGET_OF-part.*" ' in call
+    assert f'--relationships="{tmp_path}/PERTURBED_IN_DISEASE-header.csv,{tmp_path}/PERTURBED_IN_DISEASE-part.*" ' in call
 
 
 @pytest.mark.parametrize('l', [4], scope='module')
-def test_neo4j_write_node_data_headers_import_call(bw, path, _get_nodes):
+def test_neo4j_write_node_data_headers_import_call(bw, _get_nodes):
     # four proteins, four miRNAs
     nodes = _get_nodes
 
@@ -69,9 +73,11 @@ def test_neo4j_write_node_data_headers_import_call(bw, path, _get_nodes):
 
     assert passed
 
-    p_csv = os.path.join(path, 'Protein-header.csv')
-    m_csv = os.path.join(path, 'MicroRNA-header.csv')
-    call = os.path.join(path, 'neo4j-admin-import-call.sh')
+    tmp_path = bw.outdir
+
+    p_csv = os.path.join(tmp_path, 'Protein-header.csv')
+    m_csv = os.path.join(tmp_path, 'MicroRNA-header.csv')
+    call = os.path.join(tmp_path, 'neo4j-admin-import-call.sh')
 
     with open(p_csv) as f:
         p = f.read()
@@ -107,7 +113,7 @@ def test_neo4j_write_node_data_headers_import_call(bw, path, _get_nodes):
     # TODO
 
 
-def test_write_hybrid_ontology_nodes(bw, path):
+def test_write_hybrid_ontology_nodes(bw):
     nodes = []
     for i in range(4):
         nodes.append(
@@ -122,8 +128,10 @@ def test_write_hybrid_ontology_nodes(bw, path):
 
     assert passed
 
-    h_csv = os.path.join(path, 'AlteredGeneProductLevel-header.csv')
-    p_csv = os.path.join(path, 'AlteredGeneProductLevel-part000.csv')
+    tmp_path = bw.outdir
+
+    h_csv = os.path.join(tmp_path, 'AlteredGeneProductLevel-header.csv')
+    p_csv = os.path.join(tmp_path, 'AlteredGeneProductLevel-part000.csv')
 
     with open(h_csv) as f:
         header = f.read()
@@ -137,7 +145,7 @@ def test_write_hybrid_ontology_nodes(bw, path):
     assert 'BiologicalEntity' in part
 
 
-def test_property_types(bw, path):
+def test_property_types(bw):
     nodes = []
     for i in range(4):
         bnp = BioCypherNode(
@@ -154,8 +162,10 @@ def test_property_types(bw, path):
 
     passed = bw.write_nodes(nodes, batch_size=1e6)
 
-    d_csv = os.path.join(path, 'Protein-part000.csv')
-    h_csv = os.path.join(path, 'Protein-header.csv')
+    tmp_path = bw.outdir
+
+    d_csv = os.path.join(tmp_path, 'Protein-part000.csv')
+    h_csv = os.path.join(tmp_path, 'Protein-header.csv')
 
     with open(d_csv) as f:
         data = f.read()
@@ -170,13 +180,15 @@ def test_property_types(bw, path):
 
 
 @pytest.mark.parametrize('l', [4], scope='module')
-def test_write_node_data_from_list(bw, path, _get_nodes):
+def test_write_node_data_from_list(bw, _get_nodes):
     nodes = _get_nodes
 
     passed = bw._write_node_data(nodes, batch_size=1e6)
 
-    p_csv = os.path.join(path, 'Protein-part000.csv')
-    m_csv = os.path.join(path, 'MicroRNA-part000.csv')
+    tmp_path = bw.outdir
+
+    p_csv = os.path.join(tmp_path, 'Protein-part000.csv')
+    m_csv = os.path.join(tmp_path, 'MicroRNA-part000.csv')
 
     with open(p_csv) as f:
         pr = f.read()
@@ -192,7 +204,7 @@ def test_write_node_data_from_list(bw, path, _get_nodes):
 
 
 @pytest.mark.parametrize('l', [4], scope='module')
-def test_write_node_data_from_gen(bw, path, _get_nodes):
+def test_write_node_data_from_gen(bw, _get_nodes):
     nodes = _get_nodes
 
     def node_gen(nodes):
@@ -200,8 +212,10 @@ def test_write_node_data_from_gen(bw, path, _get_nodes):
 
     passed = bw._write_node_data(node_gen(nodes), batch_size=1e6)
 
-    p_csv = os.path.join(path, 'Protein-part000.csv')
-    m_csv = os.path.join(path, 'MicroRNA-part000.csv')
+    tmp_path = bw.outdir
+
+    p_csv = os.path.join(tmp_path, 'Protein-part000.csv')
+    m_csv = os.path.join(tmp_path, 'MicroRNA-part000.csv')
 
     with open(p_csv) as f:
         pr = f.read()
@@ -216,7 +230,7 @@ def test_write_node_data_from_gen(bw, path, _get_nodes):
     assert 'ChemicalEntity' in mi
 
 
-def test_write_node_data_from_gen_no_props(bw, path):
+def test_write_node_data_from_gen_no_props(bw):
     nodes = []
     le = 4
     for i in range(le):
@@ -242,8 +256,10 @@ def test_write_node_data_from_gen_no_props(bw, path):
 
     passed = bw._write_node_data(node_gen(nodes), batch_size=1e6)
 
-    p_csv = os.path.join(path, 'Protein-part000.csv')
-    m_csv = os.path.join(path, 'microRNA-part000.csv')
+    tmp_path = bw.outdir
+
+    p_csv = os.path.join(tmp_path, 'Protein-part000.csv')
+    m_csv = os.path.join(tmp_path, 'microRNA-part000.csv')
 
     with open(p_csv) as f:
         pr = f.read()
@@ -259,7 +275,7 @@ def test_write_node_data_from_gen_no_props(bw, path):
 
 
 @pytest.mark.parametrize('l', [int(1e4 + 4)], scope='module')
-def test_write_node_data_from_large_gen(bw, path, _get_nodes):
+def test_write_node_data_from_large_gen(bw, _get_nodes):
     nodes = _get_nodes
 
     def node_gen(nodes):
@@ -270,10 +286,12 @@ def test_write_node_data_from_large_gen(bw, path, _get_nodes):
         batch_size=int(1e4),
     )  # reduce test time
 
-    p0_csv = os.path.join(path, 'Protein-part000.csv')
-    m0_csv = os.path.join(path, 'MicroRNA-part000.csv')
-    p1_csv = os.path.join(path, 'Protein-part001.csv')
-    m1_csv = os.path.join(path, 'MicroRNA-part001.csv')
+    tmp_path = bw.outdir
+
+    p0_csv = os.path.join(tmp_path, 'Protein-part000.csv')
+    m0_csv = os.path.join(tmp_path, 'MicroRNA-part000.csv')
+    p1_csv = os.path.join(tmp_path, 'Protein-part001.csv')
+    m1_csv = os.path.join(tmp_path, 'MicroRNA-part001.csv')
 
     pr_lines = sum(1 for _ in open(p0_csv))
     mi_lines = sum(1 for _ in open(m0_csv))
@@ -314,7 +332,7 @@ def test_too_many_properties(bw, _get_nodes):
 
 
 @pytest.mark.parametrize('l', [1], scope='module')
-def test_not_enough_properties(bw, path, _get_nodes):
+def test_not_enough_properties(bw, _get_nodes):
     nodes = _get_nodes
 
     bn1 = BioCypherNode(
@@ -331,12 +349,15 @@ def test_not_enough_properties(bw, path, _get_nodes):
         node_gen(nodes),
         batch_size=int(1e4),
     )  # reduce test time
-    p0_csv = os.path.join(path, 'Protein-part000.csv')
+
+    tmp_path = bw.outdir
+
+    p0_csv = os.path.join(tmp_path, 'Protein-part000.csv')
 
     assert not passed and not isfile(p0_csv)
 
 
-def test_write_none_type_property_and_order_invariance(bw, path):
+def test_write_none_type_property_and_order_invariance(bw):
     # as introduced by translation using defined properties in
     # schema_config.yaml
     nodes = []
@@ -381,7 +402,9 @@ def test_write_none_type_property_and_order_invariance(bw, path):
         batch_size=int(1e4),
     )  # reduce test time
 
-    p0_csv = os.path.join(path, 'Protein-part000.csv')
+    tmp_path = bw.outdir
+
+    p0_csv = os.path.join(tmp_path, 'Protein-part000.csv')
     with open(p0_csv) as f:
         p = f.read()
 
@@ -391,7 +414,7 @@ def test_write_none_type_property_and_order_invariance(bw, path):
 
 
 @pytest.mark.parametrize('l', [int(1e4)], scope='module')
-def test_accidental_exact_batch_size(bw, path, _get_nodes):
+def test_accidental_exact_batch_size(bw, _get_nodes):
     nodes = _get_nodes
 
     def node_gen(nodes):
@@ -402,16 +425,18 @@ def test_accidental_exact_batch_size(bw, path, _get_nodes):
         batch_size=int(1e4),
     )  # reduce test time
 
-    p0_csv = os.path.join(path, 'Protein-part000.csv')
-    m0_csv = os.path.join(path, 'MicroRNA-part000.csv')
-    p1_csv = os.path.join(path, 'Protein-part001.csv')
-    m1_csv = os.path.join(path, 'MicroRNA-part001.csv')
+    tmp_path = bw.outdir
+
+    p0_csv = os.path.join(tmp_path, 'Protein-part000.csv')
+    m0_csv = os.path.join(tmp_path, 'MicroRNA-part000.csv')
+    p1_csv = os.path.join(tmp_path, 'Protein-part001.csv')
+    m1_csv = os.path.join(tmp_path, 'MicroRNA-part001.csv')
 
     pr_lines = sum(1 for _ in open(p0_csv))
     mi_lines = sum(1 for _ in open(m0_csv))
 
-    ph_csv = os.path.join(path, 'Protein-header.csv')
-    mh_csv = os.path.join(path, 'MicroRNA-header.csv')
+    ph_csv = os.path.join(tmp_path, 'Protein-header.csv')
+    mh_csv = os.path.join(tmp_path, 'MicroRNA-header.csv')
 
     with open(ph_csv) as f:
         p = f.read()
@@ -427,7 +452,7 @@ def test_accidental_exact_batch_size(bw, path, _get_nodes):
 
 
 @pytest.mark.parametrize('l', [4], scope='module')
-def test_write_edge_data_from_gen(bw, path, _get_edges):
+def test_write_edge_data_from_gen(bw, _get_edges):
     edges = _get_edges
 
     def edge_gen(edges):
@@ -435,8 +460,10 @@ def test_write_edge_data_from_gen(bw, path, _get_edges):
 
     passed = bw._write_edge_data(edge_gen(edges), batch_size=int(1e4))
 
-    pid_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part000.csv')
-    imi_csv = os.path.join(path, 'Is_Mutated_In-part000.csv')
+    tmp_path = bw.outdir
+
+    pid_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-part000.csv')
+    imi_csv = os.path.join(tmp_path, 'Is_Mutated_In-part000.csv')
 
     with open(pid_csv) as f:
         l = f.read()
@@ -453,7 +480,7 @@ def test_write_edge_data_from_gen(bw, path, _get_edges):
 
 
 @pytest.mark.parametrize('l', [int(1e4 + 4)], scope='module')
-def test_write_edge_data_from_large_gen(bw, path, _get_edges):
+def test_write_edge_data_from_large_gen(bw, _get_edges):
 
     edges = _get_edges
 
@@ -462,10 +489,12 @@ def test_write_edge_data_from_large_gen(bw, path, _get_edges):
 
     passed = bw._write_edge_data(edge_gen(edges), batch_size=int(1e4))
 
-    apl0_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part000.csv')
-    ips0_csv = os.path.join(path, 'Is_Mutated_In-part000.csv')
-    apl1_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part001.csv')
-    ips1_csv = os.path.join(path, 'Is_Mutated_In-part001.csv')
+    tmp_path = bw.outdir
+
+    apl0_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-part000.csv')
+    ips0_csv = os.path.join(tmp_path, 'Is_Mutated_In-part000.csv')
+    apl1_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-part001.csv')
+    ips1_csv = os.path.join(tmp_path, 'Is_Mutated_In-part001.csv')
 
     l_lines0 = sum(1 for _ in open(apl0_csv))
     c_lines0 = sum(1 for _ in open(ips0_csv))
@@ -479,13 +508,15 @@ def test_write_edge_data_from_large_gen(bw, path, _get_edges):
 
 
 @pytest.mark.parametrize('l', [4], scope='module')
-def test_write_edge_data_from_list(bw, path, _get_edges):
+def test_write_edge_data_from_list(bw, _get_edges):
     edges = _get_edges
 
     passed = bw._write_edge_data(edges, batch_size=int(1e4))
 
-    apl_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part000.csv')
-    ips_csv = os.path.join(path, 'Is_Mutated_In-part000.csv')
+    tmp_path = bw.outdir
+
+    apl_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-part000.csv')
+    ips_csv = os.path.join(tmp_path, 'Is_Mutated_In-part000.csv')
 
     with open(apl_csv) as f:
         l = f.read()
@@ -501,7 +532,7 @@ def test_write_edge_data_from_list(bw, path, _get_edges):
     assert '\n' in c
 
 
-def test_write_edge_data_from_list_no_props(bw, path):
+def test_write_edge_data_from_list_no_props(bw):
     le = 4
     edges = []
     for i in range(le):
@@ -520,8 +551,10 @@ def test_write_edge_data_from_list_no_props(bw, path):
 
     passed = bw._write_edge_data(edges, batch_size=int(1e4))
 
-    ptl_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part000.csv')
-    pts_csv = os.path.join(path, 'Is_Mutated_In-part000.csv')
+    tmp_path = bw.outdir
+
+    ptl_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-part000.csv')
+    pts_csv = os.path.join(tmp_path, 'Is_Mutated_In-part000.csv')
 
     with open(ptl_csv) as f:
         l = f.read()
@@ -538,7 +571,7 @@ def test_write_edge_data_from_list_no_props(bw, path):
 
 
 @pytest.mark.parametrize('l', [8], scope='module')
-def test_write_edge_data_headers_import_call(bw, path, _get_nodes, _get_edges):
+def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
     edges = _get_edges
 
     nodes = _get_nodes
@@ -560,9 +593,11 @@ def test_write_edge_data_headers_import_call(bw, path, _get_nodes, _get_edges):
 
     bw.write_import_call()
 
-    ptl_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-header.csv')
-    pts_csv = os.path.join(path, 'Is_Mutated_In-header.csv')
-    call_csv = os.path.join(path, 'neo4j-admin-import-call.sh')
+    tmp_path = bw.outdir
+
+    ptl_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-header.csv')
+    pts_csv = os.path.join(tmp_path, 'Is_Mutated_In-header.csv')
+    call_csv = os.path.join(tmp_path, 'neo4j-admin-import-call.sh')
 
     with open(ptl_csv) as f:
         l = f.read()
@@ -584,14 +619,16 @@ def test_write_edge_data_headers_import_call(bw, path, _get_nodes, _get_edges):
 
 
 @pytest.mark.parametrize('l', [4], scope='module')
-def test_write_duplicate_edges(bw, path, _get_edges):
+def test_write_duplicate_edges(bw, _get_edges):
     edges = _get_edges
     edges.append(edges[0])
 
     passed = bw.write_edges(edges)
 
-    ptl_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-part000.csv')
-    pts_csv = os.path.join(path, 'Is_Mutated_In-part000.csv')
+    tmp_path = bw.outdir
+
+    ptl_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-part000.csv')
+    pts_csv = os.path.join(tmp_path, 'Is_Mutated_In-part000.csv')
 
     l = sum(1 for _ in open(ptl_csv))
     c = sum(1 for _ in open(pts_csv))
@@ -599,7 +636,7 @@ def test_write_duplicate_edges(bw, path, _get_edges):
     assert passed and l == 4 and c == 4
 
 
-def test_BioCypherRelAsNode_implementation(bw, path):
+def test_BioCypherRelAsNode_implementation(bw):
     trips = _get_rel_as_nodes(4)
 
     def gen(lis):
@@ -607,9 +644,11 @@ def test_BioCypherRelAsNode_implementation(bw, path):
 
     passed = bw.write_edges(gen(trips))
 
-    iso_csv = os.path.join(path, 'IS_SOURCE_OF-part000.csv')
-    ito_csv = os.path.join(path, 'IS_TARGET_OF-part000.csv')
-    pmi_csv = os.path.join(path, 'PostTranslationalInteraction-part000.csv')
+    tmp_path = bw.outdir
+
+    iso_csv = os.path.join(tmp_path, 'IS_SOURCE_OF-part000.csv')
+    ito_csv = os.path.join(tmp_path, 'IS_TARGET_OF-part000.csv')
+    pmi_csv = os.path.join(tmp_path, 'PostTranslationalInteraction-part000.csv')
 
     with open(iso_csv) as f:
         s = f.read()
@@ -653,7 +692,7 @@ def _get_rel_as_nodes(l):
     return rels
 
 
-def test_RelAsNode_overwrite_behaviour(bw, path):
+def test_RelAsNode_overwrite_behaviour(bw):
     # if rel as node is called from successive write calls, SOURCE_OF,
     # TARGET_OF, and PART_OF should be continued, not overwritten
     trips = _get_rel_as_nodes(8)
@@ -667,12 +706,14 @@ def test_RelAsNode_overwrite_behaviour(bw, path):
     passed1 = bw.write_edges(gen1(trips))
     passed2 = bw.write_edges(gen2(trips))
 
-    iso_csv = os.path.join(path, 'IS_SOURCE_OF-part001.csv')
+    tmp_path = bw.outdir
+
+    iso_csv = os.path.join(tmp_path, 'IS_SOURCE_OF-part001.csv')
 
     assert passed1 and passed2 and isfile(iso_csv)
 
 
-def test_write_mixed_edges(bw, path):
+def test_write_mixed_edges(bw):
     mixed = []
     le = 4
     for i in range(le):
@@ -704,10 +745,12 @@ def test_write_mixed_edges(bw, path):
 
     passed = bw.write_edges(gen(mixed))
 
-    pmi_csv = os.path.join(path, 'PostTranslationalInteraction-header.csv')
-    iso_csv = os.path.join(path, 'IS_SOURCE_OF-header.csv')
-    ito_csv = os.path.join(path, 'IS_TARGET_OF-header.csv')
-    ipt_csv = os.path.join(path, 'PERTURBED_IN_DISEASE-header.csv')
+    tmp_path = bw.outdir
+
+    pmi_csv = os.path.join(tmp_path, 'PostTranslationalInteraction-header.csv')
+    iso_csv = os.path.join(tmp_path, 'IS_SOURCE_OF-header.csv')
+    ito_csv = os.path.join(tmp_path, 'IS_TARGET_OF-header.csv')
+    ipt_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-header.csv')
 
     assert (
         passed and os.path.isfile(pmi_csv) and os.path.isfile(iso_csv) and
@@ -715,12 +758,18 @@ def test_write_mixed_edges(bw, path):
     )
 
 
-def test_duplicate_id(bw, path):
+def test_duplicate_id(bw):
+
     nodes = []
-    csv = os.path.join(path, 'Protein-part000.csv')
+
+    tmp_path = bw.outdir
+
+    csv = os.path.join(tmp_path, 'Protein-part000.csv')
+
     # remove csv file in path
     if os.path.exists(csv):
         os.remove(csv)
+
     # four proteins, four miRNAs
     for _ in range(2):
         bnp = BioCypherNode(
@@ -742,9 +791,14 @@ def test_duplicate_id(bw, path):
     assert passed and l_lines0 == 1
 
 
-def test_write_synonym(bw, path):
+def test_write_synonym(bw):
+
     nodes = []
-    csv = os.path.join(path, 'Complex-part000.csv')
+
+    tmp_path = bw.outdir
+
+    csv = os.path.join(tmp_path, 'Complex-part000.csv')
+
     # remove csv file in path
     if os.path.exists(csv):
         os.remove(csv)
@@ -857,7 +911,7 @@ def test_get_duplicate_edges(bw, _get_edges):
     assert 'p1_p2' in ids
 
 
-def test_write_strict(bw_strict, path_strict):
+def test_write_strict(bw_strict):
 
     n1 = BioCypherNode(
         node_id='p1',
@@ -877,7 +931,9 @@ def test_write_strict(bw_strict, path_strict):
 
     assert passed
 
-    csv = os.path.join(path_strict, 'Protein-part000.csv')
+    tmp_path = bw_strict.outdir
+
+    csv = os.path.join(tmp_path, 'Protein-part000.csv')
 
     with open(csv) as f:
         prot = f.read()
@@ -887,13 +943,15 @@ def test_write_strict(bw_strict, path_strict):
 
 
 @pytest.mark.parametrize('l', [4], scope='module')
-def test_tab_delimiter(bw_tab, path, _get_nodes):
+def test_tab_delimiter(bw_tab, _get_nodes):
 
     passed = bw_tab.write_nodes(_get_nodes)
 
     assert passed
 
-    header = os.path.join(path, 'Protein-header.csv')
+    tmp_path = bw_tab.outdir
+
+    header = os.path.join(tmp_path, 'Protein-header.csv')
 
     with open(header) as f:
         prot = f.read()

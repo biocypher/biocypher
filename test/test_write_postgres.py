@@ -6,7 +6,7 @@ import pytest
 
 @pytest.mark.parametrize('l', [4], scope='module')
 def test_write_node_data_from_gen_comma_postgresql(
-    bw_comma_postgresql, path, _get_nodes
+    bw_comma_postgresql, _get_nodes
 ):
     nodes = _get_nodes
 
@@ -17,8 +17,10 @@ def test_write_node_data_from_gen_comma_postgresql(
         node_gen(nodes), batch_size=1e6
     )
 
-    p_csv = os.path.join(path, 'Protein-part000.csv')
-    m_csv = os.path.join(path, 'MicroRNA-part000.csv')
+    tmp_path = bw_comma_postgresql.outdir
+
+    p_csv = os.path.join(tmp_path, 'Protein-part000.csv')
+    m_csv = os.path.join(tmp_path, 'MicroRNA-part000.csv')
 
     with open(p_csv) as f:
         pr = f.read()
@@ -34,9 +36,7 @@ def test_write_node_data_from_gen_comma_postgresql(
 
 
 @pytest.mark.parametrize('l', [4], scope='module')
-def test_write_node_data_from_gen_tab_postgresql(
-    bw_tab_postgresql, path, _get_nodes
-):
+def test_write_node_data_from_gen_tab_postgresql(bw_tab_postgresql, _get_nodes):
     nodes = _get_nodes
 
     def node_gen(nodes):
@@ -44,8 +44,10 @@ def test_write_node_data_from_gen_tab_postgresql(
 
     passed = bw_tab_postgresql._write_node_data(node_gen(nodes), batch_size=1e6)
 
-    p_csv = os.path.join(path, 'Protein-part000.csv')
-    m_csv = os.path.join(path, 'MicroRNA-part000.csv')
+    tmp_path = bw_tab_postgresql.outdir
+
+    p_csv = os.path.join(tmp_path, 'Protein-part000.csv')
+    m_csv = os.path.join(tmp_path, 'MicroRNA-part000.csv')
 
     with open(p_csv) as f:
         pr = f.read()
@@ -63,7 +65,7 @@ def test_write_node_data_from_gen_tab_postgresql(
 @pytest.mark.requires_postgresql
 @pytest.mark.parametrize('l', [4], scope='module')
 def test_database_import_node_data_from_gen_comma_postgresql(
-    bw_comma_postgresql, path, _get_nodes, create_database_postgres
+    bw_comma_postgresql, _get_nodes, create_database_postgres
 ):
     dbname, user, port, password, create_database_success = create_database_postgres
     assert create_database_success
@@ -74,8 +76,11 @@ def test_database_import_node_data_from_gen_comma_postgresql(
         yield from nodes
 
     bw_comma_postgresql.write_nodes(node_gen(nodes))
+
+    tmp_path = bw_comma_postgresql.outdir
+
     # verify that all files have been created
-    assert set(os.listdir(path)) == set(
+    assert set(os.listdir(tmp_path)) == set(
         [
             'protein-create_table.sql', 'Protein-part000.csv',
             'microrna-create_table.sql', 'MicroRNA-part000.csv'
@@ -85,12 +90,13 @@ def test_database_import_node_data_from_gen_comma_postgresql(
     bw_comma_postgresql.write_import_call()
     # verify that import call has been created
     import_scripts = [
-        name for name in os.listdir(path) if name.endswith('-import-call.sh')
+        name
+        for name in os.listdir(tmp_path) if name.endswith('-import-call.sh')
     ]
     assert len(import_scripts) == 1
 
     import_script = import_scripts[0]
-    script = os.path.join(path, import_script)
+    script = os.path.join(tmp_path, import_script)
     with open(script) as f:
         commands = f.readlines()
         assert len(commands) == 16
@@ -123,7 +129,7 @@ def test_database_import_node_data_from_gen_comma_postgresql(
 @pytest.mark.requires_postgresql
 @pytest.mark.parametrize('l', [5], scope='module')
 def test_database_import_node_data_from_gen_tab_postgresql(
-    bw_tab_postgresql, path, _get_nodes, create_database_postgres
+    bw_tab_postgresql, _get_nodes, create_database_postgres
 ):
     dbname, user, port, password, create_database_success = create_database_postgres
     assert create_database_success
@@ -134,8 +140,11 @@ def test_database_import_node_data_from_gen_tab_postgresql(
         yield from nodes
 
     bw_tab_postgresql.write_nodes(node_gen(nodes))
+
+    tmp_path = bw_tab_postgresql.outdir
+
     # verify that all files have been created
-    assert set(os.listdir(path)) == set(
+    assert set(os.listdir(tmp_path)) == set(
         [
             'protein-create_table.sql', 'Protein-part000.csv',
             'microrna-create_table.sql', 'MicroRNA-part000.csv'
@@ -145,12 +154,13 @@ def test_database_import_node_data_from_gen_tab_postgresql(
     bw_tab_postgresql.write_import_call()
     # verify that import call has been created
     import_scripts = [
-        name for name in os.listdir(path) if name.endswith('-import-call.sh')
+        name
+        for name in os.listdir(tmp_path) if name.endswith('-import-call.sh')
     ]
     assert len(import_scripts) == 1
 
     import_script = import_scripts[0]
-    script = os.path.join(path, import_script)
+    script = os.path.join(tmp_path, import_script)
     with open(script) as f:
         commands = f.readlines()
         assert len(commands) == 16
@@ -183,7 +193,7 @@ def test_database_import_node_data_from_gen_tab_postgresql(
 @pytest.mark.requires_postgresql
 @pytest.mark.parametrize('l', [8], scope='module')
 def test_database_import_edge_data_from_gen_comma_postgresql(
-    bw_comma_postgresql, path, _get_nodes, create_database_postgres, _get_edges
+    bw_comma_postgresql, _get_nodes, create_database_postgres, _get_edges
 ):
     dbname, user, port, password, create_database_success = create_database_postgres
     assert create_database_success
@@ -206,19 +216,22 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
 
     bw_comma_postgresql.write_import_call()
 
+    tmp_path = bw_comma_postgresql.outdir
+
     # verify that import call has been created
     import_scripts = [
-        name for name in os.listdir(path) if name.endswith('-import-call.sh')
+        name
+        for name in os.listdir(tmp_path) if name.endswith('-import-call.sh')
     ]
     assert len(import_scripts) == 1
 
     import_script = import_scripts[0]
-    script = os.path.join(path, import_script)
+    script = os.path.join(tmp_path, import_script)
     with open(script) as f:
         commands = f.readlines()
 
     assert len(commands) > 0
-    assert path in '\n'.join(commands)
+    assert str(tmp_path) in '\n'.join(commands)
     assert 'protein-create_table.sql' in '\n'.join(commands)
     assert '--user' in '\n'.join(commands)
 
@@ -250,7 +263,7 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
 @pytest.mark.requires_postgresql
 @pytest.mark.parametrize('l', [8], scope='module')
 def test_database_import_edge_data_from_gen_tab_postgresql(
-    bw_tab_postgresql, path, _get_nodes, create_database_postgres, _get_edges
+    bw_tab_postgresql, _get_nodes, create_database_postgres, _get_edges
 ):
     dbname, user, port, password, create_database_success = create_database_postgres
     assert create_database_success
@@ -273,19 +286,22 @@ def test_database_import_edge_data_from_gen_tab_postgresql(
 
     bw_tab_postgresql.write_import_call()
 
+    tmp_path = bw_tab_postgresql.outdir
+
     # verify that import call has been created
     import_scripts = [
-        name for name in os.listdir(path) if name.endswith('-import-call.sh')
+        name
+        for name in os.listdir(tmp_path) if name.endswith('-import-call.sh')
     ]
     assert len(import_scripts) == 1
 
     import_script = import_scripts[0]
-    script = os.path.join(path, import_script)
+    script = os.path.join(tmp_path, import_script)
     with open(script) as f:
         commands = f.readlines()
 
     assert len(commands) > 1
-    assert path in '\n'.join(commands)
+    assert str(tmp_path) in '\n'.join(commands)
     assert 'protein-create_table.sql' in '\n'.join(commands)
     assert '--user' in '\n'.join(commands)
 
