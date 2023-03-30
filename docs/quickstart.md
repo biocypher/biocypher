@@ -266,13 +266,13 @@ biocypher:
 
 ```
 
-You can currently select between `postgresql`, `arangodb`, and `neo4j` as your
-output format; more options will be added in the future. The `output_path` is
-relative to your working directory, as is the schema-config path. The `ontology`
-should be specified as a (preferably persistent) URL to the ontology file, and
-a `root_node` to specify the node from which the ontology should be traversed.
-We recommend using a URL that specifies the exact version of the ontology, as in
-the example above.
+You can currently select between `postgresql`, `neo4j`, and `arangodb` (beta) as
+your output format; more options will be added in the future. The `output_path`
+is relative to your working directory, as is the schema-config path. The
+`ontology` should be specified as a (preferably persistent) URL to the ontology
+file, and a `root_node` to specify the node from which the ontology should be
+traversed.  We recommend using a URL that specifies the exact version of the
+ontology, as in the example above.
 
 ### DBMS-specific settings
 In addition to the general settings, you can specify DBMS-specific settings
