@@ -243,3 +243,52 @@ post translational interaction:
   input_label: post_translational
   label_as_edge: INTERACTS_POST_TRANSLATIONALLY
 ```
+
+## The biocypher configuration YAML file
+Most of the configuration options for BioCypher can and should be specified in
+the configuration YAML file, `biocypher_config.yaml`. While BioCypher comes with
+default settings (the ones you can see in the [Configuration](config) section),
+we can override them by specifying the desired settings in the local
+configuration in the root or the `config` directory of the project. The
+primary BioCypher settings are found in the top-level entry `biocypher`. For
+instance, you can select your output format (`dbms`) and output path, the
+location of the schema configuration file, and the ontology to be used.
+
+```{code-block} yaml
+
+biocypher:
+  dbms: postgresql
+  output_path: postgres_out/
+  schema_config: config/schema-config.yaml
+  head_ontology:
+    url: https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
+    root_node: entity
+
+```
+
+You can currently select between `postgresql`, `arangodb`, and `neo4j` as your
+output format; more options will be added in the future. The `output_path` is
+relative to your working directory, as is the schema-config path. The `ontology`
+should be specified as a (preferably persistent) URL to the ontology file, and
+a `root_node` to specify the node from which the ontology should be traversed.
+We recommend using a URL that specifies the exact version of the ontology, as in
+the example above.
+
+### DBMS-specific settings
+In addition to the general settings, you can specify DBMS-specific settings
+under the `postgresql`, `arangodb`, or `neo4j` entry. For instance, you can
+specify the database name, the host, the port, and the credentials for your
+database. You can also set delimiters for the entities and arrays in your import
+files. For a list of all settings, please refer to the [Configuration](config)
+section.
+
+```{code-block} yaml
+
+neo4j:
+  database_name: biocypher
+  uri: neo4j://localhost:7687
+  user: neo4j
+  password: neo4j
+  delimiter: ','
+
+```
