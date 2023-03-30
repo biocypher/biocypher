@@ -4,7 +4,7 @@
 # Copyright 2021, Heidelberg University Clinic
 #
 # File author(s): Sebastian Lobentanzer
-#                 ...
+#                 Michael Hartung
 #
 # Distributed under MIT licence, see the file `LICENSE`.
 #
@@ -12,12 +12,14 @@
 BioCypher 'offline' module. Handles the writing of node and edge representations
 suitable for import into a DBMS.
 """
+
 import glob
 
 from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
+from abc import ABC, abstractmethod
 from types import GeneratorType
 from typing import TYPE_CHECKING, Union, Optional
 from datetime import datetime
@@ -37,14 +39,24 @@ if TYPE_CHECKING:
     from ._translate import Translator
 
 
-class _Neo4jBatchWriter:
+class _BatchWriter(ABC):
     """
-    Class for writing node and edge representations to disk using the
-    format specified by Neo4j for the use of admin import. Each batch
-    writer instance has a fixed representation that needs to be passed
+    Abtract parent class for writing node and edge representations to disk using the
+    format specified by each database type. The database-specific functions are implemented
+    by the respective child-classes. This abstract class contains all methods expected by
+    a bach writer instance, some of which need to be overwritten by the child classes.
+
+    Each batch writer instance has a fixed representation that needs to be passed
     at instantiation via the :py:attr:`schema` argument. The instance
     also expects an ontology adapter via :py:attr:`ontology_adapter` to be able
     to convert and extend the hierarchy.
+
+    Requires the following methods to be overwritten by database-specific writer classes:
+        - _write_node_headers
+        - _write_edge_headers
+        - _construct_import_call
+        - _write_array_string
+        - _get_import_script_name
 
     Args:
         ontology:
@@ -68,15 +80,8 @@ class _Neo4jBatchWriter:
             Path for exporting CSV files.
 
         db_name:
-            Name of the Neo4j database that will be used in the generated
+            Name of the database that will be used in the generated
             commands.
-
-        skip_bad_relationships:
-            Whether to skip relationships that do not have a valid
-            start and end node. (In admin import call.)
-
-        skip_duplicate_nodes:
-            Whether to skip duplicate nodes. (In admin import call.)
 
         import_call_bin_prefix:
             Path prefix for the admin import call binary.
@@ -86,29 +91,124 @@ class _Neo4jBatchWriter:
             import call.
 
         wipe:
-            Whether to force import (removing existing DB content). (In
-            admin import call.)
+            Whether to force import (removing existing DB content). (Specific to Neo4j.)
 
         strict_mode:
             Whether to enforce source, version, and license properties.
+
+        skip_bad_relationships:
+            Whether to skip relationships that do not have a valid
+            start and end node. (Specific to Neo4j.)
+
+        skip_duplicate_nodes:
+            Whether to skip duplicate nodes. (Specific to Neo4j.)
     """
+    @abstractmethod
+    def _get_default_import_call_bin_prefix(self):
+        """
+        Abstract method to provide the default string for the import call bin prefix.
+
+        Returns:
+            str: The database-specific string for the path to the import call bin prefix
+        """
+        raise NotImplementedError(
+            "Database writer must override '_get_default_import_call_bin_prefix'"
+        )
+
+    @abstractmethod
+    def _write_array_string(self, string_list):
+        """
+        Abstract method to write the string representation of an array into a .csv file.
+        Different databases require different formats of array to optimize import speed.
+
+        Args:
+            string_list (list): list of ontology strings
+
+        Returns:
+            str: The database-specific string representation of an array
+        """
+        raise NotImplementedError(
+            "Database writer must override '_write_node_headers'"
+        )
+
+    @abstractmethod
+    def _write_node_headers(self):
+        """
+        Abstract method that takes care of importing properties of a graph entity that is represented
+        as a node as per the definition in the `schema_config.yaml`
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        raise NotImplementedError(
+            "Database writer must override '_write_node_headers'"
+        )
+
+    @abstractmethod
+    def _write_edge_headers(self):
+        """
+        Abstract method to write a database import-file for a graph entity that is represented
+        as an edge as per the definition in the `schema_config.yaml`,
+        containing only the header for this type of edge.
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        raise NotImplementedError(
+            "Database writer must override '_write_edge_headers'"
+        )
+
+    @abstractmethod
+    def _construct_import_call(self) -> str:
+        """
+        Function to construct the import call detailing folder and
+        individual node and edge headers and data files, as well as
+        delimiters and database name. Built after all data has been
+        processed to ensure that nodes are called before any edges.
+
+        Returns:
+            str: A bash command for csv import.
+        """
+        raise NotImplementedError(
+            "Database writer must override '_construct_import_call'"
+        )
+
+    @abstractmethod
+    def _get_import_script_name(self) -> str:
+        """
+        Returns the name of the import script.
+        The name will be chosen based on the used database.
+
+        Returns:
+            str: The name of the import script (ending in .sh)
+        """
+        raise NotImplementedError(
+            "Database writer must override '_get_import_script_name'"
+        )
+
     def __init__(
         self,
         ontology: 'Ontology',
         translator: 'Translator',
         delimiter: str,
-        array_delimiter: str,
-        quote: str,
+        array_delimiter: str = ',',
+        quote: str = '"',
         output_directory: Optional[str] = None,
         db_name: str = 'neo4j',
-        skip_bad_relationships: bool = False,
-        skip_duplicate_nodes: bool = False,
         import_call_bin_prefix: Optional[str] = None,
         import_call_file_prefix: Optional[str] = None,
         wipe: bool = True,
         strict_mode: bool = False,
+        skip_bad_relationships: bool = False,
+        skip_duplicate_nodes: bool = False,
+        db_user: str = None,
+        db_password: str = None,
+        db_port: str = None
     ):
         self.db_name = db_name
+        self.db_user = db_user
+        self.db_password = db_password
+        self.db_port = db_port
 
         self.delim, self.escaped_delim = self._process_delimiter(delimiter)
         self.adelim, self.escaped_adelim = self._process_delimiter(
@@ -119,7 +219,8 @@ class _Neo4jBatchWriter:
         self.skip_duplicate_nodes = skip_duplicate_nodes
 
         if import_call_bin_prefix is None:
-            self.import_call_bin_prefix = 'bin/'
+            self.import_call_bin_prefix = self._get_default_import_call_bin_prefix(
+            )
         else:
             self.import_call_bin_prefix = import_call_bin_prefix
 
@@ -131,15 +232,12 @@ class _Neo4jBatchWriter:
         self.translator = translator
         self.node_property_dict = {}
         self.edge_property_dict = {}
-        self.import_call_nodes = ''
-        self.import_call_edges = ''
+        self.import_call_nodes = set()
+        self.import_call_edges = set()
 
-        self.outdir = output_directory
+        self._outdir = output_directory
 
-        if import_call_file_prefix is None:
-            self.import_call_file_prefix = self.outdir
-        else:
-            self.import_call_file_prefix = import_call_file_prefix
+        self._import_call_file_prefix = import_call_file_prefix
 
         if os.path.exists(self.outdir):
             logger.warning(
@@ -167,8 +265,21 @@ class _Neo4jBatchWriter:
         )  # set to store the types of edges that
         # have been found to have duplicates
 
+        self.parts = {}  # dict to store the paths of part files for each label
+
         # TODO not memory efficient, but should be fine for most cases; is
         # there a more elegant solution?
+
+    @property
+    def outdir(self):
+        """
+        Property for output directory path.
+        """
+
+        if self._import_call_file_prefix is None:
+            return self._outdir
+        else:
+            return self._import_call_file_prefix
 
     def _process_delimiter(self, delimiter: str) -> str:
         """
@@ -376,7 +487,7 @@ class _Neo4jBatchWriter:
                         # order alphabetically
                         all_labels.sort()
                         # concatenate with array delimiter
-                        all_labels = self.adelim.join(all_labels)
+                        all_labels = self._write_array_string(all_labels)
                     else:
                         all_labels = self.translator.name_sentence_to_pascal(
                             label
@@ -437,88 +548,6 @@ class _Neo4jBatchWriter:
                     yield from nodes
 
                 return self._write_node_data(gen(nodes), batch_size=batch_size)
-
-    def _write_node_headers(self):
-        """
-        Writes single CSV file for a graph entity that is represented
-        as a node as per the definition in the `schema_config.yaml`,
-        containing only the header for this type of node.
-
-        Returns:
-            bool: The return value. True for success, False otherwise.
-        """
-        # load headers from data parse
-        if not self.node_property_dict:
-            logger.error(
-                'Header information not found. Was the data parsed first?',
-            )
-            return False
-
-        for label, props in self.node_property_dict.items():
-            # create header CSV with ID, properties, labels
-
-            _id = ':ID'
-
-            # to programmatically define properties to be written, the
-            # data would have to be parsed before writing the header.
-            # alternatively, desired properties can also be provided
-            # via the schema_config.yaml.
-
-            # translate label to PascalCase
-            pascal_label = self.translator.name_sentence_to_pascal(label)
-
-            header_path = os.path.join(
-                self.outdir,
-                f'{pascal_label}-header.csv',
-            )
-            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
-
-            # check if file already exists
-            if not os.path.exists(header_path):
-
-                # concatenate key:value in props
-                props_list = []
-                for k, v in props.items():
-                    if v in ['int', 'long']:
-                        props_list.append(f'{k}:long')
-                    elif v in ['float', 'double', 'dbl']:
-                        props_list.append(f'{k}:double')
-                    elif v in ['bool', 'boolean']:
-                        # TODO Neo4j boolean support / spelling?
-                        props_list.append(f'{k}:boolean')
-                    elif v in ['str[]', 'string[]']:
-                        props_list.append(f'{k}:string[]')
-                    else:
-                        props_list.append(f'{k}')
-
-                # create list of lists and flatten
-                # removes need for empty check of property list
-                out_list = [[_id], props_list, [':LABEL']]
-                out_list = [val for sublist in out_list for val in sublist]
-
-                with open(header_path, 'w', encoding='utf-8') as f:
-
-                    # concatenate with delimiter
-                    row = self.delim.join(out_list)
-                    f.write(row)
-
-                # import call path for custom setup
-                if self.import_call_file_prefix:
-                    header_path = os.path.join(
-                        self.import_call_file_prefix,
-                        f'{pascal_label}-header.csv',
-                    )
-                    parts_path = os.path.join(
-                        self.import_call_file_prefix,
-                        f'{pascal_label}-part.*',
-                    )
-
-                # add file path to neo4 admin import statement
-                self.import_call_nodes += (
-                    f'--nodes="{header_path},{parts_path}" '
-                )
-
-        return True
 
     def _write_single_node_list_to_file(
         self,
@@ -595,11 +624,9 @@ class _Neo4jBatchWriter:
                         plist.append(str(p))
                     else:
                         if isinstance(p, list):
-                            plist.append(
-                                self.quote + self.adelim.join(p) + self.quote
-                            )
+                            plist.append(self._write_array_string(p))
                         else:
-                            plist.append(self.quote + str(p) + self.quote)
+                            plist.append(f'{self.quote}{str(p)}{self.quote}')
 
                 line.append(self.delim.join(plist))
             line.append(labels)
@@ -780,83 +807,6 @@ class _Neo4jBatchWriter:
 
                 return self._write_edge_data(gen(edges), batch_size=batch_size)
 
-    def _write_edge_headers(self):
-        """
-        Writes single CSV file for a graph entity that is represented
-        as an edge as per the definition in the `schema_config.yaml`,
-        containing only the header for this type of edge.
-
-        Returns:
-            bool: The return value. True for success, False otherwise.
-        """
-        # load headers from data parse
-        if not self.edge_property_dict:
-            logger.error(
-                'Header information not found. Was the data parsed first?',
-            )
-            return False
-
-        for label, props in self.edge_property_dict.items():
-            # create header CSV with :START_ID, (optional) properties,
-            # :END_ID, :TYPE
-
-            # translate label to PascalCase
-            pascal_label = self.translator.name_sentence_to_pascal(label)
-
-            # paths
-            header_path = os.path.join(
-                self.outdir,
-                f'{pascal_label}-header.csv',
-            )
-            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
-
-            # check for file exists
-            if not os.path.exists(header_path):
-
-                # concatenate key:value in props
-                props_list = []
-                for k, v in props.items():
-                    if v in ['int', 'long']:
-                        props_list.append(f'{k}:long')
-                    elif v in ['float', 'double']:
-                        props_list.append(f'{k}:double')
-                    elif v in [
-                        'bool',
-                        'boolean',
-                    ]:  # TODO does Neo4j support bool?
-                        props_list.append(f'{k}:boolean')
-                    else:
-                        props_list.append(f'{k}')
-
-                # create list of lists and flatten
-                # removes need for empty check of property list
-                out_list = [[':START_ID'], props_list, [':END_ID'], [':TYPE']]
-                out_list = [val for sublist in out_list for val in sublist]
-
-                with open(header_path, 'w', encoding='utf-8') as f:
-
-                    # concatenate with delimiter
-                    row = self.delim.join(out_list)
-                    f.write(row)
-
-                # import call path for custom setup
-                if self.import_call_file_prefix:
-                    header_path = os.path.join(
-                        self.import_call_file_prefix,
-                        f'{pascal_label}-header.csv',
-                    )
-                    parts_path = os.path.join(
-                        self.import_call_file_prefix,
-                        f'{pascal_label}-part.*',
-                    )
-
-                # add file path to neo4 admin import statement
-                self.import_call_edges += (
-                    f'--relationships="{header_path},{parts_path}" '
-                )
-
-        return True
-
     def _write_single_edge_list_to_file(
         self,
         edge_list: list,
@@ -928,13 +878,10 @@ class _Neo4jBatchWriter:
                         plist.append(str(p))
                     else:
                         if isinstance(p, list):
-                            plist.append(
-                                self.quote + self.adelim.join(p) + self.quote
-                            )
+                            plist.append(self._write_array_string(p))
                         elif '**' in p:
                             plist.append(
-                                self.quote + p.replace('**', self.adelim) +
-                                self.quote
+                                self._write_array_string(p.split('**'))
                             )
                         else:
                             plist.append(self.quote + str(p) + self.quote)
@@ -985,12 +932,19 @@ class _Neo4jBatchWriter:
             bool: The return value. True for success, False otherwise.
         """
         # translate label to PascalCase
-        label = self.translator.name_sentence_to_pascal(label)
+        label_pascal = self.translator.name_sentence_to_pascal(label)
 
         # list files in self.outdir
-        files = glob.glob(os.path.join(self.outdir, f'{label}-part*.csv'))
+        files = glob.glob(
+            os.path.join(self.outdir, f'{label_pascal}-part*.csv')
+        )
         # find file with highest part number
-        if files:
+        if not files:
+
+            next_part = 0
+
+        else:
+
             next_part = (
                 max(
                     [
@@ -1000,20 +954,25 @@ class _Neo4jBatchWriter:
                     ],
                 ) + 1
             )
-        else:
-            next_part = 0
 
         # write to file
         padded_part = str(next_part).zfill(3)
         logger.info(
-            f'Writing {len(lines)} entries to {label}-part{padded_part}.csv',
+            f'Writing {len(lines)} entries to {label_pascal}-part{padded_part}.csv',
         )
-        file_path = os.path.join(self.outdir, f'{label}-part{padded_part}.csv')
+        file_path = os.path.join(
+            self.outdir, f'{label_pascal}-part{padded_part}.csv'
+        )
 
         with open(file_path, 'w', encoding='utf-8') as f:
 
             # concatenate with delimiter
             f.writelines(lines)
+
+        if not self.parts.get(label):
+            self.parts[label] = [file_path]
+        else:
+            self.parts[label].append(file_path)
 
     def get_import_call(self) -> str:
         """
@@ -1022,7 +981,7 @@ class _Neo4jBatchWriter:
         delimiters and database name.
 
         Returns:
-            str: a bash command for neo4j-admin import
+            str: a bash command for the database import
         """
 
         return self._construct_import_call()
@@ -1037,50 +996,14 @@ class _Neo4jBatchWriter:
             bool: The return value. True for success, False otherwise.
         """
 
-        file_path = os.path.join(self.outdir, 'neo4j-admin-import-call.sh')
-        logger.info(f'Writing neo4j-admin import call to `{file_path}`.')
+        file_path = os.path.join(self.outdir, self._get_import_script_name())
+        logger.info(f'Writing {self.db_name} import call to `{file_path}`.')
 
         with open(file_path, 'w', encoding='utf-8') as f:
 
             f.write(self._construct_import_call())
 
         return True
-
-    def _construct_import_call(self) -> str:
-        """
-        Function to construct the import call detailing folder and
-        individual node and edge headers and data files, as well as
-        delimiters and database name. Built after all data has been
-        processed to ensure that nodes are called before any edges.
-
-        Returns:
-            str: a bash command for neo4j-admin import
-        """
-
-        import_call = (
-            f'{self.import_call_bin_prefix}neo4j-admin import '
-            f'--database={self.db_name} '
-            f'--delimiter="{self.escaped_delim}" '
-            f'--array-delimiter="{self.escaped_adelim}" '
-        )
-
-        if self.quote == "'":
-            import_call += f'--quote="{self.quote}" '
-        else:
-            import_call += f"--quote='{self.quote}' "
-
-        if self.wipe:
-            import_call += f'--force=true '
-        if self.skip_bad_relationships:
-            import_call += '--skip-bad-relationships=true '
-        if self.skip_duplicate_nodes:
-            import_call += '--skip-duplicate-nodes=true '
-
-        # append node and edge import calls
-        import_call += self.import_call_nodes
-        import_call += self.import_call_edges
-
-        return import_call
 
     def get_duplicate_nodes(self):
         """
@@ -1109,8 +1032,706 @@ class _Neo4jBatchWriter:
             return None
 
 
+class _Neo4jBatchWriter(_BatchWriter):
+    """
+    Class for writing node and edge representations to disk using the
+    format specified by Neo4j for the use of admin import. Each batch
+    writer instance has a fixed representation that needs to be passed
+    at instantiation via the :py:attr:`schema` argument. The instance
+    also expects an ontology adapter via :py:attr:`ontology_adapter` to be able
+    to convert and extend the hierarchy.
+
+    This class inherits from the abstract class "_BatchWriter" and implements the
+    Neo4j-specific methods:
+        - _write_node_headers
+        - _write_edge_headers
+        - _construct_import_call
+        - _write_array_string
+    """
+    def _get_default_import_call_bin_prefix(self):
+        """
+        Method to provide the default string for the import call bin prefix.
+
+        Returns:
+            str: The default location for the neo4j admin import location
+        """
+        return 'bin/'
+
+    def _write_array_string(self, string_list):
+        """
+        Abstract method to write the string representation of an array into a .csv file
+        as required by the neo4j admin-import.
+
+        Args:
+            string_list (list): list of ontology strings
+
+        Returns:
+            str: The string representation of an array for the neo4j admin import
+        """
+        string = self.adelim.join(string_list)
+        return f'{self.quote}{string}{self.quote}'
+
+    def _write_node_headers(self):
+        """
+        Writes single CSV file for a graph entity that is represented
+        as a node as per the definition in the `schema_config.yaml`,
+        containing only the header for this type of node.
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        # load headers from data parse
+        if not self.node_property_dict:
+            logger.error(
+                'Header information not found. Was the data parsed first?',
+            )
+            return False
+
+        for label, props in self.node_property_dict.items():
+
+            _id = ':ID'
+
+            # translate label to PascalCase
+            pascal_label = self.translator.name_sentence_to_pascal(label)
+
+            header_path = os.path.join(
+                self.outdir,
+                f'{pascal_label}-header.csv',
+            )
+            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
+
+            # check if file already exists
+            if os.path.exists(header_path):
+                logger.warning(
+                    f'Header file `{header_path}` already exists. Overwriting.',
+                )
+
+            # concatenate key:value in props
+            props_list = []
+            for k, v in props.items():
+                if v in ['int', 'long']:
+                    props_list.append(f'{k}:long')
+                elif v in ['float', 'double', 'dbl']:
+                    props_list.append(f'{k}:double')
+                elif v in ['bool', 'boolean']:
+                    # TODO Neo4j boolean support / spelling?
+                    props_list.append(f'{k}:boolean')
+                elif v in ['str[]', 'string[]']:
+                    props_list.append(f'{k}:string[]')
+                else:
+                    props_list.append(f'{k}')
+
+            # create list of lists and flatten
+            out_list = [[_id], props_list, [':LABEL']]
+            out_list = [val for sublist in out_list for val in sublist]
+
+            with open(header_path, 'w', encoding='utf-8') as f:
+                # concatenate with delimiter
+                row = self.delim.join(out_list)
+                f.write(row)
+
+            # add file path to neo4 admin import statement
+            self.import_call_nodes.add((header_path, parts_path))
+
+        return True
+
+    def _write_edge_headers(self):
+        """
+        Writes single CSV file for a graph entity that is represented
+        as an edge as per the definition in the `schema_config.yaml`,
+        containing only the header for this type of edge.
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        # load headers from data parse
+        if not self.edge_property_dict:
+            logger.error(
+                'Header information not found. Was the data parsed first?',
+            )
+            return False
+
+        for label, props in self.edge_property_dict.items():
+
+            # translate label to PascalCase
+            pascal_label = self.translator.name_sentence_to_pascal(label)
+
+            # paths
+            header_path = os.path.join(
+                self.outdir,
+                f'{pascal_label}-header.csv',
+            )
+            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
+
+            # check for file exists
+            if os.path.exists(header_path):
+                logger.warning(
+                    f'File {header_path} already exists. Overwriting.'
+                )
+
+            # concatenate key:value in props
+            props_list = []
+            for k, v in props.items():
+                if v in ['int', 'long']:
+                    props_list.append(f'{k}:long')
+                elif v in ['float', 'double']:
+                    props_list.append(f'{k}:double')
+                elif v in [
+                    'bool',
+                    'boolean',
+                ]:  # TODO does Neo4j support bool?
+                    props_list.append(f'{k}:boolean')
+                else:
+                    props_list.append(f'{k}')
+
+            out_list = [':START_ID', *props_list, ':END_ID', ':TYPE']
+
+            with open(header_path, 'w', encoding='utf-8') as f:
+                # concatenate with delimiter
+                row = self.delim.join(out_list)
+                f.write(row)
+
+            # add file path to neo4 admin import statement
+            self.import_call_edges.add((header_path, parts_path))
+
+        return True
+
+    def _get_import_script_name(self) -> str:
+        """
+        Returns the name of the neo4j admin import script
+
+        Returns:
+            str: The name of the import script (ending in .sh)
+        """
+        return 'neo4j-admin-import-call.sh'
+
+    def _construct_import_call(self) -> str:
+        """
+        Function to construct the import call detailing folder and
+        individual node and edge headers and data files, as well as
+        delimiters and database name. Built after all data has been
+        processed to ensure that nodes are called before any edges.
+
+        Returns:
+            str: a bash command for neo4j-admin import
+        """
+        import_call = (
+            f'{self.import_call_bin_prefix}neo4j-admin import '
+            f'--database={self.db_name} '
+            f'--delimiter="{self.escaped_delim}" '
+            f'--array-delimiter="{self.escaped_adelim}" '
+        )
+
+        if self.quote == "'":
+            import_call += f'--quote="{self.quote}" '
+        else:
+            import_call += f"--quote='{self.quote}' "
+
+        if self.wipe:
+            import_call += f'--force=true '
+        if self.skip_bad_relationships:
+            import_call += '--skip-bad-relationships=true '
+        if self.skip_duplicate_nodes:
+            import_call += '--skip-duplicate-nodes=true '
+
+        # append node import calls
+        for header_path, parts_path in self.import_call_nodes:
+            import_call += f'--nodes="{header_path},{parts_path}" '
+
+        # append edge import calls
+        for header_path, parts_path in self.import_call_edges:
+            import_call += f'--relationships="{header_path},{parts_path}" '
+
+        return import_call
+
+
+class _ArangoDBBatchWriter(_Neo4jBatchWriter):
+    """
+    Class for writing node and edge representations to disk using the format
+    specified by ArangoDB for the use of "arangoimport". Output files are
+    similar to Neo4j, but with a different header format.
+    """
+    def _get_default_import_call_bin_prefix(self):
+        """
+        Method to provide the default string for the import call bin prefix.
+
+        Returns:
+            str: The default location for the neo4j admin import location
+        """
+        return ''
+
+    def _get_import_script_name(self) -> str:
+        """
+        Returns the name of the neo4j admin import script
+
+        Returns:
+            str: The name of the import script (ending in .sh)
+        """
+        return 'arangodb-import-call.sh'
+
+    def _write_node_headers(self):
+        """
+        Writes single CSV file for a graph entity that is represented
+        as a node as per the definition in the `schema_config.yaml`,
+        containing only the header for this type of node.
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        # load headers from data parse
+        if not self.node_property_dict:
+            logger.error(
+                'Header information not found. Was the data parsed first?',
+            )
+            return False
+
+        for label, props in self.node_property_dict.items():
+            # create header CSV with ID, properties, labels
+
+            _id = '_key'
+
+            # translate label to PascalCase
+            pascal_label = self.translator.name_sentence_to_pascal(label)
+
+            header_path = os.path.join(
+                self.outdir,
+                f'{pascal_label}-header.csv',
+            )
+
+            # check if file already exists
+            if os.path.exists(header_path):
+                logger.warning(
+                    f'File {header_path} already exists. Overwriting.'
+                )
+
+            # concatenate key:value in props
+            props_list = []
+            for k in props.keys():
+
+                props_list.append(f'{k}')
+
+            # create list of lists and flatten
+            # removes need for empty check of property list
+            out_list = [[_id], props_list]
+            out_list = [val for sublist in out_list for val in sublist]
+
+            with open(header_path, 'w', encoding='utf-8') as f:
+                # concatenate with delimiter
+                row = self.delim.join(out_list)
+                f.write(row)
+
+            # add collection from schema config
+            collection = self.extended_schema[label].get(
+                'db_collection_name', None
+            )
+
+            # add file path to neo4 admin import statement
+            # do once for each part file
+            parts = self.parts.get(label, [])
+
+            if not parts:
+
+                raise ValueError(
+                    f'No parts found for node label {label}. '
+                    f'Check that the data was parsed first.',
+                )
+
+            for part in parts:
+
+                self.import_call_nodes.add((header_path, part, collection))
+
+        return True
+
+    def _write_edge_headers(self):
+        """
+        Writes single CSV file for a graph entity that is represented
+        as an edge as per the definition in the `schema_config.yaml`,
+        containing only the header for this type of edge.
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        # load headers from data parse
+        if not self.edge_property_dict:
+            logger.error(
+                'Header information not found. Was the data parsed first?',
+            )
+            return False
+
+        for label, props in self.edge_property_dict.items():
+
+            # translate label to PascalCase
+            pascal_label = self.translator.name_sentence_to_pascal(label)
+
+            # paths
+            header_path = os.path.join(
+                self.outdir,
+                f'{pascal_label}-header.csv',
+            )
+            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
+
+            # check for file exists
+            if os.path.exists(header_path):
+                logger.warning(
+                    f'Header file {header_path} already exists. Overwriting.'
+                )
+
+            # concatenate key:value in props
+            props_list = []
+            for k in props.keys():
+
+                props_list.append(f'{k}')
+
+            out_list = ['_from', *props_list, '_to']
+
+            with open(header_path, 'w', encoding='utf-8') as f:
+                # concatenate with delimiter
+                row = self.delim.join(out_list)
+                f.write(row)
+
+            # add collection from schema config
+            if not self.extended_schema.get(label):
+
+                for _, v in self.extended_schema.items():
+                    if v.get('label_as_edge') == label:
+                        collection = v.get('db_collection_name', None)
+                        break
+
+            else:
+
+                collection = self.extended_schema[label].get(
+                    'db_collection_name', None
+                )
+
+            # add file path to neo4 admin import statement
+            self.import_call_edges.add((header_path, parts_path, collection))
+
+        return True
+
+    def _construct_import_call(self) -> str:
+        """
+        Function to construct the import call detailing folder and
+        individual node and edge headers and data files, as well as
+        delimiters and database name. Built after all data has been
+        processed to ensure that nodes are called before any edges.
+
+        Returns:
+            str: a bash command for neo4j-admin import
+        """
+        import_call = (
+            f'{self.import_call_bin_prefix}arangoimp '
+            f'--type csv '
+            f'--separator="{self.escaped_delim}" '
+        )
+
+        if self.quote == "'":
+            import_call += f'--quote="{self.quote}" '
+        else:
+            import_call += f"--quote='{self.quote}' "
+
+        node_lines = ''
+
+        # node import calls: one line per node type
+        for header_path, parts_path, collection in self.import_call_nodes:
+
+            line = (
+                f'{import_call} '
+                f'--headers-file {header_path} '
+                f'--file= {parts_path} '
+            )
+
+            if collection:
+                line += f'--create-collection --collection {collection} '
+
+            node_lines += f'{line}\n'
+
+        edge_lines = ''
+
+        # edge import calls: one line per edge type
+        for header_path, parts_path, collection in self.import_call_edges:
+            import_call += f'--relationships="{header_path},{parts_path}" '
+
+        return node_lines + edge_lines
+
+
+class _PostgreSQLBatchWriter(_BatchWriter):
+    """
+    Class for writing node and edge representations to disk using the
+    format specified by PostgreSQL for the use of "COPY FROM...". Each batch
+    writer instance has a fixed representation that needs to be passed
+    at instantiation via the :py:attr:`schema` argument. The instance
+    also expects an ontology adapter via :py:attr:`ontology_adapter` to be able
+    to convert and extend the hierarchy.
+
+    This class inherits from the abstract class "_BatchWriter" and implements the
+    PostgreSQL-specific methods:
+        - _write_node_headers
+        - _write_edge_headers
+        - _construct_import_call
+        - _write_array_string
+    """
+
+    DATA_TYPE_LOOKUP = {
+        'str': 'VARCHAR',  # VARCHAR needs limit
+        'int': 'INTEGER',
+        'long': 'BIGINT',
+        'float': 'NUMERIC',
+        'double': 'NUMERIC',
+        'dbl': 'NUMERIC',
+        'boolean': 'BOOLEAN',
+        'str[]': 'VARCHAR[]',
+        'string[]': 'VARCHAR[]'
+    }
+
+    def __init__(self, *args, **kwargs):
+        self._copy_from_csv_commands = set()
+        super().__init__(*args, **kwargs)
+
+    def _get_default_import_call_bin_prefix(self):
+        """
+        Method to provide the default string for the import call bin prefix.
+
+        Returns:
+            str: The default location for the psql command
+        """
+        return ''
+
+    def _get_data_type(self, string) -> str:
+        try:
+            return self.DATA_TYPE_LOOKUP[string]
+        except KeyError:
+            logger.info(
+                'Could not determine data type {string}. Using default "VARCHAR"'
+            )
+            return 'VARCHAR'
+
+    def _write_array_string(self, string_list) -> str:
+        """
+        Abstract method to write the string representation of an array into a .csv file
+        as required by the postgresql COPY command, with '{','}' brackets and ',' separation.
+
+        Args:
+            string_list (list): list of ontology strings
+
+        Returns:
+            str: The string representation of an array for postgres COPY
+        """
+        string = ','.join(string_list)
+        string = f'"{{{string}}}"'
+        return string
+
+    def _get_import_script_name(self) -> str:
+        """
+        Returns the name of the psql import script
+
+        Returns:
+            str: The name of the import script (ending in .sh)
+        """
+        return f'{self.db_name}-import-call.sh'
+
+    def _adjust_pascal_to_psql(self, string):
+        string = string.replace('.', '_')
+        string = string.lower()
+        return string
+
+    def _write_node_headers(self):
+        """
+        Writes single CSV file for a graph entity that is represented
+        as a node as per the definition in the `schema_config.yaml`,
+        containing only the header for this type of node.
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        # load headers from data parse
+        if not self.node_property_dict:
+            logger.error(
+                'Header information not found. Was the data parsed first?',
+            )
+            return False
+
+        for label, props in self.node_property_dict.items():
+            # create header CSV with ID, properties, labels
+
+            # to programmatically define properties to be written, the
+            # data would have to be parsed before writing the header.
+            # alternatively, desired properties can also be provided
+            # via the schema_config.yaml.
+
+            # translate label to PascalCase
+            pascal_label = self.translator.name_sentence_to_pascal(label)
+
+            parts_paths = os.path.join(self.outdir, f'{pascal_label}-part*.csv')
+            parts_paths = glob.glob(parts_paths)
+            parts_paths.sort()
+
+            # adjust label for import to psql
+            pascal_label = self._adjust_pascal_to_psql(pascal_label)
+            table_create_command_path = os.path.join(
+                self.outdir,
+                f'{pascal_label}-create_table.sql',
+            )
+
+            # check if file already exists
+            if os.path.exists(table_create_command_path):
+                logger.warning(
+                    f'File {table_create_command_path} already exists. Overwriting.',
+                )
+
+            # concatenate key:value in props
+            columns = ['_ID VARCHAR']
+            for col_name, col_type in props.items():
+                col_type = self._get_data_type(col_type)
+                col_name = self._adjust_pascal_to_psql(col_name)
+                columns.append(f'{col_name} {col_type}')
+            columns.append('_LABEL VARCHAR[]')
+
+            with open(table_create_command_path, 'w', encoding='utf-8') as f:
+
+                command = ''
+                if self.wipe:
+                    command += f'DROP TABLE IF EXISTS {pascal_label};\n'
+
+                # table creation requires comma separation
+                command += f'CREATE TABLE {pascal_label}({",".join(columns)});\n'
+                f.write(command)
+
+                for parts_path in parts_paths:
+                    self._copy_from_csv_commands.add(
+                        f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;'
+                    )
+
+            # add file path to import statement
+            self.import_call_nodes.add(table_create_command_path)
+
+        return True
+
+    def _write_edge_headers(self):
+        """
+        Writes single CSV file for a graph entity that is represented
+        as an edge as per the definition in the `schema_config.yaml`,
+        containing only the header for this type of edge.
+
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """
+        # load headers from data parse
+        if not self.edge_property_dict:
+            logger.error(
+                'Header information not found. Was the data parsed first?',
+            )
+            return False
+
+        for label, props in self.edge_property_dict.items():
+
+            # translate label to PascalCase
+            pascal_label = self.translator.name_sentence_to_pascal(label)
+
+            parts_paths = os.path.join(self.outdir, f'{pascal_label}-part*.csv')
+            parts_paths = glob.glob(parts_paths)
+            parts_paths.sort()
+
+            # adjust label for import to psql
+            pascal_label = self._adjust_pascal_to_psql(pascal_label)
+            table_create_command_path = os.path.join(
+                self.outdir,
+                f'{pascal_label}-create_table.sql',
+            )
+
+            # check for file exists
+            if os.path.exists(table_create_command_path):
+                logger.warning(
+                    f'File {table_create_command_path} already exists. Overwriting.',
+                )
+
+            # concatenate key:value in props
+            columns = []
+            for col_name, col_type in props.items():
+                col_type = self._get_data_type(col_type)
+                col_name = self._adjust_pascal_to_psql(col_name)
+                columns.append(f'{col_name} {col_type}')
+
+            # create list of lists and flatten
+            # removes need for empty check of property list
+            out_list = [
+                '_START_ID VARCHAR', *columns, '_END_ID VARCHAR',
+                '_TYPE VARCHAR'
+            ]
+
+            with open(table_create_command_path, 'w', encoding='utf-8') as f:
+                command = ''
+                if self.wipe:
+                    command += f'DROP TABLE IF EXISTS {pascal_label};\n'
+
+                # table creation requires comma separation
+                command += f'CREATE TABLE {pascal_label}({",".join(out_list)});\n'
+                f.write(command)
+
+                for parts_path in parts_paths:
+                    self._copy_from_csv_commands.add(
+                        f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;'
+                    )
+
+            # add file path to import statement
+            self.import_call_edges.add(table_create_command_path)
+
+        return True
+
+    def _construct_import_call(self) -> str:
+        """
+        Function to construct the import call detailing folder and
+        individual node and edge headers and data files, as well as
+        delimiters and database name. Built after all data has been
+        processed to ensure that nodes are called before any edges.
+
+        Returns:
+            str: a bash command for postgresql import
+        """
+        import_call = ''
+
+        # create tables
+        # At this point, csv files of nodes and edges do not require differentiation
+        for import_file_path in [
+            *self.import_call_nodes, *self.import_call_edges
+        ]:
+            import_call += f'echo "Setup {import_file_path}..."\n'
+            if {self.db_password}:
+                # set password variable inline
+                import_call += f'PGPASSWORD={self.db_password} '
+            import_call += f'{self.import_call_bin_prefix}psql -f {import_file_path}'
+            import_call += f' --dbname {self.db_name}'
+            import_call += f' --port {self.db_port}'
+            import_call += f' --user {self.db_user}'
+            import_call += '\necho "Done!"\n'
+            import_call += '\n'
+
+        # copy data to tables
+        for command in self._copy_from_csv_commands:
+            table_part = command.split(' ')[3]
+            import_call += f'echo "Importing {table_part}..."\n'
+            if {self.db_password}:
+                # set password variable inline
+                import_call += f'PGPASSWORD={self.db_password} '
+            import_call += f'{self.import_call_bin_prefix}psql -c "{command}"'
+            import_call += f' --dbname {self.db_name}'
+            import_call += f' --port {self.db_port}'
+            import_call += f' --user {self.db_user}'
+            import_call += '\necho "Done!"\n'
+            import_call += '\n'
+
+        return import_call
+
+
 DBMS_TO_CLASS = {
+    'neo': _Neo4jBatchWriter,
     'neo4j': _Neo4jBatchWriter,
+    'Neo4j': _Neo4jBatchWriter,
+    'postgres': _PostgreSQLBatchWriter,
+    'postgresql': _PostgreSQLBatchWriter,
+    'PostgreSQL': _PostgreSQLBatchWriter,
+    'arango': _ArangoDBBatchWriter,
+    'arangodb': _ArangoDBBatchWriter,
+    'ArangoDB': _ArangoDBBatchWriter,
 }
 
 
@@ -1134,8 +1755,13 @@ def get_writer(
     outdir = output_directory or os.path.join('biocypher-out', timestamp())
     outdir = os.path.abspath(outdir)
 
-    if dbms == 'neo4j':
-        return _Neo4jBatchWriter(
+    writer = DBMS_TO_CLASS[dbms]
+
+    if not writer:
+        raise ValueError(f'Unknown dbms: {dbms}')
+
+    if writer is not None:
+        return writer(
             ontology=ontology,
             translator=translator,
             delimiter=dbms_config.get('delimiter'),
@@ -1143,12 +1769,15 @@ def get_writer(
             quote=dbms_config.get('quote_character'),
             output_directory=outdir,
             db_name=dbms_config.get('database_name'),
-            skip_bad_relationships=dbms_config.get('skip_bad_relationships'),
-            skip_duplicate_nodes=dbms_config.get('skip_duplicate_nodes'),
             import_call_bin_prefix=dbms_config.get('import_call_bin_prefix'),
             import_call_file_prefix=dbms_config.get('import_call_file_prefix'),
             wipe=dbms_config.get('wipe'),
             strict_mode=strict_mode,
+            skip_bad_relationships=dbms_config.get('skip_bad_relationships'
+                                                  ),  # neo4j
+            skip_duplicate_nodes=dbms_config.get('skip_duplicate_nodes'
+                                                ),  # neo4j
+            db_user=dbms_config.get('user'),  # psql
+            db_password=dbms_config.get('password'),  # psql
+            db_port=dbms_config.get('port'),  # psql
         )
-
-    return None

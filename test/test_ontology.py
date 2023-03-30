@@ -106,10 +106,10 @@ def test_show_full_ontology(hybrid_ontology):
     assert treevis is not None
 
 
-def test_write_ontology(hybrid_ontology, path):
-    passed = hybrid_ontology.show_ontology_structure(to_disk=path)
+def test_write_ontology(hybrid_ontology, tmp_path):
+    passed = hybrid_ontology.show_ontology_structure(to_disk=tmp_path)
 
-    f = os.path.join(path, 'ontology_structure.graphml')
+    f = os.path.join(tmp_path, 'ontology_structure.graphml')
 
     assert passed
     assert os.path.isfile(f)

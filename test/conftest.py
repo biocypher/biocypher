@@ -2,12 +2,18 @@ import os
 import random
 import string
 import tempfile
+import subprocess
 
+from neo4j.exceptions import ServiceUnavailable
 import pytest
 
 from biocypher import config as bcy_config
 from biocypher._core import BioCypher
-from biocypher._write import _Neo4jBatchWriter
+from biocypher._write import (
+    _Neo4jBatchWriter,
+    _ArangoDBBatchWriter,
+    _PostgreSQLBatchWriter,
+)
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._connect import _Neo4jDriver
 from biocypher._mapping import OntologyMapping
@@ -19,10 +25,20 @@ from biocypher._translate import Translator
 def pytest_addoption(parser):
 
     options = (
+        # neo4j
         ('database_name', 'The Neo4j database to be used for tests.'),
         ('user', 'Tests access Neo4j as this user.'),
         ('password', 'Password to access Neo4j.'),
         ('uri', 'URI of the Neo4j server.'),
+
+        # postgresl
+        (
+            'database_name_postgresql',
+            'The PostgreSQL database to be used for tests. Defaults to "postgresql-biocypher-test-TG2C7GsdNw".'
+        ),
+        ('user_postgresql', 'Tests access PostgreSQL as this user.'),
+        ('password_postgresql', 'Password to access PostgreSQL.'),
+        ('port_postgresql', 'Port of the PostgreSQL server.'),
     )
 
     for name, help_ in options:
@@ -41,28 +57,8 @@ def get_random_string(length):
     return ''.join(random.choice(letters) for _ in range(length))
 
 
-@pytest.fixture(name='path', scope='session')
-def path():
-    path = os.path.join(
-        tempfile.gettempdir(),
-        f'biocypher-test-{get_random_string(5)}',
-    )
-    os.makedirs(path, exist_ok=True)
-    return path
-
-
-@pytest.fixture(name='path_strict', scope='module')
-def path_strict():
-    path = os.path.join(
-        tempfile.gettempdir(),
-        f'biocypher-test-{get_random_string(5)}',
-    )
-    os.makedirs(path, exist_ok=True)
-    return path
-
-
 # biocypher node generator
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def _get_nodes(l: int) -> list:
     nodes = []
     for i in range(l):
@@ -93,7 +89,7 @@ def _get_nodes(l: int) -> list:
 
 
 # biocypher edge generator
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def _get_edges(l):
     edges = []
     for i in range(l):
@@ -188,12 +184,12 @@ def hybrid_ontology(ontology_mapping):
 
 # neo4j batch writer fixtures
 @pytest.fixture(scope='function')
-def bw(hybrid_ontology, translator, path):
+def bw(hybrid_ontology, translator, tmp_path):
 
     bw = _Neo4jBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
-        output_directory=path,
+        output_directory=tmp_path,
         delimiter=';',
         array_delimiter='|',
         quote="'",
@@ -202,19 +198,19 @@ def bw(hybrid_ontology, translator, path):
     yield bw
 
     # teardown
-    for f in os.listdir(path):
-        os.remove(os.path.join(path, f))
-    os.rmdir(path)
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)
 
 
 # neo4j batch writer fixtures
 @pytest.fixture(scope='function')
-def bw_tab(hybrid_ontology, translator, path):
+def bw_tab(hybrid_ontology, translator, tmp_path):
 
     bw_tab = _Neo4jBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
-        output_directory=path,
+        output_directory=tmp_path,
         delimiter='\\t',
         array_delimiter='|',
         quote="'",
@@ -223,18 +219,18 @@ def bw_tab(hybrid_ontology, translator, path):
     yield bw_tab
 
     # teardown
-    for f in os.listdir(path):
-        os.remove(os.path.join(path, f))
-    os.rmdir(path)
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)
 
 
 @pytest.fixture(scope='function')
-def bw_strict(hybrid_ontology, translator, path_strict):
+def bw_strict(hybrid_ontology, translator, tmp_path):
 
     bw = _Neo4jBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
-        output_directory=path_strict,
+        output_directory=tmp_path,
         delimiter=';',
         array_delimiter='|',
         quote="'",
@@ -244,14 +240,16 @@ def bw_strict(hybrid_ontology, translator, path_strict):
     yield bw
 
     # teardown
-    for f in os.listdir(path_strict):
-        os.remove(os.path.join(path_strict, f))
-    os.rmdir(path_strict)
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)
 
 
 # core instance fixture
-@pytest.fixture(name='core', scope='module')
-def create_core(request, path):
+@pytest.fixture(name='core', scope='function')
+def create_core(request, tmp_path):
+
+    # TODO why does the integration test use a different path than this fixture?
 
     marker = request.node.get_closest_marker('inject_core_args')
 
@@ -269,7 +267,7 @@ def create_core(request, path):
 
         core_args = {
             'schema_config_path': 'biocypher/_config/test_schema_config.yaml',
-            'output_directory': path,
+            'output_directory': tmp_path,
         }
         core_args.update(marker_args)
 
@@ -281,9 +279,14 @@ def create_core(request, path):
 
     yield c
 
+    # teardown
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)
+
 
 # neo4j parameters
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def neo4j_param(request):
 
     keys = (
@@ -303,11 +306,45 @@ def neo4j_param(request):
     return cli
 
 
+# skip test if neo4j is offline
+@pytest.fixture(autouse=True)
+def skip_if_offline_neo4j(request, neo4j_param, translator, hybrid_ontology):
+
+    marker = request.node.get_closest_marker('requires_neo4j')
+
+    if marker:
+
+        try:
+
+            marker_args = {}
+            # check if marker has attribute param
+            if marker and hasattr(marker, 'param'):
+
+                marker_args = marker.param
+
+            driver_args = {
+                'wipe': True,
+                'multi_db': True,
+                'translator': translator,
+                'ontology': hybrid_ontology,
+            }
+            driver_args.update(marker_args)
+            driver_args.update(neo4j_param)
+
+            driver_args['database_name'] = 'test'
+
+            _Neo4jDriver(**driver_args)
+
+        except ServiceUnavailable as e:
+
+            pytest.skip(f'Neo4j is offline: {e}')
+
+
 # neo4j driver fixture
-@pytest.fixture(name='driver', scope='module')
+@pytest.fixture(name='driver', scope='function')
 def create_driver(request, neo4j_param, translator, hybrid_ontology):
 
-    marker = request.node.get_closest_marker('inject_driver_args')
+    marker = None  # request.node.get_closest_marker('inject_driver_args')
 
     marker_args = {}
     # check if marker has attribute param
@@ -357,16 +394,128 @@ def create_driver(request, neo4j_param, translator, hybrid_ontology):
     d._driver.close()
 
 
-# skip test if neo4j is offline
-@pytest.fixture(autouse=True)
-def skip_if_offline(request):
+### postgresql ###
 
-    marker = request.node.get_closest_marker('requires_neo4j')
+
+@pytest.fixture(scope='session')
+def postgresql_param(request):
+
+    keys = (
+        'user_postgresql',
+        'password_postgresql',
+        'port_postgresql',
+    )
+
+    # get fallback parameters from biocypher config
+    param = bcy_config('postgresql')
+    cli = {}
+    for key in keys:
+        # remove '_postgresql' suffix
+        key_short = key[:-11]
+        # change into format of input parameters
+        cli[f'db_{key_short}'] = request.config.getoption(f'--{key}'
+                                                         ) or param[key_short]
+
+    # hardcoded string for test-db name. test-db will be created for testing and droped after testing.
+    # Do not take db_name from config to avoid accidental testing on the production database
+    cli['db_name'] = request.config.getoption(
+        '--database_name_postgresql'
+    ) or 'postgresql-biocypher-test-TG2C7GsdNw'
+
+    return cli
+
+
+# skip test if postgresql is offline
+@pytest.fixture(autouse=True)
+def skip_if_offline_postgresql(request, postgresql_param):
+
+    marker = request.node.get_closest_marker('requires_postgresql')
 
     if marker:
 
-        driver = request.getfixturevalue('driver')
+        params = postgresql_param
+        user, port, password = params['db_user'], params['db_port'], params[
+            'db_password']
 
-        if driver.status != 'db online':
+        # an empty command, just to test if connection is possible
+        command = f'PGPASSWORD={password} psql -c \'\' --port {port} --user {user}'
+        process = subprocess.run(command, shell=True)
 
-            pytest.skip('Requires connection to Neo4j server.')
+        # returncode is 0 when success
+        if process.returncode != 0:
+            pytest.skip('Requires psql and connection to Postgresql server.')
+
+
+@pytest.fixture(scope='function')
+def bw_comma_postgresql(
+    postgresql_param, hybrid_ontology, translator, tmp_path
+):
+
+    bw_comma = _PostgreSQLBatchWriter(
+        ontology=hybrid_ontology,
+        translator=translator,
+        output_directory=tmp_path,
+        delimiter=',',
+        **postgresql_param
+    )
+
+    yield bw_comma
+
+    # teardown
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)
+
+
+@pytest.fixture(scope='function')
+def bw_tab_postgresql(postgresql_param, hybrid_ontology, translator, tmp_path):
+
+    bw_tab = _PostgreSQLBatchWriter(
+        ontology=hybrid_ontology,
+        translator=translator,
+        output_directory=tmp_path,
+        delimiter='\\t',
+        **postgresql_param
+    )
+
+    yield bw_tab
+
+    # teardown
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)
+
+
+@pytest.fixture(scope='session')
+def create_database_postgres(postgresql_param):
+    params = postgresql_param
+    dbname, user, port, password = params['db_name'], params['db_user'], params[
+        'db_port'], params['db_password']
+
+    # create the database
+    command = f'PGPASSWORD={password} psql -c \'CREATE DATABASE "{dbname}";\' --port {port} --user {user}'
+    process = subprocess.run(command, shell=True)
+
+    yield dbname, user, port, password, process.returncode == 0  # 0 if success
+
+    # teardown
+    command = f'PGPASSWORD={password} psql -c \'DROP DATABASE "{dbname}";\' --port {port} --user {user}'
+    process = subprocess.run(command, shell=True)
+
+
+@pytest.fixture(scope='function')
+def bw_arango(hybrid_ontology, translator, tmp_path):
+
+    bw_arango = _ArangoDBBatchWriter(
+        ontology=hybrid_ontology,
+        translator=translator,
+        output_directory=tmp_path,
+        delimiter=',',
+    )
+
+    yield bw_arango
+
+    # teardown
+    for f in os.listdir(tmp_path):
+        os.remove(os.path.join(tmp_path, f))
+    os.rmdir(tmp_path)

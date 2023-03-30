@@ -29,7 +29,7 @@ from ._translate import Translator
 
 __all__ = ['BioCypher']
 
-SUPPORTED_DBMS = ['neo4j']
+SUPPORTED_DBMS = ['neo4j', 'postgresql']
 
 REQUIRED_CONFIG = [
     'dbms',
@@ -92,7 +92,7 @@ class BioCypher:
                 '`database_name` setting in the `biocypher_config.yaml` file '
                 'instead.'
             )
-            _config(**{'neo4j': {'database_name': db_name}})
+            _config(**{db_name: {'database_name': db_name}})
 
         # Load configuration
         self.base_config = _config('biocypher')

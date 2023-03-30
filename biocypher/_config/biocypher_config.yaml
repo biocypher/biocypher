@@ -94,3 +94,20 @@ neo4j:
 
   # import_call_bin_prefix: bin/
   # import_call_file_prefix: path/to/files/
+
+postgresql:
+  ### PostgreSQL configuration ###
+
+  # PostgreSQL connection credentials
+  database_name: postgres # DB name
+  user: postgres  # user name
+  password: postgres  # password
+  port: 5432 # port
+
+  # PostgreSQL import batch writer settings
+  quote_character: '"'
+  delimiter: '\t'
+  # import_call_bin_prefix: '' # path to "psql"
+  # import_call_file_prefix: '/path/to/files'
+
+  
