@@ -1433,9 +1433,18 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                 f.write(row)
 
             # add collection from schema config
-            collection = self.extended_schema[label].get(
-                'db_collection_name', None
-            )
+            if not self.extended_schema.get(label):
+
+                for k, v in self.extended_schema.items():
+                    if v.get('label_as_edge') == label:
+                        collection = v.get('db_collection_name', None)
+                        break
+
+            else:
+
+                collection = self.extended_schema[label].get(
+                    'db_collection_name', None
+                )
 
             # add file path to neo4 admin import statement
             self.import_call_edges.add((header_path, parts_path, collection))
