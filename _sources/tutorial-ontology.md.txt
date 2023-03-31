@@ -80,7 +80,7 @@ BioCypher provides a simple way of visualising the ontology hierarchy. This is
 useful for debugging and for getting a quick overview of the ontology and which
 parts are actually used in the knowledge graph to be created. To get an overview
 of the structure of our project, we can run the following command via the
-driver:
+interface:
 
 ```{code-block} python
 :caption: Visualising the ontology hierarchy
@@ -402,7 +402,7 @@ introduce the concept and then fuse the tail ontology there.
 
 The ontology adapter also accepts any arbitrary "head ontology" as a base
 ontology, but if none is provided, the Biolink model is used as the default head
-ontology. These options can be provided to the BioCypher driver as parameters,
+ontology. These options can be provided to the BioCypher interface as parameters,
 or as options in the BioCypher configuration file, which is the preferred method
 for transparency reasons:
 
