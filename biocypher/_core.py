@@ -332,8 +332,10 @@ class BioCypher:
         the `schema_config.yaml` and print them to the logger.
 
         Returns:
+
             Optional[Dict[str, List[str]]]: A dictionary of Biolink types
-                encountered without an entry in the `schema_config.yaml` file.
+            encountered without an entry in the `schema_config.yaml` file.
+            
         """
 
         mt = self._translator.get_missing_biolink_types()
