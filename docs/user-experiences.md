@@ -74,7 +74,7 @@ number of lines of code required for this procedure alone is around 8000.
 This task could have been achieved significantly faster and more efficiently 
 if we had had BioCypher five years ago.
 
-- Tunca Doğan, Department of Computer Engineering and Artificial Intelligence
+&mdash; Tunca Doğan, Department of Computer Engineering and Artificial Intelligence
 Engineering, Hacettepe University and Protein Function Development Team (UniProt
 database), European Molecular Biology Laboratory, European Bioinformatics
 Institute (EMBL-EBI)
@@ -114,7 +114,7 @@ interpretability. While spending 2.5 months to create a loose collection of
 scripts and directories for the initial project, I was able to obtain a
 structured result with BioCypher within 2 weeks.
 
-- Elias Farr, Institute for Computational Biomedicine, University Hospital
+&mdash; Elias Farr, Institute for Computational Biomedicine, University Hospital
 Heidelberg
 
 ```
