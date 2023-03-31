@@ -134,47 +134,105 @@ provided, the default value ‘biocypher-out’ will be used.</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._core.BioCypher.log_duplicates">
-<span class="sig-name descname"><span class="pre">log_duplicates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._core.BioCypher.log_duplicates" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">log_duplicates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.log_duplicates" title="Permalink to this definition"></a></dt>
 <dd><p>Get the set of duplicate nodes and edges encountered and print them to
 the logger.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._core.BioCypher.log_missing_bl_types">
-<span class="sig-name descname"><span class="pre">log_missing_bl_types</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._core.BioCypher.log_missing_bl_types" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">log_missing_bl_types</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.log_missing_bl_types" title="Permalink to this definition"></a></dt>
 <dd><p>Get the set of Biolink types encountered without an entry in
 the <cite>schema_config.yaml</cite> and print them to the logger.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>a set of missing Biolink types</p>
+<dd class="field-odd"><p><dl class="simple">
+<dt>A dictionary of Biolink types</dt><dd><p>encountered without an entry in the <cite>schema_config.yaml</cite> file.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>set</p>
+<dd class="field-even"><p>Optional[Dict[str, List[str]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._core.BioCypher.merge_edges">
+<span class="sig-name descname"><span class="pre">merge_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.merge_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Merge edges into database. Either takes an iterable of tuples (if given,
+translates to <code class="docutils literal notranslate"><span class="pre">BioCypherEdge</span></code> objects) or an iterable of
+<code class="docutils literal notranslate"><span class="pre">BioCypherEdge</span></code> objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>edges</strong> (<em>iterable</em>) – An iterable of edges to merge into the database.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if successful.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._core.BioCypher.merge_nodes">
-<span class="sig-name descname"><span class="pre">merge_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._core.BioCypher.merge_nodes" title="Permalink to this definition"></a></dt>
-<dd><p>Merge nodes into database.</p>
+<span class="sig-name descname"><span class="pre">merge_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.merge_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Merge nodes into database. Either takes an iterable of tuples (if given,
+translates to <code class="docutils literal notranslate"><span class="pre">BioCypherNode</span></code> objects) or an iterable of
+<code class="docutils literal notranslate"><span class="pre">BioCypherNode</span></code> objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>iterable</em>) – An iterable of nodes to merge into the database.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if successful.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._core.BioCypher.reverse_translate_query">
 <span class="sig-name descname"><span class="pre">reverse_translate_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.reverse_translate_query" title="Permalink to this definition"></a></dt>
 <dd><p>Reverse translate a query from its BioCypher equivalent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>query</strong> (<em>str</em>) – The BioCypher query to reverse translate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The original query.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._core.BioCypher.reverse_translate_term">
 <span class="sig-name descname"><span class="pre">reverse_translate_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.reverse_translate_term" title="Permalink to this definition"></a></dt>
 <dd><p>Reverse translate a term from its BioCypher equivalent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>term</strong> (<em>str</em>) – The BioCypher term to reverse translate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The original term.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._core.BioCypher.show_ontology_structure">
-<span class="sig-name descname"><span class="pre">show_ontology_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._core.BioCypher.show_ontology_structure" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">show_ontology_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.show_ontology_structure" title="Permalink to this definition"></a></dt>
 <dd><p>Show the ontology structure using treelib or write to GRAPHML file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -194,18 +252,53 @@ edges that are relevant to the extended schema will be shown.</p></li>
 <dt class="sig sig-object py" id="biocypher._core.BioCypher.translate_query">
 <span class="sig-name descname"><span class="pre">translate_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.translate_query" title="Permalink to this definition"></a></dt>
 <dd><p>Translate a query to its BioCypher equivalent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>query</strong> (<em>str</em>) – The query to translate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The BioCypher equivalent of the query.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._core.BioCypher.translate_term">
 <span class="sig-name descname"><span class="pre">translate_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.translate_term" title="Permalink to this definition"></a></dt>
 <dd><p>Translate a term to its BioCypher equivalent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>term</strong> (<em>str</em>) – The term to translate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The BioCypher equivalent of the term.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._core.BioCypher.write_edges">
-<span class="sig-name descname"><span class="pre">write_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._core.BioCypher.write_edges" title="Permalink to this definition"></a></dt>
-<dd><p>Write edges to database.</p>
+<span class="sig-name descname"><span class="pre">write_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.write_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Write edges to database. Either takes an iterable of tuples (if given,
+translates to <code class="docutils literal notranslate"><span class="pre">BioCypherEdge</span></code> objects) or an iterable of
+<code class="docutils literal notranslate"><span class="pre">BioCypherEdge</span></code> objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>edges</strong> (<em>iterable</em>) – An iterable of edges to write to the database.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if successful.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -217,8 +310,21 @@ DBMS.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._core.BioCypher.write_nodes">
-<span class="sig-name descname"><span class="pre">write_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._core.BioCypher.write_nodes" title="Permalink to this definition"></a></dt>
-<dd><p>Write nodes to database.</p>
+<span class="sig-name descname"><span class="pre">write_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.write_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Write nodes to database. Either takes an iterable of tuples (if given,
+translates to <code class="docutils literal notranslate"><span class="pre">BioCypherNode</span></code> objects) or an iterable of
+<code class="docutils literal notranslate"><span class="pre">BioCypherNode</span></code> objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>iterable</em>) – An iterable of nodes to write to the database.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if successful.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
