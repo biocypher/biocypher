@@ -405,10 +405,14 @@ schema configuration, and the ontology class name is given in the <code class="d
 field. The name given in the <code class="docutils literal notranslate"><span class="pre">synonym_for</span></code> field must be an existing class name
 (in this example, a real Biolink class).</p>
 </div>
-<p>We can visualise the structure of the ontology as we have before using
-<code class="docutils literal notranslate"><span class="pre">driver.show_ontology_structure()</span></code>, and we observe that the <code class="docutils literal notranslate"><span class="pre">complex</span></code> class is
-now a synonym for the <code class="docutils literal notranslate"><span class="pre">macromolecular</span> <span class="pre">complex</span></code> class (their being synonyms
-indicated as an equals sign):</p>
+<p>We can visualise the structure of the ontology as we have before. Instead of
+using <code class="docutils literal notranslate"><span class="pre">bc.show_ontology_structure()</span></code> however, we can use the <code class="docutils literal notranslate"><span class="pre">bc.summary()</span></code>
+method to show the structure and simultaneously check for duplicates and missing
+labels. This is useful for debugging purposes, and we can see that the import
+was completed without encountering duplicates, and all labels in the input are
+accounted for in the schema configuration. We also observe in the tree that the
+<code class="docutils literal notranslate"><span class="pre">complex</span></code> class is now a synonym for the <code class="docutils literal notranslate"><span class="pre">macromolecular</span> <span class="pre">complex</span></code> class (their
+being synonyms indicated as an equals sign):</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Showing ontology structure based on https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl
 entity
 ├── association

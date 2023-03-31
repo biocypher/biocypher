@@ -140,10 +140,10 @@ the logger.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="biocypher._core.BioCypher.log_missing_bl_types">
-<span class="sig-name descname"><span class="pre">log_missing_bl_types</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.log_missing_bl_types" title="Permalink to this definition"></a></dt>
-<dd><p>Get the set of Biolink types encountered without an entry in
-the <cite>schema_config.yaml</cite> and print them to the logger.</p>
+<dt class="sig sig-object py" id="biocypher._core.BioCypher.log_missing_input_labels">
+<span class="sig-name descname"><span class="pre">log_missing_input_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.log_missing_input_labels" title="Permalink to this definition"></a></dt>
+<dd><p>Get the set of input labels encountered without an entry in the
+<cite>schema_config.yaml</cite> and print them to the logger.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A dictionary of Biolink types
@@ -243,6 +243,13 @@ edges that are relevant to the extended schema will be shown.</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._core.BioCypher.summary">
+<span class="sig-name descname"><span class="pre">summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#biocypher._core.BioCypher.summary" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper for showing ontology structure and logging duplicates and
+missing input types.</p>
 </dd></dl>
 
 <dl class="py method">
