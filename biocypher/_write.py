@@ -87,8 +87,8 @@ class _BatchWriter(ABC):
             Path prefix for the admin import call binary.
 
         import_call_file_prefix:
-            Path prefix for the data files (headers and parts) in the admin
-            import call.
+            Path prefix for the data files (headers and parts) in the import 
+            call.
 
         wipe:
             Whether to force import (removing existing DB content). (Specific to Neo4j.)
