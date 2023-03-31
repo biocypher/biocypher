@@ -17,17 +17,22 @@ health and disease.
 
 :::
 
-> Our project, Impact of Genomic Variation on Function (IGVF, https://igvf.org),
-> is building a massive biological knowledge graph to attempt to link human
-> variation and disease with genomic datasets at the single-cell level. We are
-> creating a user-facing API (and eventually UI) that will access this graph.
-> BioCypher, which acts as an intermediary between Biolink and graph databases (we
-> are using ArangoDB) has been instrumental in helping us design the schema and
-> move our project forward. Specifically, it provides a framework we can use to
-> parse the dozens of data files and formats into a Biolink-inspired schema.
->
-> - Ben Hitz, Director of Genomics Data Resources, Project Manager ENCODE,
-> Stanford University
+```{admonition} Testimonial
+:type: hint
+
+Our project, Impact of Genomic Variation on Function (IGVF, https://igvf.org),
+is building a massive biological knowledge graph to attempt to link human
+variation and disease with genomic datasets at the single-cell level. We are
+creating a user-facing API (and eventually UI) that will access this graph.
+BioCypher, which acts as an intermediary between Biolink and graph databases (we
+are using ArangoDB) has been instrumental in helping us design the schema and
+move our project forward. Specifically, it provides a framework we can use to
+parse the dozens of data files and formats into a Biolink-inspired schema.  
+
+&mdash; Ben Hitz, Director of Genomics Data Resources, Project Manager ENCODE,
+Stanford University
+
+```
 
 The BioCypher pipeline used to build the knowledge graph uses several adapters
 for genetics data sources; an overview is available in our
@@ -50,27 +55,31 @@ user queries.
 
 :::
 
+```{admonition} Testimonial
+:type: hint
 
-> We built CROssBAR v1 on NoSQL since property graph databases were quite new at
-> the time and there was no framework to help us establish the system. We used an
-> available NoSQL solution to house different layers of biological/biomedical data
-> as independent collections. CROssBAR’s “small-scale knowledge graph (KG)
-> construction module” queries each collection separately, collects the data, and
-> merges the data points according to their mappings (which are held in the
-> database as well, as cross-references), eliminates redundancy, queries each and
-> every collection again with the entries retrieved in the previous step, and
-> repeats all subsequent steps. Given that user queries can start with a single or
-> multiple genes/proteins, compounds/drugs, diseases, phenotypes, pathways, or any
-> combination of those, this procedure gets extremely complicated, requiring an
-> average of 64 NoSQL queries to construct one single user-specific KG. The total
-> number of lines of code required for this procedure alone is around 8000.
-> This task could have been achieved significantly faster and more efficiently 
-> if we had had BioCypher five years ago.
->
-> - Tunca Doğan, Department of Computer Engineering and Artificial Intelligence
-> Engineering, Hacettepe University and Protein Function Development Team (UniProt
-> database), European Molecular Biology Laboratory, European Bioinformatics
-> Institute (EMBL-EBI)
+We built CROssBAR v1 on NoSQL since property graph databases were quite new at
+the time and there was no framework to help us establish the system. We used an
+available NoSQL solution to house different layers of biological/biomedical data
+as independent collections. CROssBAR’s “small-scale knowledge graph (KG)
+construction module” queries each collection separately, collects the data, and
+merges the data points according to their mappings (which are held in the
+database as well, as cross-references), eliminates redundancy, queries each and
+every collection again with the entries retrieved in the previous step, and
+repeats all subsequent steps. Given that user queries can start with a single or
+multiple genes/proteins, compounds/drugs, diseases, phenotypes, pathways, or any
+combination of those, this procedure gets extremely complicated, requiring an
+average of 64 NoSQL queries to construct one single user-specific KG. The total
+number of lines of code required for this procedure alone is around 8000.
+This task could have been achieved significantly faster and more efficiently 
+if we had had BioCypher five years ago.
+
+- Tunca Doğan, Department of Computer Engineering and Artificial Intelligence
+Engineering, Hacettepe University and Protein Function Development Team (UniProt
+database), European Molecular Biology Laboratory, European Bioinformatics
+Institute (EMBL-EBI)
+
+```
 
 Using BioCypher, CROssBAR v2 will be a flexible property graph database
 comprised of single input adapters for each data source. As above, you can see
@@ -88,22 +97,27 @@ metabolic-enzymatic interactions.
 
 :::
 
-> In the metalinks project, we build a knowledge graph (KG) that incorporates
-> attributes of metabolites, proteins and their interactions to ultimately study
-> cell-cell communication. We use two types of interaction between metabolites and
-> proteins, I) production and degradation of metabolites by enzymes and II)
-> interaction of metabolites with protein receptors. During the KG assembly we
-> access multiple databases that provide information in diverse formats. BioCypher
-> takes all of these inputs, gives them a reasonable, reproducible structure, and
-> facilitates proper versioning. The KG produced by BioCypher can be easily
-> contextualized to biological questions aiming for specific tissues, diseases or
-> metabolite properties, which facilitates downstream analysis and
-> interpretability. While spending 2.5 months to create a loose collection of
-> scripts and directories for the initial project, I was able to obtain a
-> structured result with BioCypher within 2 weeks.
->
-> - Elias Farr, Institute for Computational Biomedicine, University Hospital
-> Heidelberg
+```{admonition} Testimonial
+:type: hint
+
+In the metalinks project, we build a knowledge graph (KG) that incorporates
+attributes of metabolites, proteins and their interactions to ultimately study
+cell-cell communication. We use two types of interaction between metabolites and
+proteins, I) production and degradation of metabolites by enzymes and II)
+interaction of metabolites with protein receptors. During the KG assembly we
+access multiple databases that provide information in diverse formats. BioCypher
+takes all of these inputs, gives them a reasonable, reproducible structure, and
+facilitates proper versioning. The KG produced by BioCypher can be easily
+contextualized to biological questions aiming for specific tissues, diseases or
+metabolite properties, which facilitates downstream analysis and
+interpretability. While spending 2.5 months to create a loose collection of
+scripts and directories for the initial project, I was able to obtain a
+structured result with BioCypher within 2 weeks.
+
+- Elias Farr, Institute for Computational Biomedicine, University Hospital
+Heidelberg
+
+```
 
 The BioCypher pipeline used to build the knowledge graph uses several adapters,
 some of which overlap with the CROssBAR project, which helps synergising
