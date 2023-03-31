@@ -103,15 +103,17 @@ repositories (“storage”) and (2) project-specific knowledge graph creation
 (“analysis”).</p>
 <section id="a-knowledge-graph-for-impact-of-genomic-variation-on-function-igvf">
 <h2>A Knowledge Graph for Impact of Genomic Variation on Function (IGVF)<a class="headerlink" href="#a-knowledge-graph-for-impact-of-genomic-variation-on-function-igvf" title="Permalink to this heading"></a></h2>
-<p>The Impact of Genomic Variation on Function (IGVF) project aims to provide a
-comprehensive and integrated view of the impact of genomic variation on human
-health and disease.</p>
 <div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 Impact of Genomic Variation on Function (IGVF) </div>
+<p class="sd-card-text">The Impact of Genomic Variation on Function (IGVF) project aims to provide a
+comprehensive and integrated view of the impact of genomic variation on human
+health and disease.</p>
+</div>
+<a class="sd-stretched-link reference external" href="https://www.igvf.org/"></a></div>
 <blockquote>
-<div><p class="sd-card-text">Our project, Impact of Genomic Variation on Function (IGVF, https://igvf.org),
+<div><p>Our project, Impact of Genomic Variation on Function (IGVF, https://igvf.org),
 is building a massive biological knowledge graph to attempt to link human
 variation and disease with genomic datasets at the single-cell level. We are
 creating a user-facing API (and eventually UI) that will access this graph.
@@ -119,15 +121,11 @@ BioCypher, which acts as an intermediary between Biolink and graph databases (we
 are using ArangoDB) has been instrumental in helping us design the schema and
 move our project forward. Specifically, it provides a framework we can use to
 parse the dozens of data files and formats into a Biolink-inspired schema.</p>
-</div></blockquote>
-</div>
-<div class="sd-card-footer docutils">
 <ul class="simple">
-<li><p class="sd-card-text">Ben Hitz, Director of Genomics Data Resources, Project Manager ENCODE,
+<li><p>Ben Hitz, Director of Genomics Data Resources, Project Manager ENCODE,
 Stanford University</p></li>
 </ul>
-</div>
-<a class="sd-stretched-link reference external" href="https://www.igvf.org/"></a></div>
+</div></blockquote>
 <p>The BioCypher pipeline used to build the knowledge graph uses several adapters
 for genetics data sources; an overview is available in our
 <a class="reference internal" href="adapters.html#metagraph"><span class="std std-ref">meta-graph</span></a> and on the <a class="reference external" href="https://github.com/orgs/biocypher/projects/3">GitHub Components
@@ -138,17 +136,19 @@ pipeline boasts a Docker Compose workflow that builds the graph and the API
 </section>
 <section id="drug-repurposing-with-crossbar">
 <h2>Drug Repurposing with CROssBAR<a class="headerlink" href="#drug-repurposing-with-crossbar" title="Permalink to this heading"></a></h2>
-<p>CROssBAR is a biomedical data integration and representation project. CROssBAR
-knowledge graphs incorporate relevant genes-proteins, molecular interactions,
-pathways, phenotypes, diseases, as well as known/predicted drugs and bioactive
-compounds, and they are constructed on-the-fly based on simple non-programmatic
-user queries.</p>
 <div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 CROssBAR</div>
+<p class="sd-card-text">CROssBAR is a biomedical data integration and representation project. CROssBAR
+knowledge graphs incorporate relevant genes-proteins, molecular interactions,
+pathways, phenotypes, diseases, as well as known/predicted drugs and bioactive
+compounds, and they are constructed on-the-fly based on simple non-programmatic
+user queries.</p>
+</div>
+<a class="sd-stretched-link reference external" href="https://crossbar.kansil.org/"></a></div>
 <blockquote>
-<div><p class="sd-card-text">We built CROssBAR v1 on NoSQL since property graph databases were quite new at
+<div><p>We built CROssBAR v1 on NoSQL since property graph databases were quite new at
 the time and there was no framework to help us establish the system. We used an
 available NoSQL solution to house different layers of biological/biomedical data
 as independent collections. CROssBAR’s “small-scale knowledge graph (KG)
@@ -163,17 +163,13 @@ average of 64 NoSQL queries to construct one single user-specific KG. The total
 number of lines of code required for this procedure alone is around 8000.
 This task could have been achieved significantly faster and more efficiently
 if we had had BioCypher five years ago.</p>
-</div></blockquote>
-</div>
-<div class="sd-card-footer docutils">
 <ul class="simple">
-<li><p class="sd-card-text">Tunca Doğan, Department of Computer Engineering and Artificial Intelligence
+<li><p>Tunca Doğan, Department of Computer Engineering and Artificial Intelligence
 Engineering, Hacettepe University and Protein Function Development Team (UniProt
 database), European Molecular Biology Laboratory, European Bioinformatics
 Institute (EMBL-EBI)</p></li>
 </ul>
-</div>
-<a class="sd-stretched-link reference external" href="https://crossbar.kansil.org/"></a></div>
+</div></blockquote>
 <p>Using BioCypher, CROssBAR v2 will be a flexible property graph database
 comprised of single input adapters for each data source. As above, you can see
 its current state in the <a class="reference internal" href="adapters.html#metagraph"><span class="std std-ref">meta-graph</span></a> and on the <a class="reference external" href="https://github.com/orgs/biocypher/projects/3">GitHub Components
@@ -181,14 +177,16 @@ Board</a> (pipelines column).</p>
 </section>
 <section id="builing-a-knowledge-graph-for-contextualised-metabolic-enzymatic-interactions">
 <h2>Builing a Knowledge Graph for Contextualised Metabolic-Enzymatic Interactions<a class="headerlink" href="#builing-a-knowledge-graph-for-contextualised-metabolic-enzymatic-interactions" title="Permalink to this heading"></a></h2>
-<p>The metalinks project aims to build a knowledge graph for contextualised
-metabolic-enzymatic interactions.</p>
 <div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 metalinks</div>
+<p class="sd-card-text">The metalinks project aims to build a knowledge graph for contextualised
+metabolic-enzymatic interactions.</p>
+</div>
+<a class="sd-stretched-link reference external" href="https://github.com/biocypher/metalinks"></a></div>
 <blockquote>
-<div><p class="sd-card-text">In the metalinks project, we build a knowledge graph (KG) that incorporates
+<div><p>In the metalinks project, we build a knowledge graph (KG) that incorporates
 attributes of metabolites, proteins and their interactions to ultimately study
 cell-cell communication. We use two types of interaction between metabolites and
 proteins, I) production and degradation of metabolites by enzymes and II)
@@ -201,15 +199,11 @@ metabolite properties, which facilitates downstream analysis and
 interpretability. While spending 2.5 months to create a loose collection of
 scripts and directories for the initial project, I was able to obtain a
 structured result with BioCypher within 2 weeks.</p>
-</div></blockquote>
-</div>
-<div class="sd-card-footer docutils">
 <ul class="simple">
-<li><p class="sd-card-text">Elias Farr, Institute for Computational Biomedicine, University Hospital
+<li><p>Elias Farr, Institute for Computational Biomedicine, University Hospital
 Heidelberg</p></li>
 </ul>
-</div>
-<a class="sd-stretched-link reference external" href="https://github.com/biocypher/metalinks"></a></div>
+</div></blockquote>
 <p>The BioCypher pipeline used to build the knowledge graph uses several adapters,
 some of which overlap with the CROssBAR project, which helps synergising
 maintenance efforts. An overview is available in our
