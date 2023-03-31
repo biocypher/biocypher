@@ -326,16 +326,17 @@ class BioCypher:
 
     # OVERVIEW AND CONVENIENCE METHODS ###
 
-    def log_missing_bl_types(self) -> Optional[Dict[str, List[str]]]:
+    def log_missing_input_labels(self) -> Optional[Dict[str, List[str]]]:
         """
-        Get the set of Biolink types encountered without an entry in
-        the `schema_config.yaml` and print them to the logger.
+
+        Get the set of input labels encountered without an entry in the
+        `schema_config.yaml` and print them to the logger.
 
         Returns:
 
             Optional[Dict[str, List[str]]]: A dictionary of Biolink types
             encountered without an entry in the `schema_config.yaml` file.
-            
+
         """
 
         mt = self._translator.get_missing_biolink_types()
@@ -354,7 +355,7 @@ class BioCypher:
             return mt
 
         else:
-            logger.info('No missing Biolink types in input.')
+            logger.info('No missing labels in input.')
             return None
 
     def log_duplicates(self) -> None:
@@ -457,6 +458,16 @@ class BioCypher:
         self.start_ontology()
 
         return self._translator.translate_term(term)
+    
+    def summary(self) -> None:
+        """
+        Wrapper for showing ontology structure and logging duplicates and
+        missing input types.
+        """
+
+        self.show_ontology_structure()
+        self.log_duplicates()
+        self.log_missing_input_labels()
 
     def reverse_translate_term(self, term: str) -> str:
         """

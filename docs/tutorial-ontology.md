@@ -340,10 +340,14 @@ field. The name given in the `synonym_for` field must be an existing class name
 
 ```
 
-We can visualise the structure of the ontology as we have before using
-`driver.show_ontology_structure()`, and we observe that the `complex` class is
-now a synonym for the `macromolecular complex` class (their being synonyms
-indicated as an equals sign):
+We can visualise the structure of the ontology as we have before. Instead of
+using `bc.show_ontology_structure()` however, we can use the `bc.summary()`
+method to show the structure and simultaneously check for duplicates and missing
+labels. This is useful for debugging purposes, and we can see that the import
+was completed without encountering duplicates, and all labels in the input are
+accounted for in the schema configuration. We also observe in the tree that the
+`complex` class is now a synonym for the `macromolecular complex` class (their
+being synonyms indicated as an equals sign):
 
 ```{code-block} text
 

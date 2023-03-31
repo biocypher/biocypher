@@ -57,8 +57,8 @@ def main():
     # Write command line call
     bc.write_import_call()
 
-    # Visualise ontology schema
-    bc.show_ontology_structure()
+    # Visualise ontology schema and log duplicates / missing labels
+    bc.summary()
 
 
 if __name__ == '__main__':
