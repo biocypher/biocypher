@@ -24,6 +24,7 @@ indicate the state of development: ``Planned``, ``In progress``, ``Existing``,
 and ``Ideas``.  If you would like to add or request an adapter that is not yet
 listed, please open a new issue and we will add it to the project view.
 
+(metagraph)=
 ## BioCypher meta-graph
 
 ::::{grid} 1

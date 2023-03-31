@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Experiences &mdash; BioCypher  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/design-tabs.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Get Involved!" href="get-involved.html" />
+    <link rel="prev" title="Introduction" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="contents.html" class="icon icon-home">
+            BioCypher
+          </a>
+              <div class="version">
+                0.5.7
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Experiences</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#a-knowledge-graph-for-impact-of-genomic-variation-on-function-igvf">A Knowledge Graph for Impact of Genomic Variation on Function (IGVF)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#drug-repurposing-with-crossbar">Drug Repurposing with CROssBAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#builing-a-knowledge-graph-for-contextualised-metabolic-enzymatic-interactions">Builing a Knowledge Graph for Contextualised Metabolic-Enzymatic Interactions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="get-involved.html">Get Involved!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#configuration">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">BioCypher Tutorial - Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">BioCypher Tutorial - Handling Ontologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-adapter.html">BioCypher Tutorial - Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="contents.html">BioCypher</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">User Experiences</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/user-experiences.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="user-experiences">
+<h1>User Experiences<a class="headerlink" href="#user-experiences" title="Permalink to this heading"></a></h1>
+<p>To give an overview of the capabilities of the framework and possible use cases,
+we have collected a number of user experiences from the community. The two major
+categories of BioCypher usage are (1) creation and maintenance of knowledge
+repositories (“storage”) and (2) project-specific knowledge graph creation
+(“analysis”).</p>
+<section id="a-knowledge-graph-for-impact-of-genomic-variation-on-function-igvf">
+<h2>A Knowledge Graph for Impact of Genomic Variation on Function (IGVF)<a class="headerlink" href="#a-knowledge-graph-for-impact-of-genomic-variation-on-function-igvf" title="Permalink to this heading"></a></h2>
+<p>The Impact of Genomic Variation on Function (IGVF) project aims to provide a
+comprehensive and integrated view of the impact of genomic variation on human
+health and disease.</p>
+<div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Impact of Genomic Variation on Function (IGVF) </div>
+<blockquote>
+<div><p class="sd-card-text">Our project, Impact of Genomic Variation on Function (IGVF, https://igvf.org),
+is building a massive biological knowledge graph to attempt to link human
+variation and disease with genomic datasets at the single-cell level. We are
+creating a user-facing API (and eventually UI) that will access this graph.
+BioCypher, which acts as an intermediary between Biolink and graph databases (we
+are using ArangoDB) has been instrumental in helping us design the schema and
+move our project forward. Specifically, it provides a framework we can use to
+parse the dozens of data files and formats into a Biolink-inspired schema.</p>
+</div></blockquote>
+</div>
+<div class="sd-card-footer docutils">
+<ul class="simple">
+<li><p class="sd-card-text">Ben Hitz, Director of Genomics Data Resources, Project Manager ENCODE,
+Stanford University</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link reference external" href="https://www.igvf.org/"></a></div>
+<p>The BioCypher pipeline used to build the knowledge graph uses several adapters
+for genetics data sources; an overview is available in our
+<a class="reference internal" href="adapters.html#metagraph"><span class="std std-ref">meta-graph</span></a> and on the <a class="reference external" href="https://github.com/orgs/biocypher/projects/3">GitHub Components
+Board</a> (pipelines column). The
+pipeline boasts a Docker Compose workflow that builds the graph and the API
+(using <a class="reference external" href="https://trpc.io/">tRPC</a>), and is available on
+<a class="reference external" href="https://github.com/IGVF-DACC/igvf-catalog">GitHub</a>.</p>
+</section>
+<section id="drug-repurposing-with-crossbar">
+<h2>Drug Repurposing with CROssBAR<a class="headerlink" href="#drug-repurposing-with-crossbar" title="Permalink to this heading"></a></h2>
+<p>CROssBAR is a biomedical data integration and representation project. CROssBAR
+knowledge graphs incorporate relevant genes-proteins, molecular interactions,
+pathways, phenotypes, diseases, as well as known/predicted drugs and bioactive
+compounds, and they are constructed on-the-fly based on simple non-programmatic
+user queries.</p>
+<div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+CROssBAR</div>
+<blockquote>
+<div><p class="sd-card-text">We built CROssBAR v1 on NoSQL since property graph databases were quite new at
+the time and there was no framework to help us establish the system. We used an
+available NoSQL solution to house different layers of biological/biomedical data
+as independent collections. CROssBAR’s “small-scale knowledge graph (KG)
+construction module” queries each collection separately, collects the data, and
+merges the data points according to their mappings (which are held in the
+database as well, as cross-references), eliminates redundancy, queries each and
+every collection again with the entries retrieved in the previous step, and
+repeats all subsequent steps. Given that user queries can start with a single or
+multiple genes/proteins, compounds/drugs, diseases, phenotypes, pathways, or any
+combination of those, this procedure gets extremely complicated, requiring an
+average of 64 NoSQL queries to construct one single user-specific KG. The total
+number of lines of code required for this procedure alone is around 8000.
+This task could have been achieved significantly faster and more efficiently
+if we had had BioCypher five years ago.</p>
+</div></blockquote>
+</div>
+<div class="sd-card-footer docutils">
+<ul class="simple">
+<li><p class="sd-card-text">Tunca Doğan, Department of Computer Engineering and Artificial Intelligence
+Engineering, Hacettepe University and Protein Function Development Team (UniProt
+database), European Molecular Biology Laboratory, European Bioinformatics
+Institute (EMBL-EBI)</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link reference external" href="https://crossbar.kansil.org/"></a></div>
+<p>Using BioCypher, CROssBAR v2 will be a flexible property graph database
+comprised of single input adapters for each data source. As above, you can see
+its current state in the <a class="reference internal" href="adapters.html#metagraph"><span class="std std-ref">meta-graph</span></a> and on the <a class="reference external" href="https://github.com/orgs/biocypher/projects/3">GitHub Components
+Board</a> (pipelines column).</p>
+</section>
+<section id="builing-a-knowledge-graph-for-contextualised-metabolic-enzymatic-interactions">
+<h2>Builing a Knowledge Graph for Contextualised Metabolic-Enzymatic Interactions<a class="headerlink" href="#builing-a-knowledge-graph-for-contextualised-metabolic-enzymatic-interactions" title="Permalink to this heading"></a></h2>
+<p>The metalinks project aims to build a knowledge graph for contextualised
+metabolic-enzymatic interactions.</p>
+<div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+metalinks</div>
+<blockquote>
+<div><p class="sd-card-text">In the metalinks project, we build a knowledge graph (KG) that incorporates
+attributes of metabolites, proteins and their interactions to ultimately study
+cell-cell communication. We use two types of interaction between metabolites and
+proteins, I) production and degradation of metabolites by enzymes and II)
+interaction of metabolites with protein receptors. During the KG assembly we
+access multiple databases that provide information in diverse formats. BioCypher
+takes all of these inputs, gives them a reasonable, reproducible structure, and
+facilitates proper versioning. The KG produced by BioCypher can be easily
+contextualized to biological questions aiming for specific tissues, diseases or
+metabolite properties, which facilitates downstream analysis and
+interpretability. While spending 2.5 months to create a loose collection of
+scripts and directories for the initial project, I was able to obtain a
+structured result with BioCypher within 2 weeks.</p>
+</div></blockquote>
+</div>
+<div class="sd-card-footer docutils">
+<ul class="simple">
+<li><p class="sd-card-text">Elias Farr, Institute for Computational Biomedicine, University Hospital
+Heidelberg</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link reference external" href="https://github.com/biocypher/metalinks"></a></div>
+<p>The BioCypher pipeline used to build the knowledge graph uses several adapters,
+some of which overlap with the CROssBAR project, which helps synergising
+maintenance efforts. An overview is available in our
+<a class="reference internal" href="adapters.html#metagraph"><span class="std std-ref">meta-graph</span></a> and on the <a class="reference external" href="https://github.com/orgs/biocypher/projects/3">GitHub Components
+Board</a> (pipelines column).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="get-involved.html" class="btn btn-neutral float-right" title="Get Involved!" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2023, BioCypher developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
