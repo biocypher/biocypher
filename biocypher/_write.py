@@ -1743,10 +1743,25 @@ def get_writer(
     strict_mode: bool,
 ):
     """
-    Function to return the writer class.
+    Function to return the writer class based on the selection in the config
+    file.
+
+    Args:
+
+        dbms: the database management system; for options, see DBMS_TO_CLASS.
+
+        translator: the Translator object.
+
+        ontology: the Ontology object.
+
+        output_directory: the directory to write the output files to.
+
+        strict_mode: whether to use strict mode.
 
     Returns:
-        class: the writer class
+
+        instance: an instance of the selected writer class.
+
     """
 
     dbms_config = _config(dbms)
