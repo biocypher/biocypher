@@ -72,3 +72,18 @@ our paper!
    yields a consistent semantic basis for downstream analyses. Through
    unambiguous and simple “low-code” configuration, a reproducible knowledge
    graph can be created and shared for every specific task.
+
+=================
+Mission Statement
+=================
+
+We aim to **enable access to versatile and powerful knowledge graphs for as many
+researchers as possible**. Making biomedical knowledge "their own" is often a
+privilege of the companies and groups that can afford individuals or teams
+working on knowledge representation in a dedicated manner. With BioCypher, we
+aim to change that. To achieve this, we have developed a framework that
+facilitates the creation of knowledge graphs that are informed by the latest
+developments in the field of biomedical knowledge representation. However, to
+make this framework truly accessible and comprehensive, we need the input of the
+biomedical community. We are therefore inviting you to join us in this
+endeavour!
