@@ -40,6 +40,37 @@ REQUIRED_CONFIG = [
 
 
 class BioCypher:
+    """
+    Orchestration of BioCypher operations. Instantiate this class to interact
+    with BioCypher.
+
+    Args:
+
+        dbms (str): The database management system to use. For supported
+            systems see SUPPORTED_DBMS.
+
+        offline (bool): Whether to run in offline mode. If True, no
+            connection to the database will be made.
+
+        strict_mode (bool): Whether to run in strict mode. If True, the
+            translator will raise an error if a node or edge does not
+            provide source, version, and licence information.
+
+        biocypher_config_path (str): Path to the BioCypher config file.
+
+        schema_config_path (str): Path to the user schema config
+            file.
+
+        head_ontology (dict): The head ontology defined by URL ('url') and root
+            node ('root_node').
+
+        tail_ontologies (dict): The tail ontologies defined by URL and
+            join nodes for both head and tail ontology.
+
+        output_directory (str): Path to the output directory. If not
+            provided, the default value 'biocypher-out' will be used.
+
+    """
     def __init__(
         self,
         dbms: str = None,
@@ -53,34 +84,6 @@ class BioCypher:
         # legacy params
         db_name: str = None,
     ):
-        """
-        Orchestration of BioCypher operations.
-
-        Args:
-
-            dbms (str): The database management system to use. For supported
-                systems see SUPPORTED_DBMS.
-
-            offline (bool): Whether to run in offline mode. If True, no
-                connection to the database will be made.
-
-            strict_mode (bool): Whether to run in strict mode. If True, the
-                translator will raise an error if a node or edge does not
-                provide source, version, and licence information.
-
-            user_schema_config_path (str): Path to the user schema config
-                file.
-
-            head_ontology (dict): The head ontology defined by URL and root
-                node.
-
-            tail_ontologies (dict): The tail ontologies defined by URL and
-                join nodes for both head and tail ontology.
-
-            output_directory (str): Path to the output directory. If not
-                provided, the default value 'biocypher-out' will be used.
-
-        """
 
         # Update configuration if custom path is provided
         if biocypher_config_path:
