@@ -62,12 +62,13 @@
 <li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
 <li class="toctree-l1"><a class="reference internal" href="neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Submodule documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#driver-py-the-main-biocypher-interface"><code class="docutils literal notranslate"><span class="pre">_driver.py</span></code>: the main BioCypher interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#core-py-the-main-biocypher-interface"><code class="docutils literal notranslate"><span class="pre">_core.py</span></code>: The main BioCypher interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._write"><code class="docutils literal notranslate"><span class="pre">_write.py</span></code>: Write the Graph to various formats for batch import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#connect-py-on-line-functionality-for-interaction-with-a-dbms"><code class="docutils literal notranslate"><span class="pre">_connect.py</span></code>: On-line functionality for interaction with a DBMS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mapping-py-mapping-of-data-inputs-to-kg-ontology"><code class="docutils literal notranslate"><span class="pre">_mapping.py</span></code>: Mapping of data inputs to KG ontology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ontology-py-ontology-parsing-and-manipulation"><code class="docutils literal notranslate"><span class="pre">_ontology.py</span></code>: Ontology parsing and manipulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create-py-base-classes-for-node-and-edge-representations-in-biocypher"><code class="docutils literal notranslate"><span class="pre">_create.py</span></code>: Base Classes for Node and Edge Representations in BioCypher</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#translate-py-translation-functionality-for-implemented-types-of-representation"><code class="docutils literal notranslate"><span class="pre">_translate.py</span></code>: Translation Functionality for Implemented Types of Representation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#write-py-write-the-graph-to-csv-files-for-quick-admin-import"><code class="docutils literal notranslate"><span class="pre">_write.py</span></code>: Write the Graph to CSV Files for quick ‘admin import’</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ontology-py-ontology-ingestion-parsing-and-manipulation"><code class="docutils literal notranslate"><span class="pre">_ontology.py</span></code>: Ontology ingestion, parsing, and manipulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-py-base-classes-for-node-and-edge-representations-in-biocypher"><code class="docutils literal notranslate"><span class="pre">_create.py</span></code>: Base classes for node and edge representations in BioCypher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#translate-py-translation-functionality-for-implemented-types-of-representation"><code class="docutils literal notranslate"><span class="pre">_translate.py</span></code>: Translation functionality for implemented types of representation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#logger-py-logging"><code class="docutils literal notranslate"><span class="pre">_logger.py</span></code>: Logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#misc-py-miscellaneous-utility-functions"><code class="docutils literal notranslate"><span class="pre">_misc.py</span></code>: Miscellaneous utility functions</a></li>
 </ul>
@@ -100,8 +101,33 @@
              
   <section id="submodule-documentation">
 <h1>Submodule documentation<a class="headerlink" href="#submodule-documentation" title="Permalink to this heading"></a></h1>
-<section id="driver-py-the-main-biocypher-interface">
-<span id="driver"></span><h2><code class="docutils literal notranslate"><span class="pre">_driver.py</span></code>: the main BioCypher interface<a class="headerlink" href="#driver-py-the-main-biocypher-interface" title="Permalink to this heading"></a></h2>
+<section id="core-py-the-main-biocypher-interface">
+<h2><code class="docutils literal notranslate"><span class="pre">_core.py</span></code>: The main BioCypher interface<a class="headerlink" href="#core-py-the-main-biocypher-interface" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-biocypher._core"></span><p>BioCypher core module. Interfaces with the user and distributes tasks to
+submodules.</p>
+</section>
+<section id="module-biocypher._write">
+<span id="write-py-write-the-graph-to-various-formats-for-batch-import"></span><h2><code class="docutils literal notranslate"><span class="pre">_write.py</span></code>: Write the Graph to various formats for batch import<a class="headerlink" href="#module-biocypher._write" title="Permalink to this heading"></a></h2>
+<p>BioCypher ‘offline’ module. Handles the writing of node and edge representations
+suitable for import into a DBMS.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="biocypher._write.get_writer">
+<span class="sig-prename descclassname"><span class="pre">biocypher._write.</span></span><span class="sig-name descname"><span class="pre">get_writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._ontology.Ontology" title="biocypher._ontology.Ontology"><span class="pre">Ontology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.get_writer" title="Permalink to this definition"></a></dt>
+<dd><p>Function to return the writer class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the writer class</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>class</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="connect-py-on-line-functionality-for-interaction-with-a-dbms">
+<h2><code class="docutils literal notranslate"><span class="pre">_connect.py</span></code>: On-line functionality for interaction with a DBMS<a class="headerlink" href="#connect-py-on-line-functionality-for-interaction-with-a-dbms" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-biocypher._connect"></span><p>BioCypher ‘online’ mode. Handles connection and manipulation of a running DBMS.</p>
 </section>
 <section id="mapping-py-mapping-of-data-inputs-to-kg-ontology">
 <h2><code class="docutils literal notranslate"><span class="pre">_mapping.py</span></code>: Mapping of data inputs to KG ontology<a class="headerlink" href="#mapping-py-mapping-of-data-inputs-to-kg-ontology" title="Permalink to this heading"></a></h2>
@@ -114,8 +140,8 @@ underlying ontology.</p>
 </dd></dl>
 
 </section>
-<section id="ontology-py-ontology-parsing-and-manipulation">
-<h2><code class="docutils literal notranslate"><span class="pre">_ontology.py</span></code>: Ontology parsing and manipulation<a class="headerlink" href="#ontology-py-ontology-parsing-and-manipulation" title="Permalink to this heading"></a></h2>
+<section id="ontology-py-ontology-ingestion-parsing-and-manipulation">
+<h2><code class="docutils literal notranslate"><span class="pre">_ontology.py</span></code>: Ontology ingestion, parsing, and manipulation<a class="headerlink" href="#ontology-py-ontology-ingestion-parsing-and-manipulation" title="Permalink to this heading"></a></h2>
 <span class="target" id="module-biocypher._ontology"></span><p>BioCypher ‘ontology’ module. Contains classes and functions to handle parsing
 and representation of single ontologies as well as their hybridisation and
 other advanced operations.</p>
@@ -216,7 +242,7 @@ we replace underscores with spaces.</p>
 
 </section>
 <section id="create-py-base-classes-for-node-and-edge-representations-in-biocypher">
-<h2><code class="docutils literal notranslate"><span class="pre">_create.py</span></code>: Base Classes for Node and Edge Representations in BioCypher<a class="headerlink" href="#create-py-base-classes-for-node-and-edge-representations-in-biocypher" title="Permalink to this heading"></a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">_create.py</span></code>: Base classes for node and edge representations in BioCypher<a class="headerlink" href="#create-py-base-classes-for-node-and-edge-representations-in-biocypher" title="Permalink to this heading"></a></h2>
 <span class="target" id="module-biocypher._create"></span><p>BioCypher ‘create’ module. Handles the creation of BioCypher node and edge
 dataclasses.</p>
 <dl class="py class">
@@ -449,7 +475,7 @@ relationship</p></li>
 
 </section>
 <section id="translate-py-translation-functionality-for-implemented-types-of-representation">
-<h2><code class="docutils literal notranslate"><span class="pre">_translate.py</span></code>: Translation Functionality for Implemented Types of Representation<a class="headerlink" href="#translate-py-translation-functionality-for-implemented-types-of-representation" title="Permalink to this heading"></a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">_translate.py</span></code>: Translation functionality for implemented types of representation<a class="headerlink" href="#translate-py-translation-functionality-for-implemented-types-of-representation" title="Permalink to this heading"></a></h2>
 <span class="target" id="module-biocypher._translate"></span><p>BioCypher ‘translation’ module. Responsible for translating between the raw
 input data and the BioCypherNode and BioCypherEdge objects.</p>
 <dl class="py class">
@@ -534,25 +560,6 @@ the corresponding BioCypher notation.</p>
 <dd><p>Translate a single term.</p>
 </dd></dl>
 
-</dd></dl>
-
-</section>
-<section id="write-py-write-the-graph-to-csv-files-for-quick-admin-import">
-<h2><code class="docutils literal notranslate"><span class="pre">_write.py</span></code>: Write the Graph to CSV Files for quick ‘admin import’<a class="headerlink" href="#write-py-write-the-graph-to-csv-files-for-quick-admin-import" title="Permalink to this heading"></a></h2>
-<span class="target" id="module-biocypher._write"></span><p>BioCypher ‘offline’ module. Handles the writing of node and edge representations
-suitable for import into a DBMS.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="biocypher._write.get_writer">
-<span class="sig-prename descclassname"><span class="pre">biocypher._write.</span></span><span class="sig-name descname"><span class="pre">get_writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#biocypher._ontology.Ontology" title="biocypher._ontology.Ontology"><span class="pre">Ontology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.get_writer" title="Permalink to this definition"></a></dt>
-<dd><p>Function to return the writer class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the writer class</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>class</p>
-</dd>
-</dl>
 </dd></dl>
 
 </section>
