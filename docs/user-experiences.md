@@ -18,7 +18,7 @@ health and disease.
 :::
 
 ```{admonition} Testimonial
-:type: hint
+:class: hint
 
 Our project, Impact of Genomic Variation on Function (IGVF, https://igvf.org),
 is building a massive biological knowledge graph to attempt to link human
@@ -56,7 +56,7 @@ user queries.
 :::
 
 ```{admonition} Testimonial
-:type: hint
+:class: hint
 
 We built CROssBAR v1 on NoSQL since property graph databases were quite new at
 the time and there was no framework to help us establish the system. We used an
@@ -98,7 +98,7 @@ metabolic-enzymatic interactions.
 :::
 
 ```{admonition} Testimonial
-:type: hint
+:class: hint
 
 In the metalinks project, we build a knowledge graph (KG) that incorporates
 attributes of metabolites, proteins and their interactions to ultimately study
