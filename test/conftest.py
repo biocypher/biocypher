@@ -126,10 +126,21 @@ def ontology_mapping():
         config_file='biocypher/_config/test_schema_config.yaml'
     )
 
+@pytest.fixture(scope='module')
+def extended_ontology_mapping():
+    return OntologyMapping(
+        config_file='biocypher/_config/test_schema_config_extended.yaml'
+    )
 
 @pytest.fixture(scope='module')
-def translator(ontology_mapping):
-    return Translator(ontology_mapping)
+def disconnected_mapping():
+    return OntologyMapping(
+        config_file='biocypher/_config/test_schema_config_disconnected.yaml'
+    )
+
+@pytest.fixture(scope='module')
+def translator(extended_ontology_mapping):
+    return Translator(extended_ontology_mapping)
 
 
 @pytest.fixture(scope='module')
@@ -156,7 +167,7 @@ def mondo_adapter():
 
 
 @pytest.fixture(scope='module')
-def hybrid_ontology(ontology_mapping):
+def hybrid_ontology(extended_ontology_mapping):
     return Ontology(
         head_ontology={
             'url':
@@ -164,7 +175,7 @@ def hybrid_ontology(ontology_mapping):
             'root_node':
                 'entity',
         },
-        ontology_mapping=ontology_mapping,
+        ontology_mapping=extended_ontology_mapping,
         tail_ontologies={
             'so':
                 {

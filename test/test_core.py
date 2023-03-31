@@ -7,10 +7,10 @@ def test_biocypher(core):
 def test_log_missing_bl_types(core, translator):
     core._translator = translator
     core._translator.notype = {}
-    assert core.log_missing_bl_types() == None
+    assert core.log_missing_input_labels() == None
 
     core._translator.notype = {'a': 1, 'b': 2}
-    mt = core.log_missing_bl_types()
+    mt = core.log_missing_input_labels()
 
     assert mt.get('a') == 1 and mt.get('b') == 2
 

@@ -1,6 +1,7 @@
 import os
 
 import networkx as nx
+import pytest
 
 from biocypher._ontology import Ontology
 
@@ -113,3 +114,16 @@ def test_write_ontology(hybrid_ontology, tmp_path):
 
     assert passed
     assert os.path.isfile(f)
+
+
+def test_disconnected_exception(disconnected_mapping):
+
+    with pytest.raises(ValueError):
+        Ontology(
+            head_ontology={
+                'url': 'test/so.owl', 
+                'root_node': 'sequence_variant',
+            },
+            ontology_mapping=disconnected_mapping,
+        )
+        

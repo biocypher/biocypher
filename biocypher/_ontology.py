@@ -262,7 +262,7 @@ class Ontology:
                 added to the head ontology. Defaults to None.
         """
 
-        self._head_ontology = head_ontology
+        self._head_ontology_meta = head_ontology
         self.extended_schema = ontology_mapping.extended_schema
         self._tail_ontology_meta = tail_ontologies
 
@@ -306,8 +306,8 @@ class Ontology:
         logger.info('Loading ontologies...')
 
         self._head_ontology = OntologyAdapter(
-            self._head_ontology['url'],
-            self._head_ontology['root_node'],
+            self._head_ontology_meta['url'],
+            self._head_ontology_meta['root_node'],
         )
 
         if self._tail_ontology_meta:
@@ -389,6 +389,19 @@ class Ontology:
         for key, value in self.extended_schema.items():
 
             if not value.get('is_a'):
+
+                if self._nx_graph.has_node(value.get('synonym_for')):
+                    
+                    continue
+                
+                if not self._nx_graph.has_node(key):
+                    
+                    raise ValueError(
+                        f'Node {key} not found in ontology, but also has no '
+                        'inheritance definition. Please check your schema for '
+                        'spelling errors or a missing `is_a` definition.'
+                    )
+                
                 continue
 
             parents = _misc.to_list(value.get('is_a'))
@@ -601,3 +614,4 @@ class Ontology:
 
         now = datetime.now()
         return now.strftime('v%Y%m%d-%H%M%S')
+    
