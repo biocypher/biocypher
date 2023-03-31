@@ -276,6 +276,15 @@ class _BatchWriter(ABC):
         Property for output directory path.
         """
 
+        return self._outdir
+
+
+    @property
+    def import_call_file_prefix(self):
+        """
+        Property for output directory path.
+        """
+
         if self._import_call_file_prefix is None:
             return self._outdir
         else:
@@ -960,8 +969,11 @@ class _BatchWriter(ABC):
         logger.info(
             f'Writing {len(lines)} entries to {label_pascal}-part{padded_part}.csv',
         )
+
+        # store name only in case import_call_file_prefix is set
+        part = f'{label_pascal}-part{padded_part}.csv'
         file_path = os.path.join(
-            self.outdir, f'{label_pascal}-part{padded_part}.csv'
+            self.outdir, part
         )
 
         with open(file_path, 'w', encoding='utf-8') as f:
@@ -970,9 +982,9 @@ class _BatchWriter(ABC):
             f.writelines(lines)
 
         if not self.parts.get(label):
-            self.parts[label] = [file_path]
+            self.parts[label] = [part]
         else:
-            self.parts[label].append(file_path)
+            self.parts[label].append(part)
 
     def get_import_call(self) -> str:
         """
@@ -1094,11 +1106,12 @@ class _Neo4jBatchWriter(_BatchWriter):
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
+            header = f'{pascal_label}-header.csv'
             header_path = os.path.join(
                 self.outdir,
-                f'{pascal_label}-header.csv',
+                header,
             )
-            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
+            parts = f'{pascal_label}-part.*'
 
             # check if file already exists
             if os.path.exists(header_path):
@@ -1130,8 +1143,17 @@ class _Neo4jBatchWriter(_BatchWriter):
                 row = self.delim.join(out_list)
                 f.write(row)
 
-            # add file path to neo4 admin import statement
-            self.import_call_nodes.add((header_path, parts_path))
+            # add file path to neo4 admin import statement (import call file
+            # path may be different from actual file path)
+            import_call_header_path = os.path.join(
+                self.import_call_file_prefix,
+                header,
+            )
+            import_call_parts_path = os.path.join(
+                self.import_call_file_prefix,
+                parts,
+            )
+            self.import_call_nodes.add((import_call_header_path, import_call_parts_path))
 
         return True
 
@@ -1157,11 +1179,12 @@ class _Neo4jBatchWriter(_BatchWriter):
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
             # paths
+            header = f'{pascal_label}-header.csv'
             header_path = os.path.join(
                 self.outdir,
-                f'{pascal_label}-header.csv',
+                header,
             )
-            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
+            parts = f'{pascal_label}-part.*'
 
             # check for file exists
             if os.path.exists(header_path):
@@ -1191,8 +1214,17 @@ class _Neo4jBatchWriter(_BatchWriter):
                 row = self.delim.join(out_list)
                 f.write(row)
 
-            # add file path to neo4 admin import statement
-            self.import_call_edges.add((header_path, parts_path))
+            # add file path to neo4 admin import statement (import call file
+            # path may be different from actual file path)
+            import_call_header_path = os.path.join(
+                self.import_call_file_prefix,
+                header,
+            )
+            import_call_parts_path = os.path.join(
+                self.import_call_file_prefix,
+                parts,
+            )
+            self.import_call_edges.add((import_call_header_path, import_call_parts_path))
 
         return True
 
@@ -1293,9 +1325,10 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
+            header = f'{pascal_label}-header.csv'
             header_path = os.path.join(
                 self.outdir,
-                f'{pascal_label}-header.csv',
+                header,
             )
 
             # check if file already exists
@@ -1337,8 +1370,17 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                 )
 
             for part in parts:
+                
+                import_call_header_path = os.path.join(
+                    self.import_call_file_prefix,
+                    header,
+                )
+                import_call_parts_path = os.path.join(
+                    self.import_call_file_prefix,
+                    part,
+                )
 
-                self.import_call_nodes.add((header_path, part, collection))
+                self.import_call_nodes.add((import_call_header_path, import_call_parts_path, collection))
 
         return True
 
@@ -1364,11 +1406,12 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
             # paths
+            header = f'{pascal_label}-header.csv'
             header_path = os.path.join(
                 self.outdir,
-                f'{pascal_label}-header.csv',
+                header,
             )
-            parts_path = os.path.join(self.outdir, f'{pascal_label}-part.*')
+            parts = f'{pascal_label}-part.*'
 
             # check for file exists
             if os.path.exists(header_path):
@@ -1403,8 +1446,17 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                     'db_collection_name', None
                 )
 
-            # add file path to neo4 admin import statement
-            self.import_call_edges.add((header_path, parts_path, collection))
+            # add file path to neo4 admin import statement (import call path
+            # may be different from actual output path)
+            header_import_call_path = os.path.join(
+                self.import_call_file_prefix,
+                header,
+            )
+            parts_import_call_path = os.path.join(
+                self.import_call_file_prefix,
+                parts,
+            )
+            self.import_call_edges.add((header_import_call_path, parts_import_call_path, collection,))
 
         return True
 
@@ -1553,15 +1605,11 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         for label, props in self.node_property_dict.items():
             # create header CSV with ID, properties, labels
 
-            # to programmatically define properties to be written, the
-            # data would have to be parsed before writing the header.
-            # alternatively, desired properties can also be provided
-            # via the schema_config.yaml.
-
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
-            parts_paths = os.path.join(self.outdir, f'{pascal_label}-part*.csv')
+            parts = f'{pascal_label}-part*.csv'
+            parts_paths = os.path.join(self.outdir, parts)
             parts_paths = glob.glob(parts_paths)
             parts_paths.sort()
 
@@ -1597,11 +1645,28 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 f.write(command)
 
                 for parts_path in parts_paths:
+                    
+                    # if import_call_file_prefix is set, replace actual path 
+                    # with prefix
+                    if self.import_call_file_prefix != self.outdir:
+                        parts_path = parts_path.replace(
+                            self.outdir,
+                            self.import_call_file_prefix,
+                        )
+
                     self._copy_from_csv_commands.add(
                         f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;'
                     )
 
             # add file path to import statement
+            # if import_call_file_prefix is set, replace actual path
+            # with prefix
+            if self.import_call_file_prefix != self.outdir:
+                table_create_command_path = table_create_command_path.replace(
+                    self.outdir,
+                    self.import_call_file_prefix,
+                )
+
             self.import_call_nodes.add(table_create_command_path)
 
         return True
@@ -1668,11 +1733,28 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 f.write(command)
 
                 for parts_path in parts_paths:
+
+                    # if import_call_file_prefix is set, replace actual path
+                    # with prefix
+                    if self.import_call_file_prefix != self.outdir:
+                        parts_path = parts_path.replace(
+                            self.outdir,
+                            self.import_call_file_prefix,
+                        )
+
                     self._copy_from_csv_commands.add(
                         f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;'
                     )
 
             # add file path to import statement
+            # if import_call_file_prefix is set, replace actual path
+            # with prefix
+            if self.import_call_file_prefix != self.outdir:
+                table_create_command_path = table_create_command_path.replace(
+                    self.outdir,
+                    self.import_call_file_prefix,
+                )
+                
             self.import_call_edges.add(table_create_command_path)
 
         return True
