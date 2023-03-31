@@ -12,6 +12,7 @@
 BioCypher core module. Interfaces with the user and distributes tasks to
 submodules.
 """
+from typing import Dict, List, Optional
 from more_itertools import peekable
 
 from ._logger import logger
@@ -151,7 +152,7 @@ class BioCypher:
         self._ontology = None
         self._writer = None
 
-    def _get_ontology_mapping(self):
+    def _get_ontology_mapping(self) -> OntologyMapping:
         """
         Create ontology mapping if not exists and return.
         """
@@ -163,7 +164,7 @@ class BioCypher:
 
         return self._ontology_mapping
 
-    def _get_translator(self):
+    def _get_translator(self) -> Translator:
         """
         Create translator if not exists and return.
         """
@@ -176,7 +177,7 @@ class BioCypher:
 
         return self._translator
 
-    def _get_ontology(self):
+    def _get_ontology(self) -> Ontology:
         """
         Create ontology if not exists and return.
         """
@@ -192,7 +193,7 @@ class BioCypher:
 
     def _get_writer(self):
         """
-        Create writer if not online.
+        Create writer if not online. Set as instance variable `self._writer`.
         """
 
         # Get worker
@@ -209,7 +210,7 @@ class BioCypher:
 
     def _get_driver(self):
         """
-        Create driver if not exists and return.
+        Create driver if not exists. Set as instance variable `self._driver`.
         """
 
         if not self._offline:
@@ -221,9 +222,17 @@ class BioCypher:
         else:
             raise NotImplementedError('Cannot get driver in offline mode.')
 
-    def write_nodes(self, nodes):
+    def write_nodes(self, nodes) -> bool:
         """
-        Write nodes to database.
+        Write nodes to database. Either takes an iterable of tuples (if given,
+        translates to ``BioCypherNode`` objects) or an iterable of 
+        ``BioCypherNode`` objects.
+
+        Args:
+            nodes (iterable): An iterable of nodes to write to the database.
+
+        Returns:
+            bool: True if successful.
         """
 
         if not self._writer:
@@ -237,9 +246,17 @@ class BioCypher:
         # write node files
         return self._writer.write_nodes(tnodes)
 
-    def write_edges(self, edges):
+    def write_edges(self, edges) -> bool:
         """
-        Write edges to database.
+        Write edges to database. Either takes an iterable of tuples (if given,
+        translates to ``BioCypherEdge`` objects) or an iterable of
+        ``BioCypherEdge`` objects.
+
+        Args:
+            edges (iterable): An iterable of edges to write to the database.
+
+        Returns:
+            bool: True if successful.
         """
 
         if not self._writer:
@@ -259,9 +276,17 @@ class BioCypher:
     def add_edges(self, edges):
         pass
 
-    def merge_nodes(self, nodes):
+    def merge_nodes(self, nodes) -> bool:
         """
-        Merge nodes into database.
+        Merge nodes into database. Either takes an iterable of tuples (if given,
+        translates to ``BioCypherNode`` objects) or an iterable of
+        ``BioCypherNode`` objects.
+
+        Args:
+            nodes (iterable): An iterable of nodes to merge into the database.
+
+        Returns:
+            bool: True if successful.
         """
 
         if not self._driver:
@@ -273,20 +298,42 @@ class BioCypher:
         else:
             tnodes = nodes
         # write node files
-        return self._driver.merge_nodes(tnodes)
+        return self._driver.add_biocypher_nodes(tnodes)
 
-    def merge_edges(self, edges):
-        pass
+    def merge_edges(self, edges) -> bool:
+        """
+        Merge edges into database. Either takes an iterable of tuples (if given,
+        translates to ``BioCypherEdge`` objects) or an iterable of
+        ``BioCypherEdge`` objects.
+        
+        Args:
+            edges (iterable): An iterable of edges to merge into the database. 
+
+        Returns:    
+            bool: True if successful.
+        """
+
+        if not self._driver:
+            self._get_driver()
+
+        edges = peekable(edges)
+        if not isinstance(edges.peek(), BioCypherEdge):
+            tedges = self._translator.translate_edges(edges)
+        else:
+            tedges = edges
+        # write edge files
+        return self._driver.add_biocypher_edges(tedges)
 
     # OVERVIEW AND CONVENIENCE METHODS ###
 
-    def log_missing_bl_types(self):
+    def log_missing_bl_types(self) -> Optional[Dict[str, List[str]]]:
         """
         Get the set of Biolink types encountered without an entry in
         the `schema_config.yaml` and print them to the logger.
 
         Returns:
-            set: a set of missing Biolink types
+            Optional[Dict[str, List[str]]]: A dictionary of Biolink types
+                encountered without an entry in the `schema_config.yaml` file.
         """
 
         mt = self._translator.get_missing_biolink_types()
@@ -308,7 +355,7 @@ class BioCypher:
             logger.info('No missing Biolink types in input.')
             return None
 
-    def log_duplicates(self):
+    def log_duplicates(self) -> None:
         """
         Get the set of duplicate nodes and edges encountered and print them to
         the logger.
@@ -358,7 +405,7 @@ class BioCypher:
         else:
             logger.info('No duplicate edges in input.')
 
-    def show_ontology_structure(self, **kwargs):
+    def show_ontology_structure(self, **kwargs) -> None:
         """
         Show the ontology structure using treelib or write to GRAPHML file.
 
@@ -396,6 +443,12 @@ class BioCypher:
     def translate_term(self, term: str) -> str:
         """
         Translate a term to its BioCypher equivalent.
+
+        Args:
+            term (str): The term to translate.
+
+        Returns:
+            str: The BioCypher equivalent of the term.
         """
 
         # instantiate adapter if not exists
@@ -406,6 +459,12 @@ class BioCypher:
     def reverse_translate_term(self, term: str) -> str:
         """
         Reverse translate a term from its BioCypher equivalent.
+
+        Args:
+            term (str): The BioCypher term to reverse translate.
+
+        Returns:
+            str: The original term.
         """
 
         # instantiate adapter if not exists
@@ -416,6 +475,12 @@ class BioCypher:
     def translate_query(self, query: str) -> str:
         """
         Translate a query to its BioCypher equivalent.
+
+        Args:
+            query (str): The query to translate.
+
+        Returns:
+            str: The BioCypher equivalent of the query.
         """
 
         # instantiate adapter if not exists
@@ -426,6 +491,12 @@ class BioCypher:
     def reverse_translate_query(self, query: str) -> str:
         """
         Reverse translate a query from its BioCypher equivalent.
+
+        Args:
+            query (str): The BioCypher query to reverse translate.
+
+        Returns:
+            str: The original query.
         """
 
         # instantiate adapter if not exists
