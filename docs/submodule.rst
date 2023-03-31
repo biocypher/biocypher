@@ -2,11 +2,19 @@
 Submodule documentation
 ##############################
 
-.. _driver:
+``_core.py``: The main BioCypher interface
+=========================================
+.. automodule:: biocypher._core
+   :members:
 
-``_driver.py``: the main BioCypher interface
-========================================
-.. automodule:: biocypher._driver
+``_write.py``: Write the Graph to various formats for batch import
+==================================================================
+.. automodule:: biocypher._write
+   :members:
+
+``_connect.py``: On-line functionality for interaction with a DBMS
+===============================================================
+.. automodule:: biocypher._connect
    :members:
 
 ``_mapping.py``: Mapping of data inputs to KG ontology
@@ -14,24 +22,19 @@ Submodule documentation
 .. automodule:: biocypher._mapping
    :members:
 
-``_ontology.py``: Ontology parsing and manipulation
-=================================================
+``_ontology.py``: Ontology ingestion, parsing, and manipulation
+==============================================================
 .. automodule:: biocypher._ontology
    :members:
 
-``_create.py``: Base Classes for Node and Edge Representations in BioCypher
+``_create.py``: Base classes for node and edge representations in BioCypher
 =========================================================================
 .. automodule:: biocypher._create
    :members:
 
-``_translate.py``: Translation Functionality for Implemented Types of Representation
+``_translate.py``: Translation functionality for implemented types of representation
 ==================================================================================
 .. automodule:: biocypher._translate
-   :members:
-
-``_write.py``: Write the Graph to CSV Files for quick 'admin import'
-==================================================================
-.. automodule:: biocypher._write
    :members:
 
 ``_logger.py``: Logging
