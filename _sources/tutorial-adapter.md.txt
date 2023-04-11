@@ -2,7 +2,11 @@
 # BioCypher Tutorial - Adapters
 
 ```{note}
-For a list of existing and planned adapters, please see [here](adapters).
+
+For a list of existing and planned adapters, please see [here](adapters). You
+can also get an overview of pipelines and the adapters they use in our [meta
+graph](https://meta.biocypher.org).
+
 ```
 
 ![BioCypher pipeline interface](figure_pipeline.png)
