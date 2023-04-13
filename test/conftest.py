@@ -171,7 +171,7 @@ def hybrid_ontology(extended_ontology_mapping):
     return Ontology(
         head_ontology={
             'url':
-                'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
+                'https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl',
             'root_node':
                 'entity',
         },
