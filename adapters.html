@@ -144,9 +144,10 @@ information about all adapters from the BioCypher GitHub repository via the
 GitHub API and builds a graph of all adapters and their dependencies.  Browsing
 this graph can give an overview of the current state of the adapters supported
 by BioCypher and the pipelines they are used in. It is built daily and available
-at https://meta.biocypher.org. The graph can also be built locally by cloning
-the repository and running the pipeline using <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span></code>. The graph is
-then available at <code class="docutils literal notranslate"><span class="pre">localhost:7474/browser/</span></code> in the Neo4j Browser.</p>
+at <a class="reference external" href="https://meta.biocypher.org">https://meta.biocypher.org</a>. The graph can also
+be built locally by cloning the repository and running the pipeline using
+<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span></code>. The graph is then available at <code class="docutils literal notranslate"><span class="pre">localhost:7474/browser/</span></code> in
+the Neo4j Browser.</p>
 <p>If you’re unfamiliar with Neo4j, you can use the following Cypher query to
 retrieve an overview of all graph contents:</p>
 <div class="highlight-cypher notranslate"><div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
