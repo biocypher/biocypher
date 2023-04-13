@@ -888,10 +888,6 @@ class _BatchWriter(ABC):
                     else:
                         if isinstance(p, list):
                             plist.append(self._write_array_string(p))
-                        elif '**' in p:
-                            plist.append(
-                                self._write_array_string(p.split('**'))
-                            )
                         else:
                             plist.append(self.quote + str(p) + self.quote)
 
