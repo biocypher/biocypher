@@ -109,11 +109,45 @@ different views.</p>
 GitHub Projects view may be less than complete. Please get in touch if you want
 to make sure that your favourite resource is supported.</p>
 </div>
-<p>The project view is built from issues in the <a class="reference external" href="https://github.com/biocypher/biocypher/issues">BioCypher GitHub repository</a>, which carry labels for
-adapters and adapter subtypes, as well as an <code class="docutils literal notranslate"><span class="pre">Adapter</span> <span class="pre">status</span></code> label to
-indicate the state of development: <code class="docutils literal notranslate"><span class="pre">Planned</span></code>, <code class="docutils literal notranslate"><span class="pre">In</span> <span class="pre">progress</span></code>, <code class="docutils literal notranslate"><span class="pre">Existing</span></code>,
-and <code class="docutils literal notranslate"><span class="pre">Ideas</span></code>.  If you would like to add or request an adapter that is not yet
-listed, please open a new issue and we will add it to the project view.</p>
+<p>The project view is built from issues in the <a class="reference external" href="https://github.com/biocypher/biocypher/issues">BioCypher GitHub repository</a>, which carry <code class="docutils literal notranslate"><span class="pre">Fields</span></code> (a
+GitHub Projects-specific attribute) to describe their category and features. In
+detail, these are as follows:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Component</span> <span class="pre">Type</span></code>: This refers to the class of component and can be one of
+<code class="docutils literal notranslate"><span class="pre">Adapter</span></code>, <code class="docutils literal notranslate"><span class="pre">Ontology</span></code>, or <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Adapter</span> <span class="pre">Granularity</span></code>: This is only applicable to adapters and can be either
+<code class="docutils literal notranslate"><span class="pre">Primary</span></code> (denoting an atomic resource that is represented by the adapter) or
+<code class="docutils literal notranslate"><span class="pre">Secondary</span></code> (denoting a composite resource, often pre-harmonised).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Adapter</span> <span class="pre">Input</span> <span class="pre">Format</span></code> provides a drop-down menu of the different formats
+that can be ingested, such as <code class="docutils literal notranslate"><span class="pre">Flat</span> <span class="pre">File</span></code>, <code class="docutils literal notranslate"><span class="pre">API</span></code>, or <code class="docutils literal notranslate"><span class="pre">OWL</span></code>. Select the one
+that applies to the resource.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Resource</span> <span class="pre">URL</span></code>: A free-text field to provide a link to the resource, also
+used for identification purposes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Resource</span> <span class="pre">Type</span></code>: Currently only <code class="docutils literal notranslate"><span class="pre">Database</span></code> or <code class="docutils literal notranslate"><span class="pre">Ontology</span></code>, but more
+granular reporting is planned.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Data</span> <span class="pre">Type</span></code> provides a drop-down menu of the different data types that can
+be ingested, such as <code class="docutils literal notranslate"><span class="pre">Proteomics</span></code>, <code class="docutils literal notranslate"><span class="pre">Genetics</span></code>, or <code class="docutils literal notranslate"><span class="pre">Clinical</span></code>. Select the
+one that applies to the resource. This field primarily makes sense for primary
+adapters, but is interesting information particularly for the pipelines that use
+the adapters. For that reason, when building the meta-graph (see below), we
+propagate this information from the adapters to the pipelines.</p></li>
+</ul>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>There is currently one type of meta-information that needs to be provided via
+free-text annotation in the text body of the issue: the links of pipelines to
+the input adapters and ontologies they use. For the meta-graph pipeline to work
+correctly, this information needs to be provided in the issue of the pipeline,
+in a line that starts with <code class="docutils literal notranslate"><span class="pre">Uses:</span> </code>, followed by a space-separated list of
+issue numbers representing the used components.</p>
+<p>To make this annotation less error-prone, we use the auto-completion GitHub
+provides for referencing issues. Typing a <code class="docutils literal notranslate"><span class="pre">#</span></code> character and then a few
+characters of the title of the issue to be linked to the pipeline will show a
+list of possible matches. Select the correct one and the issue number will be
+inserted automatically.</p>
+<p>The meta-graph pipeline extracts this information and uses it to build the
+meta-graph described below.</p>
+</div>
 <section id="biocypher-meta-graph">
 <span id="metagraph"></span><h2>BioCypher meta-graph<a class="headerlink" href="#biocypher-meta-graph" title="Permalink to this heading"></a></h2>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
