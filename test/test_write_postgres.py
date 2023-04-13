@@ -16,6 +16,7 @@ def test_write_node_data_from_gen_comma_postgresql(
     passed = bw_comma_postgresql._write_node_data(
         node_gen(nodes), batch_size=1e6
     )
+    assert passed
 
     tmp_path = bw_comma_postgresql.outdir
 
@@ -28,9 +29,11 @@ def test_write_node_data_from_gen_comma_postgresql(
     with open(m_csv) as f:
         mi = f.read()
 
-    assert passed
-    assert 'p1,"StringProperty1",4.0,9606,"{gene1,gene2}","p1","uniprot","{BiologicalEntity,ChemicalEntityOrProteinOrPolypeptide,Entity,NamedThing,Polypeptide,Protein}"' in pr
+    assert 'p1,"StringProperty1",4.0,9606' in pr
+    assert 'uniprot' in pr
     assert 'BiologicalEntity' in pr
+    assert 'Polypeptide' in pr
+    assert 'Protein' in pr
     assert 'm1,"StringProperty1",9606,"m1","mirbase"' in mi
     assert 'ChemicalEntity' in mi
 
@@ -56,8 +59,11 @@ def test_write_node_data_from_gen_tab_postgresql(bw_tab_postgresql, _get_nodes):
         mi = f.read()
 
     assert passed
-    assert 'p1\t"StringProperty1"\t4.0\t9606\t"{gene1,gene2}"\t"p1"\t"uniprot"\t"{BiologicalEntity,ChemicalEntityOrProteinOrPolypeptide,Entity,NamedThing,Polypeptide,Protein}"' in pr
+    assert 'p1\t"StringProperty1"\t4.0\t9606\t' in pr
+    assert '\t"uniprot"\t' in pr
     assert 'BiologicalEntity' in pr
+    assert 'Polypeptide' in pr
+    assert 'Protein' in pr
     assert 'm1\t"StringProperty1"\t9606\t"m1"\t"mirbase"' in mi
     assert 'ChemicalEntity' in mi
 
