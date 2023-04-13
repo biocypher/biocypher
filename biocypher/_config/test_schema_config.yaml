@@ -18,13 +18,13 @@ protein:
 microRNA:
   represented_as: node
   preferred_id: mirbase.mature
-  label_in_input: mirna
+  input_label: mirna
 
 complex:
   synonym_for: macromolecular complex
   represented_as: node
   preferred_id: complexportal
-  label_in_input: complex
+  input_label: complex
 
 pathway:
   represented_as: node
@@ -34,24 +34,24 @@ pathway:
 gene:
   represented_as: node
   preferred_id: hgnc
-  label_in_input: [hgnc, ensg]
+  input_label: [hgnc, ensg]
   exclude_properties: accession
 
 disease:
   represented_as: node
   preferred_id: doid
-  label_in_input: Disease
+  input_label: Disease
 
 side effect:
   is_a: phenotypic feature
   represented_as: node
   preferred_id: sider.effect
-  label_in_input: sider
+  input_label: sider
 
 sequence variant:
   represented_as: node
   preferred_id: [clinically relevant, known, somatic]
-  label_in_input: [Clinically_relevant_variant, Known_variant, Somatic_mutation]
+  input_label: [Clinically_relevant_variant, Known_variant, Somatic_mutation]
   properties:
     source: str
     original_source: str
@@ -62,7 +62,7 @@ snRNA sequence:
   is_a: nucleic acid entity
   represented_as: node
   preferred_id: [intact, rnacentral]
-  label_in_input: [intact_snrna, rnacentral_snrna]
+  input_label: [intact_snrna, rnacentral_snrna]
   properties:
     ac: str
     fullName: str
@@ -74,7 +74,7 @@ DNA sequence:
   is_a: nucleic acid entity
   represented_as: node
   preferred_id: ensembl
-  label_in_input: dna
+  input_label: dna
   properties:
     ac: str
     fullName: str
@@ -87,7 +87,7 @@ dsDNA sequence:
   inherit_properties: True
   represented_as: node
   preferred_id: [intact, uniparc]
-  label_in_input: [intact_dsdna, uniprot_archive_dsdna]
+  input_label: [intact_dsdna, uniprot_archive_dsdna]
 
 # ---
 # Associations
@@ -97,12 +97,12 @@ post translational interaction:
   is_a: pairwise molecular interaction
   represented_as: node
   label_as_edge: INTERACTS_POST_TRANSLATIONAL
-  label_in_input: post_translational
+  input_label: post_translational
 
 phosphorylation:
   is_a: post translational interaction
   represented_as: edge
-  label_in_input: phosphorylation
+  input_label: phosphorylation
 
 gene to disease association:
   represented_as: edge
@@ -114,20 +114,20 @@ mutation to tissue association:
   is_a: [genotype to tissue association, entity to tissue association, association]
   represented_as: edge
   label_as_edge: Is_Mutated_In
-  label_in_input: Gene_Is_Mutated_In_Cell_Tissue
+  input_label: Gene_Is_Mutated_In_Cell_Tissue
 
 variant to gene association: # -> Known.... and Somatic....
   represented_as: edge
   source: [known.sequence variant, somatic.sequence variant]
   target: gene
-  label_in_input: [
+  input_label: [
     VARIANT_FOUND_IN_GENE_Known_variant_Gene,
     VARIANT_FOUND_IN_GENE_Somatic_mutation_Gene
   ]
 
 gene to gene association:
   represented_as: edge
-  label_in_input: gene_gene
+  input_label: gene_gene
   properties:
     directional: bool
     curated: bool
@@ -136,4 +136,4 @@ gene to gene association:
 gene to variant association:
   is_a: gene to variant association
   represented_as: edge
-  label_in_input: gene_variant
+  input_label: gene_variant
