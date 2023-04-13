@@ -351,7 +351,7 @@ being synonyms indicated as an equals sign):
 
 ```{code-block} text
 
-Showing ontology structure based on https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl
+Showing ontology structure based on https://raw.githubusercontent.com/biolink/biolink-model/v3.2.1/biolink-model.owl.ttl
 entity
 ├── association
 │   └── gene to gene association
@@ -422,7 +422,7 @@ biocypher:  # biocypher settings
 
   # Ontology configuration
   head_ontology:
-    url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
+    url: https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
     root_node: entity
 
   tail_ontologies:
@@ -455,7 +455,7 @@ bc = BioCypher(
     # ...
 
     head_ontology={
-      'url': 'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
+      'url': 'https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl',
       'root_node': 'entity',
     },
 
