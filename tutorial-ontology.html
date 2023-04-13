@@ -38,7 +38,7 @@
             BioCypher
           </a>
               <div class="version">
-                0.5.9
+                0.5.10
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -456,14 +456,21 @@ concept.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>If the concept does not exist in the head ontology, but is a feasible child
-class of an existing concept, the above extension functionalities can be used to
-introduce the concept and then fuse the tail ontology there.</p>
+class of an existing concept, you can set the <code class="docutils literal notranslate"><span class="pre">merge_nodes</span></code> option to <code class="docutils literal notranslate"><span class="pre">False</span></code> to
+prevent the merging of head and tail join nodes, but instead adding the tail
+join node as a child of the head join node you have specified. For instance, in
+the example below, we merge <code class="docutils literal notranslate"><span class="pre">sequence</span> <span class="pre">variant</span></code> from Biolink and
+<code class="docutils literal notranslate"><span class="pre">sequence_variant</span></code> from Sequence Ontology into a single node, but we add the
+MONDO subtree of <code class="docutils literal notranslate"><span class="pre">human</span> <span class="pre">disease</span></code> as a child of <code class="docutils literal notranslate"><span class="pre">disease</span></code> in Biolink.</p>
+<p><code class="docutils literal notranslate"><span class="pre">merge_nodes</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> by default, so there is no need to specify it in
+the configuration file if you want to merge the nodes.</p>
 </div>
 <p>The ontology adapter also accepts any arbitrary “head ontology” as a base
 ontology, but if none is provided, the Biolink model is used as the default head
-ontology. These options can be provided to the BioCypher interface as parameters,
-or as options in the BioCypher configuration file, which is the preferred method
-for transparency reasons:</p>
+ontology. However, it is strongly recommended to explicitly specify your desired
+ontology version here. These options can be provided to the BioCypher interface
+as parameters, or as options in the BioCypher configuration file, which is the
+preferred method for transparency reasons:</p>
 <div class="literal-block-wrapper docutils container" id="id8">
 <div class="code-block-caption"><span class="caption-text">Using biocypher_config.yaml</span><a class="headerlink" href="#id8" title="Permalink to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
@@ -485,7 +492,8 @@ for transparency reasons:</p>
 <span class="w">    </span><span class="nt">mondo</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/mondo.owl</span>
 <span class="w">      </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
-<span class="w">      </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
+<span class="w">      </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">human disease</span>
+<span class="w">      </span><span class="nt">merge_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 
 <span class="c1"># ...</span>
 </pre></div>
@@ -518,7 +526,8 @@ as follows at BioCypher interface instantiation:</p>
             <span class="p">{</span>
                 <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;test/mondo.owl&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;head_join_node&#39;</span><span class="p">:</span> <span class="s1">&#39;disease&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;tail_join_node&#39;</span><span class="p">:</span> <span class="s1">&#39;disease&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;tail_join_node&#39;</span><span class="p">:</span> <span class="s1">&#39;human disease&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;merge_nodes&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
             <span class="p">}</span>
     <span class="p">},</span>
 
