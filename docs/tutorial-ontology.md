@@ -395,16 +395,24 @@ concept.
 ```{hint}
 
 If the concept does not exist in the head ontology, but is a feasible child
-class of an existing concept, the above extension functionalities can be used to
-introduce the concept and then fuse the tail ontology there.
+class of an existing concept, you can set the `merge_nodes` option to `False` to
+prevent the merging of head and tail join nodes, but instead adding the tail
+join node as a child of the head join node you have specified. For instance, in
+the example below, we merge `sequence variant` from Biolink and
+`sequence_variant` from Sequence Ontology into a single node, but we add the
+MONDO subtree of `human disease` as a child of `disease` in Biolink.
+
+`merge_nodes` is set to `True` by default, so there is no need to specify it in
+the configuration file if you want to merge the nodes.
 
 ```
 
 The ontology adapter also accepts any arbitrary "head ontology" as a base
 ontology, but if none is provided, the Biolink model is used as the default head
-ontology. These options can be provided to the BioCypher interface as parameters,
-or as options in the BioCypher configuration file, which is the preferred method
-for transparency reasons:
+ontology. However, it is strongly recommended to explicitly specify your desired
+ontology version here. These options can be provided to the BioCypher interface
+as parameters, or as options in the BioCypher configuration file, which is the
+preferred method for transparency reasons:
 
 ```{code-block} yaml
 :caption: Using biocypher_config.yaml
@@ -427,7 +435,8 @@ biocypher:  # biocypher settings
     mondo:
       url: http://purl.obolibrary.org/obo/mondo.owl
       head_join_node: disease
-      tail_join_node: disease
+      tail_join_node: human disease
+      merge_nodes: false
 
 # ...
 ```
@@ -461,7 +470,8 @@ bc = BioCypher(
             {
                 'url': 'test/mondo.owl',
                 'head_join_node': 'disease',
-                'tail_join_node': 'disease',
+                'tail_join_node': 'human disease',
+                'merge_nodes': False,
             }
     },
 
