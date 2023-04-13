@@ -50,9 +50,10 @@ information about all adapters from the BioCypher GitHub repository via the
 GitHub API and builds a graph of all adapters and their dependencies.  Browsing
 this graph can give an overview of the current state of the adapters supported
 by BioCypher and the pipelines they are used in. It is built daily and available
-at https://meta.biocypher.org. The graph can also be built locally by cloning
-the repository and running the pipeline using `docker compose up`. The graph is
-then available at `localhost:7474/browser/` in the Neo4j Browser.
+at [https://meta.biocypher.org](https://meta.biocypher.org). The graph can also
+be built locally by cloning the repository and running the pipeline using
+`docker compose up`. The graph is then available at `localhost:7474/browser/` in
+the Neo4j Browser.
 
 If you're unfamiliar with Neo4j, you can use the following Cypher query to
 retrieve an overview of all graph contents:
