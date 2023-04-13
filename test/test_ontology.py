@@ -63,10 +63,14 @@ def test_ontology_functions(hybrid_ontology):
     dgpl_ancestors = list(
         hybrid_ontology.get_ancestors('decreased gene product level')
     )
-    assert len(dgpl_ancestors) == 7
+    assert 'decreased gene product level' in dgpl_ancestors
     assert 'altered gene product level' in dgpl_ancestors
+    assert 'functional effect variant' in dgpl_ancestors
     assert 'sequence variant' in dgpl_ancestors
+    assert 'biological entity' in dgpl_ancestors
+    assert 'named thing' in dgpl_ancestors
     assert 'entity' in dgpl_ancestors
+    assert 'thing with taxon' in dgpl_ancestors
 
     lethal_var = hybrid_ontology._nx_graph.nodes['lethal variant']
     assert lethal_var['label'] == 'SO_0001773'
@@ -75,10 +79,14 @@ def test_ontology_functions(hybrid_ontology):
     # disease' as a child of 'disease'
 
     cf_ancestors = list(hybrid_ontology.get_ancestors('cystic fibrosis'))
-    assert len(cf_ancestors) == 10
-    assert 'disease' in cf_ancestors
+    assert 'cystic fibrosis' in cf_ancestors
+    assert 'autosomal recessive disease' in cf_ancestors
+    assert 'autosomal genetic disease' in cf_ancestors
+    assert 'hereditary disease' in cf_ancestors
     assert 'human disease' in cf_ancestors
+    assert 'disease' in cf_ancestors
     assert 'disease or phenotypic feature' in cf_ancestors
+    assert 'biological entity' in cf_ancestors
     assert 'entity' in cf_ancestors
 
     # mixins?
