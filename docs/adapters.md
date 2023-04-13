@@ -33,13 +33,13 @@ listed, please open a new issue and we will add it to the project view.
 :::{grid-item-card} Online meta-graph:
 :link: https://meta.biocypher.org
 :text-align: center
-{octicon}`plug;3em` {octicon}`share-android;3em`
+{octicon}`globe;3em` {octicon}`browser;3em` {octicon}`share-android;3em`
 :::
 
 :::{grid-item-card} Repo with Docker setup:
 :link: https://github.com/biocypher/meta-graph
 :text-align: center
-{octicon}`project;3em` {octicon}`container;3em`
+{octicon}`mark-github;3em` {octicon}`project;3em` {octicon}`container;3em`
 :::
 
 ::::
