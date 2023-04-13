@@ -49,6 +49,8 @@ def test_ontology_functions(hybrid_ontology):
     combined_length = len(hybrid_ontology._head_ontology.get_nx_graph())
     for adapter in hybrid_ontology._tail_ontologies.values():
         combined_length += len(adapter.get_nx_graph())
+    # need to add 1 for the 'merge_nodes' = False case
+    combined_length += 1
     hybrid_length = len(hybrid_ontology._nx_graph)
 
     # subtract number of tail ontologies
@@ -69,10 +71,13 @@ def test_ontology_functions(hybrid_ontology):
     lethal_var = hybrid_ontology._nx_graph.nodes['lethal variant']
     assert lethal_var['label'] == 'SO_0001773'
 
-    # second tail ontology
+    # second tail ontology: here we don't merge the nodes, but attach 'human
+    # disease' as a child of 'disease'
+
     cf_ancestors = list(hybrid_ontology.get_ancestors('cystic fibrosis'))
     assert len(cf_ancestors) == 10
     assert 'disease' in cf_ancestors
+    assert 'human disease' in cf_ancestors
     assert 'disease or phenotypic feature' in cf_ancestors
     assert 'entity' in cf_ancestors
 

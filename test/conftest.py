@@ -187,7 +187,8 @@ def hybrid_ontology(extended_ontology_mapping):
                 {
                     'url': 'test/mondo.owl',
                     'head_join_node': 'disease',
-                    'tail_join_node': 'disease',
+                    'tail_join_node': 'human disease',
+                    'merge_nodes': False,
                 }
         },
     )
