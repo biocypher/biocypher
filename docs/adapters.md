@@ -8,8 +8,8 @@ sources of biomedical knowledge as well as for different ontologies. To see
 whether your favourite resource is already supported or currently in
 development, or if you would like to contribute to the development of a new
 adapter, please refer to [this GitHub projects
-view](https://github.com/orgs/biocypher/projects/3/views/2). Check the tabs for
-different views.
+view](https://github.com/orgs/biocypher/projects/3/views/2) (check the tabs for
+different views) or the [meta-graph instance](metagraph).
 
 ```{note}
 We are currently working on adapter documentation, so the collection in the
