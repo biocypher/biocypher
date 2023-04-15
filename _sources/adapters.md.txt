@@ -21,7 +21,7 @@ to make sure that your favourite resource is supported.
 :gutter: 2
 
 :::{grid-item-card} Adapter Tutorial
-:link: adapter_functions
+:link: https://biocypher.org/tutorial-adapter.html
 :text-align: center
 For more information on developing your own adapters, please refer to this
 tutorial.
