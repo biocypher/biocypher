@@ -100,20 +100,20 @@ from adapters import AdapterChild1, AdapterChild2
 adapters = [AdapterChild1(), AdapterChild2()]
 
 for adapter in adapters:
-    adapter.write()
+    adapter.write_nodes()
 ```
 
-Examples of this approach can be seen in the [IGVF Knowledge
+Examples of this approach are the [IGVF Knowledge
 Graph](https://github.com/IGVF-DACC/igvf-catalog/tree/main/data) and the
 [Clinical Knowledge
-Graph](https://github.com/biocypher/clinical-knowledge-graph).
+Graph migration](https://github.com/biocypher/clinical-knowledge-graph).
 
 ```{note} 
 
 While there are differences in implementation details, both approaches are
 largely functionally equivalent. At the current time, there is no clear
 preference for one over the other; both are used. As the ecosystem matures and
-more higher-level functionality is added (e.g. the
+more high-level functionality is added (e.g. the
 [pipeline](https://github.com/biocypher/biocypher/milestone/1)), advantages of
 one approach over the other may become more apparent.
 
@@ -123,7 +123,7 @@ one approach over the other may become more apparent.
 
 In general, a single adapter fulfils the following tasks:
 
-1. Load the data from the primary resource, for instance by using pypath
+1. Loading the data from the primary resource, for instance by using pypath
 download / caching functions (as in the [UniProt example
 adapter](https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration)), by
 using columnar distributed data formats such as Parquet (as in the [Open Targets
@@ -135,13 +135,13 @@ adapter](https://github.com/biocypher/dependency-map)). Generally, any method
 that allows the efficient transfer of the data from adapter to BioCypher core is
 acceptable.
 
-2. Pass the data to BioCypher as a stream or list to be written to the Neo4j
-database via the python driver ("online") or via admin import (batch import from
-CSV). The latter has the advantage of high throughput and a low memory
-footprint, while the former allows for a more interactive workflow but is much
-slower, thus making it better suited for small incremental updates.
+2. Passing the data to BioCypher as a stream or list to be written to the used
+DBMS (or application) via a Python driver ("online") or via batch import (e.g.
+from CSV files).  The latter has the advantage of high throughput and a low
+memory footprint, while the former allows for a more interactive workflow but is
+often much slower, thus making it better suited for small incremental updates.
 
-3. Provide or connect to additional functionality that is useful for the
+3. Providing or connecting to additional functionality that is useful for the
 creation of knowledge graphs, such as identifier translation (e.g. via
 pypath.mapping as in the UniProt example adapter), or identifier and prefix
 standardisation and validation (e.g. via Bioregistry as in the UniProt example
@@ -164,13 +164,13 @@ multiple adapters.
 ## 1. Loading the Data
 
 Depending on the data source, it is up to the developer of the adapter to find
-and define a suitable representation to be piped into BioCypher. The way we
-handle it in ``pypath`` is only one of many: we load the entire ``pypath``
-object into memory, to be passed to BioCypher using a generator that evaluates
-each ``pypath`` object and transforms it to the tuple representation described
-below. This is made possible by the "pre-harmonised" form in which the data
-is represented within ``pypath``. For more heterogeneous data representations,
-additional transformations may be necessary before piping into BioCypher.
+and define a suitable representation to be piped into BioCypher; for instance,
+in out ``pypath`` adapter, we load the entire ``pypath`` object into memory to
+be passed to BioCypher using a generator that evaluates each ``pypath`` object
+and transforms it to the tuple representation described below. This is made
+possible by the "pre-harmonised" form in which the data is represented within
+``pypath``. For more heterogeneous data representations, additional
+transformations may be necessary before piping into BioCypher.
 
 For larger datasets, it can be beneficial to adopt a streaming approach or batch
 processing, as demonstrated in the [Open Targets
@@ -206,9 +206,9 @@ We refer to this development in an
 ```
 
 ## Note: Strict mode
-We can activate BioCypher strict mode with the `strict_mode` parameter upon
-instantiation of the driver. In strict mode, the driver will raise an error if
-it encounters a node or edge without data source, version, and licence. These
-currently need to be provided as part of the node and edge attribute
-dictionaries, with the reserved keywords `source`, `version`, and `licence` (or
-`license`). This may change to a more rigorous implementation in the future.
+We can activate BioCypher strict mode with the `strict_mode` option in the
+configuration. In strict mode, the driver will raise an error if it encounters a
+node or edge without data source, version, and licence. These currently need to
+be provided as part of the node and edge attribute dictionaries, with the
+reserved keywords `source`, `version`, and `licence` (or `license`). This may
+change to a more rigorous implementation in the future.
