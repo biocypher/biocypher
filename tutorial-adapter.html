@@ -60,6 +60,8 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">BioCypher Tutorial - Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">BioCypher Tutorial - Handling Ontologies</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">BioCypher Tutorial - Adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#adapter-philosophy">Adapter philosophy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Adapter functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#loading-the-data">1. Loading the Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#passing-the-data">2. Passing the Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#note-strict-mode">Note: Strict mode</a></li>
@@ -128,7 +130,88 @@ adapters.</p>
 <p class="admonition-title">Caution</p>
 <p>The adapter interface is still under development and may change rapidly.</p>
 </div>
-<p>In general, one adapter fulfils the following tasks:</p>
+<section id="adapter-philosophy">
+<h2>Adapter philosophy<a class="headerlink" href="#adapter-philosophy" title="Permalink to this heading"></a></h2>
+<p>There are currently two ‘flavours’ of adapters. The first is simpler and used in
+workflows that are similar to harmonisation scripts, where the BioCypher
+interface is instantiated in the same script as the adapter(s). In the second,
+the BioCypher interface is contained in the adapter class, which makes for a
+more complex architecture, but allows for more involved workflows. In
+pseudo-code, the two approaches look like this:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Simple adapter</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
+<span class="kn">from</span> <span class="nn">adapter</span> <span class="kn">import</span> <span class="n">Adapter</span>
+
+<span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
+<span class="n">adapter</span> <span class="o">=</span> <span class="n">Adapter</span><span class="p">()</span>
+
+<span class="n">bc</span><span class="o">.</span><span class="n">write_nodes</span><span class="p">(</span><span class="n">adapter</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<p>Here, the script file is the central point of control, orchestrating the entire
+interaction between the BioCypher core and the adapter(s). Examples of this
+simpler format are the <a class="reference external" href="https://github.com/biocypher/open-targets">Open Targets
+KG</a> and the <a class="reference external" href="https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration">CROssBAR
+v2</a>.</p>
+<p>On the other hand, the more involved approach looks like this:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Adapter base class</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
+
+<span class="k">class</span> <span class="nc">Adapter</span><span class="p">:</span>
+    <span class="n">__bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># setup</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_biocypher</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Adapter</span><span class="o">.</span><span class="n">__bc</span>
+
+    <span class="k">def</span> <span class="nf">get_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+        <span class="k">return</span> <span class="n">nodes</span>
+
+    <span class="k">def</span> <span class="nf">write_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Adapter</span><span class="o">.</span><span class="n">get_biocypher</span><span class="o">.</span><span class="n">write_nodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<p>Here, the adapter class (and adapters inheriting from it) contains a singleton
+instance of the BioCypher interface. Thus, the adapter needs to provide
+BioCypher functionality to the outside via dedicated methods. This allows for
+more complex workflows, for instance executing multiple adapters in a single
+for-loop, or writing from a stream of data, e.g. in a Neo4j transaction.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Main script</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adapters</span> <span class="kn">import</span> <span class="n">AdapterChild1</span><span class="p">,</span> <span class="n">AdapterChild2</span>
+
+<span class="n">adapters</span> <span class="o">=</span> <span class="p">[</span><span class="n">AdapterChild1</span><span class="p">(),</span> <span class="n">AdapterChild2</span><span class="p">()]</span>
+
+<span class="k">for</span> <span class="n">adapter</span> <span class="ow">in</span> <span class="n">adapters</span><span class="p">:</span>
+    <span class="n">adapter</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Examples of this approach can be seen in the <a class="reference external" href="https://github.com/IGVF-DACC/igvf-catalog/tree/main/data">IGVF Knowledge
+Graph</a> and the
+<a class="reference external" href="https://github.com/biocypher/clinical-knowledge-graph">Clinical Knowledge
+Graph</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While there are differences in implementation details, both approaches are
+largely functionally equivalent. At the current time, there is no clear
+preference for one over the other; both are used. As the ecosystem matures and
+more higher-level functionality is added (e.g. the
+<a class="reference external" href="https://github.com/biocypher/biocypher/milestone/1">pipeline</a>), advantages of
+one approach over the other may become more apparent.</p>
+</div>
+</section>
+<section id="id1">
+<h2>Adapter functions<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<p>In general, a single adapter fulfils the following tasks:</p>
 <ol class="arabic simple">
 <li><p>Load the data from the primary resource, for instance by using pypath
 download / caching functions (as in the <a class="reference external" href="https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration">UniProt example
@@ -165,15 +248,16 @@ maintain, extend, and reuse the code.</p>
 adapter, and to move them to the core only if they have shown to be useful for
 multiple adapters.</p>
 </div>
+</section>
 <section id="loading-the-data">
 <h2>1. Loading the Data<a class="headerlink" href="#loading-the-data" title="Permalink to this heading"></a></h2>
 <p>Depending on the data source, it is up to the developer of the adapter to find
 and define a suitable representation to be piped into BioCypher. The way we
-handle it in <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> is only one of many: we load the entire <code class="docutils literal notranslate"><span class="pre">PyPath</span></code>
+handle it in <code class="docutils literal notranslate"><span class="pre">pypath</span></code> is only one of many: we load the entire <code class="docutils literal notranslate"><span class="pre">pypath</span></code>
 object into memory, to be passed to BioCypher using a generator that evaluates
-each <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> object and transforms it to the tuple representation described
+each <code class="docutils literal notranslate"><span class="pre">pypath</span></code> object and transforms it to the tuple representation described
 below. This is made possible by the “pre-harmonised” form in which the data
-is represented within <code class="docutils literal notranslate"><span class="pre">PyPath</span></code>. For more heterogeneous data representations,
+is represented within <code class="docutils literal notranslate"><span class="pre">pypath</span></code>. For more heterogeneous data representations,
 additional transformations may be necessary before piping into BioCypher.</p>
 <p>For larger datasets, it can be beneficial to adopt a streaming approach or batch
 processing, as demonstrated in the <a class="reference external" href="https://github.com/biocypher/open-targets">Open Targets
@@ -204,7 +288,9 @@ an ontological class via the <code class="docutils literal notranslate"><span cl
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This representation will probably be subject to change soon and yield to a more
-standardised interface for nodes and edges, derived from a BioCypher core class.</p>
+standardised interface for nodes and edges, derived from a BioCypher core class.
+We refer to this development in an
+<a class="reference external" href="https://github.com/orgs/biocypher/projects/1?pane=issue&amp;itemId=23739517">issue</a>.</p>
 </div>
 </section>
 <section id="note-strict-mode">
@@ -213,9 +299,8 @@ standardised interface for nodes and edges, derived from a BioCypher core class.
 instantiation of the driver. In strict mode, the driver will raise an error if
 it encounters a node or edge without data source, version, and licence. These
 currently need to be provided as part of the node and edge attribute
-dictionaries, with the reserved keywords <code class="docutils literal notranslate"><span class="pre">source</span></code>, <code class="docutils literal notranslate"><span class="pre">version</span></code>, and <code class="docutils literal notranslate"><span class="pre">licence</span></code> or
-<code class="docutils literal notranslate"><span class="pre">license</span></code>. However, this may change to a more rigorous implementation in the
-future.</p>
+dictionaries, with the reserved keywords <code class="docutils literal notranslate"><span class="pre">source</span></code>, <code class="docutils literal notranslate"><span class="pre">version</span></code>, and <code class="docutils literal notranslate"><span class="pre">licence</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">license</span></code>). This may change to a more rigorous implementation in the future.</p>
 </section>
 </section>
 
