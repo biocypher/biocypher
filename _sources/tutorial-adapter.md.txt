@@ -90,8 +90,9 @@ class Adapter:
 Here, the adapter class (and adapters inheriting from it) contains a singleton
 instance of the BioCypher interface. Thus, the adapter needs to provide
 BioCypher functionality to the outside via dedicated methods. This allows for
-more complex workflows, for instance executing multiple adapters in a single
-for-loop, or writing from a stream of data, e.g. in a Neo4j transaction.
+more complex workflows, for instance, reducing clutter when executing multiple
+adapters in a single for-loop, or writing from a stream of data, e.g. in a Neo4j
+transaction (which happens inside the adapter).
 
 ```{code-block} python
 :caption: Main script

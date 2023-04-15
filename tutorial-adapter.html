@@ -182,8 +182,9 @@ v2</a>.</p>
 <p>Here, the adapter class (and adapters inheriting from it) contains a singleton
 instance of the BioCypher interface. Thus, the adapter needs to provide
 BioCypher functionality to the outside via dedicated methods. This allows for
-more complex workflows, for instance executing multiple adapters in a single
-for-loop, or writing from a stream of data, e.g. in a Neo4j transaction.</p>
+more complex workflows, for instance, reducing clutter when executing multiple
+adapters in a single for-loop, or writing from a stream of data, e.g. in a Neo4j
+transaction (which happens inside the adapter).</p>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">Main script</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adapters</span> <span class="kn">import</span> <span class="n">AdapterChild1</span><span class="p">,</span> <span class="n">AdapterChild2</span>
