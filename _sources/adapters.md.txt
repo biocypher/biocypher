@@ -17,6 +17,18 @@ GitHub Projects view may be less than complete. Please get in touch if you want
 to make sure that your favourite resource is supported.
 ```
 
+::::{grid} 1
+:gutter: 2
+
+:::{grid-item-card} Adapter Tutorial
+:link: adapter_functions
+:text-align: center
+For more information on developing your own adapters, please refer to this
+tutorial.
+:::
+
+::::
+
 The project view is built from issues in the [BioCypher GitHub repository](
 https://github.com/biocypher/biocypher/issues), which carry ``Fields`` (a 
 GitHub Projects-specific attribute) to describe their category and features. In
