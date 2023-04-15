@@ -191,20 +191,20 @@ for-loop, or writing from a stream of data, e.g. in a Neo4j transaction.</p>
 <span class="n">adapters</span> <span class="o">=</span> <span class="p">[</span><span class="n">AdapterChild1</span><span class="p">(),</span> <span class="n">AdapterChild2</span><span class="p">()]</span>
 
 <span class="k">for</span> <span class="n">adapter</span> <span class="ow">in</span> <span class="n">adapters</span><span class="p">:</span>
-    <span class="n">adapter</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+    <span class="n">adapter</span><span class="o">.</span><span class="n">write_nodes</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<p>Examples of this approach can be seen in the <a class="reference external" href="https://github.com/IGVF-DACC/igvf-catalog/tree/main/data">IGVF Knowledge
+<p>Examples of this approach are the <a class="reference external" href="https://github.com/IGVF-DACC/igvf-catalog/tree/main/data">IGVF Knowledge
 Graph</a> and the
 <a class="reference external" href="https://github.com/biocypher/clinical-knowledge-graph">Clinical Knowledge
-Graph</a>.</p>
+Graph migration</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>While there are differences in implementation details, both approaches are
 largely functionally equivalent. At the current time, there is no clear
 preference for one over the other; both are used. As the ecosystem matures and
-more higher-level functionality is added (e.g. the
+more high-level functionality is added (e.g. the
 <a class="reference external" href="https://github.com/biocypher/biocypher/milestone/1">pipeline</a>), advantages of
 one approach over the other may become more apparent.</p>
 </div>
@@ -213,7 +213,7 @@ one approach over the other may become more apparent.</p>
 <h2>Adapter functions<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <p>In general, a single adapter fulfils the following tasks:</p>
 <ol class="arabic simple">
-<li><p>Load the data from the primary resource, for instance by using pypath
+<li><p>Loading the data from the primary resource, for instance by using pypath
 download / caching functions (as in the <a class="reference external" href="https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration">UniProt example
 adapter</a>), by
 using columnar distributed data formats such as Parquet (as in the <a class="reference external" href="https://github.com/biocypher/open-targets">Open Targets
@@ -224,12 +224,12 @@ reading a file from disk (as in the <a class="reference external" href="https://
 adapter</a>). Generally, any method
 that allows the efficient transfer of the data from adapter to BioCypher core is
 acceptable.</p></li>
-<li><p>Pass the data to BioCypher as a stream or list to be written to the Neo4j
-database via the python driver (“online”) or via admin import (batch import from
-CSV). The latter has the advantage of high throughput and a low memory
-footprint, while the former allows for a more interactive workflow but is much
-slower, thus making it better suited for small incremental updates.</p></li>
-<li><p>Provide or connect to additional functionality that is useful for the
+<li><p>Passing the data to BioCypher as a stream or list to be written to the used
+DBMS (or application) via a Python driver (“online”) or via batch import (e.g.
+from CSV files).  The latter has the advantage of high throughput and a low
+memory footprint, while the former allows for a more interactive workflow but is
+often much slower, thus making it better suited for small incremental updates.</p></li>
+<li><p>Providing or connecting to additional functionality that is useful for the
 creation of knowledge graphs, such as identifier translation (e.g. via
 pypath.mapping as in the UniProt example adapter), or identifier and prefix
 standardisation and validation (e.g. via Bioregistry as in the UniProt example
@@ -252,13 +252,13 @@ multiple adapters.</p>
 <section id="loading-the-data">
 <h2>1. Loading the Data<a class="headerlink" href="#loading-the-data" title="Permalink to this heading"></a></h2>
 <p>Depending on the data source, it is up to the developer of the adapter to find
-and define a suitable representation to be piped into BioCypher. The way we
-handle it in <code class="docutils literal notranslate"><span class="pre">pypath</span></code> is only one of many: we load the entire <code class="docutils literal notranslate"><span class="pre">pypath</span></code>
-object into memory, to be passed to BioCypher using a generator that evaluates
-each <code class="docutils literal notranslate"><span class="pre">pypath</span></code> object and transforms it to the tuple representation described
-below. This is made possible by the “pre-harmonised” form in which the data
-is represented within <code class="docutils literal notranslate"><span class="pre">pypath</span></code>. For more heterogeneous data representations,
-additional transformations may be necessary before piping into BioCypher.</p>
+and define a suitable representation to be piped into BioCypher; for instance,
+in out <code class="docutils literal notranslate"><span class="pre">pypath</span></code> adapter, we load the entire <code class="docutils literal notranslate"><span class="pre">pypath</span></code> object into memory to
+be passed to BioCypher using a generator that evaluates each <code class="docutils literal notranslate"><span class="pre">pypath</span></code> object
+and transforms it to the tuple representation described below. This is made
+possible by the “pre-harmonised” form in which the data is represented within
+<code class="docutils literal notranslate"><span class="pre">pypath</span></code>. For more heterogeneous data representations, additional
+transformations may be necessary before piping into BioCypher.</p>
 <p>For larger datasets, it can be beneficial to adopt a streaming approach or batch
 processing, as demonstrated in the <a class="reference external" href="https://github.com/biocypher/open-targets">Open Targets
 adapter</a> and the <a class="reference external" href="https://github.com/biocypher/clinical-knowledge-graph">CKG
@@ -295,12 +295,12 @@ We refer to this development in an
 </section>
 <section id="note-strict-mode">
 <h2>Note: Strict mode<a class="headerlink" href="#note-strict-mode" title="Permalink to this heading"></a></h2>
-<p>We can activate BioCypher strict mode with the <code class="docutils literal notranslate"><span class="pre">strict_mode</span></code> parameter upon
-instantiation of the driver. In strict mode, the driver will raise an error if
-it encounters a node or edge without data source, version, and licence. These
-currently need to be provided as part of the node and edge attribute
-dictionaries, with the reserved keywords <code class="docutils literal notranslate"><span class="pre">source</span></code>, <code class="docutils literal notranslate"><span class="pre">version</span></code>, and <code class="docutils literal notranslate"><span class="pre">licence</span></code> (or
-<code class="docutils literal notranslate"><span class="pre">license</span></code>). This may change to a more rigorous implementation in the future.</p>
+<p>We can activate BioCypher strict mode with the <code class="docutils literal notranslate"><span class="pre">strict_mode</span></code> option in the
+configuration. In strict mode, the driver will raise an error if it encounters a
+node or edge without data source, version, and licence. These currently need to
+be provided as part of the node and edge attribute dictionaries, with the
+reserved keywords <code class="docutils literal notranslate"><span class="pre">source</span></code>, <code class="docutils literal notranslate"><span class="pre">version</span></code>, and <code class="docutils literal notranslate"><span class="pre">licence</span></code> (or <code class="docutils literal notranslate"><span class="pre">license</span></code>). This may
+change to a more rigorous implementation in the future.</p>
 </section>
 </section>
 
