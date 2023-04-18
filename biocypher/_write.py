@@ -623,6 +623,7 @@ class _BatchWriter(ABC):
                         plist.append('')
                     elif v in [
                         'int',
+                        'integer',
                         'long',
                         'float',
                         'double',
@@ -877,6 +878,7 @@ class _BatchWriter(ABC):
                         plist.append('')
                     elif v in [
                         'int',
+                        'integer',
                         'long',
                         'float',
                         'double',
@@ -1118,13 +1120,19 @@ class _Neo4jBatchWriter(_BatchWriter):
             # concatenate key:value in props
             props_list = []
             for k, v in props.items():
-                if v in ['int', 'long']:
+                if v in ['int', 'long', 'integer']:
                     props_list.append(f'{k}:long')
+                elif v in ['int[]', 'long[]', 'integer[]']:
+                    props_list.append(f'{k}:long[]')
                 elif v in ['float', 'double', 'dbl']:
                     props_list.append(f'{k}:double')
+                elif v in ['float[]', 'double[]']:
+                    props_list.append(f'{k}:double[]')
                 elif v in ['bool', 'boolean']:
                     # TODO Neo4j boolean support / spelling?
                     props_list.append(f'{k}:boolean')
+                elif v in ['bool[]', 'boolean[]']:
+                    props_list.append(f'{k}:boolean[]')
                 elif v in ['str[]', 'string[]']:
                     props_list.append(f'{k}:string[]')
                 else:
@@ -1191,15 +1199,23 @@ class _Neo4jBatchWriter(_BatchWriter):
             # concatenate key:value in props
             props_list = []
             for k, v in props.items():
-                if v in ['int', 'long']:
+                if v in ['int', 'long', 'integer']:
                     props_list.append(f'{k}:long')
+                elif v in ['int[]', 'long[]', 'integer[]']:
+                    props_list.append(f'{k}:long[]')
                 elif v in ['float', 'double']:
                     props_list.append(f'{k}:double')
+                elif v in ['float[]', 'double[]']:
+                    props_list.append(f'{k}:double[]')
                 elif v in [
                     'bool',
                     'boolean',
                 ]:  # TODO does Neo4j support bool?
                     props_list.append(f'{k}:boolean')
+                elif v in ['bool[]', 'boolean[]']:
+                    props_list.append(f'{k}:boolean[]')
+                elif v in ['str[]', 'string[]']:
+                    props_list.append(f'{k}:string[]')
                 else:
                     props_list.append(f'{k}')
 
