@@ -91,7 +91,7 @@ meta-graph described below.
 :::
 
 :::{grid-item-card} Repo with Docker setup:
-:link: https://github.com/biocypher/meta-graph
+:link: https://github.com/biocypher/meta-graph/tree/read_only
 :text-align: center
 {octicon}`mark-github;3em` {octicon}`project;3em` {octicon}`container;3em`
 :::
