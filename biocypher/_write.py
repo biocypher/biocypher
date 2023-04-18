@@ -1212,7 +1212,7 @@ class _Neo4jBatchWriter(_BatchWriter):
                     'boolean',
                 ]:  # TODO does Neo4j support bool?
                     props_list.append(f'{k}:boolean')
-                 elif v in ['bool[]', 'boolean[]']:
+                elif v in ['bool[]', 'boolean[]']:
                     props_list.append(f'{k}:boolean[]')
                 elif v in ['str[]', 'string[]']:
                     props_list.append(f'{k}:string[]')
