@@ -391,9 +391,17 @@ configuration. This is done by adding a `properties` key to the entity type
 configuration. The value of this key is another dictionary, where in the
 standard case the keys are the names of the properties that the entity type
 should possess, and the values give the type of the property. Possible values
-are `str` (or `string`), `int` (or `integer`, `long`), `float` (or `double`,
-`dbl`), `bool` (or `boolean`), as well as arrays of these types (indicated by
-square brackets, e.g. `string[]`).
+are:
+
+- `str` (or `string`),
+
+- `int` (or `integer`, `long`),
+
+- `float` (or `double`, `dbl`),
+
+- `bool` (or `boolean`),
+
+- arrays of any of these types (indicated by square brackets, e.g. `string[]`).
 
 In the case of properties that are not present in (some of) the source data,
 BioCypher will add them to the output with a default value of `None`.
