@@ -411,7 +411,7 @@ protein:
     sequence: str
     description: str
     taxon: str
-    mass: int
+    mass: dbl
 ```
 
 This will add the `mass` property to all proteins (in addition to the three we
