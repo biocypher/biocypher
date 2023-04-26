@@ -451,14 +451,16 @@ consistent for each entity type is to designate them explicitly in the schema
 configuration. This is done by adding a <code class="docutils literal notranslate"><span class="pre">properties</span></code> key to the entity type
 configuration. The value of this key is another dictionary, where in the
 standard case the keys are the names of the properties that the entity type
-should possess, and the values give the type of the property (<code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>,
-<code class="docutils literal notranslate"><span class="pre">bool</span></code>). In the case of properties that are not present in (some of) the source
-data, BioCypher will add them to the output with a default value of <code class="docutils literal notranslate"><span class="pre">None</span></code>.
-Additional properties in the input that are not represented in these
-designated property names will be ignored.</p>
-<p>Let’s imagine that some, but not all, of our protein nodes have a <code class="docutils literal notranslate"><span class="pre">mass</span></code> value.
-If we want to include the mass value on all proteins, we can add the following
-to our schema configuration:</p>
+should possess, and the values give the type of the property. Possible values
+are <code class="docutils literal notranslate"><span class="pre">str</span></code> (or <code class="docutils literal notranslate"><span class="pre">string</span></code>), <code class="docutils literal notranslate"><span class="pre">int</span></code> (or <code class="docutils literal notranslate"><span class="pre">integer</span></code>, <code class="docutils literal notranslate"><span class="pre">long</span></code>), <code class="docutils literal notranslate"><span class="pre">float</span></code> (or <code class="docutils literal notranslate"><span class="pre">double</span></code>,
+<code class="docutils literal notranslate"><span class="pre">dbl</span></code>), <code class="docutils literal notranslate"><span class="pre">bool</span></code> (or <code class="docutils literal notranslate"><span class="pre">boolean</span></code>), as well as arrays of these types (indicated by
+square brackets, e.g. <code class="docutils literal notranslate"><span class="pre">string[]</span></code>).</p>
+<p>In the case of properties that are not present in (some of) the source data,
+BioCypher will add them to the output with a default value of <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Additional properties in the input that are not represented in these designated
+property names will be ignored. Let’s imagine that some, but not all, of our
+protein nodes have a <code class="docutils literal notranslate"><span class="pre">mass</span></code> value. If we want to include the mass value on all
+proteins, we can add the following to our schema configuration:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
 <span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span>
