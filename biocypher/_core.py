@@ -222,7 +222,7 @@ class BioCypher:
         else:
             raise NotImplementedError('Cannot get driver in offline mode.')
 
-    def write_nodes(self, nodes) -> bool:
+    def write_nodes(self, nodes, batch_size: int = int(1e6)) -> bool:
         """
         Write nodes to database. Either takes an iterable of tuples (if given,
         translates to ``BioCypherNode`` objects) or an iterable of 
@@ -244,9 +244,9 @@ class BioCypher:
         else:
             tnodes = nodes
         # write node files
-        return self._writer.write_nodes(tnodes)
+        return self._writer.write_nodes(tnodes, batch_size=batch_size)
 
-    def write_edges(self, edges) -> bool:
+    def write_edges(self, edges, batch_size: int = int(1e6)) -> bool:
         """
         Write edges to database. Either takes an iterable of tuples (if given,
         translates to ``BioCypherEdge`` objects) or an iterable of
@@ -268,7 +268,7 @@ class BioCypher:
         else:
             tedges = edges
         # write edge files
-        return self._writer.write_edges(tedges)
+        return self._writer.write_edges(tedges, batch_size=batch_size)
 
     def add_nodes(self, nodes):
         pass

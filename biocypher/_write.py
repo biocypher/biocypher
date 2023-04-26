@@ -304,7 +304,7 @@ class _BatchWriter(ABC):
 
             return delimiter, delimiter
 
-    def write_nodes(self, nodes, batch_size=int(1e6)):
+    def write_nodes(self, nodes, batch_size: int = int(1e6)):
         """
         Wrapper for writing nodes and their headers.
 
