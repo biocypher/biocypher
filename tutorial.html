@@ -452,9 +452,14 @@ configuration. This is done by adding a <code class="docutils literal notranslat
 configuration. The value of this key is another dictionary, where in the
 standard case the keys are the names of the properties that the entity type
 should possess, and the values give the type of the property. Possible values
-are <code class="docutils literal notranslate"><span class="pre">str</span></code> (or <code class="docutils literal notranslate"><span class="pre">string</span></code>), <code class="docutils literal notranslate"><span class="pre">int</span></code> (or <code class="docutils literal notranslate"><span class="pre">integer</span></code>, <code class="docutils literal notranslate"><span class="pre">long</span></code>), <code class="docutils literal notranslate"><span class="pre">float</span></code> (or <code class="docutils literal notranslate"><span class="pre">double</span></code>,
-<code class="docutils literal notranslate"><span class="pre">dbl</span></code>), <code class="docutils literal notranslate"><span class="pre">bool</span></code> (or <code class="docutils literal notranslate"><span class="pre">boolean</span></code>), as well as arrays of these types (indicated by
-square brackets, e.g. <code class="docutils literal notranslate"><span class="pre">string[]</span></code>).</p>
+are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code> (or <code class="docutils literal notranslate"><span class="pre">string</span></code>),</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code> (or <code class="docutils literal notranslate"><span class="pre">integer</span></code>, <code class="docutils literal notranslate"><span class="pre">long</span></code>),</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">float</span></code> (or <code class="docutils literal notranslate"><span class="pre">double</span></code>, <code class="docutils literal notranslate"><span class="pre">dbl</span></code>),</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span></code> (or <code class="docutils literal notranslate"><span class="pre">boolean</span></code>),</p></li>
+<li><p>arrays of any of these types (indicated by square brackets, e.g. <code class="docutils literal notranslate"><span class="pre">string[]</span></code>).</p></li>
+</ul>
 <p>In the case of properties that are not present in (some of) the source data,
 BioCypher will add them to the output with a default value of <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 Additional properties in the input that are not represented in these designated
