@@ -390,15 +390,17 @@ consistent for each entity type is to designate them explicitly in the schema
 configuration. This is done by adding a `properties` key to the entity type
 configuration. The value of this key is another dictionary, where in the
 standard case the keys are the names of the properties that the entity type
-should possess, and the values give the type of the property (`int`, `str`,
-`bool`). In the case of properties that are not present in (some of) the source
-data, BioCypher will add them to the output with a default value of `None`.
-Additional properties in the input that are not represented in these
-designated property names will be ignored.
+should possess, and the values give the type of the property. Possible values
+are `str` (or `string`), `int` (or `integer`, `long`), `float` (or `double`,
+`dbl`), `bool` (or `boolean`), as well as arrays of these types (indicated by
+square brackets, e.g. `string[]`).
 
-Let's imagine that some, but not all, of our protein nodes have a `mass` value.
-If we want to include the mass value on all proteins, we can add the following
-to our schema configuration:
+In the case of properties that are not present in (some of) the source data,
+BioCypher will add them to the output with a default value of `None`.
+Additional properties in the input that are not represented in these designated
+property names will be ignored. Let's imagine that some, but not all, of our
+protein nodes have a `mass` value. If we want to include the mass value on all
+proteins, we can add the following to our schema configuration:
 
 ```{code-block} yaml
 protein:
