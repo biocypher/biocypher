@@ -14,12 +14,14 @@ submodules.
 """
 from typing import Dict, List, Optional
 from more_itertools import peekable
+import pandas as pd
 
 from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
 from ._write import get_writer
+from ._pandas import Pandas
 from ._config import config as _config
 from ._config import update_from_file as _file_update
 from ._create import BioCypherEdge, BioCypherNode
@@ -269,6 +271,36 @@ class BioCypher:
             tedges = edges
         # write edge files
         return self._writer.write_edges(tedges, batch_size=batch_size)
+
+    def to_df(self, entities) -> List[pd.DataFrame]:
+        """
+        Convert entities to a pandas DataFrame for each entity type and return
+        a list.
+
+        Args:
+            entities (iterable): An iterable of entities to convert to a
+                DataFrame.
+
+        Returns:
+            pd.DataFrame: A pandas DataFrame.
+        """
+
+        pd = Pandas(
+            translator=self._get_translator(),
+            ontology=self._get_ontology(),
+        )
+
+        entities = peekable(entities)
+        if isinstance(entities.peek(), BioCypherNode):
+            return pd.node_table(entities)
+        elif isinstance(entities.peek(), BioCypherEdge):
+            return pd.edge_table(entities)
+        elif len(entities.peek()) < 4:
+            tnodes = self._translator.translate_nodes(entities)
+            return pd.node_table(tnodes)
+        else:
+            tedges = self._translator.translate_edges(entities)
+            return pd.edge_table(tedges)
 
     def add_nodes(self, nodes):
         pass

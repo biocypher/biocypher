@@ -1,0 +1,25 @@
+protein:
+    represented_as: node
+    preferred_id: [uniprot, entrez]
+    input_label: [uniprot_protein, entrez_protein]
+    properties:
+        sequence: str
+        description: str
+        taxon: str
+        mass: int
+
+protein isoform:
+    is_a: protein
+    inherit_properties: true
+    represented_as: node
+    preferred_id: uniprot
+    input_label: uniprot_isoform
+
+protein protein interaction:
+    is_a: pairwise molecular interaction
+    represented_as: edge
+    preferred_id: intact
+    input_label: interacts_with
+    properties:
+        method: str
+        source: str
