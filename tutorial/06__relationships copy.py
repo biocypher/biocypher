@@ -49,11 +49,11 @@ def main():
         schema_config_path='tutorial/06_schema_config copy.yaml',
     )
     # Run the import
-    nodes = bc.to_df(node_generator())
-    print(nodes["entrez.protein"])
-
-    edges = bc.to_df(edge_generator())
-    print(edges["protein protein interaction"])
+    bc.add(node_generator())
+    bc.add(edge_generator())
+    entities = bc.to_df()
+    print(entities["entrez.protein"])
+    print(entities["protein protein interaction"])
 
 if __name__ == '__main__':
     main()

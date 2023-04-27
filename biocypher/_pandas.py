@@ -6,10 +6,9 @@ class Pandas:
         self.ontology = ontology
         self.translator = translator
 
-        self.singleton_dfs = {}
-        self.doublet_dfs = {}
+        self.dfs = {}
 
-    def node_table(self, nodes):
+    def add_node_table(self, nodes):
         """
         Return a pandas dataframe for one node type.
         """
@@ -24,13 +23,13 @@ class Pandas:
             _type = node.get_label()
             _props = node.get_properties()
 
-            if not _type in self.singleton_dfs:
+            if not _type in self.dfs:
                 col_names = [_type]
                 for prop in _props:
                     col_names.append(prop)
-                self.singleton_dfs[_type] = pd.DataFrame(columns=col_names)
+                self.dfs[_type] = pd.DataFrame(columns=col_names)
             else:
-                col_names = self.singleton_dfs[_type].columns
+                col_names = self.dfs[_type].columns
 
             # create a row assigning properties to columns
             row = [_id]
@@ -42,11 +41,9 @@ class Pandas:
                 else:
                     row.append(None)
 
-            self.singleton_dfs[_type].loc[len(self.singleton_dfs[_type])] = row
+            self.dfs[_type].loc[len(self.dfs[_type])] = row
 
-        return self.singleton_dfs
-
-    def edge_table(self, edges):
+    def add_edge_table(self, edges):
         
         for edge in edges:
             if not isinstance(edge, BioCypherEdge):
@@ -63,13 +60,13 @@ class Pandas:
             _type = edge.get_label()
             _props = edge.get_properties()
 
-            if not _type in self.doublet_dfs:
+            if not _type in self.dfs:
                 col_names = [_type, "_from", "_to"]
                 for prop in _props:
                     col_names.append(prop)
-                self.doublet_dfs[_type] = pd.DataFrame(columns=col_names)
+                self.dfs[_type] = pd.DataFrame(columns=col_names)
             else:
-                col_names = self.doublet_dfs[_type].columns
+                col_names = self.dfs[_type].columns
 
             # create a row assigning properties to columns
             row = [_id, _from, _to]
@@ -81,7 +78,5 @@ class Pandas:
                 else:
                     row.append(None)
 
-            self.doublet_dfs[_type].loc[len(self.doublet_dfs[_type])] = row
-
-        return self.doublet_dfs
+            self.dfs[_type].loc[len(self.dfs[_type])] = row
 

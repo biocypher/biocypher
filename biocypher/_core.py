@@ -153,6 +153,7 @@ class BioCypher:
         self._translator = None
         self._ontology = None
         self._writer = None
+        self._pd = None
 
     def _get_ontology_mapping(self) -> OntologyMapping:
         """
@@ -272,7 +273,7 @@ class BioCypher:
         # write edge files
         return self._writer.write_edges(tedges, batch_size=batch_size)
 
-    def to_df(self, entities) -> List[pd.DataFrame]:
+    def to_df(self) -> List[pd.DataFrame]:
         """
         Convert entities to a pandas DataFrame for each entity type and return
         a list.
@@ -284,23 +285,34 @@ class BioCypher:
         Returns:
             pd.DataFrame: A pandas DataFrame.
         """
+        if not self._pd:
+            raise ValueError(
+                "No pandas instance found. Please call `add()` first."
+            )
+        
+        return self._pd.dfs
+        
 
-        pd = Pandas(
-            translator=self._get_translator(),
-            ontology=self._get_ontology(),
-        )
+
+
+    def add(self, entities):
+        if not self._pd:
+            self._pd = Pandas(
+                translator=self._get_translator(),
+                ontology=self._get_ontology(),
+            )
 
         entities = peekable(entities)
         if isinstance(entities.peek(), BioCypherNode):
-            return pd.node_table(entities)
+            self._pd.add_node_table(entities)
         elif isinstance(entities.peek(), BioCypherEdge):
-            return pd.edge_table(entities)
+            self._pd.add_edge_table(entities)
         elif len(entities.peek()) < 4:
             tnodes = self._translator.translate_nodes(entities)
-            return pd.node_table(tnodes)
+            self._pd.add_node_table(tnodes)
         else:
             tedges = self._translator.translate_edges(entities)
-            return pd.edge_table(tedges)
+            self._pd.add_edge_table(tedges)
 
     def add_nodes(self, nodes):
         pass
