@@ -123,6 +123,15 @@ class BioCypherNode:
             str: node_label
         """
         return self.node_label
+    
+    def get_type(self) -> str:
+        """
+        Returns primary node label.
+
+        Returns:
+            str: node_label
+        """
+        return self.node_label
 
     def get_preferred_id(self) -> str:
         """
@@ -241,6 +250,15 @@ class BioCypherEdge:
         """
         return self.relationship_label
 
+    def get_type(self) -> str:
+        """
+        Returns relationship label.
+
+        Returns:
+            str: relationship_label
+        """
+        return self.relationship_label
+
     def get_properties(self) -> dict:
         """
         Returns all other relationship properties apart from primary ids
@@ -261,6 +279,7 @@ class BioCypherEdge:
                 dict.
         """
         return {
+            'relationship_id': self.relationship_id or None,
             'source_id': self.source_id,
             'target_id': self.target_id,
             'relationship_label': self.relationship_label,
@@ -312,10 +331,10 @@ class BioCypherRelAsNode:
                 f'not {type(self.target_edge)}.',
             )
 
-    def get_node(self):
+    def get_node(self) -> BioCypherNode:
         return self.node
 
-    def get_source_edge(self):
+    def get_source_edge(self) -> BioCypherEdge:
         return self.source_edge
 
     def get_target_edge(self) -> BioCypherEdge:

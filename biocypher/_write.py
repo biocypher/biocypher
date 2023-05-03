@@ -37,6 +37,7 @@ if TYPE_CHECKING:
 
     from ._ontology import Ontology
     from ._translate import Translator
+    from ._deduplicate import Deduplicator
 
 
 class _BatchWriter(ABC):
@@ -66,6 +67,10 @@ class _BatchWriter(ABC):
         translator:
             Instance of :py:class:`Translator` to enable translation of
             nodes and manipulation of properties.
+
+        deduplicator:
+            Instance of :py:class:`Deduplicator` to enable deduplication
+            of nodes and edges.
 
         delimiter:
             The delimiter to use for the CSV files.
@@ -190,6 +195,7 @@ class _BatchWriter(ABC):
         self,
         ontology: 'Ontology',
         translator: 'Translator',
+        deduplicator: 'Deduplicator',
         delimiter: str,
         array_delimiter: str = ',',
         quote: str = '"',
@@ -230,6 +236,7 @@ class _BatchWriter(ABC):
         self.extended_schema = ontology.extended_schema
         self.ontology = ontology
         self.translator = translator
+        self.deduplicator = deduplicator
         self.node_property_dict = {}
         self.edge_property_dict = {}
         self.import_call_nodes = set()
@@ -247,23 +254,6 @@ class _BatchWriter(ABC):
         else:
             logger.info(f'Creating output directory `{self.outdir}`.')
             os.makedirs(self.outdir)
-
-        self.seen_node_ids = set()  # set to store the ids of nodes that have
-        # already been written; to avoid duplicates
-        self.duplicate_node_ids = set(
-        )  # set to store the ids of nodes that were
-        # found to have duplicates (avoid overloading the log)
-        self.duplicate_node_types = set(
-        )  # set to store the types of nodes that
-        # have been found to have duplicates
-
-        self.seen_edges = {}  # dict to store the set of edges that
-        # have already been written; to avoid duplicates; per edge type
-        self.duplicate_edge_ids = set()  # set to store the ids of edges that
-        # were found to have duplicates (avoid overloading the log)
-        self.duplicate_edge_types = set(
-        )  # set to store the types of edges that
-        # have been found to have duplicates
 
         self.parts = {}  # dict to store the paths of part files for each label
 
@@ -425,22 +415,16 @@ class _BatchWriter(ABC):
             labels = {}  # dict to store the additional labels for each
             # primary graph constituent from biolink hierarchy
             for node in nodes:
+                # check if node has already been written, if so skip
+                if self.deduplicator.node_seen(node):
+                    continue
+
                 _id = node.get_id()
                 label = node.get_label()
 
                 # check for non-id
                 if not _id:
                     logger.warning(f'Node {label} has no id; skipping.')
-                    continue
-
-                # check if node has already been written, if so skip
-                if _id in self.seen_node_ids:
-                    self.duplicate_node_ids.add(_id)
-                    if not label in self.duplicate_node_types:
-                        self.duplicate_node_types.add(label)
-                        logger.warning(
-                            f'Duplicate nodes found in type {label}. '
-                        )
                     continue
 
                 if not label in bins.keys():
@@ -522,8 +506,6 @@ class _BatchWriter(ABC):
 
                         bins[label] = []
                         bin_l[label] = 0
-
-                self.seen_node_ids.add(_id)
 
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
@@ -682,45 +664,23 @@ class _BatchWriter(ABC):
             )  # dict to store a dict of properties
             # for each label to check for consistency and their type
             # for now, relevant for `int`
-            for e in edges:
-                if isinstance(e, BioCypherRelAsNode):
-                    # shouldn't happen any more
-                    logger.error(
-                        "Edges cannot be of type 'RelAsNode'. "
-                        f'Caused by: {e}',
-                    )
-                    return False
+            for edge in edges:
+                # check for duplicates
+                if self.deduplicator.edge_seen(edge):
+                    continue
 
-                if not (e.get_source_id() and e.get_target_id()):
+                if not (edge.get_source_id() and edge.get_target_id()):
                     logger.error(
                         'Edge must have source and target node. '
-                        f'Caused by: {e}',
+                        f'Caused by: {edge}',
                     )
                     continue
 
-                label = e.get_label()
-
-                if not label in self.seen_edges.keys():
-                    self.seen_edges[label] = set()
-
-                src_tar_id = '_'.join([e.get_source_id(), e.get_target_id()])
-
-                # check for duplicates
-                if src_tar_id in self.seen_edges.get(label, set()):
-                    self.duplicate_edge_ids.add(src_tar_id)
-                    if not label in self.duplicate_edge_types:
-                        self.duplicate_edge_types.add(label)
-                        logger.warning(
-                            f'Duplicate edges found in type {label}. '
-                        )
-                    continue
-
-                else:
-                    self.seen_edges[label].add(src_tar_id)
+                label = edge.get_label()
 
                 if not label in bins.keys():
                     # start new list
-                    bins[label].append(e)
+                    bins[label].append(edge)
                     bin_l[label] = 1
 
                     # get properties from config if present
@@ -750,7 +710,7 @@ class _BatchWriter(ABC):
                             d['licence'] = 'str'
 
                     else:
-                        d = dict(e.get_properties())
+                        d = dict(edge.get_properties())
                         # encode property type
                         for k, v in d.items():
                             if d[k] is not None:
@@ -768,7 +728,7 @@ class _BatchWriter(ABC):
 
                 else:
                     # add to list
-                    bins[label].append(e)
+                    bins[label].append(edge)
                     bin_l[label] += 1
                     if not bin_l[label] < batch_size:
                         # batch size controlled here
@@ -1014,32 +974,6 @@ class _BatchWriter(ABC):
             f.write(self._construct_import_call())
 
         return True
-
-    def get_duplicate_nodes(self):
-        """
-        Function to return a list of duplicate nodes.
-
-        Returns:
-            list: list of duplicate nodes
-        """
-
-        if self.duplicate_node_types:
-            return (self.duplicate_node_types, self.duplicate_node_ids)
-        else:
-            return None
-
-    def get_duplicate_edges(self):
-        """
-        Function to return a list of duplicate edges.
-
-        Returns:
-            list: list of duplicate edges
-        """
-
-        if self.duplicate_edge_types:
-            return (self.duplicate_edge_types, self.duplicate_edge_ids)
-        else:
-            return None
 
 
 class _Neo4jBatchWriter(_BatchWriter):
@@ -1833,6 +1767,7 @@ def get_writer(
     dbms: str,
     translator: 'Translator',
     ontology: 'Ontology',
+    deduplicator: 'Deduplicator',
     output_directory: str,
     strict_mode: bool,
 ):
@@ -1873,6 +1808,7 @@ def get_writer(
         return writer(
             ontology=ontology,
             translator=translator,
+            deduplicator=deduplicator,
             delimiter=dbms_config.get('delimiter'),
             array_delimiter=dbms_config.get('array_delimiter'),
             quote=dbms_config.get('quote_character'),

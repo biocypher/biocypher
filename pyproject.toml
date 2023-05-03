@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biocypher"
-version = "0.5.12"
+version = "0.5.13"
 description = "A unifying framework for biomedical research knowledge graphs"
 authors = [
     "Sebastian Lobentanzer <sebastian.lobentanzer@gmail.com>",
@@ -33,6 +33,7 @@ rdflib = "^6.2.0"
 networkx = "^3.0"
 stringcase = "^1.2.0"
 neo4j-utils = "0.0.7"
+pandas = "^2.0.1"
 
 [tool.poetry.group.dev.dependencies]
 sphinx = ">=5.0.0"

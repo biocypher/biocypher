@@ -14,12 +14,14 @@ submodules.
 """
 from typing import Dict, List, Optional
 from more_itertools import peekable
+import pandas as pd
 
 from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
 from ._write import get_writer
+from ._pandas import Pandas
 from ._config import config as _config
 from ._config import update_from_file as _file_update
 from ._create import BioCypherEdge, BioCypherNode
@@ -27,6 +29,7 @@ from ._connect import get_driver
 from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator
+from ._deduplicate import Deduplicator
 
 __all__ = ['BioCypher']
 
@@ -148,9 +151,21 @@ class BioCypher:
 
         # Initialize
         self._ontology_mapping = None
+        self._deduplicator = None
         self._translator = None
         self._ontology = None
         self._writer = None
+        self._pd = None
+    
+    def _get_deduplicator(self) -> Deduplicator:
+        """
+        Create deduplicator if not exists and return.
+        """
+
+        if not self._deduplicator:
+            self._deduplicator = Deduplicator()
+
+        return self._deduplicator
 
     def _get_ontology_mapping(self) -> OntologyMapping:
         """
@@ -202,6 +217,7 @@ class BioCypher:
                 dbms=self._dbms,
                 translator=self._get_translator(),
                 ontology=self._get_ontology(),
+                deduplicator=self._get_deduplicator(),
                 output_directory=self._output_directory,
                 strict_mode=self._strict_mode,
             )
@@ -218,6 +234,7 @@ class BioCypher:
                 dbms=self._dbms,
                 translator=self._get_translator(),
                 ontology=self._get_ontology(),
+                deduplicator=self._get_deduplicator(),
             )
         else:
             raise NotImplementedError('Cannot get driver in offline mode.')
@@ -270,11 +287,56 @@ class BioCypher:
         # write edge files
         return self._writer.write_edges(tedges, batch_size=batch_size)
 
+    def to_df(self) -> List[pd.DataFrame]:
+        """
+        Convert entities to a pandas DataFrame for each entity type and return
+        a list.
+
+        Args:
+            entities (iterable): An iterable of entities to convert to a
+                DataFrame.
+
+        Returns:
+            pd.DataFrame: A pandas DataFrame.
+        """
+        if not self._pd:
+            raise ValueError(
+                "No pandas instance found. Please call `add()` first."
+            )
+        
+        return self._pd.dfs
+        
+
+    def add(self, entities):
+        """
+        Function to add entities to the in-memory database. Accepts an iterable
+        of tuples (if given, translates to ``BioCypherNode`` or
+        ``BioCypherEdge`` objects) or an iterable of ``BioCypherNode`` or
+        ``BioCypherEdge`` objects.
+        """
+        if not self._pd:
+            self._pd = Pandas(
+                translator=self._get_translator(),
+                ontology=self._get_ontology(),
+                deduplicator=self._get_deduplicator(),
+            )
+
+        entities = peekable(entities)
+
+        if isinstance(entities.peek(), BioCypherNode) or isinstance(entities.peek(), BioCypherEdge):
+            tentities = entities
+        elif len(entities.peek()) < 4:
+            tentities = self._translator.translate_nodes(entities)
+        else:
+            tentities = self._translator.translate_edges(entities)
+
+        self._pd.add_tables(tentities)
+
     def add_nodes(self, nodes):
-        pass
+        self.add(nodes)
 
     def add_edges(self, edges):
-        pass
+        self.add(edges)
 
     def merge_nodes(self, nodes) -> bool:
         """
@@ -364,7 +426,7 @@ class BioCypher:
         the logger.
         """
 
-        dn = self._writer.get_duplicate_nodes()
+        dn = self._deduplicator.get_duplicate_nodes()
 
         if dn:
 
@@ -386,7 +448,7 @@ class BioCypher:
         else:
             logger.info('No duplicate nodes in input.')
 
-        de = self._writer.get_duplicate_edges()
+        de = self._deduplicator.get_duplicate_edges()
 
         if de:
 
