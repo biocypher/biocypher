@@ -1,5 +1,5 @@
 import pandas as pd
-from ._create import BioCypherNode, BioCypherEdge, BioCypherRelAsNode
+from ._create import BioCypherNode, BioCypherEdge
 
 class Pandas:
     def __init__(self, ontology, translator):
