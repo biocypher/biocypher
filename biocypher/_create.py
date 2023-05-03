@@ -123,6 +123,15 @@ class BioCypherNode:
             str: node_label
         """
         return self.node_label
+    
+    def get_type(self) -> str:
+        """
+        Returns primary node label.
+
+        Returns:
+            str: node_label
+        """
+        return self.node_label
 
     def get_preferred_id(self) -> str:
         """
@@ -233,6 +242,15 @@ class BioCypherEdge:
         return self.target_id
 
     def get_label(self) -> str:
+        """
+        Returns relationship label.
+
+        Returns:
+            str: relationship_label
+        """
+        return self.relationship_label
+
+    def get_type(self) -> str:
         """
         Returns relationship label.
 
