@@ -261,6 +261,7 @@ class BioCypherEdge:
                 dict.
         """
         return {
+            'relationship_id': self.relationship_id or None,
             'source_id': self.source_id,
             'target_id': self.target_id,
             'relationship_label': self.relationship_label,

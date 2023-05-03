@@ -296,6 +296,12 @@ class BioCypher:
 
 
     def add(self, entities):
+        """
+        Function to add entities to the in-memory database. Accepts an iterable
+        of tuples (if given, translates to ``BioCypherNode`` or
+        ``BioCypherEdge`` objects) or an iterable of ``BioCypherNode`` or
+        ``BioCypherEdge`` objects.
+        """
         if not self._pd:
             self._pd = Pandas(
                 translator=self._get_translator(),
@@ -303,22 +309,21 @@ class BioCypher:
             )
 
         entities = peekable(entities)
-        if isinstance(entities.peek(), BioCypherNode):
-            self._pd.add_node_table(entities)
-        elif isinstance(entities.peek(), BioCypherEdge):
-            self._pd.add_edge_table(entities)
+
+        if isinstance(entities.peek(), BioCypherNode) or isinstance(entities.peek(), BioCypherEdge):
+            tentities = entities
         elif len(entities.peek()) < 4:
-            tnodes = self._translator.translate_nodes(entities)
-            self._pd.add_node_table(tnodes)
+            tentities = self._translator.translate_nodes(entities)
         else:
-            tedges = self._translator.translate_edges(entities)
-            self._pd.add_edge_table(tedges)
+            tentities = self._translator.translate_edges(entities)
+
+        self._pd.add_tables(tentities)
 
     def add_nodes(self, nodes):
-        pass
+        self.add(nodes)
 
     def add_edges(self, edges):
-        pass
+        self.add(edges)
 
     def merge_nodes(self, nodes) -> bool:
         """
