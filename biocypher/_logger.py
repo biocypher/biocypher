@@ -75,7 +75,7 @@ def get_logger(name: str = 'biocypher') -> logging.Logger:
         # file handler
         file_handler = logging.FileHandler(logfile)
 
-        if _config.config('debug'):
+        if _config.config('biocypher').get('debug'):
             file_handler.setLevel(logging.DEBUG)
         else:
             file_handler.setLevel(logging.INFO)

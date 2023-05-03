@@ -33,7 +33,7 @@ biocypher:
   ## Logging granularity
   ## Set debug to true if more granular logging is desired
 
-  debug: false
+  debug: true
 
   ## Set to change the log directory
 
