@@ -331,10 +331,10 @@ class BioCypherRelAsNode:
                 f'not {type(self.target_edge)}.',
             )
 
-    def get_node(self):
+    def get_node(self) -> BioCypherNode:
         return self.node
 
-    def get_source_edge(self):
+    def get_source_edge(self) -> BioCypherEdge:
         return self.source_edge
 
     def get_target_edge(self) -> BioCypherEdge:
