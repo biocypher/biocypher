@@ -14,6 +14,7 @@ from biocypher._write import (
     _ArangoDBBatchWriter,
     _PostgreSQLBatchWriter,
 )
+from biocypher._pandas import Pandas
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._connect import _Neo4jDriver
 from biocypher._mapping import OntologyMapping
@@ -303,6 +304,13 @@ def create_core(request, tmp_path):
         os.remove(os.path.join(tmp_path, f))
     os.rmdir(tmp_path)
 
+@pytest.fixture(scope='function')
+def _pd(deduplicator):
+    return Pandas(
+        ontology=None,
+        translator=None,
+        deduplicator=deduplicator,
+    )
 
 # neo4j parameters
 @pytest.fixture(scope='session')

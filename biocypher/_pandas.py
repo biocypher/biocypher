@@ -2,21 +2,30 @@ import pandas as pd
 from ._create import BioCypherNode, BioCypherEdge
 
 class Pandas:
-    def __init__(self, ontology, translator):
+    def __init__(self, ontology, translator, deduplicator):
         self.ontology = ontology
         self.translator = translator
+        self.deduplicator = deduplicator
 
         self.dfs = {}
 
     def _separate_entity_types(self, entities):
         """
         Given mixed iterable of BioCypher objects, separate them into lists by
-        type.
+        type. Also deduplicates using the `Deduplicator` instance.
         """
         lists = {}
         for entity in entities:
             if not isinstance(entity, BioCypherNode) and not isinstance(entity, BioCypherEdge):
                 raise TypeError(f"Expected a BioCypherNode or BioCypherEdge, got {type(entity)}.")
+            
+            if isinstance(entity, BioCypherNode):
+                seen = self.deduplicator.node_seen(entity)
+            elif isinstance(entity, BioCypherEdge):
+                seen = self.deduplicator.edge_seen(entity)
+
+            if seen:
+                continue
             
             _type = entity.get_label()
             if not _type in lists:

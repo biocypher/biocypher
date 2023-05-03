@@ -2,7 +2,7 @@ from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
-from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from ._create import BioCypherEdge, BioCypherNode
 
 class Deduplicator:
     """
