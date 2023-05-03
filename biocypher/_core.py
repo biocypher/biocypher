@@ -29,6 +29,7 @@ from ._connect import get_driver
 from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator
+from ._deduplicate import Deduplicator
 
 __all__ = ['BioCypher']
 
@@ -150,10 +151,21 @@ class BioCypher:
 
         # Initialize
         self._ontology_mapping = None
+        self._deduplicator = None
         self._translator = None
         self._ontology = None
         self._writer = None
         self._pd = None
+    
+    def _get_deduplicator(self) -> Deduplicator:
+        """
+        Create deduplicator if not exists and return.
+        """
+
+        if not self._deduplicator:
+            self._deduplicator = Deduplicator()
+
+        return self._deduplicator
 
     def _get_ontology_mapping(self) -> OntologyMapping:
         """
@@ -205,6 +217,7 @@ class BioCypher:
                 dbms=self._dbms,
                 translator=self._get_translator(),
                 ontology=self._get_ontology(),
+                deduplicator=self._get_deduplicator(),
                 output_directory=self._output_directory,
                 strict_mode=self._strict_mode,
             )
@@ -221,6 +234,7 @@ class BioCypher:
                 dbms=self._dbms,
                 translator=self._get_translator(),
                 ontology=self._get_ontology(),
+                deduplicator=self._get_deduplicator(),
             )
         else:
             raise NotImplementedError('Cannot get driver in offline mode.')
@@ -293,8 +307,6 @@ class BioCypher:
         return self._pd.dfs
         
 
-
-
     def add(self, entities):
         """
         Function to add entities to the in-memory database. Accepts an iterable
@@ -306,6 +318,7 @@ class BioCypher:
             self._pd = Pandas(
                 translator=self._get_translator(),
                 ontology=self._get_ontology(),
+                deduplicator=self._get_deduplicator(),
             )
 
         entities = peekable(entities)
@@ -413,7 +426,7 @@ class BioCypher:
         the logger.
         """
 
-        dn = self._writer.get_duplicate_nodes()
+        dn = self._deduplicator.get_duplicate_nodes()
 
         if dn:
 
@@ -435,7 +448,7 @@ class BioCypher:
         else:
             logger.info('No duplicate nodes in input.')
 
-        de = self._writer.get_duplicate_edges()
+        de = self._deduplicator.get_duplicate_edges()
 
         if de:
 

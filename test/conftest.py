@@ -19,6 +19,7 @@ from biocypher._connect import _Neo4jDriver
 from biocypher._mapping import OntologyMapping
 from biocypher._ontology import Ontology, OntologyAdapter
 from biocypher._translate import Translator
+from biocypher._deduplicate import Deduplicator
 
 
 # CLI option parser
@@ -119,6 +120,9 @@ def _get_edges(l):
         edges.append(e2)
     return edges
 
+@pytest.fixture(scope='function')
+def deduplicator():
+    return Deduplicator()
 
 @pytest.fixture(scope='module')
 def ontology_mapping():
@@ -196,11 +200,12 @@ def hybrid_ontology(extended_ontology_mapping):
 
 # neo4j batch writer fixtures
 @pytest.fixture(scope='function')
-def bw(hybrid_ontology, translator, tmp_path):
+def bw(hybrid_ontology, translator, deduplicator, tmp_path):
 
     bw = _Neo4jBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
+        deduplicator=deduplicator,
         output_directory=tmp_path,
         delimiter=';',
         array_delimiter='|',
@@ -217,11 +222,12 @@ def bw(hybrid_ontology, translator, tmp_path):
 
 # neo4j batch writer fixtures
 @pytest.fixture(scope='function')
-def bw_tab(hybrid_ontology, translator, tmp_path):
+def bw_tab(hybrid_ontology, translator, deduplicator, tmp_path):
 
     bw_tab = _Neo4jBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
+        deduplicator=deduplicator,
         output_directory=tmp_path,
         delimiter='\\t',
         array_delimiter='|',
@@ -237,11 +243,12 @@ def bw_tab(hybrid_ontology, translator, tmp_path):
 
 
 @pytest.fixture(scope='function')
-def bw_strict(hybrid_ontology, translator, tmp_path):
+def bw_strict(hybrid_ontology, translator, deduplicator, tmp_path):
 
     bw = _Neo4jBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
+        deduplicator=deduplicator,
         output_directory=tmp_path,
         delimiter=';',
         array_delimiter='|',
@@ -460,12 +467,13 @@ def skip_if_offline_postgresql(request, postgresql_param):
 
 @pytest.fixture(scope='function')
 def bw_comma_postgresql(
-    postgresql_param, hybrid_ontology, translator, tmp_path
+    postgresql_param, hybrid_ontology, translator, deduplicator, tmp_path
 ):
 
     bw_comma = _PostgreSQLBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
+        deduplicator=deduplicator,
         output_directory=tmp_path,
         delimiter=',',
         **postgresql_param
@@ -480,11 +488,12 @@ def bw_comma_postgresql(
 
 
 @pytest.fixture(scope='function')
-def bw_tab_postgresql(postgresql_param, hybrid_ontology, translator, tmp_path):
+def bw_tab_postgresql(postgresql_param, hybrid_ontology, translator, deduplicator, tmp_path):
 
     bw_tab = _PostgreSQLBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
+        deduplicator=deduplicator,
         output_directory=tmp_path,
         delimiter='\\t',
         **postgresql_param
@@ -516,11 +525,12 @@ def create_database_postgres(postgresql_param):
 
 
 @pytest.fixture(scope='function')
-def bw_arango(hybrid_ontology, translator, tmp_path):
+def bw_arango(hybrid_ontology, translator, deduplicator, tmp_path):
 
     bw_arango = _ArangoDBBatchWriter(
         ontology=hybrid_ontology,
         translator=translator,
+        deduplicator=deduplicator,
         output_directory=tmp_path,
         delimiter=',',
     )
