@@ -1,7 +1,6 @@
 from biocypher import BioCypher
 from tutorial.data_generator import (
     EntrezProtein,
-    InteractionGenerator,
     RandomPropertyProtein,
     RandomPropertyProteinIsoform,
 )
@@ -26,34 +25,18 @@ def main():
                 protein.get_properties(),
             )
 
-    # Simulate edges
-    ppi = InteractionGenerator(
-        interactors=[p.get_id() for p in proteins],
-        interaction_probability=0.05,
-    ).generate_interactions()
-
-    # Extract id, source, target, label, and property dictionary
-    def edge_generator():
-        for interaction in ppi:
-            yield (
-                interaction.get_id(),
-                interaction.get_source_id(),
-                interaction.get_target_id(),
-                interaction.get_label(),
-                interaction.get_properties(),
-            )
-
     # Create BioCypher driver
     bc = BioCypher(
-        biocypher_config_path='tutorial/06_biocypher_config.yaml',
-        schema_config_path='tutorial/06_schema_config copy.yaml',
+        biocypher_config_path='tutorial/05_biocypher_config.yaml',
+        schema_config_path='tutorial/05_schema_config.yaml',
     )
     # Run the import
     bc.add(node_generator())
-    bc.add(edge_generator())
-    entities = bc.to_df()
-    print(entities["entrez.protein"])
-    print(entities["protein protein interaction"])
+
+    for name, df in bc.to_df().items():
+        print(name)
+        print(df)
+
 
 if __name__ == '__main__':
     main()
