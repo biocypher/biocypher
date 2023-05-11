@@ -110,14 +110,18 @@ input data - which in the real-world use case could come from any type of
 interface - are represented by simulated data containing some examples of
 differently formatted biomedical entities such as proteins and their
 interactions.</p>
+<p>There are two versions of this tutorial, which only differ in the output format.
+The first uses a CSV output format to write files suitable for Neo4j admin
+import, and the second creates an in-memory collection of Pandas dataframes.
+You can find both in the <code class="docutils literal notranslate"><span class="pre">tutorial</span></code> directory of the BioCypher repository; the
+Pandas version of each tutorial step is suffixed with <code class="docutils literal notranslate"><span class="pre">_pandas</span></code>.</p>
 <div class="warning admonition">
 <p class="admonition-title">Neo4j</p>
-<p>We use the BioCypher output adapter to write CSV files meant for Neo4j admin
-import, mainly because it is the use case with the lowest amount of
-dependencies.  While you can use the files to create an actual Neo4j database,
-it is not required for this tutorial. For checking the output, you can simply
-open the CSV files in a text editor or your IDE; by default, they will be
-written to the <code class="docutils literal notranslate"><span class="pre">biocypher-out</span></code> directory.</p>
+<p>While you can use the files generated to create an actual Neo4j database, it is
+not required for this tutorial. For checking the output, you can simply open the
+CSV files in a text editor or your IDE; by default, they will be written to the
+<code class="docutils literal notranslate"><span class="pre">biocypher-out</span></code> directory. If you simply want to run the tutorial to see how
+it works, you can also run the Pandas version.</p>
 </div>
 <section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading"></a></h2>
