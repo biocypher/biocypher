@@ -80,7 +80,7 @@ BioCypher provides a simple way of visualising the ontology hierarchy. This is
 useful for debugging and for getting a quick overview of the ontology and which
 parts are actually used in the knowledge graph to be created. To get an overview
 of the structure of our project, we can run the following command via the
-driver:
+interface:
 
 ```{code-block} python
 :caption: Visualising the ontology hierarchy
@@ -340,14 +340,18 @@ field. The name given in the `synonym_for` field must be an existing class name
 
 ```
 
-We can visualise the structure of the ontology as we have before using
-`driver.show_ontology_structure()`, and we observe that the `complex` class is
-now a synonym for the `macromolecular complex` class (their being synonyms
-indicated as an equals sign):
+We can visualise the structure of the ontology as we have before. Instead of
+using `bc.show_ontology_structure()` however, we can use the `bc.summary()`
+method to show the structure and simultaneously check for duplicates and missing
+labels. This is useful for debugging purposes, and we can see that the import
+was completed without encountering duplicates, and all labels in the input are
+accounted for in the schema configuration. We also observe in the tree that the
+`complex` class is now a synonym for the `macromolecular complex` class (their
+being synonyms indicated as an equals sign):
 
 ```{code-block} text
 
-Showing ontology structure based on https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl
+Showing ontology structure based on https://raw.githubusercontent.com/biolink/biolink-model/v3.2.1/biolink-model.owl.ttl
 entity
 ├── association
 │   └── gene to gene association
@@ -391,16 +395,24 @@ concept.
 ```{hint}
 
 If the concept does not exist in the head ontology, but is a feasible child
-class of an existing concept, the above extension functionalities can be used to
-introduce the concept and then fuse the tail ontology there.
+class of an existing concept, you can set the `merge_nodes` option to `False` to
+prevent the merging of head and tail join nodes, but instead adding the tail
+join node as a child of the head join node you have specified. For instance, in
+the example below, we merge `sequence variant` from Biolink and
+`sequence_variant` from Sequence Ontology into a single node, but we add the
+MONDO subtree of `human disease` as a child of `disease` in Biolink.
+
+`merge_nodes` is set to `True` by default, so there is no need to specify it in
+the configuration file if you want to merge the nodes.
 
 ```
 
 The ontology adapter also accepts any arbitrary "head ontology" as a base
 ontology, but if none is provided, the Biolink model is used as the default head
-ontology. These options can be provided to the BioCypher driver as parameters,
-or as options in the BioCypher configuration file, which is the preferred method
-for transparency reasons:
+ontology. However, it is strongly recommended to explicitly specify your desired
+ontology version here. These options can be provided to the BioCypher interface
+as parameters, or as options in the BioCypher configuration file, which is the
+preferred method for transparency reasons:
 
 ```{code-block} yaml
 :caption: Using biocypher_config.yaml
@@ -410,7 +422,7 @@ biocypher:  # biocypher settings
 
   # Ontology configuration
   head_ontology:
-    url: https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl
+    url: https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
     root_node: entity
 
   tail_ontologies:
@@ -423,7 +435,8 @@ biocypher:  # biocypher settings
     mondo:
       url: http://purl.obolibrary.org/obo/mondo.owl
       head_join_node: disease
-      tail_join_node: disease
+      tail_join_node: human disease
+      merge_nodes: false
 
 # ...
 ```
@@ -442,7 +455,7 @@ bc = BioCypher(
     # ...
 
     head_ontology={
-      'url': 'https://github.com/biolink/biolink-model/raw/master/biolink-model.owl.ttl',
+      'url': 'https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl',
       'root_node': 'entity',
     },
 
@@ -457,7 +470,8 @@ bc = BioCypher(
             {
                 'url': 'test/mondo.owl',
                 'head_join_node': 'disease',
-                'tail_join_node': 'disease',
+                'tail_join_node': 'human disease',
+                'merge_nodes': False,
             }
     },
 

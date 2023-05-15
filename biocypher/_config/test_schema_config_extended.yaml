@@ -58,6 +58,18 @@ sequence variant:
     effect: str
     biotype: str
 
+altered gene product level:
+  represented_as: node
+  input_label: agpl
+
+decreased gene product level:
+  represented_as: node
+  input_label: agpl_decreased
+
+lethal variant:
+  represented_as: node
+  input_label: lethal
+
 snRNA sequence:
   is_a: nucleic acid entity
   represented_as: node

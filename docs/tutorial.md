@@ -13,17 +13,60 @@ interface - are represented by simulated data containing some examples of
 differently formatted biomedical entities such as proteins and their
 interactions.
 
+There are two versions of this tutorial, which only differ in the output format.
+The first uses a CSV output format to write files suitable for Neo4j admin
+import, and the second creates an in-memory collection of Pandas dataframes.
+You can find both in the `tutorial` directory of the BioCypher repository; the
+Pandas version of each tutorial step is suffixed with `_pandas`.
+
 ```{admonition} Neo4j
 :class: warning
 
-We use the BioCypher output adapter to write CSV files meant for Neo4j admin
-import, mainly because it is the use case with the lowest amount of
-dependencies.  While you can use the files to create an actual Neo4j database,
-it is not required for this tutorial. For checking the output, you can simply
-open the CSV files in a text editor or your IDE; by default, they will be
-written to the ``biocypher-out`` directory.
+While you can use the files generated to create an actual Neo4j database, it is
+not required for this tutorial. For checking the output, you can simply open the
+CSV files in a text editor or your IDE; by default, they will be written to the
+``biocypher-out`` directory. If you simply want to run the tutorial to see how
+it works, you can also run the Pandas version.
 
 ```
+
+## Setup
+To run this tutorial, you will need to have cloned and installed the BioCypher
+repository on your machine. We recommend using
+[Poetry](https://python-poetry.org/):
+
+```{code-block} bash
+
+git clone https://github.com/biocypher/biocypher.git
+cd biocypher
+poetry install
+
+```
+
+```{admonition} Poetry environment
+:class: note
+In order to run the tutorial code, you will need to activate the Poetry
+environment. This can be done by running `poetry shell` in the `biocypher`
+directory. Alternatively, you can run the code from within the Poetry
+environment by prepending `poetry run` to the command. For example, to run the
+tutorial code, you can run `poetry run python tutorial/01__basic_import.py`.
+```
+
+In the `biocypher` root directory, you will find a `tutorial` directory with
+the files for this tutorial. The `data_generator.py` file contains the
+simulated data generation code, and the other files are named according to the
+tutorial step they are used in. The `biocypher-out` directory will be created
+automatically when you run the tutorial code.
+
+## Configuration
+BioCypher is configured using a YAML file; it comes with a default (which you
+can see in the [Configuration](config) section). You can use it, for instance,
+to select an output format, the output directory, separators, logging level, and
+other options. For this tutorial, we will use a dedicated configuration file for
+each of the steps. The configuration files are located in the `tutorial`
+directory, and are called using the `biocypher_config_path` argument at
+instantiation of the BioCypher interface. For more information, see also the
+[Quickstart Configuration](quick_config) section.
 
 ## Section 1: Adding data
 ```{admonition} Tutorial files
@@ -352,15 +395,25 @@ consistent for each entity type is to designate them explicitly in the schema
 configuration. This is done by adding a `properties` key to the entity type
 configuration. The value of this key is another dictionary, where in the
 standard case the keys are the names of the properties that the entity type
-should possess, and the values give the type of the property (`int`, `str`,
-`bool`). In the case of properties that are not present in (some of) the source
-data, BioCypher will add them to the output with a default value of `None`.
-Additional properties in the input that are not represented in these
-designated property names will be ignored.
+should possess, and the values give the type of the property. Possible values
+are:
 
-Let's imagine that some, but not all, of our protein nodes have a `mass` value.
-If we want to include the mass value on all proteins, we can add the following
-to our schema configuration:
+- `str` (or `string`),
+
+- `int` (or `integer`, `long`),
+
+- `float` (or `double`, `dbl`),
+
+- `bool` (or `boolean`),
+
+- arrays of any of these types (indicated by square brackets, e.g. `string[]`).
+
+In the case of properties that are not present in (some of) the source data,
+BioCypher will add them to the output with a default value of `None`.
+Additional properties in the input that are not represented in these designated
+property names will be ignored. Let's imagine that some, but not all, of our
+protein nodes have a `mass` value. If we want to include the mass value on all
+proteins, we can add the following to our schema configuration:
 
 ```{code-block} yaml
 protein:
@@ -371,7 +424,7 @@ protein:
     sequence: str
     description: str
     taxon: str
-    mass: int
+    mass: dbl
 ```
 
 This will add the `mass` property to all proteins (in addition to the three we

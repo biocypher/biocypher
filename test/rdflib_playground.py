@@ -100,7 +100,7 @@ def remove_prefix(uri: str) -> str:
 
 if __name__ == '__main__':
     path = 'test/so.owl'
-    url = 'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl'
+    url = 'https://raw.githubusercontent.com/biolink/biolink-model/v3.2.1/biolink-model.owl.ttl'
     root_label = 'entity'
     G = ontology_to_tree(url, root_label, switch_id_and_label=True)
 

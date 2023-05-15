@@ -12,13 +12,16 @@
 BioCypher core module. Interfaces with the user and distributes tasks to
 submodules.
 """
+from typing import Dict, List, Optional
 from more_itertools import peekable
+import pandas as pd
 
 from ._logger import logger
 
 logger.debug(f'Loading module {__name__}.')
 
 from ._write import get_writer
+from ._pandas import Pandas
 from ._config import config as _config
 from ._config import update_from_file as _file_update
 from ._create import BioCypherEdge, BioCypherNode
@@ -26,10 +29,11 @@ from ._connect import get_driver
 from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator
+from ._deduplicate import Deduplicator
 
 __all__ = ['BioCypher']
 
-SUPPORTED_DBMS = ['neo4j']
+SUPPORTED_DBMS = ['neo4j', 'postgresql']
 
 REQUIRED_CONFIG = [
     'dbms',
@@ -40,6 +44,37 @@ REQUIRED_CONFIG = [
 
 
 class BioCypher:
+    """
+    Orchestration of BioCypher operations. Instantiate this class to interact
+    with BioCypher.
+
+    Args:
+
+        dbms (str): The database management system to use. For supported
+            systems see SUPPORTED_DBMS.
+
+        offline (bool): Whether to run in offline mode. If True, no
+            connection to the database will be made.
+
+        strict_mode (bool): Whether to run in strict mode. If True, the
+            translator will raise an error if a node or edge does not
+            provide source, version, and licence information.
+
+        biocypher_config_path (str): Path to the BioCypher config file.
+
+        schema_config_path (str): Path to the user schema config
+            file.
+
+        head_ontology (dict): The head ontology defined by URL ('url') and root
+            node ('root_node').
+
+        tail_ontologies (dict): The tail ontologies defined by URL and
+            join nodes for both head and tail ontology.
+
+        output_directory (str): Path to the output directory. If not
+            provided, the default value 'biocypher-out' will be used.
+
+    """
     def __init__(
         self,
         dbms: str = None,
@@ -53,34 +88,6 @@ class BioCypher:
         # legacy params
         db_name: str = None,
     ):
-        """
-        Orchestration of BioCypher operations.
-
-        Args:
-
-            dbms (str): The database management system to use. For supported
-                systems see SUPPORTED_DBMS.
-
-            offline (bool): Whether to run in offline mode. If True, no
-                connection to the database will be made.
-
-            strict_mode (bool): Whether to run in strict mode. If True, the
-                translator will raise an error if a node or edge does not
-                provide source, version, and licence information.
-
-            user_schema_config_path (str): Path to the user schema config
-                file.
-
-            head_ontology (dict): The head ontology defined by URL and root
-                node.
-
-            tail_ontologies (dict): The tail ontologies defined by URL and
-                join nodes for both head and tail ontology.
-
-            output_directory (str): Path to the output directory. If not
-                provided, the default value 'biocypher-out' will be used.
-
-        """
 
         # Update configuration if custom path is provided
         if biocypher_config_path:
@@ -92,7 +99,7 @@ class BioCypher:
                 '`database_name` setting in the `biocypher_config.yaml` file '
                 'instead.'
             )
-            _config(**{'neo4j': {'database_name': db_name}})
+            _config(**{db_name: {'database_name': db_name}})
 
         # Load configuration
         self.base_config = _config('biocypher')
@@ -144,11 +151,23 @@ class BioCypher:
 
         # Initialize
         self._ontology_mapping = None
+        self._deduplicator = None
         self._translator = None
         self._ontology = None
         self._writer = None
+        self._pd = None
+    
+    def _get_deduplicator(self) -> Deduplicator:
+        """
+        Create deduplicator if not exists and return.
+        """
 
-    def _get_ontology_mapping(self):
+        if not self._deduplicator:
+            self._deduplicator = Deduplicator()
+
+        return self._deduplicator
+
+    def _get_ontology_mapping(self) -> OntologyMapping:
         """
         Create ontology mapping if not exists and return.
         """
@@ -160,7 +179,7 @@ class BioCypher:
 
         return self._ontology_mapping
 
-    def _get_translator(self):
+    def _get_translator(self) -> Translator:
         """
         Create translator if not exists and return.
         """
@@ -173,7 +192,7 @@ class BioCypher:
 
         return self._translator
 
-    def _get_ontology(self):
+    def _get_ontology(self) -> Ontology:
         """
         Create ontology if not exists and return.
         """
@@ -189,7 +208,7 @@ class BioCypher:
 
     def _get_writer(self):
         """
-        Create writer if not online.
+        Create writer if not online. Set as instance variable `self._writer`.
         """
 
         # Get worker
@@ -198,6 +217,7 @@ class BioCypher:
                 dbms=self._dbms,
                 translator=self._get_translator(),
                 ontology=self._get_ontology(),
+                deduplicator=self._get_deduplicator(),
                 output_directory=self._output_directory,
                 strict_mode=self._strict_mode,
             )
@@ -206,7 +226,7 @@ class BioCypher:
 
     def _get_driver(self):
         """
-        Create driver if not exists and return.
+        Create driver if not exists. Set as instance variable `self._driver`.
         """
 
         if not self._offline:
@@ -214,13 +234,22 @@ class BioCypher:
                 dbms=self._dbms,
                 translator=self._get_translator(),
                 ontology=self._get_ontology(),
+                deduplicator=self._get_deduplicator(),
             )
         else:
             raise NotImplementedError('Cannot get driver in offline mode.')
 
-    def write_nodes(self, nodes):
+    def write_nodes(self, nodes, batch_size: int = int(1e6)) -> bool:
         """
-        Write nodes to database.
+        Write nodes to database. Either takes an iterable of tuples (if given,
+        translates to ``BioCypherNode`` objects) or an iterable of 
+        ``BioCypherNode`` objects.
+
+        Args:
+            nodes (iterable): An iterable of nodes to write to the database.
+
+        Returns:
+            bool: True if successful.
         """
 
         if not self._writer:
@@ -232,11 +261,19 @@ class BioCypher:
         else:
             tnodes = nodes
         # write node files
-        return self._writer.write_nodes(tnodes)
+        return self._writer.write_nodes(tnodes, batch_size=batch_size)
 
-    def write_edges(self, edges):
+    def write_edges(self, edges, batch_size: int = int(1e6)) -> bool:
         """
-        Write edges to database.
+        Write edges to database. Either takes an iterable of tuples (if given,
+        translates to ``BioCypherEdge`` objects) or an iterable of
+        ``BioCypherEdge`` objects.
+
+        Args:
+            edges (iterable): An iterable of edges to write to the database.
+
+        Returns:
+            bool: True if successful.
         """
 
         if not self._writer:
@@ -248,17 +285,70 @@ class BioCypher:
         else:
             tedges = edges
         # write edge files
-        return self._writer.write_edges(tedges)
+        return self._writer.write_edges(tedges, batch_size=batch_size)
+
+    def to_df(self) -> List[pd.DataFrame]:
+        """
+        Convert entities to a pandas DataFrame for each entity type and return
+        a list.
+
+        Args:
+            entities (iterable): An iterable of entities to convert to a
+                DataFrame.
+
+        Returns:
+            pd.DataFrame: A pandas DataFrame.
+        """
+        if not self._pd:
+            raise ValueError(
+                "No pandas instance found. Please call `add()` first."
+            )
+        
+        return self._pd.dfs
+        
+
+    def add(self, entities):
+        """
+        Function to add entities to the in-memory database. Accepts an iterable
+        of tuples (if given, translates to ``BioCypherNode`` or
+        ``BioCypherEdge`` objects) or an iterable of ``BioCypherNode`` or
+        ``BioCypherEdge`` objects.
+        """
+        if not self._pd:
+            self._pd = Pandas(
+                translator=self._get_translator(),
+                ontology=self._get_ontology(),
+                deduplicator=self._get_deduplicator(),
+            )
+
+        entities = peekable(entities)
+
+        if isinstance(entities.peek(), BioCypherNode) or isinstance(entities.peek(), BioCypherEdge):
+            tentities = entities
+        elif len(entities.peek()) < 4:
+            tentities = self._translator.translate_nodes(entities)
+        else:
+            tentities = self._translator.translate_edges(entities)
+
+        self._pd.add_tables(tentities)
 
     def add_nodes(self, nodes):
-        pass
+        self.add(nodes)
 
     def add_edges(self, edges):
-        pass
+        self.add(edges)
 
-    def merge_nodes(self, nodes):
+    def merge_nodes(self, nodes) -> bool:
         """
-        Merge nodes into database.
+        Merge nodes into database. Either takes an iterable of tuples (if given,
+        translates to ``BioCypherNode`` objects) or an iterable of
+        ``BioCypherNode`` objects.
+
+        Args:
+            nodes (iterable): An iterable of nodes to merge into the database.
+
+        Returns:
+            bool: True if successful.
         """
 
         if not self._driver:
@@ -270,20 +360,45 @@ class BioCypher:
         else:
             tnodes = nodes
         # write node files
-        return self._driver.merge_nodes(tnodes)
+        return self._driver.add_biocypher_nodes(tnodes)
 
-    def merge_edges(self, edges):
-        pass
+    def merge_edges(self, edges) -> bool:
+        """
+        Merge edges into database. Either takes an iterable of tuples (if given,
+        translates to ``BioCypherEdge`` objects) or an iterable of
+        ``BioCypherEdge`` objects.
+        
+        Args:
+            edges (iterable): An iterable of edges to merge into the database. 
+
+        Returns:    
+            bool: True if successful.
+        """
+
+        if not self._driver:
+            self._get_driver()
+
+        edges = peekable(edges)
+        if not isinstance(edges.peek(), BioCypherEdge):
+            tedges = self._translator.translate_edges(edges)
+        else:
+            tedges = edges
+        # write edge files
+        return self._driver.add_biocypher_edges(tedges)
 
     # OVERVIEW AND CONVENIENCE METHODS ###
 
-    def log_missing_bl_types(self):
+    def log_missing_input_labels(self) -> Optional[Dict[str, List[str]]]:
         """
-        Get the set of Biolink types encountered without an entry in
-        the `schema_config.yaml` and print them to the logger.
+
+        Get the set of input labels encountered without an entry in the
+        `schema_config.yaml` and print them to the logger.
 
         Returns:
-            set: a set of missing Biolink types
+
+            Optional[Dict[str, List[str]]]: A dictionary of Biolink types
+            encountered without an entry in the `schema_config.yaml` file.
+
         """
 
         mt = self._translator.get_missing_biolink_types()
@@ -302,16 +417,16 @@ class BioCypher:
             return mt
 
         else:
-            logger.info('No missing Biolink types in input.')
+            logger.info('No missing labels in input.')
             return None
 
-    def log_duplicates(self):
+    def log_duplicates(self) -> None:
         """
         Get the set of duplicate nodes and edges encountered and print them to
         the logger.
         """
 
-        dn = self._writer.get_duplicate_nodes()
+        dn = self._deduplicator.get_duplicate_nodes()
 
         if dn:
 
@@ -333,7 +448,7 @@ class BioCypher:
         else:
             logger.info('No duplicate nodes in input.')
 
-        de = self._writer.get_duplicate_edges()
+        de = self._deduplicator.get_duplicate_edges()
 
         if de:
 
@@ -355,7 +470,7 @@ class BioCypher:
         else:
             logger.info('No duplicate edges in input.')
 
-    def show_ontology_structure(self, **kwargs):
+    def show_ontology_structure(self, **kwargs) -> None:
         """
         Show the ontology structure using treelib or write to GRAPHML file.
 
@@ -393,16 +508,38 @@ class BioCypher:
     def translate_term(self, term: str) -> str:
         """
         Translate a term to its BioCypher equivalent.
+
+        Args:
+            term (str): The term to translate.
+
+        Returns:
+            str: The BioCypher equivalent of the term.
         """
 
         # instantiate adapter if not exists
         self.start_ontology()
 
         return self._translator.translate_term(term)
+    
+    def summary(self) -> None:
+        """
+        Wrapper for showing ontology structure and logging duplicates and
+        missing input types.
+        """
+
+        self.show_ontology_structure()
+        self.log_duplicates()
+        self.log_missing_input_labels()
 
     def reverse_translate_term(self, term: str) -> str:
         """
         Reverse translate a term from its BioCypher equivalent.
+
+        Args:
+            term (str): The BioCypher term to reverse translate.
+
+        Returns:
+            str: The original term.
         """
 
         # instantiate adapter if not exists
@@ -413,6 +550,12 @@ class BioCypher:
     def translate_query(self, query: str) -> str:
         """
         Translate a query to its BioCypher equivalent.
+
+        Args:
+            query (str): The query to translate.
+
+        Returns:
+            str: The BioCypher equivalent of the query.
         """
 
         # instantiate adapter if not exists
@@ -423,6 +566,12 @@ class BioCypher:
     def reverse_translate_query(self, query: str) -> str:
         """
         Reverse translate a query from its BioCypher equivalent.
+
+        Args:
+            query (str): The BioCypher query to reverse translate.
+
+        Returns:
+            str: The original query.
         """
 
         # instantiate adapter if not exists

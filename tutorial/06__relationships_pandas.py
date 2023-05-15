@@ -1,6 +1,5 @@
 from biocypher import BioCypher
 from tutorial.data_generator import (
-    Complex,
     EntrezProtein,
     InteractionGenerator,
     RandomPropertyProtein,
@@ -10,27 +9,26 @@ from tutorial.data_generator import (
 
 def main():
     # Setup: create a list of proteins to be imported
-    proteins_complexes = [
+    proteins = [
         p for sublist in zip(
             [RandomPropertyProtein() for _ in range(10)],
             [RandomPropertyProteinIsoform() for _ in range(10)],
             [EntrezProtein() for _ in range(10)],
-            [Complex() for _ in range(10)],
         ) for p in sublist
     ]
 
     # Extract id, label, and property dictionary
     def node_generator():
-        for p_or_c in proteins_complexes:
+        for protein in proteins:
             yield (
-                p_or_c.get_id(),
-                p_or_c.get_label(),
-                p_or_c.get_properties(),
+                protein.get_id(),
+                protein.get_label(),
+                protein.get_properties(),
             )
 
     # Simulate edges
     ppi = InteractionGenerator(
-        interactors=[p.get_id() for p in proteins_complexes],
+        interactors=[p.get_id() for p in proteins],
         interaction_probability=0.05,
     ).generate_interactions()
 
@@ -47,19 +45,16 @@ def main():
 
     # Create BioCypher driver
     bc = BioCypher(
-        biocypher_config_path='tutorial/07_biocypher_config.yaml',
-        schema_config_path='tutorial/07_schema_config.yaml',
+        biocypher_config_path='tutorial/06_biocypher_config.yaml',
+        schema_config_path='tutorial/06_schema_config_pandas.yaml',
     )
     # Run the import
-    bc.write_nodes(node_generator())
-    bc.write_edges(edge_generator())
-
-    # Write command line call
-    bc.write_import_call()
-
-    # Visualise ontology schema and log duplicates / missing labels
-    bc.summary()
-
+    bc.add(node_generator())
+    bc.add(edge_generator())
+    
+    for name, df in bc.to_df().items():
+        print(name)
+        print(df)
 
 if __name__ == '__main__':
     main()

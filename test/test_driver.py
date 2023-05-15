@@ -5,16 +5,19 @@ from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._connect import _Neo4jDriver
 
 
+@pytest.mark.requires_neo4j
 def test_create_driver(driver):
 
     assert isinstance(driver, _Neo4jDriver)
 
 
+@pytest.mark.requires_neo4j
 def test_connect_to_db(driver):
 
     assert isinstance(driver._driver.driver, neo4j.Neo4jDriver) or isinstance(driver._driver.driver, neo4j.BoltDriver)
 
 
+@pytest.mark.requires_neo4j
 def test_increment_version(driver):
     driver._driver.wipe_db()
     query = "CREATE (n:BioCypher {id: 'v19700101-000000'})"
@@ -27,6 +30,7 @@ def test_increment_version(driver):
     assert len(r) == 2
 
 
+@pytest.mark.requires_neo4j
 def test_explain(driver):
     query = 'MATCH (n) WITH n LIMIT 25 MATCH (n)--(m)--(f) RETURN n, m, f'
     e = driver._driver.explain(query)
@@ -35,6 +39,7 @@ def test_explain(driver):
     assert 'args' in t and 'identifiers' in t
 
 
+@pytest.mark.requires_neo4j
 def test_profile(driver):
     query = 'MATCH (n) RETURN n LIMIT 100'
     p = driver._driver.profile(query)
@@ -43,6 +48,7 @@ def test_profile(driver):
     assert 'args' in t and 'identifiers' in t
 
 
+@pytest.mark.requires_neo4j
 def test_add_invalid_biocypher_node(driver):
     # neo4j database needs to be running!
 
@@ -53,6 +59,7 @@ def test_add_invalid_biocypher_node(driver):
         driver.add_biocypher_nodes('String')
 
 
+@pytest.mark.requires_neo4j
 def test_add_single_biocypher_node(driver):
     # neo4j database needs to be running!
     n = BioCypherNode(node_id='test_id1', node_label='Test')
@@ -65,6 +72,7 @@ def test_add_single_biocypher_node(driver):
     assert r[0]['id'] == 'test_id1'
 
 
+@pytest.mark.requires_neo4j
 def test_add_biocypher_node_list(driver):
     # neo4j database needs to be running!
     n1 = BioCypherNode(node_id='test_id1', node_label='Test')
@@ -78,6 +86,7 @@ def test_add_biocypher_node_list(driver):
     assert set([r[0]['id'], r[1]['id']]) == set(['test_id1', 'test_id2'])
 
 
+@pytest.mark.requires_neo4j
 def test_add_biocypher_node_generator(driver):
     # neo4j database needs to be running!
     # generator
@@ -100,6 +109,7 @@ def test_add_biocypher_node_generator(driver):
     assert 'test_id2' in ids
 
 
+@pytest.mark.requires_neo4j
 def test_add_specific_id_node(driver):
     n = BioCypherNode(node_id='CHAT', node_label='Gene', preferred_id='hgnc')
     driver.add_biocypher_nodes(n)
@@ -111,6 +121,7 @@ def test_add_specific_id_node(driver):
     assert r[0]['n'].get('preferred_id') == 'hgnc'
 
 
+@pytest.mark.requires_neo4j
 def test_add_generic_id_node(driver):
     n = BioCypherNode(node_id='CHAT', node_label='Gene', preferred_id='HGNC')
     driver.add_biocypher_nodes(n)
@@ -121,12 +132,14 @@ def test_add_generic_id_node(driver):
     assert r[0]['n'].get('id') is not None
 
 
+@pytest.mark.requires_neo4j
 def test_add_invalid_biocypher_edge(driver):
     # neo4j database needs to be running!
     with pytest.raises(ValueError):
         driver.add_biocypher_edges([1, 2, 3])
 
 
+@pytest.mark.requires_neo4j
 def test_add_single_biocypher_edge_explicit_node_creation(driver):
     # neo4j database needs to be running!
     n1 = BioCypherNode('src', 'Test')
@@ -146,6 +159,7 @@ def test_add_single_biocypher_edge_explicit_node_creation(driver):
     )
 
 
+@pytest.mark.requires_neo4j
 def test_add_single_biocypher_edge_missing_nodes(driver):
     # neo4j database needs to be running!
     # merging on non-existing nodes creates them without labels; what is
@@ -164,6 +178,7 @@ def test_add_single_biocypher_edge_missing_nodes(driver):
     )
 
 
+@pytest.mark.requires_neo4j
 def test_add_biocypher_edge_list(driver):
     # neo4j database needs to be running!
     n1 = BioCypherNode('src', 'Test')
@@ -188,6 +203,7 @@ def test_add_biocypher_edge_list(driver):
     )
 
 
+@pytest.mark.requires_neo4j
 def test_add_biocypher_edge_generator(driver):
     # neo4j database needs to be running!
     n1 = BioCypherNode('src', 'Test')
@@ -223,6 +239,7 @@ def test_add_biocypher_edge_generator(driver):
     )
 
 
+@pytest.mark.requires_neo4j
 def test_add_biocypher_interaction_as_BioCypherRelAsNode_list(driver):
     # neo4j database needs to be running!
     i1 = BioCypherNode('int1', 'Int1')
@@ -252,6 +269,7 @@ def test_add_biocypher_interaction_as_BioCypherRelAsNode_list(driver):
     )
 
 
+@pytest.mark.requires_neo4j
 def test_add_biocypher_interaction_as_BioCypherRelAsNode_generator(driver):
     # neo4j database needs to be running!
     i1 = BioCypherNode('int1', 'Int1')
@@ -287,6 +305,7 @@ def test_add_biocypher_interaction_as_BioCypherRelAsNode_generator(driver):
     )
 
 
+@pytest.mark.requires_neo4j
 def test_pretty_profile(driver):
     prof, printout = driver._driver.profile(
         'UNWIND [1,2,3,4,5] as id '
@@ -297,6 +316,7 @@ def test_pretty_profile(driver):
     assert 'args' in prof and 'ProduceResults' in printout[1]
 
 
+@pytest.mark.requires_neo4j
 def test_pretty_explain(driver):
     plan, printout = driver._driver.explain(
         'UNWIND [1,2,3,4,5] as id '

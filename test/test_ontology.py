@@ -1,6 +1,7 @@
 import os
 
 import networkx as nx
+import pytest
 
 from biocypher._ontology import Ontology
 
@@ -48,6 +49,8 @@ def test_ontology_functions(hybrid_ontology):
     combined_length = len(hybrid_ontology._head_ontology.get_nx_graph())
     for adapter in hybrid_ontology._tail_ontologies.values():
         combined_length += len(adapter.get_nx_graph())
+    # need to add 1 for the 'merge_nodes' = False case
+    combined_length += 1
     hybrid_length = len(hybrid_ontology._nx_graph)
 
     # subtract number of tail ontologies
@@ -60,19 +63,30 @@ def test_ontology_functions(hybrid_ontology):
     dgpl_ancestors = list(
         hybrid_ontology.get_ancestors('decreased gene product level')
     )
-    assert len(dgpl_ancestors) == 8
+    assert 'decreased gene product level' in dgpl_ancestors
     assert 'altered gene product level' in dgpl_ancestors
+    assert 'functional effect variant' in dgpl_ancestors
     assert 'sequence variant' in dgpl_ancestors
+    assert 'biological entity' in dgpl_ancestors
+    assert 'named thing' in dgpl_ancestors
     assert 'entity' in dgpl_ancestors
+    assert 'thing with taxon' in dgpl_ancestors
 
     lethal_var = hybrid_ontology._nx_graph.nodes['lethal variant']
     assert lethal_var['label'] == 'SO_0001773'
 
-    # second tail ontology
+    # second tail ontology: here we don't merge the nodes, but attach 'human
+    # disease' as a child of 'disease'
+
     cf_ancestors = list(hybrid_ontology.get_ancestors('cystic fibrosis'))
-    assert len(cf_ancestors) == 11
+    assert 'cystic fibrosis' in cf_ancestors
+    assert 'autosomal recessive disease' in cf_ancestors
+    assert 'autosomal genetic disease' in cf_ancestors
+    assert 'hereditary disease' in cf_ancestors
+    assert 'human disease' in cf_ancestors
     assert 'disease' in cf_ancestors
     assert 'disease or phenotypic feature' in cf_ancestors
+    assert 'biological entity' in cf_ancestors
     assert 'entity' in cf_ancestors
 
     # mixins?
@@ -106,10 +120,23 @@ def test_show_full_ontology(hybrid_ontology):
     assert treevis is not None
 
 
-def test_write_ontology(hybrid_ontology, path):
-    passed = hybrid_ontology.show_ontology_structure(to_disk=path)
+def test_write_ontology(hybrid_ontology, tmp_path):
+    passed = hybrid_ontology.show_ontology_structure(to_disk=tmp_path)
 
-    f = os.path.join(path, 'ontology_structure.graphml')
+    f = os.path.join(tmp_path, 'ontology_structure.graphml')
 
     assert passed
     assert os.path.isfile(f)
+
+
+def test_disconnected_exception(disconnected_mapping):
+
+    with pytest.raises(ValueError):
+        Ontology(
+            head_ontology={
+                'url': 'test/so.owl', 
+                'root_node': 'sequence_variant',
+            },
+            ontology_mapping=disconnected_mapping,
+        )
+        

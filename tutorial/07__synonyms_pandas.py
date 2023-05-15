@@ -48,14 +48,15 @@ def main():
     # Create BioCypher driver
     bc = BioCypher(
         biocypher_config_path='tutorial/07_biocypher_config.yaml',
-        schema_config_path='tutorial/07_schema_config.yaml',
+        schema_config_path='tutorial/07_schema_config_pandas.yaml',
     )
     # Run the import
-    bc.write_nodes(node_generator())
-    bc.write_edges(edge_generator())
+    bc.add(node_generator())
+    bc.add(edge_generator())
 
-    # Write command line call
-    bc.write_import_call()
+    for name, df in bc.to_df().items():
+        print(name)
+        print(df)
 
     # Visualise ontology schema and log duplicates / missing labels
     bc.summary()

@@ -3,6 +3,7 @@
    :caption: Table of Contents
 
    index
+   user-experiences
    get-involved
    installation
    quickstart

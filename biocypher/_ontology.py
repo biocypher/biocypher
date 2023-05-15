@@ -42,11 +42,12 @@ class OntologyAdapter:
     """
     def __init__(
         self,
-        ontology_file,
-        root_label,
+        ontology_file: str,
+        root_label: str,
         head_join_node: Optional[str] = None,
-        reverse_labels=True,
-        remove_prefixes=True,
+        merge_nodes: Optional[bool] = True,
+        reverse_labels: bool = True,
+        remove_prefixes: bool = True,
     ):
         """
         Initialize the OntologyAdapter class.
@@ -55,11 +56,17 @@ class OntologyAdapter:
             ontology_file (str): Path to the ontology file. Can be local or
                 remote.
 
-            root_label (str): The label of the root node in the ontology.
+            root_label (str): The label of the root node in the ontology. In
+                case of a tail ontology, this is the tail join node.
 
             head_join_node (str): Optional variable to store the label of the
                 node in the head ontology that should be used to join to the
                 root node of the tail ontology. Defaults to None.
+
+            merge_nodes (bool): If True, head and tail join nodes will be 
+                merged, using the label of the head join node. If False, the
+                tail join node will be attached as a child of the head join
+                node.
 
             reverse_labels (bool): If True, the node names in the graph will be
                 the human-readable labels. If False, the node names will be the
@@ -73,6 +80,7 @@ class OntologyAdapter:
 
         self._ontology_file = ontology_file
         self._root_label = root_label
+        self._merge_nodes = merge_nodes
         self._head_join_node = head_join_node
         self._reverse_labels = reverse_labels
         self._remove_prefixes = remove_prefixes
@@ -262,7 +270,7 @@ class Ontology:
                 added to the head ontology. Defaults to None.
         """
 
-        self._head_ontology = head_ontology
+        self._head_ontology_meta = head_ontology
         self.extended_schema = ontology_mapping.extended_schema
         self._tail_ontology_meta = tail_ontologies
 
@@ -306,17 +314,18 @@ class Ontology:
         logger.info('Loading ontologies...')
 
         self._head_ontology = OntologyAdapter(
-            self._head_ontology['url'],
-            self._head_ontology['root_node'],
+            self._head_ontology_meta['url'],
+            self._head_ontology_meta['root_node'],
         )
 
         if self._tail_ontology_meta:
             self._tail_ontologies = {}
             for key, value in self._tail_ontology_meta.items():
                 self._tail_ontologies[key] = OntologyAdapter(
-                    value['url'],
-                    value['tail_join_node'],
-                    value['head_join_node'],
+                    ontology_file = value['url'],
+                    root_label = value['tail_join_node'],
+                    head_join_node = value['head_join_node'],
+                    merge_nodes = value.get('merge_nodes', True),
                 )
 
     def _assert_join_node(self, adapter: OntologyAdapter) -> None:
@@ -367,8 +376,21 @@ class Ontology:
         for node in tail_ontology_subtree.nodes:
             tail_ontology_subtree.nodes[node].update(tail_ontology.nodes[node])
 
-        # rename tail join node to match head join node
-        if not tail_join_node == head_join_node:
+        # if merge_nodes is False, create parent of tail join node from head
+        # join node
+        if not adapter._merge_nodes:
+            # add head join node from head ontology to tail ontology subtree
+            # as parent of tail join node
+            tail_ontology_subtree.add_node(
+                head_join_node,
+                **self._head_ontology.get_nx_graph().nodes[head_join_node]
+            )
+            tail_ontology_subtree.add_edge(
+                tail_join_node, head_join_node
+            )
+
+        # else rename tail join node to match head join node if necessary
+        elif not tail_join_node == head_join_node:
             tail_ontology_subtree = nx.relabel_nodes(
                 tail_ontology_subtree, {tail_join_node: head_join_node}
             )
@@ -389,6 +411,19 @@ class Ontology:
         for key, value in self.extended_schema.items():
 
             if not value.get('is_a'):
+
+                if self._nx_graph.has_node(value.get('synonym_for')):
+                    
+                    continue
+                
+                if not self._nx_graph.has_node(key):
+                    
+                    raise ValueError(
+                        f'Node {key} not found in ontology, but also has no '
+                        'inheritance definition. Please check your schema for '
+                        'spelling errors or a missing `is_a` definition.'
+                    )
+                
                 continue
 
             parents = _misc.to_list(value.get('is_a'))
@@ -601,3 +636,4 @@ class Ontology:
 
         now = datetime.now()
         return now.strftime('v%Y%m%d-%H%M%S')
+    
