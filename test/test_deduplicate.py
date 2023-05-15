@@ -59,6 +59,7 @@ def test_duplicate_edges(_get_edges):
     edges = _get_edges
     edges.append(
         BioCypherEdge(
+        relationship_id='mrel2',
             source_id='m2',
             target_id='p3',
             relationship_label='Is_Mutated_In',
@@ -75,7 +76,7 @@ def test_duplicate_edges(_get_edges):
         dedup.edge_seen(edge)
 
     assert 'Is_Mutated_In' in dedup.duplicate_edge_types
-    assert ('m2_p3') in dedup.duplicate_edge_ids
+    assert ('mrel2') in dedup.duplicate_edge_ids
 
 @pytest.mark.parametrize('l', [4], scope='module')
 def test_get_duplicate_edges(_get_edges):
@@ -83,6 +84,7 @@ def test_get_duplicate_edges(_get_edges):
     edges = _get_edges
     edges.append(
         BioCypherEdge(
+            relationship_id='mrel2',
             source_id='m2',
             target_id='p3',
             relationship_label='Is_Mutated_In',
@@ -103,4 +105,4 @@ def test_get_duplicate_edges(_get_edges):
     ids = d[1]
 
     assert 'Is_Mutated_In' in types
-    assert ('m2_p3') in ids
+    assert ('mrel2') in ids

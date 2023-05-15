@@ -471,11 +471,31 @@ def test_write_edge_data_from_gen(bw, _get_edges):
         c = f.read()
 
     assert passed
-    assert "p0;'T253';4;p1;PERTURBED_IN_DISEASE" in l
-    assert "p1;'T253';4;p2;PERTURBED_IN_DISEASE" in l
+    assert "p0;" in l
+    assert "prel0;" in l
+    assert "'T253';" in l
+    assert "4;" in l
+    assert "p1;" in l
+    assert "PERTURBED_IN_DISEASE" in l
+    assert "p1;" in l
+    assert "prel1;" in l
+    assert "'T253';" in l
+    assert "4;" in l
+    assert "p2;" in l
+    assert "PERTURBED_IN_DISEASE" in l
     assert '\n' in l
-    assert "m0;'3-UTR';1;p1;Is_Mutated_In" in c
-    assert "m1;'3-UTR';1;p2;Is_Mutated_In" in c
+    assert "m0;" in c
+    assert "mrel0;" in c
+    assert "'3-UTR';" in c
+    assert "1;" in c
+    assert "p1;" in c
+    assert "Is_Mutated_In" in c
+    assert "m1;" in c
+    assert "mrel1;" in c
+    assert "'3-UTR';" in c
+    assert "1;" in c
+    assert "p2;" in c
+    assert "Is_Mutated_In" in c
     assert '\n' in c
 
 
@@ -524,12 +544,23 @@ def test_write_edge_data_from_list(bw, _get_edges):
         c = f.read()
 
     assert passed
-    assert "p0;'T253';4;p1;PERTURBED_IN_DISEASE" in l
-    assert "p1;'T253';4;p2;PERTURBED_IN_DISEASE" in l
-    assert '\n' in l
-    assert "m0;'3-UTR';1;p1;Is_Mutated_In" in c
-    assert "m1;'3-UTR';1;p2;Is_Mutated_In" in c
+    assert "p0;" in l
+    assert "prel0;" in l
+    assert "'T253';" in l
+    assert "4;" in l 
+    assert "p1;" in l
+    assert "PERTURBED_IN_DISEASE" in l
+    assert "\n" in l
+    assert "p2;PERTURBED_IN_DISEASE" in l
+    assert "m0;" in c
+    assert "mrel0;" in c
+    assert "'3-UTR';" in c
+    assert "1;" in c
+    assert "p1;" in c
+    assert "Is_Mutated_In" in c
+    assert "m1;" in c
     assert '\n' in c
+    
 
 
 def test_write_edge_data_from_list_no_props(bw):
@@ -562,11 +593,19 @@ def test_write_edge_data_from_list_no_props(bw):
         c = f.read()
 
     assert passed
-    assert 'p0;p1;PERTURBED_IN_DISEASE' in l
-    assert 'p1;p2;PERTURBED_IN_DISEASE' in l
+    assert 'p0;' in l
+    assert 'p1;' in l
+    assert 'PERTURBED_IN_DISEASE' in l
+    assert 'p1;' in l
+    assert 'p2;' in l
+    assert 'PERTURBED_IN_DISEASE' in l
     assert '\n' in l
-    assert 'm0;p1;Is_Mutated_In' in c
-    assert 'm1;p2;Is_Mutated_In' in c
+    assert 'm0;' in c
+    assert 'p1;' in c
+    assert 'Is_Mutated_In' in c
+    assert 'm1;' in c
+    assert 'p2;' in c
+    assert 'Is_Mutated_In' in c
     assert '\n' in c
 
 
@@ -606,8 +645,8 @@ def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
     with open(call_csv) as f:
         call = f.read()
 
-    assert l == ':START_ID;residue;level:long;:END_ID;:TYPE'
-    assert c == ':START_ID;site;confidence:long;:END_ID;:TYPE'
+    assert l == ':START_ID;id;residue;level:long;:END_ID;:TYPE'
+    assert c == ':START_ID;id;site;confidence:long;:END_ID;:TYPE'
 
     assert 'bin/neo4j-admin import' in call
     assert '--database=neo4j' in call
@@ -658,9 +697,13 @@ def test_BioCypherRelAsNode_implementation(bw):
         p = f.read()
 
     assert passed
-    assert 'i1;p1;IS_SOURCE_OF' in s
+    assert 'i1;' in s
+    assert 'p1;' in s
+    assert 'IS_SOURCE_OF' in s
     assert '\n' in s
-    assert 'i0;p2;IS_TARGET_OF' in t
+    assert 'i0;' in t
+    assert 'p2;' in t
+    assert 'IS_TARGET_OF' in t
     assert '\n' in t
     assert "i1;True;-1;'i1';'id'" in p
     assert 'Association' in p

@@ -69,8 +69,10 @@ def test_arango_write_data_headers_import_call(
     assert ph == '_key,name,score,taxon,genes,id,preferred_id'
     assert mh == '_key,name,taxon,id,preferred_id'
     assert '_from' in dh
+    assert '_key' in dh
     assert '_to' in dh
     assert '_from' in muh
+    assert '_key' in muh
     assert '_to' in muh
     assert len(pp_1) == len(pp_2) == len(mp_1) == len(mp_2) == len(dp_1) == len(
         dp_2

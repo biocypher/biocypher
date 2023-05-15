@@ -132,6 +132,7 @@ gene to gene association:
     directional: bool
     curated: bool
     score: float
+    id: str  # should be removed
 
 gene to variant association:
   is_a: gene to variant association

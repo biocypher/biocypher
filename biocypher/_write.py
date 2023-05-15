@@ -857,6 +857,7 @@ class _BatchWriter(ABC):
                     self.delim.join(
                         [
                             e.get_source_id(),
+                            e.get_id() or '',
                             # here we need a list of properties in
                             # the same order as in the header
                             self.delim.join(plist),
@@ -871,6 +872,7 @@ class _BatchWriter(ABC):
                     self.delim.join(
                         [
                             e.get_source_id(),
+                            e.get_id() or '',
                             e.get_target_id(),
                             self.translator.
                             name_sentence_to_pascal(e.get_label(), ),
@@ -1153,7 +1155,7 @@ class _Neo4jBatchWriter(_BatchWriter):
                 else:
                     props_list.append(f'{k}')
 
-            out_list = [':START_ID', *props_list, ':END_ID', ':TYPE']
+            out_list = [':START_ID', 'id', *props_list, ':END_ID', ':TYPE']
 
             with open(header_path, 'w', encoding='utf-8') as f:
                 # concatenate with delimiter
@@ -1371,7 +1373,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
 
                 props_list.append(f'{k}')
 
-            out_list = ['_from', *props_list, '_to']
+            out_list = ['_from', '_key', *props_list, '_to']
 
             with open(header_path, 'w', encoding='utf-8') as f:
                 # concatenate with delimiter
@@ -1660,12 +1662,20 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             for col_name, col_type in props.items():
                 col_type = self._get_data_type(col_type)
                 col_name = self._adjust_pascal_to_psql(col_name)
+                if col_name == '_ID':
+                    # should ideally never happen
+                    raise ValueError(
+                        "Column name '_ID' is reserved for internal use, "
+                        "denoting the relationship ID. Please choose a "
+                        "different name for your column."
+                    )
+
                 columns.append(f'{col_name} {col_type}')
 
             # create list of lists and flatten
             # removes need for empty check of property list
             out_list = [
-                '_START_ID VARCHAR', *columns, '_END_ID VARCHAR',
+                '_START_ID VARCHAR', '_ID VARCHAR', *columns, '_END_ID VARCHAR',
                 '_TYPE VARCHAR'
             ]
 

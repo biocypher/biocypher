@@ -96,6 +96,7 @@ def _get_edges(l):
     edges = []
     for i in range(l):
         e1 = BioCypherEdge(
+            relationship_id=f'prel{i}',
             source_id=f'p{i}',
             target_id=f'p{i + 1}',
             relationship_label='PERTURBED_IN_DISEASE',
@@ -108,6 +109,7 @@ def _get_edges(l):
         )
         edges.append(e1)
         e2 = BioCypherEdge(
+            relationship_id=f'mrel{i}',
             source_id=f'm{i}',
             target_id=f'p{i + 1}',
             relationship_label='Is_Mutated_In',
@@ -296,6 +298,9 @@ def create_core(request, tmp_path):
         if not marker_args:
 
             globals()['CORE'] = c
+
+    c._deduplicator = Deduplicator()
+    # seems to reuse deduplicator from previous test, unsure why
 
     yield c
 

@@ -330,6 +330,7 @@ def test_properties_from_config(translator):
             {
                 'directional': True,
                 'score': 0.5,
+                'id': 'should_not_be_returned',
             },
         ),
         (
@@ -341,6 +342,7 @@ def test_properties_from_config(translator):
                 'curated': True,
                 'score': 0.5,
                 'test': 'should_not_be_returned',
+                'id': 'should_not_be_returned',
             },
         ),
     ]
@@ -354,7 +356,9 @@ def test_properties_from_config(translator):
         'curated' in r[1].get_properties().keys() and
         'score' in r[0].get_properties().keys() and
         'score' in r[1].get_properties().keys() and
-        'test' not in r[1].get_properties().keys()
+        'test' not in r[1].get_properties().keys() and
+        'id' not in r[0].get_properties().keys() and
+        'id' not in r[1].get_properties().keys()
     )
 
 
