@@ -212,6 +212,22 @@ class BioCypherEdge:
             )
             # self.properties["type"] = self.properties[":TYPE"]
             del self.properties[':TYPE']
+        elif 'id' in self.properties.keys():
+            logger.debug(
+                "Keyword 'id' is reserved for Neo4j. "
+                'Removing from properties.',
+                # "Renaming to 'type'."
+            )
+            # self.properties["type"] = self.properties[":TYPE"]
+            del self.properties['id']
+        elif '_ID' in self.properties.keys():
+            logger.debug(
+                "Keyword '_ID' is reserved for Postgres. "
+                'Removing from properties.',
+                # "Renaming to 'type'."
+            )
+            # self.properties["type"] = self.properties[":TYPE"]
+            del self.properties['_ID']
 
     def get_id(self) -> Union[str, None]:
         """
