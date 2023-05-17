@@ -1,9 +1,11 @@
 # 🔬 Developer Guide
+
 Thank you for considering to contribute to the project! This guide will help you
 to get started with the development of the project. If you have any questions,
 please feel free to ask them in the issue tracker.
 
 ## Formal Requirements
+
 The project uses documentation format [Napoleon](
 https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
 ) with a [Sphinx](https://www.sphinx-doc.org/en/master/) autodoc GitHub
@@ -18,6 +20,7 @@ development. If you want to fix dependency issues, please do so in the Poetry
 framework. If Poetry does not work for you for some reason, please let us know.
 
 ## Testing
+
 The project uses [pytest](https://docs.pytest.org/en/stable/) for testing. To
 run the tests, please run `pytest` in the root directory of the project. We are
 developing BioCypher using test-driven development. Please make sure that you
@@ -30,11 +33,13 @@ have any questions, please feel free to ask them in the issue tracker.
 that the documentation builds correctly.**
 
 ## Small Contributions
+
 If you want to contribute a small change (e.g. a bugfix), you can probably
 immediately go ahead and create a pull request. For more substantial changes or
 additions, please read on.
 
 ## Larger Contributions
+
 If you want to contribute a larger change, please create an issue first. This
 will allow us to discuss the change and make sure that it fits into the project.
 It can happen that development for a feature is already in progress, so it is
