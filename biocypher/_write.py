@@ -326,7 +326,8 @@ class _BatchWriter(ABC):
                 for source in nodes for label, target_id in source.get_edges().items()
             ]
 
-        self.write_edges(edges, batch_size)
+        if edges:
+            self.write_edges(edges, batch_size)
 
         return True
 
