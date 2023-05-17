@@ -307,6 +307,8 @@ class _BatchWriter(ABC):
         """
         # TODO check represented_as
 
+        nodes = list(nodes)  # force evaluation to handle empty generator
+
         # write node data
         passed = self._write_node_data(nodes, batch_size)
         if not passed:
@@ -317,6 +319,15 @@ class _BatchWriter(ABC):
         if not passed:
             logger.error('Error while writing node headers.')
             return False
+
+        # write node edges
+        edges = [
+                BioCypherEdge(source.get_id(),target_id,label,is_simple_edge=True)                          
+                for source in nodes for label, target_id in source.get_edges().items()
+            ]
+
+        if edges:
+            self.write_edges(edges, batch_size)
 
         return True
 
@@ -812,6 +823,9 @@ class _BatchWriter(ABC):
             e_props = e.get_properties()
             e_keys = list(e_props.keys())
             ref_props = list(prop_dict.keys())
+            translated_label = e.get_label()
+            if not e.get_is_simple_edge():
+                translated_label = self.translator.name_sentence_to_pascal(translated_label, )
 
             # compare list order invariant
             if not set(ref_props) == set(e_keys):
@@ -862,8 +876,7 @@ class _BatchWriter(ABC):
                             # the same order as in the header
                             self.delim.join(plist),
                             e.get_target_id(),
-                            self.translator.
-                            name_sentence_to_pascal(e.get_label(), ),
+                            translated_label,
                         ],
                     ) + '\n',
                 )
@@ -874,8 +887,7 @@ class _BatchWriter(ABC):
                             e.get_source_id(),
                             e.get_id() or '',
                             e.get_target_id(),
-                            self.translator.
-                            name_sentence_to_pascal(e.get_label(), ),
+                            translated_label,
                         ],
                     ) + '\n',
                 )

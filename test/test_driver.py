@@ -14,7 +14,7 @@ def test_create_driver(driver):
 @pytest.mark.requires_neo4j
 def test_connect_to_db(driver):
 
-    assert isinstance(driver._driver.driver, neo4j.Neo4jDriver)
+    assert isinstance(driver._driver.driver, neo4j.Neo4jDriver) or isinstance(driver._driver.driver, neo4j.BoltDriver)
 
 
 @pytest.mark.requires_neo4j
