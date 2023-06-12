@@ -828,57 +828,54 @@ class _BatchWriter(ABC):
                 )
                 return False
 
-            if ref_props:
-
-                plist = []
-                # make all into strings, put actual strings in quotes
-                for k, v in prop_dict.items():
-                    p = e_props.get(k)
-                    if p is None:  # TODO make field empty instead of ""?
-                        plist.append('')
-                    elif v in [
-                        'int',
-                        'integer',
-                        'long',
-                        'float',
-                        'double',
-                        'dbl',
-                        'bool',
-                        'boolean',
-                    ]:
-                        plist.append(str(p))
+            plist = []
+            # make all into strings, put actual strings in quotes
+            for k, v in prop_dict.items():
+                p = e_props.get(k)
+                if p is None:  # TODO make field empty instead of ""?
+                    plist.append('')
+                elif v in [
+                    'int',
+                    'integer',
+                    'long',
+                    'float',
+                    'double',
+                    'dbl',
+                    'bool',
+                    'boolean',
+                ]:
+                    plist.append(str(p))
+                else:
+                    if isinstance(p, list):
+                        plist.append(self._write_array_string(p))
                     else:
-                        if isinstance(p, list):
-                            plist.append(self._write_array_string(p))
-                        else:
-                            plist.append(self.quote + str(p) + self.quote)
+                        plist.append(self.quote + str(p) + self.quote)
+                        
+            entries = [e.get_source_id()]
 
-                lines.append(
-                    self.delim.join(
-                        [
-                            e.get_source_id(),
-                            e.get_id() or '',
-                            # here we need a list of properties in
-                            # the same order as in the header
-                            self.delim.join(plist),
-                            e.get_target_id(),
-                            self.translator.
-                            name_sentence_to_pascal(e.get_label(), ),
-                        ],
-                    ) + '\n',
-                )
+            if not self.extended_schema.get(label):
+                # find label in schema by label_as_edge
+                for k, v in self.extended_schema.items():
+                    if v.get('label_as_edge') == label:
+                        schema_label = k
+                        break
             else:
-                lines.append(
-                    self.delim.join(
-                        [
-                            e.get_source_id(),
-                            e.get_id() or '',
-                            e.get_target_id(),
-                            self.translator.
-                            name_sentence_to_pascal(e.get_label(), ),
-                        ],
-                    ) + '\n',
-                )
+                schema_label = label
+
+            if not self.extended_schema.get(schema_label).get('use_id') == False:
+                entries.append(e.get_id() or '')
+
+            if ref_props:
+                entries.append(self.delim.join(plist))
+
+            entries.append(e.get_target_id())
+            entries.append(self.translator.name_sentence_to_pascal(
+                e.get_label(),
+            ))
+
+            lines.append(
+                self.delim.join(entries) + '\n',
+            )
 
         # avoid writing empty files
         if lines:

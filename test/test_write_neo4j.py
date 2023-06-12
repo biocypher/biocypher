@@ -571,7 +571,7 @@ def test_write_edge_id_optional(bw, _get_edges):
             relationship_id=f"phos{i}",  # should be ignored
             source_id=f"p{i}",
             target_id=f"p{i + 1}",
-            relationship_label="Phosphorylates",
+            relationship_label="phosphorylation",
         )
         edges.append(e1)
 
@@ -581,7 +581,7 @@ def test_write_edge_id_optional(bw, _get_edges):
     tmp_path = bw.outdir
 
     apl_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-part000.csv')
-    pps_csv = os.path.join(tmp_path, 'Phosphorylates-part000.csv')
+    pps_csv = os.path.join(tmp_path, 'Phosphorylation-part000.csv')
 
     with open(apl_csv) as f:
         l = f.read()
