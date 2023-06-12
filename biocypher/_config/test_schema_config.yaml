@@ -102,7 +102,6 @@ post translational interaction:
 phosphorylation:
   is_a: post translational interaction
   represented_as: edge
-  use_id: false
   input_label: phosphorylation
 
 gene to disease association:
