@@ -1152,7 +1152,22 @@ class _Neo4jBatchWriter(_BatchWriter):
                 else:
                     props_list.append(f'{k}')
 
-            out_list = [':START_ID', 'id', *props_list, ':END_ID', ':TYPE']
+            if not self.extended_schema.get(label):
+                # find label in schema by label_as_edge
+                for k, v in self.extended_schema.items():
+                    if v.get('label_as_edge') == label:
+                        schema_label = k
+                        break
+            else:
+                schema_label = label
+
+            out_list = [':START_ID']
+
+            if not self.extended_schema.get(schema_label).get('use_id') == False:
+                out_list.append('id')
+
+            out_list.extend(props_list)
+            out_list.extend([':END_ID', ':TYPE'])
 
             with open(header_path, 'w', encoding='utf-8') as f:
                 # concatenate with delimiter
