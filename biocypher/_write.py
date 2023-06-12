@@ -853,7 +853,12 @@ class _BatchWriter(ABC):
                         
             entries = [e.get_source_id()]
 
-            if not self.extended_schema.get(label):
+            skip_id = False
+            schema_label = None
+
+            if label in ["IS_SOURCE_OF", "IS_TARGET_OF", "IS_PART_OF"]:
+                skip_id = True
+            elif not self.extended_schema.get(label):
                 # find label in schema by label_as_edge
                 for k, v in self.extended_schema.items():
                     if v.get('label_as_edge') == label:
@@ -862,7 +867,11 @@ class _BatchWriter(ABC):
             else:
                 schema_label = label
 
-            if not self.extended_schema.get(schema_label).get('use_id') == False:
+            if schema_label:
+                if self.extended_schema.get(schema_label).get('use_id') == False:
+                    skip_id = True
+
+            if not skip_id:
                 entries.append(e.get_id() or '')
 
             if ref_props:
@@ -1152,7 +1161,12 @@ class _Neo4jBatchWriter(_BatchWriter):
                 else:
                     props_list.append(f'{k}')
 
-            if not self.extended_schema.get(label):
+            skip_id = False
+            schema_label = None
+
+            if label in ["IS_SOURCE_OF", "IS_TARGET_OF", "IS_PART_OF"]:
+                skip_id = True
+            elif not self.extended_schema.get(label):
                 # find label in schema by label_as_edge
                 for k, v in self.extended_schema.items():
                     if v.get('label_as_edge') == label:
@@ -1163,7 +1177,11 @@ class _Neo4jBatchWriter(_BatchWriter):
 
             out_list = [':START_ID']
 
-            if not self.extended_schema.get(schema_label).get('use_id') == False:
+            if schema_label:
+                if self.extended_schema.get(schema_label).get('use_id') == False:
+                    skip_id = True
+
+            if not skip_id:
                 out_list.append('id')
 
             out_list.extend(props_list)
