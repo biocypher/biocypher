@@ -561,7 +561,46 @@ def test_write_edge_data_from_list(bw, _get_edges):
     assert "m1;" in c
     assert '\n' in c
     
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_write_edge_id_optional(bw, _get_edges):
+    edges = _get_edges
 
+    # add phosphorylation edges
+    for i in range(4):
+        e1 = BioCypherEdge(
+            relationship_id=f"phos{i}",  # should be ignored
+            source_id=f"p{i}",
+            target_id=f"p{i + 1}",
+            relationship_label="phosphorylation",
+        )
+        edges.append(e1)
+
+    passed = bw.write_edges(edges, batch_size=int(1e4))
+    assert passed
+
+    tmp_path = bw.outdir
+
+    pert_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-part000.csv')
+    phos_csv = os.path.join(tmp_path, 'Phosphorylation-part000.csv')
+
+    with open(pert_csv) as f:
+        pertf = f.read()
+    with open(phos_csv) as f:
+        phosf = f.read()
+
+    assert "prel0;" in pertf
+    assert "phos1;" not in phosf
+
+    pert_header = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-header.csv')
+    phos_header = os.path.join(tmp_path, 'Phosphorylation-header.csv')
+
+    with open(pert_header) as f:
+        perth = f.read()
+    with open(phos_header) as f:
+        phosh = f.read()
+
+    assert "id;" in perth
+    assert "id;" not in phosh
 
 def test_write_edge_data_from_list_no_props(bw):
     le = 4

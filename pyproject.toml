@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biocypher"
-version = "0.5.15"
+version = "0.5.16"
 description = "A unifying framework for biomedical research knowledge graphs"
 authors = [
     "Sebastian Lobentanzer <sebastian.lobentanzer@gmail.com>",
@@ -52,6 +52,7 @@ pytest-cov = "^3.0.0"
 hypothesis = "^6.50.1"
 isort = "^5.10.1"
 ipython = "^8.7.0"
+ipykernel = "^6.23.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

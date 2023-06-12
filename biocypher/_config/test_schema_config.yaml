@@ -134,7 +134,7 @@ gene to gene association:
     score: float
     id: str  # should be removed
 
-gene to variant association:
+gene to variant association:  # should be removed
   is_a: gene to variant association
   represented_as: edge
   input_label: gene_variant
