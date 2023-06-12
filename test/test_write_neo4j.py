@@ -561,7 +561,35 @@ def test_write_edge_data_from_list(bw, _get_edges):
     assert "m1;" in c
     assert '\n' in c
     
+@pytest.mark.parametrize('l', [4], scope='module')
+def test_write_edge_id_optional(bw, _get_edges):
+    edges = _get_edges
 
+    # add phosphorylation edges
+    for i in range(4):
+        e1 = BioCypherEdge(
+            relationship_id=f"phos{i}",  # should be ignored
+            source_id=f"p{i}",
+            target_id=f"p{i + 1}",
+            relationship_label="Phosphorylates",
+        )
+        edges.append(e1)
+
+    passed = bw._write_edge_data(edges, batch_size=int(1e4))
+    assert passed
+
+    tmp_path = bw.outdir
+
+    apl_csv = os.path.join(tmp_path, 'PERTURBED_IN_DISEASE-part000.csv')
+    pps_csv = os.path.join(tmp_path, 'Phosphorylates-part000.csv')
+
+    with open(apl_csv) as f:
+        l = f.read()
+    with open(pps_csv) as f:
+        c = f.read()
+
+    assert "prel0;" in l
+    assert "phos1" not in c
 
 def test_write_edge_data_from_list_no_props(bw):
     le = 4
