@@ -541,3 +541,22 @@ Biolink "pairwise molecular interaction" class. We also reify this relationship
 by representing it as a node. This allows us to connect it to other nodes in
 the graph, for example to evidences for each interaction. If we do not want to
 reify the relationship, we can set `represented_as` to `edge` instead.
+
+### Relationship identifiers
+In biomedical data, relationships often do not have curated unique identifiers.
+Nevertheless, we may want to be able to refer to them in the graph. Thus, edges
+possess an ID field similar to nodes, which can be supplied in the input data
+as an optional first element in the edge tuple. Generating this ID from the
+properties of the edge (source and target identifiers, and additionally any
+properties that the edge possesses) can be done, for instance, by using the MD5
+hash of the concatenation of these values. Edge IDs are active by default, but
+can be deactivated by setting the `use_id` field to `false` in the
+`schema_config.yaml` file.
+
+```{yaml} schema_config.yaml
+protein protein interaction:
+  is_a: pairwise molecular interaction
+  represented_as: edge
+  use_id: false
+  # ...
+```

@@ -38,7 +38,7 @@
             BioCypher
           </a>
               <div class="version">
-                0.5.15
+                0.5.16
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -585,6 +585,18 @@ Biolink “pairwise molecular interaction” class. We also reify this relations
 by representing it as a node. This allows us to connect it to other nodes in
 the graph, for example to evidences for each interaction. If we do not want to
 reify the relationship, we can set <code class="docutils literal notranslate"><span class="pre">represented_as</span></code> to <code class="docutils literal notranslate"><span class="pre">edge</span></code> instead.</p>
+<section id="relationship-identifiers">
+<h3>Relationship identifiers<a class="headerlink" href="#relationship-identifiers" title="Permalink to this heading"></a></h3>
+<p>In biomedical data, relationships often do not have curated unique identifiers.
+Nevertheless, we may want to be able to refer to them in the graph. Thus, edges
+possess an ID field similar to nodes, which can be supplied in the input data
+as an optional first element in the edge tuple. Generating this ID from the
+properties of the edge (source and target identifiers, and additionally any
+properties that the edge possesses) can be done, for instance, by using the MD5
+hash of the concatenation of these values. Edge IDs are active by default, but
+can be deactivated by setting the <code class="docutils literal notranslate"><span class="pre">use_id</span></code> field to <code class="docutils literal notranslate"><span class="pre">false</span></code> in the
+<code class="docutils literal notranslate"><span class="pre">schema_config.yaml</span></code> file.</p>
+</section>
 </section>
 </section>
 
