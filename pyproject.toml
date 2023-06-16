@@ -53,6 +53,7 @@ hypothesis = "^6.50.1"
 isort = "^5.10.1"
 ipython = "^8.7.0"
 ipykernel = "^6.23.1"
+sphinxext-opengraph = "^0.8.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -51,6 +51,7 @@ extensions = [
     'myst_parser',  # markdown support
     'sphinx_rtd_theme',
     'sphinx_design',
+    'sphinxext.opengraph',
 ]
 myst_enable_extensions = ['colon_fence']
 
