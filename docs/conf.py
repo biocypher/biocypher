@@ -86,3 +86,4 @@ html_theme_options = {
 # -- OpenGraph configuration -------------------------------------------------
 
 ogp_site_url = 'https://biocypher.org'
+ogp_image = 'https://github.com/biocypher/biocypher/blob/main/docs/logo.png'
