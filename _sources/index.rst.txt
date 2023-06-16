@@ -1,3 +1,6 @@
+og:title: BioCypher
+og:description: A framework for creating biomedical knowledge graphs.
+
 .. image:: banner.png
 
 ############
