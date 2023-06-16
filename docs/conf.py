@@ -87,7 +87,3 @@ html_theme_options = {
 
 ogp_site_url = 'https://biocypher.org'
 ogp_image = 'https://github.com/biocypher/biocypher/blob/main/docs/logo.png'
-ogp_custom_meta_tags = [
-    '<meta property="og:title" content="BioCypher">',
-    '<meta property="og:description" content="A unifying framework for biomedical knowledge graphs.">',
-]
