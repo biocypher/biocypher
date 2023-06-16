@@ -85,14 +85,8 @@ html_theme_options = {
 
 # -- OpenGraph configuration -------------------------------------------------
 
-og_description = "A unifying framework for biomedical knowledge graphs."
-
 ogp_site_url = 'https://biocypher.org'
 ogp_image = 'https://github.com/biocypher/biocypher/blob/main/docs/logo.png'
 ogp_custom_meta_tags = [
-    ('description', og_description),
-    ('og:description', og_description),
-    ('og:image', ogp_image),
-    ('twitter:card', 'summary'),
-    ('twitter:image', ogp_image),
+    '<meta property="og:description" content="A unifying framework for biomedical knowledge graphs.">',
 ]
