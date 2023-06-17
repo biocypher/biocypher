@@ -1,4 +1,4 @@
-# BioCypher Tutorial - Handling Ontologies
+# Tutorial - Handling Ontologies
 
 ![Adapters and ontologies](figure_modularity.png)
 
