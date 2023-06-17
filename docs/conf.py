@@ -48,10 +48,10 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',  # not for output but to remove warnings
+    'sphinxext.opengraph',
     'myst_parser',  # markdown support
     'sphinx_rtd_theme',
     'sphinx_design',
-    'sphinxext.opengraph',
 ]
 myst_enable_extensions = ['colon_fence']
 
@@ -94,3 +94,4 @@ ogp_custom_meta_tags = [
     '<meta property="twitter:description" content="BioCypher is a framework to simplify the creation of robust biomedical knowledge graphs." />',
     '<meta property="twitter:image" content="https://github.com/biocypher/biocypher/blob/main/docs/biocypher-open-graph.png" />',
 ]
+ogp_enable_meta_description = True
