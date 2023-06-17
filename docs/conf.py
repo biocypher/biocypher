@@ -86,12 +86,12 @@ html_theme_options = {
 # -- OpenGraph configuration -------------------------------------------------
 
 ogp_site_url = 'https://biocypher.org'
-ogp_image = 'https://github.com/biocypher/biocypher/blob/main/docs/biocypher-open-graph.png'
+ogp_image = 'https://biocypher.org/_images/biocypher-open-graph.png'
 ogp_custom_meta_tags = [
     '<meta property="twitter:card" content="summary_large_image" />',
     '<meta property="twitter:url" content="https://biocypher.org" />',
     '<meta property="twitter:title" content="BioCypher - Democratising Knowledge Graphs" />',
     '<meta property="twitter:description" content="BioCypher is a framework to simplify the creation of robust biomedical knowledge graphs." />',
-    '<meta property="twitter:image" content="https://github.com/biocypher/biocypher/blob/main/docs/biocypher-open-graph.png" />',
+    '<meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />',
 ]
 ogp_enable_meta_description = True

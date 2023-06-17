@@ -1,3 +1,4 @@
+![BioCypher Open Graph](biocypher-open-graph.png)
 # User Experiences
 To give an overview of the capabilities of the framework and possible use cases,
 we have collected a number of user experiences from the community. The two major
