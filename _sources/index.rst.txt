@@ -1,4 +1,3 @@
-:og:title: BioCypher - Democratising Knowledge Graphs
 :og:description: BioCypher is a framework to simplify the creation of robust biomedical knowledge graphs.
 
 .. image:: banner.png
