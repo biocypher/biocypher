@@ -2,9 +2,9 @@
 
 .. image:: banner.png
 
-##########################################
-BioCypher - Democratising Knowledge Graphs
-##########################################
+##############################
+Democratising Knowledge Graphs
+##############################
 
 Building a knowledge graph for biomedical tasks usually takes months or years.
 What if you could do it in weeks or days? We created BioCypher to make the
