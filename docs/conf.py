@@ -72,6 +72,7 @@ autodoc_mock_imports = ['bmt', 'neo4j-utils']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
+html_title = 'BioCypher - Democratising Knowledge Graphs'
 html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     'navigation_depth': 2,
