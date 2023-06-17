@@ -1,5 +1,5 @@
 (adapter_functions)=
-# BioCypher Tutorial - Adapters
+# Tutorial - Adapters
 
 ```{note}
 
