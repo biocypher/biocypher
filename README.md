@@ -50,7 +50,9 @@ please join our community at https://biocypher.zulipchat.com!
 > This disclaimer was adapted from the [Pooch](https://github.com/fatiando/pooch) project.
 
 ## ✍️ Citation
-The BioCypher paper is available as a preprint at https://arxiv.org/abs/2212.13543.
+The BioCypher paper has been peer-reviewed in 
+[Nature Biotechnology](https://www.nature.com/articles/s41587-023-01848-y). 
+Before, it was available as a preprint at https://arxiv.org/abs/2212.13543.
 
 ## Acknowledgements
 This project has received funding from the European Union’s Horizon 2020
