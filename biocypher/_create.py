@@ -90,7 +90,7 @@ class BioCypherNode:
                     ).replace(
                         '\r',
                         ' ',
-                    ).replace('"', "'")
+                    )
                 )
 
             elif isinstance(v, list):
