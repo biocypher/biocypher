@@ -207,6 +207,26 @@ def test_merge_multiple_inputs_node(ontology_mapping, translator):
     assert all([type(n) == BioCypherNode for n in t])
     assert all([n.get_label() == 'gene' for n in t])
 
+def test_implicit_inheritance_node(translator):
+    id_type = [
+        (
+            'snrna1',
+            'intact_snrna',
+            {},
+        ),
+        (
+            'snrna2',
+            'rnacentral_snrna',
+            {},
+        ),
+    ]
+
+    t = list(translator.translate_nodes(id_type))
+
+    assert all([type(n) == BioCypherNode for n in t])
+    assert t[0].get_label() == 'intact.snRNA sequence'
+    assert t[1].get_label() == 'rnacentral.snRNA sequence'
+
 
 def test_merge_multiple_inputs_edge(ontology_mapping, translator):
     # GeneToDiseaseAssociation has two input labels and one preferred ID
@@ -253,6 +273,28 @@ def test_merge_multiple_inputs_edge(ontology_mapping, translator):
     assert all([type(e) == BioCypherEdge for e in t])
     assert all([e.get_label() == 'PERTURBED_IN_DISEASE' for e in t])
 
+def test_implicit_inheritance_edge(translator):
+    src_tar_type = [
+        (
+            'mut1',
+            'var1',
+            'gene1',
+            'VARIANT_FOUND_IN_GENE_Known_variant_Gene',
+            {},
+        ),
+        (
+            'mut2',
+            'var2',
+            'gene2',
+            'VARIANT_FOUND_IN_GENE_Somatic_mutation_Gene',
+            {},
+        ),
+    ]
+    t = list(translator.translate_edges(src_tar_type))
+
+    assert all([type(e) == BioCypherEdge for e in t])
+    assert t[0].get_label() == 'known.sequence variant.variant to gene association'
+    assert t[1].get_label() == 'somatic.sequence variant.variant to gene association'
 
 def test_virtual_leaves_inherit_is_a(ontology_mapping):
 
