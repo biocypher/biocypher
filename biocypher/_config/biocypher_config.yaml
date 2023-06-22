@@ -110,4 +110,6 @@ postgresql:
   # import_call_bin_prefix: '' # path to "psql"
   # import_call_file_prefix: '/path/to/files'
 
-  
+rdf:
+  ### RDF configuration ###
+  rdf_format: turtle
