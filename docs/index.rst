@@ -101,7 +101,7 @@ is called `biochatter <https://github.com/biocypher/biochatter>`_ and is used in
 our web app `ChatGSE <https://chat.biocypher.org/>`_. See the links for more
 information.
 
-. grid:: 2
+.. grid:: 2
    :gutter: 2
 
    .. grid-item-card:: ChatGSE web app
