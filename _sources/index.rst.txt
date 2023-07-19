@@ -17,7 +17,7 @@ biomedical community.
 
 If you're new to knowledge graphs and want to familiarise with the concepts that
 drive BioCypher, we recommend to check out the graphical abstract below and read
-our paper!
+[our paper](https://www.nature.com/articles/s41587-023-01848-y)!
 
 .. grid:: 2
    :gutter: 2
@@ -29,7 +29,7 @@ our paper!
       :octicon:`mark-github;3em` :octicon:`repo;3em`
 
    .. grid-item-card:: Read the paper
-      :link: https://arxiv.org/abs/2212.13543
+      :link: https://www.nature.com/articles/s41587-023-01848-y
       :text-align: center
 
       :octicon:`book;3em` :octicon:`light-bulb;3em`
