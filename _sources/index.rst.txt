@@ -97,7 +97,7 @@ Connect your Knowledge Graph to Large Language Models
 
 To facilitate the use of knowledge graphs in downstream tasks, we have developed
 a framework to connect knowledge graphs to large language models. This framework
-is called `biochatter <https://github.com/biocypher/biochatter>` and is used in
+is called `biochatter <https://github.com/biocypher/biochatter>`_ and is used in
 our web app `ChatGSE <https://chat.biocypher.org/>`_. See the links for more
 information.
 
