@@ -90,3 +90,28 @@ developments in the field of biomedical knowledge representation. However, to
 make this framework truly accessible and comprehensive, we need the input of the
 biomedical community. We are therefore inviting you to join us in this
 endeavour!
+
+==================
+Connect your Knowledge Graph to Large Language Models
+==================
+
+To facilitate the use of knowledge graphs in downstream tasks, we have developed
+a framework to connect knowledge graphs to large language models. This framework
+is called `biochatter <https://github.com/biocypher/biochatter>` and is used in
+our web app `ChatGSE <https://chat.biocypher.org/>`_. See the links for more
+information.
+
+. grid:: 2
+   :gutter: 2
+
+   .. grid-item-card:: ChatGSE web app
+      :link: https://chat.biocypher.org/
+      :text-align: center
+
+      :octicon:`comment-discussion;3em` :octicon:`dependabot;3em`
+
+   .. grid-item-card:: biochatter repository
+      :link: https://github.com/biocypher/biochatter
+      :text-align: center
+
+      :octicon:`mark-github;3em` :octicon:`repo;3em`
