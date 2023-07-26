@@ -1,4 +1,8 @@
 # BioCypher
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Python](https://img.shields.io/badge/python-3.9-blue.svg)
+![Python](https://img.shields.io/badge/python-3.10-blue.svg)
+[![PyPI version](https://badge.fury.io/py/biocypher.svg)](https://badge.fury.io/py/biocypher)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) 
 ![Docs build](https://github.com/biocypher/biocypher/actions/workflows/sphinx_autodoc.yml/badge.svg) 
 [![Downloads](https://static.pepy.tech/badge/biocypher)](https://pepy.tech/project/biocypher) 
