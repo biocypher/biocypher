@@ -231,7 +231,8 @@ df = bc.to_df()
 ```
 
 For more information on the usage of these functions, please refer to the
-[Tutorial](tutorial) section and the [full API documentation](API Reference).
+[Tutorial](tutorial) section and the [full API
+documentation](submodule.rst#api-reference).
 
 (qs_config)=
 ## The biocypher configuration YAML file
