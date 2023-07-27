@@ -33,7 +33,7 @@ from ._deduplicate import Deduplicator
 
 __all__ = ['BioCypher']
 
-SUPPORTED_DBMS = ['neo4j', 'postgresql']
+SUPPORTED_DBMS = ['neo4j', 'postgresql', 'rdf']
 
 REQUIRED_CONFIG = [
     'dbms',
