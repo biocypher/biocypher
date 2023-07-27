@@ -74,7 +74,7 @@ other options. For this tutorial, we will use a dedicated configuration file for
 each of the steps. The configuration files are located in the `tutorial`
 directory, and are called using the `biocypher_config_path` argument at
 instantiation of the BioCypher interface. For more information, see also the
-[Quickstart Configuration](quick_config) section.
+[Quickstart Configuration](qs_config) section.
 
 ## Section 1: Adding data
 ```{admonition} Tutorial files
