@@ -6,10 +6,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://biocypher.org/quickstart.html" />
 <meta property="og:site_name" content="BioCypher" />
-<meta property="og:description" content="Already familiar? Here’s a template: New to BioCypher? Follow the tutorial: The BioCypher workflow of creating your own knowledge graph consists of two components: the host module adapter, a python..." />
+<meta property="og:description" content="Already familiar? Here’s a template: New to BioCypher? Follow the tutorial: The BioCypher workflow of creating your own knowledge graph consists of three consecutive steps: Clearly define the scope..." />
 <meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 <meta property="og:image:alt" content="BioCypher" />
-<meta name="description" content="Already familiar? Here’s a template: New to BioCypher? Follow the tutorial: The BioCypher workflow of creating your own knowledge graph consists of two components: the host module adapter, a python..." />
+<meta name="description" content="Already familiar? Here’s a template: New to BioCypher? Follow the tutorial: The BioCypher workflow of creating your own knowledge graph consists of three consecutive steps: Clearly define the scope..." />
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content="https://biocypher.org" />
 <meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
@@ -69,8 +69,9 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html#configuration">Configuration</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#the-host-module-adapter">The host module adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-input-adapter">The input adapter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#the-schema-configuration-yaml-file">The schema configuration YAML file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#biocypher-api-documentation">BioCypher API documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#the-biocypher-configuration-yaml-file">The biocypher configuration YAML file</a></li>
 </ul>
 </li>
@@ -81,7 +82,7 @@
 <li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
 <li class="toctree-l1"><a class="reference internal" href="neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
 <li class="toctree-l1"><a class="reference internal" href="r-bioc.html">R and Bioconductor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="submodule.html">Submodule documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submodule.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -142,61 +143,44 @@ project, simply follow the instructions in the README.</p>
 <p>If you are new to BioCypher and would like a step-by-step introduction to the
 package, please follow the <a class="reference internal" href="tutorial.html#tutorial"><span class="std std-ref">tutorial</span></a>.</p>
 </div>
-<p>The BioCypher workflow of creating your own knowledge graph consists of two
-components:</p>
+<p>The BioCypher workflow of creating your own knowledge graph consists of three
+consecutive steps:</p>
 <ol class="arabic simple">
-<li><p>the <a class="reference internal" href="#qs-host-module-adapter"><span class="std std-ref">host module adapter</span></a>, a python
-program, and</p></li>
-<li><p>the <a class="reference internal" href="#qs-schema-config"><span class="std std-ref">schema configuration file</span></a>, a YAML file.</p></li>
+<li><p>Clearly define the scope of your project, including the data sources you want
+to use, the entities and relationships you want to represent, and the
+<a class="reference internal" href="tutorial-ontology.html#ontologies"><span class="std std-ref">ontologies</span></a> that should inform these entities.</p></li>
+<li><p>Using these definitions, find existing <a class="reference internal" href="#qs-input-adapter"><span class="std std-ref">adapters of data
+sources</span></a> or, if necessary, create your own. For the data
+yielded by these adapters, create a <a class="reference internal" href="#qs-schema-config"><span class="std std-ref">schema configuration</span></a>
+file that tells BioCypher how to represent the entities and relationships in the
+graph.</p></li>
+<li><p><a class="reference internal" href="#qs-run-bc"><span class="std std-ref">Run BioCypher</span></a> using the adapters and schema config to create the
+knowledge graph. If necessary, iterate over KG construction and configuration
+until you are satisfied with the result.</p></li>
 </ol>
-<p>The adapter serves as a data interface between the source and BioCypher,
-piping the “raw” data into BioCypher for the creation of the property
-graph, while the schema configuration tells BioCypher how the graph
-should be structured, detailing the names of constituents and how they
-should be connected.</p>
-<section id="the-host-module-adapter">
-<span id="qs-host-module-adapter"></span><h2>The host module adapter<a class="headerlink" href="#the-host-module-adapter" title="Permalink to this heading"></a></h2>
+<section id="the-input-adapter">
+<span id="qs-input-adapter"></span><h2>The input adapter<a class="headerlink" href="#the-input-adapter" title="Permalink to this heading"></a></h2>
 <p>BioCypher follows a modular approach to data inputs; to create a knowledge
 graph, we use at least one adapter module that provides a data stream to build
 the graph from. Examples for current adapters can be found on the <a class="reference external" href="https://github.com/orgs/biocypher/projects/3/views/2">GitHub
 project adapter view</a>.
-Adapters can ingest data from many different input sources, including Python
+This is the first place to look when creating your own KG; BioCypher adapters
+are meant to be reusable and a centralised way of maintaining access to data
+sources.</p>
+<p>Adapters can ingest data from many different input formats, including Python
 modules as in the <a class="reference external" href="https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration">CROssBAR
 adapter</a> (which
 uses the OmniPath backend software, PyPath, for downloading and caching data),
 advanced file management formats such as Parquet as in the <a class="reference external" href="https://github.com/biocypher/open-targets">Open Targets
 adapter</a>, or simple CSV files as in
 the <a class="reference external" href="https://github.com/biocypher/dependency-map">Dependency Map adapter</a>.</p>
-<p>The recommended way of interacting with BioCypher is via the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">biocypher._driver.Driver</span></code> class. It can be called either starting
-in “offline mode” using <code class="docutils literal notranslate"><span class="pre">offline</span> <span class="pre">=</span> <span class="pre">True</span></code>, i.e., without connection to a running
-Neo4j instance, or by providing authentication details via arguments or
-configuration file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">biocypher</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">biocypher</span><span class="o">.</span><span class="n">Driver</span><span class="p">(</span>
-  <span class="n">offline</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-  <span class="n">db_uri</span> <span class="o">=</span> <span class="s2">&quot;bolt://localhost:7687&quot;</span><span class="p">,</span>
-  <span class="n">db_user</span> <span class="o">=</span> <span class="s2">&quot;neo4j&quot;</span><span class="p">,</span>
-  <span class="n">db_passwd</span> <span class="o">=</span> <span class="s2">&quot;password&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>We use the APOC library for Neo4j, which is not included automatically, but
-needs to be installed as a plugin to the DMBS. For more information, please
-refer to the <a class="reference external" href="https://neo4j.com/labs/apoc/">APOC documentation</a>.</p>
-</div>
-<div class="admonition hint">
-<p class="admonition-title">Hint</p>
-<p>The settings for the BioCypher driver can also be specified in a configuration
-file. For more details, please refer to the <a class="reference internal" href="installation.html#config"><span class="std std-ref">Setup instructions</span></a>.</p>
-</div>
 <p>The main function of the adapter is to pass data into BioCypher, usually
 as some form of iterable (commonly a list or generator of items). As a
 minimal example, we load a list of proteins with identifiers, trivial
 names, and molecular masses from a (fictional) CSV:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># read into data frame</span>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Adapter yielding nodes</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># read data into df</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;file.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
   <span class="n">proteins</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
@@ -211,15 +195,39 @@ names, and molecular masses from a (fictional) CSV:</p>
     <span class="p">}</span>
 
     <span class="k">yield</span> <span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">_props</span><span class="p">)</span>
-
-<span class="c1"># write biocypher nodes</span>
-<span class="n">d</span><span class="o">.</span><span class="n">write_nodes</span><span class="p">(</span><span class="n">node_generator</span><span class="p">())</span>
 </pre></div>
+</div>
 </div>
 <p>For nodes, BioCypher expects a tuple containing three entries; the preferred
 identifier of the node, the type of entity, and a dictionary containing all
 other properties (can be empty). What BioCypher does with the received
 information is determined largely by the schema configuration detailed below.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Adapter yielding edges</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># read data into df</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;file.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+  <span class="n">interactions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># yield interactions from data frame</span>
+<span class="k">def</span> <span class="nf">edge_generator</span><span class="p">():</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">interactions</span><span class="p">:</span>
+    <span class="n">_id</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+    <span class="n">_source</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span>
+    <span class="n">_target</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span>
+    <span class="n">_type</span> <span class="o">=</span> <span class="s2">&quot;interaction&quot;</span>
+    <span class="n">_props</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;relationship_type&quot;</span><span class="p">],</span>
+      <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">],</span>
+    <span class="p">}</span>
+
+    <span class="k">yield</span> <span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">_source</span><span class="p">,</span> <span class="n">_target</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">_props</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>For edges, BioCypher expects a tuple containing five entries; the preferred
+identifier of the edge (can be <code class="docutils literal notranslate"><span class="pre">None</span></code>), the identifier of the source node
+(non-optional), the identifier of the target node (non-optional), the type of
+relationship, and a dictionary containing all other properties (can be empty).</p>
 <p>For advanced usage, the type of node or edge can be determined
 programatically. Properties do not need to be explicitly called one by
 one; they can be passed in as a complete dictionary of all entries and
@@ -229,115 +237,91 @@ type in the schema configuration file.</p>
 <section id="the-schema-configuration-yaml-file">
 <span id="qs-schema-config"></span><h2>The schema configuration YAML file<a class="headerlink" href="#the-schema-configuration-yaml-file" title="Permalink to this heading"></a></h2>
 <p>The second important component of translation into a BioCypher-compatible
-property graph is the specification of graph constituents and their mode of
-representation in the graph. For instance, we want to add a representation for
-proteins to the OmniPath graph, and the proteins should be represented as nodes.
-To make this known to the BioCypher module, we use the
-<a class="reference external" href="https://github.com/biocypher/biocypher/blob/main/biocypher/_config/schema_config.yaml">schema-config.yaml</a>,
-which details <em>only</em> the immediate constituents of the desired graph.  Since the
-identifier systems in the Biolink schema are not comprehensive and offer many
-alternatives, we currently use the CURIE prefixes directly as given by
-<a class="reference external" href="https://bioregistry.io">Bioregistry</a>. For instance, a protein could be
-represented, for instance, by a UniProt identifier, the corresponding ENSEMBL
-identifier, or an HGNC gene symbol. The CURIE prefix for “Uniprot Protein” is
-<code class="docutils literal notranslate"><span class="pre">uniprot</span></code>, so a consistent protein schema definition would be:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span>
-<span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
+knowledge graph is the specification of graph constituents and their mode of
+representation in the graph. To make this known to the BioCypher module, we use
+the
+<a class="reference external" href="https://github.com/biocypher/biocypher/blob/main/biocypher/_config/test_schema_config.yaml">schema-config.yaml</a>,
+which details <em>only</em> the immediate constituents of the desired graph as the
+top-level entries in the YAML file. While each of these top-level entries is
+required to be found in the underlying ontology (for instance, the <a class="reference external" href="https://biolink.github.io/biolink-model/">Biolink
+model</a>), the <code class="docutils literal notranslate"><span class="pre">input_label</span></code> field is
+arbitrary and has to match the <code class="docutils literal notranslate"><span class="pre">_type</span></code> yielded by the adapter (compare above).</p>
+<p>Other fields of each entry can refer to the representation of the entity in the
+KG (<code class="docutils literal notranslate"><span class="pre">represented_as:</span> <span class="pre">node</span></code>), and the identifier namespace chosen for each entity
+type. For instance, a protein could be represented by a UniProt identifier, the
+corresponding ENSEMBL identifier, or an HGNC gene symbol. We prefer the CURIE
+prefix for unambiguous identification of entities. The CURIE prefix for “Uniprot
+Protein” is <code class="docutils literal notranslate"><span class="pre">uniprot</span></code>, so a consistent protein schema definition would be:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span><span class="w">                    </span><span class="c1"># top-level entry, has to match ontology</span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w">      </span><span class="c1"># mode of representation: node or edge</span>
+<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span><span class="w">     </span><span class="c1"># preferred identifier namespace</span>
+<span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span><span class="w">      </span><span class="c1"># label that identifies members of this class (_type)</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For BioCypher classes, similar to the internal representation in the Biolink
-model, we use lower sentence-case notation, e.g., <code class="docutils literal notranslate"><span class="pre">protein</span></code> and <code class="docutils literal notranslate"><span class="pre">small</span> <span class="pre">molecule</span></code>. For file names and Neo4j labels, these are converted to PascalCase.</p>
+model, we use lower sentence-case notation, e.g., <code class="docutils literal notranslate"><span class="pre">protein</span></code> and <code class="docutils literal notranslate"><span class="pre">small</span> <span class="pre">molecule</span></code>. For file names and Neo4j labels, these are converted to PascalCase.
+For more information, see the <span class="xref myst">Ontology tutorial</span>.</p>
 </div>
-<p>In the protein case, we are specifying its representation as a node,
-that we wish to use the UniProt identifier as the main identifier for
-proteins, and that proteins in the input coming from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> carry
-the label <code class="docutils literal notranslate"><span class="pre">protein</span></code> (in lowercase). Should one wish to use ENSEMBL
-notation instead of UniProt, the corresponding CURIE prefix, in this
-case, <code class="docutils literal notranslate"><span class="pre">ensembl</span></code>, can be substituted.</p>
+<p>The above configuration of the protein class specifies its representation as a
+node, that we wish to use the UniProt identifier as the main identifier for
+proteins, and that proteins in the data stream from the adapter carry the label
+(<code class="docutils literal notranslate"><span class="pre">_type</span></code>) <code class="docutils literal notranslate"><span class="pre">protein</span></code> (in lowercase). Should we want to use the ENSEMBL
+namespace instead of UniProt IDs, the corresponding CURIE prefix, in this case,
+<code class="docutils literal notranslate"><span class="pre">ensembl</span></code>, can be substituted:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
 <span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ensembl</span>
 <span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
 </pre></div>
 </div>
-<p>If there exists no identifier system that is suitable for coverage of
-the data, the standard field <code class="docutils literal notranslate"><span class="pre">id</span></code> can be used; this will not result in
-the creation of a named property that reflects the identifier of each
-node. See below for an example. The <code class="docutils literal notranslate"><span class="pre">preferred_id</span></code> field can in this case also
-be omitted entirely; this will lead to the same outcome (<code class="docutils literal notranslate"><span class="pre">id</span></code>).</p>
-<p>The other slots of a graph constituent entry contain information
-BioCypher needs to receive the input data correctly and construct the
-graph accordingly. For “Named Thing” entities such as the protein, this
-includes the mode of representation (YAML entry <code class="docutils literal notranslate"><span class="pre">represented_as</span></code>),
-which can be <code class="docutils literal notranslate"><span class="pre">node</span></code> or <code class="docutils literal notranslate"><span class="pre">edge</span></code>. Proteins can only feasibly
-represented as nodes, but for other entities, such as interactions or
-aggregates, representation can be both as node or as edge. In Biolink,
-these belong to the super-class
-<a class="reference external" href="https://biolink.github.io/biolink-model/docs/associations.html">Associations</a>.
-For associations, BioCypher additionally requires the specification of
-the source and target of the association; for instance, a
-post-translational interaction occurs between proteins, so the source
-and target attribute in the <code class="docutils literal notranslate"><span class="pre">schema-config.yaml</span></code> will both be
-<code class="docutils literal notranslate"><span class="pre">protein</span></code>.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">post translational interaction</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
-<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
-<span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
-<span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">post_translational</span>
+<p>If there exists no identifier system that is suitable for coverage of the data
+(which is fairly common when it comes to relationships), <code class="docutils literal notranslate"><span class="pre">preferred_id</span></code> field
+can be omitted. This will lead to the creation of a generic <code class="docutils literal notranslate"><span class="pre">id</span></code> property on
+this node or edge type.</p>
+</section>
+<section id="biocypher-api-documentation">
+<span id="qs-run-bc"></span><h2>BioCypher API documentation<a class="headerlink" href="#biocypher-api-documentation" title="Permalink to this heading"></a></h2>
+<p>BioCypher is instantiated using the <code class="docutils literal notranslate"><span class="pre">BioCypher()</span></code> class, which can be called
+without arguments, given that the <a class="reference internal" href="#qs-config"><span class="std std-ref">configuration</span></a> files are either
+present in the working directory, or the pipeline should be run with default
+settings.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>For the post-translational interaction, which is an association, we are
-specifying representation as a node (prompting BioCypher to create not
-only the node but also two edges connecting to the proteins
-participating in any particular post-translational interaction). In
-other words, we are reifying the post-translational interaction in order
-to have a node to which other nodes can be linked; for instance, we
-might want to add a publication to a particular interaction to serve as
-source of evidence, which is only possible for nodes in a property
-graph, not for edges.</p>
-<p>Since there are no systematic identifiers for post-translational
-interactions, we concatenate the protein ids and relevant properties of
-the interaction to a new unique id. We prevent creation of a specific
-named property by specifying <code class="docutils literal notranslate"><span class="pre">id</span></code> as the identifier system in this case.
-If a specific property name (in addition to the generic <code class="docutils literal notranslate"><span class="pre">id</span></code> field) is
-desired, one can use any arbitrary string as a designation for this
-identifier, which will then be a named property on the
-<code class="docutils literal notranslate"><span class="pre">PostTranslationalInteraction</span></code> nodes.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>BioCypher accepts non-Biolink IDs since not all possible entries possess a
-systematic identifier system, whereas the entity class (<code class="docutils literal notranslate"><span class="pre">protein</span></code>, <code class="docutils literal notranslate"><span class="pre">post</span> <span class="pre">translational</span> <span class="pre">interaction</span></code>) has to be included in the Biolink schema and
-spelled identically. For this reason, we <a class="reference internal" href="tutorial-ontology.html#tutorial-ontology-extension"><span class="std std-ref">extend the Biolink
-schema</span></a> in cases where there exists no entry for
-our entity of choice. Further, we are specifying the source and target classes
-of our association (both <code class="docutils literal notranslate"><span class="pre">protein</span></code>), which are optional, and the label we
-provide in the input from <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> (<code class="docutils literal notranslate"><span class="pre">post_translational</span></code>).</p>
-</div>
-<p>If we wanted the interaction to be represented in the graph as an edge,
-we would also need to supply an additional - arbitrary - property,
-<code class="docutils literal notranslate"><span class="pre">label_as_edge</span></code>, which would be used as the relationship type; this
-could for instance be <code class="docutils literal notranslate"><span class="pre">INTERACTS_POST_TRANSLATIONALLY</span></code>, following the
-property graph database consensus that property graph edges are
-represented in all upper case form and as verbs, to distinguish from
-nodes that are represented in PascalCase and as nouns. This would modify
-the above example to the following:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">post translational interaction</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edge</span>
-<span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
-<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
-<span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
-<span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">post_translational</span>
-<span class="w">  </span><span class="nt">label_as_edge</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INTERACTS_POST_TRANSLATIONALLY</span>
+<p>BioCypher’s main functionality is writing the graph (nodes and edges) to a
+database or files for database import. We exemplarise this using the Neo4j
+output format, writing CSV files formatted for the Neo4j admin import. In this
+example, <code class="docutils literal notranslate"><span class="pre">node_generator()</span></code> and <code class="docutils literal notranslate"><span class="pre">edge_generator()</span></code> are the adapter functions
+that yield nodes and edges, respectively (see above).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bc</span><span class="o">.</span><span class="n">write_nodes</span><span class="p">(</span><span class="n">node_generator</span><span class="p">())</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">write_edges</span><span class="p">(</span><span class="n">edge_generator</span><span class="p">())</span>
 </pre></div>
 </div>
+<p>Node and edge generators can contain arbitrarily many types of nodes and edges,
+which will be mapped via the schema configuration and sorted by BioCypher.
+One instance of the BioCypher class keeps track of the nodes and edges that
+have been written to the database, so that multiple calls to <code class="docutils literal notranslate"><span class="pre">write_nodes()</span></code>
+and <code class="docutils literal notranslate"><span class="pre">write_edges()</span></code> will not lead to duplicate entries in the database.</p>
+<p>For on-line writing to a database or a Pandas dataframe, we use the functions
+with <code class="docutils literal notranslate"><span class="pre">add</span></code> instead of <code class="docutils literal notranslate"><span class="pre">write</span></code>. For instance, to add nodes and edges to a Pandas
+dataframe, we can use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bc</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">node_generator</span><span class="p">())</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edge_generator</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>To retrieve the dataframe once all entities are in the graph, we can call
+<code class="docutils literal notranslate"><span class="pre">to_df()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">bc</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For more information on the usage of these functions, please refer to the
+<a class="reference internal" href="tutorial.html#tutorial"><span class="std std-ref">Tutorial</span></a> section and the [full API documentation](API Reference).</p>
 </section>
 <section id="the-biocypher-configuration-yaml-file">
-<span id="quick-config"></span><h2>The biocypher configuration YAML file<a class="headerlink" href="#the-biocypher-configuration-yaml-file" title="Permalink to this heading"></a></h2>
+<span id="qs-config"></span><h2>The biocypher configuration YAML file<a class="headerlink" href="#the-biocypher-configuration-yaml-file" title="Permalink to this heading"></a></h2>
 <p>Most of the configuration options for BioCypher can and should be specified in
 the configuration YAML file, <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code>. While BioCypher comes with
 default settings (the ones you can see in the <a class="reference internal" href="installation.html#config"><span class="std std-ref">Configuration</span></a> section),
@@ -346,6 +330,8 @@ configuration in the root or the <code class="docutils literal notranslate"><spa
 primary BioCypher settings are found in the top-level entry <code class="docutils literal notranslate"><span class="pre">biocypher</span></code>. For
 instance, you can select your output format (<code class="docutils literal notranslate"><span class="pre">dbms</span></code>) and output path, the
 location of the schema configuration file, and the ontology to be used.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">biocypher</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">dbms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgresql</span>
 <span class="w">  </span><span class="nt">output_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres_out/</span>
@@ -355,21 +341,24 @@ location of the schema configuration file, and the ontology to be used.</p>
 <span class="w">    </span><span class="nt">root_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">entity</span>
 </pre></div>
 </div>
-<p>You can currently select between <code class="docutils literal notranslate"><span class="pre">postgresql</span></code>, <code class="docutils literal notranslate"><span class="pre">neo4j</span></code>, and <code class="docutils literal notranslate"><span class="pre">arangodb</span></code> (beta) as
-your output format; more options will be added in the future. The <code class="docutils literal notranslate"><span class="pre">output_path</span></code>
-is relative to your working directory, as is the schema-config path. The
-<code class="docutils literal notranslate"><span class="pre">ontology</span></code> should be specified as a (preferably persistent) URL to the ontology
-file, and a <code class="docutils literal notranslate"><span class="pre">root_node</span></code> to specify the node from which the ontology should be
-traversed.  We recommend using a URL that specifies the exact version of the
-ontology, as in the example above.</p>
+</div>
+<p>You can currently select between <code class="docutils literal notranslate"><span class="pre">postgresql</span></code>, <code class="docutils literal notranslate"><span class="pre">neo4j</span></code>, <code class="docutils literal notranslate"><span class="pre">rdf</span></code> (beta), and
+<code class="docutils literal notranslate"><span class="pre">arangodb</span></code> (beta) as your output format; more options will be added in the
+future. The <code class="docutils literal notranslate"><span class="pre">output_path</span></code> is relative to your working directory, as is the
+schema-config path. The <code class="docutils literal notranslate"><span class="pre">ontology</span></code> should be specified as a (preferably
+persistent) URL to the ontology file, and a <code class="docutils literal notranslate"><span class="pre">root_node</span></code> to specify the node from
+which the ontology should be traversed.  We recommend using a URL that specifies
+the exact version of the ontology, as in the example above.</p>
 <section id="dbms-specific-settings">
 <h3>DBMS-specific settings<a class="headerlink" href="#dbms-specific-settings" title="Permalink to this heading"></a></h3>
-<p>In addition to the general settings, you can specify DBMS-specific settings
-under the <code class="docutils literal notranslate"><span class="pre">postgresql</span></code>, <code class="docutils literal notranslate"><span class="pre">arangodb</span></code>, or <code class="docutils literal notranslate"><span class="pre">neo4j</span></code> entry. For instance, you can
-specify the database name, the host, the port, and the credentials for your
-database. You can also set delimiters for the entities and arrays in your import
-files. For a list of all settings, please refer to the <a class="reference internal" href="installation.html#config"><span class="std std-ref">Configuration</span></a>
-section.</p>
+<p>In addition to the general settings, you can specify settings specific to each
+DBMS (database management system) in the configuration file under the
+<code class="docutils literal notranslate"><span class="pre">postgresql</span></code>, <code class="docutils literal notranslate"><span class="pre">arangodb</span></code>, <code class="docutils literal notranslate"><span class="pre">rdf</span></code>, or <code class="docutils literal notranslate"><span class="pre">neo4j</span></code> entry. For instance, you can specify
+the database name, the host, the port, and the credentials for your database.
+You can also set delimiters for the entities and arrays in your import files.
+For a list of all settings, please refer to the <a class="reference internal" href="installation.html#config"><span class="std std-ref">Configuration</span></a> section.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">neo4j</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">database_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">biocypher</span>
 <span class="w">  </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j://localhost:7687</span>
@@ -377,6 +366,7 @@ section.</p>
 <span class="w">  </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span>
 <span class="w">  </span><span class="nt">delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;,&#39;</span>
 </pre></div>
+</div>
 </div>
 </section>
 </section>

@@ -1,5 +1,6 @@
 
 # Interacting with Neo4j
+
 BioCypher development was initially centred around a Neo4j graph database output
 due to the migration of OmniPath to a Neo4j backend. Importantly, we understand
 BioCypher as an abstration of the build process of a biomedical knowledge graph,
@@ -8,6 +9,12 @@ are currently working on other output formats, such as RDF, SQL, and ArangoDB,
 and will update the documentation accordingly. In the following section, we give
 an overview of interacting with Neo4j from the perspective of BioCypher, but we
 refer the reader to the Neo4j documentation for more details.
+
+```{note}
+We use the APOC library for Neo4j, which is not included automatically, but
+needs to be installed as a plugin to the DMBS. For more information, please
+refer to the [APOC documentation](https://neo4j.com/labs/apoc/).
+```
 
 ## Communication via the Neo4j Python Driver
 
@@ -136,11 +143,12 @@ BioCypher or original versions, respectively.
 
 (neo4j_tut)=
 # Tutorial - Neo4j
+
 After writing knowledge graph files with BioCypher in offline mode for the Neo4j
-DBMS, the graph can now be imported into Neo4j using the `neo4j-admin` command
-line tool. This is not necessary if the graph is created in online mode. For
-convenience, BioCypher provides the command line call required to import the
-data into Neo4j:
+DBMS (database management system), the graph can now be imported into Neo4j
+using the `neo4j-admin` command line tool. This is not necessary if the graph is
+created in online mode. For convenience, BioCypher provides the command line
+call required to import the data into Neo4j:
 
 ```{code-block} python
 bc.write_import_call()
