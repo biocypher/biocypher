@@ -61,7 +61,7 @@ drive BioCypher, we recommend to check out the graphical abstract below and read
    on `GitHub <https://github.com/biocypher/biocypher>`_ or via email at
    sebastian.lobentanzer (at) uni-heidelberg.de.
 
-.. figure:: ../graphical_abstract.png
+.. figure:: graphical_abstract.png
    :width: 95%
    :align: center
    :alt: BioCypher graphical abstract
