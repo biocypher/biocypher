@@ -19,6 +19,8 @@ import importlib.metadata
 
 import toml
 
+_VERSION = "0.5.17"
+
 
 def get_metadata():
     """
@@ -58,7 +60,7 @@ def get_metadata():
         except importlib.metadata.PackageNotFoundError:
             pass
 
-    meta["version"] = meta.get("version", None)
+    meta["version"] = meta.get("version", None) or _VERSION
 
     return meta
 
