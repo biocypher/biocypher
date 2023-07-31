@@ -43,7 +43,7 @@ There are currently two 'flavours' of adapters. The first is simpler and used in
 workflows that are similar to harmonisation scripts, where the BioCypher
 interface is instantiated in the same script as the adapter(s). In the second,
 the BioCypher interface is contained in the adapter class, which makes for a
-more complex architecture, but allows for more involved workflows. In 
+more complex architecture, but allows for more involved workflows. In
 pseudo-code, the two approaches look like this:
 
 ```{code-block} python
@@ -109,7 +109,7 @@ Graph](https://github.com/IGVF-DACC/igvf-catalog/tree/main/data) and the
 [Clinical Knowledge
 Graph migration](https://github.com/biocypher/clinical-knowledge-graph).
 
-```{note} 
+```{note}
 
 While there are differences in implementation details, both approaches are
 largely functionally equivalent. At the current time, there is no clear

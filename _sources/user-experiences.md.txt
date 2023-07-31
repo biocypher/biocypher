@@ -9,7 +9,7 @@ repositories ("storage") and (2) project-specific knowledge graph creation
 ## A Knowledge Graph for Impact of Genomic Variation on Function (IGVF)
 
 
-:::{card} Impact of Genomic Variation on Function (IGVF) 
+:::{card} Impact of Genomic Variation on Function (IGVF)
 :link: https://www.igvf.org/
 
 The Impact of Genomic Variation on Function (IGVF) project aims to provide a
@@ -28,7 +28,7 @@ creating a user-facing API (and eventually UI) that will access this graph.
 BioCypher, which acts as an intermediary between Biolink and graph databases (we
 are using ArangoDB) has been instrumental in helping us design the schema and
 move our project forward. Specifically, it provides a framework we can use to
-parse the dozens of data files and formats into a Biolink-inspired schema.  
+parse the dozens of data files and formats into a Biolink-inspired schema.
 
 &mdash; Ben Hitz, Director of Genomics Data Resources, Project Manager ENCODE,
 Stanford University
@@ -37,10 +37,10 @@ Stanford University
 
 The BioCypher pipeline used to build the knowledge graph uses several adapters
 for genetics data sources; an overview is available in our
-[meta-graph](metagraph) and on the [GitHub Components 
+[meta-graph](metagraph) and on the [GitHub Components
 Board](https://github.com/orgs/biocypher/projects/3) (pipelines column). The
 pipeline boasts a Docker Compose workflow that builds the graph and the API
-(using [tRPC](https://trpc.io/)), and is available on 
+(using [tRPC](https://trpc.io/)), and is available on
 [GitHub](https://github.com/IGVF-DACC/igvf-catalog).
 
 ## Drug Repurposing with CROssBAR
@@ -72,7 +72,7 @@ multiple genes/proteins, compounds/drugs, diseases, phenotypes, pathways, or any
 combination of those, this procedure gets extremely complicated, requiring an
 average of 64 NoSQL queries to construct one single user-specific KG. The total
 number of lines of code required for this procedure alone is around 8000.
-This task could have been achieved significantly faster and more efficiently 
+This task could have been achieved significantly faster and more efficiently
 if we had had BioCypher five years ago.
 
 &mdash; Tunca Doğan, Department of Computer Engineering and Artificial Intelligence
@@ -84,7 +84,7 @@ Institute (EMBL-EBI)
 
 Using BioCypher, CROssBAR v2 will be a flexible property graph database
 comprised of single input adapters for each data source. As above, you can see
-its current state in the [meta-graph](metagraph) and on the [GitHub Components 
+its current state in the [meta-graph](metagraph) and on the [GitHub Components
 Board](https://github.com/orgs/biocypher/projects/3) (pipelines column).
 
 ## Builing a Knowledge Graph for Contextualised Metabolic-Enzymatic Interactions
