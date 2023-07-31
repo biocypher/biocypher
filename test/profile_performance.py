@@ -11,15 +11,15 @@ from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._connect import _Neo4jDriver
 
 __all__ = [
-    'create_network_by_gen',
-    'create_network_by_list',
-    'create_networks',
-    'delete_test_network',
-    'explain_neo4j',
-    'profile_neo4j',
-    'remove_constraint',
-    'setup_constraint',
-    'visualise_benchmark',
+    "create_network_by_gen",
+    "create_network_by_list",
+    "create_networks",
+    "delete_test_network",
+    "explain_neo4j",
+    "profile_neo4j",
+    "remove_constraint",
+    "setup_constraint",
+    "visualise_benchmark",
 ]
 
 
@@ -28,14 +28,14 @@ def create_network_by_gen(num_nodes, num_edges, profile=False, explain=False):
 
     def node_gen(num_nodes):
         for i in range(num_nodes):
-            yield BioCypherNode(i, 'test')
+            yield BioCypherNode(i, "test")
 
     def edge_gen(num_edges):
         for _ in range(num_edges):
             src = random.randint(1, num_nodes)
             tar = random.randint(1, num_nodes)
 
-            yield BioCypherEdge(src, tar, 'test')
+            yield BioCypherEdge(src, tar, "test")
 
     node_profile, np_printout = d.add_biocypher_nodes(
         node_gen(num_nodes),
@@ -82,7 +82,7 @@ def create_network_by_list(num_nodes, num_edges):
     def node_list(num_nodes):
         ls = []
         for i in range(num_nodes):
-            ls.append(BioCypherNode(i, 'test'))
+            ls.append(BioCypherNode(i, "test"))
 
         return ls
 
@@ -91,7 +91,7 @@ def create_network_by_list(num_nodes, num_edges):
         for _ in range(num_edges):
             src = random.randint(1, num_nodes)
             tar = random.randint(1, num_nodes)
-            ls.append(BioCypherEdge(src, tar, 'test'))
+            ls.append(BioCypherEdge(src, tar, "test"))
 
         return ls
 
@@ -104,23 +104,23 @@ def create_network_by_list(num_nodes, num_edges):
 def setup_constraint():
     d = _Neo4jDriver(increment_version=False)
     d.query(
-        'CREATE CONSTRAINT test_id '
-        'IF NOT EXISTS ON (n:test) '
-        'ASSERT n.id IS UNIQUE ',
+        "CREATE CONSTRAINT test_id "
+        "IF NOT EXISTS ON (n:test) "
+        "ASSERT n.id IS UNIQUE ",
     )
     d.close()
 
 
 def remove_constraint():
     d = _Neo4jDriver(increment_version=False)
-    d.query('DROP CONSTRAINT test_id')
+    d.query("DROP CONSTRAINT test_id")
     d.close()
 
 
 def delete_test_network():
     d = _Neo4jDriver(increment_version=False)
-    d.query('MATCH (n)-[:test]-() DETACH DELETE n')
-    d.query('MATCH (n:test) DETACH DELETE n')
+    d.query("MATCH (n)-[:test]-() DETACH DELETE n")
+    d.query("MATCH (n:test) DETACH DELETE n")
     d.close()
 
 
@@ -140,9 +140,9 @@ def create_networks():
         )
         delete_test_network()
 
-        res.update({'lis%s' % n: lis, 'lism%s' % n: lism})
+        res.update({"lis%s" % n: lis, "lism%s" % n: lism})
 
-    with open('benchmark.pickle', 'wb') as f:
+    with open("benchmark.pickle", "wb") as f:
         pickle.dump(res, f)
 
     print(res)
@@ -153,57 +153,55 @@ def visualise_benchmark():
 
     import matplotlib.pyplot as plt
 
-    with open('benchmark.pickle', 'rb') as f:
+    with open("benchmark.pickle", "rb") as f:
         res = pickle.load(f)
 
-    x = [key for key in res.keys() if 'lism' in key]
-    x = [int(e.replace('lism', '')) for e in x]
-    lis = [value for key, value in res.items() if 'lism' not in key]
-    lism = [value for key, value in res.items() if 'lism' in key]
+    x = [key for key in res.keys() if "lism" in key]
+    x = [int(e.replace("lism", "")) for e in x]
+    lis = [value for key, value in res.items() if "lism" not in key]
+    lism = [value for key, value in res.items() if "lism" in key]
 
-    plt.plot(x, lis, marker='o', label='List')
-    plt.plot(x, lism, marker='o', label='List (modified)')
-    plt.xlabel('Network size (nodes)')
-    plt.ylabel('Time (s)')
+    plt.plot(x, lis, marker="o", label="List")
+    plt.plot(x, lism, marker="o", label="List (modified)")
+    plt.xlabel("Network size (nodes)")
+    plt.ylabel("Time (s)")
     plt.legend()
     plt.show()
 
 
 def profile_neo4j(num_nodes, num_edges):
-
     np, ep, epm = create_network_by_gen(num_nodes, num_edges, profile=True)
-    print('')
-    print(f'{bcolors.HEADER}### NODE PROFILE ###{bcolors.ENDC}')
+    print("")
+    print(f"{bcolors.HEADER}### NODE PROFILE ###{bcolors.ENDC}")
     for p in np[1]:
         print(p)
-    print('')
-    print(f'{bcolors.HEADER}### EDGE PROFILE ###{bcolors.ENDC}')
+    print("")
+    print(f"{bcolors.HEADER}### EDGE PROFILE ###{bcolors.ENDC}")
     for p in ep[1]:
         print(p)
-    print('')
-    print(f'{bcolors.HEADER}### MODIFIED EDGE PROFILE ###{bcolors.ENDC}')
+    print("")
+    print(f"{bcolors.HEADER}### MODIFIED EDGE PROFILE ###{bcolors.ENDC}")
     for p in epm[1]:
         print(p)
 
 
 def explain_neo4j(num_nodes, num_edges):
-
     np, ep, epm = create_network_by_gen(num_nodes, num_edges, explain=True)
-    print('')
-    print(f'{bcolors.HEADER}### NODE PROFILE ###{bcolors.ENDC}')
+    print("")
+    print(f"{bcolors.HEADER}### NODE PROFILE ###{bcolors.ENDC}")
     for p in np[1]:
         print(p)
-    print('')
-    print(f'{bcolors.HEADER}### EDGE PROFILE ###{bcolors.ENDC}')
+    print("")
+    print(f"{bcolors.HEADER}### EDGE PROFILE ###{bcolors.ENDC}")
     for p in ep[1]:
         print(p)
-    print('')
-    print(f'{bcolors.HEADER}### MODIFIED EDGE PROFILE ###{bcolors.ENDC}')
+    print("")
+    print(f"{bcolors.HEADER}### MODIFIED EDGE PROFILE ###{bcolors.ENDC}")
     for p in epm[1]:
         print(p)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # profile python performance with cProfile
     python_prof = False
     # run network creation (needed for python profiling)
@@ -233,7 +231,7 @@ if __name__ == '__main__':
         ps = pstats.Stats(profile, stream=s).sort_stats(sortby)
         ps.print_stats()
         # print(s.getvalue())
-        filename = 'create_network.prof'
+        filename = "create_network.prof"
         ps.dump_stats(filename)
 
     if viz:

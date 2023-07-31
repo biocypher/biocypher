@@ -11,12 +11,14 @@ from tutorial.data_generator import (
 def main():
     # Setup: create a list of proteins to be imported
     proteins_complexes = [
-        p for sublist in zip(
+        p
+        for sublist in zip(
             [RandomPropertyProtein() for _ in range(10)],
             [RandomPropertyProteinIsoform() for _ in range(10)],
             [EntrezProtein() for _ in range(10)],
             [Complex() for _ in range(10)],
-        ) for p in sublist
+        )
+        for p in sublist
     ]
 
     # Extract id, label, and property dictionary
@@ -47,8 +49,8 @@ def main():
 
     # Create BioCypher driver
     bc = BioCypher(
-        biocypher_config_path='tutorial/07_biocypher_config.yaml',
-        schema_config_path='tutorial/07_schema_config_pandas.yaml',
+        biocypher_config_path="tutorial/07_biocypher_config.yaml",
+        schema_config_path="tutorial/07_schema_config_pandas.yaml",
     )
     # Run the import
     bc.add(node_generator())
@@ -62,5 +64,5 @@ def main():
     bc.summary()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

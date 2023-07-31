@@ -13,7 +13,7 @@ Handy functions for use in various places.
 """
 from ._logger import logger
 
-logger.debug(f'Loading module {__name__}.')
+logger.debug(f"Loading module {__name__}.")
 
 from typing import (
     Any,
@@ -31,7 +31,7 @@ from treelib import Tree
 import networkx as nx
 import stringcase
 
-__all__ = ['LIST_LIKE', 'SIMPLE_TYPES', 'ensure_iterable', 'to_list']
+__all__ = ["LIST_LIKE", "SIMPLE_TYPES", "ensure_iterable", "to_list"]
 
 SIMPLE_TYPES = (
     bytes,
@@ -60,11 +60,9 @@ def to_list(value: Any) -> list:
     """
 
     if isinstance(value, LIST_LIKE):
-
         value = list(value)
 
     else:
-
         value = [value]
 
     return value
@@ -75,7 +73,7 @@ def ensure_iterable(value: Any) -> Iterable:
     Returns iterables, except strings, wraps simple types into tuple.
     """
 
-    return value if isinstance(value, LIST_LIKE) else (value, )
+    return value if isinstance(value, LIST_LIKE) else (value,)
 
 
 def create_tree_visualisation(inheritance_tree: Union[dict, nx.Graph]) -> str:
@@ -84,7 +82,6 @@ def create_tree_visualisation(inheritance_tree: Union[dict, nx.Graph]) -> str:
     """
 
     if isinstance(inheritance_tree, nx.Graph):
-
         inheritance_tree = nx.to_dict_of_lists(inheritance_tree)
         # unlist values
         inheritance_tree = {k: v[0] for k, v in inheritance_tree.items() if v}
@@ -95,56 +92,48 @@ def create_tree_visualisation(inheritance_tree: Union[dict, nx.Graph]) -> str:
     root = list(parents - classes)
 
     if len(root) > 1:
-
-        if 'entity' in root:
-
-            root = 'entity'  # default: good standard? TODO
+        if "entity" in root:
+            root = "entity"  # default: good standard? TODO
 
         else:
-
             raise ValueError(
-                'Inheritance tree cannot have more than one root node. '
-                f'Found {len(root)}: {root}.'
+                "Inheritance tree cannot have more than one root node. "
+                f"Found {len(root)}: {root}."
             )
 
     else:
-
         root = root[0]
 
     if not root:
         # find key whose value is None
-        root = list(inheritance_tree.keys())[list(inheritance_tree.values()
-                                                 ).index(None)]
+        root = list(inheritance_tree.keys())[
+            list(inheritance_tree.values()).index(None)
+        ]
 
     tree = Tree()
 
     tree.create_node(root, root)
 
     while classes:
-
         for child in classes:
-
             parent = inheritance_tree[child]
 
             if parent in tree.nodes.keys() or parent == root:
-
                 tree.create_node(child, child, parent=parent)
 
         for node in tree.nodes.keys():
-
             if node in classes:
-
                 classes.remove(node)
 
     return tree
 
 
 # string conversion, adapted from Biolink Model Toolkit
-lowercase_pattern = re.compile(r'[a-zA-Z]*[a-z][a-zA-Z]*')
-underscore_pattern = re.compile(r'(?<!^)(?=[A-Z][a-z])')
+lowercase_pattern = re.compile(r"[a-zA-Z]*[a-z][a-zA-Z]*")
+underscore_pattern = re.compile(r"(?<!^)(?=[A-Z][a-z])")
 
 
-def from_pascal(s: str, sep: str = ' ') -> str:
+def from_pascal(s: str, sep: str = " ") -> str:
     underscored = underscore_pattern.sub(sep, s)
     lowercased = lowercase_pattern.sub(
         lambda match: match.group(0).lower(),
@@ -163,7 +152,7 @@ def pascalcase_to_sentencecase(s: str) -> str:
     Returns:
         string in sentence case form
     """
-    return from_pascal(s, sep=' ')
+    return from_pascal(s, sep=" ")
 
 
 def snakecase_to_sentencecase(s: str) -> str:
@@ -202,7 +191,7 @@ def sentencecase_to_pascalcase(s: str) -> str:
     Returns:
         string in PascalCase form
     """
-    return re.sub(r'(?:^| )([a-zA-Z])', lambda match: match.group(1).upper(), s)
+    return re.sub(r"(?:^| )([a-zA-Z])", lambda match: match.group(1).upper(), s)
 
 
 def to_lower_sentence_case(s: str) -> str:
@@ -216,9 +205,9 @@ def to_lower_sentence_case(s: str) -> str:
     Returns:
         string in lower sentence case form
     """
-    if '_' in s:
+    if "_" in s:
         return snakecase_to_sentencecase(s)
-    elif ' ' in s:
+    elif " " in s:
         return s.lower()
     elif s[0].isupper():
         return pascalcase_to_sentencecase(s)

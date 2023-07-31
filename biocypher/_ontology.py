@@ -17,7 +17,7 @@ import os
 
 from ._logger import logger
 
-logger.debug(f'Loading module {__name__}.')
+logger.debug(f"Loading module {__name__}.")
 
 from typing import Optional
 from datetime import datetime
@@ -40,6 +40,7 @@ class OntologyAdapter:
     labels are formatted in lower sentence case. In some cases, this means that
     we replace underscores with spaces.
     """
+
     def __init__(
         self,
         ontology_file: str,
@@ -63,7 +64,7 @@ class OntologyAdapter:
                 node in the head ontology that should be used to join to the
                 root node of the tail ontology. Defaults to None.
 
-            merge_nodes (bool): If True, head and tail join nodes will be 
+            merge_nodes (bool): If True, head and tail join nodes will be
                 merged, using the label of the head join node. If False, the
                 tail join node will be attached as a child of the head join
                 node.
@@ -76,7 +77,7 @@ class OntologyAdapter:
                 be removed. Defaults to True.
         """
 
-        logger.info(f'Instantiating OntologyAdapter class for {ontology_file}.')
+        logger.info(f"Instantiating OntologyAdapter class for {ontology_file}.")
 
         self._ontology_file = ontology_file
         self._root_label = root_label
@@ -93,7 +94,6 @@ class OntologyAdapter:
         )
 
     def _rdf_to_nx(self, g, root_label, switch_id_and_label=True):
-
         # Loop through all labels in the ontology
         for s, _, o in g.triples((None, rdflib.RDFS.label, None)):
             # If the label is the root label, set the root node to the subject of the label
@@ -102,7 +102,7 @@ class OntologyAdapter:
                 break
         else:
             raise ValueError(
-                f'Could not find root node with label {root_label}'
+                f"Could not find root node with label {root_label}"
             )
 
         # Create a directed graph to represent the ontology as a tree
@@ -110,7 +110,6 @@ class OntologyAdapter:
 
         # Define a recursive function to add subclasses to the graph
         def add_subclasses(node):
-
             # Only add nodes that have a label
             if (node, rdflib.RDFS.label, None) not in g:
                 return
@@ -119,25 +118,23 @@ class OntologyAdapter:
 
             if nx_id not in G:
                 G.add_node(nx_id)
-                G.nodes[nx_id]['label'] = nx_label
+                G.nodes[nx_id]["label"] = nx_label
 
             # Recursively add all subclasses of the node to the graph
             for s, _, o in g.triples((None, rdflib.RDFS.subClassOf, node)):
-
                 # Only add nodes that have a label
                 if (s, rdflib.RDFS.label, None) not in g:
                     continue
 
                 s_id, s_label = _get_nx_id_and_label(s)
                 G.add_node(s_id)
-                G.nodes[s_id]['label'] = s_label
+                G.nodes[s_id]["label"] = s_label
 
                 G.add_edge(s_id, nx_id)
                 add_subclasses(s)
                 add_parents(s)
 
         def add_parents(node):
-
             # Only add nodes that have a label
             if (node, rdflib.RDFS.label, None) not in g:
                 return
@@ -146,7 +143,6 @@ class OntologyAdapter:
 
             # Recursively add all parents of the node to the graph
             for s, _, o in g.triples((node, rdflib.RDFS.subClassOf, None)):
-
                 # Only add nodes that have a label
                 if (o, rdflib.RDFS.label, None) not in g:
                     continue
@@ -158,15 +154,16 @@ class OntologyAdapter:
                     continue
 
                 G.add_node(o_id)
-                G.nodes[o_id]['label'] = o_label
+                G.nodes[o_id]["label"] = o_label
 
                 G.add_edge(nx_id, o_id)
                 add_parents(o)
 
         def _get_nx_id_and_label(node):
             node_id_str = self._remove_prefix(str(node))
-            node_label_str = str(g.value(node,
-                                         rdflib.RDFS.label)).replace('_', ' ')
+            node_label_str = str(g.value(node, rdflib.RDFS.label)).replace(
+                "_", " "
+            )
             node_label_str = _misc.to_lower_sentence_case(node_label_str)
 
             nx_id = node_label_str if switch_id_and_label else node_id_str
@@ -185,7 +182,7 @@ class OntologyAdapter:
         everything before the last separator.
         """
         if self._remove_prefixes:
-            return uri.rsplit('#', 1)[-1].rsplit('/', 1)[-1]
+            return uri.rsplit("#", 1)[-1].rsplit("/", 1)[-1]
         else:
             return uri
 
@@ -202,17 +199,17 @@ class OntologyAdapter:
         """
         Get the format of the ontology file.
         """
-        if ontology_file.endswith('.owl'):
-            return 'application/rdf+xml'
-        elif ontology_file.endswith('.obo'):
-            raise NotImplementedError('OBO format not yet supported')
-        elif ontology_file.endswith('.rdf'):
-            return 'application/rdf+xml'
-        elif ontology_file.endswith('.ttl'):
-            return 'ttl'
+        if ontology_file.endswith(".owl"):
+            return "application/rdf+xml"
+        elif ontology_file.endswith(".obo"):
+            raise NotImplementedError("OBO format not yet supported")
+        elif ontology_file.endswith(".rdf"):
+            return "application/rdf+xml"
+        elif ontology_file.endswith(".ttl"):
+            return "ttl"
         else:
             raise ValueError(
-                f'Could not determine format of ontology file {ontology_file}'
+                f"Could not determine format of ontology file {ontology_file}"
             )
 
     def get_nx_graph(self):
@@ -254,10 +251,11 @@ class Ontology:
     while an arbitrary number of other resources can become "tail" ontologies at
     arbitrary fusion points inside the "head" ontology.
     """
+
     def __init__(
         self,
         head_ontology: dict,
-        ontology_mapping: 'OntologyMapping',
+        ontology_mapping: "OntologyMapping",
         tail_ontologies: Optional[dict] = None,
     ):
         """
@@ -311,21 +309,21 @@ class Ontology:
         instance variable (head) or a dictionary (tail).
         """
 
-        logger.info('Loading ontologies...')
+        logger.info("Loading ontologies...")
 
         self._head_ontology = OntologyAdapter(
-            self._head_ontology_meta['url'],
-            self._head_ontology_meta['root_node'],
+            self._head_ontology_meta["url"],
+            self._head_ontology_meta["root_node"],
         )
 
         if self._tail_ontology_meta:
             self._tail_ontologies = {}
             for key, value in self._tail_ontology_meta.items():
                 self._tail_ontologies[key] = OntologyAdapter(
-                    ontology_file = value['url'],
-                    root_label = value['tail_join_node'],
-                    head_join_node = value['head_join_node'],
-                    merge_nodes = value.get('merge_nodes', True),
+                    ontology_file=value["url"],
+                    root_label=value["tail_join_node"],
+                    head_join_node=value["head_join_node"],
+                    merge_nodes=value.get("merge_nodes", True),
                 )
 
     def _assert_join_node(self, adapter: OntologyAdapter) -> None:
@@ -342,10 +340,9 @@ class Ontology:
         head_join_node = adapter.get_head_join_node()
 
         if head_join_node not in self._head_ontology.get_nx_graph().nodes:
-
             raise ValueError(
-                f'Head join node {head_join_node} not found in '
-                f'head ontology.'
+                f"Head join node {head_join_node} not found in "
+                f"head ontology."
             )
 
     def _join_ontologies(self, adapter: OntologyAdapter) -> None:
@@ -383,11 +380,9 @@ class Ontology:
             # as parent of tail join node
             tail_ontology_subtree.add_node(
                 head_join_node,
-                **self._head_ontology.get_nx_graph().nodes[head_join_node]
+                **self._head_ontology.get_nx_graph().nodes[head_join_node],
             )
-            tail_ontology_subtree.add_edge(
-                tail_join_node, head_join_node
-            )
+            tail_ontology_subtree.add_edge(tail_join_node, head_join_node)
 
         # else rename tail join node to match head join node if necessary
         elif not tail_join_node == head_join_node:
@@ -409,46 +404,43 @@ class Ontology:
             self._nx_graph = self._head_ontology.get_nx_graph().copy()
 
         for key, value in self.extended_schema.items():
-
-            if not value.get('is_a'):
-
-                if self._nx_graph.has_node(value.get('synonym_for')):
-                    
+            if not value.get("is_a"):
+                if self._nx_graph.has_node(value.get("synonym_for")):
                     continue
-                
+
                 if not self._nx_graph.has_node(key):
-                    
                     raise ValueError(
-                        f'Node {key} not found in ontology, but also has no '
-                        'inheritance definition. Please check your schema for '
-                        'spelling errors or a missing `is_a` definition.'
+                        f"Node {key} not found in ontology, but also has no "
+                        "inheritance definition. Please check your schema for "
+                        "spelling errors or a missing `is_a` definition."
                     )
-                
+
                 continue
 
-            parents = _misc.to_list(value.get('is_a'))
+            parents = _misc.to_list(value.get("is_a"))
             child = key
 
             while parents:
                 parent = parents.pop(0)
 
                 if parent not in self._nx_graph.nodes:
-
                     self._nx_graph.add_node(parent)
                     self._nx_graph.nodes[parent][
-                        'label'] = _misc.sentencecase_to_pascalcase(parent)
+                        "label"
+                    ] = _misc.sentencecase_to_pascalcase(parent)
 
                     # mark parent as user extension
-                    self._nx_graph.nodes[parent]['user_extension'] = True
+                    self._nx_graph.nodes[parent]["user_extension"] = True
                     self._extended_nodes.add(parent)
 
                 if child not in self._nx_graph.nodes:
                     self._nx_graph.add_node(child)
                     self._nx_graph.nodes[child][
-                        'label'] = _misc.sentencecase_to_pascalcase(child)
+                        "label"
+                    ] = _misc.sentencecase_to_pascalcase(child)
 
                     # mark child as user extension
-                    self._nx_graph.nodes[child]['user_extension'] = True
+                    self._nx_graph.nodes[child]["user_extension"] = True
                     self._extended_nodes.add(child)
 
                 self._nx_graph.add_edge(child, parent)
@@ -463,29 +455,28 @@ class Ontology:
         if not self._nx_graph:
             self._nx_graph = self._head_ontology.get_nx_graph().copy()
 
-        if 'entity' not in self._nx_graph.nodes:
+        if "entity" not in self._nx_graph.nodes:
             return
 
         # biolink classes that are disjoint from entity
         disjoint_classes = [
-            'frequency qualifier mixin',
-            'chemical entity to entity association mixin',
-            'ontology class',
-            'relationship quantifier',
-            'physical essence or occurrent',
-            'gene or gene product',
-            'subject of investigation',
+            "frequency qualifier mixin",
+            "chemical entity to entity association mixin",
+            "ontology class",
+            "relationship quantifier",
+            "physical essence or occurrent",
+            "gene or gene product",
+            "subject of investigation",
         ]
 
         for node in disjoint_classes:
-
             if not self._nx_graph.nodes.get(node):
-
                 self._nx_graph.add_node(node)
                 self._nx_graph.nodes[node][
-                    'label'] = _misc.sentencecase_to_pascalcase(node)
+                    "label"
+                ] = _misc.sentencecase_to_pascalcase(node)
 
-            self._nx_graph.add_edge(node, 'entity')
+            self._nx_graph.add_edge(node, "entity")
 
     def _add_properties(self) -> None:
         """
@@ -495,21 +486,18 @@ class Ontology:
         """
 
         for key, value in self.extended_schema.items():
-
             if key in self._nx_graph.nodes:
-
                 self._nx_graph.nodes[key].update(value)
 
-            if value.get('synonym_for'):
-
+            if value.get("synonym_for"):
                 # change node label to synonym
-                if value['synonym_for'] not in self._nx_graph.nodes:
+                if value["synonym_for"] not in self._nx_graph.nodes:
                     raise ValueError(
                         f'Node {value["synonym_for"]} not found in ontology.'
                     )
 
                 self._nx_graph = nx.relabel_nodes(
-                    self._nx_graph, {value['synonym_for']: key}
+                    self._nx_graph, {value["synonym_for"]: key}
                 )
 
     def get_ancestors(self, node_label: str) -> list:
@@ -541,18 +529,17 @@ class Ontology:
         """
 
         if not self._nx_graph:
-            raise ValueError('Ontology not loaded.')
+            raise ValueError("Ontology not loaded.")
 
         if not self._tail_ontologies:
-            msg = f'Showing ontology structure based on {self._head_ontology._ontology_file}'
+            msg = f"Showing ontology structure based on {self._head_ontology._ontology_file}"
 
         else:
-            msg = f'Showing ontology structure based on {len(self._tail_ontology_meta)+1} ontologies: '
+            msg = f"Showing ontology structure based on {len(self._tail_ontology_meta)+1} ontologies: "
 
         print(msg)
 
         if not full:
-
             # set of leaves and their intermediate parents up to the root
             filter_nodes = set(self.extended_schema.keys())
 
@@ -563,19 +550,17 @@ class Ontology:
             G = self._nx_graph.subgraph(filter_nodes)
 
         else:
-
             G = self._nx_graph
 
         if not to_disk:
-
             # create tree
             tree = _misc.create_tree_visualisation(G)
 
             # add synonym information
             for node in self.extended_schema:
-                if self.extended_schema[node].get('synonym_for'):
+                if self.extended_schema[node].get("synonym_for"):
                     tree.nodes[node].tag = (
-                        f'{node} = '
+                        f"{node} = "
                         f"{self.extended_schema[node].get('synonym_for')}"
                     )
 
@@ -584,26 +569,24 @@ class Ontology:
             return tree
 
         else:
-
             # convert lists/dicts to strings for vis only
             for node in G.nodes:
-
                 # rename node and use former id as label
-                label = G.nodes[node].get('label')
+                label = G.nodes[node].get("label")
 
                 if not label:
                     label = node
 
                 G = nx.relabel_nodes(G, {node: label})
-                G.nodes[label]['label'] = node
+                G.nodes[label]["label"] = node
 
                 for attrib in G.nodes[label]:
                     if type(G.nodes[label][attrib]) in [list, dict]:
                         G.nodes[label][attrib] = str(G.nodes[label][attrib])
 
-            path = os.path.join(to_disk, 'ontology_structure.graphml')
+            path = os.path.join(to_disk, "ontology_structure.graphml")
 
-            logger.info(f'Writing ontology structure to {path}.')
+            logger.info(f"Writing ontology structure to {path}.")
 
             nx.write_graphml(G, path)
 
@@ -616,10 +599,10 @@ class Ontology:
         """
 
         d = {
-            'node_id': self._get_current_id(),
-            'node_label': 'BioCypher',
-            'properties': {
-                'schema': 'self.extended_schema',
+            "node_id": self._get_current_id(),
+            "node_label": "BioCypher",
+            "properties": {
+                "schema": "self.extended_schema",
             },
         }
 
@@ -635,5 +618,4 @@ class Ontology:
         """
 
         now = datetime.now()
-        return now.strftime('v%Y%m%d-%H%M%S')
-    
+        return now.strftime("v%Y%m%d-%H%M%S")

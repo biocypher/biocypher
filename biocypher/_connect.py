@@ -13,7 +13,7 @@ BioCypher 'online' mode. Handles connection and manipulation of a running DBMS.
 """
 from ._logger import logger
 
-logger.debug(f'Loading module {__name__}.')
+logger.debug(f"Loading module {__name__}.")
 
 from typing import Optional
 from collections.abc import Iterable
@@ -27,10 +27,10 @@ from ._create import BioCypherEdge, BioCypherNode
 from ._ontology import Ontology
 from ._translate import Translator
 
-__all__ = ['_Neo4jDriver']
+__all__ = ["_Neo4jDriver"]
 
 
-class _Neo4jDriver():
+class _Neo4jDriver:
     """
     Manages a BioCypher connection to a Neo4j database using the
     ``neo4j_utils.Driver`` class.
@@ -58,6 +58,7 @@ class _Neo4jDriver():
         translator (Translator): The translator to use for mapping.
 
     """
+
     def __init__(
         self,
         database_name: str,
@@ -71,7 +72,6 @@ class _Neo4jDriver():
         fetch_size: int = 1000,
         increment_version: bool = True,
     ):
-
         self._ontology = ontology
         self._translator = translator
 
@@ -89,23 +89,18 @@ class _Neo4jDriver():
         # check for biocypher config in connected graph
 
         if wipe:
-
             self.init_db()
 
         if increment_version:
-
             # set new current version node
             self._update_meta_graph()
 
     def _update_meta_graph(self):
-
-        logger.info('Updating Neo4j meta graph.')
+        logger.info("Updating Neo4j meta graph.")
 
         # find current version node
         db_version = self._driver.query(
-            'MATCH (v:BioCypher) '
-            'WHERE NOT (v)-[:PRECEDES]->() '
-            'RETURN v',
+            "MATCH (v:BioCypher) " "WHERE NOT (v)-[:PRECEDES]->() " "RETURN v",
         )
         # add version node
         self.add_biocypher_nodes(self._ontology)
@@ -113,11 +108,11 @@ class _Neo4jDriver():
         # connect version node to previous
         if db_version[0]:
             previous = db_version[0][0]
-            previous_id = previous['v']['id']
+            previous_id = previous["v"]["id"]
             e_meta = BioCypherEdge(
                 previous_id,
-                self._ontology.get_dict().get('node_id'),
-                'PRECEDES',
+                self._ontology.get_dict().get("node_id"),
+                "PRECEDES",
             )
             self.add_biocypher_edges(e_meta)
 
@@ -132,7 +127,7 @@ class _Neo4jDriver():
                 need of the database
         """
 
-        logger.info('Initialising database.')
+        logger.info("Initialising database.")
         self._create_constraints()
 
     def _create_constraints(self):
@@ -144,17 +139,16 @@ class _Neo4jDriver():
         constraints on the id of all entities represented as nodes.
         """
 
-        logger.info('Creating constraints for node types in config.')
+        logger.info("Creating constraints for node types in config.")
 
         # get structure
         for leaf in self._ontology.extended_schema.items():
             label = _misc.sentencecase_to_pascalcase(leaf[0])
-            if leaf[1]['represented_as'] == 'node':
-
+            if leaf[1]["represented_as"] == "node":
                 s = (
-                    f'CREATE CONSTRAINT `{label}_id` '
-                    f'IF NOT EXISTS ON (n:`{label}`) '
-                    'ASSERT n.id IS UNIQUE'
+                    f"CREATE CONSTRAINT `{label}_id` "
+                    f"IF NOT EXISTS ON (n:`{label}`) "
+                    "ASSERT n.id IS UNIQUE"
                 )
                 self._driver.query(s)
 
@@ -246,38 +240,36 @@ class _Neo4jDriver():
         """
 
         try:
-
             nodes = _misc.to_list(nodes)
 
             entities = [node.get_dict() for node in nodes]
 
         except AttributeError:
-
-            msg = 'Nodes must have a `get_dict` method.'
+            msg = "Nodes must have a `get_dict` method."
             logger.error(msg)
 
             raise ValueError(msg)
 
-        logger.info(f'Merging {len(entities)} nodes.')
+        logger.info(f"Merging {len(entities)} nodes.")
 
         entity_query = (
-            'UNWIND $entities AS ent '
-            'CALL apoc.merge.node([ent.node_label], '
-            '{id: ent.node_id}, ent.properties, ent.properties) '
-            'YIELD node '
-            'RETURN node'
+            "UNWIND $entities AS ent "
+            "CALL apoc.merge.node([ent.node_label], "
+            "{id: ent.node_id}, ent.properties, ent.properties) "
+            "YIELD node "
+            "RETURN node"
         )
 
-        method = 'explain' if explain else 'profile' if profile else 'query'
+        method = "explain" if explain else "profile" if profile else "query"
 
         result = getattr(self._driver, method)(
             entity_query,
             parameters={
-                'entities': entities,
+                "entities": entities,
             },
         )
 
-        logger.info('Finished merging nodes.')
+        logger.info("Finished merging nodes.")
 
         return result
 
@@ -326,28 +318,23 @@ class _Neo4jDriver():
         rels = []
 
         try:
-
             for e in edges:
-
-                if hasattr(e, 'get_node'):
-
+                if hasattr(e, "get_node"):
                     nodes.append(e.get_node())
                     rels.append(e.get_source_edge().get_dict())
                     rels.append(e.get_target_edge().get_dict())
 
                 else:
-
                     rels.append(e.get_dict())
 
         except AttributeError:
-
-            msg = 'Edges and nodes must have a `get_dict` method.'
+            msg = "Edges and nodes must have a `get_dict` method."
             logger.error(msg)
 
             raise ValueError(msg)
 
         self.add_biocypher_nodes(nodes)
-        logger.info(f'Merging {len(rels)} edges.')
+        logger.info(f"Merging {len(rels)} edges.")
 
         # cypher query
 
@@ -355,41 +342,40 @@ class _Neo4jDriver():
         # properties on match and on create;
         # TODO add node labels?
         node_query = (
-            'UNWIND $rels AS r '
-            'MERGE (src {id: r.source_id}) '
-            'MERGE (tar {id: r.target_id}) '
+            "UNWIND $rels AS r "
+            "MERGE (src {id: r.source_id}) "
+            "MERGE (tar {id: r.target_id}) "
         )
 
-        self._driver.query(node_query, parameters={'rels': rels})
+        self._driver.query(node_query, parameters={"rels": rels})
 
         edge_query = (
-            'UNWIND $rels AS r '
-            'MATCH (src {id: r.source_id}) '
-            'MATCH (tar {id: r.target_id}) '
-            'WITH src, tar, r '
-            'CALL apoc.merge.relationship'
-            '(src, r.relationship_label, NULL, '
-            'r.properties, tar, r.properties) '
-            'YIELD rel '
-            'RETURN rel'
+            "UNWIND $rels AS r "
+            "MATCH (src {id: r.source_id}) "
+            "MATCH (tar {id: r.target_id}) "
+            "WITH src, tar, r "
+            "CALL apoc.merge.relationship"
+            "(src, r.relationship_label, NULL, "
+            "r.properties, tar, r.properties) "
+            "YIELD rel "
+            "RETURN rel"
         )
 
-        method = 'explain' if explain else 'profile' if profile else 'query'
+        method = "explain" if explain else "profile" if profile else "query"
 
-        result = getattr(self._driver,
-                         method)(edge_query, parameters={
-                             'rels': rels
-                         })
+        result = getattr(self._driver, method)(
+            edge_query, parameters={"rels": rels}
+        )
 
-        logger.info('Finished merging edges.')
+        logger.info("Finished merging edges.")
 
         return result
 
 
 def get_driver(
     dbms: str,
-    translator: 'Translator',
-    ontology: 'Ontology',
+    translator: "Translator",
+    ontology: "Ontology",
 ):
     """
     Function to return the writer class.
@@ -400,14 +386,14 @@ def get_driver(
 
     dbms_config = _config(dbms)
 
-    if dbms == 'neo4j':
+    if dbms == "neo4j":
         return _Neo4jDriver(
-            database_name=dbms_config['database_name'],
-            wipe=dbms_config['wipe'],
-            uri=dbms_config['uri'],
-            user=dbms_config['user'],
-            password=dbms_config['password'],
-            multi_db=dbms_config['multi_db'],
+            database_name=dbms_config["database_name"],
+            wipe=dbms_config["wipe"],
+            uri=dbms_config["uri"],
+            user=dbms_config["user"],
+            password=dbms_config["password"],
+            multi_db=dbms_config["multi_db"],
             ontology=ontology,
             translator=translator,
         )

@@ -5,10 +5,12 @@ from tutorial.data_generator import Protein, EntrezProtein
 def main():
     # Setup: create a list of proteins to be imported
     proteins = [
-        p for sublist in zip(
+        p
+        for sublist in zip(
             [Protein() for _ in range(10)],
             [EntrezProtein() for _ in range(10)],
-        ) for p in sublist
+        )
+        for p in sublist
     ]
 
     # Extract id, label, and property dictionary
@@ -22,8 +24,8 @@ def main():
 
     # Create BioCypher driver
     bc = BioCypher(
-        biocypher_config_path='tutorial/03_biocypher_config.yaml',
-        schema_config_path='tutorial/03_schema_config.yaml',
+        biocypher_config_path="tutorial/03_biocypher_config.yaml",
+        schema_config_path="tutorial/03_schema_config.yaml",
     )
     # Run the import
     bc.add(node_generator())
@@ -33,5 +35,5 @@ def main():
         print(df)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

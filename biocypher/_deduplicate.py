@@ -1,8 +1,9 @@
 from ._logger import logger
 
-logger.debug(f'Loading module {__name__}.')
+logger.debug(f"Loading module {__name__}.")
 
 from ._create import BioCypherEdge, BioCypherNode
+
 
 class Deduplicator:
     """
@@ -18,13 +19,13 @@ class Deduplicator:
     """
 
     def __init__(self):
-        self.seen_node_ids = set()  
-        self.duplicate_node_ids = set()  
-        self.duplicate_node_types = set()  
+        self.seen_node_ids = set()
+        self.duplicate_node_ids = set()
+        self.duplicate_node_types = set()
 
-        self.seen_edges = {}  
-        self.duplicate_edge_ids = set()  
-        self.duplicate_edge_types = set()  
+        self.seen_edges = {}
+        self.duplicate_edge_ids = set()
+        self.duplicate_edge_types = set()
 
     def node_seen(self, node: BioCypherNode) -> bool:
         """
@@ -39,13 +40,15 @@ class Deduplicator:
         if node.get_id() in self.seen_node_ids:
             self.duplicate_node_ids.add(node.get_id())
             if node.get_label() not in self.duplicate_node_types:
-                logger.warning(f"Duplicate node type {node.get_label()} found. ")
+                logger.warning(
+                    f"Duplicate node type {node.get_label()} found. "
+                )
                 self.duplicate_node_types.add(node.get_label())
             return True
-        
+
         self.seen_node_ids.add(node.get_id())
         return False
-    
+
     def edge_seen(self, edge: BioCypherEdge) -> bool:
         """
         Adds an edge to the instance and checks if it has been seen before.
@@ -71,10 +74,10 @@ class Deduplicator:
                 logger.warning(f"Duplicate edge type {edge.get_type()} found. ")
                 self.duplicate_edge_types.add(edge.get_type())
             return True
-        
+
         self.seen_edges[edge.get_type()].add(_id)
         return False
-    
+
     def get_duplicate_nodes(self):
         """
         Function to return a list of duplicate nodes.

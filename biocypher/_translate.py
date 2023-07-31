@@ -14,7 +14,7 @@ input data and the BioCypherNode and BioCypherEdge objects.
 """
 from ._logger import logger
 
-logger.debug(f'Loading module {__name__}.')
+logger.debug(f"Loading module {__name__}.")
 
 from typing import Any, Union, Optional
 from collections.abc import Iterable, Generator
@@ -25,7 +25,7 @@ from . import _misc
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from ._mapping import OntologyMapping
 
-__all__ = ['BiolinkAdapter', 'Translator']
+__all__ = ["BiolinkAdapter", "Translator"]
 
 
 class Translator:
@@ -40,8 +40,9 @@ class Translator:
     Provides utility functions for translating between input and output labels
     and cypher queries.
     """
+
     def __init__(
-        self, ontology_mapping: 'OntologyMapping', strict_mode: bool = False
+        self, ontology_mapping: "OntologyMapping", strict_mode: bool = False
     ):
         """
         Args:
@@ -85,30 +86,28 @@ class Translator:
 
         """
 
-        self._log_begin_translate(id_type_prop_tuples, 'nodes')
+        self._log_begin_translate(id_type_prop_tuples, "nodes")
 
         for _id, _type, _props in id_type_prop_tuples:
-
             # check for strict mode requirements
-            required_props = ['source', 'licence', 'version']
+            required_props = ["source", "licence", "version"]
 
             if self.strict_mode:
                 # rename 'license' to 'licence' in _props
-                if _props.get('license'):
-                    _props['licence'] = _props.pop('license')
+                if _props.get("license"):
+                    _props["licence"] = _props.pop("license")
 
                 for prop in required_props:
                     if prop not in _props:
                         raise ValueError(
-                            f'Property `{prop}` missing from node {_id}. '
-                            'Strict mode is enabled, so this is not allowed.'
+                            f"Property `{prop}` missing from node {_id}. "
+                            "Strict mode is enabled, so this is not allowed."
                         )
 
             # find the node in leaves that represents biolink node type
             _ontology_class = self._get_ontology_mapping(_type)
 
             if _ontology_class:
-
                 # filter properties for those specified in schema_config if any
                 _filtered_props = self._filter_props(_ontology_class, _props)
 
@@ -123,10 +122,9 @@ class Translator:
                 )
 
             else:
-
                 self._record_no_type(_type, _id)
 
-        self._log_finish_translate('nodes')
+        self._log_finish_translate("nodes")
 
     def _get_preferred_id(self, _bl_type: str) -> str:
         """
@@ -134,8 +132,9 @@ class Translator:
         """
 
         return (
-            self.extended_schema[_bl_type]['preferred_id'] if 'preferred_id'
-            in self.extended_schema.get(_bl_type, {}) else 'id'
+            self.extended_schema[_bl_type]["preferred_id"]
+            if "preferred_id" in self.extended_schema.get(_bl_type, {})
+            else "id"
         )
 
     def _filter_props(self, bl_type: str, props: dict) -> dict:
@@ -143,27 +142,22 @@ class Translator:
         Filters properties for those specified in schema_config if any.
         """
 
-        filter_props = self.extended_schema[bl_type].get('properties', {})
+        filter_props = self.extended_schema[bl_type].get("properties", {})
 
         # strict mode: add required properties (only if there is a whitelist)
         if self.strict_mode and filter_props:
             filter_props.update(
-                {
-                    'source': 'str',
-                    'licence': 'str',
-                    'version': 'str'
-                },
+                {"source": "str", "licence": "str", "version": "str"},
             )
 
         exclude_props = self.extended_schema[bl_type].get(
-            'exclude_properties', []
+            "exclude_properties", []
         )
 
         if isinstance(exclude_props, str):
             exclude_props = [exclude_props]
 
         if filter_props and exclude_props:
-
             filtered_props = {
                 k: v
                 for k, v in props.items()
@@ -171,21 +165,16 @@ class Translator:
             }
 
         elif filter_props:
-
             filtered_props = {
-                k: v
-                for k, v in props.items() if k in filter_props.keys()
+                k: v for k, v in props.items() if k in filter_props.keys()
             }
 
         elif exclude_props:
-
             filtered_props = {
-                k: v
-                for k, v in props.items() if k not in exclude_props
+                k: v for k, v in props.items() if k not in exclude_props
             }
 
         else:
-
             return props
 
         missing_props = [
@@ -193,7 +182,6 @@ class Translator:
         ]
         # add missing properties with default values
         for k in missing_props:
-
             filtered_props[k] = None
 
         return filtered_props
@@ -218,7 +206,7 @@ class Translator:
                 Can optionally possess its own ID.
         """
 
-        self._log_begin_translate(id_src_tar_type_prop_tuples, 'edges')
+        self._log_begin_translate(id_src_tar_type_prop_tuples, "edges")
 
         # legacy: deal with 4-tuples (no edge id)
         # TODO remove for performance reasons once safe
@@ -230,18 +218,17 @@ class Translator:
             ]
 
         for _id, _src, _tar, _type, _props in id_src_tar_type_prop_tuples:
-
             # check for strict mode requirements
             if self.strict_mode:
-                if not 'source' in _props:
+                if not "source" in _props:
                     raise ValueError(
-                        f'Edge {_id if _id else (_src, _tar)} does not have a `source` property.',
-                        ' This is required in strict mode.',
+                        f"Edge {_id if _id else (_src, _tar)} does not have a `source` property.",
+                        " This is required in strict mode.",
                     )
-                if not 'licence' in _props:
+                if not "licence" in _props:
                     raise ValueError(
-                        f'Edge {_id if _id else (_src, _tar)} does not have a `licence` property.',
-                        ' This is required in strict mode.',
+                        f"Edge {_id if _id else (_src, _tar)} does not have a `licence` property.",
+                        " This is required in strict mode.",
                     )
 
             # match the input label (_type) to
@@ -249,14 +236,12 @@ class Translator:
             bl_type = self._get_ontology_mapping(_type)
 
             if bl_type:
-
                 # filter properties for those specified in schema_config if any
                 _filtered_props = self._filter_props(bl_type, _props)
 
-                rep = self.extended_schema[bl_type]['represented_as']
+                rep = self.extended_schema[bl_type]["represented_as"]
 
-                if rep == 'node':
-
+                if rep == "node":
                     if _id:
                         # if it brings its own ID, use it
                         node_id = _id
@@ -264,8 +249,11 @@ class Translator:
                     else:
                         # source target concat
                         node_id = (
-                            str(_src) + '_' + str(_tar) + '_' +
-                            '_'.join(str(v) for v in _filtered_props.values())
+                            str(_src)
+                            + "_"
+                            + str(_tar)
+                            + "_"
+                            + "_".join(str(v) for v in _filtered_props.values())
                         )
 
                     n = BioCypherNode(
@@ -277,21 +265,18 @@ class Translator:
                     # directionality check TODO generalise to account for
                     # different descriptions of directionality or find a
                     # more consistent solution for indicating directionality
-                    if _filtered_props.get('directed') == True:
-
-                        l1 = 'IS_SOURCE_OF'
-                        l2 = 'IS_TARGET_OF'
+                    if _filtered_props.get("directed") == True:
+                        l1 = "IS_SOURCE_OF"
+                        l2 = "IS_TARGET_OF"
 
                     elif _filtered_props.get(
-                        'src_role',
-                    ) and _filtered_props.get('tar_role'):
-
-                        l1 = _filtered_props.get('src_role')
-                        l2 = _filtered_props.get('tar_role')
+                        "src_role",
+                    ) and _filtered_props.get("tar_role"):
+                        l1 = _filtered_props.get("src_role")
+                        l2 = _filtered_props.get("tar_role")
 
                     else:
-
-                        l1 = l2 = 'IS_PART_OF'
+                        l1 = l2 = "IS_PART_OF"
 
                     e_s = BioCypherEdge(
                         source_id=_src,
@@ -310,13 +295,11 @@ class Translator:
                     yield BioCypherRelAsNode(n, e_s, e_t)
 
                 else:
-
                     edge_label = self.extended_schema[bl_type].get(
-                        'label_as_edge'
+                        "label_as_edge"
                     )
 
                     if edge_label is None:
-
                         edge_label = bl_type
 
                     yield BioCypherEdge(
@@ -328,10 +311,9 @@ class Translator:
                     )
 
             else:
-
                 self._record_no_type(_type, (_src, _tar))
 
-        self._log_finish_translate('edges')
+        self._log_finish_translate("edges")
 
     def _record_no_type(self, _type: Any, what: Any) -> None:
         """
@@ -339,14 +321,12 @@ class Translator:
         schema_config.
         """
 
-        logger.debug(f'No Biolink type defined for `{_type}`: {what}')
+        logger.debug(f"No Biolink type defined for `{_type}`: {what}")
 
         if self.notype.get(_type, None):
-
             self.notype[_type] += 1
 
         else:
-
             self.notype[_type] = 1
 
     def get_missing_biolink_types(self) -> dict:
@@ -359,15 +339,13 @@ class Translator:
 
     @staticmethod
     def _log_begin_translate(_input: Iterable, what: str):
+        n = f"{len(_input)} " if hasattr(_input, "__len__") else ""
 
-        n = f'{len(_input)} ' if hasattr(_input, '__len__') else ''
-
-        logger.debug(f'Translating {n}{what} to BioCypher')
+        logger.debug(f"Translating {n}{what} to BioCypher")
 
     @staticmethod
     def _log_finish_translate(what: str):
-
-        logger.debug(f'Finished translating {what} to BioCypher.')
+        logger.debug(f"Finished translating {what} to BioCypher.")
 
     def _update_ontology_types(self):
         """
@@ -379,24 +357,19 @@ class Translator:
         self._ontology_mapping = {}
 
         for key, value in self.extended_schema.items():
-
-            labels = value.get('input_label') or value.get('label_in_input')
+            labels = value.get("input_label") or value.get("label_in_input")
 
             if isinstance(labels, str):
-
                 self._ontology_mapping[labels] = key
 
             elif isinstance(labels, list):
-
                 for label in labels:
                     self._ontology_mapping[label] = key
 
-            if value.get('label_as_edge'):
-
-                self._add_translation_mappings(labels, value['label_as_edge'])
+            if value.get("label_as_edge"):
+                self._add_translation_mappings(labels, value["label_as_edge"])
 
             else:
-
                 self._add_translation_mappings(labels, key)
 
     def _get_ontology_mapping(self, label: str) -> Optional[str]:
@@ -433,7 +406,7 @@ class Translator:
         Translate a cypher query. Only translates labels as of now.
         """
         for key in self.mappings:
-            query = query.replace(':' + key, ':' + self.mappings[key])
+            query = query.replace(":" + key, ":" + self.mappings[key])
         return query
 
     def reverse_translate(self, query):
@@ -442,23 +415,22 @@ class Translator:
         now.
         """
         for key in self.reverse_mappings:
-
-            a = ':' + key + ')'
-            b = ':' + key + ']'
+            a = ":" + key + ")"
+            b = ":" + key + "]"
             # TODO this conditional probably does not cover all cases
             if a in query or b in query:
                 if isinstance(self.reverse_mappings[key], list):
                     raise NotImplementedError(
-                        'Reverse translation of multiple inputs not '
-                        'implemented yet. Many-to-one mappings are '
-                        'not reversible. '
-                        f'({key} -> {self.reverse_mappings[key]})',
+                        "Reverse translation of multiple inputs not "
+                        "implemented yet. Many-to-one mappings are "
+                        "not reversible. "
+                        f"({key} -> {self.reverse_mappings[key]})",
                     )
                 else:
                     query = query.replace(
                         a,
-                        ':' + self.reverse_mappings[key] + ')',
-                    ).replace(b, ':' + self.reverse_mappings[key] + ']')
+                        ":" + self.reverse_mappings[key] + ")",
+                    ).replace(b, ":" + self.reverse_mappings[key] + "]")
         return query
 
     def _add_translation_mappings(self, original_name, biocypher_name):
@@ -479,12 +451,17 @@ class Translator:
 
         if isinstance(biocypher_name, list):
             for bn in biocypher_name:
-                self.reverse_mappings[self.name_sentence_to_pascal(bn, )
-                                     ] = original_name
+                self.reverse_mappings[
+                    self.name_sentence_to_pascal(
+                        bn,
+                    )
+                ] = original_name
         else:
-            self.reverse_mappings[self.name_sentence_to_pascal(
-                biocypher_name,
-            )] = original_name
+            self.reverse_mappings[
+                self.name_sentence_to_pascal(
+                    biocypher_name,
+                )
+            ] = original_name
 
     @staticmethod
     def name_sentence_to_pascal(name: str) -> str:
@@ -492,9 +469,9 @@ class Translator:
         Converts a name in sentence case to pascal case.
         """
         # split on dots if dot is present
-        if '.' in name:
-            return '.'.join(
-                [_misc.sentencecase_to_pascalcase(n) for n in name.split('.')],
+        if "." in name:
+            return ".".join(
+                [_misc.sentencecase_to_pascalcase(n) for n in name.split(".")],
             )
         else:
             return _misc.sentencecase_to_pascalcase(name)

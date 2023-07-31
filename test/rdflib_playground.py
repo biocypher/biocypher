@@ -3,10 +3,9 @@ import networkx as nx
 
 
 def ontology_to_tree(ontology_path, root_label, switch_id_and_label=True):
-
     # Load the ontology into an rdflib Graph
     g = rdflib.Graph()
-    g.parse(ontology_path, format='ttl')
+    g.parse(ontology_path, format="ttl")
 
     # Loop through all labels in the ontology
     for s, _, o in g.triples((None, rdflib.RDFS.label, None)):
@@ -15,14 +14,13 @@ def ontology_to_tree(ontology_path, root_label, switch_id_and_label=True):
             root = s
             break
     else:
-        raise ValueError(f'Could not find root node with label {root_label}')
+        raise ValueError(f"Could not find root node with label {root_label}")
 
     # Create a directed graph to represent the ontology as a tree
     G = nx.DiGraph()
 
     # Define a recursive function to add subclasses to the graph
     def add_subclasses(node):
-
         # Only add nodes that have a label
         if (node, rdflib.RDFS.label, None) not in g:
             return
@@ -31,25 +29,23 @@ def ontology_to_tree(ontology_path, root_label, switch_id_and_label=True):
 
         if nx_id not in G:
             G.add_node(nx_id)
-            G.nodes[nx_id]['label'] = nx_label
+            G.nodes[nx_id]["label"] = nx_label
 
         # Recursively add all subclasses of the node to the graph
         for s, _, o in g.triples((None, rdflib.RDFS.subClassOf, node)):
-
             # Only add nodes that have a label
             if (s, rdflib.RDFS.label, None) not in g:
                 continue
 
             s_id, s_label = _get_nx_id_and_label(s)
             G.add_node(s_id)
-            G.nodes[s_id]['label'] = s_label
+            G.nodes[s_id]["label"] = s_label
 
             G.add_edge(s_id, nx_id)
             add_subclasses(s)
             add_parents(s)
 
     def add_parents(node):
-
         # Only add nodes that have a label
         if (node, rdflib.RDFS.label, None) not in g:
             return
@@ -58,7 +54,6 @@ def ontology_to_tree(ontology_path, root_label, switch_id_and_label=True):
 
         # Recursively add all parents of the node to the graph
         for s, _, o in g.triples((node, rdflib.RDFS.subClassOf, None)):
-
             # Only add nodes that have a label
             if (o, rdflib.RDFS.label, None) not in g:
                 continue
@@ -70,7 +65,7 @@ def ontology_to_tree(ontology_path, root_label, switch_id_and_label=True):
                 continue
 
             G.add_node(o_id)
-            G.nodes[o_id]['label'] = o_label
+            G.nodes[o_id]["label"] = o_label
 
             G.add_edge(nx_id, o_id)
             add_parents(o)
@@ -95,15 +90,15 @@ def remove_prefix(uri: str) -> str:
     separator between the prefix and the local name. The prefix is
     everything before the last separator.
     """
-    return uri.rsplit('#', 1)[-1].rsplit('/', 1)[-1]
+    return uri.rsplit("#", 1)[-1].rsplit("/", 1)[-1]
 
 
-if __name__ == '__main__':
-    path = 'test/so.owl'
-    url = 'https://raw.githubusercontent.com/biolink/biolink-model/v3.2.1/biolink-model.owl.ttl'
-    root_label = 'entity'
+if __name__ == "__main__":
+    path = "test/so.owl"
+    url = "https://raw.githubusercontent.com/biolink/biolink-model/v3.2.1/biolink-model.owl.ttl"
+    root_label = "entity"
     G = ontology_to_tree(url, root_label, switch_id_and_label=True)
 
     # depth first search: ancestors of the "protein" node
-    ancestors = nx.dfs_preorder_nodes(G, 'macromolecular complex')
+    ancestors = nx.dfs_preorder_nodes(G, "macromolecular complex")
     print(list(ancestors))

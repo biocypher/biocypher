@@ -12,34 +12,36 @@
 BioCypher core module. Interfaces with the user and distributes tasks to
 submodules.
 """
-from typing import Dict, List, Optional
+from typing import Optional
+
 from more_itertools import peekable
+
 import pandas as pd
 
 from ._logger import logger
 
-logger.debug(f'Loading module {__name__}.')
+logger.debug(f"Loading module {__name__}.")
 
 from ._write import get_writer
-from ._pandas import Pandas
 from ._config import config as _config
 from ._config import update_from_file as _file_update
 from ._create import BioCypherEdge, BioCypherNode
+from ._pandas import Pandas
 from ._connect import get_driver
 from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator
 from ._deduplicate import Deduplicator
 
-__all__ = ['BioCypher']
+__all__ = ["BioCypher"]
 
-SUPPORTED_DBMS = ['neo4j', 'postgresql']
+SUPPORTED_DBMS = ["neo4j", "postgresql"]
 
 REQUIRED_CONFIG = [
-    'dbms',
-    'offline',
-    'strict_mode',
-    'head_ontology',
+    "dbms",
+    "offline",
+    "strict_mode",
+    "head_ontology",
 ]
 
 
@@ -75,6 +77,7 @@ class BioCypher:
             provided, the default value 'biocypher-out' will be used.
 
     """
+
     def __init__(
         self,
         dbms: str = None,
@@ -88,65 +91,64 @@ class BioCypher:
         # legacy params
         db_name: str = None,
     ):
-
         # Update configuration if custom path is provided
         if biocypher_config_path:
             _file_update(biocypher_config_path)
 
         if db_name:
             logger.warning(
-                'The parameter `db_name` is deprecated. Please set the '
-                '`database_name` setting in the `biocypher_config.yaml` file '
-                'instead.'
+                "The parameter `db_name` is deprecated. Please set the "
+                "`database_name` setting in the `biocypher_config.yaml` file "
+                "instead."
             )
-            _config(**{db_name: {'database_name': db_name}})
+            _config(**{db_name: {"database_name": db_name}})
 
         # Load configuration
-        self.base_config = _config('biocypher')
+        self.base_config = _config("biocypher")
 
         # Check for required configuration
         for key in REQUIRED_CONFIG:
             if key not in self.base_config:
-                raise ValueError(f'Configuration key {key} is required.')
+                raise ValueError(f"Configuration key {key} is required.")
 
         # Set configuration - mandatory
-        self._dbms = dbms or self.base_config['dbms']
+        self._dbms = dbms or self.base_config["dbms"]
 
         if offline is None:
-            self._offline = self.base_config['offline']
+            self._offline = self.base_config["offline"]
         else:
             self._offline = offline
 
         if strict_mode is None:
-            self._strict_mode = self.base_config['strict_mode']
+            self._strict_mode = self.base_config["strict_mode"]
         else:
             self._strict_mode = strict_mode
 
         self._schema_config_path = schema_config_path or self.base_config.get(
-            'schema_config_path'
+            "schema_config_path"
         )
 
         if not self._schema_config_path:
             raise ValueError(
-                'BioCypher requires a schema configuration; please provide a '
-                'path to the schema configuration YAML file via '
-                '`biocypher_config.yaml` or `BioCypher` class parameter.'
+                "BioCypher requires a schema configuration; please provide a "
+                "path to the schema configuration YAML file via "
+                "`biocypher_config.yaml` or `BioCypher` class parameter."
             )
 
-        self._head_ontology = head_ontology or self.base_config['head_ontology']
+        self._head_ontology = head_ontology or self.base_config["head_ontology"]
 
         # Set configuration - optional
         self._output_directory = output_directory or self.base_config.get(
-            'output_directory'
+            "output_directory"
         )
         self._tail_ontologies = tail_ontologies or self.base_config.get(
-            'tail_ontologies'
+            "tail_ontologies"
         )
 
         if self._dbms not in SUPPORTED_DBMS:
             raise ValueError(
-                f'DBMS {self._dbms} not supported. '
-                f'Please select from {SUPPORTED_DBMS}.'
+                f"DBMS {self._dbms} not supported. "
+                f"Please select from {SUPPORTED_DBMS}."
             )
 
         # Initialize
@@ -156,7 +158,7 @@ class BioCypher:
         self._ontology = None
         self._writer = None
         self._pd = None
-    
+
     def _get_deduplicator(self) -> Deduplicator:
         """
         Create deduplicator if not exists and return.
@@ -222,7 +224,7 @@ class BioCypher:
                 strict_mode=self._strict_mode,
             )
         else:
-            raise NotImplementedError('Cannot get writer in online mode.')
+            raise NotImplementedError("Cannot get writer in online mode.")
 
     def _get_driver(self):
         """
@@ -237,12 +239,12 @@ class BioCypher:
                 deduplicator=self._get_deduplicator(),
             )
         else:
-            raise NotImplementedError('Cannot get driver in offline mode.')
+            raise NotImplementedError("Cannot get driver in offline mode.")
 
     def write_nodes(self, nodes, batch_size: int = int(1e6)) -> bool:
         """
         Write nodes to database. Either takes an iterable of tuples (if given,
-        translates to ``BioCypherNode`` objects) or an iterable of 
+        translates to ``BioCypherNode`` objects) or an iterable of
         ``BioCypherNode`` objects.
 
         Args:
@@ -287,7 +289,7 @@ class BioCypher:
         # write edge files
         return self._writer.write_edges(tedges, batch_size=batch_size)
 
-    def to_df(self) -> List[pd.DataFrame]:
+    def to_df(self) -> list[pd.DataFrame]:
         """
         Convert entities to a pandas DataFrame for each entity type and return
         a list.
@@ -303,9 +305,8 @@ class BioCypher:
             raise ValueError(
                 "No pandas instance found. Please call `add()` first."
             )
-        
+
         return self._pd.dfs
-        
 
     def add(self, entities):
         """
@@ -323,7 +324,9 @@ class BioCypher:
 
         entities = peekable(entities)
 
-        if isinstance(entities.peek(), BioCypherNode) or isinstance(entities.peek(), BioCypherEdge):
+        if isinstance(entities.peek(), BioCypherNode) or isinstance(
+            entities.peek(), BioCypherEdge
+        ):
             tentities = entities
         elif len(entities.peek()) < 4:
             tentities = self._translator.translate_nodes(entities)
@@ -367,11 +370,11 @@ class BioCypher:
         Merge edges into database. Either takes an iterable of tuples (if given,
         translates to ``BioCypherEdge`` objects) or an iterable of
         ``BioCypherEdge`` objects.
-        
-        Args:
-            edges (iterable): An iterable of edges to merge into the database. 
 
-        Returns:    
+        Args:
+            edges (iterable): An iterable of edges to merge into the database.
+
+        Returns:
             bool: True if successful.
         """
 
@@ -388,7 +391,7 @@ class BioCypher:
 
     # OVERVIEW AND CONVENIENCE METHODS ###
 
-    def log_missing_input_labels(self) -> Optional[Dict[str, List[str]]]:
+    def log_missing_input_labels(self) -> Optional[dict[str, list[str]]]:
         """
 
         Get the set of input labels encountered without an entry in the
@@ -405,19 +408,19 @@ class BioCypher:
 
         if mt:
             msg = (
-                'Input entities not accounted for due to them not being '
-                'present in the `schema_config.yaml` configuration file '
-                '(this is not necessarily a problem, if you did not intend '
-                'to include them in the database; see the log for details): \n'
+                "Input entities not accounted for due to them not being "
+                "present in the `schema_config.yaml` configuration file "
+                "(this is not necessarily a problem, if you did not intend "
+                "to include them in the database; see the log for details): \n"
             )
             for k, v in mt.items():
-                msg += f'    {k}: {v} \n'
+                msg += f"    {k}: {v} \n"
 
             logger.info(msg)
             return mt
 
         else:
-            logger.info('No missing labels in input.')
+            logger.info("No missing labels in input.")
             return None
 
     def log_duplicates(self) -> None:
@@ -429,46 +432,44 @@ class BioCypher:
         dn = self._deduplicator.get_duplicate_nodes()
 
         if dn:
-
             ntypes = dn[0]
             nids = dn[1]
 
-            msg = ('Duplicate node types encountered (IDs in log): \n')
+            msg = "Duplicate node types encountered (IDs in log): \n"
             for typ in ntypes:
-                msg += f'    {typ}\n'
+                msg += f"    {typ}\n"
 
             logger.info(msg)
 
-            idmsg = ('Duplicate node IDs encountered: \n')
+            idmsg = "Duplicate node IDs encountered: \n"
             for _id in nids:
-                idmsg += f'    {_id}\n'
+                idmsg += f"    {_id}\n"
 
             logger.debug(idmsg)
 
         else:
-            logger.info('No duplicate nodes in input.')
+            logger.info("No duplicate nodes in input.")
 
         de = self._deduplicator.get_duplicate_edges()
 
         if de:
-
             etypes = de[0]
             eids = de[1]
 
-            msg = ('Duplicate edge types encountered (IDs in log): \n')
+            msg = "Duplicate edge types encountered (IDs in log): \n"
             for typ in etypes:
-                msg += f'    {typ}\n'
+                msg += f"    {typ}\n"
 
             logger.info(msg)
 
-            idmsg = ('Duplicate edge IDs encountered: \n')
+            idmsg = "Duplicate edge IDs encountered: \n"
             for _id in eids:
-                idmsg += f'    {_id}\n'
+                idmsg += f"    {_id}\n"
 
             logger.debug(idmsg)
 
         else:
-            logger.info('No duplicate edges in input.')
+            logger.info("No duplicate edges in input.")
 
     def show_ontology_structure(self, **kwargs) -> None:
         """
@@ -498,7 +499,7 @@ class BioCypher:
 
         if not self._offline:
             raise NotImplementedError(
-                'Cannot write import call in online mode.'
+                "Cannot write import call in online mode."
             )
 
         self._writer.write_import_call()
@@ -520,7 +521,7 @@ class BioCypher:
         self.start_ontology()
 
         return self._translator.translate_term(term)
-    
+
     def summary(self) -> None:
         """
         Wrapper for showing ontology structure and logging duplicates and

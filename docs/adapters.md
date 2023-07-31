@@ -30,7 +30,7 @@ tutorial.
 ::::
 
 The project view is built from issues in the [BioCypher GitHub repository](
-https://github.com/biocypher/biocypher/issues), which carry ``Fields`` (a 
+https://github.com/biocypher/biocypher/issues), which carry ``Fields`` (a
 GitHub Projects-specific attribute) to describe their category and features. In
 detail, these are as follows:
 

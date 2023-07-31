@@ -17,7 +17,7 @@ import glob
 
 from ._logger import logger
 
-logger.debug(f'Loading module {__name__}.')
+logger.debug(f"Loading module {__name__}.")
 
 from abc import ABC, abstractmethod
 from types import GeneratorType
@@ -31,10 +31,9 @@ from more_itertools import peekable
 from ._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
-__all__ = ['get_writer']
+__all__ = ["get_writer"]
 
 if TYPE_CHECKING:
-
     from ._ontology import Ontology
     from ._translate import Translator
     from ._deduplicate import Deduplicator
@@ -92,7 +91,7 @@ class _BatchWriter(ABC):
             Path prefix for the admin import call binary.
 
         import_call_file_prefix:
-            Path prefix for the data files (headers and parts) in the import 
+            Path prefix for the data files (headers and parts) in the import
             call.
 
         wipe:
@@ -108,6 +107,7 @@ class _BatchWriter(ABC):
         skip_duplicate_nodes:
             Whether to skip duplicate nodes. (Specific to Neo4j.)
     """
+
     @abstractmethod
     def _get_default_import_call_bin_prefix(self):
         """
@@ -193,14 +193,14 @@ class _BatchWriter(ABC):
 
     def __init__(
         self,
-        ontology: 'Ontology',
-        translator: 'Translator',
-        deduplicator: 'Deduplicator',
+        ontology: "Ontology",
+        translator: "Translator",
+        deduplicator: "Deduplicator",
         delimiter: str,
-        array_delimiter: str = ',',
+        array_delimiter: str = ",",
         quote: str = '"',
         output_directory: Optional[str] = None,
-        db_name: str = 'neo4j',
+        db_name: str = "neo4j",
         import_call_bin_prefix: Optional[str] = None,
         import_call_file_prefix: Optional[str] = None,
         wipe: bool = True,
@@ -209,7 +209,7 @@ class _BatchWriter(ABC):
         skip_duplicate_nodes: bool = False,
         db_user: str = None,
         db_password: str = None,
-        db_port: str = None
+        db_port: str = None,
     ):
         self.db_name = db_name
         self.db_user = db_user
@@ -225,7 +225,8 @@ class _BatchWriter(ABC):
         self.skip_duplicate_nodes = skip_duplicate_nodes
 
         if import_call_bin_prefix is None:
-            self.import_call_bin_prefix = self._get_default_import_call_bin_prefix(
+            self.import_call_bin_prefix = (
+                self._get_default_import_call_bin_prefix()
             )
         else:
             self.import_call_bin_prefix = import_call_bin_prefix
@@ -248,11 +249,11 @@ class _BatchWriter(ABC):
 
         if os.path.exists(self.outdir):
             logger.warning(
-                f'Output directory `{self.outdir}` already exists. '
-                'If this is not planned, file consistency may be compromised.'
+                f"Output directory `{self.outdir}` already exists. "
+                "If this is not planned, file consistency may be compromised."
             )
         else:
-            logger.info(f'Creating output directory `{self.outdir}`.')
+            logger.info(f"Creating output directory `{self.outdir}`.")
             os.makedirs(self.outdir)
 
         self.parts = {}  # dict to store the paths of part files for each label
@@ -267,7 +268,6 @@ class _BatchWriter(ABC):
         """
 
         return self._outdir
-
 
     @property
     def import_call_file_prefix(self):
@@ -286,12 +286,10 @@ class _BatchWriter(ABC):
         representation (e.g. tab for '\t').
         """
 
-        if delimiter == '\\t':
-
-            return '\t', '\\t'
+        if delimiter == "\\t":
+            return "\t", "\\t"
 
         else:
-
             return delimiter, delimiter
 
     def write_nodes(self, nodes, batch_size: int = int(1e6)):
@@ -310,12 +308,12 @@ class _BatchWriter(ABC):
         # write node data
         passed = self._write_node_data(nodes, batch_size)
         if not passed:
-            logger.error('Error while writing node data.')
+            logger.error("Error while writing node data.")
             return False
         # pass property data to header writer per node type written
         passed = self._write_node_headers()
         if not passed:
-            logger.error('Error while writing node headers.')
+            logger.error("Error while writing node headers.")
             return False
 
         return True
@@ -348,7 +346,9 @@ class _BatchWriter(ABC):
                             e.get_source_edge(),
                             e.get_target_edge(),
                         ],
-                    ) if isinstance(e, BioCypherRelAsNode) else (None, [e])
+                    )
+                    if isinstance(e, BioCypherRelAsNode)
+                    else (None, [e])
                     for e in edges
                 )
             )
@@ -368,17 +368,17 @@ class _BatchWriter(ABC):
             # is this a problem? if the generator or list is empty, we
             # don't write anything.
             logger.debug(
-                'No edges to write, possibly due to no matched Biolink classes.',
+                "No edges to write, possibly due to no matched Biolink classes.",
             )
             pass
 
         if not passed:
-            logger.error('Error while writing edge data.')
+            logger.error("Error while writing edge data.")
             return False
         # pass property data to header writer per edge type written
         passed = self._write_edge_headers()
         if not passed:
-            logger.error('Error while writing edge headers.')
+            logger.error("Error while writing edge headers.")
             return False
 
         return True
@@ -401,7 +401,7 @@ class _BatchWriter(ABC):
         """
 
         if isinstance(nodes, GeneratorType) or isinstance(nodes, peekable):
-            logger.debug('Writing node CSV from generator.')
+            logger.debug("Writing node CSV from generator.")
 
             bins = defaultdict(list)  # dict to store a list for each
             # label that is passed in
@@ -424,7 +424,7 @@ class _BatchWriter(ABC):
 
                 # check for non-id
                 if not _id:
-                    logger.warning(f'Node {label} has no id; skipping.')
+                    logger.warning(f"Node {label} has no id; skipping.")
                     continue
 
                 if not label in bins.keys():
@@ -434,20 +434,22 @@ class _BatchWriter(ABC):
                     bin_l[label] = 1
 
                     # get properties from config if present
-                    cprops = self.extended_schema.get(label).get('properties', )
+                    cprops = self.extended_schema.get(label).get(
+                        "properties",
+                    )
                     if cprops:
                         d = dict(cprops)
 
                         # add id and preferred id to properties; these are
                         # created in node creation (`_create.BioCypherNode`)
-                        d['id'] = 'str'
-                        d['preferred_id'] = 'str'
+                        d["id"] = "str"
+                        d["preferred_id"] = "str"
 
                         # add strict mode properties
                         if self.strict_mode:
-                            d['source'] = 'str'
-                            d['version'] = 'str'
-                            d['licence'] = 'str'
+                            d["source"] = "str"
+                            d["version"] = "str"
+                            d["licence"] = "str"
 
                     else:
                         d = dict(node.get_properties())
@@ -531,7 +533,7 @@ class _BatchWriter(ABC):
             return True
         else:
             if type(nodes) is not list:
-                logger.error('Nodes must be passed as list or generator.')
+                logger.error("Nodes must be passed as list or generator.")
                 return False
             else:
 
@@ -563,14 +565,13 @@ class _BatchWriter(ABC):
             bool: The return value. True for success, False otherwise.
         """
         if not all(isinstance(n, BioCypherNode) for n in node_list):
-            logger.error('Nodes must be passed as type BioCypherNode.')
+            logger.error("Nodes must be passed as type BioCypherNode.")
             return False
 
         # from list of nodes to list of strings
         lines = []
 
         for n in node_list:
-
             # check for deviations in properties
             # node properties
             n_props = n.get_properties()
@@ -584,46 +585,45 @@ class _BatchWriter(ABC):
                 oprop1 = set(ref_props).difference(n_keys)
                 oprop2 = set(n_keys).difference(ref_props)
                 logger.error(
-                    f'At least one node of the class {n.get_label()} '
-                    f'has more or fewer properties than another. '
-                    f'Offending node: {onode!r}, offending property: '
-                    f'{max([oprop1, oprop2])}. '
-                    f'All reference properties: {ref_props}, '
-                    f'All node properties: {n_keys}.',
+                    f"At least one node of the class {n.get_label()} "
+                    f"has more or fewer properties than another. "
+                    f"Offending node: {onode!r}, offending property: "
+                    f"{max([oprop1, oprop2])}. "
+                    f"All reference properties: {ref_props}, "
+                    f"All node properties: {n_keys}.",
                 )
                 return False
 
             line = [n.get_id()]
 
             if ref_props:
-
                 plist = []
                 # make all into strings, put actual strings in quotes
                 for k, v in prop_dict.items():
                     p = n_props.get(k)
                     if p is None:  # TODO make field empty instead of ""?
-                        plist.append('')
+                        plist.append("")
                     elif v in [
-                        'int',
-                        'integer',
-                        'long',
-                        'float',
-                        'double',
-                        'dbl',
-                        'bool',
-                        'boolean',
+                        "int",
+                        "integer",
+                        "long",
+                        "float",
+                        "double",
+                        "dbl",
+                        "bool",
+                        "boolean",
                     ]:
                         plist.append(str(p))
                     else:
                         if isinstance(p, list):
                             plist.append(self._write_array_string(p))
                         else:
-                            plist.append(f'{self.quote}{str(p)}{self.quote}')
+                            plist.append(f"{self.quote}{str(p)}{self.quote}")
 
                 line.append(self.delim.join(plist))
             line.append(labels)
 
-            lines.append(self.delim.join(line) + '\n')
+            lines.append(self.delim.join(line) + "\n")
 
         # avoid writing empty files
         if lines:
@@ -653,7 +653,7 @@ class _BatchWriter(ABC):
         """
 
         if isinstance(edges, GeneratorType):
-            logger.debug('Writing edge CSV from generator.')
+            logger.debug("Writing edge CSV from generator.")
 
             bins = defaultdict(list)  # dict to store a list for each
             # label that is passed in
@@ -671,8 +671,8 @@ class _BatchWriter(ABC):
 
                 if not (edge.get_source_id() and edge.get_target_id()):
                     logger.error(
-                        'Edge must have source and target node. '
-                        f'Caused by: {edge}',
+                        "Edge must have source and target node. "
+                        f"Caused by: {edge}",
                     )
                     continue
 
@@ -691,23 +691,23 @@ class _BatchWriter(ABC):
                     cprops = None
                     if label in self.extended_schema:
                         cprops = self.extended_schema.get(label).get(
-                            'properties',
+                            "properties",
                         )
                     else:
                         # try via "label_as_edge"
                         for k, v in self.extended_schema.items():
                             if isinstance(v, dict):
-                                if v.get('label_as_edge') == label:
-                                    cprops = v.get('properties')
+                                if v.get("label_as_edge") == label:
+                                    cprops = v.get("properties")
                                     break
                     if cprops:
                         d = cprops
 
                         # add strict mode properties
                         if self.strict_mode:
-                            d['source'] = 'str'
-                            d['version'] = 'str'
-                            d['licence'] = 'str'
+                            d["source"] = "str"
+                            d["version"] = "str"
+                            d["licence"] = "str"
 
                     else:
                         d = dict(edge.get_properties())
@@ -746,7 +746,6 @@ class _BatchWriter(ABC):
 
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
-
                 passed = self._write_single_edge_list_to_file(
                     nl,
                     label,
@@ -768,7 +767,7 @@ class _BatchWriter(ABC):
             return True
         else:
             if type(edges) is not list:
-                logger.error('Edges must be passed as list or generator.')
+                logger.error("Edges must be passed as list or generator.")
                 return False
             else:
 
@@ -800,8 +799,7 @@ class _BatchWriter(ABC):
         """
 
         if not all(isinstance(n, BioCypherEdge) for n in edge_list):
-
-            logger.error('Edges must be passed as type BioCypherEdge.')
+            logger.error("Edges must be passed as type BioCypherEdge.")
             return False
 
         # from list of edges to list of strings
@@ -815,16 +813,16 @@ class _BatchWriter(ABC):
 
             # compare list order invariant
             if not set(ref_props) == set(e_keys):
-                oedge = f'{e.get_source_id()}-{e.get_target_id()}'
+                oedge = f"{e.get_source_id()}-{e.get_target_id()}"
                 oprop1 = set(ref_props).difference(e_keys)
                 oprop2 = set(e_keys).difference(ref_props)
                 logger.error(
-                    f'At least one edge of the class {e.get_label()} '
-                    f'has more or fewer properties than another. '
-                    f'Offending edge: {oedge!r}, offending property: '
-                    f'{max([oprop1, oprop2])}. '
-                    f'All reference properties: {ref_props}, '
-                    f'All edge properties: {e_keys}.',
+                    f"At least one edge of the class {e.get_label()} "
+                    f"has more or fewer properties than another. "
+                    f"Offending edge: {oedge!r}, offending property: "
+                    f"{max([oprop1, oprop2])}. "
+                    f"All reference properties: {ref_props}, "
+                    f"All edge properties: {e_keys}.",
                 )
                 return False
 
@@ -833,16 +831,16 @@ class _BatchWriter(ABC):
             for k, v in prop_dict.items():
                 p = e_props.get(k)
                 if p is None:  # TODO make field empty instead of ""?
-                    plist.append('')
+                    plist.append("")
                 elif v in [
-                    'int',
-                    'integer',
-                    'long',
-                    'float',
-                    'double',
-                    'dbl',
-                    'bool',
-                    'boolean',
+                    "int",
+                    "integer",
+                    "long",
+                    "float",
+                    "double",
+                    "dbl",
+                    "bool",
+                    "boolean",
                 ]:
                     plist.append(str(p))
                 else:
@@ -850,7 +848,7 @@ class _BatchWriter(ABC):
                         plist.append(self._write_array_string(p))
                     else:
                         plist.append(self.quote + str(p) + self.quote)
-                        
+
             entries = [e.get_source_id()]
 
             skip_id = False
@@ -861,29 +859,34 @@ class _BatchWriter(ABC):
             elif not self.extended_schema.get(label):
                 # find label in schema by label_as_edge
                 for k, v in self.extended_schema.items():
-                    if v.get('label_as_edge') == label:
+                    if v.get("label_as_edge") == label:
                         schema_label = k
                         break
             else:
                 schema_label = label
 
             if schema_label:
-                if self.extended_schema.get(schema_label).get('use_id') == False:
+                if (
+                    self.extended_schema.get(schema_label).get("use_id")
+                    == False
+                ):
                     skip_id = True
 
             if not skip_id:
-                entries.append(e.get_id() or '')
+                entries.append(e.get_id() or "")
 
             if ref_props:
                 entries.append(self.delim.join(plist))
 
             entries.append(e.get_target_id())
-            entries.append(self.translator.name_sentence_to_pascal(
-                e.get_label(),
-            ))
+            entries.append(
+                self.translator.name_sentence_to_pascal(
+                    e.get_label(),
+                )
+            )
 
             lines.append(
-                self.delim.join(entries) + '\n',
+                self.delim.join(entries) + "\n",
             )
 
         # avoid writing empty files
@@ -911,39 +914,34 @@ class _BatchWriter(ABC):
 
         # list files in self.outdir
         files = glob.glob(
-            os.path.join(self.outdir, f'{label_pascal}-part*.csv')
+            os.path.join(self.outdir, f"{label_pascal}-part*.csv")
         )
         # find file with highest part number
         if not files:
-
             next_part = 0
 
         else:
-
             next_part = (
                 max(
                     [
-                        int(
-                            f.split('.')[-2].split('-')[-1].replace('part', '')
-                        ) for f in files
+                        int(f.split(".")[-2].split("-")[-1].replace("part", ""))
+                        for f in files
                     ],
-                ) + 1
+                )
+                + 1
             )
 
         # write to file
         padded_part = str(next_part).zfill(3)
         logger.info(
-            f'Writing {len(lines)} entries to {label_pascal}-part{padded_part}.csv',
+            f"Writing {len(lines)} entries to {label_pascal}-part{padded_part}.csv",
         )
 
         # store name only in case import_call_file_prefix is set
-        part = f'{label_pascal}-part{padded_part}.csv'
-        file_path = os.path.join(
-            self.outdir, part
-        )
+        part = f"{label_pascal}-part{padded_part}.csv"
+        file_path = os.path.join(self.outdir, part)
 
-        with open(file_path, 'w', encoding='utf-8') as f:
-
+        with open(file_path, "w", encoding="utf-8") as f:
             # concatenate with delimiter
             f.writelines(lines)
 
@@ -975,10 +973,9 @@ class _BatchWriter(ABC):
         """
 
         file_path = os.path.join(self.outdir, self._get_import_script_name())
-        logger.info(f'Writing {self.db_name} import call to `{file_path}`.')
+        logger.info(f"Writing {self.db_name} import call to `{file_path}`.")
 
-        with open(file_path, 'w', encoding='utf-8') as f:
-
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(self._construct_import_call())
 
         return True
@@ -1000,6 +997,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         - _construct_import_call
         - _write_array_string
     """
+
     def _get_default_import_call_bin_prefix(self):
         """
         Method to provide the default string for the import call bin prefix.
@@ -1007,7 +1005,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         Returns:
             str: The default location for the neo4j admin import location
         """
-        return 'bin/'
+        return "bin/"
 
     def _write_array_string(self, string_list):
         """
@@ -1021,7 +1019,7 @@ class _Neo4jBatchWriter(_BatchWriter):
             str: The string representation of an array for the neo4j admin import
         """
         string = self.adelim.join(string_list)
-        return f'{self.quote}{string}{self.quote}'
+        return f"{self.quote}{string}{self.quote}"
 
     def _write_node_headers(self):
         """
@@ -1035,56 +1033,55 @@ class _Neo4jBatchWriter(_BatchWriter):
         # load headers from data parse
         if not self.node_property_dict:
             logger.error(
-                'Header information not found. Was the data parsed first?',
+                "Header information not found. Was the data parsed first?",
             )
             return False
 
         for label, props in self.node_property_dict.items():
-
-            _id = ':ID'
+            _id = ":ID"
 
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
-            header = f'{pascal_label}-header.csv'
+            header = f"{pascal_label}-header.csv"
             header_path = os.path.join(
                 self.outdir,
                 header,
             )
-            parts = f'{pascal_label}-part.*'
+            parts = f"{pascal_label}-part.*"
 
             # check if file already exists
             if os.path.exists(header_path):
                 logger.warning(
-                    f'Header file `{header_path}` already exists. Overwriting.',
+                    f"Header file `{header_path}` already exists. Overwriting.",
                 )
 
             # concatenate key:value in props
             props_list = []
             for k, v in props.items():
-                if v in ['int', 'long', 'integer']:
-                    props_list.append(f'{k}:long')
-                elif v in ['int[]', 'long[]', 'integer[]']:
-                    props_list.append(f'{k}:long[]')
-                elif v in ['float', 'double', 'dbl']:
-                    props_list.append(f'{k}:double')
-                elif v in ['float[]', 'double[]']:
-                    props_list.append(f'{k}:double[]')
-                elif v in ['bool', 'boolean']:
+                if v in ["int", "long", "integer"]:
+                    props_list.append(f"{k}:long")
+                elif v in ["int[]", "long[]", "integer[]"]:
+                    props_list.append(f"{k}:long[]")
+                elif v in ["float", "double", "dbl"]:
+                    props_list.append(f"{k}:double")
+                elif v in ["float[]", "double[]"]:
+                    props_list.append(f"{k}:double[]")
+                elif v in ["bool", "boolean"]:
                     # TODO Neo4j boolean support / spelling?
-                    props_list.append(f'{k}:boolean')
-                elif v in ['bool[]', 'boolean[]']:
-                    props_list.append(f'{k}:boolean[]')
-                elif v in ['str[]', 'string[]']:
-                    props_list.append(f'{k}:string[]')
+                    props_list.append(f"{k}:boolean")
+                elif v in ["bool[]", "boolean[]"]:
+                    props_list.append(f"{k}:boolean[]")
+                elif v in ["str[]", "string[]"]:
+                    props_list.append(f"{k}:string[]")
                 else:
-                    props_list.append(f'{k}')
+                    props_list.append(f"{k}")
 
             # create list of lists and flatten
-            out_list = [[_id], props_list, [':LABEL']]
+            out_list = [[_id], props_list, [":LABEL"]]
             out_list = [val for sublist in out_list for val in sublist]
 
-            with open(header_path, 'w', encoding='utf-8') as f:
+            with open(header_path, "w", encoding="utf-8") as f:
                 # concatenate with delimiter
                 row = self.delim.join(out_list)
                 f.write(row)
@@ -1099,7 +1096,9 @@ class _Neo4jBatchWriter(_BatchWriter):
                 self.import_call_file_prefix,
                 parts,
             )
-            self.import_call_nodes.add((import_call_header_path, import_call_parts_path))
+            self.import_call_nodes.add(
+                (import_call_header_path, import_call_parts_path)
+            )
 
         return True
 
@@ -1115,51 +1114,50 @@ class _Neo4jBatchWriter(_BatchWriter):
         # load headers from data parse
         if not self.edge_property_dict:
             logger.error(
-                'Header information not found. Was the data parsed first?',
+                "Header information not found. Was the data parsed first?",
             )
             return False
 
         for label, props in self.edge_property_dict.items():
-
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
             # paths
-            header = f'{pascal_label}-header.csv'
+            header = f"{pascal_label}-header.csv"
             header_path = os.path.join(
                 self.outdir,
                 header,
             )
-            parts = f'{pascal_label}-part.*'
+            parts = f"{pascal_label}-part.*"
 
             # check for file exists
             if os.path.exists(header_path):
                 logger.warning(
-                    f'File {header_path} already exists. Overwriting.'
+                    f"File {header_path} already exists. Overwriting."
                 )
 
             # concatenate key:value in props
             props_list = []
             for k, v in props.items():
-                if v in ['int', 'long', 'integer']:
-                    props_list.append(f'{k}:long')
-                elif v in ['int[]', 'long[]', 'integer[]']:
-                    props_list.append(f'{k}:long[]')
-                elif v in ['float', 'double']:
-                    props_list.append(f'{k}:double')
-                elif v in ['float[]', 'double[]']:
-                    props_list.append(f'{k}:double[]')
+                if v in ["int", "long", "integer"]:
+                    props_list.append(f"{k}:long")
+                elif v in ["int[]", "long[]", "integer[]"]:
+                    props_list.append(f"{k}:long[]")
+                elif v in ["float", "double"]:
+                    props_list.append(f"{k}:double")
+                elif v in ["float[]", "double[]"]:
+                    props_list.append(f"{k}:double[]")
                 elif v in [
-                    'bool',
-                    'boolean',
+                    "bool",
+                    "boolean",
                 ]:  # TODO does Neo4j support bool?
-                    props_list.append(f'{k}:boolean')
-                elif v in ['bool[]', 'boolean[]']:
-                    props_list.append(f'{k}:boolean[]')
-                elif v in ['str[]', 'string[]']:
-                    props_list.append(f'{k}:string[]')
+                    props_list.append(f"{k}:boolean")
+                elif v in ["bool[]", "boolean[]"]:
+                    props_list.append(f"{k}:boolean[]")
+                elif v in ["str[]", "string[]"]:
+                    props_list.append(f"{k}:string[]")
                 else:
-                    props_list.append(f'{k}')
+                    props_list.append(f"{k}")
 
             skip_id = False
             schema_label = None
@@ -1169,25 +1167,28 @@ class _Neo4jBatchWriter(_BatchWriter):
             elif not self.extended_schema.get(label):
                 # find label in schema by label_as_edge
                 for k, v in self.extended_schema.items():
-                    if v.get('label_as_edge') == label:
+                    if v.get("label_as_edge") == label:
                         schema_label = k
                         break
             else:
                 schema_label = label
 
-            out_list = [':START_ID']
+            out_list = [":START_ID"]
 
             if schema_label:
-                if self.extended_schema.get(schema_label).get('use_id') == False:
+                if (
+                    self.extended_schema.get(schema_label).get("use_id")
+                    == False
+                ):
                     skip_id = True
 
             if not skip_id:
-                out_list.append('id')
+                out_list.append("id")
 
             out_list.extend(props_list)
-            out_list.extend([':END_ID', ':TYPE'])
+            out_list.extend([":END_ID", ":TYPE"])
 
-            with open(header_path, 'w', encoding='utf-8') as f:
+            with open(header_path, "w", encoding="utf-8") as f:
                 # concatenate with delimiter
                 row = self.delim.join(out_list)
                 f.write(row)
@@ -1202,7 +1203,9 @@ class _Neo4jBatchWriter(_BatchWriter):
                 self.import_call_file_prefix,
                 parts,
             )
-            self.import_call_edges.add((import_call_header_path, import_call_parts_path))
+            self.import_call_edges.add(
+                (import_call_header_path, import_call_parts_path)
+            )
 
         return True
 
@@ -1213,7 +1216,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         Returns:
             str: The name of the import script (ending in .sh)
         """
-        return 'neo4j-admin-import-call.sh'
+        return "neo4j-admin-import-call.sh"
 
     def _construct_import_call(self) -> str:
         """
@@ -1226,8 +1229,8 @@ class _Neo4jBatchWriter(_BatchWriter):
             str: a bash command for neo4j-admin import
         """
         import_call = (
-            f'{self.import_call_bin_prefix}neo4j-admin import '
-            f'--database={self.db_name} '
+            f"{self.import_call_bin_prefix}neo4j-admin import "
+            f"--database={self.db_name} "
             f'--delimiter="{self.escaped_delim}" '
             f'--array-delimiter="{self.escaped_adelim}" '
         )
@@ -1238,11 +1241,11 @@ class _Neo4jBatchWriter(_BatchWriter):
             import_call += f"--quote='{self.quote}' "
 
         if self.wipe:
-            import_call += f'--force=true '
+            import_call += f"--force=true "
         if self.skip_bad_relationships:
-            import_call += '--skip-bad-relationships=true '
+            import_call += "--skip-bad-relationships=true "
         if self.skip_duplicate_nodes:
-            import_call += '--skip-duplicate-nodes=true '
+            import_call += "--skip-duplicate-nodes=true "
 
         # append node import calls
         for header_path, parts_path in self.import_call_nodes:
@@ -1261,6 +1264,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
     specified by ArangoDB for the use of "arangoimport". Output files are
     similar to Neo4j, but with a different header format.
     """
+
     def _get_default_import_call_bin_prefix(self):
         """
         Method to provide the default string for the import call bin prefix.
@@ -1268,7 +1272,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
         Returns:
             str: The default location for the neo4j admin import location
         """
-        return ''
+        return ""
 
     def _get_import_script_name(self) -> str:
         """
@@ -1277,7 +1281,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
         Returns:
             str: The name of the import script (ending in .sh)
         """
-        return 'arangodb-import-call.sh'
+        return "arangodb-import-call.sh"
 
     def _write_node_headers(self):
         """
@@ -1291,19 +1295,19 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
         # load headers from data parse
         if not self.node_property_dict:
             logger.error(
-                'Header information not found. Was the data parsed first?',
+                "Header information not found. Was the data parsed first?",
             )
             return False
 
         for label, props in self.node_property_dict.items():
             # create header CSV with ID, properties, labels
 
-            _id = '_key'
+            _id = "_key"
 
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
-            header = f'{pascal_label}-header.csv'
+            header = f"{pascal_label}-header.csv"
             header_path = os.path.join(
                 self.outdir,
                 header,
@@ -1312,28 +1316,27 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
             # check if file already exists
             if os.path.exists(header_path):
                 logger.warning(
-                    f'File {header_path} already exists. Overwriting.'
+                    f"File {header_path} already exists. Overwriting."
                 )
 
             # concatenate key:value in props
             props_list = []
             for k in props.keys():
-
-                props_list.append(f'{k}')
+                props_list.append(f"{k}")
 
             # create list of lists and flatten
             # removes need for empty check of property list
             out_list = [[_id], props_list]
             out_list = [val for sublist in out_list for val in sublist]
 
-            with open(header_path, 'w', encoding='utf-8') as f:
+            with open(header_path, "w", encoding="utf-8") as f:
                 # concatenate with delimiter
                 row = self.delim.join(out_list)
                 f.write(row)
 
             # add collection from schema config
             collection = self.extended_schema[label].get(
-                'db_collection_name', None
+                "db_collection_name", None
             )
 
             # add file path to neo4 admin import statement
@@ -1341,14 +1344,12 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
             parts = self.parts.get(label, [])
 
             if not parts:
-
                 raise ValueError(
-                    f'No parts found for node label {label}. '
-                    f'Check that the data was parsed first.',
+                    f"No parts found for node label {label}. "
+                    f"Check that the data was parsed first.",
                 )
 
             for part in parts:
-                
                 import_call_header_path = os.path.join(
                     self.import_call_file_prefix,
                     header,
@@ -1358,7 +1359,13 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                     part,
                 )
 
-                self.import_call_nodes.add((import_call_header_path, import_call_parts_path, collection))
+                self.import_call_nodes.add(
+                    (
+                        import_call_header_path,
+                        import_call_parts_path,
+                        collection,
+                    )
+                )
 
         return True
 
@@ -1374,54 +1381,50 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
         # load headers from data parse
         if not self.edge_property_dict:
             logger.error(
-                'Header information not found. Was the data parsed first?',
+                "Header information not found. Was the data parsed first?",
             )
             return False
 
         for label, props in self.edge_property_dict.items():
-
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
             # paths
-            header = f'{pascal_label}-header.csv'
+            header = f"{pascal_label}-header.csv"
             header_path = os.path.join(
                 self.outdir,
                 header,
             )
-            parts = f'{pascal_label}-part.*'
+            parts = f"{pascal_label}-part.*"
 
             # check for file exists
             if os.path.exists(header_path):
                 logger.warning(
-                    f'Header file {header_path} already exists. Overwriting.'
+                    f"Header file {header_path} already exists. Overwriting."
                 )
 
             # concatenate key:value in props
             props_list = []
             for k in props.keys():
+                props_list.append(f"{k}")
 
-                props_list.append(f'{k}')
+            out_list = ["_from", "_key", *props_list, "_to"]
 
-            out_list = ['_from', '_key', *props_list, '_to']
-
-            with open(header_path, 'w', encoding='utf-8') as f:
+            with open(header_path, "w", encoding="utf-8") as f:
                 # concatenate with delimiter
                 row = self.delim.join(out_list)
                 f.write(row)
 
             # add collection from schema config
             if not self.extended_schema.get(label):
-
                 for _, v in self.extended_schema.items():
-                    if v.get('label_as_edge') == label:
-                        collection = v.get('db_collection_name', None)
+                    if v.get("label_as_edge") == label:
+                        collection = v.get("db_collection_name", None)
                         break
 
             else:
-
                 collection = self.extended_schema[label].get(
-                    'db_collection_name', None
+                    "db_collection_name", None
                 )
 
             # add file path to neo4 admin import statement (import call path
@@ -1434,7 +1437,13 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                 self.import_call_file_prefix,
                 parts,
             )
-            self.import_call_edges.add((header_import_call_path, parts_import_call_path, collection,))
+            self.import_call_edges.add(
+                (
+                    header_import_call_path,
+                    parts_import_call_path,
+                    collection,
+                )
+            )
 
         return True
 
@@ -1449,8 +1458,8 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
             str: a bash command for neo4j-admin import
         """
         import_call = (
-            f'{self.import_call_bin_prefix}arangoimp '
-            f'--type csv '
+            f"{self.import_call_bin_prefix}arangoimp "
+            f"--type csv "
             f'--separator="{self.escaped_delim}" '
         )
 
@@ -1459,23 +1468,22 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
         else:
             import_call += f"--quote='{self.quote}' "
 
-        node_lines = ''
+        node_lines = ""
 
         # node import calls: one line per node type
         for header_path, parts_path, collection in self.import_call_nodes:
-
             line = (
-                f'{import_call} '
-                f'--headers-file {header_path} '
-                f'--file= {parts_path} '
+                f"{import_call} "
+                f"--headers-file {header_path} "
+                f"--file= {parts_path} "
             )
 
             if collection:
-                line += f'--create-collection --collection {collection} '
+                line += f"--create-collection --collection {collection} "
 
-            node_lines += f'{line}\n'
+            node_lines += f"{line}\n"
 
-        edge_lines = ''
+        edge_lines = ""
 
         # edge import calls: one line per edge type
         for header_path, parts_path, collection in self.import_call_edges:
@@ -1502,15 +1510,15 @@ class _PostgreSQLBatchWriter(_BatchWriter):
     """
 
     DATA_TYPE_LOOKUP = {
-        'str': 'VARCHAR',  # VARCHAR needs limit
-        'int': 'INTEGER',
-        'long': 'BIGINT',
-        'float': 'NUMERIC',
-        'double': 'NUMERIC',
-        'dbl': 'NUMERIC',
-        'boolean': 'BOOLEAN',
-        'str[]': 'VARCHAR[]',
-        'string[]': 'VARCHAR[]'
+        "str": "VARCHAR",  # VARCHAR needs limit
+        "int": "INTEGER",
+        "long": "BIGINT",
+        "float": "NUMERIC",
+        "double": "NUMERIC",
+        "dbl": "NUMERIC",
+        "boolean": "BOOLEAN",
+        "str[]": "VARCHAR[]",
+        "string[]": "VARCHAR[]",
     }
 
     def __init__(self, *args, **kwargs):
@@ -1524,7 +1532,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         Returns:
             str: The default location for the psql command
         """
-        return ''
+        return ""
 
     def _get_data_type(self, string) -> str:
         try:
@@ -1533,7 +1541,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             logger.info(
                 'Could not determine data type {string}. Using default "VARCHAR"'
             )
-            return 'VARCHAR'
+            return "VARCHAR"
 
     def _write_array_string(self, string_list) -> str:
         """
@@ -1546,7 +1554,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         Returns:
             str: The string representation of an array for postgres COPY
         """
-        string = ','.join(string_list)
+        string = ",".join(string_list)
         string = f'"{{{string}}}"'
         return string
 
@@ -1557,10 +1565,10 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         Returns:
             str: The name of the import script (ending in .sh)
         """
-        return f'{self.db_name}-import-call.sh'
+        return f"{self.db_name}-import-call.sh"
 
     def _adjust_pascal_to_psql(self, string):
-        string = string.replace('.', '_')
+        string = string.replace(".", "_")
         string = string.lower()
         return string
 
@@ -1576,7 +1584,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         # load headers from data parse
         if not self.node_property_dict:
             logger.error(
-                'Header information not found. Was the data parsed first?',
+                "Header information not found. Was the data parsed first?",
             )
             return False
 
@@ -1586,7 +1594,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
-            parts = f'{pascal_label}-part*.csv'
+            parts = f"{pascal_label}-part*.csv"
             parts_paths = os.path.join(self.outdir, parts)
             parts_paths = glob.glob(parts_paths)
             parts_paths.sort()
@@ -1595,36 +1603,36 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             pascal_label = self._adjust_pascal_to_psql(pascal_label)
             table_create_command_path = os.path.join(
                 self.outdir,
-                f'{pascal_label}-create_table.sql',
+                f"{pascal_label}-create_table.sql",
             )
 
             # check if file already exists
             if os.path.exists(table_create_command_path):
                 logger.warning(
-                    f'File {table_create_command_path} already exists. Overwriting.',
+                    f"File {table_create_command_path} already exists. Overwriting.",
                 )
 
             # concatenate key:value in props
-            columns = ['_ID VARCHAR']
+            columns = ["_ID VARCHAR"]
             for col_name, col_type in props.items():
                 col_type = self._get_data_type(col_type)
                 col_name = self._adjust_pascal_to_psql(col_name)
-                columns.append(f'{col_name} {col_type}')
-            columns.append('_LABEL VARCHAR[]')
+                columns.append(f"{col_name} {col_type}")
+            columns.append("_LABEL VARCHAR[]")
 
-            with open(table_create_command_path, 'w', encoding='utf-8') as f:
-
-                command = ''
+            with open(table_create_command_path, "w", encoding="utf-8") as f:
+                command = ""
                 if self.wipe:
-                    command += f'DROP TABLE IF EXISTS {pascal_label};\n'
+                    command += f"DROP TABLE IF EXISTS {pascal_label};\n"
 
                 # table creation requires comma separation
-                command += f'CREATE TABLE {pascal_label}({",".join(columns)});\n'
+                command += (
+                    f'CREATE TABLE {pascal_label}({",".join(columns)});\n'
+                )
                 f.write(command)
 
                 for parts_path in parts_paths:
-                    
-                    # if import_call_file_prefix is set, replace actual path 
+                    # if import_call_file_prefix is set, replace actual path
                     # with prefix
                     if self.import_call_file_prefix != self.outdir:
                         parts_path = parts_path.replace(
@@ -1633,7 +1641,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                         )
 
                     self._copy_from_csv_commands.add(
-                        f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;'
+                        f"\\copy {pascal_label} FROM '{parts_path}' DELIMITER E'{self.delim}' CSV;"
                     )
 
             # add file path to import statement
@@ -1661,16 +1669,15 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         # load headers from data parse
         if not self.edge_property_dict:
             logger.error(
-                'Header information not found. Was the data parsed first?',
+                "Header information not found. Was the data parsed first?",
             )
             return False
 
         for label, props in self.edge_property_dict.items():
-
             # translate label to PascalCase
             pascal_label = self.translator.name_sentence_to_pascal(label)
 
-            parts_paths = os.path.join(self.outdir, f'{pascal_label}-part*.csv')
+            parts_paths = os.path.join(self.outdir, f"{pascal_label}-part*.csv")
             parts_paths = glob.glob(parts_paths)
             parts_paths.sort()
 
@@ -1678,13 +1685,13 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             pascal_label = self._adjust_pascal_to_psql(pascal_label)
             table_create_command_path = os.path.join(
                 self.outdir,
-                f'{pascal_label}-create_table.sql',
+                f"{pascal_label}-create_table.sql",
             )
 
             # check for file exists
             if os.path.exists(table_create_command_path):
                 logger.warning(
-                    f'File {table_create_command_path} already exists. Overwriting.',
+                    f"File {table_create_command_path} already exists. Overwriting.",
                 )
 
             # concatenate key:value in props
@@ -1692,7 +1699,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             for col_name, col_type in props.items():
                 col_type = self._get_data_type(col_type)
                 col_name = self._adjust_pascal_to_psql(col_name)
-                if col_name == '_ID':
+                if col_name == "_ID":
                     # should ideally never happen
                     raise ValueError(
                         "Column name '_ID' is reserved for internal use, "
@@ -1700,26 +1707,30 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                         "different name for your column."
                     )
 
-                columns.append(f'{col_name} {col_type}')
+                columns.append(f"{col_name} {col_type}")
 
             # create list of lists and flatten
             # removes need for empty check of property list
             out_list = [
-                '_START_ID VARCHAR', '_ID VARCHAR', *columns, '_END_ID VARCHAR',
-                '_TYPE VARCHAR'
+                "_START_ID VARCHAR",
+                "_ID VARCHAR",
+                *columns,
+                "_END_ID VARCHAR",
+                "_TYPE VARCHAR",
             ]
 
-            with open(table_create_command_path, 'w', encoding='utf-8') as f:
-                command = ''
+            with open(table_create_command_path, "w", encoding="utf-8") as f:
+                command = ""
                 if self.wipe:
-                    command += f'DROP TABLE IF EXISTS {pascal_label};\n'
+                    command += f"DROP TABLE IF EXISTS {pascal_label};\n"
 
                 # table creation requires comma separation
-                command += f'CREATE TABLE {pascal_label}({",".join(out_list)});\n'
+                command += (
+                    f'CREATE TABLE {pascal_label}({",".join(out_list)});\n'
+                )
                 f.write(command)
 
                 for parts_path in parts_paths:
-
                     # if import_call_file_prefix is set, replace actual path
                     # with prefix
                     if self.import_call_file_prefix != self.outdir:
@@ -1729,7 +1740,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                         )
 
                     self._copy_from_csv_commands.add(
-                        f'\\copy {pascal_label} FROM \'{parts_path}\' DELIMITER E\'{self.delim}\' CSV;'
+                        f"\\copy {pascal_label} FROM '{parts_path}' DELIMITER E'{self.delim}' CSV;"
                     )
 
             # add file path to import statement
@@ -1740,7 +1751,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                     self.outdir,
                     self.import_call_file_prefix,
                 )
-                
+
             self.import_call_edges.add(table_create_command_path)
 
         return True
@@ -1755,59 +1766,62 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         Returns:
             str: a bash command for postgresql import
         """
-        import_call = ''
+        import_call = ""
 
         # create tables
         # At this point, csv files of nodes and edges do not require differentiation
         for import_file_path in [
-            *self.import_call_nodes, *self.import_call_edges
+            *self.import_call_nodes,
+            *self.import_call_edges,
         ]:
             import_call += f'echo "Setup {import_file_path}..."\n'
             if {self.db_password}:
                 # set password variable inline
-                import_call += f'PGPASSWORD={self.db_password} '
-            import_call += f'{self.import_call_bin_prefix}psql -f {import_file_path}'
-            import_call += f' --dbname {self.db_name}'
-            import_call += f' --port {self.db_port}'
-            import_call += f' --user {self.db_user}'
+                import_call += f"PGPASSWORD={self.db_password} "
+            import_call += (
+                f"{self.import_call_bin_prefix}psql -f {import_file_path}"
+            )
+            import_call += f" --dbname {self.db_name}"
+            import_call += f" --port {self.db_port}"
+            import_call += f" --user {self.db_user}"
             import_call += '\necho "Done!"\n'
-            import_call += '\n'
+            import_call += "\n"
 
         # copy data to tables
         for command in self._copy_from_csv_commands:
-            table_part = command.split(' ')[3]
+            table_part = command.split(" ")[3]
             import_call += f'echo "Importing {table_part}..."\n'
             if {self.db_password}:
                 # set password variable inline
-                import_call += f'PGPASSWORD={self.db_password} '
+                import_call += f"PGPASSWORD={self.db_password} "
             import_call += f'{self.import_call_bin_prefix}psql -c "{command}"'
-            import_call += f' --dbname {self.db_name}'
-            import_call += f' --port {self.db_port}'
-            import_call += f' --user {self.db_user}'
+            import_call += f" --dbname {self.db_name}"
+            import_call += f" --port {self.db_port}"
+            import_call += f" --user {self.db_user}"
             import_call += '\necho "Done!"\n'
-            import_call += '\n'
+            import_call += "\n"
 
         return import_call
 
 
 DBMS_TO_CLASS = {
-    'neo': _Neo4jBatchWriter,
-    'neo4j': _Neo4jBatchWriter,
-    'Neo4j': _Neo4jBatchWriter,
-    'postgres': _PostgreSQLBatchWriter,
-    'postgresql': _PostgreSQLBatchWriter,
-    'PostgreSQL': _PostgreSQLBatchWriter,
-    'arango': _ArangoDBBatchWriter,
-    'arangodb': _ArangoDBBatchWriter,
-    'ArangoDB': _ArangoDBBatchWriter,
+    "neo": _Neo4jBatchWriter,
+    "neo4j": _Neo4jBatchWriter,
+    "Neo4j": _Neo4jBatchWriter,
+    "postgres": _PostgreSQLBatchWriter,
+    "postgresql": _PostgreSQLBatchWriter,
+    "PostgreSQL": _PostgreSQLBatchWriter,
+    "arango": _ArangoDBBatchWriter,
+    "arangodb": _ArangoDBBatchWriter,
+    "ArangoDB": _ArangoDBBatchWriter,
 }
 
 
 def get_writer(
     dbms: str,
-    translator: 'Translator',
-    ontology: 'Ontology',
-    deduplicator: 'Deduplicator',
+    translator: "Translator",
+    ontology: "Ontology",
+    deduplicator: "Deduplicator",
     output_directory: str,
     strict_mode: bool,
 ):
@@ -1835,34 +1849,36 @@ def get_writer(
 
     dbms_config = _config(dbms)
 
-    timestamp = lambda: datetime.now().strftime('%Y%m%d%H%M%S')
-    outdir = output_directory or os.path.join('biocypher-out', timestamp())
+    timestamp = lambda: datetime.now().strftime("%Y%m%d%H%M%S")
+    outdir = output_directory or os.path.join("biocypher-out", timestamp())
     outdir = os.path.abspath(outdir)
 
     writer = DBMS_TO_CLASS[dbms]
 
     if not writer:
-        raise ValueError(f'Unknown dbms: {dbms}')
+        raise ValueError(f"Unknown dbms: {dbms}")
 
     if writer is not None:
         return writer(
             ontology=ontology,
             translator=translator,
             deduplicator=deduplicator,
-            delimiter=dbms_config.get('delimiter'),
-            array_delimiter=dbms_config.get('array_delimiter'),
-            quote=dbms_config.get('quote_character'),
+            delimiter=dbms_config.get("delimiter"),
+            array_delimiter=dbms_config.get("array_delimiter"),
+            quote=dbms_config.get("quote_character"),
             output_directory=outdir,
-            db_name=dbms_config.get('database_name'),
-            import_call_bin_prefix=dbms_config.get('import_call_bin_prefix'),
-            import_call_file_prefix=dbms_config.get('import_call_file_prefix'),
-            wipe=dbms_config.get('wipe'),
+            db_name=dbms_config.get("database_name"),
+            import_call_bin_prefix=dbms_config.get("import_call_bin_prefix"),
+            import_call_file_prefix=dbms_config.get("import_call_file_prefix"),
+            wipe=dbms_config.get("wipe"),
             strict_mode=strict_mode,
-            skip_bad_relationships=dbms_config.get('skip_bad_relationships'
-                                                  ),  # neo4j
-            skip_duplicate_nodes=dbms_config.get('skip_duplicate_nodes'
-                                                ),  # neo4j
-            db_user=dbms_config.get('user'),  # psql
-            db_password=dbms_config.get('password'),  # psql
-            db_port=dbms_config.get('port'),  # psql
+            skip_bad_relationships=dbms_config.get(
+                "skip_bad_relationships"
+            ),  # neo4j
+            skip_duplicate_nodes=dbms_config.get(
+                "skip_duplicate_nodes"
+            ),  # neo4j
+            db_user=dbms_config.get("user"),  # psql
+            db_password=dbms_config.get("password"),  # psql
+            db_port=dbms_config.get("port"),  # psql
         )
