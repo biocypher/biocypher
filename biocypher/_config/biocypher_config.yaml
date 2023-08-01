@@ -102,6 +102,7 @@ postgresql:
   database_name: postgres # DB name
   user: postgres  # user name
   password: postgres  # password
+  host: localhost # host
   port: 5432 # port
 
   # PostgreSQL import batch writer settings

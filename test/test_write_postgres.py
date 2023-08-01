@@ -76,6 +76,7 @@ def test_database_import_node_data_from_gen_comma_postgresql(
     (
         dbname,
         user,
+        host,
         port,
         password,
         create_database_success,
@@ -121,7 +122,7 @@ def test_database_import_node_data_from_gen_comma_postgresql(
         assert result.returncode == 0
 
     # check data in the databases
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM protein;' --dbname {dbname} --host localhost --port {port} --user {user}"
+    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM protein;' --dbname {dbname} --host {host} --port {port} --user {user}"
     result = subprocess.run(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
@@ -131,7 +132,7 @@ def test_database_import_node_data_from_gen_comma_postgresql(
     assert "4" in result.stdout.decode()
 
     # check data in the databases
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM microrna;' --dbname {dbname} --host localhost --port {port} --user {user}"
+    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM microrna;' --dbname {dbname} --host {host} --port {port} --user {user}"
     result = subprocess.run(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
@@ -149,6 +150,7 @@ def test_database_import_node_data_from_gen_tab_postgresql(
     (
         dbname,
         user,
+        host,
         port,
         password,
         create_database_success,
@@ -194,7 +196,7 @@ def test_database_import_node_data_from_gen_tab_postgresql(
         assert result.returncode == 0
 
     # check data in the databases
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM protein;' --dbname {dbname} --host localhost --port {port} --user {user}"
+    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM protein;' --dbname {dbname} --host {host} --port {port} --user {user}"
     result = subprocess.run(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
@@ -204,7 +206,7 @@ def test_database_import_node_data_from_gen_tab_postgresql(
     assert "5" in result.stdout.decode()
 
     # check data in the databases
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM microrna;' --dbname {dbname} --host localhost --port {port} --user {user}"
+    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM microrna;' --dbname {dbname} --host {host} --port {port} --user {user}"
     result = subprocess.run(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
@@ -222,6 +224,7 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
     (
         dbname,
         user,
+        host,
         port,
         password,
         create_database_success,
@@ -272,7 +275,7 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
     assert result.returncode == 0
 
     # check data in the databases
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM is_mutated_in;' --dbname {dbname} --host localhost --port {port} --user {user}"
+    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM is_mutated_in;' --dbname {dbname} --host {host} --port {port} --user {user}"
     result = subprocess.run(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
@@ -281,7 +284,7 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
     # 2 entries in table
     assert "8" in result.stdout.decode()
 
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM perturbed_in_disease;' --dbname {dbname} --host localhost --port {port} --user {user}"
+    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM perturbed_in_disease;' --dbname {dbname} --host {host} --port {port} --user {user}"
     result = subprocess.run(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
@@ -299,6 +302,7 @@ def test_database_import_edge_data_from_gen_tab_postgresql(
     (
         dbname,
         user,
+        host,
         port,
         password,
         create_database_success,
@@ -348,7 +352,7 @@ def test_database_import_edge_data_from_gen_tab_postgresql(
         assert result.returncode == 0
 
     # check data in the databases
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM is_mutated_in;' --dbname {dbname} --host localhost --port {port} --user {user}"
+    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM is_mutated_in;' --dbname {dbname} --host {host} --port {port} --user {user}"
     result = subprocess.run(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
@@ -357,7 +361,7 @@ def test_database_import_edge_data_from_gen_tab_postgresql(
     # 2 entires in table
     assert "8" in result.stdout.decode()
 
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM perturbed_in_disease;' --dbname {dbname} --host localhost --port {port} --user {user}"
+    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM perturbed_in_disease;' --dbname {dbname} --host {host} --port {port} --user {user}"
     result = subprocess.run(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )

@@ -38,6 +38,7 @@ def pytest_addoption(parser):
         ),
         ("user_postgresql", "Tests access PostgreSQL as this user."),
         ("password_postgresql", "Password to access PostgreSQL."),
+        ("host_postgresql", "Host of the PostgreSQL server."),
         ("port_postgresql", "Port of the PostgreSQL server."),
     )
 
@@ -409,6 +410,7 @@ def postgresql_param(request):
     keys = (
         "user_postgresql",
         "password_postgresql",
+        "host_postgresql",
         "port_postgresql",
     )
 
@@ -440,14 +442,15 @@ def skip_if_offline_postgresql(request, postgresql_param):
 
     if marker:
         params = postgresql_param
-        user, port, password = (
+        user, host, port, password = (
             params["db_user"],
+            params["db_host"],
             params["db_port"],
             params["db_password"],
         )
 
         # an empty command, just to test if connection is possible
-        command = f"PGPASSWORD={password} psql -c '' --host localhost --port {port} --user {user}"
+        command = f"PGPASSWORD={password} psql -c '' --host {host} --port {port} --user {user}"
         process = subprocess.run(command, shell=True)
 
         # returncode is 0 when success
@@ -500,21 +503,22 @@ def bw_tab_postgresql(
 @pytest.fixture(scope="session")
 def create_database_postgres(postgresql_param):
     params = postgresql_param
-    dbname, user, port, password = (
+    dbname, user, host, port, password = (
         params["db_name"],
         params["db_user"],
+        params["db_host"],
         params["db_port"],
         params["db_password"],
     )
 
     # create the database
-    command = f"PGPASSWORD={password} psql -c 'CREATE DATABASE \"{dbname}\";' --host localhost --port {port} --user {user}"
+    command = f"PGPASSWORD={password} psql -c 'CREATE DATABASE \"{dbname}\";' --host {host} --port {port} --user {user}"
     process = subprocess.run(command, shell=True)
 
-    yield dbname, user, port, password, process.returncode == 0  # 0 if success
+    yield dbname, user, host, port, password, process.returncode == 0  # 0 if success
 
     # teardown
-    command = f"PGPASSWORD={password} psql -c 'DROP DATABASE \"{dbname}\";' --host localhost --port {port} --user {user}"
+    command = f"PGPASSWORD={password} psql -c 'DROP DATABASE \"{dbname}\";' --host {host} --port {port} --user {user}"
     process = subprocess.run(command, shell=True)
 
 

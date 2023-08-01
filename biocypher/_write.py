@@ -40,74 +40,6 @@ if TYPE_CHECKING:
 
 
 class _BatchWriter(ABC):
-    """
-    Abtract parent class for writing node and edge representations to disk using the
-    format specified by each database type. The database-specific functions are implemented
-    by the respective child-classes. This abstract class contains all methods expected by
-    a bach writer instance, some of which need to be overwritten by the child classes.
-
-    Each batch writer instance has a fixed representation that needs to be passed
-    at instantiation via the :py:attr:`schema` argument. The instance
-    also expects an ontology adapter via :py:attr:`ontology_adapter` to be able
-    to convert and extend the hierarchy.
-
-    Requires the following methods to be overwritten by database-specific writer classes:
-        - _write_node_headers
-        - _write_edge_headers
-        - _construct_import_call
-        - _write_array_string
-        - _get_import_script_name
-
-    Args:
-        ontology:
-            Instance of :py:class:`Ontology` to enable translation and
-            ontology queries
-
-        translator:
-            Instance of :py:class:`Translator` to enable translation of
-            nodes and manipulation of properties.
-
-        deduplicator:
-            Instance of :py:class:`Deduplicator` to enable deduplication
-            of nodes and edges.
-
-        delimiter:
-            The delimiter to use for the CSV files.
-
-        array_delimiter:
-            The delimiter to use for array properties.
-
-        quote:
-            The quote character to use for the CSV files.
-
-        dirname:
-            Path for exporting CSV files.
-
-        db_name:
-            Name of the database that will be used in the generated
-            commands.
-
-        import_call_bin_prefix:
-            Path prefix for the admin import call binary.
-
-        import_call_file_prefix:
-            Path prefix for the data files (headers and parts) in the import
-            call.
-
-        wipe:
-            Whether to force import (removing existing DB content). (Specific to Neo4j.)
-
-        strict_mode:
-            Whether to enforce source, version, and license properties.
-
-        skip_bad_relationships:
-            Whether to skip relationships that do not have a valid
-            start and end node. (Specific to Neo4j.)
-
-        skip_duplicate_nodes:
-            Whether to skip duplicate nodes. (Specific to Neo4j.)
-    """
-
     @abstractmethod
     def _get_default_import_call_bin_prefix(self):
         """
@@ -209,11 +141,96 @@ class _BatchWriter(ABC):
         skip_duplicate_nodes: bool = False,
         db_user: str = None,
         db_password: str = None,
+        db_host: str = None,
         db_port: str = None,
     ):
+        """
+
+        Abtract parent class for writing node and edge representations to disk
+        using the format specified by each database type. The database-specific
+        functions are implemented by the respective child-classes. This abstract
+        class contains all methods expected by a bach writer instance, some of
+        which need to be overwritten by the child classes.
+
+        Each batch writer instance has a fixed representation that needs to be
+        passed at instantiation via the :py:attr:`schema` argument. The instance
+        also expects an ontology adapter via :py:attr:`ontology_adapter` to be
+        able to convert and extend the hierarchy.
+
+        Requires the following methods to be overwritten by database-specific
+        writer classes:
+
+            - _write_node_headers
+            - _write_edge_headers
+            - _construct_import_call
+            - _write_array_string
+            - _get_import_script_name
+
+        Args:
+            ontology:
+                Instance of :py:class:`Ontology` to enable translation and
+                ontology queries
+
+            translator:
+                Instance of :py:class:`Translator` to enable translation of
+                nodes and manipulation of properties.
+
+            deduplicator:
+                Instance of :py:class:`Deduplicator` to enable deduplication
+                of nodes and edges.
+
+            delimiter:
+                The delimiter to use for the CSV files.
+
+            array_delimiter:
+                The delimiter to use for array properties.
+
+            quote:
+                The quote character to use for the CSV files.
+
+            dirname:
+                Path for exporting CSV files.
+
+            db_name:
+                Name of the database that will be used in the generated
+                commands.
+
+            import_call_bin_prefix:
+                Path prefix for the admin import call binary.
+
+            import_call_file_prefix:
+                Path prefix for the data files (headers and parts) in the import
+                call.
+
+            wipe:
+                Whether to force import (removing existing DB content). (Specific to Neo4j.)
+
+            strict_mode:
+                Whether to enforce source, version, and license properties.
+
+            skip_bad_relationships:
+                Whether to skip relationships that do not have a valid
+                start and end node. (Specific to Neo4j.)
+
+            skip_duplicate_nodes:
+                Whether to skip duplicate nodes. (Specific to Neo4j.)
+
+            db_user:
+                The database user.
+
+            db_password:
+                The database password.
+
+            db_host:
+                The database host. Defaults to localhost.
+
+            db_port:
+                The database port.
+        """
         self.db_name = db_name
         self.db_user = db_user
         self.db_password = db_password
+        self.db_host = db_host or "localhost"
         self.db_port = db_port
 
         self.delim, self.escaped_delim = self._process_delimiter(delimiter)
@@ -1782,7 +1799,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 f"{self.import_call_bin_prefix}psql -f {import_file_path}"
             )
             import_call += f" --dbname {self.db_name}"
-            import_call += f" --host localhost"
+            import_call += f" --host {self.db_host}"
             import_call += f" --port {self.db_port}"
             import_call += f" --user {self.db_user}"
             import_call += '\necho "Done!"\n'
@@ -1797,7 +1814,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 import_call += f"PGPASSWORD={self.db_password} "
             import_call += f'{self.import_call_bin_prefix}psql -c "{command}"'
             import_call += f" --dbname {self.db_name}"
-            import_call += f" --host localhost"
+            import_call += f" --host {self.db_host}"
             import_call += f" --port {self.db_port}"
             import_call += f" --user {self.db_user}"
             import_call += '\necho "Done!"\n'
