@@ -52,6 +52,7 @@ extensions = [
     "myst_parser",  # markdown support
     "sphinx_rtd_theme",
     "sphinx_design",
+    "nbsphinx",
 ]
 myst_enable_extensions = ["colon_fence"]
 
