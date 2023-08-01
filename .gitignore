@@ -3,6 +3,8 @@
 build/
 docs/pypath_log/
 docs/_build/
+docs/biocypher-log/
+docs/modules/
 .DS_Store
 .vscode
 biocypher.egg-info/

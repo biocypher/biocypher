@@ -91,9 +91,9 @@ make this framework truly accessible and comprehensive, we need the input of the
 biomedical community. We are therefore inviting you to join us in this
 endeavour!
 
-==================
+=====================================================
 Connect your Knowledge Graph to Large Language Models
-==================
+=====================================================
 
 To facilitate the use of knowledge graphs in downstream tasks, we have developed
 a framework to connect knowledge graphs to large language models. This framework

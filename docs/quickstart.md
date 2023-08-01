@@ -10,7 +10,7 @@
 :::
 
 :::{grid-item-card} New to BioCypher? Follow the tutorial:
-:link: tutorial
+:link: tutorial_basic
 :link-type: ref
 :text-align: center
 {octicon}`package;3em` {octicon}`question;3em` {octicon}`checklist;3em` {octicon}`light-bulb;3em`
@@ -34,7 +34,7 @@ consecutive steps:
 
 1. Clearly define the scope of your project, including the data sources you want
 to use, the entities and relationships you want to represent, and the
-[ontologies](ontologies) that should inform these entities.
+[ontologies](tutorial_ontologies) that should inform these entities.
 
 2. Using these definitions, find existing [adapters of data
 sources](qs_input-adapter) or, if necessary, create your own. For the data
@@ -162,7 +162,7 @@ protein:                    # top-level entry, has to match ontology
 For BioCypher classes, similar to the internal representation in the Biolink
 model, we use lower sentence-case notation, e.g., `protein` and `small
 molecule`. For file names and Neo4j labels, these are converted to PascalCase.
-For more information, see the [Ontology tutorial](ontology).
+For more information, see the [Ontology tutorial](tutorial_ontologies).
 ```
 
 The above configuration of the protein class specifies its representation as a
@@ -231,8 +231,8 @@ df = bc.to_df()
 ```
 
 For more information on the usage of these functions, please refer to the
-[Tutorial](tutorial) section and the [full API
-documentation](submodule.rst#api-reference).
+[Tutorial](tutorial_basic) section and the [full API
+documentation](api-reference).
 
 (qs_config)=
 ## The biocypher configuration YAML file

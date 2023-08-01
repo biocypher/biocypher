@@ -1,4 +1,4 @@
-(adapters)=
+(adapters_info)=
 # Adapters
 
 BioCypher is a modular framework, with the main purpose of avoiding redundant

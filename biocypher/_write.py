@@ -1009,6 +1009,7 @@ class _Neo4jBatchWriter(_BatchWriter):
 
     This class inherits from the abstract class "_BatchWriter" and implements the
     Neo4j-specific methods:
+
         - _write_node_headers
         - _write_edge_headers
         - _construct_import_call
@@ -1520,6 +1521,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
 
     This class inherits from the abstract class "_BatchWriter" and implements the
     PostgreSQL-specific methods:
+
         - _write_node_headers
         - _write_edge_headers
         - _construct_import_call
