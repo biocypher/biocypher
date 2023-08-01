@@ -1782,6 +1782,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 f"{self.import_call_bin_prefix}psql -f {import_file_path}"
             )
             import_call += f" --dbname {self.db_name}"
+            import_call += f" --host localhost"
             import_call += f" --port {self.db_port}"
             import_call += f" --user {self.db_user}"
             import_call += '\necho "Done!"\n'
@@ -1796,6 +1797,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                 import_call += f"PGPASSWORD={self.db_password} "
             import_call += f'{self.import_call_bin_prefix}psql -c "{command}"'
             import_call += f" --dbname {self.db_name}"
+            import_call += f" --host localhost"
             import_call += f" --port {self.db_port}"
             import_call += f" --user {self.db_user}"
             import_call += '\necho "Done!"\n'

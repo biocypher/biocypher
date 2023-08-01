@@ -447,9 +447,7 @@ def skip_if_offline_postgresql(request, postgresql_param):
         )
 
         # an empty command, just to test if connection is possible
-        command = (
-            f"PGPASSWORD={password} psql -c '' --port {port} --user {user}"
-        )
+        command = f"PGPASSWORD={password} psql -c '' --host localhost --port {port} --user {user}"
         process = subprocess.run(command, shell=True)
 
         # returncode is 0 when success
@@ -510,13 +508,13 @@ def create_database_postgres(postgresql_param):
     )
 
     # create the database
-    command = f"PGPASSWORD={password} psql -c 'CREATE DATABASE \"{dbname}\";' --port {port} --user {user}"
+    command = f"PGPASSWORD={password} psql -c 'CREATE DATABASE \"{dbname}\";' --host localhost --port {port} --user {user}"
     process = subprocess.run(command, shell=True)
 
     yield dbname, user, port, password, process.returncode == 0  # 0 if success
 
     # teardown
-    command = f"PGPASSWORD={password} psql -c 'DROP DATABASE \"{dbname}\";' --port {port} --user {user}"
+    command = f"PGPASSWORD={password} psql -c 'DROP DATABASE \"{dbname}\";' --host localhost --port {port} --user {user}"
     process = subprocess.run(command, shell=True)
 
 
