@@ -119,3 +119,27 @@ affiliations:
     index: 22
 date: 2023-06-19
 paper_url: https://doi.org/10.1038/s41587-023-01848-y
+
+---
+
+# Statement of need
+
+Building a knowledge graph for biomedical tasks usually takes months or years,
+often requiring a team of experts in knowledge representation, ontology
+engineering, and software development. This is a major bottleneck for
+biomedical research, as it prevents researchers from quickly building
+knowledge graphs for their specific research questions. We propose BioCypher,
+a knowledge graph construction tool that democratises knowledge representation
+by enabling biomedical researchers to build knowledge graphs more easily.
+
+# Summary
+
+BioCypher is an open-source Python framework built around the concept of a
+“threefold modularity”: modularity of data sources, modularity of
+structure-giving ontology, and modularity of output formats. This design allows
+for a high degree of flexibility and reusability, rationalising efforts by
+leveraging the biomedical community.
+
+# References
+
+For all references, see the [paper](https://doi.org/10.1038/s41587-023-01848-y).
