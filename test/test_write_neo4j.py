@@ -275,6 +275,7 @@ def test_write_node_data_from_gen_no_props(bw):
     passed = bw._write_node_data(node_gen(nodes), batch_size=1e6)
 
     tmp_path = bw.outdir
+    assert os.path.exists(tmp_path)
 
     p_csv = os.path.join(tmp_path, "Protein-part000.csv")
     m_csv = os.path.join(tmp_path, "microRNA-part000.csv")
