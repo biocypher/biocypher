@@ -38,21 +38,12 @@ jobs:
       run: coverage run -m pytest --password=your_password_here
 
     - name: Generate coverage badge
-      run: coverage-badge -f -o docs/coverage.svg
-
-    - name: Check if there are any changes
-      id: verify_diff
-      run: |
-        git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
+      run: coverage-badge -f -o coverage/coverage.svg
 
     - name: Commit changes
-      if: steps.verify_diff.outputs.changed == 'true'
-      run: |
-        git config --global user.email "no-reply@github.com"
-        git config --global user.name "GitHub Actions"
-        git add docs/coverage.svg
-        git commit -m "Update coverage badge"
-        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-        git push
+      uses: s0/git-publish-subdir-action@develop
       env:
+        REPO: self
+        BRANCH: coverage
+        FOLDER: coverage
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

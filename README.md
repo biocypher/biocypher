@@ -5,7 +5,7 @@
 [![PyPI version](https://badge.fury.io/py/biocypher.svg)](https://badge.fury.io/py/biocypher)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![CI](https://github.com/biocypher/biocypher/actions/workflows/ci_cd.yaml/badge.svg)](https://github.com/biocypher/biocypher/actions/workflows/ci_cd.yaml)
-![Coverage](docs/coverage.svg)
+![Coverage](https://raw.githubusercontent.com/biocypher/biocypher/coverage/coverage.svg)
 [![Docs build](https://github.com/biocypher/biocypher/actions/workflows/sphinx_autodoc.yaml/badge.svg)](https://github.com/biocypher/biocypher/actions/workflows/sphinx_autodoc.yaml)
 [![Downloads](https://static.pepy.tech/badge/biocypher)](https://pepy.tech/project/biocypher)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
