@@ -47,7 +47,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "To run this tutorial interactively, you will first need to install perform some setup steps specific to running on Google Colab. You can collapse this section and run the setup steps with one click, as they are not required for the explanation of BioCyper's functionality. You can of course also run the steps one by one, if you want to see what is happening. The real tutorial starts with [section 1, \"Adding data\"](https://biocypher.org/notebooks/pandas_tutorial.html#section-1-adding-data)."
+    "To run this tutorial interactively, you will first need to install perform some setup steps specific to running on Google Colab. You can collapse this section and run the setup steps with one click, as they are not required for the explanation of BioCyper's functionality. You can of course also run the steps one by one, if you want to see what is happening. The real tutorial starts with [section 1, \"Adding data\"](https://biocypher.org/notebooks/pandas_tutorial.html#Section-1:-Adding-data) (do not follow this link on colab, as you will be taken back to the website; please scroll down instead)."
    ]
   },
   {
