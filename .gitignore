@@ -5,6 +5,8 @@ docs/pypath_log/
 docs/_build/
 docs/biocypher-log/
 docs/modules/
+docs/notebooks/*.yaml
+docs/notebooks/*.py
 .DS_Store
 .vscode
 biocypher.egg-info/
