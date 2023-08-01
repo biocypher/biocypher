@@ -1,11 +1,3 @@
-```{admonition} Google Colab Version of the Tutorial
-:class: tip
-
-You can run the tutorial interactively in Google Colab by clicking [this
-link](https://colab.research.google.com/github/biocypher/biocypher/blob/main/tutorial/08_basics_pandas.ipynb).
-
-```
-
 (tutorial_basic)=
 # Tutorial - Basics
 The main purpose of BioCypher is to facilitate the pre-processing of biomedical

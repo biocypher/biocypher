@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="Example Notebook: BioCypher and Pandas" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://biocypher.org/notebooks/pandas_tutorial.html" />
+<meta property="og:site_name" content="BioCypher" />
+<meta property="og:description" content="Tip: You can run the tutorial interactively in Google Colab. Introduction: The main purpose of BioCypher is to facilitate the pre-processing of biomedical data, and thus save development time in th..." />
+<meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+<meta property="og:image:alt" content="BioCypher" />
+<meta name="description" content="Tip: You can run the tutorial interactively in Google Colab. Introduction: The main purpose of BioCypher is to facilitate the pre-processing of biomedical data, and thus save development time in th..." />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="https://biocypher.org" />
+<meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
+<meta property="twitter:description" content="BioCypher is a framework to simplify the creation of robust biomedical knowledge graphs." />
+<meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Example Notebook: BioCypher and Pandas &mdash; BioCypher</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/design-tabs.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial - Basics" href="../tutorial.html" />
+    <link rel="prev" title="Adapters" href="../adapters.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html" class="icon icon-home">
+            BioCypher
+          </a>
+              <div class="version">
+                0.5.19
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Democratising Knowledge Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-experiences.html">User Experiences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-involved.html">Get Involved!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#configuration">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters.html">Adapters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example Notebook: BioCypher and Pandas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Section-1:-Adding-data">Section 1: Adding data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Section-2:-Merging-data">Section 2: Merging data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Section-3:-Handling-properties">Section 3: Handling properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Section-4:-Handling-relationships">Section 4: Handling relationships</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial - Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-ontology.html">Tutorial - Handling Ontologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-adapter.html">Tutorial - Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neo4j.html">Interacting with Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../r-bioc.html">R and Bioconductor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">BioCypher</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Example Notebook: BioCypher and Pandas</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/pandas_tutorial.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Example-Notebook:-BioCypher-and-Pandas">
+<h1>Example Notebook: BioCypher and Pandas<a class="headerlink" href="#Example-Notebook:-BioCypher-and-Pandas" title="Permalink to this heading"></a></h1>
+<div class="admonition note">
+<p><strong>Tip:</strong> You can <a class="reference external" href="https://colab.research.google.com/github/biocypher/biocypher/blob/main/docs/notebooks/pandas_tutorial.ipynb">run the tutorial interactively in Google Colab</a>.</p>
+</div>
+<section id="Introduction">
+<h2>Introduction<a class="headerlink" href="#Introduction" title="Permalink to this heading"></a></h2>
+<p>The main purpose of BioCypher is to facilitate the pre-processing of biomedical data, and thus save development time in the maintenance of curated knowledge graphs, while allowing simple and efficient creation of task-specific lightweight knowledge graphs in a user-friendly and biology-centric fashion.</p>
+<p>We are going to use a toy example to familiarise the user with the basic functionality of BioCypher. One central task of BioCypher is the harmonisation of dissimilar datasets describing the same entities. Thus, in this example, the input data - which in the real-world use case could come from any type of interface - are represented by simulated data containing some examples of differently formatted biomedical entities such as proteins and their interactions.</p>
+<p>There are two other versions of this tutorial, which only differ in the output format. The first uses a CSV output format to write files suitable for Neo4j admin import, and the second creates an in-memory collection of Pandas dataframes. You can find both in the tutorial directory of the BioCypher repository. This tutorial simply takes the in-memory approach to a Jupyter notebook.</p>
+<p>While BioCypher was designed as a graph-focused framework, due to commonalities in bioinformatics workflows, BioCypher also supports Pandas DataFrames. This allows integration with methods that use tabular data, such as machine learning and statistical analysis, for instance in the <a class="reference external" href="https://scverse.org">scVerse framework</a>.</p>
+</section>
+<section id="Setup">
+<h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this heading"></a></h2>
+<p>To run this tutorial interactively, you will first need to install perform some setup steps specific to running on Google Colab. You can collapse this section and run the setup steps with one click, as they are not required for the explanation of BioCyper’s functionality. You can of course also run the steps one by one, if you want to see what is happening. The real tutorial starts with <a class="reference external" href="https://biocypher.org/notebooks/pandas_tutorial.html#section-1-adding-data">section 1, “Adding data”</a>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>biocypher
+</pre></div>
+</div>
+</div>
+<section id="Tutorial-files">
+<h3>Tutorial files<a class="headerlink" href="#Tutorial-files" title="Permalink to this heading"></a></h3>
+<p>In the <code class="docutils literal notranslate"><span class="pre">biocypher</span></code> root directory, you will find a <code class="docutils literal notranslate"><span class="pre">tutorial</span></code> directory with the files for this tutorial. The <code class="docutils literal notranslate"><span class="pre">data_generator.py</span></code> file contains the simulated data generation code, and the other files, specifically the <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> files, are named according to the tutorial step they are used in.</p>
+<p>Let’s download these:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="n">schema_path</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/dbdimitrov/biocypher/pandas-tutorial/tutorial/&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>wget<span class="w"> </span>-O<span class="w"> </span>data_generator.py<span class="w"> </span><span class="s2">&quot;https://github.com/biocypher/biocypher/raw/main/tutorial/data_generator.py&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">owner</span> <span class="o">=</span> <span class="s2">&quot;biocypher&quot;</span>
+<span class="n">repo</span> <span class="o">=</span> <span class="s2">&quot;biocypher&quot;</span>
+<span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;tutorial&quot;</span>  <span class="c1"># The path within the repository (optional, leave empty for the root directory)</span>
+<span class="n">github_url</span> <span class="o">=</span> <span class="s2">&quot;https://api.github.com/repos/</span><span class="si">{owner}</span><span class="s2">/</span><span class="si">{repo}</span><span class="s2">/contents/</span><span class="si">{path}</span><span class="s2">&quot;</span>
+
+<span class="n">api_url</span> <span class="o">=</span> <span class="n">github_url</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="n">owner</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_url</span><span class="p">)</span>
+
+<span class="c1"># Get list of yaml files from the repo</span>
+<span class="n">files</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="n">yamls</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">file</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;file&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">file</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.yaml&quot;</span><span class="p">):</span>
+            <span class="n">yamls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+
+<span class="c1"># wget all yaml files</span>
+<span class="k">for</span> <span class="n">yaml</span> <span class="ow">in</span> <span class="n">yamls</span><span class="p">:</span>
+    <span class="n">url_path</span> <span class="o">=</span> <span class="n">schema_path</span> <span class="o">+</span> <span class="n">yaml</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;wget&quot;</span><span class="p">,</span> <span class="n">url_path</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>Let’s also define functions with which we can visualize those</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># helper function to print yaml files</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="k">def</span> <span class="nf">print_yaml</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">yaml_data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--------------&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">yaml_data</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--------------&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Configuration">
+<h2>Configuration<a class="headerlink" href="#Configuration" title="Permalink to this heading"></a></h2>
+<p>BioCypher is configured using a YAML file; it comes with a default (which you can see in the <a class="reference external" href="https://biocypher.org/installation.html#configuration">Configuration</a> section). You can use it, for instance, to select an output format, the output directory, separators, logging level, and other options. For this tutorial, we will use a dedicated configuration file for each of the steps. The configuration files are located in the <code class="docutils literal notranslate"><span class="pre">tutorial</span></code> directory, and are called using the
+<code class="docutils literal notranslate"><span class="pre">biocypher_config_path</span></code> argument at instantiation of the BioCypher interface. For more information, see also the <a class="reference external" href="https://biocypher.org/quickstart.html#the-biocypher-configuration-yaml-file">Quickstart Configuration</a> section.</p>
+</section>
+<section id="Section-1:-Adding-data">
+<h2>Section 1: Adding data<a class="headerlink" href="#Section-1:-Adding-data" title="Permalink to this heading"></a></h2>
+<section id="Input-data-stream-(%22adapter%22)">
+<h3>Input data stream (“adapter”)<a class="headerlink" href="#Input-data-stream-(%22adapter%22)" title="Permalink to this heading"></a></h3>
+<p>The basic operation of adding data to the knowledge graph requires two components: an input stream of data (which we call adapter) and a configuration for the resulting desired output (the schema configuration). The former will be simulated by calling the <code class="docutils literal notranslate"><span class="pre">Protein</span></code> class of our data generator 10 times.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a list of proteins to be imported</span>
+<span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">Protein</span>
+<span class="n">n_proteins</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">proteins</span> <span class="o">=</span> <span class="p">[</span><span class="n">Protein</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_proteins</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<p>Each protein in our simulated data has a UniProt ID, a label (“uniprot_protein”), and a dictionary of properties describing it. This is - purely by coincidence - very close to the input BioCypher expects (for nodes): - a unique identifier - an input label (to allow mapping to the ontology, see the second step below) - a dictionary of further properties (which can be empty)</p>
+<p>These should be presented to BioCypher in the form of a tuple. To achieve this representation, we can use a generator function that iterates through our simulated input data and, for each entity, forms the corresponding tuple. The use of a generator allows for efficient streaming of larger datasets where required.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_generator</span><span class="p">(</span><span class="n">proteins</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="p">(</span>
+            <span class="n">protein</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span>
+            <span class="n">protein</span><span class="o">.</span><span class="n">get_label</span><span class="p">(),</span>
+            <span class="n">protein</span><span class="o">.</span><span class="n">get_properties</span><span class="p">(),</span>
+        <span class="p">)</span>
+<span class="n">entities</span> <span class="o">=</span> <span class="n">node_generator</span><span class="p">(</span><span class="n">proteins</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The concept of an adapter can become arbitrarily complex and involve programmatic access to databases, API requests, asynchronous queries, context managers, and other complicating factors. However, it always boils down to providing the BioCypher driver with a collection of tuples, one for each entity in the input data. For more info, see the section on <a class="reference internal" href="../adapters.html"><span class="doc">Adapters</span></a>.</p>
+<p>As descibed above, <em>nodes</em> possess:</p>
+<ul class="simple">
+<li><p>a mandatory ID,</p></li>
+<li><p>a mandatory label, and</p></li>
+<li><p>a property dictionary,</p></li>
+</ul>
+<p>while <em>edges</em> possess:</p>
+<ul class="simple">
+<li><p>an (optional) ID,</p></li>
+<li><p>two mandatory IDs for source and target,</p></li>
+<li><p>a mandatory label, and</p></li>
+<li><p>a property dictionary.</p></li>
+</ul>
+<p>How these entities are mapped to the ontological hierarchy underlying a BioCypher graph is determined by their mandatory labels, which connect the input data stream to the schema configuration. This we will see in the following section.</p>
+</section>
+<section id="Schema-configuration">
+<h3>Schema configuration<a class="headerlink" href="#Schema-configuration" title="Permalink to this heading"></a></h3>
+<p>How each BioCypher graph is structured is determined by the schema configuration YAML file that is given to the BioCypher interface. This also serves to ground the entities of the graph in the biomedical realm by using an ontological hierarchy. In this tutorial, we refer to the Biolink model as the general backbone of our ontological hierarchy. The basic premise of the schema configuration YAML file is that each component of the desired knowledge graph output should be configured here; if (and
+only if) an entity is represented in the schema configuration <em>and</em> is present in the input data stream, will it be part of our knowledge graph.</p>
+<p>In our case, since we only import proteins, we only require few lines of configuration:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_yaml</span><span class="p">(</span><span class="s1">&#39;01_schema_config.yaml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--------------
+protein:
+    represented_as: node
+    preferred_id: uniprot
+    input_label: uniprot_protein
+
+--------------
+</pre></div></div>
+</div>
+<p>The first line (<code class="docutils literal notranslate"><span class="pre">protein</span></code>) identifies our entity and connects to the ontological backbone; here we define the first class to be represented in the graph. In the configuration YAML, we represent entities — similar to the internal representation of Biolink — in lower sentence case (e.g., “small molecule”). Conversely, for class names, in file names, and property graph labels, we use PascalCase instead (e.g., “SmallMolecule”) to avoid issues with handling spaces. The transformation is done by
+BioCypher internally. BioCypher does not strictly enforce the entities allowed in this class definition; in fact, we provide <a class="reference external" href="https://biocypher.org/tutorial-ontology.html#model-extensions">several methods of extending the existing ontological backbone ad hoc by providing custom inheritance or hybridising ontologies</a>. However, every entity should at some point be connected to the underlying ontology, otherwise the multiple hierarchical labels will not be populated. Following this first line
+are three indented values of the protein class.</p>
+<p>The second line (<code class="docutils literal notranslate"><span class="pre">represented_as</span></code>) tells BioCypher in which way each entity should be represented in the graph; the only options are <code class="docutils literal notranslate"><span class="pre">node</span></code> and <code class="docutils literal notranslate"><span class="pre">edge</span></code>. Representation as an edge is only possible when source and target IDs are provided in the input data stream. Conversely, relationships can be represented as both <code class="docutils literal notranslate"><span class="pre">node</span></code> or <code class="docutils literal notranslate"><span class="pre">edge</span></code>, depending on the desired output. When a relationship should be represented as a node, i.e., “reified”, BioCypher takes care to create a set of two edges and a
+node in place of the relationship. This is useful when we want to connect the relationship to other entities in the graph, for example literature references.</p>
+<p>The third line (<code class="docutils literal notranslate"><span class="pre">preferred_id</span></code>) informs the uniqueness of represented entities by selecting an ontological namespace around which the definition of uniqueness should revolve. In our example, if a protein has its own uniprot ID, it is understood to be a unique entity. When there are multiple protein isoforms carrying the same uniprot ID, they are understood to be aggregated to result in only one unique entity in the graph. Decisions around uniqueness of graph constituents sometimes require some
+consideration in task-specific applications. Selection of a namespace also has effects in identifier mapping; in our case, for protein nodes that do not carry a uniprot ID, identifier mapping will attempt to find a uniprot ID given the other identifiers of that node. To account for the broadest possible range of identifier systems while also dealing with parsing of namespace prefixes and validation, we refer to the <a class="reference external" href="https://bioregistry.io">Bioregistry</a> project namespaces, which should be
+preferred values for this field.</p>
+<p>Finally, the fourth line (<code class="docutils literal notranslate"><span class="pre">input_label</span></code>) connects the input data stream to the configuration; here we indicate which label to expect in the input tuple for each class in the graph. In our case, we expect “uniprot_protein” as the label for each protein in the input data stream; all other input entities that do not carry this label are ignored as long as they are not in the schema configuration.</p>
+</section>
+<section id="Creating-the-graph-(using-the-BioCypher-interface)">
+<h3>Creating the graph (using the BioCypher interface)<a class="headerlink" href="#Creating-the-graph-(using-the-BioCypher-interface)" title="Permalink to this heading"></a></h3>
+<p>All that remains to be done now is to instantiate the BioCypher interface (as the main means of communicating with BioCypher) and call the function to create the graph.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span>
+    <span class="n">biocypher_config_path</span><span class="o">=</span><span class="s1">&#39;01_biocypher_config.yaml&#39;</span><span class="p">,</span>
+    <span class="n">schema_config_path</span><span class="o">=</span><span class="s1">&#39;01_schema_config.yaml&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># Add the entities that we generated above to the graph</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO -- Loading ontologies...
+INFO -- Instantiating OntologyAdapter class for https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl.
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print the graph as a dictionary of pandas DataFrame(s) per node label</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">to_df</span><span class="p">()[</span><span class="s2">&quot;protein&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;protein&#39;:   protein                                           sequence  \
+ 0  F7V4U2  RMFDDRFPVELRICTGSLVIINLGEFAEQHDKQDGSKPSHQPMFAT...
+ 1  K2Y8U3  HWPPSGVSCGVFPECWYRWRDEQWACFGPHIKYNKDNTWSWAQWMH...
+ 2  L1V6V9  QAEPKYKLAQENCRVQIKLPKIVGTCRPHWMTKTYHVLHTCVLWKS...
+
+            description taxon      id preferred_id
+ 0  i f c m m q e o o s  9606  F7V4U2      uniprot
+ 1  e y p g j t j y r x  9606  K2Y8U3      uniprot
+ 2  a i b t l j e g n j  9606  L1V6V9      uniprot  }
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Section-2:-Merging-data">
+<h2>Section 2: Merging data<a class="headerlink" href="#Section-2:-Merging-data" title="Permalink to this heading"></a></h2>
+<section id="Plain-merge">
+<h3>Plain merge<a class="headerlink" href="#Plain-merge" title="Permalink to this heading"></a></h3>
+<p>Using the workflow described above with minor changes, we can merge data from different input streams. If we do not want to introduce additional ontological subcategories, we can simply add the new input stream to the existing one and add the new label to the schema configuration (the new label being <code class="docutils literal notranslate"><span class="pre">entrez_protein</span></code>). In this case, we would add the following to the schema configuration:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">Protein</span><span class="p">,</span> <span class="n">EntrezProtein</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_yaml</span><span class="p">(</span><span class="s1">&#39;02_schema_config.yaml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--------------
+protein:
+    represented_as: node
+    preferred_id: uniprot
+    input_label:
+    - uniprot_protein
+    - entrez_protein
+
+--------------
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a list of proteins to be imported</span>
+<span class="n">proteins</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">p</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">Protein</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_proteins</span><span class="p">)],</span>
+        <span class="p">[</span><span class="n">EntrezProtein</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_proteins</span><span class="p">)],</span>
+    <span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sublist</span>
+<span class="p">]</span>
+<span class="c1"># Create a new BioCypher instance</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span>
+    <span class="n">biocypher_config_path</span><span class="o">=</span><span class="s1">&#39;02_biocypher_config.yaml&#39;</span><span class="p">,</span>
+    <span class="n">schema_config_path</span><span class="o">=</span><span class="s1">&#39;02_schema_config.yaml&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># Run the import</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_generator</span><span class="p">(</span><span class="n">proteins</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO -- Loading ontologies...
+INFO -- Instantiating OntologyAdapter class for https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl.
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bc</span><span class="o">.</span><span class="n">to_df</span><span class="p">()[</span><span class="s2">&quot;protein&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;protein&#39;:   protein                                           sequence  \
+ 0  K2W3K5  TVKISILFNPLPNQDMNTTTCQAESNYKAIYLYPWCSMDDVWNVEA...
+ 1  186009  FHYHGGMGPFMTYQNFLHWEQMQPMKLFNEPMQFHDWYGTHVNWPG...
+ 2  S6E6D1  CSVQIQIGMSQDSPDSSEGNMDCPPRNIGGYEIVCNVQGKRCYSTD...
+ 3  926766  HKEAELLVKGQIQTPKCLRHNHFYAKLTIVIELNYMVDRYGKDMAR...
+ 4  Z1F6R2  FMVWKDCLCIRMRHMAVPVPQYHCEYFEVILERWEVPCFSVLNRCK...
+ 5  362641  PISDEQEMGSEFCGHCNTGVYQVEMHFFECEDLNPKVQPKWIFTVT...
+
+            description taxon      id preferred_id
+ 0  e e v h x f t f j l  9606  K2W3K5      uniprot
+ 1  b c q m l d a u u g  9606  186009      uniprot
+ 2  i z t s l x v g j l  9606  S6E6D1      uniprot
+ 3  t n a j d l j a t a  9606  926766      uniprot
+ 4  h d m k q n r e h r  9606  Z1F6R2      uniprot
+ 5  l m x k h m v g p y  9606  362641      uniprot  }
+</pre></div></div>
+</div>
+<p>This again creates a single DataFrame, now for both protein types, but now including both input streams (you should note both uniprot &amp; entrez style IDs in the id column). However, we are generating our <code class="docutils literal notranslate"><span class="pre">entrez</span></code> proteins as having entrez IDs, which could result in problems in querying. Additionally, a strict import mode including regex pattern matching of identifiers will fail at this point due to the difference in pattern of UniProt vs. Entrez IDs. This issue could be resolved by mapping the
+Entrez IDs to UniProt IDs, but we will instead use the opportunity to demonstrate how to merge data from different sources into the same ontological class using <em>ad hoc</em> subclasses.</p>
+</section>
+<section id="Ad-hoc-subclassing">
+<h3><em>Ad hoc</em> subclassing<a class="headerlink" href="#Ad-hoc-subclassing" title="Permalink to this heading"></a></h3>
+<p>In the previous section, we saw how to merge data from different sources into the same ontological class. However, we did not resolve the issue of the <code class="docutils literal notranslate"><span class="pre">entrez</span></code> proteins living in a different namespace than the <code class="docutils literal notranslate"><span class="pre">uniprot</span></code> proteins, which could result in problems in querying. In proteins, it would probably be more appropriate to solve this problem using identifier mapping, but in other categories, e.g., pathways, this may not be possible because of a lack of one-to-one mapping between different
+data sources. Thus, if we so desire, we can merge datasets into the same ontological class by creating <em>ad hoc</em> subclasses implicitly through BioCypher, by providing multiple preferred identifiers. In our case, we update our schema configuration as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_yaml</span><span class="p">(</span><span class="s1">&#39;03_schema_config.yaml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--------------
+protein:
+    represented_as: node
+    preferred_id:
+    - uniprot
+    - entrez
+    input_label:
+    - uniprot_protein
+    - entrez_protein
+
+--------------
+</pre></div></div>
+</div>
+<p>This will “implicitly” create two subclasses of the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class, which will inherit the entire hierarchy of the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class. The two subclasses will be named using a combination of their preferred namespace and the name of the parent class, separated by a dot, i.e., <code class="docutils literal notranslate"><span class="pre">uniprot.protein</span></code> and <code class="docutils literal notranslate"><span class="pre">entrez.protein</span></code>. In this manner, they can be identified as proteins regardless of their sources by any queries for the generic <code class="docutils literal notranslate"><span class="pre">protein</span></code> class, while still carrying information about their
+namespace and avoiding identifier conflicts.</p>
+<div class="admonition note">
+<p>The only change affected upon the code from the previous section is the referral to the updated schema configuration file.</p>
+</div>
+<div class="alert alert-success"><p>In the output, we now generate two separate files for the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class, one for each subclass (with names in PascalCase).</p>
+</div><p>Let’s create a DataFrame with the same nodes as above, but with a different schema configuration:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span>
+    <span class="n">biocypher_config_path</span><span class="o">=</span><span class="s1">&#39;03_biocypher_config.yaml&#39;</span><span class="p">,</span>
+    <span class="n">schema_config_path</span><span class="o">=</span><span class="s1">&#39;03_schema_config.yaml&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_generator</span><span class="p">(</span><span class="n">proteins</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">bc</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO -- Loading ontologies...
+INFO -- Instantiating OntologyAdapter class for https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;uniprot.protein&#39;:   uniprot.protein                                           sequence  \
+ 0          K2W3K5  TVKISILFNPLPNQDMNTTTCQAESNYKAIYLYPWCSMDDVWNVEA...
+ 1          S6E6D1  CSVQIQIGMSQDSPDSSEGNMDCPPRNIGGYEIVCNVQGKRCYSTD...
+ 2          Z1F6R2  FMVWKDCLCIRMRHMAVPVPQYHCEYFEVILERWEVPCFSVLNRCK...
+
+            description taxon      id preferred_id
+ 0  e e v h x f t f j l  9606  K2W3K5      uniprot
+ 1  i z t s l x v g j l  9606  S6E6D1      uniprot
+ 2  h d m k q n r e h r  9606  Z1F6R2      uniprot  ,
+ &#39;entrez.protein&#39;:   entrez.protein                                           sequence  \
+ 0         186009  FHYHGGMGPFMTYQNFLHWEQMQPMKLFNEPMQFHDWYGTHVNWPG...
+ 1         926766  HKEAELLVKGQIQTPKCLRHNHFYAKLTIVIELNYMVDRYGKDMAR...
+ 2         362641  PISDEQEMGSEFCGHCNTGVYQVEMHFFECEDLNPKVQPKWIFTVT...
+
+            description taxon      id preferred_id
+ 0  b c q m l d a u u g  9606  186009       entrez
+ 1  t n a j d l j a t a  9606  926766       entrez
+ 2  l m x k h m v g p y  9606  362641       entrez  }
+</pre></div></div>
+</div>
+<p>Now we see two separate DataFrames, one for each subclass of the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class.</p>
+</section>
+</section>
+<section id="Section-3:-Handling-properties">
+<h2>Section 3: Handling properties<a class="headerlink" href="#Section-3:-Handling-properties" title="Permalink to this heading"></a></h2>
+<p>While ID and label are mandatory components of our knowledge graph, properties are optional and can include different types of information on the entities. In source data, properties are represented in arbitrary ways, and designations rarely overlap even for the most trivial of cases (spelling differences, formatting, etc). Additionally, some data sources contain a large wealth of information about entities, most of which may not be needed for the given task. Thus, it is often desirable to
+filter out properties that are not needed to save time, disk space, and memory.</p>
+<div class="admonition note">
+<p>Maintaining consistent properties per entity type is particularly important when using the admin import feature of Neo4j, which requires consistency between the header and data files. Properties that are introduced into only some of the rows will lead to column misalignment and import failure. In “online mode”, this is not an issue.</p>
+</div>
+<p>We will take a look at how to handle property selection in BioCypher in a way that is flexible and easy to maintain.</p>
+<section id="Designated-properties">
+<h3>Designated properties<a class="headerlink" href="#Designated-properties" title="Permalink to this heading"></a></h3>
+<p>The simplest and most straightforward way to ensure that properties are consistent for each entity type is to designate them explicitly in the schema configuration. This is done by adding a <code class="docutils literal notranslate"><span class="pre">properties</span></code> key to the entity type configuration. The value of this key is another dictionary, where in the standard case the keys are the names of the properties that the entity type should possess, and the values give the type of the property. Possible values are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code> (or <code class="docutils literal notranslate"><span class="pre">string</span></code>),</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code> (or <code class="docutils literal notranslate"><span class="pre">integer</span></code>, <code class="docutils literal notranslate"><span class="pre">long</span></code>),</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">float</span></code> (or <code class="docutils literal notranslate"><span class="pre">double</span></code>, <code class="docutils literal notranslate"><span class="pre">dbl</span></code>),</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span></code> (or <code class="docutils literal notranslate"><span class="pre">boolean</span></code>),</p></li>
+<li><p>arrays of any of these types (indicated by square brackets, e.g. <code class="docutils literal notranslate"><span class="pre">string[]</span></code>).</p></li>
+</ul>
+<p>In the case of properties that are not present in (some of) the source data, BioCypher will add them to the output with a default value of <code class="docutils literal notranslate"><span class="pre">None</span></code>. Additional properties in the input that are not represented in these designated property names will be ignored. Let’s imagine that some, but not all, of our protein nodes have a <code class="docutils literal notranslate"><span class="pre">mass</span></code> value. If we want to include the mass value on all proteins, we can add the following to our schema configuration:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_yaml</span><span class="p">(</span><span class="s1">&#39;04_schema_config.yaml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--------------
+protein:
+    represented_as: node
+    preferred_id:
+    - uniprot
+    - entrez
+    input_label:
+    - uniprot_protein
+    - entrez_protein
+    properties:
+        sequence: str
+        description: str
+        taxon: str
+        mass: int
+
+--------------
+</pre></div></div>
+</div>
+<p>This will add the <code class="docutils literal notranslate"><span class="pre">mass</span></code> property to all proteins (in addition to the three we had before); if not encountered, the column will be empty. Implicit subclasses will automatically inherit the property configuration; in this case, both <code class="docutils literal notranslate"><span class="pre">uniprot.protein</span></code> and <code class="docutils literal notranslate"><span class="pre">entrez.protein</span></code> will have the <code class="docutils literal notranslate"><span class="pre">mass</span></code> property, even though the <code class="docutils literal notranslate"><span class="pre">entrez</span></code> proteins do not have a <code class="docutils literal notranslate"><span class="pre">mass</span></code> value in the input data.</p>
+<div class="admonition note">
+<p>If we wanted to ignore the mass value for all properties, we could simply remove the <code class="docutils literal notranslate"><span class="pre">mass</span></code> key from the <code class="docutils literal notranslate"><span class="pre">properties</span></code> dictionary.</p>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">EntrezProtein</span><span class="p">,</span> <span class="n">RandomPropertyProtein</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a list of proteins to be imported (now with properties)</span>
+<span class="n">proteins</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">p</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">RandomPropertyProtein</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_proteins</span><span class="p">)],</span>
+        <span class="p">[</span><span class="n">EntrezProtein</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_proteins</span><span class="p">)],</span>
+    <span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sublist</span>
+<span class="p">]</span>
+<span class="c1"># New instance, populated, and to DataFrame</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span>
+    <span class="n">biocypher_config_path</span><span class="o">=</span><span class="s1">&#39;04_biocypher_config.yaml&#39;</span><span class="p">,</span>
+    <span class="n">schema_config_path</span><span class="o">=</span><span class="s1">&#39;04_schema_config.yaml&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_generator</span><span class="p">(</span><span class="n">proteins</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">bc</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO -- Loading ontologies...
+INFO -- Instantiating OntologyAdapter class for https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;uniprot.protein&#39;:   uniprot.protein                                           sequence  \
+ 0          S1Z9L5  RHLRGDVMQEDHHTSSERMVYNVLPQDYKVVSCEYWNTQVTALWVI...
+ 1          W9J5F1  IPFSQSAWAQQRIGPKGTKAHGVTQPAPMDIKNLCNLTDLTLILDF...
+ 2          T1J3U0  WFGCCHKQYVSHVIDRQDPQSPSDNPSLVSQLQFFMWGIQIQNGEI...
+
+            description taxon  mass      id preferred_id
+ 0  u x e o k m a i o s  3899  None  S1Z9L5      uniprot
+ 1  i x k c r b p d d p  8873  None  W9J5F1      uniprot
+ 2  m a w r r u x c w o  1966  9364  T1J3U0      uniprot  ,
+ &#39;entrez.protein&#39;:   entrez.protein                                           sequence  \
+ 0         405878  RMTDGFEWQLDFHAFIWCNQAAWQLPLEVHISQGNGGWRMGLYGNM...
+ 1         154167  CGMNYDNGYFSVAYQSYDLWYHQQLKTRGVKPAEKDSDKDLGIDVI...
+ 2         234189  GQWQECIQGFTPQQMCVDCCAETKLANKSYYHSWMTWRLSGLCFNM...
+
+            description taxon  mass      id preferred_id
+ 0  y c s v s n e c h o  9606  None  405878       entrez
+ 1  i k n c e n r n c d  9606  None  154167       entrez
+ 2  o v w y g h y e v y  9606  None  234189       entrez  }
+</pre></div></div>
+</div>
+</section>
+<section id="Inheriting-properties">
+<h3>Inheriting properties<a class="headerlink" href="#Inheriting-properties" title="Permalink to this heading"></a></h3>
+<p>Sometimes, explicit designation of properties requires a lot of maintenance work, particularly for classes with many properties. In these cases, it may be more convenient to inherit properties from a parent class. This is done by adding a <code class="docutils literal notranslate"><span class="pre">properties</span></code> key to a suitable parent class configuration, and then defining inheritance via the <code class="docutils literal notranslate"><span class="pre">is_a</span></code> key in the child class configuration and setting the <code class="docutils literal notranslate"><span class="pre">inherit_properties</span></code> key to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<p>Let’s say we have an additional <code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">isoform</span></code> class, which can reasonably inherit from <code class="docutils literal notranslate"><span class="pre">protein</span></code> and should carry the same properties as the parent. We can add the following to our schema configuration:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">RandomPropertyProteinIsoform</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_yaml</span><span class="p">(</span><span class="s1">&#39;05_schema_config.yaml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--------------
+protein:
+    represented_as: node
+    preferred_id:
+    - uniprot
+    - entrez
+    input_label:
+    - uniprot_protein
+    - entrez_protein
+    properties:
+        sequence: str
+        description: str
+        taxon: str
+        mass: int
+protein isoform:
+    is_a: protein
+    inherit_properties: true
+    represented_as: node
+    preferred_id: uniprot
+    input_label: uniprot_isoform
+
+--------------
+</pre></div></div>
+</div>
+<p>This allows maintenance of property lists for many classes at once. If the child class has properties already, they will be kept (if they are not present in the parent class) or replaced by the parent class properties (if they are present).</p>
+<p>Again, apart from adding the protein isoforms to the input stream, the code for this example is identical to the previous one except for the reference to the updated schema configuration.</p>
+<p>We now create three separate DataFrames, all of which are children of the <code class="docutils literal notranslate"><span class="pre">protein</span></code> class; two implicit children (<code class="docutils literal notranslate"><span class="pre">uniprot.protein</span></code> and <code class="docutils literal notranslate"><span class="pre">entrez.protein</span></code>) and one explicit child (<code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">isoform</span></code>).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a list of proteins to be imported</span>
+<span class="n">proteins</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">p</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">RandomPropertyProtein</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_proteins</span><span class="p">)],</span>
+        <span class="p">[</span><span class="n">RandomPropertyProteinIsoform</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_proteins</span><span class="p">)],</span>
+        <span class="p">[</span><span class="n">EntrezProtein</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_proteins</span><span class="p">)],</span>
+    <span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sublist</span>
+<span class="p">]</span>
+
+<span class="c1"># Create BioCypher driver</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span>
+    <span class="n">biocypher_config_path</span><span class="o">=</span><span class="s1">&#39;05_biocypher_config.yaml&#39;</span><span class="p">,</span>
+    <span class="n">schema_config_path</span><span class="o">=</span><span class="s1">&#39;05_schema_config.yaml&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># Run the import</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_generator</span><span class="p">(</span><span class="n">proteins</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">bc</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO -- Loading ontologies...
+INFO -- Instantiating OntologyAdapter class for https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+uniprot.protein
+  uniprot.protein                                           sequence  \
+0          A9L6G4  SWIVVGQPDSHNKRLVNYHWMRCEHPLRCWRPIYVVRVSFQSQCEQ...
+1          E4N2H2  PGVMILDNMQHKCSKELSTRQIITNHWICNSAPISWSSGMDRSCLD...
+2          V4F1T1  DQCHNLCPGSSFQCPENAFGNDWIDHMPQETGLMQYDDPQSGMWFT...
+
+           description taxon  mass      id preferred_id
+0  m o k j a f w v w r  4220  None  A9L6G4      uniprot
+1  n v i r s f m f d w  6339  6481  E4N2H2      uniprot
+2  w e v v a b o b b u  9176  6510  V4F1T1      uniprot
+protein isoform
+  protein isoform                                           sequence  \
+0          F0N9A4  QDVVLVEGCGDEGWIHMPEKRPGQAYKWCERFRPIPDFTNSIKIAY...
+1          B1W6O2  SQKHFRRWWTNDCFGQELMSIYYNVKFWDNLIEMTGGPASRVCLGQ...
+2          G6V5R9  ASAITPFSYEKPHTVTLDATEVFPKMQDAQAIEREIHFSKSTLVYG...
+
+           description taxon  mass      id preferred_id
+0  r f e a v a a g w r  8061  None  F0N9A4      uniprot
+1  a c a v v k v k c w  6786  None  B1W6O2      uniprot
+2  c k g d a l f r t v  6868  1323  G6V5R9      uniprot
+entrez.protein
+  entrez.protein                                           sequence  \
+0          52329  DYRSMAPTFILMKIYPACDAITKRRWSVATVKDGEFIWWSAVKIFP...
+1         581107  LLVFNMGQLAVAGYGNTMVSAMMCFCCDVKARMGMSWLPKITTMQW...
+2         270569  MVCSHHELAVAFQTMCPIQGDAATAKANAHRTTDKQNWMVVKWFRT...
+
+           description taxon  mass      id preferred_id
+0  q k r b h g t q x x  9606  None   52329       entrez
+1  h f g z j r b g m w  9606  None  581107       entrez
+2  s b p v f u t y g v  9606  None  270569       entrez
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Section-4:-Handling-relationships">
+<h2>Section 4: Handling relationships<a class="headerlink" href="#Section-4:-Handling-relationships" title="Permalink to this heading"></a></h2>
+<p>Naturally, we do not only want nodes in our knowledge graph, but also edges. In BioCypher, the configuration of relationships is very similar to that of nodes, with some key differences. First the similarities: the top-level class configuration of edges is the same; class names refer to ontological classes or are an extension thereof. Similarly, the <code class="docutils literal notranslate"><span class="pre">is_a</span></code> key is used to define inheritance, and the <code class="docutils literal notranslate"><span class="pre">inherit_properties</span></code> key is used to inherit properties from a parent class. Relationships also
+possess a <code class="docutils literal notranslate"><span class="pre">preferred_id</span></code> key, an <code class="docutils literal notranslate"><span class="pre">input_label</span></code> key, and a <code class="docutils literal notranslate"><span class="pre">properties</span></code> key, which work in the same way as for nodes.</p>
+<p>Relationships also have a <code class="docutils literal notranslate"><span class="pre">represented_as</span></code> key, which in this case can be either <code class="docutils literal notranslate"><span class="pre">node</span></code> or <code class="docutils literal notranslate"><span class="pre">edge</span></code>. The <code class="docutils literal notranslate"><span class="pre">node</span></code> option is used to “reify” the relationship in order to be able to connect it to other nodes in the graph. In addition to the configuration of nodes, relationships also have fields for the <code class="docutils literal notranslate"><span class="pre">source</span></code> and <code class="docutils literal notranslate"><span class="pre">target</span></code> node types, which refer to the ontological classes of the respective nodes, and are currently optional.</p>
+<p>To add protein-protein interactions to our graph, we can modify the schema configuration above to the following:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_yaml</span><span class="p">(</span><span class="s1">&#39;06_schema_config_pandas.yaml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--------------
+protein:
+    represented_as: node
+    preferred_id:
+    - uniprot
+    - entrez
+    input_label:
+    - uniprot_protein
+    - entrez_protein
+    properties:
+        sequence: str
+        description: str
+        taxon: str
+        mass: int
+protein isoform:
+    is_a: protein
+    inherit_properties: true
+    represented_as: node
+    preferred_id: uniprot
+    input_label: uniprot_isoform
+protein protein interaction:
+    is_a: pairwise molecular interaction
+    represented_as: edge
+    preferred_id: intact
+    input_label: interacts_with
+    properties:
+        method: str
+        source: str
+
+--------------
+</pre></div></div>
+</div>
+<p>Now that we have added <code class="docutils literal notranslate"><span class="pre">protein</span> <span class="pre">protein</span> <span class="pre">interaction</span></code> as an edge, we have to simulate some interactions:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">InteractionGenerator</span>
+
+<span class="c1"># Simulate edges for proteins we defined above</span>
+<span class="n">ppi</span> <span class="o">=</span> <span class="n">InteractionGenerator</span><span class="p">(</span>
+    <span class="n">interactors</span><span class="o">=</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">],</span>
+    <span class="n">interaction_probability</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">generate_interactions</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># naturally interactions/edges contain information about the interacting source and target nodes</span>
+<span class="c1"># let&#39;s look at the first one in the list</span>
+<span class="n">interaction</span> <span class="o">=</span> <span class="n">ppi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interaction</span><span class="o">.</span><span class="n">get_source_id</span><span class="p">()</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">interaction</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">interaction</span><span class="o">.</span><span class="n">get_target_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;A9L6G4 interacts_with V4F1T1&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># similarly to nodes, it also has a dictionary of properties</span>
+<span class="n">interaction</span><span class="o">.</span><span class="n">get_properties</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;source&#39;: &#39;signor&#39;, &#39;method&#39;: &#39;u z c x m d c u g s&#39;}
+</pre></div></div>
+</div>
+<p>As with nodes, we add first createa a new BioCypher instance, and then populate it with nodes as well as edges:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span>
+    <span class="n">biocypher_config_path</span><span class="o">=</span><span class="s1">&#39;06_biocypher_config.yaml&#39;</span><span class="p">,</span>
+    <span class="n">schema_config_path</span><span class="o">=</span><span class="s1">&#39;06_schema_config_pandas.yaml&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract id, source, target, label, and property dictionary</span>
+<span class="k">def</span> <span class="nf">edge_generator</span><span class="p">(</span><span class="n">ppi</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">interaction</span> <span class="ow">in</span> <span class="n">ppi</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="p">(</span>
+            <span class="n">interaction</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span>
+            <span class="n">interaction</span><span class="o">.</span><span class="n">get_source_id</span><span class="p">(),</span>
+            <span class="n">interaction</span><span class="o">.</span><span class="n">get_target_id</span><span class="p">(),</span>
+            <span class="n">interaction</span><span class="o">.</span><span class="n">get_label</span><span class="p">(),</span>
+            <span class="n">interaction</span><span class="o">.</span><span class="n">get_properties</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+<span class="n">bc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_generator</span><span class="p">(</span><span class="n">proteins</span><span class="p">))</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge_generator</span><span class="p">(</span><span class="n">ppi</span><span class="p">))</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO -- Loading ontologies...
+INFO -- Instantiating OntologyAdapter class for https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl.
+</pre></div></div>
+</div>
+<p>Let’s look at the interaction DataFrame:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bc</span><span class="o">.</span><span class="n">to_df</span><span class="p">()[</span><span class="s2">&quot;protein protein interaction&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>protein protein interaction</th>
+      <th>_from</th>
+      <th>_to</th>
+      <th>source</th>
+      <th>method</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>intact703256</td>
+      <td>A9L6G4</td>
+      <td>V4F1T1</td>
+      <td>signor</td>
+      <td>u z c x m d c u g s</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>None</td>
+      <td>E4N2H2</td>
+      <td>F0N9A4</td>
+      <td>intact</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Finally, it is worth noting that BioCypher relies on ontologies, which are machine readable representations of domains of knowledge that we use to ground the contents of our knowledge graphs. While details about ontologies are out of scope for this tutorial, and are described in detail in the <a class="reference external" href="https://biocypher.org/tutorial-ontology.html">BioCypher documentation</a>, we can still have a glimpse at the ontology that we used implicitly in this tutorial:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bc</span><span class="o">.</span><span class="n">show_ontology_structure</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Showing ontology structure based on https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
+entity
+├── association
+│   └── gene to gene association
+│       └── pairwise gene to gene interaction
+│           └── pairwise molecular interaction
+│               └── protein protein interaction
+└── named thing
+    └── biological entity
+        └── polypeptide
+            └── protein
+                ├── entrez.protein
+                ├── protein isoform
+                └── uniprot.protein
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;treelib.tree.Tree at 0x7f7327b3a880&gt;
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../adapters.html" class="btn btn-neutral float-left" title="Adapters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tutorial.html" class="btn btn-neutral float-right" title="Tutorial - Basics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2023, BioCypher developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
