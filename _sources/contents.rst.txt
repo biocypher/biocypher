@@ -13,4 +13,4 @@
    tutorial-adapter
    neo4j
    r-bioc
-   submodule
+   api

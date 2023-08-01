@@ -64,8 +64,8 @@ database named `test` running on standard bolt port `7687`
 tests by running `% pytest` in the root directory of the repository with the
 command line argument `--password=<your DBMS password>`.
 
-Once this is set up, you can go through the [tutorial](tutorial) or use it in
-your project as a local dependency.
+Once this is set up, you can go through the [tutorial](tutorial_basic) or use it
+in your project as a local dependency.
 
 (config)=
 # Configuration

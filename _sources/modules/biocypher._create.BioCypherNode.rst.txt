@@ -1,0 +1,37 @@
+﻿biocypher.\_create.BioCypherNode
+================================
+
+.. currentmodule:: biocypher._create
+
+.. autoclass:: BioCypherNode
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BioCypherNode.__init__
+      ~BioCypherNode.get_dict
+      ~BioCypherNode.get_id
+      ~BioCypherNode.get_label
+      ~BioCypherNode.get_preferred_id
+      ~BioCypherNode.get_properties
+      ~BioCypherNode.get_type
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BioCypherNode.preferred_id
+      ~BioCypherNode.node_id
+      ~BioCypherNode.node_label
+      ~BioCypherNode.properties
+   
+   

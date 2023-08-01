@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="biocypher._misc.snakecase_to_sentencecase" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://biocypher.org/modules/biocypher._misc.snakecase_to_sentencecase.html" />
+<meta property="og:site_name" content="BioCypher" />
+<meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+<meta property="og:image:alt" content="BioCypher" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="https://biocypher.org" />
+<meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
+<meta property="twitter:description" content="BioCypher is a framework to simplify the creation of robust biomedical knowledge graphs." />
+<meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>biocypher._misc.snakecase_to_sentencecase &mdash; BioCypher</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/design-tabs.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="biocypher._misc.sentencecase_to_snakecase" href="biocypher._misc.sentencecase_to_snakecase.html" />
+    <link rel="prev" title="biocypher._misc.pascalcase_to_sentencecase" href="biocypher._misc.pascalcase_to_sentencecase.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html" class="icon icon-home">
+            BioCypher
+          </a>
+              <div class="version">
+                0.5.19
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Democratising Knowledge Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-experiences.html">User Experiences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-involved.html">Get Involved!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#configuration">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters.html">Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial - Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-ontology.html">Tutorial - Handling Ontologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-adapter.html">Tutorial - Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neo4j.html">Interacting with Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../r-bioc.html">R and Bioconductor</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#the-main-biocypher-interface">The main BioCypher interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-by-file">Database creation by file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-and-manipulation-by-driver">Database creation and manipulation by Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._ontology">Ontology ingestion, parsing, and manipulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._mapping">Mapping of data inputs to KG ontology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._create">Base classes for node and edge representations in BioCypher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._translate">Translation functionality for implemented types of representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._logger">Logging</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-biocypher._misc">Miscellaneous utility functions</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">BioCypher</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+      <li class="breadcrumb-item active">biocypher._misc.snakecase_to_sentencecase</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/biocypher._misc.snakecase_to_sentencecase.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="biocypher-misc-snakecase-to-sentencecase">
+<h1>biocypher._misc.snakecase_to_sentencecase<a class="headerlink" href="#biocypher-misc-snakecase-to-sentencecase" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="biocypher._misc.snakecase_to_sentencecase">
+<span class="sig-prename descclassname"><span class="pre">biocypher._misc.</span></span><span class="sig-name descname"><span class="pre">snakecase_to_sentencecase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._misc.snakecase_to_sentencecase" title="Permalink to this definition"></a></dt>
+<dd><p>Convert snake_case to sentence case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> – Input string in snake_case</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>string in sentence case form</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="biocypher._misc.pascalcase_to_sentencecase.html" class="btn btn-neutral float-left" title="biocypher._misc.pascalcase_to_sentencecase" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="biocypher._misc.sentencecase_to_snakecase.html" class="btn btn-neutral float-right" title="biocypher._misc.sentencecase_to_snakecase" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2023, BioCypher developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+﻿biocypher.\_misc.pascalcase\_to\_sentencecase
+=============================================
+
+.. currentmodule:: biocypher._misc
+
+.. autofunction:: pascalcase_to_sentencecase

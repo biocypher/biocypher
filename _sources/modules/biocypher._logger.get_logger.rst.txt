@@ -1,0 +1,6 @@
+﻿biocypher.\_logger.get\_logger
+==============================
+
+.. currentmodule:: biocypher._logger
+
+.. autofunction:: get_logger

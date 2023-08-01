@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="biocypher._translate.Translator" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://biocypher.org/modules/biocypher._translate.Translator.html" />
+<meta property="og:site_name" content="BioCypher" />
+<meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+<meta property="og:image:alt" content="BioCypher" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="https://biocypher.org" />
+<meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
+<meta property="twitter:description" content="BioCypher is a framework to simplify the creation of robust biomedical knowledge graphs." />
+<meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>biocypher._translate.Translator &mdash; BioCypher</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/design-tabs.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="biocypher._logger.get_logger" href="biocypher._logger.get_logger.html" />
+    <link rel="prev" title="biocypher._create.BioCypherRelAsNode" href="biocypher._create.BioCypherRelAsNode.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html" class="icon icon-home">
+            BioCypher
+          </a>
+              <div class="version">
+                0.5.19
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Democratising Knowledge Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-experiences.html">User Experiences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-involved.html">Get Involved!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#configuration">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters.html">Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial - Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-ontology.html">Tutorial - Handling Ontologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-adapter.html">Tutorial - Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neo4j.html">Interacting with Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../r-bioc.html">R and Bioconductor</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#the-main-biocypher-interface">The main BioCypher interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-by-file">Database creation by file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-and-manipulation-by-driver">Database creation and manipulation by Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._ontology">Ontology ingestion, parsing, and manipulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._mapping">Mapping of data inputs to KG ontology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._create">Base classes for node and edge representations in BioCypher</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-biocypher._translate">Translation functionality for implemented types of representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._logger">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._misc">Miscellaneous utility functions</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">BioCypher</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+      <li class="breadcrumb-item active">biocypher._translate.Translator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/biocypher._translate.Translator.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="biocypher-translate-translator">
+<h1>biocypher._translate.Translator<a class="headerlink" href="#biocypher-translate-translator" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="biocypher._translate.Translator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">Translator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._mapping.OntologyMapping.html#biocypher._mapping.OntologyMapping" title="biocypher._mapping.OntologyMapping"><span class="pre">OntologyMapping</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator" title="Permalink to this definition"></a></dt>
+<dd><p>Class responsible for exacting the translation process that is configured in
+the schema_config.yaml file. Creates a mapping dictionary from that file,
+and, given nodes and edges, translates them into BioCypherNodes and
+BioCypherEdges. During this process, can also filter the properties of the
+entities if the schema_config.yaml file specifies a property whitelist or
+blacklist.</p>
+<p>Provides utility functions for translating between input and output labels
+and cypher queries.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="biocypher._translate.Translator.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._mapping.OntologyMapping.html#biocypher._mapping.OntologyMapping" title="biocypher._mapping.OntologyMapping"><span class="pre">OntologyMapping</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>leaves</strong> – Dictionary detailing the leaves of the hierarchy
+tree representing the structure of the graph; the leaves are
+the entities that will be direct components of the graph,
+while the intermediary nodes are additional labels for
+filtering purposes.</p></li>
+<li><p><strong>strict_mode</strong> – If True, the translator will raise an error if input data do not
+carry source, licence, and version information.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biocypher._translate.Translator.__init__" title="biocypher._translate.Translator.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(ontology_mapping[, strict_mode])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param leaves<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary detailing the leaves of the hierarchy</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_missing_biolink_types</span></code>()</p></td>
+<td><p>Returns a dictionary of types that were not represented in the schema_config.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name_sentence_to_pascal</span></code>(name)</p></td>
+<td><p>Converts a name in sentence case to pascal case.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_translate</span></code>(query)</p></td>
+<td><p>Reverse translate a cypher query.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_translate_term</span></code>(term)</p></td>
+<td><p>Reverse translate a single term.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate</span></code>(query)</p></td>
+<td><p>Translate a cypher query.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_edges</span></code>(id_src_tar_type_prop_tuples)</p></td>
+<td><p>Translates input edge representation to a representation that conforms to the schema of the given BioCypher graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_nodes</span></code>(id_type_prop_tuples)</p></td>
+<td><p>Translates input node representation to a representation that conforms to the schema of the given BioCypher graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_term</span></code>(term)</p></td>
+<td><p>Translate a single term.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="biocypher._create.BioCypherRelAsNode.html" class="btn btn-neutral float-left" title="biocypher._create.BioCypherRelAsNode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="biocypher._logger.get_logger.html" class="btn btn-neutral float-right" title="biocypher._logger.get_logger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2023, BioCypher developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

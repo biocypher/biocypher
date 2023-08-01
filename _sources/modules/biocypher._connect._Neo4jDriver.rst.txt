@@ -1,0 +1,27 @@
+﻿biocypher.\_connect.\_Neo4jDriver
+=================================
+
+.. currentmodule:: biocypher._connect
+
+.. autoclass:: _Neo4jDriver
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~_Neo4jDriver.__init__
+      ~_Neo4jDriver.add_biocypher_edges
+      ~_Neo4jDriver.add_biocypher_nodes
+      ~_Neo4jDriver.add_edges
+      ~_Neo4jDriver.add_nodes
+      ~_Neo4jDriver.init_db
+   
+   
+
+   
+   
+   

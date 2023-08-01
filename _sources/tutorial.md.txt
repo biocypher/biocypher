@@ -6,7 +6,7 @@ link](https://colab.research.google.com/github/biocypher/biocypher/blob/main/tut
 
 ```
 
-(tutorial)=
+(tutorial_basic)=
 # Tutorial - Basics
 The main purpose of BioCypher is to facilitate the pre-processing of biomedical
 data to save development time in the maintenance of curated knowledge graphs
@@ -76,6 +76,7 @@ directory, and are called using the `biocypher_config_path` argument at
 instantiation of the BioCypher interface. For more information, see also the
 [Quickstart Configuration](qs_config) section.
 
+(tut_01)=
 ## Section 1: Adding data
 ```{admonition} Tutorial files
 :class: note
@@ -172,20 +173,19 @@ protein:                            # mapping
   input_label: uniprot_protein      # connection to input stream
 ```
 
-The first line (`protein`) identifies our entity and connects to the
-ontological backbone; here we define the first class to be represented in the
-graph. In the configuration YAML, we represent entities — similar to the
-internal representation of Biolink — in lower sentence case (e.g., "small
-molecule"). Conversely, for class names, in file names, and property graph
-labels, we use PascalCase instead (e.g., "SmallMolecule") to avoid issues with
-handling spaces. The transformation is done by BioCypher internally. BioCypher
-does not strictly enforce the entities allowed in this class definition; in
-fact, we provide [several methods of extending the existing ontological
-backbone *ad hoc* by providing custom inheritance or hybridising
-ontologies](biolink). However, every entity should at some point be connected
-to the underlying ontology, otherwise the multiple hierarchical labels will not
-be populated. Following this first line are three indented values of the
-protein class.
+The first line (`protein`) identifies our entity and connects to the ontological
+backbone; here we define the first class to be represented in the graph. In the
+configuration YAML, we represent entities — similar to the internal
+representation of Biolink — in lower sentence case (e.g., "small molecule").
+Conversely, for class names, in file names, and property graph labels, we use
+PascalCase instead (e.g., "SmallMolecule") to avoid issues with handling spaces.
+The transformation is done by BioCypher internally. BioCypher does not strictly
+enforce the entities allowed in this class definition; in fact, we provide
+[several methods of extending the existing ontological backbone *ad hoc* by
+providing custom inheritance or hybridising ontologies](tut_hybridising).
+However, every entity should at some point be connected to the underlying
+ontology, otherwise the multiple hierarchical labels will not be populated.
+Following this first line are three indented values of the protein class.
 
 The second line (`represented_as`) tells BioCypher in which way each entity
 should be represented in the graph; the only options are `node` and `edge`.
@@ -561,7 +561,8 @@ hash of the concatenation of these values. Edge IDs are active by default, but
 can be deactivated by setting the `use_id` field to `false` in the
 `schema_config.yaml` file.
 
-```{yaml} schema_config.yaml
+```{code-block} yaml
+:caption: schema_config.yaml
 protein protein interaction:
   is_a: pairwise molecular interaction
   represented_as: edge

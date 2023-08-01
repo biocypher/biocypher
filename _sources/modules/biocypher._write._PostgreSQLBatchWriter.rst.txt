@@ -1,0 +1,34 @@
+﻿biocypher.\_write.\_PostgreSQLBatchWriter
+=========================================
+
+.. currentmodule:: biocypher._write
+
+.. autoclass:: _PostgreSQLBatchWriter
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~_PostgreSQLBatchWriter.__init__
+      ~_PostgreSQLBatchWriter.get_import_call
+      ~_PostgreSQLBatchWriter.write_edges
+      ~_PostgreSQLBatchWriter.write_import_call
+      ~_PostgreSQLBatchWriter.write_nodes
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~_PostgreSQLBatchWriter.DATA_TYPE_LOOKUP
+      ~_PostgreSQLBatchWriter.import_call_file_prefix
+      ~_PostgreSQLBatchWriter.outdir
+   
+   

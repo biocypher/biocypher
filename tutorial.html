@@ -84,7 +84,7 @@
 <li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
 <li class="toctree-l1"><a class="reference internal" href="neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
 <li class="toctree-l1"><a class="reference internal" href="r-bioc.html">R and Bioconductor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="submodule.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -117,7 +117,7 @@
 link</a>.</p>
 </div>
 <section id="tutorial-basics">
-<span id="tutorial"></span><h1>Tutorial - Basics<a class="headerlink" href="#tutorial-basics" title="Permalink to this heading"></a></h1>
+<span id="tutorial-basic"></span><h1>Tutorial - Basics<a class="headerlink" href="#tutorial-basics" title="Permalink to this heading"></a></h1>
 <p>The main purpose of BioCypher is to facilitate the pre-processing of biomedical
 data to save development time in the maintenance of curated knowledge graphs
 and to allow the simple and efficient creation of task-specific lightweight
@@ -178,7 +178,7 @@ instantiation of the BioCypher interface. For more information, see also the
 <a class="reference internal" href="quickstart.html#qs-config"><span class="std std-ref">Quickstart Configuration</span></a> section.</p>
 </section>
 <section id="section-1-adding-data">
-<h2>Section 1: Adding data<a class="headerlink" href="#section-1-adding-data" title="Permalink to this heading"></a></h2>
+<span id="tut-01"></span><h2>Section 1: Adding data<a class="headerlink" href="#section-1-adding-data" title="Permalink to this heading"></a></h2>
 <div class="note admonition">
 <p class="admonition-title">Tutorial files</p>
 <p>The code for this tutorial can be found at <code class="docutils literal notranslate"><span class="pre">tutorial/01__basic_import.py</span></code>. The
@@ -262,20 +262,19 @@ configuration:</p>
 <span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot_protein</span><span class="w">      </span><span class="c1"># connection to input stream</span>
 </pre></div>
 </div>
-<p>The first line (<code class="docutils literal notranslate"><span class="pre">protein</span></code>) identifies our entity and connects to the
-ontological backbone; here we define the first class to be represented in the
-graph. In the configuration YAML, we represent entities — similar to the
-internal representation of Biolink — in lower sentence case (e.g., “small
-molecule”). Conversely, for class names, in file names, and property graph
-labels, we use PascalCase instead (e.g., “SmallMolecule”) to avoid issues with
-handling spaces. The transformation is done by BioCypher internally. BioCypher
-does not strictly enforce the entities allowed in this class definition; in
-fact, we provide <span class="xref myst">several methods of extending the existing ontological
-backbone <em>ad hoc</em> by providing custom inheritance or hybridising
-ontologies</span>. However, every entity should at some point be connected
-to the underlying ontology, otherwise the multiple hierarchical labels will not
-be populated. Following this first line are three indented values of the
-protein class.</p>
+<p>The first line (<code class="docutils literal notranslate"><span class="pre">protein</span></code>) identifies our entity and connects to the ontological
+backbone; here we define the first class to be represented in the graph. In the
+configuration YAML, we represent entities — similar to the internal
+representation of Biolink — in lower sentence case (e.g., “small molecule”).
+Conversely, for class names, in file names, and property graph labels, we use
+PascalCase instead (e.g., “SmallMolecule”) to avoid issues with handling spaces.
+The transformation is done by BioCypher internally. BioCypher does not strictly
+enforce the entities allowed in this class definition; in fact, we provide
+<a class="reference internal" href="tutorial-ontology.html#tut-hybridising"><span class="std std-ref">several methods of extending the existing ontological backbone <em>ad hoc</em> by
+providing custom inheritance or hybridising ontologies</span></a>.
+However, every entity should at some point be connected to the underlying
+ontology, otherwise the multiple hierarchical labels will not be populated.
+Following this first line are three indented values of the protein class.</p>
 <p>The second line (<code class="docutils literal notranslate"><span class="pre">represented_as</span></code>) tells BioCypher in which way each entity
 should be represented in the graph; the only options are <code class="docutils literal notranslate"><span class="pre">node</span></code> and <code class="docutils literal notranslate"><span class="pre">edge</span></code>.
 Representation as an edge is only possible when source and target IDs are
@@ -614,6 +613,16 @@ properties that the edge possesses) can be done, for instance, by using the MD5
 hash of the concatenation of these values. Edge IDs are active by default, but
 can be deactivated by setting the <code class="docutils literal notranslate"><span class="pre">use_id</span></code> field to <code class="docutils literal notranslate"><span class="pre">false</span></code> in the
 <code class="docutils literal notranslate"><span class="pre">schema_config.yaml</span></code> file.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">schema_config.yaml</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">protein protein interaction</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pairwise molecular interaction</span>
+<span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edge</span>
+<span class="w">  </span><span class="nt">use_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="c1"># ...</span>
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 </section>

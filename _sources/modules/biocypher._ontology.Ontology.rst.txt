@@ -1,0 +1,25 @@
+﻿biocypher.\_ontology.Ontology
+=============================
+
+.. currentmodule:: biocypher._ontology
+
+.. autoclass:: Ontology
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Ontology.__init__
+      ~Ontology.get_ancestors
+      ~Ontology.get_dict
+      ~Ontology.show_ontology_structure
+   
+   
+
+   
+   
+   

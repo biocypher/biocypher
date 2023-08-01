@@ -1,0 +1,33 @@
+﻿biocypher.\_write.\_Neo4jBatchWriter
+====================================
+
+.. currentmodule:: biocypher._write
+
+.. autoclass:: _Neo4jBatchWriter
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~_Neo4jBatchWriter.__init__
+      ~_Neo4jBatchWriter.get_import_call
+      ~_Neo4jBatchWriter.write_edges
+      ~_Neo4jBatchWriter.write_import_call
+      ~_Neo4jBatchWriter.write_nodes
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~_Neo4jBatchWriter.import_call_file_prefix
+      ~_Neo4jBatchWriter.outdir
+   
+   

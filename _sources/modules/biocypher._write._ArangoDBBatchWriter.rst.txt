@@ -1,0 +1,33 @@
+﻿biocypher.\_write.\_ArangoDBBatchWriter
+=======================================
+
+.. currentmodule:: biocypher._write
+
+.. autoclass:: _ArangoDBBatchWriter
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~_ArangoDBBatchWriter.__init__
+      ~_ArangoDBBatchWriter.get_import_call
+      ~_ArangoDBBatchWriter.write_edges
+      ~_ArangoDBBatchWriter.write_import_call
+      ~_ArangoDBBatchWriter.write_nodes
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~_ArangoDBBatchWriter.import_call_file_prefix
+      ~_ArangoDBBatchWriter.outdir
+   
+   

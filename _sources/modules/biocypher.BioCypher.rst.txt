@@ -1,0 +1,39 @@
+﻿biocypher.BioCypher
+===================
+
+.. currentmodule:: biocypher
+
+.. autoclass:: BioCypher
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BioCypher.__init__
+      ~BioCypher.add
+      ~BioCypher.add_edges
+      ~BioCypher.add_nodes
+      ~BioCypher.log_duplicates
+      ~BioCypher.log_missing_input_labels
+      ~BioCypher.merge_edges
+      ~BioCypher.merge_nodes
+      ~BioCypher.reverse_translate_query
+      ~BioCypher.reverse_translate_term
+      ~BioCypher.show_ontology_structure
+      ~BioCypher.summary
+      ~BioCypher.to_df
+      ~BioCypher.translate_query
+      ~BioCypher.translate_term
+      ~BioCypher.write_edges
+      ~BioCypher.write_import_call
+      ~BioCypher.write_nodes
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+﻿biocypher.\_misc.sentencecase\_to\_snakecase
+============================================
+
+.. currentmodule:: biocypher._misc
+
+.. autofunction:: sentencecase_to_snakecase

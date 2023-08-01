@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="API Reference" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://biocypher.org/api.html" />
+<meta property="og:site_name" content="BioCypher" />
+<meta property="og:description" content="The main BioCypher interface: Create a BioCypher instance by running: Most of the settings should be configured by YAML files. See below for more information on the BioCypher class. Database creati..." />
+<meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+<meta property="og:image:alt" content="BioCypher" />
+<meta name="description" content="The main BioCypher interface: Create a BioCypher instance by running: Most of the settings should be configured by YAML files. See below for more information on the BioCypher class. Database creati..." />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="https://biocypher.org" />
+<meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
+<meta property="twitter:description" content="BioCypher is a framework to simplify the creation of robust biomedical knowledge graphs." />
+<meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; BioCypher</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/design-tabs.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="biocypher.BioCypher" href="modules/biocypher.BioCypher.html" />
+    <link rel="prev" title="R and Bioconductor" href="r-bioc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="contents.html" class="icon icon-home">
+            BioCypher
+          </a>
+              <div class="version">
+                0.5.19
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Democratising Knowledge Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-experiences.html">User Experiences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get-involved.html">Get Involved!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#configuration">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial - Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">Tutorial - Handling Ontologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-adapter.html">Tutorial - Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="r-bioc.html">R and Bioconductor</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-main-biocypher-interface">The main BioCypher interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#database-creation-by-file">Database creation by file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#database-creation-and-manipulation-by-driver">Database creation and manipulation by Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._ontology">Ontology ingestion, parsing, and manipulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._mapping">Mapping of data inputs to KG ontology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._create">Base classes for node and edge representations in BioCypher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._translate">Translation functionality for implemented types of representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._logger">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-biocypher._misc">Miscellaneous utility functions</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="contents.html">BioCypher</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<span id="id1"></span><h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading"></a></h1>
+<section id="the-main-biocypher-interface">
+<span id="api-core"></span><h2>The main BioCypher interface<a class="headerlink" href="#the-main-biocypher-interface" title="Permalink to this heading"></a></h2>
+<p>Create a BioCypher instance by running:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Most of the settings should be configured by <a class="reference internal" href="installation.html#config"><span class="std std-ref">YAML files</span></a>. See
+below for more information on the BioCypher class.</p>
+<span class="target" id="module-biocypher"></span><table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.BioCypher.html#biocypher.BioCypher" title="biocypher.BioCypher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BioCypher</span></code></a>([dbms, offline, strict_mode, ...])</p></td>
+<td><p>Orchestration of BioCypher operations.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="database-creation-by-file">
+<span id="api-write"></span><h2>Database creation by file<a class="headerlink" href="#database-creation-by-file" title="Permalink to this heading"></a></h2>
+<p>Using the BioCypher instance, you can create a database by writing files by
+using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">BioCypher.write_nodes()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">BioCypher.write_edges()</span></code>
+methods, which accept collections of nodes and edges either as <a class="reference internal" href="tutorial.html#tut-01"><span class="std std-ref">tuples</span></a> or as <code class="xref py py-class docutils literal notranslate"><span class="pre">BioCypherNode</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">BioCypherEdge</span></code> <a class="reference internal" href="#api-create"><span class="std std-ref">objects</span></a>. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># given lists of nodes and edges</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">write_nodes</span><span class="p">(</span><span class="n">node_list</span><span class="p">)</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">write_edges</span><span class="p">(</span><span class="n">edge_list</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To facilitate the interaction with the various database management systems
+(DBMSs), BioCypher provides utility functions, such as writing a Neo4j
+admin import statement to be used for creating a Neo4j database
+(<code class="xref py py-meth docutils literal notranslate"><span class="pre">BioCypher.write_import_call()</span></code>). The most commonly used utility
+functions are also available in the wrapper function
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">BioCypher.summary()</span></code>. See the <a class="reference internal" href="modules/biocypher.BioCypher.html#biocypher.BioCypher" title="biocypher.BioCypher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BioCypher</span></code></a> <a class="reference internal" href="#api-core"><span class="std std-ref">class</span></a> for more information.</p>
+</div>
+<p>Details about the <a class="reference internal" href="#module-biocypher._write" title="biocypher._write"><code class="xref py py-mod docutils literal notranslate"><span class="pre">biocypher._write</span></code></a> module responsible for these methods
+can be found below.</p>
+<span class="target" id="module-biocypher._write"></span><table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._write.get_writer.html#biocypher._write.get_writer" title="biocypher._write.get_writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_writer</span></code></a>(dbms, translator, ontology, ...)</p></td>
+<td><p>Function to return the writer class based on the selection in the config file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._write._BatchWriter.html#biocypher._write._BatchWriter" title="biocypher._write._BatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BatchWriter</span></code></a>(ontology, translator, ...[, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._write._Neo4jBatchWriter.html#biocypher._write._Neo4jBatchWriter" title="biocypher._write._Neo4jBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Neo4jBatchWriter</span></code></a>(ontology, translator, ...)</p></td>
+<td><p>Class for writing node and edge representations to disk using the format specified by Neo4j for the use of admin import.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._write._PostgreSQLBatchWriter.html#biocypher._write._PostgreSQLBatchWriter" title="biocypher._write._PostgreSQLBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_PostgreSQLBatchWriter</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Class for writing node and edge representations to disk using the format specified by PostgreSQL for the use of &quot;COPY FROM...&quot;.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._write._ArangoDBBatchWriter.html#biocypher._write._ArangoDBBatchWriter" title="biocypher._write._ArangoDBBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_ArangoDBBatchWriter</span></code></a>(ontology, translator, ...)</p></td>
+<td><p>Class for writing node and edge representations to disk using the format specified by ArangoDB for the use of &quot;arangoimport&quot;.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="database-creation-and-manipulation-by-driver">
+<span id="api-connect"></span><h2>Database creation and manipulation by Driver<a class="headerlink" href="#database-creation-and-manipulation-by-driver" title="Permalink to this heading"></a></h2>
+<p>BioCypher also provides a driver for each of the supported DBMSs. The driver can
+be used to create a database and to write nodes and edges to it, as well as
+allowing more subtle manipulation usually not encountered in creating a database
+from scratch as in the <a class="reference internal" href="#api-write"><span class="std std-ref">file-based workflow</span></a>. This includes
+merging (creation of entities only if they don’t exist) and deletion. For
+example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># given lists of nodes and edges</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">write_nodes</span><span class="p">(</span><span class="n">node_set_1</span><span class="p">)</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">write_edges</span><span class="p">(</span><span class="n">edge_set_1</span><span class="p">)</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">merge_nodes</span><span class="p">(</span><span class="n">node_set_2</span><span class="p">)</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">merge_edges</span><span class="p">(</span><span class="n">edge_set_2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Details about the <a class="reference internal" href="#module-biocypher._connect" title="biocypher._connect"><code class="xref py py-mod docutils literal notranslate"><span class="pre">biocypher._connect</span></code></a> module responsible for these methods
+can be found below.</p>
+<span class="target" id="module-biocypher._connect"></span><table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._connect.get_driver.html#biocypher._connect.get_driver" title="biocypher._connect.get_driver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_driver</span></code></a>(dbms, translator, ontology)</p></td>
+<td><p>Function to return the writer class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._connect._Neo4jDriver.html#biocypher._connect._Neo4jDriver" title="biocypher._connect._Neo4jDriver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Neo4jDriver</span></code></a>(database_name, uri, user, ...)</p></td>
+<td><p>Manages a BioCypher connection to a Neo4j database using the <code class="docutils literal notranslate"><span class="pre">neo4j_utils.Driver</span></code> class.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-biocypher._ontology">
+<span id="ontology-ingestion-parsing-and-manipulation"></span><h2>Ontology ingestion, parsing, and manipulation<a class="headerlink" href="#module-biocypher._ontology" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._ontology.Ontology.html#biocypher._ontology.Ontology" title="biocypher._ontology.Ontology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ontology</span></code></a>(head_ontology, ontology_mapping[, ...])</p></td>
+<td><p>A class that represents the ontological &quot;backbone&quot; of a BioCypher knowledge graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._ontology.OntologyAdapter.html#biocypher._ontology.OntologyAdapter" title="biocypher._ontology.OntologyAdapter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OntologyAdapter</span></code></a>(ontology_file, root_label[, ...])</p></td>
+<td><p>Class that represents an ontology to be used in the Biocypher framework.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-biocypher._mapping">
+<span id="mapping-of-data-inputs-to-kg-ontology"></span><h2>Mapping of data inputs to KG ontology<a class="headerlink" href="#module-biocypher._mapping" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._mapping.OntologyMapping.html#biocypher._mapping.OntologyMapping" title="biocypher._mapping.OntologyMapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OntologyMapping</span></code></a>([config_file])</p></td>
+<td><p>Class to store the ontology mapping and extensions.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-biocypher._create">
+<span id="base-classes-for-node-and-edge-representations-in-biocypher"></span><span id="api-create"></span><h2>Base classes for node and edge representations in BioCypher<a class="headerlink" href="#module-biocypher._create" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._create.BioCypherNode.html#biocypher._create.BioCypherNode" title="biocypher._create.BioCypherNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BioCypherNode</span></code></a>(node_id, node_label, ...)</p></td>
+<td><p>Handoff class to represent biomedical entities as Neo4j nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._create.BioCypherEdge.html#biocypher._create.BioCypherEdge" title="biocypher._create.BioCypherEdge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BioCypherEdge</span></code></a>(source_id, target_id, ...)</p></td>
+<td><p>Handoff class to represent biomedical relationships in Neo4j.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._create.BioCypherRelAsNode.html#biocypher._create.BioCypherRelAsNode" title="biocypher._create.BioCypherRelAsNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BioCypherRelAsNode</span></code></a>(node, source_edge, ...)</p></td>
+<td><p>Class to represent relationships as nodes (with in- and outgoing edges) as a triplet of a BioCypherNode and two BioCypherEdges.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-biocypher._translate">
+<span id="translation-functionality-for-implemented-types-of-representation"></span><h2>Translation functionality for implemented types of representation<a class="headerlink" href="#module-biocypher._translate" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Translator</span></code></a>(ontology_mapping[, strict_mode])</p></td>
+<td><p>Class responsible for exacting the translation process that is configured in the schema_config.yaml file.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-biocypher._logger">
+<span id="logging"></span><h2>Logging<a class="headerlink" href="#module-biocypher._logger" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._logger.get_logger.html#biocypher._logger.get_logger" title="biocypher._logger.get_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logger</span></code></a>([name])</p></td>
+<td><p>Access the module logger, create a new one if does not exist yet.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-biocypher._misc">
+<span id="miscellaneous-utility-functions"></span><h2>Miscellaneous utility functions<a class="headerlink" href="#module-biocypher._misc" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._misc.to_list.html#biocypher._misc.to_list" title="biocypher._misc.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a>(value)</p></td>
+<td><p>Ensures that <code class="docutils literal notranslate"><span class="pre">value</span></code> is a list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._misc.ensure_iterable.html#biocypher._misc.ensure_iterable" title="biocypher._misc.ensure_iterable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_iterable</span></code></a>(value)</p></td>
+<td><p>Returns iterables, except strings, wraps simple types into tuple.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._misc.create_tree_visualisation.html#biocypher._misc.create_tree_visualisation" title="biocypher._misc.create_tree_visualisation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_tree_visualisation</span></code></a>(inheritance_tree)</p></td>
+<td><p>Creates a visualisation of the inheritance tree using treelib.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._misc.from_pascal.html#biocypher._misc.from_pascal" title="biocypher._misc.from_pascal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_pascal</span></code></a>(s[, sep])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._misc.pascalcase_to_sentencecase.html#biocypher._misc.pascalcase_to_sentencecase" title="biocypher._misc.pascalcase_to_sentencecase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pascalcase_to_sentencecase</span></code></a>(s)</p></td>
+<td><p>Convert PascalCase to sentence case.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._misc.snakecase_to_sentencecase.html#biocypher._misc.snakecase_to_sentencecase" title="biocypher._misc.snakecase_to_sentencecase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">snakecase_to_sentencecase</span></code></a>(s)</p></td>
+<td><p>Convert snake_case to sentence case.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._misc.sentencecase_to_snakecase.html#biocypher._misc.sentencecase_to_snakecase" title="biocypher._misc.sentencecase_to_snakecase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sentencecase_to_snakecase</span></code></a>(s)</p></td>
+<td><p>Convert sentence case to snake_case.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._misc.sentencecase_to_pascalcase.html#biocypher._misc.sentencecase_to_pascalcase" title="biocypher._misc.sentencecase_to_pascalcase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sentencecase_to_pascalcase</span></code></a>(s)</p></td>
+<td><p>Convert sentence case to PascalCase.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="r-bioc.html" class="btn btn-neutral float-left" title="R and Bioconductor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules/biocypher.BioCypher.html" class="btn btn-neutral float-right" title="biocypher.BioCypher" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2023, BioCypher developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

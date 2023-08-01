@@ -1,0 +1,6 @@
+﻿biocypher.\_misc.from\_pascal
+=============================
+
+.. currentmodule:: biocypher._misc
+
+.. autofunction:: from_pascal

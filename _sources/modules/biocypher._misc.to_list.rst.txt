@@ -1,0 +1,6 @@
+﻿biocypher.\_misc.to\_list
+=========================
+
+.. currentmodule:: biocypher._misc
+
+.. autofunction:: to_list

@@ -1,0 +1,30 @@
+﻿biocypher.\_translate.Translator
+================================
+
+.. currentmodule:: biocypher._translate
+
+.. autoclass:: Translator
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Translator.__init__
+      ~Translator.get_missing_biolink_types
+      ~Translator.name_sentence_to_pascal
+      ~Translator.reverse_translate
+      ~Translator.reverse_translate_term
+      ~Translator.translate
+      ~Translator.translate_edges
+      ~Translator.translate_nodes
+      ~Translator.translate_term
+   
+   
+
+   
+   
+   

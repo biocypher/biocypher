@@ -1,0 +1,39 @@
+﻿biocypher.\_create.BioCypherEdge
+================================
+
+.. currentmodule:: biocypher._create
+
+.. autoclass:: BioCypherEdge
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BioCypherEdge.__init__
+      ~BioCypherEdge.get_dict
+      ~BioCypherEdge.get_id
+      ~BioCypherEdge.get_label
+      ~BioCypherEdge.get_properties
+      ~BioCypherEdge.get_source_id
+      ~BioCypherEdge.get_target_id
+      ~BioCypherEdge.get_type
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BioCypherEdge.relationship_id
+      ~BioCypherEdge.source_id
+      ~BioCypherEdge.target_id
+      ~BioCypherEdge.relationship_label
+      ~BioCypherEdge.properties
+   
+   

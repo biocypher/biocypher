@@ -1,0 +1,27 @@
+﻿biocypher.\_ontology.OntologyAdapter
+====================================
+
+.. currentmodule:: biocypher._ontology
+
+.. autoclass:: OntologyAdapter
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~OntologyAdapter.__init__
+      ~OntologyAdapter.get_ancestors
+      ~OntologyAdapter.get_head_join_node
+      ~OntologyAdapter.get_nx_graph
+      ~OntologyAdapter.get_rdf_graph
+      ~OntologyAdapter.get_root_label
+   
+   
+
+   
+   
+   

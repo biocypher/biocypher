@@ -1,0 +1,33 @@
+﻿biocypher.\_create.BioCypherRelAsNode
+=====================================
+
+.. currentmodule:: biocypher._create
+
+.. autoclass:: BioCypherRelAsNode
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BioCypherRelAsNode.__init__
+      ~BioCypherRelAsNode.get_node
+      ~BioCypherRelAsNode.get_source_edge
+      ~BioCypherRelAsNode.get_target_edge
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BioCypherRelAsNode.node
+      ~BioCypherRelAsNode.source_edge
+      ~BioCypherRelAsNode.target_edge
+   
+   

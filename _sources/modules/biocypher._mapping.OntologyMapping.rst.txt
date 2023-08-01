@@ -1,0 +1,22 @@
+﻿biocypher.\_mapping.OntologyMapping
+===================================
+
+.. currentmodule:: biocypher._mapping
+
+.. autoclass:: OntologyMapping
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~OntologyMapping.__init__
+   
+   
+
+   
+   
+   
