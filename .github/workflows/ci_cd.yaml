@@ -38,7 +38,7 @@ jobs:
       run: coverage run -m pytest --password=your_password_here
 
     - name: Generate coverage badge
-      run: coverage-badge -f -o coverage/coverage.svg
+      run: coverage-badge -f -o docs/coverage/coverage.svg
 
     - name: Commit changes
       uses: s0/git-publish-subdir-action@develop
