@@ -278,7 +278,7 @@ def test_write_node_data_from_gen_no_props(bw):
     assert os.path.exists(tmp_path)
 
     p_csv = os.path.join(tmp_path, "Protein-part000.csv")
-    m_csv = os.path.join(tmp_path, "microRNA-part000.csv")
+    m_csv = os.path.join(tmp_path, "MicroRNA-part000.csv")
 
     with open(p_csv) as f:
         pr = f.read()
