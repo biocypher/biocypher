@@ -126,7 +126,7 @@
 <h2>Introduction<a class="headerlink" href="#Introduction" title="Permalink to this heading"></a></h2>
 <p>The main purpose of BioCypher is to facilitate the pre-processing of biomedical data, and thus save development time in the maintenance of curated knowledge graphs, while allowing simple and efficient creation of task-specific lightweight knowledge graphs in a user-friendly and biology-centric fashion.</p>
 <p>We are going to use a toy example to familiarise the user with the basic functionality of BioCypher. One central task of BioCypher is the harmonisation of dissimilar datasets describing the same entities. Thus, in this example, the input data - which in the real-world use case could come from any type of interface - are represented by simulated data containing some examples of differently formatted biomedical entities such as proteins and their interactions.</p>
-<p>There are two other versions of this tutorial, which only differ in the output format. The first uses a CSV output format to write files suitable for Neo4j admin import, and the second creates an in-memory collection of Pandas dataframes. You can find both in the tutorial directory of the BioCypher repository. This tutorial simply takes the in-memory approach to a Jupyter notebook.</p>
+<p>There are two other versions of this tutorial, which only differ in the output format. The first uses a CSV output format to write files suitable for Neo4j admin import, and the second creates an in-memory collection of Pandas dataframes. You can find the former in the tutorial directory of the BioCypher repository. This tutorial simply takes the latter, in-memory approach to a Jupyter notebook.</p>
 <p>While BioCypher was designed as a graph-focused framework, due to commonalities in bioinformatics workflows, BioCypher also supports Pandas DataFrames. This allows integration with methods that use tabular data, such as machine learning and statistical analysis, for instance in the <a class="reference external" href="https://scverse.org">scVerse framework</a>.</p>
 </section>
 <section id="Setup">
@@ -146,14 +146,14 @@ not follow this link on colab, as you will be taken back to the website; please 
 <p>In the <code class="docutils literal notranslate"><span class="pre">biocypher</span></code> root directory, you will find a <code class="docutils literal notranslate"><span class="pre">tutorial</span></code> directory with the files for this tutorial. The <code class="docutils literal notranslate"><span class="pre">data_generator.py</span></code> file contains the simulated data generation code, and the other files, specifically the <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> files, are named according to the tutorial step they are used in.</p>
 <p>Let’s download these:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 
-<span class="n">schema_path</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/dbdimitrov/biocypher/pandas-tutorial/tutorial/&quot;</span>
+<span class="n">schema_path</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/biocypher/biocypher/main/tutorial/&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -1038,14 +1038,6 @@ entity
 <div class="highlight"><pre>
 &lt;treelib.tree.Tree at 0x7f7327b3a880&gt;
 </pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
 </div>
 </section>
 </section>
