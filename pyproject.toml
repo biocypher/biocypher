@@ -34,6 +34,8 @@ networkx = "^3.0"
 stringcase = "^1.2.0"
 neo4j-utils = "0.0.7"
 pandas = "^2.0.1"
+pooch = "^1.7.0"
+tqdm = "^4.65.0"
 
 [tool.poetry.group.dev.dependencies]
 sphinx = ">=5.0.0"
