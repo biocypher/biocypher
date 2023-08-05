@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import os
 import json
 
@@ -29,10 +30,26 @@ def test_download_file(downloader):
     resource = Resource(
         "test_resource",
         "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_config.yaml",
+        lifetime=7,
     )
     paths = downloader.download(resource)
     assert len(paths) == 1
     assert os.path.exists(paths[0])
+
+    # test caching
+    paths = downloader.download(resource)
+    # should not download again
+    assert paths[0] is None
+
+    # manipulate cache dict to test expiration (datetime format)
+    downloader.cache_dict["test_resource"][
+        "date_downloaded"
+    ] = datetime.now() - timedelta(days=8)
+
+    paths = downloader.download(resource)
+    # should download again
+    assert len(paths) == 1
+    assert paths[0] is not None
 
 
 def test_download_file_list(downloader):
@@ -64,6 +81,12 @@ def test_download_directory():
     assert len(paths) == 17
     for path in paths:
         assert os.path.exists(path)
+
+    # test caching
+    paths = downloader.download(resource)
+    # should not download again
+    assert len(paths) == 1
+    assert paths[0] is None
 
 
 def test_download_zip():

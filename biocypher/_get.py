@@ -105,7 +105,7 @@ class Downloader:
 
         if cache_record:
             # check if resource is expired (formatted in days)
-            dl = datetime.fromisoformat(cache_record.get("date_downloaded"))
+            dl = cache_record.get("date_downloaded")
             lt = timedelta(days=resource.lifetime)
             expired = dl + lt < datetime.now()
         else:
@@ -228,6 +228,10 @@ class Downloader:
             ftp.cwd(dir)
             files = ftp.nlst()
             ftp.quit()
+        else:
+            raise NotImplementedError(
+                "Only FTP directories are supported at the moment."
+            )
 
         return files
 
