@@ -8,20 +8,65 @@ import pytest
 from biocypher._get import Resource, Downloader
 
 
+@pytest.fixture
+def downloader():
+    return Downloader(cache_dir=None)
+
+
 @given(st.builds(Resource))
 def test_resource(resource):
     assert isinstance(resource.name, str)
-    assert isinstance(resource.url, str)
+    assert isinstance(resource.url_s, str) or isinstance(resource.url_s, list)
     assert isinstance(resource.lifetime, int)
 
 
-@given(st.builds(Downloader))
 def test_downloader(downloader):
     assert isinstance(downloader.cache_dir, str)
     assert isinstance(downloader.cache_file, str)
 
 
-def test_download():
+def test_download_file(downloader):
+    resource = Resource(
+        "test_resource",
+        "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_config.yaml",
+    )
+    paths = downloader.download(resource)
+    assert len(paths) == 1
+    assert os.path.exists(paths[0])
+
+
+def test_download_file_list(downloader):
+    resource = Resource(
+        "test_resource",
+        [
+            "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_config.yaml",
+            "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_schema_config_disconnected.yaml",
+        ],
+    )
+    paths = downloader.download(resource)
+    assert len(paths) == 2
+    assert os.path.exists(paths[0])
+    assert os.path.exists(paths[1])
+
+
+def test_download_directory():
+    # use temp dir, no cache file present
+    downloader = Downloader(cache_dir=None)
+    assert os.path.exists(downloader.cache_dir)
+    assert os.path.exists(downloader.cache_file)
+    resource = Resource(
+        "ot_indication",
+        "ftp://ftp.ebi.ac.uk/pub/databases/opentargets/platform/23.06/output/etl/parquet/go",
+        lifetime=7,
+        is_dir=True,
+    )
+    paths = downloader.download(resource)
+    assert len(paths) == 17
+    for path in paths:
+        assert os.path.exists(path)
+
+
+def test_download_zip():
     # use temp dir, no cache file present
     downloader = Downloader(cache_dir=None)
     assert os.path.exists(downloader.cache_dir)
@@ -42,6 +87,8 @@ def test_download():
     assert cache["test_resource"]["date_downloaded"]
     for path in paths:
         assert os.path.exists(path)
+
+    # use files downloaded here and manipulate cache file to test expiration?
 
 
 def test_download_expired():
