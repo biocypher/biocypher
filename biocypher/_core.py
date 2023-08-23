@@ -22,6 +22,7 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
+from ._get import Downloader
 from ._write import get_writer
 from ._config import config as _config
 from ._config import update_from_file as _file_update
@@ -388,6 +389,24 @@ class BioCypher:
             tedges = edges
         # write edge files
         return self._driver.add_biocypher_edges(tedges)
+
+    # DOWNLOAD AND CACHE MANAGEMENT METHODS ###
+
+    def _get_downloader(self):
+        """
+        Create downloader if not exists.
+        """
+
+        if not self._downloader:
+            self._downloader = Downloader()
+
+    def download(self, force: bool = False) -> None:
+        """
+        Use the :class:`Downloader` class to download or load from cache the
+        resources given by the adapter.
+        """
+
+        self._get_downloader()
 
     # OVERVIEW AND CONVENIENCE METHODS ###
 
