@@ -181,19 +181,6 @@ class BioCypher:
 
         return self._ontology_mapping
 
-    def _get_translator(self) -> Translator:
-        """
-        Create translator if not exists and return.
-        """
-
-        if not self._translator:
-            self._translator = Translator(
-                ontology_mapping=self._get_ontology_mapping(),
-                strict_mode=self._strict_mode,
-            )
-
-        return self._translator
-
     def _get_ontology(self) -> Ontology:
         """
         Create ontology if not exists and return.
@@ -208,17 +195,28 @@ class BioCypher:
 
         return self._ontology
 
+    def _get_translator(self) -> Translator:
+        """
+        Create translator if not exists and return.
+        """
+
+        if not self._translator:
+            self._translator = Translator(
+                ontology=self._get_ontology(),
+                strict_mode=self._strict_mode,
+            )
+
+        return self._translator
+
     def _get_writer(self):
         """
         Create writer if not online. Set as instance variable `self._writer`.
         """
 
-        # Get worker
         if self._offline:
             self._writer = get_writer(
                 dbms=self._dbms,
                 translator=self._get_translator(),
-                ontology=self._get_ontology(),
                 deduplicator=self._get_deduplicator(),
                 output_directory=self._output_directory,
                 strict_mode=self._strict_mode,
@@ -235,7 +233,6 @@ class BioCypher:
             self._driver = get_driver(
                 dbms=self._dbms,
                 translator=self._get_translator(),
-                ontology=self._get_ontology(),
                 deduplicator=self._get_deduplicator(),
             )
         else:
@@ -503,6 +500,25 @@ class BioCypher:
             )
 
         self._writer.write_import_call()
+
+    def write_schema_info(self) -> None:
+        """
+        Write an extended schema info YAML file that extends the
+        `schema_config.yaml` with run-time information of the built KG. For
+        instance, include information on whether something is a relationship
+        (which is important in the case of representing relationships as nodes)
+        and the actual sources and targets of edges. Since this file can be used
+        in place of the original `schema_config.yaml` file, it indicates that it
+        is the extended schema by setting `is_schema_info` to `true`.
+
+        We start by using the `extended_schema` dictionary from the ontology
+        class instance, which contains all expanded entities and relationships.
+        """
+
+        if not self._offline:
+            raise NotImplementedError(
+                "Cannot write schema info in online mode."
+            )
 
     # TRANSLATION METHODS ###
 

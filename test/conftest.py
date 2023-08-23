@@ -149,8 +149,32 @@ def disconnected_mapping():
 
 
 @pytest.fixture(scope="module")
-def translator(extended_ontology_mapping):
-    return Translator(extended_ontology_mapping)
+def hybrid_ontology(extended_ontology_mapping):
+    return Ontology(
+        head_ontology={
+            "url": "https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl",
+            "root_node": "entity",
+        },
+        ontology_mapping=extended_ontology_mapping,
+        tail_ontologies={
+            "so": {
+                "url": "test/so.owl",
+                "head_join_node": "sequence variant",
+                "tail_join_node": "sequence_variant",
+            },
+            "mondo": {
+                "url": "test/mondo.owl",
+                "head_join_node": "disease",
+                "tail_join_node": "human disease",
+                "merge_nodes": False,
+            },
+        },
+    )
+
+
+@pytest.fixture(scope="module")
+def translator(hybrid_ontology):
+    return Translator(hybrid_ontology)
 
 
 @pytest.fixture(scope="module")
@@ -174,30 +198,6 @@ def go_adapter():
 @pytest.fixture(scope="module")
 def mondo_adapter():
     return OntologyAdapter("test/mondo.owl", "disease")
-
-
-@pytest.fixture(scope="module")
-def hybrid_ontology(extended_ontology_mapping):
-    return Ontology(
-        head_ontology={
-            "url": "https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl",
-            "root_node": "entity",
-        },
-        ontology_mapping=extended_ontology_mapping,
-        tail_ontologies={
-            "so": {
-                "url": "test/so.owl",
-                "head_join_node": "sequence variant",
-                "tail_join_node": "sequence_variant",
-            },
-            "mondo": {
-                "url": "test/mondo.owl",
-                "head_join_node": "disease",
-                "tail_join_node": "human disease",
-                "merge_nodes": False,
-            },
-        },
-    )
 
 
 # neo4j batch writer fixtures
