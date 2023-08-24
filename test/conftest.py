@@ -311,8 +311,6 @@ def bw_strict(translator, deduplicator, tmp_path_session):
 # core instance fixture
 @pytest.fixture(name="core", scope="function")
 def create_core(request, tmp_path_session):
-    # TODO why does the integration test use a different path than this fixture?
-
     marker = request.node.get_closest_marker("inject_core_args")
 
     marker_args = {}
