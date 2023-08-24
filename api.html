@@ -238,21 +238,30 @@ can be found below.</p>
 <p>BioCypher provides a download and cache functionality for resources. Resources
 are defined via the <code class="docutils literal notranslate"><span class="pre">Resource</span></code> class, which have a name, a (set of) URL(s),
 and a lifetime (in days, set to 0 for infinite). The <code class="docutils literal notranslate"><span class="pre">Downloader</span></code> can deal
-with single and lists of files, compressed files, and directories. It uses
-<a class="reference external" href="https://www.fatiando.org/pooch/latest/">Pooch</a> under the hood to handle the
+with single and lists of files, compressed files, and directories (which needs
+to be indicated using the <code class="docutils literal notranslate"><span class="pre">is_dir</span></code> parameter of the resource). It uses <a class="reference external" href="https://www.fatiando.org/pooch/latest/">Pooch</a> under the hood to handle the
 downloads. Example usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span><span class="p">,</span> <span class="n">Resource</span>
 <span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
 
 <span class="n">resource1</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span>
-   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;resource1&quot;</span><span class="p">,</span>
-   <span class="n">urls</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;https://example.com/resource1.txt&quot;</span><span class="p">],</span>
+   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;file_list_resource&quot;</span><span class="p">,</span>
+   <span class="n">url_s</span><span class="o">=</span><span class="p">[</span>
+      <span class="s2">&quot;https://example.com/resource1.txt&quot;</span>
+      <span class="s2">&quot;https://example.com/resource2.txt&quot;</span>
+   <span class="p">],</span>
    <span class="n">lifetime</span><span class="o">=</span><span class="mi">1</span>
 <span class="p">)</span>
 <span class="n">resource2</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span>
-   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;resource2&quot;</span><span class="p">,</span>
-   <span class="n">urls</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;https://example.com/resource2.zip&quot;</span><span class="p">],</span>
+   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;zipped_resource&quot;</span><span class="p">,</span>
+   <span class="n">url_s</span><span class="o">=</span><span class="s2">&quot;https://example.com/resource3.zip&quot;</span><span class="p">,</span>
    <span class="n">lifetime</span><span class="o">=</span><span class="mi">7</span>
+<span class="p">)</span>
+<span class="n">resource3</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span>
+   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;directory_resource&quot;</span><span class="p">,</span>
+   <span class="n">url_s</span><span class="o">=</span><span class="s2">&quot;https://example.com/resource4/&quot;</span><span class="p">,</span>
+   <span class="n">lifetime</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+   <span class="n">is_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">paths</span> <span class="o">=</span> <span class="n">bc</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">resource_list</span><span class="p">)</span>
 </pre></div>
