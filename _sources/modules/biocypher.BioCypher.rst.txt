@@ -17,6 +17,7 @@
       ~BioCypher.add
       ~BioCypher.add_edges
       ~BioCypher.add_nodes
+      ~BioCypher.download
       ~BioCypher.log_duplicates
       ~BioCypher.log_missing_input_labels
       ~BioCypher.merge_edges
