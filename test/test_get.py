@@ -70,7 +70,7 @@ def test_download_lists(downloader):
     )
     resource2 = Resource(
         "test_resource2",
-        "https://github.com/biocypher/biocypher/raw/get-module/test/test_CSVs.zip",
+        "https://github.com/biocypher/biocypher/raw/main/test/test_CSVs.zip",
     )
     paths = downloader.download(resource1, resource2)
     assert len(paths) == 4  # 2 files from resource1, 2 files from resource2 zip
@@ -151,7 +151,7 @@ def test_download_zip_and_expiration():
     assert os.path.exists(downloader.cache_file)
     resource = Resource(
         "test_resource",
-        "https://github.com/biocypher/biocypher/raw/get-module/test/test_CSVs.zip",
+        "https://github.com/biocypher/biocypher/raw/main/test/test_CSVs.zip",
         lifetime=7,
     )
     paths = downloader.download(resource)
@@ -159,7 +159,7 @@ def test_download_zip_and_expiration():
         cache = json.load(f)
     assert (
         cache["test_resource"]["url"][0]
-        == "https://github.com/biocypher/biocypher/raw/get-module/test/test_CSVs.zip"
+        == "https://github.com/biocypher/biocypher/raw/main/test/test_CSVs.zip"
     )
     assert cache["test_resource"]["lifetime"] == 7
     assert cache["test_resource"]["date_downloaded"]
