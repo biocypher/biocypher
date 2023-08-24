@@ -14,7 +14,7 @@ from biocypher._write import (
     _ArangoDBBatchWriter,
     _PostgreSQLBatchWriter,
 )
-from biocypher._create import BioCypherEdge, BioCypherNode
+from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._pandas import Pandas
 from biocypher._connect import _Neo4jDriver
 from biocypher._mapping import OntologyMapping
@@ -120,6 +120,32 @@ def _get_edges(l):
         )
         edges.append(e2)
     return edges
+
+
+@pytest.fixture(scope="function")
+def _get_rel_as_nodes(l):
+    rels = []
+    for i in range(l):
+        n = BioCypherNode(
+            node_id=f"i{i+1}",
+            node_label="post translational interaction",
+            properties={
+                "directed": True,
+                "effect": -1,
+            },
+        )
+        e1 = BioCypherEdge(
+            source_id=f"i{i+1}",
+            target_id=f"p{i+1}",
+            relationship_label="IS_SOURCE_OF",
+        )
+        e2 = BioCypherEdge(
+            source_id=f"i{i}",
+            target_id=f"p{i + 2}",
+            relationship_label="IS_TARGET_OF",
+        )
+        rels.append(BioCypherRelAsNode(n, e1, e2))
+    return rels
 
 
 @pytest.fixture(scope="function")

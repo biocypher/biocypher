@@ -744,8 +744,9 @@ def test_write_duplicate_edges(bw, _get_edges):
     assert passed and l == 4 and c == 4
 
 
-def test_BioCypherRelAsNode_implementation(bw):
-    trips = _get_rel_as_nodes(4)
+@pytest.mark.parametrize("l", [4], scope="module")
+def test_BioCypherRelAsNode_implementation(bw, _get_rel_as_nodes):
+    trips = _get_rel_as_nodes
 
     def gen(lis):
         yield from lis
@@ -779,35 +780,11 @@ def test_BioCypherRelAsNode_implementation(bw):
     assert "\n" in p
 
 
-def _get_rel_as_nodes(l):
-    rels = []
-    for i in range(l):
-        n = BioCypherNode(
-            node_id=f"i{i+1}",
-            node_label="post translational interaction",
-            properties={
-                "directed": True,
-                "effect": -1,
-            },
-        )
-        e1 = BioCypherEdge(
-            source_id=f"i{i+1}",
-            target_id=f"p{i+1}",
-            relationship_label="IS_SOURCE_OF",
-        )
-        e2 = BioCypherEdge(
-            source_id=f"i{i}",
-            target_id=f"p{i + 2}",
-            relationship_label="IS_TARGET_OF",
-        )
-        rels.append(BioCypherRelAsNode(n, e1, e2))
-    return rels
-
-
-def test_RelAsNode_overwrite_behaviour(bw):
+@pytest.mark.parametrize("l", [8], scope="module")
+def test_RelAsNode_overwrite_behaviour(bw, _get_rel_as_nodes):
     # if rel as node is called from successive write calls, SOURCE_OF,
     # TARGET_OF, and PART_OF should be continued, not overwritten
-    trips = _get_rel_as_nodes(8)
+    trips = _get_rel_as_nodes
 
     def gen1(lis):
         yield from lis[:5]
