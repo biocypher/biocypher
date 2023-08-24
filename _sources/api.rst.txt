@@ -136,7 +136,7 @@ BioCypher provides a download and cache functionality for resources. Resources
 are defined via the ``Resource`` class, which have a name, a (set of) URL(s),
 and a lifetime (in days, set to 0 for infinite). The ``Downloader`` can deal
 with single and lists of files, compressed files, and directories. It uses
-[Pooch](https://www.fatiando.org/pooch/latest/) under the hood to handle the
+`Pooch <https://www.fatiando.org/pooch/latest/>`_ under the hood to handle the
 downloads. Example usage:
 
 .. code-block:: python
