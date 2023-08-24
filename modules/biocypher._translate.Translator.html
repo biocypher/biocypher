@@ -50,7 +50,7 @@
             BioCypher
           </a>
               <div class="version">
-                0.5.19
+                0.5.20
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -119,7 +119,7 @@
 <h1>biocypher._translate.Translator<a class="headerlink" href="#biocypher-translate-translator" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._translate.Translator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">Translator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._mapping.OntologyMapping.html#biocypher._mapping.OntologyMapping" title="biocypher._mapping.OntologyMapping"><span class="pre">OntologyMapping</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._translate.</span></span><span class="sig-name descname"><span class="pre">Translator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._ontology.Ontology.html#biocypher._ontology.Ontology" title="biocypher._ontology.Ontology"><span class="pre">Ontology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator" title="Permalink to this definition"></a></dt>
 <dd><p>Class responsible for exacting the translation process that is configured in
 the schema_config.yaml file. Creates a mapping dictionary from that file,
 and, given nodes and edges, translates them into BioCypherNodes and
@@ -130,7 +130,7 @@ blacklist.</p>
 and cypher queries.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._translate.Translator.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._mapping.OntologyMapping.html#biocypher._mapping.OntologyMapping" title="biocypher._mapping.OntologyMapping"><span class="pre">OntologyMapping</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._ontology.Ontology.html#biocypher._ontology.Ontology" title="biocypher._ontology.Ontology"><span class="pre">Ontology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._translate.Translator.__init__" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -149,7 +149,7 @@ carry source, licence, and version information.</p></li>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#biocypher._translate.Translator.__init__" title="biocypher._translate.Translator.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(ontology_mapping[, strict_mode])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biocypher._translate.Translator.__init__" title="biocypher._translate.Translator.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(ontology[, strict_mode])</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param leaves<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dictionary detailing the leaves of the hierarchy</p>
@@ -172,10 +172,10 @@ carry source, licence, and version information.</p></li>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate</span></code>(query)</p></td>
 <td><p>Translate a cypher query.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_edges</span></code>(id_src_tar_type_prop_tuples)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_edges</span></code>(edge_tuples)</p></td>
 <td><p>Translates input edge representation to a representation that conforms to the schema of the given BioCypher graph.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_nodes</span></code>(id_type_prop_tuples)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_nodes</span></code>(node_tuples)</p></td>
 <td><p>Translates input node representation to a representation that conforms to the schema of the given BioCypher graph.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_term</span></code>(term)</p></td>

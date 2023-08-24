@@ -31,6 +31,7 @@
       ~BioCypher.write_edges
       ~BioCypher.write_import_call
       ~BioCypher.write_nodes
+      ~BioCypher.write_schema_info
    
    
 

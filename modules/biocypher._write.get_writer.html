@@ -50,7 +50,7 @@
             BioCypher
           </a>
               <div class="version">
-                0.5.19
+                0.5.20
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -119,7 +119,7 @@
 <h1>biocypher._write.get_writer<a class="headerlink" href="#biocypher-write-get-writer" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="biocypher._write.get_writer">
-<span class="sig-prename descclassname"><span class="pre">biocypher._write.</span></span><span class="sig-name descname"><span class="pre">get_writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._ontology.Ontology.html#biocypher._ontology.Ontology" title="biocypher._ontology.Ontology"><span class="pre">Ontology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Deduplicator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.get_writer" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">biocypher._write.</span></span><span class="sig-name descname"><span class="pre">get_writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Deduplicator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._write.get_writer" title="Permalink to this definition"></a></dt>
 <dd><p>Function to return the writer class based on the selection in the config
 file.</p>
 <dl class="field-list simple">
@@ -127,7 +127,6 @@ file.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dbms</strong> – the database management system; for options, see DBMS_TO_CLASS.</p></li>
 <li><p><strong>translator</strong> – the Translator object.</p></li>
-<li><p><strong>ontology</strong> – the Ontology object.</p></li>
 <li><p><strong>output_directory</strong> – the directory to write the output files to.</p></li>
 <li><p><strong>strict_mode</strong> – whether to use strict mode.</p></li>
 </ul>

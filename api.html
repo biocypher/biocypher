@@ -52,7 +52,7 @@
             BioCypher
           </a>
               <div class="version">
-                0.5.19
+                0.5.20
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -158,19 +158,19 @@ functions are also available in the wrapper function
 can be found below.</p>
 <span class="target" id="module-biocypher._write"></span><table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._write.get_writer.html#biocypher._write.get_writer" title="biocypher._write.get_writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_writer</span></code></a>(dbms, translator, ontology, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._write.get_writer.html#biocypher._write.get_writer" title="biocypher._write.get_writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_writer</span></code></a>(dbms, translator, deduplicator, ...)</p></td>
 <td><p>Function to return the writer class based on the selection in the config file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._write._BatchWriter.html#biocypher._write._BatchWriter" title="biocypher._write._BatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BatchWriter</span></code></a>(ontology, translator, ...[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._write._BatchWriter.html#biocypher._write._BatchWriter" title="biocypher._write._BatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BatchWriter</span></code></a>(translator, deduplicator, delimiter)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._write._Neo4jBatchWriter.html#biocypher._write._Neo4jBatchWriter" title="biocypher._write._Neo4jBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Neo4jBatchWriter</span></code></a>(ontology, translator, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._write._Neo4jBatchWriter.html#biocypher._write._Neo4jBatchWriter" title="biocypher._write._Neo4jBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Neo4jBatchWriter</span></code></a>(translator, deduplicator, ...)</p></td>
 <td><p>Class for writing node and edge representations to disk using the format specified by Neo4j for the use of admin import.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._write._PostgreSQLBatchWriter.html#biocypher._write._PostgreSQLBatchWriter" title="biocypher._write._PostgreSQLBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_PostgreSQLBatchWriter</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Class for writing node and edge representations to disk using the format specified by PostgreSQL for the use of &quot;COPY FROM...&quot;.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._write._ArangoDBBatchWriter.html#biocypher._write._ArangoDBBatchWriter" title="biocypher._write._ArangoDBBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_ArangoDBBatchWriter</span></code></a>(ontology, translator, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._write._ArangoDBBatchWriter.html#biocypher._write._ArangoDBBatchWriter" title="biocypher._write._ArangoDBBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_ArangoDBBatchWriter</span></code></a>(translator, ...[, ...])</p></td>
 <td><p>Class for writing node and edge representations to disk using the format specified by ArangoDB for the use of &quot;arangoimport&quot;.</p></td>
 </tr>
 </tbody>
@@ -196,7 +196,7 @@ example:</p>
 can be found below.</p>
 <span class="target" id="module-biocypher._connect"></span><table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._connect.get_driver.html#biocypher._connect.get_driver" title="biocypher._connect.get_driver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_driver</span></code></a>(dbms, translator, ontology)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._connect.get_driver.html#biocypher._connect.get_driver" title="biocypher._connect.get_driver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_driver</span></code></a>(dbms, translator)</p></td>
 <td><p>Function to return the writer class.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._connect._Neo4jDriver.html#biocypher._connect._Neo4jDriver" title="biocypher._connect._Neo4jDriver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Neo4jDriver</span></code></a>(database_name, uri, user, ...)</p></td>
@@ -248,7 +248,7 @@ can be found below.</p>
 <span id="translation-functionality-for-implemented-types-of-representation"></span><h2>Translation functionality for implemented types of representation<a class="headerlink" href="#module-biocypher._translate" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Translator</span></code></a>(ontology_mapping[, strict_mode])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Translator</span></code></a>(ontology[, strict_mode])</p></td>
 <td><p>Class responsible for exacting the translation process that is configured in the schema_config.yaml file.</p></td>
 </tr>
 </tbody>
