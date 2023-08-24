@@ -315,7 +315,6 @@ class BioCypher:
         if not self._pd:
             self._pd = Pandas(
                 translator=self._get_translator(),
-                ontology=self._get_ontology(),
                 deduplicator=self._get_deduplicator(),
             )
 
