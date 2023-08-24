@@ -59,3 +59,18 @@ def test_edges_gen(_pd, _get_edges):
 
     _pd.add_tables(edge_gen())
     assert "PERTURBED_IN_DISEASE" in _pd.dfs.keys()
+
+
+@pytest.mark.parametrize("l", [4], scope="module")
+def test_rel_as_nodes(_pd, _get_rel_as_nodes):
+    _pd.add_tables(_get_rel_as_nodes)
+    assert "post translational interaction" in _pd.dfs.keys()
+    assert "directed" in _pd.dfs["post translational interaction"].columns
+    assert "effect" in _pd.dfs["post translational interaction"].columns
+    assert "i1" in _pd.dfs["post translational interaction"]["node_id"].values
+    assert "IS_SOURCE_OF" in _pd.dfs.keys()
+    assert "IS_TARGET_OF" in _pd.dfs.keys()
+    assert "source_id" in _pd.dfs["IS_SOURCE_OF"].columns
+    assert "i3" in _pd.dfs["IS_SOURCE_OF"]["source_id"].values
+    assert "target_id" in _pd.dfs["IS_TARGET_OF"].columns
+    assert "p2" in _pd.dfs["IS_TARGET_OF"]["target_id"].values

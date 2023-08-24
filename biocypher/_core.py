@@ -25,7 +25,7 @@ logger.debug(f"Loading module {__name__}.")
 from ._write import get_writer
 from ._config import config as _config
 from ._config import update_from_file as _file_update
-from ._create import BioCypherEdge, BioCypherNode
+from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from ._pandas import Pandas
 from ._connect import get_driver
 from ._mapping import OntologyMapping
@@ -320,8 +320,10 @@ class BioCypher:
 
         entities = peekable(entities)
 
-        if isinstance(entities.peek(), BioCypherNode) or isinstance(
-            entities.peek(), BioCypherEdge
+        if (
+            isinstance(entities.peek(), BioCypherNode)
+            or isinstance(entities.peek(), BioCypherEdge)
+            or isinstance(entities.peek(), BioCypherRelAsNode)
         ):
             tentities = entities
         elif len(entities.peek()) < 4:
@@ -512,12 +514,24 @@ class BioCypher:
 
         We start by using the `extended_schema` dictionary from the ontology
         class instance, which contains all expanded entities and relationships.
+        The information of whether something is a relationship can be gathered
+        from the deduplicator instance, which keeps track of all entities that
+        have been seen.
         """
 
         if not self._offline:
             raise NotImplementedError(
                 "Cannot write schema info in online mode."
             )
+
+        ontology = self._get_ontology()
+        schema = ontology.mapping.extended_schema
+        schema["is_schema_info"] = True
+
+        deduplicator = self._get_deduplicator()
+        for node in deduplicator.seen_nodes:
+            if node in schema["nodes"]:
+                schema["nodes"][node]["is_relationship"] = True
 
     # TRANSLATION METHODS ###
 

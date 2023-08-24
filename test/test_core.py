@@ -30,12 +30,11 @@ def test_log_duplicates(core, deduplicator, _get_nodes):
 
 
 @pytest.mark.parametrize("l", [4], scope="module")
-def test_write_schema_info(core, _get_nodes, _get_edges):
+def test_write_schema_info(core, _get_nodes, _get_edges, _get_rel_as_nodes):
     core.add(_get_nodes)
     core.add(_get_edges)
+    core.add(_get_rel_as_nodes)
 
-    # create rel as node situation
-    relasnodes = None
     assert core.write_schema_info() == None
 
 
