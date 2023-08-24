@@ -135,8 +135,9 @@ Download and cache functionality
 BioCypher provides a download and cache functionality for resources. Resources
 are defined via the ``Resource`` class, which have a name, a (set of) URL(s),
 and a lifetime (in days, set to 0 for infinite). The ``Downloader`` can deal
-with single and lists of files, compressed files, and directories. It uses
-`Pooch <https://www.fatiando.org/pooch/latest/>`_ under the hood to handle the
+with single and lists of files, compressed files, and directories (which needs
+to be indicated using the ``is_dir`` parameter of the resource). It uses `Pooch
+<https://www.fatiando.org/pooch/latest/>`_ under the hood to handle the
 downloads. Example usage:
 
 .. code-block:: python
@@ -145,14 +146,23 @@ downloads. Example usage:
    bc = BioCypher()
 
    resource1 = Resource(
-      name="resource1",
-      urls=["https://example.com/resource1.txt"],
+      name="file_list_resource",
+      url_s=[
+         "https://example.com/resource1.txt"
+         "https://example.com/resource2.txt"
+      ],
       lifetime=1
    )
    resource2 = Resource(
-      name="resource2",
-      urls=["https://example.com/resource2.zip"],
+      name="zipped_resource",
+      url_s="https://example.com/resource3.zip",
       lifetime=7
+   )
+   resource3 = Resource(
+      name="directory_resource",
+      url_s="https://example.com/resource4/",
+      lifetime=7,
+      is_dir=True,
    )
    paths = bc.download(resource_list)
 

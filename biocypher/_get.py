@@ -51,6 +51,8 @@ class Resource:
 
             lifetime (int): The lifetime of the resource in days. If 0, the
                 resource is considered to be permanent.
+
+            is_dir (bool): Whether the resource is a directory or not.
         """
         self.name = name
         self.url_s = url_s
