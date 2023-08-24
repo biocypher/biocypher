@@ -83,6 +83,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#database-creation-by-file">Database creation by file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#in-memory-pandas-knowledge-graph">In-memory Pandas knowledge graph</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#database-creation-and-manipulation-by-driver">Database creation and manipulation by Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-and-cache-functionality">Download and cache functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-biocypher._ontology">Ontology ingestion, parsing, and manipulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-biocypher._mapping">Mapping of data inputs to KG ontology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-biocypher._create">Base classes for node and edge representations in BioCypher</a></li>
@@ -228,6 +229,48 @@ can be found below.</p>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._connect._Neo4jDriver.html#biocypher._connect._Neo4jDriver" title="biocypher._connect._Neo4jDriver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Neo4jDriver</span></code></a>(database_name, uri, user, ...)</p></td>
 <td><p>Manages a BioCypher connection to a Neo4j database using the <code class="docutils literal notranslate"><span class="pre">neo4j_utils.Driver</span></code> class.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="download-and-cache-functionality">
+<h2>Download and cache functionality<a class="headerlink" href="#download-and-cache-functionality" title="Permalink to this heading"></a></h2>
+<p>BioCypher provides a download and cache functionality for resources. resources
+are defined via the <code class="docutils literal notranslate"><span class="pre">Resource</span></code> class, which have a name, a (set of) URL(s),
+and a lifetime (in days, set to 0 for infinite). The <code class="docutils literal notranslate"><span class="pre">Downloader</span></code> can deal
+with single and lists of files, compressed files, and directories. It uses
+[Pooch](<a class="reference external" href="https://www.fatiando.org/pooch/latest/">https://www.fatiando.org/pooch/latest/</a>) under the hood to handle the
+downloads. Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span><span class="p">,</span> <span class="n">Resource</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
+
+<span class="n">resource1</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span>
+   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;resource1&quot;</span><span class="p">,</span>
+   <span class="n">urls</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;https://example.com/resource1.txt&quot;</span><span class="p">],</span>
+   <span class="n">lifetime</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+<span class="n">resource2</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span>
+   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;resource2&quot;</span><span class="p">,</span>
+   <span class="n">urls</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;https://example.com/resource2.zip&quot;</span><span class="p">],</span>
+   <span class="n">lifetime</span><span class="o">=</span><span class="mi">7</span>
+<span class="p">)</span>
+<span class="n">paths</span> <span class="o">=</span> <span class="n">bc</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">resource_list</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The files will be stored in the cache directory, in subfolders according to the
+names of the resources, and additionally determined by Pooch (e.g. extraction).
+All paths of downloaded files are returned by the <code class="docutils literal notranslate"><span class="pre">download</span></code> method. The
+<code class="docutils literal notranslate"><span class="pre">Downloader</span></code> class can also be used directly, without the BioCypher instance.
+You can set the cache directory in the configuration file; if not set, it will
+use the <code class="docutils literal notranslate"><span class="pre">TemporaryDirectory.name()</span></code> method from the <code class="docutils literal notranslate"><span class="pre">tempfile</span></code> module. More
+details about the <code class="docutils literal notranslate"><span class="pre">Resource</span></code> and <code class="docutils literal notranslate"><span class="pre">Downloader</span></code> classes can be found below.</p>
+<span class="target" id="module-biocypher._get"></span><table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._get.Resource.html#biocypher._get.Resource" title="biocypher._get.Resource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resource</span></code></a>(name, url_s[, lifetime, is_dir])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._get.Downloader.html#biocypher._get.Downloader" title="biocypher._get.Downloader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Downloader</span></code></a>([cache_dir])</p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>

@@ -1,0 +1,22 @@
+﻿biocypher.\_get.Resource
+========================
+
+.. currentmodule:: biocypher._get
+
+.. autoclass:: Resource
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Resource.__init__
+   
+   
+
+   
+   
+   

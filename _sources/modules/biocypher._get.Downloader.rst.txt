@@ -1,0 +1,23 @@
+﻿biocypher.\_get.Downloader
+==========================
+
+.. currentmodule:: biocypher._get
+
+.. autoclass:: Downloader
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Downloader.__init__
+      ~Downloader.download
+   
+   
+
+   
+   
+   
