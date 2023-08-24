@@ -14,7 +14,15 @@ def downloader():
     return Downloader(cache_dir=None)
 
 
-@given(st.builds(Resource))
+@given(
+    st.builds(
+        Resource,
+        name=st.text(),
+        url_s=st.text(),
+        lifetime=st.integers(),
+        is_dir=st.booleans(),
+    )
+)
 def test_resource(resource):
     assert isinstance(resource.name, str)
     assert isinstance(resource.url_s, str) or isinstance(resource.url_s, list)
@@ -70,10 +78,38 @@ def test_download_lists(downloader):
     assert os.path.exists(paths[1])
     assert os.path.exists(paths[2])
     assert os.path.exists(paths[3])
-    assert "test_config.yaml" in paths[0]
-    assert "test_schema_config_disconnected.yaml" in paths[1]
-    assert "file1.csv" in paths[2]
-    assert "file2.csv" in paths[3]
+    expected_paths = [
+        os.path.realpath(
+            os.path.join(
+                downloader.cache_dir, "test_resource1", "test_config.yaml"
+            )
+        ),
+        os.path.realpath(
+            os.path.join(
+                downloader.cache_dir,
+                "test_resource1",
+                "test_schema_config_disconnected.yaml",
+            )
+        ),
+        os.path.realpath(
+            os.path.join(
+                downloader.cache_dir,
+                "test_resource2",
+                "test_CSVs.zip.unzip",
+                "file1.csv",
+            )
+        ),
+        os.path.realpath(
+            os.path.join(
+                downloader.cache_dir,
+                "test_resource2",
+                "test_CSVs.zip.unzip",
+                "file2.csv",
+            )
+        ),
+    ]
+    for path in paths:
+        assert os.path.realpath(path) in expected_paths
     assert isinstance(
         downloader.cache_dict["test_resource1"]["date_downloaded"], datetime
     )
