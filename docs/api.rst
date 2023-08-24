@@ -132,7 +132,7 @@ can be found below.
 Download and cache functionality
 ================================
 
-BioCypher provides a download and cache functionality for resources. resources
+BioCypher provides a download and cache functionality for resources. Resources
 are defined via the ``Resource`` class, which have a name, a (set of) URL(s),
 and a lifetime (in days, set to 0 for infinite). The ``Downloader`` can deal
 with single and lists of files, compressed files, and directories. It uses
@@ -170,8 +170,6 @@ details about the ``Resource`` and ``Downloader`` classes can be found below.
 
    Resource
    Downloader
-
-
 
 Ontology ingestion, parsing, and manipulation
 =============================================
