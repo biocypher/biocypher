@@ -1,5 +1,6 @@
 import os
 import random
+import shutil
 import string
 import tempfile
 import subprocess
@@ -51,10 +52,34 @@ def pytest_addoption(parser):
         )
 
 
-# temporary output paths
-def get_random_string(length):
-    letters = string.ascii_lowercase
-    return "".join(random.choice(letters) for _ in range(length))
+@pytest.fixture(scope="session")
+def tmp_path_session(tmp_path_factory):
+    """
+    Create a session-scoped temporary directory.
+
+    Args:
+        tmp_path_factory: The built-in pytest fixture.
+
+    Returns:
+        pathlib.Path: The path to the temporary directory.
+    """
+    return tmp_path_factory.mktemp("data")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def cleanup(request, tmp_path_session):
+    """
+    Teardown function to delete the session-scoped temporary directory.
+
+    Args:
+        request: The pytest request object.
+        tmp_path_session: The session-scoped temporary directory.
+    """
+
+    def remove_tmp_dir():
+        shutil.rmtree(tmp_path_session)
+
+    request.addfinalizer(remove_tmp_dir)
 
 
 # biocypher node generator
@@ -228,11 +253,11 @@ def mondo_adapter():
 
 # neo4j batch writer fixtures
 @pytest.fixture(scope="function")
-def bw(translator, deduplicator, tmp_path):
+def bw(translator, deduplicator, tmp_path_session):
     bw = _Neo4jBatchWriter(
         translator=translator,
         deduplicator=deduplicator,
-        output_directory=tmp_path,
+        output_directory=tmp_path_session,
         delimiter=";",
         array_delimiter="|",
         quote="'",
@@ -241,18 +266,17 @@ def bw(translator, deduplicator, tmp_path):
     yield bw
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
 
 
 # neo4j batch writer fixtures
 @pytest.fixture(scope="function")
-def bw_tab(translator, deduplicator, tmp_path):
+def bw_tab(translator, deduplicator, tmp_path_session):
     bw_tab = _Neo4jBatchWriter(
         translator=translator,
         deduplicator=deduplicator,
-        output_directory=tmp_path,
+        output_directory=tmp_path_session,
         delimiter="\\t",
         array_delimiter="|",
         quote="'",
@@ -261,17 +285,16 @@ def bw_tab(translator, deduplicator, tmp_path):
     yield bw_tab
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
 
 
 @pytest.fixture(scope="function")
-def bw_strict(translator, deduplicator, tmp_path):
+def bw_strict(translator, deduplicator, tmp_path_session):
     bw = _Neo4jBatchWriter(
         translator=translator,
         deduplicator=deduplicator,
-        output_directory=tmp_path,
+        output_directory=tmp_path_session,
         delimiter=";",
         array_delimiter="|",
         quote="'",
@@ -281,14 +304,13 @@ def bw_strict(translator, deduplicator, tmp_path):
     yield bw
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
 
 
 # core instance fixture
 @pytest.fixture(name="core", scope="function")
-def create_core(request, tmp_path):
+def create_core(request, tmp_path_session):
     # TODO why does the integration test use a different path than this fixture?
 
     marker = request.node.get_closest_marker("inject_core_args")
@@ -298,30 +320,20 @@ def create_core(request, tmp_path):
     if marker and hasattr(marker, "param"):
         marker_args = marker.param
 
-    if not marker_args and "CORE" in globals():
-        c = globals()["CORE"]
-
     else:
         core_args = {
             "schema_config_path": "biocypher/_config/test_schema_config.yaml",
-            "output_directory": tmp_path,
+            "output_directory": tmp_path_session,
         }
         core_args.update(marker_args)
 
         c = BioCypher(**core_args)
 
-        if not marker_args:
-            globals()["CORE"] = c
-
-    c._deduplicator = Deduplicator()
-    # seems to reuse deduplicator from previous test, unsure why
-
     yield c
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
 
 
 @pytest.fixture(scope="function")
@@ -479,11 +491,13 @@ def skip_if_offline_postgresql(request, postgresql_param):
 
 
 @pytest.fixture(scope="function")
-def bw_comma_postgresql(postgresql_param, translator, deduplicator, tmp_path):
+def bw_comma_postgresql(
+    postgresql_param, translator, deduplicator, tmp_path_session
+):
     bw_comma = _PostgreSQLBatchWriter(
         translator=translator,
         deduplicator=deduplicator,
-        output_directory=tmp_path,
+        output_directory=tmp_path_session,
         delimiter=",",
         **postgresql_param,
     )
@@ -491,17 +505,18 @@ def bw_comma_postgresql(postgresql_param, translator, deduplicator, tmp_path):
     yield bw_comma
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
 
 
 @pytest.fixture(scope="function")
-def bw_tab_postgresql(postgresql_param, translator, deduplicator, tmp_path):
+def bw_tab_postgresql(
+    postgresql_param, translator, deduplicator, tmp_path_session
+):
     bw_tab = _PostgreSQLBatchWriter(
         translator=translator,
         deduplicator=deduplicator,
-        output_directory=tmp_path,
+        output_directory=tmp_path_session,
         delimiter="\\t",
         **postgresql_param,
     )
@@ -509,9 +524,8 @@ def bw_tab_postgresql(postgresql_param, translator, deduplicator, tmp_path):
     yield bw_tab
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
 
 
 @pytest.fixture(scope="session")
@@ -537,17 +551,16 @@ def create_database_postgres(postgresql_param):
 
 
 @pytest.fixture(scope="function")
-def bw_arango(translator, deduplicator, tmp_path):
+def bw_arango(translator, deduplicator, tmp_path_session):
     bw_arango = _ArangoDBBatchWriter(
         translator=translator,
         deduplicator=deduplicator,
-        output_directory=tmp_path,
+        output_directory=tmp_path_session,
         delimiter=",",
     )
 
     yield bw_arango
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
