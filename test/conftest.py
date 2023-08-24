@@ -342,7 +342,6 @@ def skip_if_offline_neo4j(request, neo4j_param, translator, hybrid_ontology):
                 "wipe": True,
                 "multi_db": True,
                 "translator": translator,
-                "ontology": hybrid_ontology,
             }
             driver_args.update(marker_args)
             driver_args.update(neo4j_param)
@@ -373,7 +372,6 @@ def create_driver(request, neo4j_param, translator, hybrid_ontology):
             "wipe": True,
             "multi_db": True,
             "translator": translator,
-            "ontology": hybrid_ontology,
         }
         driver_args.update(marker_args)
         driver_args.update(neo4j_param)
