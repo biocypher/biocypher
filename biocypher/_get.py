@@ -125,7 +125,7 @@ class Downloader:
             elif isinstance(resource.url_s, list):
                 paths = []
                 for url in resource.url_s:
-                    fname = resource.name + "_" + url[url.rfind("/") + 1 :]
+                    fname = url[url.rfind("/") + 1 :]
                     paths.append(
                         self._retrieve(
                             url=url,
