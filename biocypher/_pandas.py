@@ -4,8 +4,7 @@ from ._create import BioCypherEdge, BioCypherNode
 
 
 class Pandas:
-    def __init__(self, ontology, translator, deduplicator):
-        self.ontology = ontology
+    def __init__(self, translator, deduplicator):
         self.translator = translator
         self.deduplicator = deduplicator
 

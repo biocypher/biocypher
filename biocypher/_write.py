@@ -1865,7 +1865,6 @@ DBMS_TO_CLASS = {
 def get_writer(
     dbms: str,
     translator: "Translator",
-    ontology: "Ontology",
     deduplicator: "Deduplicator",
     output_directory: str,
     strict_mode: bool,
@@ -1879,8 +1878,6 @@ def get_writer(
         dbms: the database management system; for options, see DBMS_TO_CLASS.
 
         translator: the Translator object.
-
-        ontology: the Ontology object.
 
         output_directory: the directory to write the output files to.
 
@@ -1905,7 +1902,6 @@ def get_writer(
 
     if writer is not None:
         return writer(
-            ontology=ontology,
             translator=translator,
             deduplicator=deduplicator,
             delimiter=dbms_config.get("delimiter"),

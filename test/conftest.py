@@ -301,7 +301,6 @@ def create_core(request, tmp_path):
 @pytest.fixture(scope="function")
 def _pd(deduplicator):
     return Pandas(
-        ontology=None,
         translator=None,
         deduplicator=deduplicator,
     )
@@ -328,7 +327,7 @@ def neo4j_param(request):
 
 # skip test if neo4j is offline
 @pytest.fixture(autouse=True)
-def skip_if_offline_neo4j(request, neo4j_param, translator, hybrid_ontology):
+def skip_if_offline_neo4j(request, neo4j_param, translator):
     marker = request.node.get_closest_marker("requires_neo4j")
 
     if marker:
@@ -356,7 +355,7 @@ def skip_if_offline_neo4j(request, neo4j_param, translator, hybrid_ontology):
 
 # neo4j driver fixture
 @pytest.fixture(name="driver", scope="function")
-def create_driver(request, neo4j_param, translator, hybrid_ontology):
+def create_driver(request, neo4j_param, translator):
     marker = None  # request.node.get_closest_marker('inject_driver_args')
 
     marker_args = {}
