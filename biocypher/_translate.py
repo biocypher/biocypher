@@ -69,7 +69,7 @@ class Translator:
 
     def translate_nodes(
         self,
-        id_type_prop_tuples: Iterable,
+        node_tuples: Iterable,
     ) -> Generator[BioCypherNode, None, None]:
         """
         Translates input node representation to a representation that
@@ -77,16 +77,16 @@ class Translator:
         requires explicit statement of node type on pass.
 
         Args:
-            id_type_tuples (list of tuples): collection of tuples
+            node_tuples (list of tuples): collection of tuples
                 representing individual nodes by their unique id and a type
                 that is translated from the original database notation to
                 the corresponding BioCypher notation.
 
         """
 
-        self._log_begin_translate(id_type_prop_tuples, "nodes")
+        self._log_begin_translate(node_tuples, "nodes")
 
-        for _id, _type, _props in id_type_prop_tuples:
+        for _id, _type, _props in node_tuples:
             # check for strict mode requirements
             required_props = ["source", "licence", "version"]
 
