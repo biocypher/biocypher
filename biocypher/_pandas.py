@@ -1,11 +1,10 @@
 import pandas as pd
 
-from ._create import BioCypherEdge, BioCypherNode
+from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 
 class Pandas:
-    def __init__(self, ontology, translator, deduplicator):
-        self.ontology = ontology
+    def __init__(self, translator, deduplicator):
         self.translator = translator
         self.deduplicator = deduplicator
 
@@ -18,22 +17,48 @@ class Pandas:
         """
         lists = {}
         for entity in entities:
-            if not isinstance(entity, BioCypherNode) and not isinstance(
-                entity, BioCypherEdge
+            if (
+                not isinstance(entity, BioCypherNode)
+                and not isinstance(entity, BioCypherEdge)
+                and not isinstance(entity, BioCypherRelAsNode)
             ):
                 raise TypeError(
-                    f"Expected a BioCypherNode or BioCypherEdge, got {type(entity)}."
+                    "Expected a BioCypherNode / BioCypherEdge / "
+                    f"BioCypherRelAsNode, got {type(entity)}."
                 )
 
             if isinstance(entity, BioCypherNode):
                 seen = self.deduplicator.node_seen(entity)
             elif isinstance(entity, BioCypherEdge):
                 seen = self.deduplicator.edge_seen(entity)
+            elif isinstance(entity, BioCypherRelAsNode):
+                seen = self.deduplicator.rel_as_node_seen(entity)
 
             if seen:
                 continue
 
-            _type = entity.get_label()
+            if isinstance(entity, BioCypherRelAsNode):
+                node = entity.get_node()
+                source_edge = entity.get_source_edge()
+                target_edge = entity.get_target_edge()
+
+                _type = node.get_type()
+                if not _type in lists:
+                    lists[_type] = []
+                lists[_type].append(node)
+
+                _source_type = source_edge.get_type()
+                if not _source_type in lists:
+                    lists[_source_type] = []
+                lists[_source_type].append(source_edge)
+
+                _target_type = target_edge.get_type()
+                if not _target_type in lists:
+                    lists[_target_type] = []
+                lists[_target_type].append(target_edge)
+                continue
+
+            _type = entity.get_type()
             if not _type in lists:
                 lists[_type] = []
             lists[_type].append(entity)

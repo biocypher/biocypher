@@ -24,8 +24,8 @@ def test_duplicate_nodes(_get_nodes):
     for node in nodes:
         dedup.node_seen(node)
 
-    assert "protein" in dedup.duplicate_node_types
-    assert "p1" in dedup.duplicate_node_ids
+    assert "protein" in dedup.duplicate_entity_types
+    assert "p1" in dedup.duplicate_entity_ids
 
 
 @pytest.mark.parametrize("l", [4], scope="module")
@@ -78,8 +78,8 @@ def test_duplicate_edges(_get_edges):
     for edge in edges:
         dedup.edge_seen(edge)
 
-    assert "Is_Mutated_In" in dedup.duplicate_edge_types
-    assert ("mrel2") in dedup.duplicate_edge_ids
+    assert "Is_Mutated_In" in dedup.duplicate_relationship_types
+    assert ("mrel2") in dedup.duplicate_relationship_ids
 
 
 @pytest.mark.parametrize("l", [4], scope="module")

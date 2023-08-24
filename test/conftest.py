@@ -1,5 +1,6 @@
 import os
 import random
+import shutil
 import string
 import tempfile
 import subprocess
@@ -14,7 +15,7 @@ from biocypher._write import (
     _ArangoDBBatchWriter,
     _PostgreSQLBatchWriter,
 )
-from biocypher._create import BioCypherEdge, BioCypherNode
+from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._pandas import Pandas
 from biocypher._connect import _Neo4jDriver
 from biocypher._mapping import OntologyMapping
@@ -51,10 +52,34 @@ def pytest_addoption(parser):
         )
 
 
-# temporary output paths
-def get_random_string(length):
-    letters = string.ascii_lowercase
-    return "".join(random.choice(letters) for _ in range(length))
+@pytest.fixture(scope="session")
+def tmp_path_session(tmp_path_factory):
+    """
+    Create a session-scoped temporary directory.
+
+    Args:
+        tmp_path_factory: The built-in pytest fixture.
+
+    Returns:
+        pathlib.Path: The path to the temporary directory.
+    """
+    return tmp_path_factory.mktemp("data")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def cleanup(request, tmp_path_session):
+    """
+    Teardown function to delete the session-scoped temporary directory.
+
+    Args:
+        request: The pytest request object.
+        tmp_path_session: The session-scoped temporary directory.
+    """
+
+    def remove_tmp_dir():
+        shutil.rmtree(tmp_path_session)
+
+    request.addfinalizer(remove_tmp_dir)
 
 
 # biocypher node generator
@@ -123,6 +148,32 @@ def _get_edges(l):
 
 
 @pytest.fixture(scope="function")
+def _get_rel_as_nodes(l):
+    rels = []
+    for i in range(l):
+        n = BioCypherNode(
+            node_id=f"i{i+1}",
+            node_label="post translational interaction",
+            properties={
+                "directed": True,
+                "effect": -1,
+            },
+        )
+        e1 = BioCypherEdge(
+            source_id=f"i{i+1}",
+            target_id=f"p{i+1}",
+            relationship_label="IS_SOURCE_OF",
+        )
+        e2 = BioCypherEdge(
+            source_id=f"i{i}",
+            target_id=f"p{i + 2}",
+            relationship_label="IS_TARGET_OF",
+        )
+        rels.append(BioCypherRelAsNode(n, e1, e2))
+    return rels
+
+
+@pytest.fixture(scope="function")
 def deduplicator():
     return Deduplicator()
 
@@ -149,8 +200,32 @@ def disconnected_mapping():
 
 
 @pytest.fixture(scope="module")
-def translator(extended_ontology_mapping):
-    return Translator(extended_ontology_mapping)
+def hybrid_ontology(extended_ontology_mapping):
+    return Ontology(
+        head_ontology={
+            "url": "https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl",
+            "root_node": "entity",
+        },
+        ontology_mapping=extended_ontology_mapping,
+        tail_ontologies={
+            "so": {
+                "url": "test/so.owl",
+                "head_join_node": "sequence variant",
+                "tail_join_node": "sequence_variant",
+            },
+            "mondo": {
+                "url": "test/mondo.owl",
+                "head_join_node": "disease",
+                "tail_join_node": "human disease",
+                "merge_nodes": False,
+            },
+        },
+    )
+
+
+@pytest.fixture(scope="module")
+def translator(hybrid_ontology):
+    return Translator(hybrid_ontology)
 
 
 @pytest.fixture(scope="module")
@@ -176,38 +251,13 @@ def mondo_adapter():
     return OntologyAdapter("test/mondo.owl", "disease")
 
 
-@pytest.fixture(scope="module")
-def hybrid_ontology(extended_ontology_mapping):
-    return Ontology(
-        head_ontology={
-            "url": "https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl",
-            "root_node": "entity",
-        },
-        ontology_mapping=extended_ontology_mapping,
-        tail_ontologies={
-            "so": {
-                "url": "test/so.owl",
-                "head_join_node": "sequence variant",
-                "tail_join_node": "sequence_variant",
-            },
-            "mondo": {
-                "url": "test/mondo.owl",
-                "head_join_node": "disease",
-                "tail_join_node": "human disease",
-                "merge_nodes": False,
-            },
-        },
-    )
-
-
 # neo4j batch writer fixtures
 @pytest.fixture(scope="function")
-def bw(hybrid_ontology, translator, deduplicator, tmp_path):
+def bw(translator, deduplicator, tmp_path_session):
     bw = _Neo4jBatchWriter(
-        ontology=hybrid_ontology,
         translator=translator,
         deduplicator=deduplicator,
-        output_directory=tmp_path,
+        output_directory=tmp_path_session,
         delimiter=";",
         array_delimiter="|",
         quote="'",
@@ -216,19 +266,17 @@ def bw(hybrid_ontology, translator, deduplicator, tmp_path):
     yield bw
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
 
 
 # neo4j batch writer fixtures
 @pytest.fixture(scope="function")
-def bw_tab(hybrid_ontology, translator, deduplicator, tmp_path):
+def bw_tab(translator, deduplicator, tmp_path_session):
     bw_tab = _Neo4jBatchWriter(
-        ontology=hybrid_ontology,
         translator=translator,
         deduplicator=deduplicator,
-        output_directory=tmp_path,
+        output_directory=tmp_path_session,
         delimiter="\\t",
         array_delimiter="|",
         quote="'",
@@ -237,18 +285,16 @@ def bw_tab(hybrid_ontology, translator, deduplicator, tmp_path):
     yield bw_tab
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
 
 
 @pytest.fixture(scope="function")
-def bw_strict(hybrid_ontology, translator, deduplicator, tmp_path):
+def bw_strict(translator, deduplicator, tmp_path_session):
     bw = _Neo4jBatchWriter(
-        ontology=hybrid_ontology,
         translator=translator,
         deduplicator=deduplicator,
-        output_directory=tmp_path,
+        output_directory=tmp_path_session,
         delimiter=";",
         array_delimiter="|",
         quote="'",
@@ -258,16 +304,13 @@ def bw_strict(hybrid_ontology, translator, deduplicator, tmp_path):
     yield bw
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
 
 
 # core instance fixture
 @pytest.fixture(name="core", scope="function")
-def create_core(request, tmp_path):
-    # TODO why does the integration test use a different path than this fixture?
-
+def create_core(request, tmp_path_session):
     marker = request.node.get_closest_marker("inject_core_args")
 
     marker_args = {}
@@ -275,36 +318,25 @@ def create_core(request, tmp_path):
     if marker and hasattr(marker, "param"):
         marker_args = marker.param
 
-    if not marker_args and "CORE" in globals():
-        c = globals()["CORE"]
-
     else:
         core_args = {
             "schema_config_path": "biocypher/_config/test_schema_config.yaml",
-            "output_directory": tmp_path,
+            "output_directory": tmp_path_session,
         }
         core_args.update(marker_args)
 
         c = BioCypher(**core_args)
 
-        if not marker_args:
-            globals()["CORE"] = c
-
-    c._deduplicator = Deduplicator()
-    # seems to reuse deduplicator from previous test, unsure why
-
     yield c
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
 
 
 @pytest.fixture(scope="function")
 def _pd(deduplicator):
     return Pandas(
-        ontology=None,
         translator=None,
         deduplicator=deduplicator,
     )
@@ -331,7 +363,7 @@ def neo4j_param(request):
 
 # skip test if neo4j is offline
 @pytest.fixture(autouse=True)
-def skip_if_offline_neo4j(request, neo4j_param, translator, hybrid_ontology):
+def skip_if_offline_neo4j(request, neo4j_param, translator):
     marker = request.node.get_closest_marker("requires_neo4j")
 
     if marker:
@@ -345,7 +377,6 @@ def skip_if_offline_neo4j(request, neo4j_param, translator, hybrid_ontology):
                 "wipe": True,
                 "multi_db": True,
                 "translator": translator,
-                "ontology": hybrid_ontology,
             }
             driver_args.update(marker_args)
             driver_args.update(neo4j_param)
@@ -360,7 +391,7 @@ def skip_if_offline_neo4j(request, neo4j_param, translator, hybrid_ontology):
 
 # neo4j driver fixture
 @pytest.fixture(name="driver", scope="function")
-def create_driver(request, neo4j_param, translator, hybrid_ontology):
+def create_driver(request, neo4j_param, translator):
     marker = None  # request.node.get_closest_marker('inject_driver_args')
 
     marker_args = {}
@@ -376,7 +407,6 @@ def create_driver(request, neo4j_param, translator, hybrid_ontology):
             "wipe": True,
             "multi_db": True,
             "translator": translator,
-            "ontology": hybrid_ontology,
         }
         driver_args.update(marker_args)
         driver_args.update(neo4j_param)
@@ -460,13 +490,12 @@ def skip_if_offline_postgresql(request, postgresql_param):
 
 @pytest.fixture(scope="function")
 def bw_comma_postgresql(
-    postgresql_param, hybrid_ontology, translator, deduplicator, tmp_path
+    postgresql_param, translator, deduplicator, tmp_path_session
 ):
     bw_comma = _PostgreSQLBatchWriter(
-        ontology=hybrid_ontology,
         translator=translator,
         deduplicator=deduplicator,
-        output_directory=tmp_path,
+        output_directory=tmp_path_session,
         delimiter=",",
         **postgresql_param,
     )
@@ -474,20 +503,18 @@ def bw_comma_postgresql(
     yield bw_comma
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
 
 
 @pytest.fixture(scope="function")
 def bw_tab_postgresql(
-    postgresql_param, hybrid_ontology, translator, deduplicator, tmp_path
+    postgresql_param, translator, deduplicator, tmp_path_session
 ):
     bw_tab = _PostgreSQLBatchWriter(
-        ontology=hybrid_ontology,
         translator=translator,
         deduplicator=deduplicator,
-        output_directory=tmp_path,
+        output_directory=tmp_path_session,
         delimiter="\\t",
         **postgresql_param,
     )
@@ -495,9 +522,8 @@ def bw_tab_postgresql(
     yield bw_tab
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
 
 
 @pytest.fixture(scope="session")
@@ -523,18 +549,16 @@ def create_database_postgres(postgresql_param):
 
 
 @pytest.fixture(scope="function")
-def bw_arango(hybrid_ontology, translator, deduplicator, tmp_path):
+def bw_arango(translator, deduplicator, tmp_path_session):
     bw_arango = _ArangoDBBatchWriter(
-        ontology=hybrid_ontology,
         translator=translator,
         deduplicator=deduplicator,
-        output_directory=tmp_path,
+        output_directory=tmp_path_session,
         delimiter=",",
     )
 
     yield bw_arango
 
     # teardown
-    for f in os.listdir(tmp_path):
-        os.remove(os.path.join(tmp_path, f))
-    os.rmdir(tmp_path)
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))

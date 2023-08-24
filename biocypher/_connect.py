@@ -53,8 +53,6 @@ class _Neo4jDriver:
 
         increment_version (bool): Whether to increment the version number.
 
-        ontology (Ontology): The ontology to use for mapping.
-
         translator (Translator): The translator to use for mapping.
 
     """
@@ -66,14 +64,12 @@ class _Neo4jDriver:
         user: str,
         password: str,
         multi_db: bool,
-        ontology: Ontology,
         translator: Translator,
         wipe: bool = False,
         fetch_size: int = 1000,
         increment_version: bool = True,
     ):
-        self._ontology = ontology
-        self._translator = translator
+        self.translator = translator
 
         self._driver = neo4j_utils.Driver(
             db_name=database_name,
@@ -103,7 +99,7 @@ class _Neo4jDriver:
             "MATCH (v:BioCypher) " "WHERE NOT (v)-[:PRECEDES]->() " "RETURN v",
         )
         # add version node
-        self.add_biocypher_nodes(self._ontology)
+        self.add_biocypher_nodes(self.translator.ontology)
 
         # connect version node to previous
         if db_version[0]:
@@ -111,7 +107,7 @@ class _Neo4jDriver:
             previous_id = previous["v"]["id"]
             e_meta = BioCypherEdge(
                 previous_id,
-                self._ontology.get_dict().get("node_id"),
+                self.translator.ontology.get_dict().get("node_id"),
                 "PRECEDES",
             )
             self.add_biocypher_edges(e_meta)
@@ -142,7 +138,7 @@ class _Neo4jDriver:
         logger.info("Creating constraints for node types in config.")
 
         # get structure
-        for leaf in self._ontology.extended_schema.items():
+        for leaf in self.translator.ontology.mapping.extended_schema.items():
             label = _misc.sentencecase_to_pascalcase(leaf[0])
             if leaf[1]["represented_as"] == "node":
                 s = (
@@ -172,7 +168,7 @@ class _Neo4jDriver:
                 - second entry: Neo4j summary.
         """
 
-        bn = self._translator.translate_nodes(id_type_tuples)
+        bn = self.translator.translate_nodes(id_type_tuples)
         return self.add_biocypher_nodes(bn)
 
     def add_edges(self, id_src_tar_type_tuples: Iterable[tuple]) -> tuple:
@@ -204,7 +200,7 @@ class _Neo4jDriver:
                 - second entry: Neo4j summary.
         """
 
-        bn = self._translator.translate_edges(id_src_tar_type_tuples)
+        bn = self.translator.translate_edges(id_src_tar_type_tuples)
         return self.add_biocypher_edges(bn)
 
     def add_biocypher_nodes(
@@ -375,7 +371,6 @@ class _Neo4jDriver:
 def get_driver(
     dbms: str,
     translator: "Translator",
-    ontology: "Ontology",
 ):
     """
     Function to return the writer class.
@@ -394,7 +389,6 @@ def get_driver(
             user=dbms_config["user"],
             password=dbms_config["password"],
             multi_db=dbms_config["multi_db"],
-            ontology=ontology,
             translator=translator,
         )
 

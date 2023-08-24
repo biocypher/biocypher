@@ -269,7 +269,7 @@ class Ontology:
         """
 
         self._head_ontology_meta = head_ontology
-        self.extended_schema = ontology_mapping.extended_schema
+        self.mapping = ontology_mapping
         self._tail_ontology_meta = tail_ontologies
 
         self._tail_ontologies = None
@@ -403,7 +403,7 @@ class Ontology:
         if not self._nx_graph:
             self._nx_graph = self._head_ontology.get_nx_graph().copy()
 
-        for key, value in self.extended_schema.items():
+        for key, value in self.mapping.extended_schema.items():
             if not value.get("is_a"):
                 if self._nx_graph.has_node(value.get("synonym_for")):
                     continue
@@ -485,7 +485,7 @@ class Ontology:
         setting the synonym as the primary node label.
         """
 
-        for key, value in self.extended_schema.items():
+        for key, value in self.mapping.extended_schema.items():
             if key in self._nx_graph.nodes:
                 self._nx_graph.nodes[key].update(value)
 
@@ -541,9 +541,9 @@ class Ontology:
 
         if not full:
             # set of leaves and their intermediate parents up to the root
-            filter_nodes = set(self.extended_schema.keys())
+            filter_nodes = set(self.mapping.extended_schema.keys())
 
-            for node in self.extended_schema.keys():
+            for node in self.mapping.extended_schema.keys():
                 filter_nodes.update(self.get_ancestors(node).nodes)
 
             # filter graph
@@ -557,11 +557,13 @@ class Ontology:
             tree = _misc.create_tree_visualisation(G)
 
             # add synonym information
-            for node in self.extended_schema:
-                if self.extended_schema[node].get("synonym_for"):
+            for node in self.mapping.extended_schema:
+                if not isinstance(self.mapping.extended_schema[node], dict):
+                    continue
+                if self.mapping.extended_schema[node].get("synonym_for"):
                     tree.nodes[node].tag = (
                         f"{node} = "
-                        f"{self.extended_schema[node].get('synonym_for')}"
+                        f"{self.mapping.extended_schema[node].get('synonym_for')}"
                     )
 
             tree.show()
@@ -602,7 +604,7 @@ class Ontology:
             "node_id": self._get_current_id(),
             "node_label": "BioCypher",
             "properties": {
-                "schema": "self.extended_schema",
+                "schema": "self.ontology_mapping.extended_schema",
             },
         }
 
