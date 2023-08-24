@@ -345,34 +345,34 @@ class _BatchWriter(ABC):
             bool: The return value. True for success, False otherwise.
         """
         passed = False
-        # unwrap generator in one step
         edges = list(edges)  # force evaluation to handle empty generator
         if edges:
-            z = zip(
-                *(
-                    (
-                        e.get_node(),
-                        [
-                            e.get_source_edge(),
-                            e.get_target_edge(),
-                        ],
-                    )
-                    if isinstance(e, BioCypherRelAsNode)
-                    else (None, [e])
-                    for e in edges
-                )
-            )
-            nod, edg = (list(a) for a in z)
-            nod = [n for n in nod if n]
-            edg = [val for sublist in edg for val in sublist]  # flatten
+            nodes_flat = []
+            edges_flat = []
+            for edge in edges:
+                if isinstance(edge, BioCypherRelAsNode):
+                    # check if relationship has already been written, if so skip
+                    if self.deduplicator.rel_as_node_seen(edge):
+                        continue
 
-            if nod and edg:
-                passed = self.write_nodes(nod) and self._write_edge_data(
-                    edg,
+                    nodes_flat.append(edge.get_node())
+                    edges_flat.append(edge.get_source_edge())
+                    edges_flat.append(edge.get_target_edge())
+
+                else:
+                    # check if relationship has already been written, if so skip
+                    if self.deduplicator.edge_seen(edge):
+                        continue
+
+                    edges_flat.append(edge)
+
+            if nodes_flat and edges_flat:
+                passed = self.write_nodes(nodes_flat) and self._write_edge_data(
+                    edges_flat,
                     batch_size,
                 )
             else:
-                passed = self._write_edge_data(edg, batch_size)
+                passed = self._write_edge_data(edges_flat, batch_size)
 
         else:
             # is this a problem? if the generator or list is empty, we
@@ -679,10 +679,6 @@ class _BatchWriter(ABC):
             # for each label to check for consistency and their type
             # for now, relevant for `int`
             for edge in edges:
-                # check for duplicates
-                if self.deduplicator.edge_seen(edge):
-                    continue
-
                 if not (edge.get_source_id() and edge.get_target_id()):
                     logger.error(
                         "Edge must have source and target node. "
