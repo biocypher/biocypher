@@ -202,9 +202,8 @@ def mondo_adapter():
 
 # neo4j batch writer fixtures
 @pytest.fixture(scope="function")
-def bw(hybrid_ontology, translator, deduplicator, tmp_path):
+def bw(translator, deduplicator, tmp_path):
     bw = _Neo4jBatchWriter(
-        ontology=hybrid_ontology,
         translator=translator,
         deduplicator=deduplicator,
         output_directory=tmp_path,
@@ -223,9 +222,8 @@ def bw(hybrid_ontology, translator, deduplicator, tmp_path):
 
 # neo4j batch writer fixtures
 @pytest.fixture(scope="function")
-def bw_tab(hybrid_ontology, translator, deduplicator, tmp_path):
+def bw_tab(translator, deduplicator, tmp_path):
     bw_tab = _Neo4jBatchWriter(
-        ontology=hybrid_ontology,
         translator=translator,
         deduplicator=deduplicator,
         output_directory=tmp_path,
@@ -243,9 +241,8 @@ def bw_tab(hybrid_ontology, translator, deduplicator, tmp_path):
 
 
 @pytest.fixture(scope="function")
-def bw_strict(hybrid_ontology, translator, deduplicator, tmp_path):
+def bw_strict(translator, deduplicator, tmp_path):
     bw = _Neo4jBatchWriter(
-        ontology=hybrid_ontology,
         translator=translator,
         deduplicator=deduplicator,
         output_directory=tmp_path,
@@ -459,11 +456,8 @@ def skip_if_offline_postgresql(request, postgresql_param):
 
 
 @pytest.fixture(scope="function")
-def bw_comma_postgresql(
-    postgresql_param, hybrid_ontology, translator, deduplicator, tmp_path
-):
+def bw_comma_postgresql(postgresql_param, translator, deduplicator, tmp_path):
     bw_comma = _PostgreSQLBatchWriter(
-        ontology=hybrid_ontology,
         translator=translator,
         deduplicator=deduplicator,
         output_directory=tmp_path,
@@ -480,11 +474,8 @@ def bw_comma_postgresql(
 
 
 @pytest.fixture(scope="function")
-def bw_tab_postgresql(
-    postgresql_param, hybrid_ontology, translator, deduplicator, tmp_path
-):
+def bw_tab_postgresql(postgresql_param, translator, deduplicator, tmp_path):
     bw_tab = _PostgreSQLBatchWriter(
-        ontology=hybrid_ontology,
         translator=translator,
         deduplicator=deduplicator,
         output_directory=tmp_path,
@@ -523,9 +514,8 @@ def create_database_postgres(postgresql_param):
 
 
 @pytest.fixture(scope="function")
-def bw_arango(hybrid_ontology, translator, deduplicator, tmp_path):
+def bw_arango(translator, deduplicator, tmp_path):
     bw_arango = _ArangoDBBatchWriter(
-        ontology=hybrid_ontology,
         translator=translator,
         deduplicator=deduplicator,
         output_directory=tmp_path,
