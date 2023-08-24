@@ -558,6 +558,8 @@ class Ontology:
 
             # add synonym information
             for node in self.mapping.extended_schema:
+                if not isinstance(self.mapping.extended_schema[node], dict):
+                    continue
                 if self.mapping.extended_schema[node].get("synonym_for"):
                     tree.nodes[node].tag = (
                         f"{node} = "
