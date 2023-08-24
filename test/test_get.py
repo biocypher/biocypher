@@ -85,7 +85,7 @@ def test_download_lists(downloader):
     assert downloader.cache_dict["test_resource2"]["lifetime"] == 0
 
 
-def test_download_directory():
+def test_download_directory_and_caching():
     # use temp dir, no cache file present
     downloader = Downloader(cache_dir=None)
     assert os.path.exists(downloader.cache_dir)
@@ -108,7 +108,7 @@ def test_download_directory():
     assert paths[0] is None
 
 
-def test_download_zip():
+def test_download_zip_and_expiration():
     # use temp dir, no cache file present
     downloader = Downloader(cache_dir=None)
     assert os.path.exists(downloader.cache_dir)
@@ -122,7 +122,7 @@ def test_download_zip():
     with open(downloader.cache_file, "r") as f:
         cache = json.load(f)
     assert (
-        cache["test_resource"]["url"]
+        cache["test_resource"]["url"][0]
         == "https://github.com/biocypher/biocypher/raw/get-module/test/test_CSVs.zip"
     )
     assert cache["test_resource"]["lifetime"] == 7
@@ -130,19 +130,20 @@ def test_download_zip():
     for path in paths:
         assert os.path.exists(path)
 
-    # use files downloaded here and manipulate cache file to test expiration?
+    # use files downloaded here and manipulate cache file to test expiration
+    downloader.cache_dict["test_resource"][
+        "date_downloaded"
+    ] = datetime.now() - timedelta(days=4)
 
+    paths = downloader.download(resource)
+    # should not download again
+    assert paths[0] is None
 
-def test_download_expired():
-    # set up test file to be expired, monkeypatch?
-    {
-        "test_resource": {
-            "url": "https://github.com/biocypher/biocypher/raw/get-module/test/test_CSVs.zip",
-            "date_downloaded": "2022-08-04 20:41:09.375915",
-            "lifetime": 7,
-        }
-    }
+    # minus 8 days from date_downloaded
+    downloader.cache_dict["test_resource"][
+        "date_downloaded"
+    ] = datetime.now() - timedelta(days=8)
 
-
-def test_download_resource_list():
-    pass
+    paths = downloader.download(resource)
+    # should download again
+    assert paths[0] is not None
