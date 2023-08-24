@@ -26,6 +26,8 @@ import ftplib
 
 import pooch
 
+from ._misc import to_list
+
 
 class Resource:
     def __init__(
@@ -43,7 +45,7 @@ class Resource:
         Args:
             name (str): The name of the resource.
 
-            url (str): The URL of the resource.
+            url_s (str | list[str]): The URL or URLs of the resource.
 
             lifetime (int): The lifetime of the resource in days. If 0, the
                 resource is considered to be permanent.
@@ -273,7 +275,7 @@ class Downloader:
             resource (Resource): The resource to update the cache record of.
         """
         cache_record = {}
-        cache_record["url"] = resource.url_s
+        cache_record["url"] = to_list(resource.url_s)
         cache_record["date_downloaded"] = datetime.now()
         cache_record["lifetime"] = resource.lifetime
         self.cache_dict[resource.name] = cache_record

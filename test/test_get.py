@@ -52,18 +52,37 @@ def test_download_file(downloader):
     assert paths[0] is not None
 
 
-def test_download_file_list(downloader):
-    resource = Resource(
-        "test_resource",
-        [
+def test_download_lists(downloader):
+    resource1 = Resource(
+        name="test_resource1",
+        url_s=[
             "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_config.yaml",
             "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_schema_config_disconnected.yaml",
         ],
     )
-    paths = downloader.download(resource)
-    assert len(paths) == 2
+    resource2 = Resource(
+        "test_resource2",
+        "https://github.com/biocypher/biocypher/raw/get-module/test/test_CSVs.zip",
+    )
+    paths = downloader.download(resource1, resource2)
+    assert len(paths) == 4  # 2 files from resource1, 2 files from resource2 zip
     assert os.path.exists(paths[0])
     assert os.path.exists(paths[1])
+    assert os.path.exists(paths[2])
+    assert os.path.exists(paths[3])
+    assert "test_config.yaml" in paths[0]
+    assert "test_schema_config_disconnected.yaml" in paths[1]
+    assert "file1.csv" in paths[2]
+    assert "file2.csv" in paths[3]
+    assert isinstance(
+        downloader.cache_dict["test_resource1"]["date_downloaded"], datetime
+    )
+    assert isinstance(downloader.cache_dict["test_resource1"]["url"], list)
+    assert len(downloader.cache_dict["test_resource1"]["url"]) == 2
+    assert downloader.cache_dict["test_resource1"]["lifetime"] == 0
+    assert isinstance(downloader.cache_dict["test_resource2"]["url"], list)
+    assert len(downloader.cache_dict["test_resource2"]["url"]) == 1
+    assert downloader.cache_dict["test_resource2"]["lifetime"] == 0
 
 
 def test_download_directory():
