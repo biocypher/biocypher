@@ -1,8 +1,5 @@
 import os
-import random
 import shutil
-import string
-import tempfile
 import subprocess
 
 from neo4j.exceptions import ServiceUnavailable
@@ -35,7 +32,8 @@ def pytest_addoption(parser):
         # postgresl
         (
             "database_name_postgresql",
-            'The PostgreSQL database to be used for tests. Defaults to "postgresql-biocypher-test-TG2C7GsdNw".',
+            "The PostgreSQL database to be used for tests. Defaults to "
+            '"postgresql-biocypher-test-TG2C7GsdNw".',
         ),
         ("user_postgresql", "Tests access PostgreSQL as this user."),
         ("password_postgresql", "Password to access PostgreSQL."),
@@ -455,8 +453,10 @@ def postgresql_param(request):
             request.config.getoption(f"--{key}") or param[key_short]
         )
 
-    # hardcoded string for test-db name. test-db will be created for testing and droped after testing.
-    # Do not take db_name from config to avoid accidental testing on the production database
+    # hardcoded string for test-db name. test-db will be created for testing and
+    # droped after testing.  Do not take db_name from config to avoid accidental
+    # testing on the production database
+
     cli["db_name"] = (
         request.config.getoption("--database_name_postgresql")
         or "postgresql-biocypher-test-TG2C7GsdNw"
@@ -480,7 +480,10 @@ def skip_if_offline_postgresql(request, postgresql_param):
         )
 
         # an empty command, just to test if connection is possible
-        command = f"PGPASSWORD={password} psql -c '' --host {host} --port {port} --user {user}"
+        command = (
+            f"PGPASSWORD={password} psql -c '' --host {host} "
+            "--port {port} --user {user}"
+        )
         process = subprocess.run(command, shell=True)
 
         # returncode is 0 when success
@@ -538,13 +541,20 @@ def create_database_postgres(postgresql_param):
     )
 
     # create the database
-    command = f"PGPASSWORD={password} psql -c 'CREATE DATABASE \"{dbname}\";' --host {host} --port {port} --user {user}"
+    command = (
+        f"PGPASSWORD={password} psql -c 'CREATE DATABASE \"{dbname}\";' "
+        "--host {host} --port {port} --user {user}"
+    )
     process = subprocess.run(command, shell=True)
 
-    yield dbname, user, host, port, password, process.returncode == 0  # 0 if success
+    # 0 if success
+    yield dbname, user, host, port, password, process.returncode == 0
 
     # teardown
-    command = f"PGPASSWORD={password} psql -c 'DROP DATABASE \"{dbname}\";' --host {host} --port {port} --user {user}"
+    command = (
+        f"PGPASSWORD={password} psql -c 'DROP DATABASE \"{dbname}\";' "
+        "--host {host} --port {port} --user {user}"
+    )
     process = subprocess.run(command, shell=True)
 
 
