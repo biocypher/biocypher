@@ -80,8 +80,8 @@ Example usage:
    from biocypher import BioCypher
    bc = BioCypher()
    # given lists of nodes and edges
-   bc.add_nodes(node_list)
-   bc.add_edges(edge_list)
+   bc.add(node_list)
+   bc.add(edge_list)
    # show list of dataframes (one per node/edge type)
    dfs = bc.to_df()
 

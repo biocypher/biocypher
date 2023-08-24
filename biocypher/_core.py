@@ -308,12 +308,20 @@ class BioCypher:
 
         return self._pd.dfs
 
-    def add(self, entities):
+    def add(self, entities) -> None:
         """
         Function to add entities to the in-memory database. Accepts an iterable
         of tuples (if given, translates to ``BioCypherNode`` or
         ``BioCypherEdge`` objects) or an iterable of ``BioCypherNode`` or
         ``BioCypherEdge`` objects.
+
+        Args:
+            entities (iterable): An iterable of entities to add to the database.
+                Can be 3-tuples (nodes) or 5-tuples (edges); also accepts
+                4-tuples for edges (deprecated).
+
+        Returns:
+            None
         """
         if not self._pd:
             self._pd = Pandas(
@@ -336,10 +344,28 @@ class BioCypher:
 
         self._pd.add_tables(tentities)
 
-    def add_nodes(self, nodes):
+    def add_nodes(self, nodes) -> None:
+        """
+        Wrapper for ``add()`` to add nodes to the in-memory database.
+
+        Args:
+            nodes (iterable): An iterable of node tuples to add to the database.
+
+        Returns:
+            None
+        """
         self.add(nodes)
 
-    def add_edges(self, edges):
+    def add_edges(self, edges) -> None:
+        """
+        Wrapper for ``add()`` to add edges to the in-memory database.
+
+        Args:
+            edges (iterable): An iterable of edge tuples to add to the database.
+
+        Returns:
+            None
+        """
         self.add(edges)
 
     def merge_nodes(self, nodes) -> bool:
