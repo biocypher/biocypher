@@ -81,8 +81,8 @@ example:
 
    # given lists of nodes and edges
    bc = BioCypher()
-   bc.write_nodes(node_set_1)
-   bc.write_edges(edge_set_1)
+   bc.merge_nodes(node_set_1)
+   bc.merge_edges(edge_set_1)
    bc.merge_nodes(node_set_2)
    bc.merge_edges(edge_set_2)
 
