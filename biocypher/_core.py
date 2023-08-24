@@ -13,8 +13,10 @@ BioCypher core module. Interfaces with the user and distributes tasks to
 submodules.
 """
 from typing import Optional
+import os
 
 from more_itertools import peekable
+import yaml
 
 import pandas as pd
 
@@ -26,7 +28,7 @@ from ._get import Downloader
 from ._write import get_writer
 from ._config import config as _config
 from ._config import update_from_file as _file_update
-from ._create import BioCypherEdge, BioCypherNode
+from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from ._pandas import Pandas
 from ._connect import get_driver
 from ._mapping import OntologyMapping
@@ -182,19 +184,6 @@ class BioCypher:
 
         return self._ontology_mapping
 
-    def _get_translator(self) -> Translator:
-        """
-        Create translator if not exists and return.
-        """
-
-        if not self._translator:
-            self._translator = Translator(
-                ontology_mapping=self._get_ontology_mapping(),
-                strict_mode=self._strict_mode,
-            )
-
-        return self._translator
-
     def _get_ontology(self) -> Ontology:
         """
         Create ontology if not exists and return.
@@ -209,17 +198,28 @@ class BioCypher:
 
         return self._ontology
 
+    def _get_translator(self) -> Translator:
+        """
+        Create translator if not exists and return.
+        """
+
+        if not self._translator:
+            self._translator = Translator(
+                ontology=self._get_ontology(),
+                strict_mode=self._strict_mode,
+            )
+
+        return self._translator
+
     def _get_writer(self):
         """
         Create writer if not online. Set as instance variable `self._writer`.
         """
 
-        # Get worker
         if self._offline:
             self._writer = get_writer(
                 dbms=self._dbms,
                 translator=self._get_translator(),
-                ontology=self._get_ontology(),
                 deduplicator=self._get_deduplicator(),
                 output_directory=self._output_directory,
                 strict_mode=self._strict_mode,
@@ -236,7 +236,6 @@ class BioCypher:
             self._driver = get_driver(
                 dbms=self._dbms,
                 translator=self._get_translator(),
-                ontology=self._get_ontology(),
                 deduplicator=self._get_deduplicator(),
             )
         else:
@@ -319,14 +318,15 @@ class BioCypher:
         if not self._pd:
             self._pd = Pandas(
                 translator=self._get_translator(),
-                ontology=self._get_ontology(),
                 deduplicator=self._get_deduplicator(),
             )
 
         entities = peekable(entities)
 
-        if isinstance(entities.peek(), BioCypherNode) or isinstance(
-            entities.peek(), BioCypherEdge
+        if (
+            isinstance(entities.peek(), BioCypherNode)
+            or isinstance(entities.peek(), BioCypherEdge)
+            or isinstance(entities.peek(), BioCypherRelAsNode)
         ):
             tentities = entities
         elif len(entities.peek()) < 4:
@@ -522,6 +522,73 @@ class BioCypher:
             )
 
         self._writer.write_import_call()
+
+    def write_schema_info(self) -> None:
+        """
+        Write an extended schema info YAML file that extends the
+        `schema_config.yaml` with run-time information of the built KG. For
+        instance, include information on whether something present in the actual
+        knowledge graph, whether it is a relationship (which is important in the
+        case of representing relationships as nodes) and the actual sources and
+        targets of edges. Since this file can be used in place of the original
+        `schema_config.yaml` file, it indicates that it is the extended schema
+        by setting `is_schema_info` to `true`.
+
+        We start by using the `extended_schema` dictionary from the ontology
+        class instance, which contains all expanded entities and relationships.
+        The information of whether something is a relationship can be gathered
+        from the deduplicator instance, which keeps track of all entities that
+        have been seen.
+        """
+
+        if not self._offline:
+            raise NotImplementedError(
+                "Cannot write schema info in online mode."
+            )
+
+        ontology = self._get_ontology()
+        schema = ontology.mapping.extended_schema
+        schema["is_schema_info"] = True
+
+        deduplicator = self._get_deduplicator()
+        for node in deduplicator.entity_types:
+            if node in schema.keys():
+                schema[node]["present_in_knowledge_graph"] = True
+                schema[node]["is_relationship"] = False
+            else:
+                logger.info(
+                    f"Node {node} not present in extended schema. "
+                    "Skipping schema info."
+                )
+
+        # find 'label_as_edge' cases in schema entries
+        changed_labels = {}
+        for k, v in schema.items():
+            if not isinstance(v, dict):
+                continue
+            if "label_as_edge" in v.keys():
+                if v["label_as_edge"] in deduplicator.seen_relationships.keys():
+                    changed_labels[v["label_as_edge"]] = k
+
+        for edge in deduplicator.seen_relationships.keys():
+            if edge in changed_labels.keys():
+                edge = changed_labels[edge]
+            if edge in schema.keys():
+                schema[edge]["present_in_knowledge_graph"] = True
+                schema[edge]["is_relationship"] = True
+                # TODO information about source and target nodes
+            else:
+                logger.info(
+                    f"Edge {edge} not present in extended schema. "
+                    "Skipping schema info."
+                )
+
+        # write to output directory as YAML file
+        path = os.path.join(self._output_directory, "schema_info.yaml")
+        with open(path, "w") as f:
+            f.write(yaml.dump(schema))
+
+        return schema
 
     # TRANSLATION METHODS ###
 

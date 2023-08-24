@@ -23,7 +23,7 @@ from more_itertools import peekable
 
 from . import _misc
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from ._mapping import OntologyMapping
+from ._ontology import Ontology
 
 __all__ = ["BiolinkAdapter", "Translator"]
 
@@ -41,9 +41,7 @@ class Translator:
     and cypher queries.
     """
 
-    def __init__(
-        self, ontology_mapping: "OntologyMapping", strict_mode: bool = False
-    ):
+    def __init__(self, ontology: "Ontology", strict_mode: bool = False):
         """
         Args:
             leaves:
@@ -57,7 +55,7 @@ class Translator:
                 carry source, licence, and version information.
         """
 
-        self.extended_schema = ontology_mapping.extended_schema
+        self.ontology = ontology
         self.strict_mode = strict_mode
 
         # record nodes without biolink type configured in schema_config.yaml
@@ -71,7 +69,7 @@ class Translator:
 
     def translate_nodes(
         self,
-        id_type_prop_tuples: Iterable,
+        node_tuples: Iterable,
     ) -> Generator[BioCypherNode, None, None]:
         """
         Translates input node representation to a representation that
@@ -79,16 +77,16 @@ class Translator:
         requires explicit statement of node type on pass.
 
         Args:
-            id_type_tuples (list of tuples): collection of tuples
+            node_tuples (list of tuples): collection of tuples
                 representing individual nodes by their unique id and a type
                 that is translated from the original database notation to
                 the corresponding BioCypher notation.
 
         """
 
-        self._log_begin_translate(id_type_prop_tuples, "nodes")
+        self._log_begin_translate(node_tuples, "nodes")
 
-        for _id, _type, _props in id_type_prop_tuples:
+        for _id, _type, _props in node_tuples:
             # check for strict mode requirements
             required_props = ["source", "licence", "version"]
 
@@ -132,8 +130,9 @@ class Translator:
         """
 
         return (
-            self.extended_schema[_bl_type]["preferred_id"]
-            if "preferred_id" in self.extended_schema.get(_bl_type, {})
+            self.ontology.mapping.extended_schema[_bl_type]["preferred_id"]
+            if "preferred_id"
+            in self.ontology.mapping.extended_schema.get(_bl_type, {})
             else "id"
         )
 
@@ -142,7 +141,9 @@ class Translator:
         Filters properties for those specified in schema_config if any.
         """
 
-        filter_props = self.extended_schema[bl_type].get("properties", {})
+        filter_props = self.ontology.mapping.extended_schema[bl_type].get(
+            "properties", {}
+        )
 
         # strict mode: add required properties (only if there is a whitelist)
         if self.strict_mode and filter_props:
@@ -150,7 +151,7 @@ class Translator:
                 {"source": "str", "licence": "str", "version": "str"},
             )
 
-        exclude_props = self.extended_schema[bl_type].get(
+        exclude_props = self.ontology.mapping.extended_schema[bl_type].get(
             "exclude_properties", []
         )
 
@@ -188,7 +189,7 @@ class Translator:
 
     def translate_edges(
         self,
-        id_src_tar_type_prop_tuples: Iterable,
+        edge_tuples: Iterable,
     ) -> Generator[Union[BioCypherEdge, BioCypherRelAsNode], None, None]:
         """
         Translates input edge representation to a representation that
@@ -197,7 +198,7 @@ class Translator:
 
         Args:
 
-            id_src_tar_type_prop_tuples (list of tuples):
+            edge_tuples (list of tuples):
 
                 collection of tuples representing source and target of
                 an interaction via their unique ids as well as the type
@@ -206,18 +207,18 @@ class Translator:
                 Can optionally possess its own ID.
         """
 
-        self._log_begin_translate(id_src_tar_type_prop_tuples, "edges")
+        self._log_begin_translate(edge_tuples, "edges")
 
         # legacy: deal with 4-tuples (no edge id)
         # TODO remove for performance reasons once safe
-        id_src_tar_type_prop_tuples = peekable(id_src_tar_type_prop_tuples)
-        if len(id_src_tar_type_prop_tuples.peek()) == 4:
-            id_src_tar_type_prop_tuples = [
+        edge_tuples = peekable(edge_tuples)
+        if len(edge_tuples.peek()) == 4:
+            edge_tuples = [
                 (None, src, tar, typ, props)
-                for src, tar, typ, props in id_src_tar_type_prop_tuples
+                for src, tar, typ, props in edge_tuples
             ]
 
-        for _id, _src, _tar, _type, _props in id_src_tar_type_prop_tuples:
+        for _id, _src, _tar, _type, _props in edge_tuples:
             # check for strict mode requirements
             if self.strict_mode:
                 if not "source" in _props:
@@ -239,7 +240,9 @@ class Translator:
                 # filter properties for those specified in schema_config if any
                 _filtered_props = self._filter_props(bl_type, _props)
 
-                rep = self.extended_schema[bl_type]["represented_as"]
+                rep = self.ontology.mapping.extended_schema[bl_type][
+                    "represented_as"
+                ]
 
                 if rep == "node":
                     if _id:
@@ -295,9 +298,9 @@ class Translator:
                     yield BioCypherRelAsNode(n, e_s, e_t)
 
                 else:
-                    edge_label = self.extended_schema[bl_type].get(
-                        "label_as_edge"
-                    )
+                    edge_label = self.ontology.mapping.extended_schema[
+                        bl_type
+                    ].get("label_as_edge")
 
                     if edge_label is None:
                         edge_label = bl_type
@@ -356,7 +359,7 @@ class Translator:
 
         self._ontology_mapping = {}
 
-        for key, value in self.extended_schema.items():
+        for key, value in self.ontology.mapping.extended_schema.items():
             labels = value.get("input_label") or value.get("label_in_input")
 
             if isinstance(labels, str):

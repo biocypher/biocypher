@@ -125,7 +125,6 @@ class _BatchWriter(ABC):
 
     def __init__(
         self,
-        ontology: "Ontology",
         translator: "Translator",
         deduplicator: "Deduplicator",
         delimiter: str,
@@ -167,10 +166,6 @@ class _BatchWriter(ABC):
             - _get_import_script_name
 
         Args:
-            ontology:
-                Instance of :py:class:`Ontology` to enable translation and
-                ontology queries
-
             translator:
                 Instance of :py:class:`Translator` to enable translation of
                 nodes and manipulation of properties.
@@ -251,8 +246,6 @@ class _BatchWriter(ABC):
         self.wipe = wipe
         self.strict_mode = strict_mode
 
-        self.extended_schema = ontology.extended_schema
-        self.ontology = ontology
         self.translator = translator
         self.deduplicator = deduplicator
         self.node_property_dict = {}
@@ -352,34 +345,34 @@ class _BatchWriter(ABC):
             bool: The return value. True for success, False otherwise.
         """
         passed = False
-        # unwrap generator in one step
         edges = list(edges)  # force evaluation to handle empty generator
         if edges:
-            z = zip(
-                *(
-                    (
-                        e.get_node(),
-                        [
-                            e.get_source_edge(),
-                            e.get_target_edge(),
-                        ],
-                    )
-                    if isinstance(e, BioCypherRelAsNode)
-                    else (None, [e])
-                    for e in edges
-                )
-            )
-            nod, edg = (list(a) for a in z)
-            nod = [n for n in nod if n]
-            edg = [val for sublist in edg for val in sublist]  # flatten
+            nodes_flat = []
+            edges_flat = []
+            for edge in edges:
+                if isinstance(edge, BioCypherRelAsNode):
+                    # check if relationship has already been written, if so skip
+                    if self.deduplicator.rel_as_node_seen(edge):
+                        continue
 
-            if nod and edg:
-                passed = self.write_nodes(nod) and self._write_edge_data(
-                    edg,
+                    nodes_flat.append(edge.get_node())
+                    edges_flat.append(edge.get_source_edge())
+                    edges_flat.append(edge.get_target_edge())
+
+                else:
+                    # check if relationship has already been written, if so skip
+                    if self.deduplicator.edge_seen(edge):
+                        continue
+
+                    edges_flat.append(edge)
+
+            if nodes_flat and edges_flat:
+                passed = self.write_nodes(nodes_flat) and self._write_edge_data(
+                    edges_flat,
                     batch_size,
                 )
             else:
-                passed = self._write_edge_data(edg, batch_size)
+                passed = self._write_edge_data(edges_flat, batch_size)
 
         else:
             # is this a problem? if the generator or list is empty, we
@@ -451,8 +444,12 @@ class _BatchWriter(ABC):
                     bin_l[label] = 1
 
                     # get properties from config if present
-                    cprops = self.extended_schema.get(label).get(
-                        "properties",
+                    cprops = (
+                        self.translator.ontology.mapping.extended_schema.get(
+                            label
+                        ).get(
+                            "properties",
+                        )
                     )
                     if cprops:
                         d = dict(cprops)
@@ -486,7 +483,7 @@ class _BatchWriter(ABC):
 
                     # get label hierarchy
                     # multiple labels:
-                    all_labels = self.ontology.get_ancestors(label)
+                    all_labels = self.translator.ontology.get_ancestors(label)
 
                     if all_labels:
                         # convert to pascal case
@@ -682,10 +679,6 @@ class _BatchWriter(ABC):
             # for each label to check for consistency and their type
             # for now, relevant for `int`
             for edge in edges:
-                # check for duplicates
-                if self.deduplicator.edge_seen(edge):
-                    continue
-
                 if not (edge.get_source_id() and edge.get_target_id()):
                     logger.error(
                         "Edge must have source and target node. "
@@ -706,13 +699,23 @@ class _BatchWriter(ABC):
                     # (may not be if it is an edge that carries the
                     # "label_as_edge" property)
                     cprops = None
-                    if label in self.extended_schema:
-                        cprops = self.extended_schema.get(label).get(
+                    if (
+                        label
+                        in self.translator.ontology.mapping.extended_schema
+                    ):
+                        cprops = self.translator.ontology.mapping.extended_schema.get(
+                            label
+                        ).get(
                             "properties",
                         )
                     else:
                         # try via "label_as_edge"
-                        for k, v in self.extended_schema.items():
+                        for (
+                            k,
+                            v,
+                        ) in (
+                            self.translator.ontology.mapping.extended_schema.items()
+                        ):
                             if isinstance(v, dict):
                                 if v.get("label_as_edge") == label:
                                     cprops = v.get("properties")
@@ -873,9 +876,14 @@ class _BatchWriter(ABC):
 
             if label in ["IS_SOURCE_OF", "IS_TARGET_OF", "IS_PART_OF"]:
                 skip_id = True
-            elif not self.extended_schema.get(label):
+            elif not self.translator.ontology.mapping.extended_schema.get(
+                label
+            ):
                 # find label in schema by label_as_edge
-                for k, v in self.extended_schema.items():
+                for (
+                    k,
+                    v,
+                ) in self.translator.ontology.mapping.extended_schema.items():
                     if v.get("label_as_edge") == label:
                         schema_label = k
                         break
@@ -884,7 +892,9 @@ class _BatchWriter(ABC):
 
             if schema_label:
                 if (
-                    self.extended_schema.get(schema_label).get("use_id")
+                    self.translator.ontology.mapping.extended_schema.get(
+                        schema_label
+                    ).get("use_id")
                     == False
                 ):
                     skip_id = True
@@ -1182,9 +1192,14 @@ class _Neo4jBatchWriter(_BatchWriter):
 
             if label in ["IS_SOURCE_OF", "IS_TARGET_OF", "IS_PART_OF"]:
                 skip_id = True
-            elif not self.extended_schema.get(label):
+            elif not self.translator.ontology.mapping.extended_schema.get(
+                label
+            ):
                 # find label in schema by label_as_edge
-                for k, v in self.extended_schema.items():
+                for (
+                    k,
+                    v,
+                ) in self.translator.ontology.mapping.extended_schema.items():
                     if v.get("label_as_edge") == label:
                         schema_label = k
                         break
@@ -1195,7 +1210,9 @@ class _Neo4jBatchWriter(_BatchWriter):
 
             if schema_label:
                 if (
-                    self.extended_schema.get(schema_label).get("use_id")
+                    self.translator.ontology.mapping.extended_schema.get(
+                        schema_label
+                    ).get("use_id")
                     == False
                 ):
                     skip_id = True
@@ -1353,9 +1370,9 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                 f.write(row)
 
             # add collection from schema config
-            collection = self.extended_schema[label].get(
-                "db_collection_name", None
-            )
+            collection = self.translator.ontology.mapping.extended_schema[
+                label
+            ].get("db_collection_name", None)
 
             # add file path to neo4 admin import statement
             # do once for each part file
@@ -1434,16 +1451,19 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                 f.write(row)
 
             # add collection from schema config
-            if not self.extended_schema.get(label):
-                for _, v in self.extended_schema.items():
+            if not self.translator.ontology.mapping.extended_schema.get(label):
+                for (
+                    _,
+                    v,
+                ) in self.translator.ontology.mapping.extended_schema.items():
                     if v.get("label_as_edge") == label:
                         collection = v.get("db_collection_name", None)
                         break
 
             else:
-                collection = self.extended_schema[label].get(
-                    "db_collection_name", None
-                )
+                collection = self.translator.ontology.mapping.extended_schema[
+                    label
+                ].get("db_collection_name", None)
 
             # add file path to neo4 admin import statement (import call path
             # may be different from actual output path)
@@ -1841,7 +1861,6 @@ DBMS_TO_CLASS = {
 def get_writer(
     dbms: str,
     translator: "Translator",
-    ontology: "Ontology",
     deduplicator: "Deduplicator",
     output_directory: str,
     strict_mode: bool,
@@ -1855,8 +1874,6 @@ def get_writer(
         dbms: the database management system; for options, see DBMS_TO_CLASS.
 
         translator: the Translator object.
-
-        ontology: the Ontology object.
 
         output_directory: the directory to write the output files to.
 
@@ -1881,7 +1898,6 @@ def get_writer(
 
     if writer is not None:
         return writer(
-            ontology=ontology,
             translator=translator,
             deduplicator=deduplicator,
             delimiter=dbms_config.get("delimiter"),
