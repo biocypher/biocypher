@@ -65,6 +65,35 @@ can be found below.
    _PostgreSQLBatchWriter
    _ArangoDBBatchWriter
 
+.. api_pandas:
+
+In-memory Pandas knowledge graph
+================================
+
+BioCypher provides a wrapper around the :class:`pandas.DataFrame` class to
+facilitate the creation of a knowledge graph in memory. This is useful for
+testing, small datasets, and for workflows that should remain purely in Python.
+Example usage:
+
+.. code-block:: python
+
+   from biocypher import BioCypher
+   bc = BioCypher()
+   # given lists of nodes and edges
+   bc.add_nodes(node_list)
+   bc.add_edges(edge_list)
+   # show list of dataframes (one per node/edge type)
+   dfs = bc.to_df()
+
+Details about the :mod:`biocypher._pandas` module responsible for these methods
+can be found below.
+
+.. module:: biocypher._pandas
+.. autosummary::
+   :toctree: modules
+
+   Pandas
+
 .. _api_connect:
 
 Database creation and manipulation by Driver
@@ -79,10 +108,11 @@ example:
 
 .. code-block:: python
 
-   # given lists of nodes and edges
+   from biocypher import BioCypher
    bc = BioCypher()
-   bc.write_nodes(node_set_1)
-   bc.write_edges(edge_set_1)
+   # given lists of nodes and edges
+   bc.merge_nodes(node_set_1)
+   bc.merge_edges(edge_set_1)
    bc.merge_nodes(node_set_2)
    bc.merge_edges(edge_set_2)
 

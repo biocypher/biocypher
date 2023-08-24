@@ -1,0 +1,23 @@
+﻿biocypher.\_pandas.Pandas
+=========================
+
+.. currentmodule:: biocypher._pandas
+
+.. autoclass:: Pandas
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Pandas.__init__
+      ~Pandas.add_tables
+   
+   
+
+   
+   
+   

@@ -81,6 +81,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#the-main-biocypher-interface">The main BioCypher interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#database-creation-by-file">Database creation by file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#in-memory-pandas-knowledge-graph">In-memory Pandas knowledge graph</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#database-creation-and-manipulation-by-driver">Database creation and manipulation by Driver</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-biocypher._ontology">Ontology ingestion, parsing, and manipulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-biocypher._mapping">Mapping of data inputs to KG ontology</a></li>
@@ -176,6 +177,31 @@ can be found below.</p>
 </tbody>
 </table>
 </section>
+<section id="in-memory-pandas-knowledge-graph">
+<h2>In-memory Pandas knowledge graph<a class="headerlink" href="#in-memory-pandas-knowledge-graph" title="Permalink to this heading"></a></h2>
+<p>BioCypher provides a wrapper around the <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> class to
+facilitate the creation of a knowledge graph in memory. This is useful for
+testing, small datasets, and for workflows that should remain purely in Python.
+Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
+<span class="c1"># given lists of nodes and edges</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">node_list</span><span class="p">)</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edge_list</span><span class="p">)</span>
+<span class="c1"># show list of dataframes (one per node/edge type)</span>
+<span class="n">dfs</span> <span class="o">=</span> <span class="n">bc</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Details about the <a class="reference internal" href="#module-biocypher._pandas" title="biocypher._pandas"><code class="xref py py-mod docutils literal notranslate"><span class="pre">biocypher._pandas</span></code></a> module responsible for these methods
+can be found below.</p>
+<span class="target" id="module-biocypher._pandas"></span><table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._pandas.Pandas.html#biocypher._pandas.Pandas" title="biocypher._pandas.Pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Pandas</span></code></a>(translator, deduplicator)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="database-creation-and-manipulation-by-driver">
 <span id="api-connect"></span><h2>Database creation and manipulation by Driver<a class="headerlink" href="#database-creation-and-manipulation-by-driver" title="Permalink to this heading"></a></h2>
 <p>BioCypher also provides a driver for each of the supported DBMSs. The driver can
@@ -184,10 +210,11 @@ allowing more subtle manipulation usually not encountered in creating a database
 from scratch as in the <a class="reference internal" href="#api-write"><span class="std std-ref">file-based workflow</span></a>. This includes
 merging (creation of entities only if they don’t exist) and deletion. For
 example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># given lists of nodes and edges</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
 <span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
-<span class="n">bc</span><span class="o">.</span><span class="n">write_nodes</span><span class="p">(</span><span class="n">node_set_1</span><span class="p">)</span>
-<span class="n">bc</span><span class="o">.</span><span class="n">write_edges</span><span class="p">(</span><span class="n">edge_set_1</span><span class="p">)</span>
+<span class="c1"># given lists of nodes and edges</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">merge_nodes</span><span class="p">(</span><span class="n">node_set_1</span><span class="p">)</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">merge_edges</span><span class="p">(</span><span class="n">edge_set_1</span><span class="p">)</span>
 <span class="n">bc</span><span class="o">.</span><span class="n">merge_nodes</span><span class="p">(</span><span class="n">node_set_2</span><span class="p">)</span>
 <span class="n">bc</span><span class="o">.</span><span class="n">merge_edges</span><span class="p">(</span><span class="n">edge_set_2</span><span class="p">)</span>
 </pre></div>
