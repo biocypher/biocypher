@@ -13,8 +13,10 @@ BioCypher core module. Interfaces with the user and distributes tasks to
 submodules.
 """
 from typing import Optional
+import os
 
 from more_itertools import peekable
+import yaml
 
 import pandas as pd
 
@@ -506,11 +508,12 @@ class BioCypher:
         """
         Write an extended schema info YAML file that extends the
         `schema_config.yaml` with run-time information of the built KG. For
-        instance, include information on whether something is a relationship
-        (which is important in the case of representing relationships as nodes)
-        and the actual sources and targets of edges. Since this file can be used
-        in place of the original `schema_config.yaml` file, it indicates that it
-        is the extended schema by setting `is_schema_info` to `true`.
+        instance, include information on whether something present in the actual
+        knowledge graph, whether it is a relationship (which is important in the
+        case of representing relationships as nodes) and the actual sources and
+        targets of edges. Since this file can be used in place of the original
+        `schema_config.yaml` file, it indicates that it is the extended schema
+        by setting `is_schema_info` to `true`.
 
         We start by using the `extended_schema` dictionary from the ontology
         class instance, which contains all expanded entities and relationships.
@@ -529,9 +532,44 @@ class BioCypher:
         schema["is_schema_info"] = True
 
         deduplicator = self._get_deduplicator()
-        for node in deduplicator.seen_nodes:
-            if node in schema["nodes"]:
-                schema["nodes"][node]["is_relationship"] = True
+        for node in deduplicator.entity_types:
+            if node in schema.keys():
+                schema[node]["present_in_knowledge_graph"] = True
+                schema[node]["is_relationship"] = False
+            else:
+                logger.info(
+                    f"Node {node} not present in extended schema. "
+                    "Skipping schema info."
+                )
+
+        # find 'label_as_edge' cases in schema entries
+        changed_labels = {}
+        for k, v in schema.items():
+            if not isinstance(v, dict):
+                continue
+            if "label_as_edge" in v.keys():
+                if v["label_as_edge"] in deduplicator.seen_relationships.keys():
+                    changed_labels[v["label_as_edge"]] = k
+
+        for edge in deduplicator.seen_relationships.keys():
+            if edge in changed_labels.keys():
+                edge = changed_labels[edge]
+            if edge in schema.keys():
+                schema[edge]["present_in_knowledge_graph"] = True
+                schema[edge]["is_relationship"] = True
+                # TODO information about source and target nodes
+            else:
+                logger.info(
+                    f"Edge {edge} not present in extended schema. "
+                    "Skipping schema info."
+                )
+
+        # write to output directory as YAML file
+        path = os.path.join(self._output_directory, "schema_info.yaml")
+        with open(path, "w") as f:
+            f.write(yaml.dump(schema))
+
+        return schema
 
     # TRANSLATION METHODS ###
 
