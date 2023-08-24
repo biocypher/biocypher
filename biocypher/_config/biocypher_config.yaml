@@ -43,6 +43,10 @@ biocypher:
 
   # output_directory: biocypher-out
 
+  ## Set to change the cache directory
+
+  # cache_directory: .cache
+
   ## Optional tail ontologies
 
   # tail_ontologies:

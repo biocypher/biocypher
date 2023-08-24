@@ -21,8 +21,10 @@ __all__ = [
     "log",
     "Driver",
     "BioCypher",
+    "Resource",
 ]
 
+from ._get import Resource
 from ._core import BioCypher
 from ._config import config, module_data
 from ._logger import log, logger, logfile

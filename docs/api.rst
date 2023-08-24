@@ -127,6 +127,52 @@ can be found below.
    _Neo4jDriver
 
 
+.. api_get:
+
+Download and cache functionality
+================================
+
+BioCypher provides a download and cache functionality for resources. resources
+are defined via the ``Resource`` class, which have a name, a (set of) URL(s),
+and a lifetime (in days, set to 0 for infinite). The ``Downloader`` can deal
+with single and lists of files, compressed files, and directories. It uses
+[Pooch](https://www.fatiando.org/pooch/latest/) under the hood to handle the
+downloads. Example usage:
+
+.. code-block:: python
+
+   from biocypher import BioCypher, Resource
+   bc = BioCypher()
+
+   resource1 = Resource(
+      name="resource1",
+      urls=["https://example.com/resource1.txt"],
+      lifetime=1
+   )
+   resource2 = Resource(
+      name="resource2",
+      urls=["https://example.com/resource2.zip"],
+      lifetime=7
+   )
+   paths = bc.download(resource_list)
+
+The files will be stored in the cache directory, in subfolders according to the
+names of the resources, and additionally determined by Pooch (e.g. extraction).
+All paths of downloaded files are returned by the ``download`` method. The
+``Downloader`` class can also be used directly, without the BioCypher instance.
+You can set the cache directory in the configuration file; if not set, it will
+use the ``TemporaryDirectory.name()`` method from the ``tempfile`` module. More
+details about the ``Resource`` and ``Downloader`` classes can be found below.
+
+.. module:: biocypher._get
+.. autosummary::
+   :toctree: modules
+
+   Resource
+   Downloader
+
+
+
 Ontology ingestion, parsing, and manipulation
 =============================================
 .. module:: biocypher._ontology

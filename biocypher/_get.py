@@ -14,6 +14,8 @@ BioCypher get module. Used to download and cache data from external sources.
 
 from __future__ import annotations
 
+from typing import Optional
+
 from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
@@ -57,7 +59,7 @@ class Resource:
 
 
 class Downloader:
-    def __init__(self, cache_dir: str):
+    def __init__(self, cache_dir: Optional[str] = None) -> None:
         """
         A downloader is a collection of resources that can be downloaded
         and cached locally. It manages the lifetime of downloaded resources by
@@ -66,6 +68,9 @@ class Downloader:
         Args:
             cache_dir (str): The directory where the resources are cached. If
                 not given, a temporary directory is created.
+
+        Returns:
+            Downloader: The downloader object.
         """
         self.cache_dir = cache_dir or TemporaryDirectory().name
         self.cache_file = os.path.join(self.cache_dir, "cache.json")
@@ -115,7 +120,7 @@ class Downloader:
 
         # download resource
         if expired or not cache:
-            logger.info(f"Downloading resource {resource.name}.")
+            logger.info(f"Asking for download of {resource.name}.")
 
             if resource.is_dir:
                 files = self._get_files(resource)

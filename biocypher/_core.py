@@ -91,6 +91,7 @@ class BioCypher:
         head_ontology: dict = None,
         tail_ontologies: dict = None,
         output_directory: str = None,
+        cache_directory: str = None,
         # legacy params
         db_name: str = None,
     ):
@@ -144,6 +145,9 @@ class BioCypher:
         self._output_directory = output_directory or self.base_config.get(
             "output_directory"
         )
+        self._cache_directory = cache_directory or self.base_config.get(
+            "cache_directory"
+        )
         self._tail_ontologies = tail_ontologies or self.base_config.get(
             "tail_ontologies"
         )
@@ -158,6 +162,7 @@ class BioCypher:
         self._ontology_mapping = None
         self._deduplicator = None
         self._translator = None
+        self._downloader = None
         self._ontology = None
         self._writer = None
         self._pd = None
@@ -418,21 +423,22 @@ class BioCypher:
 
     # DOWNLOAD AND CACHE MANAGEMENT METHODS ###
 
-    def _get_downloader(self):
+    def _get_downloader(self, cache_dir: Optional[str] = None):
         """
         Create downloader if not exists.
         """
 
         if not self._downloader:
-            self._downloader = Downloader()
+            self._downloader = Downloader(self._cache_directory)
 
-    def download(self, force: bool = False) -> None:
+    def download(self, *resources) -> None:
         """
         Use the :class:`Downloader` class to download or load from cache the
         resources given by the adapter.
         """
 
         self._get_downloader()
+        return self._downloader.download(*resources)
 
     # OVERVIEW AND CONVENIENCE METHODS ###
 
