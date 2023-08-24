@@ -186,8 +186,8 @@ Example usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
 <span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
 <span class="c1"># given lists of nodes and edges</span>
-<span class="n">bc</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">node_list</span><span class="p">)</span>
-<span class="n">bc</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edge_list</span><span class="p">)</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_list</span><span class="p">)</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge_list</span><span class="p">)</span>
 <span class="c1"># show list of dataframes (one per node/edge type)</span>
 <span class="n">dfs</span> <span class="o">=</span> <span class="n">bc</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span>
 </pre></div>
