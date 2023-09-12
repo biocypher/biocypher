@@ -7,16 +7,25 @@ please feel free to ask them in the issue tracker.
 ## Dependency management
 
 We use [Poetry](https://python-poetry.org) for dependency management. Please
-make sure that you have set up the environment correctly before starting
-development. If you want to fix dependency issues, please do so in the Poetry
+make sure that you have installed Poetry and set up the environment correctly
+before starting development.
+
+### Setup the environment
+
+- Install dependencies from the lock file: `poetry install`
+- Use the environment: You can either run commands directly with `poetry run <command>` or open a shell with `poetry shell` and then run commands directly.
+
+### Updating the environment
+
+If you want to fix dependency issues, please do so in the Poetry
 framework. If Poetry does not work for you for some reason, please let us know.
 
-Helpful commands:
-- Install dependencies from lock file: `poetry install`
-- Open shell with this environment: `poetry shell`
-- Add new dependencies: `poetry add <dependency>`
+The Poetry dependencies are organized in groups.
+There are groups with dependencies needed for running BioCypher (`[tool.poetry.dependencies` with the group name `main`) and a group with dependencies needed for development (`[tool.poetry.group.dev.dependencies` with the group name `dev`).
+
+For adding new dependencies:
+- Add new dependencies: `poetry add <dependency> -- group <group>`
 - Update lock file (after adding new dependencies in pyproject.toml): `poetry lock`
-- Update dependencies to newest version: `poetry update`
 
 ## Code quality and formal requirements
 
