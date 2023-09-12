@@ -32,7 +32,7 @@ For running the hook for all project files (not only the changed ones) run `poet
 
 The project uses [Sphinx](https://www.sphinx-doc.org/en/master/) autodoc GitHub
 Actions workflow to generate the documentation. If you add new code, please make sure that it is documented
-accordingly and in a consistent manner with the existing code base. 
+accordingly and in a consistent manner with the existing code base.
 Especially the docstrings should follow the [Google style guide](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html). To check, you can run the documentation build locally by running `make html` in the `docs` directory.
 
 ## Testing
