@@ -88,8 +88,8 @@ simulated by calling the `Protein` class of our data generator 10 times.
 
 ```{code-block} python
 
-from data_generator import Protein
-proteins = [Protein() for _ in range(10)]
+>>> from tutorial.data_generator import Protein
+>>> proteins = [Protein() for _ in range(10)]
 
 ```
 
