@@ -11,7 +11,7 @@ jobs:
         -   name: Check out main
             uses: actions/checkout@main
         -   name: Setup Python
-            uses: actions/setup-python@v2
+            uses: actions/setup-python@v4
             with:
                 python-version: 3.10.5
         -   name: Load cached Poetry installation
