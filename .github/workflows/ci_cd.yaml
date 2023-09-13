@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - main
+      - '*'
 
 jobs:
   build-linux:
@@ -39,6 +39,9 @@ jobs:
 
     - name: Generate coverage badge
       run: coverage-badge -f -o docs/coverage/coverage.svg
+
+    - name: Check code quality
+      uses: pre-commit/action@v3.0.0
 
     - name: Commit changes
       uses: s0/git-publish-subdir-action@develop
