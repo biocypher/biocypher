@@ -66,21 +66,21 @@ jobs:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     build_and_deploy_artifact:
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-    - name: Install and configure Poetry
-      uses: snok/install-poetry@v1
-      with:
-        version: 1.5.1
-        virtualenvs-create: false
-    - name: Install Dependencies
-      run: poetry install
-    - name: Build artifact
-      run: poetry build
-    #- name: Deploy artifact to PyPi
-    #  run: poetry publish --username __token__ --password ${{ secrets.PYPI_TOKEN }}
+        steps:
+        -   name: Checkout Repository
+            uses: actions/checkout@v4
+        -   name: Set up Python
+            uses: actions/setup-python@v4
+            with:
+                python-version: '3.9'
+        -   name: Install and configure Poetry
+            uses: snok/install-poetry@v1
+            with:
+                version: 1.5.1
+                virtualenvs-create: false
+        -   name: Install Dependencies
+            run: poetry install
+        -   name: Build artifact
+            run: poetry build
+        #- name: Deploy artifact to PyPi
+        #  run: poetry publish --username __token__ --password ${{ secrets.PYPI_TOKEN }}
