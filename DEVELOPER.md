@@ -44,6 +44,8 @@ Actions workflow to generate the documentation. If you add new code, please make
 accordingly and in a consistent manner with the existing code base.
 Especially the docstrings should follow the [Google style guide](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html). To check, you can run the documentation build locally by running `make html` in the `docs` directory.
 
+When adding new code snippets to the documentation make sure, that they are automatically tested with [doctest](https://sphinx-tutorial.readthedocs.io/step-3/#testing-your-code) to ensure, that no ouutdated code snippets are part of the documentation.
+
 ## Testing
 
 The project uses [pytest](https://docs.pytest.org/en/stable/) for testing. To
