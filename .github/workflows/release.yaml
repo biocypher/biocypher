@@ -1,9 +1,15 @@
-name: Docs build
+name: Release
+
 on:
--   push
+  push:
+    branches:
+    - '*'
+    #- main
+    #tags:
+    #- '*'
 
 jobs:
-    build:
+    build_and_deploy_docs:
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/main'
         permissions: write-all
@@ -38,6 +44,8 @@ jobs:
             run: poetry install --no-interaction
         -   name: Install pandoc
             run: sudo apt-get -y install pandoc
+        -   name: Test code snippets in documentation
+            run: poetry run make doctest --directory docs/
         -   name: Build documentation
             run: poetry run make html --directory docs/
         -   name: Commit files
@@ -56,3 +64,24 @@ jobs:
                 BRANCH: gh-pages
                 FOLDER: docs/_build/html
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+    build_and_deploy_artifact:
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.5.1
+        virtualenvs-create: false
+    - name: Install Dependencies
+      run: poetry install
+    - name: Build artifact
+      run: poetry build
+    #- name: Deploy artifact to PyPi
+    #  run: poetry publish --username __token__ --password ${{ secrets.PYPI_TOKEN }}
