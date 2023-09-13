@@ -66,6 +66,7 @@ jobs:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     build_and_deploy_artifact:
+        runs-on: ubuntu-latest
         steps:
         -   name: Checkout Repository
             uses: actions/checkout@v4
