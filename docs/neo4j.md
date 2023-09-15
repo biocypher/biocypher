@@ -63,6 +63,10 @@ running database (``<db_name>`` being the name assigned in the method):
 2. ``create database <db_name>``
 3. ``:use <db_name>``
 
+Note: starting from major version 5.0, Neo4j ``import`` command needs the
+``database`` scope. Biocypher will take care of changing the import command to
+``neo4j-admin database import`` if that’s the case.
+
 (neo4j_tut)=
 # Tutorial - Neo4j
 
