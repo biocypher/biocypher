@@ -1008,14 +1008,14 @@ class _BatchWriter(ABC):
 
         return self._construct_import_call()
 
-    def write_import_call(self) -> bool:
+    def write_import_call(self) -> str:
         """
         Function to write the import call detailing folder and
         individual node and edge headers and data files, as well as
         delimiters and database name, to the export folder as txt.
 
         Returns:
-            bool: The return value. True for success, False otherwise.
+            str: The path of the file holding the import call.
         """
 
         file_path = os.path.join(self.outdir, self._get_import_script_name())
@@ -1024,7 +1024,7 @@ class _BatchWriter(ABC):
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(self._construct_import_call())
 
-        return True
+        return file_path
 
 
 class _Neo4jBatchWriter(_BatchWriter):
