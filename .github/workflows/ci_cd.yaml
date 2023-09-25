@@ -98,7 +98,8 @@ jobs:
     # - name: Start Neo4j Docker
     # No official Neo4j Docker image available for Windows
     # -> setup currently missing and tests which need this are skipped on Windows
-    - name: Start Postgres Docker
-      run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:latest
+    # and the same for Postgres
+    # - name: Start Postgres Docker
+    #  run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:latest
     - name: Run Tests
       run: pytest --password=your_password_here
