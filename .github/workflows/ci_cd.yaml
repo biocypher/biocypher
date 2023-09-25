@@ -95,8 +95,9 @@ jobs:
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
     - name: Install Dependencies
       run: poetry install --no-interaction --no-root
-    - name: Start Neo4j Docker
-      run: docker run --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/your_password_here --env NEO4J_PLUGINS='["apoc"]' --env=NEO4J_ACCEPT_LICENSE_AGREEMENT=yes -d neo4j
+    # - name: Start Neo4j Docker
+    # No official Neo4j Docker image available for Windows
+    # -> setup currently missing and tests which need this are skipped on Windows
     - name: Start Postgres Docker
       run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:latest
     - name: Run Tests
