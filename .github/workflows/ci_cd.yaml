@@ -5,8 +5,8 @@ on: [push, pull_request]
 jobs:
   test:
     strategy:
+      fail-fast: true
       matrix:
-        fail-fast: true
         os: ["ubuntu-latest", "macos-latest"]
         python-version: ["3.9", "3.10"]
     runs-on: ${{ matrix.os }}
