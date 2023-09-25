@@ -1,12 +1,6 @@
 name: Release
 
-on:
-  push:
-    branches:
-    - '*'
-    #- main
-    #tags:
-    #- '*'
+on: [push]
 
 jobs:
     build_and_deploy_docs:
