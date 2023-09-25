@@ -10,7 +10,7 @@ on:
 
 jobs:
   push_job:
-  if: github.event_name == 'push'
+  if: ${{ github.event_name == 'push' }}
   runs-on: ubuntu-latest
   # TODO: fix duplicate code
   steps:
@@ -40,6 +40,7 @@ jobs:
       uses: pre-commit/action@v3.0.0
 
   pull_request_job:
+    if: ${{ github.event_name == 'pull_request' }}
     strategy:
       # max-parallel: 1
       fail-fast: true
