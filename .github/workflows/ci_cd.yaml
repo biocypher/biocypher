@@ -10,10 +10,10 @@ on:
 
 jobs:
   push_job:
-  if: ${{ github.event_name == 'push' }}
-  runs-on: ubuntu-latest
-  # TODO: fix duplicate code
-  steps:
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    # TODO: fix duplicate code
+    steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
     - name: Install and configure Poetry
