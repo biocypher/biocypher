@@ -102,4 +102,4 @@ jobs:
     # - name: Start Postgres Docker
     #  run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:latest
     - name: Run Tests
-      run: pytest --password=your_password_here
+      run: poetry run pytest --password=your_password_here
