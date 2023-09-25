@@ -33,15 +33,15 @@ jobs:
     - name: Start Postgres Docker
       run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:latest
     - name: Run Tests
-      run: pytest --password=your_password_here
+      run: poetry run pytest --password=your_password_here
     - name: Check code quality
       uses: pre-commit/action@v3.0.0
 
     - name: Generate coverage report
-      run: coverage run -m pytest --password=your_password_here
+      run: poetry run coverage run -m pytest --password=your_password_here
       if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
     - name: Generate coverage badge
-      run: coverage-badge -f -o docs/coverage/coverage.svg
+      run: poetry run coverage-badge -f -o docs/coverage/coverage.svg
       if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
     - name: Commit changes
       uses: s0/git-publish-subdir-action@develop
