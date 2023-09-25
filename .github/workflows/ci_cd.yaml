@@ -172,8 +172,10 @@ jobs:
       with:
         path: ~/.cache
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Install Dependencies
+    - name: Install dependencies
       run: poetry install --no-interaction --no-root
+    - name: Install library
+      run: poetry install --no-interaction
     # - name: Start Neo4j Docker
     # No official Neo4j Docker image available for Windows
     # -> setup currently missing and tests which need this are skipped on Windows
