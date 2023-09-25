@@ -2,13 +2,17 @@ name: Tests and code quality
 
 on: [push, pull_request]
 
+# TODO: matrix only on pull requests
+# TODO: tests and code quality on all commits
+
 jobs:
   test:
     strategy:
+      max-parallel: 1
       fail-fast: true
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.9", "3.10", "3.11"]
     runs-on: ${{ matrix.os }}
 
     steps:
