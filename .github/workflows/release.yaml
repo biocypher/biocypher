@@ -83,5 +83,5 @@ jobs:
             run: poetry install
         -   name: Build artifact
             run: poetry build
-        -   name: Publish artifact to PyPI
-            uses: pypa/gh-action-pypi-publish@release/v1
+        #-   name: Publish artifact to PyPI
+        #    uses: pypa/gh-action-pypi-publish@release/v1
