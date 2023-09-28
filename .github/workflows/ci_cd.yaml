@@ -3,149 +3,87 @@ name: Tests and code quality
 on: [push, pull_request]
 
 jobs:
-  push_job:
-    if: ${{ github.event_name == 'push' }}
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-    - name: Install and configure Poetry
-      uses: snok/install-poetry@v1
-      with:
-        version: 1.5.1
-        virtualenvs-create: true
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.9
-        cache: 'poetry'
-    - name: Set Poetry Python version
-      run: poetry env use 3.9
-    - name: Install Dependencies
-      run: poetry install
-    - name: Start Neo4j Docker
-      run: docker run --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/your_password_here --env NEO4J_PLUGINS='["apoc"]' --env=NEO4J_ACCEPT_LICENSE_AGREEMENT=yes -d neo4j:4.4-enterprise
-    - name: Start Postgres Docker
-      run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:latest
-    - name: Run Tests
-      run: poetry run pytest --password=your_password_here
-    - name: Check code quality
-      uses: pre-commit/action@v3.0.0
-
-  pull_request_job:
-    # if: ${{ github.event_name == 'pull_request' }}
-    strategy:
-      fail-fast: true
-      matrix:
-        os: ["ubuntu-latest", "macos-latest"]
-        python-version: ["3.9", "3.10", "3.11"]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-    - name: Install and configure Poetry
-      uses: snok/install-poetry@v1
-      with:
-        version: 1.5.1
-        virtualenvs-create: true
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'poetry'
-    - name: Set Poetry Python version
-      run: poetry env use ${{ matrix.python-version }}
-    - name: Install Dependencies
-      run: poetry install
-    - name: Install Docker
-      uses: douglascamata/setup-docker-macos-action@v1-alpha
-      if: ${{ matrix.os == 'macos-latest' }}
-    - name: Start Neo4j Docker
-      run: docker run --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/your_password_here --env NEO4J_PLUGINS='["apoc"]' --env=NEO4J_ACCEPT_LICENSE_AGREEMENT=yes -d neo4j:4.4-enterprise
-    - name: Start Postgres Docker
-      run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:latest
-    - name: Run Tests
-      run: poetry run pytest --password=your_password_here
-    - name: Check code quality
-      uses: pre-commit/action@v3.0.0
-
-    - name: Generate coverage report
-      run: poetry run coverage run -m pytest --password=your_password_here
-      if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
-    - name: Generate coverage badge
-      run: poetry run coverage-badge -f -o docs/coverage/coverage.svg
-      if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
-    - name: Commit changes
-      uses: s0/git-publish-subdir-action@develop
-      if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
-      env:
-        REPO: self
-        BRANCH: coverage
-        FOLDER: docs/coverage
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  #build-macos:
-  #  runs-on: macos-latest
-#
+  #push_job:
+  #  if: ${{ github.event_name == 'push' }}
+  #  runs-on: ubuntu-latest
   #  steps:
   #  - name: Checkout Repository
   #    uses: actions/checkout@v4
-  #  - name: Set up Python
-  #    uses: actions/setup-python@v4
-  #    with:
-  #      python-version: '3.9'
   #  - name: Install and configure Poetry
   #    uses: snok/install-poetry@v1
   #    with:
   #      version: 1.5.1
-  #      virtualenvs-create: false
+  #      virtualenvs-create: true
+  #  - name: Set up Python 3.9
+  #    uses: actions/setup-python@v4
+  #    with:
+  #      python-version: 3.9
+  #      cache: 'poetry'
+  #  - name: Set Poetry Python version
+  #    run: poetry env use 3.9
   #  - name: Install Dependencies
   #    run: poetry install
-  #  - name: Install Docker
-  #    uses: douglascamata/setup-docker-macos-action@v1-alpha
   #  - name: Start Neo4j Docker
   #    run: docker run --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/your_password_here --env NEO4J_PLUGINS='["apoc"]' --env=NEO4J_ACCEPT_LICENSE_AGREEMENT=yes -d neo4j:4.4-enterprise
   #  - name: Start Postgres Docker
   #    run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:latest
   #  - name: Run Tests
-  #    run: pytest --password=your_password_here
-
-  #build-windows:
-  #  runs-on: windows-latest
+  #    run: poetry run pytest --password=your_password_here
+  #  - name: Check code quality
+  #    uses: pre-commit/action@v3.0.0
 #
-  #  defaults:
-  #    run:
-  #      shell: bash
+  #pull_request_job:
+  #  # if: ${{ github.event_name == 'pull_request' }}
+  #  strategy:
+  #    fail-fast: true
+  #    matrix:
+  #      os: ["ubuntu-latest", "macos-latest"]
+  #      python-version: ["3.9", "3.10", "3.11"]
+  #  runs-on: ${{ matrix.os }}
 #
   #  steps:
   #  - name: Checkout Repository
   #    uses: actions/checkout@v4
-  #  - name: Set up Python
-  #    uses: actions/setup-python@v4
-  #    with:
-  #      python-version: '3.9'
-  #  - name: Install Poetry
+  #  - name: Install and configure Poetry
   #    uses: snok/install-poetry@v1
   #    with:
+  #      version: 1.5.1
   #      virtualenvs-create: true
-  #      virtualenvs-in-project: true
-  #  - name: Load cached venv
-  #    id: cached-pip-wheels
-  #    uses: actions/cache@v3
+  #  - name: Set up Python ${{ matrix.python-version }}
+  #    uses: actions/setup-python@v4
   #    with:
-  #      path: ~/.cache
-  #      key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+  #      python-version: ${{ matrix.python-version }}
+  #      cache: 'poetry'
+  #  - name: Set Poetry Python version
+  #    run: poetry env use ${{ matrix.python-version }}
   #  - name: Install Dependencies
-  #    run: poetry install --no-interaction --no-root
-  #  # - name: Start Neo4j Docker
-  #  # No official Neo4j Docker image available for Windows
-  #  # -> setup currently missing and tests which need this are skipped on Windows
-  #  # and the same for Postgres
-  #  # - name: Start Postgres Docker
-  #  #  run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:latest
+  #    run: poetry install
+  #  - name: Install Docker
+  #    uses: douglascamata/setup-docker-macos-action@v1-alpha
+  #    if: ${{ matrix.os == 'macos-latest' }}
+  #  - name: Start Neo4j Docker
+  #    run: docker run --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/your_password_here --env NEO4J_PLUGINS='["apoc"]' --env=NEO4J_ACCEPT_LICENSE_AGREEMENT=yes -d neo4j:4.4-enterprise
+  #  - name: Start Postgres Docker
+  #    run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:latest
   #  - name: Run Tests
   #    run: poetry run pytest --password=your_password_here
+  #  - name: Check code quality
+  #    uses: pre-commit/action@v3.0.0
+#
+  #  - name: Generate coverage report
+  #    run: poetry run coverage run -m pytest --password=your_password_here
+  #    if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
+  #  - name: Generate coverage badge
+  #    run: poetry run coverage-badge -f -o docs/coverage/coverage.svg
+  #    if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
+  #  - name: Commit changes
+  #    uses: s0/git-publish-subdir-action@develop
+  #    if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
+  #    env:
+  #      REPO: self
+  #      BRANCH: coverage
+  #      FOLDER: docs/coverage
+  #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-windows:
     runs-on: windows-latest

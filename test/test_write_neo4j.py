@@ -57,19 +57,19 @@ def test_create_import_call(bw):
     assert 'bin/neo4j-admin import --database=neo4j --delimiter=";" ' in call
     assert '--array-delimiter="|" --quote="\'" --force=true ' in call
     assert (
-        f'--nodes="{tmp_path}/PostTranslationalInteraction-header.csv,{tmp_path}/PostTranslationalInteraction-part.*" '
+        f'--nodes="{tmp_path}{os.sep}PostTranslationalInteraction-header.csv,{tmp_path}{os.sep}PostTranslationalInteraction-part.*" '
         in call
     )
     assert (
-        f'--relationships="{tmp_path}/IS_SOURCE_OF-header.csv,{tmp_path}/IS_SOURCE_OF-part.*" '
+        f'--relationships="{tmp_path}{os.sep}IS_SOURCE_OF-header.csv,{tmp_path}{os.sep}IS_SOURCE_OF-part.*" '
         in call
     )
     assert (
-        f'--relationships="{tmp_path}/IS_TARGET_OF-header.csv,{tmp_path}/IS_TARGET_OF-part.*" '
+        f'--relationships="{tmp_path}{os.sep}IS_TARGET_OF-header.csv,{tmp_path}{os.sep}IS_TARGET_OF-part.*" '
         in call
     )
     assert (
-        f'--relationships="{tmp_path}/PERTURBED_IN_DISEASE-header.csv,{tmp_path}/PERTURBED_IN_DISEASE-part.*" '
+        f'--relationships="{tmp_path}{os.sep}PERTURBED_IN_DISEASE-header.csv,{tmp_path}{os.sep}PERTURBED_IN_DISEASE-part.*" '
         in call
     )
 
