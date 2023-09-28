@@ -183,3 +183,7 @@ def test_download_zip_and_expiration():
     paths = downloader.download(resource)
     # should download again
     assert paths[0] is not None
+
+
+def test_cache_api_request():
+    pass
