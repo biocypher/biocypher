@@ -15,10 +15,10 @@ jobs:
     #----------------------------------------------
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set up Python $PYTHON_VERSION
+    - name: Set up Python ${{env.PYTHON_VERSION}}
       uses: actions/setup-python@v4
       with:
-        python-version: $PYTHON_VERSION
+        python-version: ${{env.PYTHON_VERSION}}
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1
       with:
