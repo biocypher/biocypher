@@ -84,8 +84,10 @@ jobs:
       if: ${{ matrix.os == 'macos-latest' }}
     - name: Start Neo4j Docker
       run: docker run --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/your_password_here --env NEO4J_PLUGINS='["apoc"]' --env=NEO4J_ACCEPT_LICENSE_AGREEMENT=yes -d neo4j:4.4-enterprise
+      if: ${{ matrix.os != 'windows-latest' }}
     - name: Start Postgres Docker
       run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:latest
+      if: ${{ matrix.os != 'windows-latest' }}
     #----------------------------------------------
     #      run tests and code quality checks
     #----------------------------------------------
