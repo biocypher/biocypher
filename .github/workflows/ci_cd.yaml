@@ -113,14 +113,14 @@ jobs:
     - name: Generate coverage report
       run: poetry run coverage run -m pytest --password=your_password_here
       if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
-    #- name: Generate coverage badge
-    #  run: poetry run coverage-badge -f -o docs/coverage/coverage.svg
-    #  if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
-    #- name: Commit changes
-    #  uses: s0/git-publish-subdir-action@develop
-    #  if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
-    #  env:
-    #    REPO: self
-    #    BRANCH: coverage
-    #    FOLDER: docs/coverage
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Generate coverage badge
+      run: poetry run coverage-badge -f -o docs/coverage/coverage.svg
+      if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/main' }}
+    - name: Commit changes
+      uses: s0/git-publish-subdir-action@develop
+      if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/main' }}
+      env:
+        REPO: self
+        BRANCH: coverage
+        FOLDER: docs/coverage
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
