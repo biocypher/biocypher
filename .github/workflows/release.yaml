@@ -3,85 +3,43 @@ name: Release
 on: [push]
 
 jobs:
-    build_and_deploy_docs:
-        runs-on: ubuntu-latest
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        permissions: write-all
-        steps:
-        -   name: Check out main
-            uses: actions/checkout@main
-        -   name: Setup Python
-            uses: actions/setup-python@v4
-            with:
-                python-version: 3.10.5
-        -   name: Load cached Poetry installation
-            uses: actions/cache@v2
-            with:
-                path: ~/.local
-                key: poetry-0
-        -   name: Install Poetry
-            uses: snok/install-poetry@v1
-            with:
-                virtualenvs-create: true
-                virtualenvs-in-project: true
-                installer-parallel: true
-        # -   name: Load cached venv
-        #     id: cached-poetry-dependencies
-        #     uses: actions/cache@v2
-        #     with:
-        #         path: .venv
-        #         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-        -   name: Install dependencies
-            # if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-            run: poetry install --no-interaction --no-root
-        -   name: Install library
-            run: poetry install --no-interaction
-        -   name: Install pandoc
-            run: sudo apt-get -y install pandoc
-        -   name: Test code snippets in documentation
-            run: poetry run make doctest --directory docs/
-        -   name: Build documentation
-            run: poetry run make html --directory docs/
-        -   name: Commit files
-            run: |
-                git config --local user.email "action@github.com"
-                git config --local user.name "GitHub Action"
-                touch docs/_build/html/.nojekyll
-                echo 'biocypher.org' > docs/_build/html/CNAME
-                git add -f docs/_build/
-                git commit -m "Update autodoc" -a
-    # using https://github.com/marketplace/actions/push-git-subdirectory-as-branch
-        -   name: Deploy
-            uses: s0/git-publish-subdir-action@develop
-            env:
-                REPO: self
-                BRANCH: gh-pages
-                FOLDER: docs/_build/html
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    build_and_deploy_artifact:
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        runs-on: ubuntu-latest
-        environment:
-            name: pypi
-            url: https://test.pypi.org/project/biocypher/
-        permissions:
-            id-token: write
-        steps:
-        -   name: Checkout Repository
-            uses: actions/checkout@v4
-        -   name: Set up Python
-            uses: actions/setup-python@v4
-            with:
-                python-version: '3.9'
-        -   name: Install and configure Poetry
-            uses: snok/install-poetry@v1
-            with:
-                version: 1.5.1
-                virtualenvs-create: false
-        -   name: Install Dependencies
-            run: poetry install
-        -   name: Build artifact
-            run: poetry build
-        #-   name: Publish artifact to PyPI
-        #    uses: pypa/gh-action-pypi-publish@release/v1
+  build_and_deploy_artifact:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: 3.9
+    environment:
+      name: pypi
+      url: https://test.pypi.org/project/biocypher/
+    permissions:
+      id-token: write
+    steps:
+    #----------------------------------------------
+    # check-out repo and set-up python and poetry
+    #----------------------------------------------
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{env.PYTHON_VERSION}}
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.5.1
+        virtualenvs-create: false
+    #----------------------------------------------
+    #             install dependencies
+    #----------------------------------------------
+    - name: Install Dependencies
+      run: poetry install
+    #----------------------------------------------
+    #             build artifact
+    #----------------------------------------------
+    - name: Build artifact
+      run: poetry build
+    #----------------------------------------------
+    #             upload to PyPi
+    #----------------------------------------------
+    #- name: Publish artifact to PyPI
+    #  uses: pypa/gh-action-pypi-publish@release/v1
