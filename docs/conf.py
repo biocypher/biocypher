@@ -49,6 +49,7 @@ extensions = [
     "sphinx.ext.todo",  # not for output but to remove warnings
     "sphinx.ext.autosummary",
     "sphinxext.opengraph",
+    "sphinx.ext.doctest",
     "myst_parser",  # markdown support
     "sphinx_rtd_theme",
     "sphinx_design",

@@ -72,6 +72,22 @@ using the `neo4j-admin` command line tool. This is not necessary if the graph is
 created in online mode. For convenience, BioCypher provides the command line
 call required to import the data into Neo4j:
 
+```{testcode} python
+:hide:
+from biocypher import BioCypher
+bc = BioCypher()
+
+def check_if_function_exists(module_name, function_name):
+    if hasattr(module_name, function_name):
+        print("Functions exists")
+    else:
+        print("Function does not exist")
+check_if_function_exists(bc, "write_import_call")
+```
+```{testoutput} python
+:hide:
+Functions exists
+```
 ```{code-block} python
 bc.write_import_call()
 ```

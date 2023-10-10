@@ -11,7 +11,7 @@ The main BioCypher interface
 
 Create a BioCypher instance by running:
 
-.. code-block:: python
+.. testcode:: python
 
    from biocypher import BioCypher
    bc = BioCypher()
@@ -35,6 +35,29 @@ using the :meth:`BioCypher.write_nodes` and :meth:`BioCypher.write_edges`
 methods, which accept collections of nodes and edges either as :ref:`tuples
 <tut_01>` or as :class:`BioCypherNode` and :class:`BioCypherEdge` :ref:`objects
 <api_create>`. For example:
+
+.. testsetup:: python
+
+   from biocypher import BioCypher
+   bc = BioCypher()
+
+   def check_if_function_exists(module_name, function_name):
+      if hasattr(module_name, function_name):
+         print("Functions exists")
+      else:
+         print("Function does not exist")
+
+.. testcode:: python
+   :hide:
+
+   check_if_function_exists(bc, 'write_nodes')
+   check_if_function_exists(bc, 'write_edges')
+
+.. testoutput:: python
+   :hide:
+
+   Functions exists
+   Functions exists
 
 .. code-block:: python
 
@@ -75,6 +98,18 @@ facilitate the creation of a knowledge graph in memory. This is useful for
 testing, small datasets, and for workflows that should remain purely in Python.
 Example usage:
 
+.. testcode:: python
+   :hide:
+
+   check_if_function_exists(bc, 'add')
+   check_if_function_exists(bc, 'to_df')
+
+.. testoutput:: python
+   :hide:
+
+   Functions exists
+   Functions exists
+
 .. code-block:: python
 
    from biocypher import BioCypher
@@ -105,6 +140,16 @@ allowing more subtle manipulation usually not encountered in creating a database
 from scratch as in the :ref:`file-based workflow <api_write>`. This includes
 merging (creation of entities only if they don't exist) and deletion. For
 example:
+
+.. testcode:: python
+   :hide:
+
+   check_if_function_exists(bc, 'merge_nodes')
+
+.. testoutput:: python
+   :hide:
+
+   Functions exists
 
 .. code-block:: python
 
@@ -139,6 +184,16 @@ with single and lists of files, compressed files, and directories (which needs
 to be indicated using the ``is_dir`` parameter of the resource). It uses `Pooch
 <https://www.fatiando.org/pooch/latest/>`_ under the hood to handle the
 downloads. Example usage:
+
+.. testcode:: python
+   :hide:
+
+   check_if_function_exists(bc, 'download')
+
+.. testoutput:: python
+   :hide:
+
+   Functions exists
 
 .. code-block:: python
 
