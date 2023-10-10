@@ -1,4 +1,4 @@
-name: Release
+name: Publish
 
 on: [push]
 
@@ -9,7 +9,7 @@ jobs:
     env:
       PYTHON_VERSION: 3.9
     environment:
-      name: pypi
+      name: staging
       url: https://test.pypi.org/project/biocypher/
     permissions:
       id-token: write
@@ -41,5 +41,5 @@ jobs:
     #----------------------------------------------
     #             upload to PyPi
     #----------------------------------------------
-    #- name: Publish artifact to PyPI
-    #  uses: pypa/gh-action-pypi-publish@release/v1
+    - name: Publish artifact to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1

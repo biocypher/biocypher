@@ -115,10 +115,11 @@ jobs:
       if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
     - name: Generate coverage badge
       run: poetry run coverage-badge -f -o docs/coverage/coverage.svg
-      if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/main' }}
+      # TODO: set to pyopensci branch to test it -> set it back to main branch after test
+      if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/pyopensci' }} # main
     - name: Commit changes
       uses: s0/git-publish-subdir-action@develop
-      if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/main' }}
+      if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/pyopensci' }} # main
       env:
         REPO: self
         BRANCH: coverage
