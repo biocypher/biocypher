@@ -9,7 +9,7 @@ jobs:
     env:
       PYTHON_VERSION: 3.9
     environment:
-      name: staging
+      name: staging # uploads to test.pypi.org
       url: https://test.pypi.org/project/biocypher/
     permissions:
       id-token: write
