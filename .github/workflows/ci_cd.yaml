@@ -38,7 +38,7 @@ jobs:
     - name: Start Postgres Docker
       run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:11.21-bullseye
     #----------------------------------------------
-    #      run tests and code quality checks
+    #     run tests and code quality checks
     #----------------------------------------------
     - name: Run Tests
       run: poetry run pytest --password=your_password_here
