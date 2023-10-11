@@ -59,6 +59,7 @@ sphinxext-opengraph = "^0.8.2"
 coverage-badge = "^1.1.0"
 nbsphinx = "^0.9.2"
 black = "^23.9.1"
+flake8 = "^6.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -113,11 +114,11 @@ indent = "    "
 profile = "black"
 
 [tool.flake8]
-ignore = ["D200", "D202", "D401", "D105", "W504"]
+ignore = ["E203", "D200", "D202", "D401", "D105", "W504"]
 per-file-ignores = [
     "docs/source/conf.py:D100",
     "tests/*:D100,D101,D102",
     "*/__init__.py:F401"
 ]
-max-line-length = 80
+max-line-length = 88
 count = true

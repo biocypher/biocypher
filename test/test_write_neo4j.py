@@ -74,7 +74,7 @@ def test_create_import_call(bw):
     )
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_neo4j_write_node_data_headers_import_call(bw, _get_nodes):
     # four proteins, four miRNAs
     nodes = _get_nodes
@@ -197,7 +197,7 @@ def test_property_types(bw):
     assert "BiologicalEntity" in data
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_write_node_data_from_list(bw, _get_nodes):
     nodes = _get_nodes
 
@@ -223,7 +223,7 @@ def test_write_node_data_from_list(bw, _get_nodes):
     assert "ChemicalEntity" in micro_rna
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_write_node_data_from_gen(bw, _get_nodes):
     nodes = _get_nodes
 
@@ -297,7 +297,7 @@ def test_write_node_data_from_gen_no_props(bw):
     assert "ChemicalEntity" in micro_rna
 
 
-@pytest.mark.parametrize("l", [int(1e4 + 4)], scope="module")
+@pytest.mark.parametrize("lenght", [int(1e4 + 4)], scope="module")
 def test_write_node_data_from_large_gen(bw, _get_nodes):
     nodes = _get_nodes
 
@@ -330,7 +330,7 @@ def test_write_node_data_from_large_gen(bw, _get_nodes):
     )
 
 
-@pytest.mark.parametrize("l", [1], scope="module")
+@pytest.mark.parametrize("lenght", [1], scope="module")
 def test_too_many_properties(bw, _get_nodes):
     nodes = _get_nodes
 
@@ -357,7 +357,7 @@ def test_too_many_properties(bw, _get_nodes):
     assert not passed
 
 
-@pytest.mark.parametrize("l", [1], scope="module")
+@pytest.mark.parametrize("lenght", [1], scope="module")
 def test_not_enough_properties(bw, _get_nodes):
     nodes = _get_nodes
 
@@ -439,7 +439,7 @@ def test_write_none_type_property_and_order_invariance(bw):
     assert "BiologicalEntity" in protein
 
 
-@pytest.mark.parametrize("l", [int(1e4)], scope="module")
+@pytest.mark.parametrize("lenght", [int(1e4)], scope="module")
 def test_accidental_exact_batch_size(bw, _get_nodes):
     nodes = _get_nodes
 
@@ -481,7 +481,7 @@ def test_accidental_exact_batch_size(bw, _get_nodes):
     )
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_write_edge_data_from_gen(bw, _get_edges):
     edges = _get_edges
 
@@ -529,7 +529,7 @@ def test_write_edge_data_from_gen(bw, _get_edges):
     assert "\n" in is_mutated_in
 
 
-@pytest.mark.parametrize("l", [int(1e4 + 4)], scope="module")
+@pytest.mark.parametrize("lenght", [int(1e4 + 4)], scope="module")
 def test_write_edge_data_from_large_gen(bw, _get_edges):
     edges = _get_edges
 
@@ -567,7 +567,7 @@ def test_write_edge_data_from_large_gen(bw, _get_edges):
     )
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_write_edge_data_from_list(bw, _get_edges):
     edges = _get_edges
 
@@ -604,7 +604,7 @@ def test_write_edge_data_from_list(bw, _get_edges):
     assert "\n" in is_mutated_in
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_write_edge_id_optional(bw, _get_edges):
     edges = _get_edges
 
@@ -700,7 +700,7 @@ def test_write_edge_data_from_list_no_props(bw):
     assert "\n" in is_mutated_in
 
 
-@pytest.mark.parametrize("l", [8], scope="module")
+@pytest.mark.parametrize("lenght", [8], scope="module")
 def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
     edges = _get_edges
 
@@ -752,7 +752,7 @@ def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
     assert "Is_Mutated_In" in call
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_write_duplicate_edges(bw, _get_edges):
     edges = _get_edges
     edges.append(edges[0])
@@ -772,7 +772,7 @@ def test_write_duplicate_edges(bw, _get_edges):
     assert passed and perturbed_in_disease == 4 and is_mutated_in == 4
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_BioCypherRelAsNode_implementation(bw, _get_rel_as_nodes):
     trips = _get_rel_as_nodes
 
@@ -810,7 +810,7 @@ def test_BioCypherRelAsNode_implementation(bw, _get_rel_as_nodes):
     assert "\n" in post_translational_interaction
 
 
-@pytest.mark.parametrize("l", [8], scope="module")
+@pytest.mark.parametrize("lenght", [8], scope="module")
 def test_RelAsNode_overwrite_behaviour(bw, _get_rel_as_nodes):
     # if rel as node is called from successive write calls, SOURCE_OF,
     # TARGET_OF, and PART_OF should be continued, not overwritten
@@ -982,7 +982,7 @@ def test_write_strict(bw_strict):
     assert "BiologicalEntity" in protein
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_tab_delimiter(bw_tab, _get_nodes):
     passed = bw_tab.write_nodes(_get_nodes)
 

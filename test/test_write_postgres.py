@@ -4,7 +4,7 @@ import subprocess
 import pytest
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_write_node_data_from_gen_comma_postgresql(
     bw_comma_postgresql, _get_nodes
 ):
@@ -38,7 +38,7 @@ def test_write_node_data_from_gen_comma_postgresql(
     assert "ChemicalEntity" in micro_rna
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_write_node_data_from_gen_tab_postgresql(bw_tab_postgresql, _get_nodes):
     nodes = _get_nodes
 
@@ -69,7 +69,7 @@ def test_write_node_data_from_gen_tab_postgresql(bw_tab_postgresql, _get_nodes):
 
 
 @pytest.mark.requires_postgresql
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_database_import_node_data_from_gen_comma_postgresql(
     bw_comma_postgresql, _get_nodes, create_database_postgres
 ):
@@ -143,7 +143,7 @@ def test_database_import_node_data_from_gen_comma_postgresql(
 
 
 @pytest.mark.requires_postgresql
-@pytest.mark.parametrize("l", [5], scope="module")
+@pytest.mark.parametrize("lenght", [5], scope="module")
 def test_database_import_node_data_from_gen_tab_postgresql(
     bw_tab_postgresql, _get_nodes, create_database_postgres
 ):
@@ -217,7 +217,7 @@ def test_database_import_node_data_from_gen_tab_postgresql(
 
 
 @pytest.mark.requires_postgresql
-@pytest.mark.parametrize("l", [8], scope="module")
+@pytest.mark.parametrize("lenght", [8], scope="module")
 def test_database_import_edge_data_from_gen_comma_postgresql(
     bw_comma_postgresql, _get_nodes, create_database_postgres, _get_edges
 ):
@@ -295,7 +295,7 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
 
 
 @pytest.mark.requires_postgresql
-@pytest.mark.parametrize("l", [8], scope="module")
+@pytest.mark.parametrize("lenght", [8], scope="module")
 def test_database_import_edge_data_from_gen_tab_postgresql(
     bw_tab_postgresql, _get_nodes, create_database_postgres, _get_edges
 ):
