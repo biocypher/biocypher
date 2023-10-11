@@ -33,9 +33,9 @@ def test_tree_vis():
 
 
 def test_tree_vis_from_networkx():
-    G = nx.DiGraph(inheritance_tree)
+    graph = nx.DiGraph(inheritance_tree)
 
-    tree_vis = create_tree_visualisation(G)
+    tree_vis = create_tree_visualisation(graph)
 
     assert tree_vis.DEPTH == 1
     assert tree_vis.WIDTH == 2

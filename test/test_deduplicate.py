@@ -48,9 +48,9 @@ def test_get_duplicate_nodes(_get_nodes):
     for node in nodes:
         dedup.node_seen(node)
 
-    d = dedup.get_duplicate_nodes()
-    types = d[0]
-    ids = d[1]
+    duplicates = dedup.get_duplicate_nodes()
+    types = duplicates[0]
+    ids = duplicates[1]
 
     assert "protein" in types
     assert "p1" in ids
@@ -104,9 +104,9 @@ def test_get_duplicate_edges(_get_edges):
     for edge in edges:
         dedup.edge_seen(edge)
 
-    d = dedup.get_duplicate_edges()
-    types = d[0]
-    ids = d[1]
+    duplicates = dedup.get_duplicate_edges()
+    types = duplicates[0]
+    ids = duplicates[1]
 
     assert "Is_Mutated_In" in types
     assert ("mrel2") in ids

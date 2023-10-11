@@ -16,9 +16,9 @@ def test_log_missing_types(core, translator):
     assert core.log_missing_input_labels() == None
 
     core._translator.notype = {"a": 1, "b": 2}
-    mt = core.log_missing_input_labels()
+    real_missing_types = core.log_missing_input_labels()
 
-    assert mt.get("a") == 1 and mt.get("b") == 2
+    assert real_missing_types.get("a") == 1 and real_missing_types.get("b") == 2
 
 
 @pytest.mark.parametrize("l", [4], scope="function")
