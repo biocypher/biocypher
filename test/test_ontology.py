@@ -139,3 +139,20 @@ def test_disconnected_exception(disconnected_mapping):
             },
             ontology_mapping=disconnected_mapping,
         )
+
+
+def test_manual_format():
+    """
+    Allow manual specification of ontology file format. Also test for allowing
+    no schema config use.
+    """
+    ontology = Ontology(
+        head_ontology={
+            "url": "http://semanticweb.cs.vu.nl/2009/11/sem/",
+            "root_node": "Core",
+            "format": "rdf",
+        },
+        ontology_mapping=None,
+    )
+
+    assert ontology._head_ontology.get_nx_graph().number_of_nodes() == 6
