@@ -14,6 +14,7 @@ jobs:
       url: https://test.pypi.org/project/biocypher/
     permissions:
       id-token: write
+      contents: write
     steps:
     #----------------------------------------------
     # check-out repo and set-up python and poetry
@@ -45,7 +46,7 @@ jobs:
     - name: Publish artifact to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        repository_url: https://test.pypi.org/legacy/
+        repository-url: https://test.pypi.org/legacy/
     #----------------------------------------------
     #           create Github release
     #----------------------------------------------
