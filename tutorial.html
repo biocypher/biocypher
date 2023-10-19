@@ -189,7 +189,7 @@ schema is at <code class="docutils literal notranslate"><span class="pre">tutori
 components: an input stream of data (which we call adapter) and a configuration
 for the resulting desired output (the schema configuration). The former will be
 simulated by calling the <code class="docutils literal notranslate"><span class="pre">Protein</span></code> class of our data generator 10 times.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">Protein</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tutorial.data_generator</span> <span class="kn">import</span> <span class="n">Protein</span>
 <span class="n">proteins</span> <span class="o">=</span> <span class="p">[</span><span class="n">Protein</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 </pre></div>
 </div>
@@ -207,12 +207,12 @@ simulated input data and, for each entity, forms the corresponding tuple. The
 use of a generator allows for efficient streaming of larger datasets where
 required.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_generator</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="p">(</span>
-          <span class="n">protein</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span>
-          <span class="n">protein</span><span class="o">.</span><span class="n">get_label</span><span class="p">(),</span>
-          <span class="n">protein</span><span class="o">.</span><span class="n">get_properties</span><span class="p">()</span>
-        <span class="p">)</span>
+      <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
+          <span class="k">yield</span> <span class="p">(</span>
+            <span class="n">protein</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span>
+            <span class="n">protein</span><span class="o">.</span><span class="n">get_label</span><span class="p">(),</span>
+            <span class="n">protein</span><span class="o">.</span><span class="n">get_properties</span><span class="p">()</span>
+          <span class="p">)</span>
 </pre></div>
 </div>
 <p>The concept of an adapter can become arbitrarily complex and involve
@@ -313,9 +313,9 @@ the data stream and configuration set up above to write the files for knowledge
 graph creation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
 <span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span>
-    <span class="n">biocypher_config_path</span><span class="o">=</span><span class="s1">&#39;tutorial/01_biocypher_config.yaml&#39;</span><span class="p">,</span>
-    <span class="n">schema_config_path</span><span class="o">=</span><span class="s2">&quot;tutorial/01_schema_config.yaml&quot;</span><span class="p">,</span>
-<span class="p">)</span>
+  <span class="n">biocypher_config_path</span><span class="o">=</span><span class="s1">&#39;tutorial/01_biocypher_config.yaml&#39;</span><span class="p">,</span>
+  <span class="n">schema_config_path</span><span class="o">=</span><span class="s1">&#39;tutorial/01_schema_config.yaml&#39;</span><span class="p">,</span>
+  <span class="p">)</span>
 <span class="n">bc</span><span class="o">.</span><span class="n">write_nodes</span><span class="p">(</span><span class="n">node_generator</span><span class="p">())</span>
 </pre></div>
 </div>
@@ -351,7 +351,7 @@ accounted for in the schema configuration, as well as a log of duplicates in the
 input data (for the level of granularity that was used for the import). We can
 also print the ontological hierarchy derived from the underlying model(s)
 according to the classes that were given in the schema configuration:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bc</span><span class="o">.</span><span class="n">log_missing_bl_types</span><span class="p">()</span>     <span class="c1"># show input unaccounted for in the schema</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bc</span><span class="o">.</span><span class="n">log_missing_input_labels</span><span class="p">()</span> <span class="c1"># show input unaccounted for in the schema</span>
 <span class="n">bc</span><span class="o">.</span><span class="n">log_duplicates</span><span class="p">()</span>           <span class="c1"># show duplicates in the input data</span>
 <span class="n">bc</span><span class="o">.</span><span class="n">show_ontology_structure</span><span class="p">()</span>  <span class="c1"># show ontological hierarchy</span>
 </pre></div>
