@@ -37,11 +37,11 @@ biocypher:
 
   ## Set to change the log directory
 
-  # log_directory: biocypher-log
+  log_directory: biocypher-log
 
   ## Set to change the output directory
 
-  # output_directory: biocypher-out
+  output_directory: biocypher-out
 
   ## Set to change the cache directory
 
