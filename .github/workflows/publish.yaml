@@ -21,20 +21,13 @@ jobs:
     #----------------------------------------------
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{env.PYTHON_VERSION}}
-    - name: Install and configure Poetry
-      uses: snok/install-poetry@v1
-      with:
-        version: 1.5.1
-        virtualenvs-create: false
+    - name: Setup Python and Poetry
+      uses: ./.github/actions/setup
     #----------------------------------------------
-    #             install dependencies
+    #            install dependencies
     #----------------------------------------------
-    - name: Install Dependencies
-      run: poetry install
+    - name: Install dependencies
+      uses: ./.github/actions/install
     #----------------------------------------------
     #             build artifact
     #----------------------------------------------
