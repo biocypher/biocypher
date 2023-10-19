@@ -547,6 +547,15 @@ class Ontology:
                 edges that are relevant to the extended schema will be shown.
         """
 
+        if not full and not self.mapping.extended_schema:
+            raise ValueError(
+                "You are attempting to visualise a subset of the loaded"
+                "ontology, but have not provided a schema configuration. "
+                "To display a partial ontology graph, please provide a schema "
+                "configuration file; to visualise the full graph, please use "
+                "the parameter `full = True`."
+            )
+
         if not self._nx_graph:
             raise ValueError("Ontology not loaded.")
 
