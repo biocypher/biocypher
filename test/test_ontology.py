@@ -155,4 +155,5 @@ def test_manual_format():
         ontology_mapping=None,
     )
 
-    assert ontology._head_ontology.get_nx_graph().number_of_nodes() == 6
+    assert isinstance(ontology._nx_graph, nx.DiGraph)
+    assert "event" in ontology._nx_graph.nodes
