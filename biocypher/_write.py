@@ -401,7 +401,7 @@ class _BatchWriter(ABC):
 
         return True
 
-    def _write_node_data(self, nodes, batch_size, force):
+    def _write_node_data(self, nodes, batch_size, force: bool = False):
         """
         Writes biocypher nodes to CSV conforming to the headers created
         with `_write_node_headers()`, and is actually required to be run
