@@ -178,6 +178,9 @@ class BioCypher:
         Create ontology mapping if not exists and return.
         """
 
+        if not self._schema_config_path:
+            return None
+
         if not self._ontology_mapping:
             self._ontology_mapping = OntologyMapping(
                 config_file=self._schema_config_path,
