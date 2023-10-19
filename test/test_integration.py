@@ -1,5 +1,6 @@
 import os
 
+import yaml
 import pytest
 import networkx as nx
 

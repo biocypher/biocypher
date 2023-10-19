@@ -13,6 +13,7 @@ BioCypher core module. Interfaces with the user and distributes tasks to
 submodules.
 """
 from typing import Optional
+from datetime import datetime
 import os
 
 from more_itertools import peekable
@@ -221,6 +222,12 @@ class BioCypher:
         """
 
         if self._offline:
+            timestamp = lambda: datetime.now().strftime("%Y%m%d%H%M%S")
+            outdir = self._output_directory or os.path.join(
+                "biocypher-out", timestamp()
+            )
+            self._output_directory = os.path.abspath(outdir)
+
             self._writer = get_writer(
                 dbms=self._dbms,
                 translator=self._get_translator(),
