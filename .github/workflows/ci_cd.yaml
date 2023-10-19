@@ -24,7 +24,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.local
-        key: poetry-0
+        key: poetry-cache-${{ runner.os }}-${{ matrix.python-version }}-${{ env.POETRY_VERSION }}
     - name: Install and configure Poetry
       if: steps.cached-poetry.outputs.cache-hit != 'true'
       uses: snok/install-poetry@v1
@@ -70,6 +70,8 @@ jobs:
         os: ["ubuntu-latest", "macos-latest", "windows-latest"]
         python-version: ["3.9", "3.10", "3.11"]
     runs-on: ${{ matrix.os }}
+    env:
+      POETRY_VERSION: 1.5.1
     defaults:
       run:
         shell: bash
@@ -89,12 +91,12 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.local
-        key: poetry-0
+        key: poetry-cache-${{ runner.os }}-${{ matrix.python-version }}-${{ env.POETRY_VERSION }}
     - name: Install and configure Poetry
       if: steps.cached-poetry.outputs.cache-hit != 'true'
       uses: snok/install-poetry@v1
       with:
-        version: 1.5.1
+        version: ${{env.POETRY_VERSION}}
         virtualenvs-create: true
         virtualenvs-in-project: true
     #----------------------------------------------
