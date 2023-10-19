@@ -30,3 +30,4 @@ runs:
         virtualenvs-in-project: true
     - name: Check Poetry installation
       run: poetry --version
+      shell: bash
