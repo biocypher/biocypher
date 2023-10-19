@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Setup
-      uses: nilskre/biocypher/.github/workflows/reusable_steps/setup.yaml #TODO: adapt Org
+      uses: nilskre/biocypher/.github/workflows/reusable_steps/setup.yaml@PyOpenSci_review_part_2 #TODO: adapt Org
     #----------------------------------------------
     #       load cached venv if cache exists
     #----------------------------------------------
