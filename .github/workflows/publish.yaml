@@ -1,14 +1,13 @@
 name: Publish
 
-#on: [push]
+on: [push]
 # TODO: switch to this rules after successful test
-on:
-  push:
-    branches:
-      - main
-    tags:
-    # TODO: ensure semver structure of tags
-      - '*'
+#on:
+#  push:
+#    branches:
+#      - main
+#    tags:
+#      - '*'
 
 jobs:
   build_and_deploy_artifact:
@@ -35,6 +34,15 @@ jobs:
     #----------------------------------------------
     - name: Install dependencies
       uses: ./.github/actions/install
+    #----------------------------------------------
+    #       check if tag follows semver
+    #----------------------------------------------
+    - name: Validate tag name
+      run: |
+        if [[ ! "$GITHUB_REF" =~ ^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$ ]]; then
+          echo "Tag name is not in SemVer format (vX.Y.Z). Aborting."
+          exit 1
+        fi
     #----------------------------------------------
     #             build artifact
     #----------------------------------------------
