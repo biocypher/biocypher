@@ -29,16 +29,16 @@ def test_translate_nodes(translator):
         ("REACT:25520", "reactome", {}),
         ("agpl:001524", "agpl", {}),
     ]
-    t = translator.translate_nodes(id_type)
+    translated_nodes = translator.translate_nodes(id_type)
 
-    assert all(type(n) == BioCypherNode for n in t)
+    assert all(type(n) == BioCypherNode for n in translated_nodes)
 
-    t = translator.translate_nodes(id_type)
-    assert next(t).get_label() == "protein"
-    assert next(t).get_label() == "microRNA"
-    assert next(t).get_label() == "complex"
-    assert next(t).get_label() == "reactome.pathway"
-    assert next(t).get_label() == "altered gene product level"
+    translated_nodes = translator.translate_nodes(id_type)
+    assert next(translated_nodes).get_label() == "protein"
+    assert next(translated_nodes).get_label() == "microRNA"
+    assert next(translated_nodes).get_label() == "complex"
+    assert next(translated_nodes).get_label() == "reactome.pathway"
+    assert next(translated_nodes).get_label() == "altered gene product level"
 
 
 def test_specific_and_generic_ids(translator):
@@ -52,14 +52,16 @@ def test_specific_and_generic_ids(translator):
         ),
         ("REACT:25520", "reactome", {}),
     ]
-    t = list(translator.translate_nodes(id_type))
+    translated_nodes = list(translator.translate_nodes(id_type))
 
-    assert t[0].get_id() == "CHAT"
-    assert t[0].get_properties().get("preferred_id") == "hgnc"
-    assert t[0].get_properties().get("id") == "CHAT"
-    assert t[1].get_id() == "REACT:25520"
-    assert t[1].get_properties().get("preferred_id") == "reactome"
-    assert t[1].get_properties().get("id") == "REACT:25520"
+    assert translated_nodes[0].get_id() == "CHAT"
+    assert translated_nodes[0].get_properties().get("preferred_id") == "hgnc"
+    assert translated_nodes[0].get_properties().get("id") == "CHAT"
+    assert translated_nodes[1].get_id() == "REACT:25520"
+    assert (
+        translated_nodes[1].get_properties().get("preferred_id") == "reactome"
+    )
+    assert translated_nodes[1].get_properties().get("id") == "REACT:25520"
 
 
 def test_translate_edges(translator):
@@ -73,11 +75,11 @@ def test_translate_edges(translator):
     def gen_edges():
         yield from src_tar_type_edge
 
-    t = translator.translate_edges(gen_edges())
+    translated_edges = translator.translate_edges(gen_edges())
 
-    assert type(next(t)) == BioCypherEdge
-    assert next(t).get_label() == "PERTURBED_IN_DISEASE"
-    assert next(t).get_label() == "phosphorylation"
+    assert type(next(translated_edges)) == BioCypherEdge
+    assert next(translated_edges).get_label() == "PERTURBED_IN_DISEASE"
+    assert next(translated_edges).get_label() == "phosphorylation"
 
     # node type association (defined in `schema_config.yaml`)
     src_tar_type_node = [
@@ -107,23 +109,23 @@ def test_translate_edges(translator):
             },
         ),
     ]
-    t = translator.translate_edges(src_tar_type_node)
-    t = list(t)
+    translated_edges = translator.translate_edges(src_tar_type_node)
+    translated_edges = list(translated_edges)
 
-    n1 = t[0]
-    n2 = t[1]
-    n3 = t[2]
+    node_1 = translated_edges[0]
+    node_2 = translated_edges[1]
+    node_3 = translated_edges[2]
 
-    assert n1.get_source_edge().get_label() == "IS_PART_OF"
-    assert n2.get_source_edge().get_label() == "IS_PART_OF"
-    assert n3.get_target_edge().get_label() == "IS_TARGET_OF"
+    assert node_1.get_source_edge().get_label() == "IS_PART_OF"
+    assert node_2.get_source_edge().get_label() == "IS_PART_OF"
+    assert node_3.get_target_edge().get_label() == "IS_TARGET_OF"
     assert (
-        type(n1.get_node()) == BioCypherNode
-        and type(n1.get_source_edge()) == BioCypherEdge
-        and type(n1.get_target_edge()) == BioCypherEdge
+        type(node_1.get_node()) == BioCypherNode
+        and type(node_1.get_source_edge()) == BioCypherEdge
+        and type(node_1.get_target_edge()) == BioCypherEdge
     )
-    assert n3.get_node().get_id() == "G15258_G16347_True_-1"
-    assert n3.get_source_edge().get_source_id() == "G15258"
+    assert node_3.get_node().get_id() == "G15258_G16347_True_-1"
+    assert node_3.get_source_edge().get_source_id() == "G15258"
 
 
 # def test_biolink_adapter(version_node, translator):
@@ -191,21 +193,29 @@ def test_merge_multiple_inputs_node(ontology_mapping, translator):
             },
         ),
     ]
-    t = list(translator.translate_nodes(id_type))
+    translated_nodes = list(translator.translate_nodes(id_type))
 
-    assert t
+    assert translated_nodes
 
     # check unique node type
     assert not any(
-        [s for s in ontology_mapping.extended_schema.keys() if ".gene" in s]
+        [
+            schema
+            for schema in ontology_mapping.extended_schema.keys()
+            if ".gene" in schema
+        ]
     )
     assert any(
-        [s for s in ontology_mapping.extended_schema.keys() if ".pathway" in s]
+        [
+            schema
+            for schema in ontology_mapping.extended_schema.keys()
+            if ".pathway" in schema
+        ]
     )
 
     # check translator.translate_nodes for unique return type
-    assert all([type(n) == BioCypherNode for n in t])
-    assert all([n.get_label() == "gene" for n in t])
+    assert all([type(node) == BioCypherNode for node in translated_nodes])
+    assert all([node.get_label() == "gene" for node in translated_nodes])
 
 
 def test_implicit_inheritance_node(translator):
@@ -222,11 +232,11 @@ def test_implicit_inheritance_node(translator):
         ),
     ]
 
-    t = list(translator.translate_nodes(id_type))
+    translated_nodes = list(translator.translate_nodes(id_type))
 
-    assert all([type(n) == BioCypherNode for n in t])
-    assert t[0].get_label() == "intact.snRNA sequence"
-    assert t[1].get_label() == "rnacentral.snRNA sequence"
+    assert all([type(n) == BioCypherNode for n in translated_nodes])
+    assert translated_nodes[0].get_label() == "intact.snRNA sequence"
+    assert translated_nodes[1].get_label() == "rnacentral.snRNA sequence"
 
 
 def test_merge_multiple_inputs_edge(ontology_mapping, translator):
@@ -254,27 +264,32 @@ def test_merge_multiple_inputs_edge(ontology_mapping, translator):
             },
         ),
     ]
-    t = list(translator.translate_edges(src_tar_type))
+    translated_edges = list(translator.translate_edges(src_tar_type))
 
     # check unique edge type
     assert not any(
         [
-            s
-            for s in ontology_mapping.extended_schema.keys()
-            if ".gene to disease association" in s
+            schema
+            for schema in ontology_mapping.extended_schema.keys()
+            if ".gene to disease association" in schema
         ],
     )
     assert any(
         [
-            s
-            for s in ontology_mapping.extended_schema.keys()
-            if ".sequence variant" in s
+            schema
+            for schema in ontology_mapping.extended_schema.keys()
+            if ".sequence variant" in schema
         ],
     )
 
     # check translator.translate_nodes for unique return type
-    assert all([type(e) == BioCypherEdge for e in t])
-    assert all([e.get_label() == "PERTURBED_IN_DISEASE" for e in t])
+    assert all([type(edge) == BioCypherEdge for edge in translated_edges])
+    assert all(
+        [
+            edge.get_label() == "PERTURBED_IN_DISEASE"
+            for edge in translated_edges
+        ]
+    )
 
 
 def test_implicit_inheritance_edge(translator):
@@ -294,14 +309,15 @@ def test_implicit_inheritance_edge(translator):
             {},
         ),
     ]
-    t = list(translator.translate_edges(src_tar_type))
+    translated_edges = list(translator.translate_edges(src_tar_type))
 
-    assert all([type(e) == BioCypherEdge for e in t])
+    assert all([type(edge) == BioCypherEdge for edge in translated_edges])
     assert (
-        t[0].get_label() == "known.sequence variant.variant to gene association"
+        translated_edges[0].get_label()
+        == "known.sequence variant.variant to gene association"
     )
     assert (
-        t[1].get_label()
+        translated_edges[1].get_label()
         == "somatic.sequence variant.variant to gene association"
     )
 
@@ -362,13 +378,13 @@ def test_properties_from_config(translator):
             },
         ),
     ]
-    t = translator.translate_nodes(id_type)
+    translated_edges = translator.translate_nodes(id_type)
 
-    r = list(t)
+    translated_edges_as_list = list(translated_edges)
     assert (
-        "name" in r[0].get_properties().keys()
-        and "name" in r[1].get_properties().keys()
-        and "test" not in r[2].get_properties().keys()
+        "name" in translated_edges_as_list[0].get_properties().keys()
+        and "name" in translated_edges_as_list[1].get_properties().keys()
+        and "test" not in translated_edges_as_list[2].get_properties().keys()
     )
 
     src_tar_type = [
@@ -396,18 +412,18 @@ def test_properties_from_config(translator):
         ),
     ]
 
-    t = translator.translate_edges(src_tar_type)
+    translated_edges = translator.translate_edges(src_tar_type)
 
-    r = list(t)
+    translated_edges_as_list = list(translated_edges)
     assert (
-        "directional" in r[0].get_properties().keys()
-        and "directional" in r[1].get_properties().keys()
-        and "curated" in r[1].get_properties().keys()
-        and "score" in r[0].get_properties().keys()
-        and "score" in r[1].get_properties().keys()
-        and "test" not in r[1].get_properties().keys()
-        and "id" not in r[0].get_properties().keys()
-        and "id" not in r[1].get_properties().keys()
+        "directional" in translated_edges_as_list[0].get_properties().keys()
+        and "directional" in translated_edges_as_list[1].get_properties().keys()
+        and "curated" in translated_edges_as_list[1].get_properties().keys()
+        and "score" in translated_edges_as_list[0].get_properties().keys()
+        and "score" in translated_edges_as_list[1].get_properties().keys()
+        and "test" not in translated_edges_as_list[1].get_properties().keys()
+        and "id" not in translated_edges_as_list[0].get_properties().keys()
+        and "id" not in translated_edges_as_list[1].get_properties().keys()
     )
 
 
@@ -429,13 +445,14 @@ def test_exclude_properties(translator):
             },
         ),
     ]
-    t = translator.translate_nodes(id_type)
+    translated_nodes = translator.translate_nodes(id_type)
 
-    r = list(t)
+    translated_nodes_as_list = list(translated_nodes)
     assert (
-        "taxon" in r[0].get_properties().keys()
-        and "taxon" in r[1].get_properties().keys()
-        and "accession" not in r[0].get_properties().keys()
+        "taxon" in translated_nodes_as_list[0].get_properties().keys()
+        and "taxon" in translated_nodes_as_list[1].get_properties().keys()
+        and "accession"
+        not in translated_nodes_as_list[0].get_properties().keys()
     )
 
     src_tar_type = [
@@ -460,15 +477,16 @@ def test_exclude_properties(translator):
         ),
     ]
 
-    t = translator.translate_edges(src_tar_type)
+    translated_nodes = translator.translate_edges(src_tar_type)
 
-    r = list(t)
+    translated_nodes_as_list = list(translated_nodes)
     assert (
-        "directional" in r[0].get_properties().keys()
-        and "directional" in r[1].get_properties().keys()
-        and "score" in r[0].get_properties().keys()
-        and "score" in r[1].get_properties().keys()
-        and "accession" not in r[1].get_properties().keys()
+        "directional" in translated_nodes_as_list[0].get_properties().keys()
+        and "directional" in translated_nodes_as_list[1].get_properties().keys()
+        and "score" in translated_nodes_as_list[0].get_properties().keys()
+        and "score" in translated_nodes_as_list[1].get_properties().keys()
+        and "accession"
+        not in translated_nodes_as_list[1].get_properties().keys()
     )
 
 
@@ -513,7 +531,7 @@ def test_reverse_translate_query(translator):
 
 
 def test_log_missing_nodes(translator):
-    tn = translator.translate_nodes(
+    translated_nodes = translator.translate_nodes(
         [
             (
                 "G49205",
@@ -527,39 +545,39 @@ def test_log_missing_nodes(translator):
         ],
     )
 
-    tn = list(tn)
+    translated_nodes = list(translated_nodes)
 
-    m = translator.get_missing_biolink_types()
-    assert m.get("missing_protein") == 2
-    assert m.get("missing_pathway") == 1
+    missing_types = translator.get_missing_biolink_types()
+    assert missing_types.get("missing_protein") == 2
+    assert missing_types.get("missing_pathway") == 1
 
 
 def test_strict_mode_error(translator):
     translator.strict_mode = True
 
-    n1 = (
+    node_1 = (
         "n2",
         "Test",
         {"prop": "val", "source": "test", "licence": "test", "version": "test"},
     )
 
-    assert list(translator.translate_nodes([n1])) is not None
+    assert list(translator.translate_nodes([node_1])) is not None
 
     # test 'license' instead of 'licence'
-    n2 = (
+    node_2 = (
         "n2",
         "Test",
         {"prop": "val", "source": "test", "license": "test", "version": "test"},
     )
 
-    assert list(translator.translate_nodes([n2])) is not None
+    assert list(translator.translate_nodes([node_2])) is not None
 
-    n3 = ("n1", "Test", {"prop": "val"})
+    node_3 = ("n1", "Test", {"prop": "val"})
 
     with pytest.raises(ValueError):
-        list(translator.translate_nodes([n1, n2, n3]))
+        list(translator.translate_nodes([node_1, node_2, node_3]))
 
-    e1 = (
+    edge_1 = (
         "n1",
         "n2",
         "Test",
@@ -571,18 +589,18 @@ def test_strict_mode_error(translator):
         },
     )
 
-    assert list(translator.translate_edges([e1])) is not None
+    assert list(translator.translate_edges([edge_1])) is not None
 
-    e2 = ("n1", "n2", "Test", {"prop": "val"})
+    edge_2 = ("n1", "n2", "Test", {"prop": "val"})
 
     with pytest.raises(ValueError):
-        list(translator.translate_edges([e1, e2]))
+        list(translator.translate_edges([edge_1, edge_2]))
 
 
 def test_strict_mode_property_filter(translator):
     translator.strict_mode = True
 
-    p1 = (
+    protein_1 = (
         "p1",
         "protein",
         {
@@ -593,8 +611,8 @@ def test_strict_mode_property_filter(translator):
         },
     )
 
-    l = list(translator.translate_nodes([p1]))
+    translated_protein_node = list(translator.translate_nodes([protein_1]))
 
-    assert "source" in l[0].get_properties().keys()
-    assert "licence" in l[0].get_properties().keys()
-    assert "version" in l[0].get_properties().keys()
+    assert "source" in translated_protein_node[0].get_properties().keys()
+    assert "licence" in translated_protein_node[0].get_properties().keys()
+    assert "version" in translated_protein_node[0].get_properties().keys()

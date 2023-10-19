@@ -17,7 +17,6 @@ Module data directory, including:
 
 from typing import Any, Optional
 import os
-import re
 import warnings
 
 import yaml
@@ -101,7 +100,9 @@ def read_config() -> dict:
         )
 
         if value is not None:
-            if type(defaults[key]) == str:  # first level config (like title)
+            if isinstance(
+                defaults[key], str
+            ):  # first level config (like title)
                 defaults[key] = value
             else:
                 defaults[key].update(value)

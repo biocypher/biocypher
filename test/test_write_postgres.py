@@ -4,7 +4,7 @@ import subprocess
 import pytest
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_write_node_data_from_gen_comma_postgresql(
     bw_comma_postgresql, _get_nodes
 ):
@@ -20,25 +20,25 @@ def test_write_node_data_from_gen_comma_postgresql(
 
     tmp_path = bw_comma_postgresql.outdir
 
-    p_csv = os.path.join(tmp_path, "Protein-part000.csv")
-    m_csv = os.path.join(tmp_path, "MicroRNA-part000.csv")
+    protein_csv = os.path.join(tmp_path, "Protein-part000.csv")
+    micro_rna_csv = os.path.join(tmp_path, "MicroRNA-part000.csv")
 
-    with open(p_csv) as f:
-        pr = f.read()
+    with open(protein_csv) as f:
+        protein = f.read()
 
-    with open(m_csv) as f:
-        mi = f.read()
+    with open(micro_rna_csv) as f:
+        micro_rna = f.read()
 
-    assert 'p1,"StringProperty1",4.0,9606' in pr
-    assert "uniprot" in pr
-    assert "BiologicalEntity" in pr
-    assert "Polypeptide" in pr
-    assert "Protein" in pr
-    assert 'm1,"StringProperty1",9606,"m1","mirbase"' in mi
-    assert "ChemicalEntity" in mi
+    assert 'p1,"StringProperty1",4.0,9606' in protein
+    assert "uniprot" in protein
+    assert "BiologicalEntity" in protein
+    assert "Polypeptide" in protein
+    assert "Protein" in protein
+    assert 'm1,"StringProperty1",9606,"m1","mirbase"' in micro_rna
+    assert "ChemicalEntity" in micro_rna
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_write_node_data_from_gen_tab_postgresql(bw_tab_postgresql, _get_nodes):
     nodes = _get_nodes
 
@@ -49,27 +49,27 @@ def test_write_node_data_from_gen_tab_postgresql(bw_tab_postgresql, _get_nodes):
 
     tmp_path = bw_tab_postgresql.outdir
 
-    p_csv = os.path.join(tmp_path, "Protein-part000.csv")
-    m_csv = os.path.join(tmp_path, "MicroRNA-part000.csv")
+    protein_csv = os.path.join(tmp_path, "Protein-part000.csv")
+    micro_rna_csv = os.path.join(tmp_path, "MicroRNA-part000.csv")
 
-    with open(p_csv) as f:
-        pr = f.read()
+    with open(protein_csv) as f:
+        protein = f.read()
 
-    with open(m_csv) as f:
-        mi = f.read()
+    with open(micro_rna_csv) as f:
+        micro_rna = f.read()
 
     assert passed
-    assert 'p1\t"StringProperty1"\t4.0\t9606\t' in pr
-    assert '\t"uniprot"\t' in pr
-    assert "BiologicalEntity" in pr
-    assert "Polypeptide" in pr
-    assert "Protein" in pr
-    assert 'm1\t"StringProperty1"\t9606\t"m1"\t"mirbase"' in mi
-    assert "ChemicalEntity" in mi
+    assert 'p1\t"StringProperty1"\t4.0\t9606\t' in protein
+    assert '\t"uniprot"\t' in protein
+    assert "BiologicalEntity" in protein
+    assert "Polypeptide" in protein
+    assert "Protein" in protein
+    assert 'm1\t"StringProperty1"\t9606\t"m1"\t"mirbase"' in micro_rna
+    assert "ChemicalEntity" in micro_rna
 
 
 @pytest.mark.requires_postgresql
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_database_import_node_data_from_gen_comma_postgresql(
     bw_comma_postgresql, _get_nodes, create_database_postgres
 ):
@@ -143,7 +143,7 @@ def test_database_import_node_data_from_gen_comma_postgresql(
 
 
 @pytest.mark.requires_postgresql
-@pytest.mark.parametrize("l", [5], scope="module")
+@pytest.mark.parametrize("lenght", [5], scope="module")
 def test_database_import_node_data_from_gen_tab_postgresql(
     bw_tab_postgresql, _get_nodes, create_database_postgres
 ):
@@ -217,7 +217,7 @@ def test_database_import_node_data_from_gen_tab_postgresql(
 
 
 @pytest.mark.requires_postgresql
-@pytest.mark.parametrize("l", [8], scope="module")
+@pytest.mark.parametrize("lenght", [8], scope="module")
 def test_database_import_edge_data_from_gen_comma_postgresql(
     bw_comma_postgresql, _get_nodes, create_database_postgres, _get_edges
 ):
@@ -241,11 +241,11 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
     def edge_gen2(edges):
         yield from edges[4:]
 
-    p1 = bw_comma_postgresql.write_edges(edge_gen1(edges))
-    p2 = bw_comma_postgresql.write_edges(edge_gen2(edges))
-    p3 = bw_comma_postgresql.write_nodes(nodes)
+    process_1 = bw_comma_postgresql.write_edges(edge_gen1(edges))
+    process_2 = bw_comma_postgresql.write_edges(edge_gen2(edges))
+    process_3 = bw_comma_postgresql.write_nodes(nodes)
 
-    assert all([p1, p2, p3])
+    assert all([process_1, process_2, process_3])
 
     bw_comma_postgresql.write_import_call()
 
@@ -295,7 +295,7 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
 
 
 @pytest.mark.requires_postgresql
-@pytest.mark.parametrize("l", [8], scope="module")
+@pytest.mark.parametrize("lenght", [8], scope="module")
 def test_database_import_edge_data_from_gen_tab_postgresql(
     bw_tab_postgresql, _get_nodes, create_database_postgres, _get_edges
 ):
@@ -319,11 +319,11 @@ def test_database_import_edge_data_from_gen_tab_postgresql(
     def edge_gen2(edges):
         yield from edges[4:]
 
-    p1 = bw_tab_postgresql.write_edges(edge_gen1(edges))
-    p2 = bw_tab_postgresql.write_edges(edge_gen2(edges))
-    p3 = bw_tab_postgresql.write_nodes(nodes)
+    process_1 = bw_tab_postgresql.write_edges(edge_gen1(edges))
+    process_2 = bw_tab_postgresql.write_edges(edge_gen2(edges))
+    process_3 = bw_tab_postgresql.write_nodes(nodes)
 
-    assert all([p1, p2, p3])
+    assert all([process_1, process_2, process_3])
 
     bw_tab_postgresql.write_import_call()
 

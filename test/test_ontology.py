@@ -124,10 +124,10 @@ def test_show_full_ontology(hybrid_ontology):
 def test_write_ontology(hybrid_ontology, tmp_path):
     passed = hybrid_ontology.show_ontology_structure(to_disk=tmp_path)
 
-    f = os.path.join(tmp_path, "ontology_structure.graphml")
+    file_path = os.path.join(tmp_path, "ontology_structure.graphml")
 
     assert passed
-    assert os.path.isfile(f)
+    assert os.path.isfile(file_path)
 
 
 def test_disconnected_exception(disconnected_mapping):

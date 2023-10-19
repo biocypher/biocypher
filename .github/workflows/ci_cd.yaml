@@ -6,29 +6,29 @@ jobs:
   push_job:
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
-    env:
-      PYTHON_VERSION: 3.9
 
     steps:
     #----------------------------------------------
-    # check-out repo and set-up python and poetry
+    #  checkout repo and set-up python and poetry
     #----------------------------------------------
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set up Python ${{env.PYTHON_VERSION}}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{env.PYTHON_VERSION}}
-    - name: Install and configure Poetry
-      uses: snok/install-poetry@v1
-      with:
-        version: 1.5.1
-        virtualenvs-create: true
-        virtualenvs-in-project: true
+    - name: Setup Python and Poetry
+      uses: ./.github/actions/setup
     #----------------------------------------------
-    #             install dependencies
+    #       load cached venv if cache exists
+    #----------------------------------------------
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v3
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+    #----------------------------------------------
+    # install dependencies if cache does not exist
     #----------------------------------------------
     - name: Install Dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install
     #----------------------------------------------
     #    setup docker containers for testing
@@ -38,7 +38,7 @@ jobs:
     - name: Start Postgres Docker
       run: docker run --restart always --publish=5432:5432 --env POSTGRES_PASSWORD=postgres -d postgres:11.21-bullseye
     #----------------------------------------------
-    #      run tests and code quality checks
+    #     run tests and code quality checks
     #----------------------------------------------
     - name: Run Tests
       run: poetry run pytest --password=your_password_here
@@ -53,38 +53,37 @@ jobs:
         os: ["ubuntu-latest", "macos-latest", "windows-latest"]
         python-version: ["3.9", "3.10", "3.11"]
     runs-on: ${{ matrix.os }}
+    env:
+      POETRY_VERSION: 1.5.1
     defaults:
       run:
         shell: bash
 
     steps:
     #----------------------------------------------
-    # check-out repo and set-up python and poetry
+    #  checkout repo and set-up python and poetry
     #----------------------------------------------
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+    - name: Setup Python and Poetry
+      uses: ./.github/actions/setup
       with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install and configure Poetry
-      uses: snok/install-poetry@v1
-      with:
-        version: 1.5.1
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-    #- name: Set Poetry Python version
-    #  run: poetry env use ${{ matrix.python-version }}
+        PYTHON_VERSION: ${{ matrix.python-version }}
+        POETRY_VERSION: ${{ env.POETRY_VERSION }}
+    #----------------------------------------------
+    #       load cached venv if cache exists
+    #----------------------------------------------
     - name: Load cached venv
-      id: cached-pip-wheels
+      id: cached-poetry-dependencies
       uses: actions/cache@v3
       with:
-        path: ~/.cache
+        path: .venv
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
     #----------------------------------------------
-    #             install dependencies
+    # install dependencies if cache does not exist
     #----------------------------------------------
     - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
     - name: Install library
       run: poetry install --no-interaction

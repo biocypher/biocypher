@@ -4,7 +4,7 @@ from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._deduplicate import Deduplicator
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_duplicate_nodes(_get_nodes):
     dedup = Deduplicator()
     nodes = _get_nodes
@@ -28,7 +28,7 @@ def test_duplicate_nodes(_get_nodes):
     assert "p1" in dedup.duplicate_entity_ids
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_get_duplicate_nodes(_get_nodes):
     dedup = Deduplicator()
     nodes = _get_nodes
@@ -48,15 +48,15 @@ def test_get_duplicate_nodes(_get_nodes):
     for node in nodes:
         dedup.node_seen(node)
 
-    d = dedup.get_duplicate_nodes()
-    types = d[0]
-    ids = d[1]
+    duplicates = dedup.get_duplicate_nodes()
+    types = duplicates[0]
+    ids = duplicates[1]
 
     assert "protein" in types
     assert "p1" in ids
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_duplicate_edges(_get_edges):
     dedup = Deduplicator()
     edges = _get_edges
@@ -82,7 +82,7 @@ def test_duplicate_edges(_get_edges):
     assert ("mrel2") in dedup.duplicate_relationship_ids
 
 
-@pytest.mark.parametrize("l", [4], scope="module")
+@pytest.mark.parametrize("lenght", [4], scope="module")
 def test_get_duplicate_edges(_get_edges):
     dedup = Deduplicator()
     edges = _get_edges
@@ -104,9 +104,9 @@ def test_get_duplicate_edges(_get_edges):
     for edge in edges:
         dedup.edge_seen(edge)
 
-    d = dedup.get_duplicate_edges()
-    types = d[0]
-    ids = d[1]
+    duplicates = dedup.get_duplicate_edges()
+    types = duplicates[0]
+    ids = duplicates[1]
 
     assert "Is_Mutated_In" in types
     assert ("mrel2") in ids

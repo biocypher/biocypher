@@ -43,3 +43,15 @@ jobs:
     #----------------------------------------------
     - name: Publish artifact to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
+    #----------------------------------------------
+    #           create Github release
+    #----------------------------------------------
+    - name: Create Github release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.ref_name }}
+      run: |
+        gh release create "$tag" \
+            --repo="$GITHUB_REPOSITORY" \
+            --title="$tag" \
+            --generate-notes
