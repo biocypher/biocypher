@@ -45,6 +45,7 @@ class OntologyAdapter:
         self,
         ontology_file: str,
         root_label: str,
+        format: Optional[str] = None,
         head_join_node: Optional[str] = None,
         merge_nodes: Optional[bool] = True,
         reverse_labels: bool = True,
@@ -81,6 +82,7 @@ class OntologyAdapter:
 
         self._ontology_file = ontology_file
         self._root_label = root_label
+        self._format = format
         self._merge_nodes = merge_nodes
         self._head_join_node = head_join_node
         self._reverse_labels = reverse_labels
@@ -199,6 +201,20 @@ class OntologyAdapter:
         """
         Get the format of the ontology file.
         """
+        if self._format:
+            if self._format == "owl":
+                return "application/rdf+xml"
+            elif self._format == "obo":
+                raise NotImplementedError("OBO format not yet supported")
+            elif self._format == "rdf":
+                return "application/rdf+xml"
+            elif self._format == "ttl":
+                return self._format
+            else:
+                raise ValueError(
+                    f"Could not determine format of ontology file {ontology_file}"
+                )
+
         if ontology_file.endswith(".owl"):
             return "application/rdf+xml"
         elif ontology_file.endswith(".obo"):
@@ -255,7 +271,7 @@ class Ontology:
     def __init__(
         self,
         head_ontology: dict,
-        ontology_mapping: "OntologyMapping",
+        ontology_mapping: Optional["OntologyMapping"] = None,
         tail_ontologies: Optional[dict] = None,
     ):
         """
@@ -296,12 +312,13 @@ class Ontology:
         else:
             self._nx_graph = self._head_ontology.get_nx_graph()
 
-        self._extend_ontology()
+        if self.mapping:
+            self._extend_ontology()
 
-        # experimental: add connections of disjoint classes to entity
-        self._connect_biolink_classes()
+            # experimental: add connections of disjoint classes to entity
+            self._connect_biolink_classes()
 
-        self._add_properties()
+            self._add_properties()
 
     def _load_ontologies(self) -> None:
         """
@@ -312,8 +329,9 @@ class Ontology:
         logger.info("Loading ontologies...")
 
         self._head_ontology = OntologyAdapter(
-            self._head_ontology_meta["url"],
-            self._head_ontology_meta["root_node"],
+            ontology_file=self._head_ontology_meta["url"],
+            root_label=self._head_ontology_meta["root_node"],
+            format=self._head_ontology_meta.get("format", None),
         )
 
         if self._tail_ontology_meta:
@@ -323,6 +341,7 @@ class Ontology:
                     ontology_file=value["url"],
                     root_label=value["tail_join_node"],
                     head_join_node=value["head_join_node"],
+                    format=value.get("format", None),
                     merge_nodes=value.get("merge_nodes", True),
                 )
 
@@ -527,6 +546,15 @@ class Ontology:
                 including all nodes and edges. If False, only the nodes and
                 edges that are relevant to the extended schema will be shown.
         """
+
+        if not full and not self.mapping.extended_schema:
+            raise ValueError(
+                "You are attempting to visualise a subset of the loaded"
+                "ontology, but have not provided a schema configuration. "
+                "To display a partial ontology graph, please provide a schema "
+                "configuration file; to visualise the full graph, please use "
+                "the parameter `full = True`."
+            )
 
         if not self._nx_graph:
             raise ValueError("Ontology not loaded.")
