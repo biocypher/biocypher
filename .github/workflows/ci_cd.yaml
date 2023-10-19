@@ -10,8 +10,10 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Setup
-      uses: nilskre/biocypher/.github/actions/setup_composite/action.yaml@PyOpenSci_review_part_2 # TODO: adapt
+    #- name: Setup
+    #  uses: nilskre/biocypher/.github/actions/setup_composite/action.yaml@PyOpenSci_review_part_2 # TODO: adapt
+    - id: Setup
+      uses: ./.github/actions/setup
     #----------------------------------------------
     #       load cached venv if cache exists
     #----------------------------------------------
