@@ -578,7 +578,7 @@ class BioCypher:
             )
 
         ontology = self._get_ontology()
-        schema = ontology.mapping.extended_schema
+        schema = ontology.mapping.extended_schema.copy()
         schema["is_schema_info"] = True
 
         deduplicator = self._get_deduplicator()
