@@ -133,11 +133,7 @@ class BioCypher:
         )
 
         if not self._schema_config_path:
-            raise ValueError(
-                "BioCypher requires a schema configuration; please provide a "
-                "path to the schema configuration YAML file via "
-                "`biocypher_config.yaml` or `BioCypher` class parameter."
-            )
+            logger.warning("Running BioCypher without schema configuration.")
 
         self._head_ontology = head_ontology or self.base_config["head_ontology"]
 
