@@ -33,7 +33,9 @@ runs:
       shell: bash
       if: runner.os != 'Windows'
     - name: Run Tests
-      run: pytest --password=your_password_here
+      run: |
+        source $VENV
+        pytest --password=your_password_here
       shell: bash
     - name: Check code quality
       uses: pre-commit/action@v3.0.0
