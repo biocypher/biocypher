@@ -20,7 +20,7 @@ runs:
       shell: bash
       if: ${{ runner.os != 'Windows' }}
     #----------------------------------------------
-    #      run tests and code quality checks
+    #     run tests and code quality checks
     #----------------------------------------------
     - name: Run Tests
       run: |
