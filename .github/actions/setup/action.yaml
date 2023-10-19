@@ -1,33 +1,35 @@
 name: 'Setup'
 description: 'Setup Python and Poetry'
-#inputs:
-#  who-to-greet:  # id of input
-#    description: 'Who to greet'
-#    required: true
-#    default: 'World'
+inputs:
+  PYTHON_VERSION:
+    description: 'Python version'
+    #required: true
+    default: 3.9
+  POETRY_VERSION:
+    description: 'Poetry version'
+    #required: true
+    default: 1.5.1
 #outputs:
 #  random-number:
 #    description: "Random number"
 #    value: ${{ steps.random-number-generator.outputs.random-number }}
+
 runs:
   using: "composite"
-  env:
-    PYTHON_VERSION: 3.9
-    POETRY_VERSION: 1.5.1
   steps:
     #----------------------------------------------
     # check-out repo and set-up python and poetry
     #----------------------------------------------
-    - name: Set up Python ${{env.PYTHON_VERSION}}
+    - name: Set up Python ${{inputs.PYTHON_VERSION}}
       uses: actions/setup-python@v4
       with:
-        python-version: ${{env.PYTHON_VERSION}}
+        python-version: ${{inputs.PYTHON_VERSION}}
     - name: Load cached Poetry installation
       id: cached-poetry
       uses: actions/cache@v3
       with:
         path: ~/.local
-        key: poetry-cache-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ env.POETRY_VERSION }}
+        key: poetry-cache-${{ runner.os }}-${{ inputs.PYTHON_VERSION }}-${{ inputs.POETRY_VERSION }}
     - name: Install and configure Poetry
       if: steps.cached-poetry.outputs.cache-hit != 'true'
       uses: snok/install-poetry@v1
