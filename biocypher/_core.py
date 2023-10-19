@@ -554,7 +554,7 @@ class BioCypher:
 
         self._writer.write_import_call()
 
-    def write_schema_info(self) -> None:
+    def write_schema_info(self, as_node: bool = False) -> None:
         """
         Write an extended schema info YAML file that extends the
         `schema_config.yaml` with run-time information of the built KG. For
@@ -618,6 +618,15 @@ class BioCypher:
         path = os.path.join(self._output_directory, "schema_info.yaml")
         with open(path, "w") as f:
             f.write(yaml.dump(schema))
+
+        if as_node:
+            # write as node
+            node = BioCypherNode(
+                node_id="schema_info",
+                node_label="schema_info",
+                properties={"schema_info": yaml.dump(schema)},
+            )
+            self.write_nodes([node])
 
         return schema
 
