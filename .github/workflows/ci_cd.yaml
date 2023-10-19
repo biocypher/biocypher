@@ -19,7 +19,14 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{env.PYTHON_VERSION}}
+    - name: Load cached Poetry installation
+      id: cached-poetry
+      uses: actions/cache@v3
+      with:
+        path: ~/.local
+        key: poetry-0
     - name: Install and configure Poetry
+      if: steps.cached-poetry.outputs.cache-hit != 'true'
       uses: snok/install-poetry@v1
       with:
         version: 1.5.1
@@ -67,7 +74,14 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Load cached Poetry installation
+      id: cached-poetry
+      uses: actions/cache@v3
+      with:
+        path: ~/.local
+        key: poetry-0
     - name: Install and configure Poetry
+      if: steps.cached-poetry.outputs.cache-hit != 'true'
       uses: snok/install-poetry@v1
       with:
         version: 1.5.1
