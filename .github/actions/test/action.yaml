@@ -25,10 +25,12 @@ runs:
     - run: |
         source .venv/scripts/activate
         pytest --version
+      shell: bash
       if: runner.os == 'Windows'
     - run: |
         source .venv/bin/activate
         pytest --version
+      shell: bash
       if: runner.os != 'Windows'
     - name: Run Tests
       run: pytest --password=your_password_here
