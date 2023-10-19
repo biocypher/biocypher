@@ -302,7 +302,9 @@ class _BatchWriter(ABC):
         else:
             return delimiter, delimiter
 
-    def write_nodes(self, nodes, batch_size: int = int(1e6)):
+    def write_nodes(
+        self, nodes, batch_size: int = int(1e6), force: bool = False
+    ):
         """
         Wrapper for writing nodes and their headers.
 
@@ -310,13 +312,19 @@ class _BatchWriter(ABC):
             nodes (BioCypherNode): a list or generator of nodes in
                 :py:class:`BioCypherNode` format
 
+            batch_size (int): The batch size for writing nodes.
+
+            force (bool): Whether to force writing nodes even if their type is
+                not present in the schema.
+
+
         Returns:
             bool: The return value. True for success, False otherwise.
         """
         # TODO check represented_as
 
         # write node data
-        passed = self._write_node_data(nodes, batch_size)
+        passed = self._write_node_data(nodes, batch_size, force)
         if not passed:
             logger.error("Error while writing node data.")
             return False
@@ -393,7 +401,7 @@ class _BatchWriter(ABC):
 
         return True
 
-    def _write_node_data(self, nodes, batch_size):
+    def _write_node_data(self, nodes, batch_size, force):
         """
         Writes biocypher nodes to CSV conforming to the headers created
         with `_write_node_headers()`, and is actually required to be run
@@ -444,13 +452,17 @@ class _BatchWriter(ABC):
                     bin_l[label] = 1
 
                     # get properties from config if present
-                    cprops = (
-                        self.translator.ontology.mapping.extended_schema.get(
+                    if (
+                        label
+                        in self.translator.ontology.mapping.extended_schema
+                    ):
+                        cprops = self.translator.ontology.mapping.extended_schema.get(
                             label
                         ).get(
                             "properties",
                         )
-                    )
+                    else:
+                        cprops = None
                     if cprops:
                         d = dict(cprops)
 
@@ -483,7 +495,12 @@ class _BatchWriter(ABC):
 
                     # get label hierarchy
                     # multiple labels:
-                    all_labels = self.translator.ontology.get_ancestors(label)
+                    if not force:
+                        all_labels = self.translator.ontology.get_ancestors(
+                            label
+                        )
+                    else:
+                        all_labels = None
 
                     if all_labels:
                         # convert to pascal case

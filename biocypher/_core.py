@@ -15,6 +15,7 @@ submodules.
 from typing import Optional
 from datetime import datetime
 import os
+import json
 
 from more_itertools import peekable
 import yaml
@@ -252,7 +253,9 @@ class BioCypher:
         else:
             raise NotImplementedError("Cannot get driver in offline mode.")
 
-    def write_nodes(self, nodes, batch_size: int = int(1e6)) -> bool:
+    def write_nodes(
+        self, nodes, batch_size: int = int(1e6), force: bool = False
+    ) -> bool:
         """
         Write nodes to database. Either takes an iterable of tuples (if given,
         translates to ``BioCypherNode`` objects) or an iterable of
@@ -260,6 +263,11 @@ class BioCypher:
 
         Args:
             nodes (iterable): An iterable of nodes to write to the database.
+
+            batch_size (int): The batch size to use when writing to disk.
+
+            force (bool): Whether to force writing to the output directory even
+                if the node type is not present in the schema config file.
 
         Returns:
             bool: True if successful.
@@ -274,7 +282,9 @@ class BioCypher:
         else:
             tnodes = nodes
         # write node files
-        return self._writer.write_nodes(tnodes, batch_size=batch_size)
+        return self._writer.write_nodes(
+            tnodes, batch_size=batch_size, force=force
+        )
 
     def write_edges(self, edges, batch_size: int = int(1e6)) -> bool:
         """
@@ -631,9 +641,9 @@ class BioCypher:
             node = BioCypherNode(
                 node_id="schema_info",
                 node_label="schema_info",
-                properties={"schema_info": yaml.dump(schema)},
+                properties={"schema_info": json.dumps(schema)},
             )
-            self.write_nodes([node])
+            self.write_nodes([node], force=True)
 
         return schema
 

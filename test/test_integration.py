@@ -1,8 +1,10 @@
 import os
+import json
 
-import yaml
 import pytest
 import networkx as nx
+
+import pandas as pd
 
 from biocypher._ontology import Ontology
 
@@ -63,10 +65,25 @@ def test_write_schema_info_as_node(core, _get_nodes):
 
     schema = core.write_schema_info(as_node=True)
 
-    path = os.path.join(core._output_directory, "schema_info.yaml")
-    assert os.path.exists(path)
+    header_path = os.path.join(core._output_directory, "Schema_info-header.csv")
+    assert os.path.exists(header_path)
+    schema_path = os.path.join(
+        core._output_directory, "Schema_info-part000.csv"
+    )
+    assert os.path.exists(schema_path)
 
-    with open(path, "r") as f:
-        schema_loaded = yaml.safe_load(f)
+    with open(header_path, "r") as f:
+        schema_header = f.read()
 
-    assert schema_loaded == schema
+    assert "schema_info" in schema_header
+
+    # read schema_path with pandas
+    schema_df = pd.read_csv(schema_path, sep=";", header=None)
+
+    # get the second column of the first row and decode from json dumps format
+    string = schema_df.iloc[0, 1]
+    # fix initial and end quotes
+    string = string[1:-1]
+    schema_part = json.loads(string)
+
+    assert schema_part == schema
