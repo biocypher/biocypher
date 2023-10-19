@@ -218,25 +218,6 @@ For on-line writing to a database or a Pandas dataframe, we use the functions
 with `add` instead of `write`. For instance, to add nodes and edges to a Pandas
 dataframe, we can use:
 
-```{testcode} python
-:hide:
-from biocypher import BioCypher
-bc = BioCypher()
-
-def check_if_function_exists(module_name, function_name):
-    if hasattr(module_name, function_name):
-        print("Functions exists")
-    else:
-        print("Function does not exist")
-check_if_function_exists(bc, "add_nodes")
-check_if_function_exists(bc, "add_edges")
-```
-```{testoutput} python
-:hide:
-Functions exists
-Functions exists
-```
-
 ```{code-block} python
 bc.add_nodes(node_generator())
 bc.add_edges(edge_generator())
