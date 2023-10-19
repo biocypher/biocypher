@@ -6,32 +6,10 @@ jobs:
   push_job:
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
-    env:
-      PYTHON_VERSION: 3.9
 
     steps:
-    #----------------------------------------------
-    # check-out repo and set-up python and poetry
-    #----------------------------------------------
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-    - name: Set up Python ${{env.PYTHON_VERSION}}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{env.PYTHON_VERSION}}
-    - name: Load cached Poetry installation
-      id: cached-poetry
-      uses: actions/cache@v3
-      with:
-        path: ~/.local
-        key: poetry-cache-${{ runner.os }}-${{ matrix.python-version }}-${{ env.POETRY_VERSION }}
-    - name: Install and configure Poetry
-      if: steps.cached-poetry.outputs.cache-hit != 'true'
-      uses: snok/install-poetry@v1
-      with:
-        version: 1.5.1
-        virtualenvs-create: true
-        virtualenvs-in-project: true
+    - name: Setup
+      uses: nilskre/biocypher/.github/workflows/reusable_steps/setup.yaml #TODO: adapt Org
     #----------------------------------------------
     #       load cached venv if cache exists
     #----------------------------------------------
