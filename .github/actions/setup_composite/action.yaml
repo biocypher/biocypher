@@ -18,8 +18,6 @@ runs:
     #----------------------------------------------
     # check-out repo and set-up python and poetry
     #----------------------------------------------
-    - name: Checkout Repository
-      uses: actions/checkout@v4
     - name: Set up Python ${{env.PYTHON_VERSION}}
       uses: actions/setup-python@v4
       with:
