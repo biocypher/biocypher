@@ -37,5 +37,5 @@ def test_show_ontology_structure_kwargs(core):
     assert treevis is not None
 
 
-def test_ontology_without_schema_config(core):
-    pass
+def test_ontology_without_schema_config(core_no_schema):
+    assert core_no_schema
