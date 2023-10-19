@@ -312,12 +312,13 @@ class Ontology:
         else:
             self._nx_graph = self._head_ontology.get_nx_graph()
 
-        self._extend_ontology()
+        if self.mapping:
+            self._extend_ontology()
 
-        # experimental: add connections of disjoint classes to entity
-        self._connect_biolink_classes()
+            # experimental: add connections of disjoint classes to entity
+            self._connect_biolink_classes()
 
-        self._add_properties()
+            self._add_properties()
 
     def _load_ontologies(self) -> None:
         """
