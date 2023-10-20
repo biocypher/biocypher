@@ -11,7 +11,7 @@ biocypher:
 
   ## Schema configuration
 
-  schema_config_path: config/schema_config.yaml
+  # schema_config_path: config/schema_config.yaml
 
   ## Offline mode: do not connect to a running DBMS instance
   ## Can be used e.g. for writing batch import files
