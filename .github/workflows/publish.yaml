@@ -5,8 +5,8 @@ on:
     branches:
       - pyopensci
       - main
-    tags:
-      - "[0-9]+.[0-9]+.[0-9]+(-[a-z]+)?(.[0-9]+)?"
+    # tags:
+    #   - "[0-9]+.[0-9]+.[0-9]+(-[a-z]+)?(.[0-9]+)?"
 
 jobs:
   build_and_deploy_artifact:
