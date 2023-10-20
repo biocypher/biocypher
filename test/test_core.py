@@ -21,7 +21,7 @@ def test_log_missing_types(core, translator):
     assert real_missing_types.get("a") == 1 and real_missing_types.get("b") == 2
 
 
-@pytest.mark.parametrize("lenght", [4], scope="function")
+@pytest.mark.parametrize("length", [4], scope="function")
 def test_log_duplicates(core, deduplicator, _get_nodes):
     core._deduplicator = deduplicator
     nodes = _get_nodes + _get_nodes
@@ -35,7 +35,7 @@ def test_log_duplicates(core, deduplicator, _get_nodes):
     assert "m1" in core._deduplicator.duplicate_entity_ids
 
 
-@pytest.mark.parametrize("lenght", [4], scope="function")
+@pytest.mark.parametrize("length", [4], scope="function")
 def test_write_schema_info(core, _get_nodes, _get_edges, _get_rel_as_nodes):
     core.add(_get_nodes)
     core.add(_get_edges)

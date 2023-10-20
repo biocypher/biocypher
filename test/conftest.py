@@ -82,9 +82,9 @@ def cleanup(request, tmp_path_session):
 
 # biocypher node generator
 @pytest.fixture(scope="function")
-def _get_nodes(lenght: int) -> list:
+def _get_nodes(length: int) -> list:
     nodes = []
-    for i in range(lenght):
+    for i in range(length):
         bnp = BioCypherNode(
             node_id=f"p{i+1}",
             node_label="protein",
@@ -113,9 +113,9 @@ def _get_nodes(lenght: int) -> list:
 
 # biocypher edge generator
 @pytest.fixture(scope="function")
-def _get_edges(lenght):
+def _get_edges(length):
     edges = []
-    for i in range(lenght):
+    for i in range(length):
         e1 = BioCypherEdge(
             relationship_id=f"prel{i}",
             source_id=f"p{i}",
@@ -146,9 +146,9 @@ def _get_edges(lenght):
 
 
 @pytest.fixture(scope="function")
-def _get_rel_as_nodes(lenght):
+def _get_rel_as_nodes(length):
     rels = []
-    for i in range(lenght):
+    for i in range(length):
         n = BioCypherNode(
             node_id=f"i{i+1}",
             node_label="post translational interaction",

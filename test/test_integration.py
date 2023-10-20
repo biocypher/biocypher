@@ -9,7 +9,7 @@ import pandas as pd
 from biocypher._ontology import Ontology
 
 
-@pytest.mark.parametrize("lenght", [4], scope="function")
+@pytest.mark.parametrize("length", [4], scope="function")
 def test_write_node_data_from_gen(core, _get_nodes):
     nodes = _get_nodes
 
@@ -62,7 +62,7 @@ def test_ontology_without_schema_config(core_no_schema):
     assert isinstance(core_no_schema._ontology._nx_graph, nx.DiGraph)
 
 
-@pytest.mark.parametrize("l", [4], scope="function")
+@pytest.mark.parametrize("length", [4], scope="function")
 def test_write_schema_info_as_node(core, _get_nodes):
     core.add(_get_nodes)
 

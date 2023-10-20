@@ -3,7 +3,7 @@ import os
 import pytest
 
 
-@pytest.mark.parametrize("lenght", [4], scope="function")
+@pytest.mark.parametrize("length", [4], scope="function")
 def test_arango_write_data_headers_import_call(
     bw_arango,
     _get_nodes,
