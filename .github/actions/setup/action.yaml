@@ -16,7 +16,7 @@ runs:
       with:
         python-version: ${{inputs.PYTHON_VERSION}}
     - name: Load cached Poetry installation
-      if: runner.os == 'ubuntu-latest' # TODO: add support for other OS
+      if: runner.os == 'Linux' # TODO: add support for other OS
       id: cached-poetry
       uses: actions/cache@v3
       with:

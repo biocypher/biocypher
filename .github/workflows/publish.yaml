@@ -1,9 +1,15 @@
 name: Publish
 
 on: [push]
+# TODO: switch to this rules after successful test
+#on:
+#  push:
+#    branches:
+#      - main
+#    tags:
+#      - '*'
 
 jobs:
-  # TODO add 'main' branch filter
   build_and_deploy_artifact:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
@@ -14,26 +20,29 @@ jobs:
       url: https://test.pypi.org/project/biocypher/
     permissions:
       id-token: write
+      contents: write
     steps:
     #----------------------------------------------
     # check-out repo and set-up python and poetry
     #----------------------------------------------
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{env.PYTHON_VERSION}}
-    - name: Install and configure Poetry
-      uses: snok/install-poetry@v1
-      with:
-        version: 1.5.1
-        virtualenvs-create: false
+    - name: Setup Python and Poetry
+      uses: ./.github/actions/setup
     #----------------------------------------------
-    #             install dependencies
+    #            install dependencies
     #----------------------------------------------
-    - name: Install Dependencies
-      run: poetry install
+    - name: Install dependencies
+      uses: ./.github/actions/install
+    #----------------------------------------------
+    #       check if tag follows semver
+    #----------------------------------------------
+    - name: Validate tag name
+      run: |
+        if [[ ! "$GITHUB_REF" =~ ^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$ ]]; then
+          echo "Tag name is not in SemVer format (vX.Y.Z). Aborting."
+          exit 1
+        fi
     #----------------------------------------------
     #             build artifact
     #----------------------------------------------
@@ -45,7 +54,7 @@ jobs:
     - name: Publish artifact to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        repository_url: https://test.pypi.org/legacy/
+        repository-url: https://test.pypi.org/legacy/
     #----------------------------------------------
     #           create Github release
     #----------------------------------------------
