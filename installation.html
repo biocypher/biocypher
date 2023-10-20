@@ -174,11 +174,12 @@ poetry<span class="w"> </span>install
 </div>
 <p>Poetry creates a virtual environment for you (starting with <code class="docutils literal notranslate"><span class="pre">biocypher-</span></code>;
 alternatively you can name it yourself) and installs all dependencies.</p>
-<p>If you want to run the tests that use a Neo4j DBMS (database management system)
+<p>If you want to run the tests that use a local Neo4j or PostgreSQL DBMS (database management system)
 instance:</p>
 <ul class="simple">
 <li><p>Make sure that you have a Neo4j instance with the APOC plugin installed and a
 database named <code class="docutils literal notranslate"><span class="pre">test</span></code> running on standard bolt port <code class="docutils literal notranslate"><span class="pre">7687</span></code></p></li>
+<li><p>A PostgreSQL instance with the psql command line tool should be installed locally and running on standard port <code class="docutils literal notranslate"><span class="pre">5432</span></code></p></li>
 <li><p>Activate the virtual environment by running <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">poetry</span> <span class="pre">shell</span></code> and then run the
 tests by running <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">pytest</span></code> in the root directory of the repository with the
 command line argument <code class="docutils literal notranslate"><span class="pre">--password=&lt;your</span> <span class="pre">DBMS</span> <span class="pre">password&gt;</span></code>.</p></li>
