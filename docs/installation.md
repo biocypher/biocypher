@@ -54,13 +54,14 @@ poetry install
 Poetry creates a virtual environment for you (starting with `biocypher-`;
 alternatively you can name it yourself) and installs all dependencies.
 
-If you want to run the tests that use a local Neo4j or PostgreSQL DBMS (database management system)
-instance:
+If you want to run the tests that use a local Neo4j or PostgreSQL DBMS (database
+management system) instance:
 
 - Make sure that you have a Neo4j instance with the APOC plugin installed and a
 database named `test` running on standard bolt port `7687`
 
-- A PostgreSQL instance with the psql command line tool should be installed locally and running on standard port `5432`
+- A PostgreSQL instance with the psql command line tool should be installed
+locally and running on standard port `5432`
 
 - Activate the virtual environment by running `% poetry shell` and then run the
 tests by running `% pytest` in the root directory of the repository with the
