@@ -3,6 +3,7 @@ name: Publish
 on:
   workflow_run:
     workflows: [Tests and code quality]
+    branches: [PyOpenSci_review_part_4]
     types:
       - completed
   #push:
