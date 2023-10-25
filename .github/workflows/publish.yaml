@@ -10,6 +10,7 @@ on:
 
 jobs:
   call-tests_and_code_quality:
+    if: github.event_name == 'push' && github.event.ref_type == 'tag'
     uses: "./.github/workflows/tests_and_code_quality.yaml"
 
   build_and_deploy_artifact:
