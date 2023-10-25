@@ -12,6 +12,8 @@ authors:
       Heidelberg University Hospital: Institute for
       Computational Biomedicine
     orcid: 'https://orcid.org/0000-0003-3399-6695'
+  - name: BioCypher Consortium
+    type: consortium
   - given-names: Julio
     family-names: Saez-Rodriguez
     email: saez@uni-heidelberg.de
