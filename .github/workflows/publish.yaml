@@ -1,11 +1,6 @@
 name: Publish
 
 on:
-  workflow_run:
-    workflows: [Tests and code quality]
-    branches: [main]
-    types:
-      - completed
   push:
     branches:
       - main
@@ -14,8 +9,12 @@ on:
     # TODO: ensure semver style - "[0-9]+.[0-9]+.[0-9]+(-[a-z]+)?(.[0-9]+)?"
 
 jobs:
+  call-tests_and_code_quality:
+    uses: ./.github/workflows/tests_and_code_quality.yml
+
   build_and_deploy_artifact:
-    if: github.event_name == 'push' && github.event.ref_type == 'tag' && github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'push' && github.event.ref_type == 'tag'
+    needs: call-tests_and_code_quality
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: 3.9
