@@ -1,10 +1,11 @@
 name: 'Test coverage'
 description: 'Check test coverage'
 
+permissions:
+  contents: write
+
 runs:
   using: "composite"
-  permissions:
-    contents: write
   steps:
     - name: Generate coverage report
       run: poetry run coverage run -m pytest --password=your_password_here
