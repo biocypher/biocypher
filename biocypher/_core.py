@@ -645,6 +645,9 @@ class BioCypher:
             )
             self.write_nodes([node], force=True)
 
+            # override import call with added schema info node
+            self.write_import_call()
+
         return schema
 
     # TRANSLATION METHODS ###
