@@ -83,25 +83,9 @@ parts are actually used in the knowledge graph to be created. To get an overview
 of the structure of our project, we can run the following command via the
 interface:
 
-```{testcode} python
-:hide:
-from biocypher import BioCypher
-bc = BioCypher()
-
-def check_if_function_exists(module_name, function_name):
-    if hasattr(module_name, function_name):
-        print("Functions exists")
-    else:
-        print("Function does not exist")
-check_if_function_exists(bc, "show_ontology_structure")
-```
-```{testoutput} python
-:hide:
-Functions exists
-```
-
 ```{code-block} python
 :caption: Visualising the ontology hierarchy
+
 from biocypher import BioCypher
 bc = BioCypher(
     offline=True,  # no need to connect or to load data
