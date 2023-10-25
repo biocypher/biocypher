@@ -1,0 +1,29 @@
+name: 'Install'
+description: 'Install dependencies'
+inputs:
+  PYTHON_VERSION:
+    description: 'Python version'
+    default: 3.9
+
+runs:
+  using: "composite"
+  steps:
+    #----------------------------------------------
+    #       load cached venv if cache exists
+    #----------------------------------------------
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v3
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ inputs.PYTHON_VERSION }}-${{ hashFiles('**/poetry.lock') }}
+    #----------------------------------------------
+    # install dependencies if cache does not exist
+    #----------------------------------------------
+    - name: Install Dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+      shell: bash
+    - name: Install library
+      run: poetry install --no-interaction
+      shell: bash

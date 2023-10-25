@@ -4,20 +4,71 @@ Thank you for considering to contribute to the project! This guide will help you
 to get started with the development of the project. If you have any questions,
 please feel free to ask them in the issue tracker.
 
-## Formal Requirements
-
-The project uses documentation format [Napoleon](
-https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
-) with a [Sphinx](https://www.sphinx-doc.org/en/master/) autodoc GitHub
-Actions workflow. If you add new code, please make sure that it is documented
-accordingly and in a consistent manner with the existing code base. To check,
-you can run the documentation build locally by running `make html` in the `docs`
-directory.
+## Dependency management
 
 We use [Poetry](https://python-poetry.org) for dependency management. Please
-make sure that you have set up the environment correctly before starting
-development. If you want to fix dependency issues, please do so in the Poetry
+make sure that you have installed Poetry and set up the environment correctly
+before starting development.
+
+### Setup the environment
+
+- Install dependencies from the lock file: `poetry install`
+
+- Use the environment: You can either run commands directly with `poetry run
+<command>` or open a shell with `poetry shell` and then run commands directly.
+
+### Updating the environment
+
+If you want to fix dependency issues, please do so in the Poetry
 framework. If Poetry does not work for you for some reason, please let us know.
+
+The Poetry dependencies are organized in groups. There are groups with
+dependencies needed for running BioCypher (`[tool.poetry.dependencies` with the
+group name `main`) and a group with dependencies needed for development
+(`[tool.poetry.group.dev.dependencies` with the group name `dev`).
+
+For adding new dependencies:
+
+- Add new dependencies: `poetry add <dependency> -- group <group>`
+
+- Update lock file (after adding new dependencies in pyproject.toml): `poetry
+lock`
+
+## Code quality and formal requirements
+
+For ensuring code quality, the following tools are used:
+
+- [isort](https://isort.readthedocs.io/en/latest/) for sorting imports
+
+- [black](https://black.readthedocs.io/en/stable/) for automated code formatting
+
+- [pre-commit-hooks](https://github.com/pre-commit/pre-commit-hooks) for
+ensuring some general rules
+
+- [pep585-upgrade](https://github.com/snok/pep585-upgrade) for automatically
+upgrading type hints to the new native types defined in PEP 585
+
+- [pygrep-hooks](https://github.com/pre-commit/pygrep-hooks) for ensuring some
+general naming rules
+
+Pre-commit hooks are used to automatically run these tools before each commit.
+They are defined in [.pre-commit-config.yaml](./.pre-commit-config.yaml). To
+install the hooks run `poetry run pre-commit install`. The hooks are then
+executed before each commit. For running the hook for all project files (not
+only the changed ones) run `poetry run pre-commit run --all-files`.
+
+The project uses a [Sphinx](https://www.sphinx-doc.org/en/master/) autodoc
+GitHub Actions workflow to generate the documentation. If you add new code,
+please make sure that it is documented accordingly and in a consistent manner
+with the existing code base. The docstrings should follow the [Google style
+guide](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
+To check if the docs build successfully, you can build them locally by running
+`make html` in the `docs` directory.
+
+When adding new code snippets to the documentation, make sure that they are
+automatically tested with
+[doctest](https://sphinx-tutorial.readthedocs.io/step-3/#testing-your-code);
+this ensures that no outdated code snippets are part of the documentation.
 
 ## Testing
 
@@ -58,9 +109,7 @@ that the version number is incremented according to the following scheme:
 
 - Increment the patch version number if you make backwards-compatible bug fixes.
 
-You can use the `bumpversion` tool to update the version number in the
-`pyproject.toml` file. This will create a new git tag automatically.
-
-```
-bumpversion [major|minor|patch]
-```
+We use the `bumpversion` tool to update the version number in the
+`pyproject.toml` file. This will create a new git tag automatically. Usually,
+versioning is done by the maintainers, so please do not increment versions in
+pull requests by default.

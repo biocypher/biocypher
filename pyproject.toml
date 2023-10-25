@@ -58,6 +58,8 @@ ipykernel = "^6.23.1"
 sphinxext-opengraph = "^0.8.2"
 coverage-badge = "^1.1.0"
 nbsphinx = "^0.9.2"
+black = "^23.9.1"
+flake8 = "^6.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -98,7 +100,7 @@ exclude = '''
 
 [tool.isort]
 from_first = true
-line_length = 79
+line_length = 80
 multi_line_output = 3
 include_trailing_comma = true
 use_parentheses = true
@@ -112,7 +114,7 @@ indent = "    "
 profile = "black"
 
 [tool.flake8]
-ignore = ["D200", "D202", "D401", "D105", "W504"]
+ignore = ["E203", "D200", "D202", "D401", "D105", "W504"]
 per-file-ignores = [
     "docs/source/conf.py:D100",
     "tests/*:D100,D101,D102",
