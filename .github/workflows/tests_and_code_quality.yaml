@@ -1,10 +1,6 @@
 name: Tests and code quality
 
-on:
-  push:
-    branches-ignore:
-      - main
-  workflow_call:
+on: [push, workflow_call]
 
 jobs:
   tests_and_code_quality:

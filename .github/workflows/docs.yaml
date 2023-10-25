@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_call:
 
 jobs:
   build_docs:
@@ -27,11 +28,10 @@ jobs:
     #----------------------------------------------
     #                  build docs
     #----------------------------------------------
-    - name: Install dependencies
+    - name: Build docs
       uses: ./.github/actions/build_docs
 
   build_and_deploy_docs:
-    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     permissions: write-all
     steps:

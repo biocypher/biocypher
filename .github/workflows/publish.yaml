@@ -5,8 +5,7 @@ on:
     branches:
       - main
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+(a|b|rc|post|dev)[0-9]+"
+      - "*"
     # TODO: ensure semver style - "[0-9]+.[0-9]+.[0-9]+(-[a-z]+)?(.[0-9]+)?"
 
 jobs:
@@ -61,3 +60,6 @@ jobs:
 #            --repo="$GITHUB_REPOSITORY" \
 #            --title="$tag" \
 #            --generate-notes
+
+  call-build_and_deploy_docs:
+    uses: "./.github/workflows/docs.yaml"
