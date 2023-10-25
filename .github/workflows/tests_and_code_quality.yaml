@@ -1,6 +1,10 @@
 name: Tests and code quality
 
-on: [push, workflow_call]
+on:
+  push:
+    tags-ignore:
+      - '**'
+  workflow_call:
 
 jobs:
   tests_and_code_quality:
