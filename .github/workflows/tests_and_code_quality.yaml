@@ -2,8 +2,8 @@ name: Tests and code quality
 
 on:
   push:
-    tags-ignore:
-      - '**'
+    branches:
+      - "*"
   workflow_call:
 
 jobs:
