@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: 3.9
-    environment:
-      name: staging # uploads to test.pypi.org
-      url: https://test.pypi.org/project/biocypher/
+#    environment:
+#      name: staging # uploads to test.pypi.org
+#      url: https://test.pypi.org/project/biocypher/
     permissions:
       id-token: write
       contents: write
@@ -45,19 +45,19 @@ jobs:
     #----------------------------------------------
     #             upload to PyPi
     #----------------------------------------------
-    - name: Publish artifact to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://test.pypi.org/legacy/
+#    - name: Publish artifact to PyPI
+#      uses: pypa/gh-action-pypi-publish@release/v1
+#      with:
+#        repository-url: https://test.pypi.org/legacy/
     #----------------------------------------------
     #           create Github release
     #----------------------------------------------
-    - name: Create Github release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.ref_name }}
-      run: |
-        gh release create "$tag" \
-            --repo="$GITHUB_REPOSITORY" \
-            --title="$tag" \
-            --generate-notes
+#    - name: Create Github release
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        tag: ${{ github.ref_name }}
+#      run: |
+#        gh release create "$tag" \
+#            --repo="$GITHUB_REPOSITORY" \
+#            --title="$tag" \
+#            --generate-notes
