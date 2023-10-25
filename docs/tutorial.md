@@ -86,11 +86,9 @@ components: an input stream of data (which we call adapter) and a configuration
 for the resulting desired output (the schema configuration). The former will be
 simulated by calling the `Protein` class of our data generator 10 times.
 
-```{code-block} python
-
-from data_generator import Protein
+```{testcode} python
+from tutorial.data_generator import Protein
 proteins = [Protein() for _ in range(10)]
-
 ```
 
 Each protein in our simulated data has a UniProt ID, a label
@@ -106,14 +104,14 @@ simulated input data and, for each entity, forms the corresponding tuple. The
 use of a generator allows for efficient streaming of larger datasets where
 required.
 
-```{code-block} python
+```{testcode} python
 def node_generator():
-    for protein in proteins:
-        yield (
-          protein.get_id(),
-          protein.get_label(),
-          protein.get_properties()
-        )
+      for protein in proteins:
+          yield (
+            protein.get_id(),
+            protein.get_label(),
+            protein.get_properties()
+          )
 ```
 
 The concept of an adapter can become arbitrarily complex and involve
@@ -220,12 +218,17 @@ not require setting up a graph database instance. The following code will use
 the data stream and configuration set up above to write the files for knowledge
 graph creation:
 
-```{code-block} python
+```{testsetup} python
+import os
+os.chdir('../')
+```
+
+```{testcode} python
 from biocypher import BioCypher
 bc = BioCypher(
-    biocypher_config_path='tutorial/01_biocypher_config.yaml',
-    schema_config_path="tutorial/01_schema_config.yaml",
-)
+  biocypher_config_path='tutorial/01_biocypher_config.yaml',
+  schema_config_path='tutorial/01_schema_config.yaml',
+  )
 bc.write_nodes(node_generator())
 ```
 
@@ -263,10 +266,15 @@ input data (for the level of granularity that was used for the import). We can
 also print the ontological hierarchy derived from the underlying model(s)
 according to the classes that were given in the schema configuration:
 
-```{code-block} python
-bc.log_missing_bl_types()     # show input unaccounted for in the schema
+```{testcode} python
+bc.log_missing_input_labels() # show input unaccounted for in the schema
 bc.log_duplicates()           # show duplicates in the input data
 bc.show_ontology_structure()  # show ontological hierarchy
+```
+
+```{testoutput} python
+:hide:
+...
 ```
 
 ## Section 2: Merging data

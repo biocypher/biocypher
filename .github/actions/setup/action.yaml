@@ -1,0 +1,34 @@
+name: 'Setup'
+description: 'Setup Python and Poetry'
+inputs:
+  PYTHON_VERSION:
+    description: 'Python version'
+    default: 3.9
+  POETRY_VERSION:
+    description: 'Poetry version'
+    default: 1.5.1
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python ${{inputs.PYTHON_VERSION}}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{inputs.PYTHON_VERSION}}
+    - name: Load cached Poetry installation
+      if: runner.os == 'Linux' # TODO: add support for other OS
+      id: cached-poetry
+      uses: actions/cache@v3
+      with:
+        path: ~/.local
+        key: poetry-cache-${{ runner.os }}-${{ inputs.PYTHON_VERSION }}-${{ inputs.POETRY_VERSION }}
+    - name: Install and configure Poetry
+      if: steps.cached-poetry.outputs.cache-hit != 'true'
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.5.1
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Check Poetry installation
+      run: poetry --version
+      shell: bash
