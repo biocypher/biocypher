@@ -87,3 +87,13 @@ def test_write_schema_info_as_node(core, _get_nodes):
     schema_part = json.loads(string)
 
     assert schema_part == schema
+
+    # test import call
+    import_call_path = os.path.join(
+        core._output_directory, "neo4j-admin-import-call.sh"
+    )
+    assert os.path.exists(import_call_path)
+    with open(import_call_path, "r") as f:
+        import_call = f.read()
+
+    assert "Schema_info" in import_call
