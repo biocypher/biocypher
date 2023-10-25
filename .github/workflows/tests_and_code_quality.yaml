@@ -1,6 +1,10 @@
 name: Tests and code quality
 
-on: [push, workflow_call]
+on:
+  push:
+    branches-ignore:
+      - main
+  workflow_call:
 
 jobs:
   tests_and_code_quality:
@@ -29,4 +33,6 @@ jobs:
     #----------------------------------------------
     - name: Generate test coverage badge
       uses: ./.github/actions/test_coverage
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
       if: github.ref == 'refs/heads/main'

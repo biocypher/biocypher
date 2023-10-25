@@ -1,8 +1,10 @@
 name: 'Test coverage'
 description: 'Check test coverage'
 
-permissions:
-  contents: write
+inputs:
+  token:
+    description: 'A Github PAT'
+    required: true
 
 runs:
   using: "composite"
@@ -19,4 +21,4 @@ runs:
         REPO: self
         BRANCH: coverage
         FOLDER: docs/coverage
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.token }}
