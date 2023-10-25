@@ -31,7 +31,7 @@ jobs:
       uses: ./.github/actions/build_docs
 
   build_and_deploy_docs:
-    if: github.ref_type == 'tag'
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     permissions: write-all
     steps:

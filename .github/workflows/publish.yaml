@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - main
-    #tags:
-    #  - '*'
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+(a|b|rc|post|dev)[0-9]+"
     # TODO: ensure semver style - "[0-9]+.[0-9]+.[0-9]+(-[a-z]+)?(.[0-9]+)?"
 
 jobs:
@@ -13,7 +14,6 @@ jobs:
     uses: "./.github/workflows/tests_and_code_quality.yaml"
 
   build_and_deploy_artifact:
-    # if: startsWith(github.ref, 'refs/tags/')
     needs: call-tests_and_code_quality
     runs-on: ubuntu-latest
     env:
