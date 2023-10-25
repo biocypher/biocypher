@@ -24,9 +24,9 @@ jobs:
     #----------------------------------------------
     - name: Run tests
       uses: ./.github/actions/test
-    #----------------------------------------------
-    #        generate test coverage badge
-    #----------------------------------------------
-    - name: Generate test coverage badge
-      uses: ./.github/actions/test_coverage
-      if: github.ref == 'refs/heads/main'
+    # #----------------------------------------------
+    # #        generate test coverage badge
+    # #----------------------------------------------
+    # - name: Generate test coverage badge
+    #   uses: ./.github/actions/test_coverage
+    #   if: github.ref == 'refs/heads/main'
