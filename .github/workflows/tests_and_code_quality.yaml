@@ -1,6 +1,10 @@
 name: Tests and code quality
 
-on: [push]
+on:
+  push:
+    tags-ignore:
+      - '**'
+  workflow_call:
 
 jobs:
   tests_and_code_quality:
@@ -24,9 +28,11 @@ jobs:
     #----------------------------------------------
     - name: Run tests
       uses: ./.github/actions/test
-    # #----------------------------------------------
-    # #        generate test coverage badge
-    # #----------------------------------------------
-    # - name: Generate test coverage badge
-    #   uses: ./.github/actions/test_coverage
-    #   if: github.ref == 'refs/heads/main'
+    #----------------------------------------------
+    #        generate test coverage badge
+    #----------------------------------------------
+    - name: Generate test coverage badge
+      uses: ./.github/actions/test_coverage
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+      if: github.ref == 'refs/heads/main'
