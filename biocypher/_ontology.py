@@ -173,7 +173,7 @@ class OntologyAdapter:
         for label_subject, _, label_in_ontology in g.triples(
             (None, rdflib.RDFS.label, None)
         ):
-            # If the label is the root label, set the root node to the subject of the label
+            # If the label is the root label, set the root node to the label's subject
             if str(label_in_ontology) == root_label:
                 root = label_subject
                 break
