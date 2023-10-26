@@ -60,11 +60,27 @@ def get_logger(name: str = "biocypher") -> logging.Logger:
         now = datetime.now()
         date_time = now.strftime("%Y%m%d-%H%M%S")
 
-        logdir = (
-            _config.config("biocypher").get("log_directory") or "biocypher-log"
-        )
-        os.makedirs(logdir, exist_ok=True)
-        logfile = os.path.join(logdir, f"biocypher-{date_time}.log")
+        log_to_disk = _config.config("biocypher").get("log_to_disk", True)
+
+        if log_to_disk:
+            logdir = (
+                _config.config("biocypher").get("log_directory")
+                or "biocypher-log"
+            )
+            os.makedirs(logdir, exist_ok=True)
+            logfile = os.path.join(logdir, f"biocypher-{date_time}.log")
+
+            # file handler
+            file_handler = logging.FileHandler(logfile)
+
+            if _config.config("biocypher").get("debug"):
+                file_handler.setLevel(logging.DEBUG)
+            else:
+                file_handler.setLevel(logging.INFO)
+
+            file_handler.setFormatter(file_formatter)
+
+            logger.addHandler(file_handler)
 
         # handlers
         # stream handler
@@ -72,23 +88,15 @@ def get_logger(name: str = "biocypher") -> logging.Logger:
         stdout_handler.setLevel(logging.INFO)
         stdout_handler.setFormatter(stdout_formatter)
 
-        # file handler
-        file_handler = logging.FileHandler(logfile)
-
-        if _config.config("biocypher").get("debug"):
-            file_handler.setLevel(logging.DEBUG)
-        else:
-            file_handler.setLevel(logging.INFO)
-
-        file_handler.setFormatter(file_formatter)
-
         # add handlers
-        logger.addHandler(file_handler)
         logger.addHandler(stdout_handler)
 
         # startup message
         logger.info(f"This is BioCypher v{__version__}.")
-        logger.info(f"Logging into `{logfile}`.")
+        if log_to_disk:
+            logger.info(f"Logging into `{logfile}`.")
+        else:
+            logger.info("Logging into stdout.")
 
     return logging.getLogger(name)
 

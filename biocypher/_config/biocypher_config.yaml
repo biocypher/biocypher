@@ -39,6 +39,10 @@ biocypher:
 
   # log_directory: biocypher-log
 
+  ## Set to configure if logs are written to disk
+
+  # log_to_disk: true
+
   ## Set to change the output directory
 
   # output_directory: biocypher-out
