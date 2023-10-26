@@ -96,16 +96,7 @@ class OntologyAdapter:
         )
 
     def _rdf_to_nx(self, g, root_label, switch_id_and_label=True):
-        # Loop through all labels in the ontology
-        for s, _, o in g.triples((None, rdflib.RDFS.label, None)):
-            # If the label is the root label, set the root node to the subject of the label
-            if o.eq(root_label):
-                root = s
-                break
-        else:
-            raise ValueError(
-                f"Could not find root node with label {root_label}"
-            )
+        root = self._find_root_label(g, root_label)
 
         # Create a directed graph to represent the ontology as a tree
         G = nx.DiGraph()
@@ -176,6 +167,21 @@ class OntologyAdapter:
         add_subclasses(root)
 
         return G
+
+    def _find_root_label(self, g, root_label):
+        # Loop through all labels in the ontology
+        for label_subject, _, label_in_ontology in g.triples(
+            (None, rdflib.RDFS.label, None)
+        ):
+            # If the label is the root label, set the root node to the subject of the label
+            if str(label_in_ontology) == root_label:
+                root = label_subject
+                break
+        else:
+            raise ValueError(
+                f"Could not find root node with label {root_label}"
+            )
+        return root
 
     def _remove_prefix(self, uri: str) -> str:
         """

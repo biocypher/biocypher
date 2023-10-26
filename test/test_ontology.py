@@ -3,7 +3,7 @@ import os
 import pytest
 import networkx as nx
 
-from biocypher._ontology import Ontology
+from biocypher._ontology import Ontology, OntologyAdapter
 
 
 def test_biolink_adapter(biolink_adapter):
@@ -35,6 +35,11 @@ def test_mondo_adapter(mondo_adapter):
     assert mondo_adapter.get_root_label() == "disease"
 
     assert "human disease" in mondo_adapter.get_ancestors("cystic fibrosis")
+
+
+def test_ontology_adapter_root_node_missing():
+    with pytest.raises(ValueError):
+        OntologyAdapter("test/so.owl", "not_in_tree")
 
 
 def test_ontology_functions(hybrid_ontology):
