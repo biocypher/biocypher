@@ -71,8 +71,8 @@ class Protein(Node):
 
         ## random amino acid sequence
 
-        # random int between 50 and 250
-        random_length = random.randint(50, 250)
+        # random int between 20 and 50
+        random_length = random.randint(20, 50)
 
         properties["sequence"] = "".join(
             [
@@ -82,8 +82,8 @@ class Protein(Node):
         )
 
         ## random description
-        properties["description"] = " ".join(
-            [random.choice(string.ascii_lowercase) for _ in range(10)],
+        properties["description"] = "Lorem ipsum " + "".join(
+            [random.choice(string.ascii_lowercase) for _ in range(5)],
         )
 
         ## taxon
@@ -115,8 +115,8 @@ class Complex(Node):
         properties = {}
 
         ## random description
-        properties["description"] = " ".join(
-            [random.choice(string.ascii_lowercase) for _ in range(10)],
+        properties["description"] = "Lorem ipsum " + "".join(
+            [random.choice(string.ascii_lowercase) for _ in range(5)],
         )
 
         ## taxon
@@ -135,8 +135,8 @@ class RandomPropertyProtein(Protein):
 
         ## random amino acid sequence
 
-        # random int between 50 and 250
-        random_length = random.randint(50, 250)
+        # random int between 20 and 50
+        random_length = random.randint(20, 50)
 
         properties["sequence"] = "".join(
             [
@@ -146,8 +146,8 @@ class RandomPropertyProtein(Protein):
         )
 
         ## random description
-        properties["description"] = " ".join(
-            [random.choice(string.ascii_lowercase) for _ in range(10)],
+        properties["description"] = "Lorem ipsum " + "".join(
+            [random.choice(string.ascii_lowercase) for _ in range(5)],
         )
 
         ## random taxon
@@ -262,8 +262,8 @@ class ProteinProteinInteraction(Interaction):
 
         ## randomly add 'method'
         if random.random() > 0.5:
-            properties["method"] = " ".join(
-                [random.choice(string.ascii_lowercase) for _ in range(10)],
+            properties["method"] = "Lorem ipsum " + "".join(
+                [random.choice(string.ascii_lowercase) for _ in range(5)],
             )
 
         return properties
