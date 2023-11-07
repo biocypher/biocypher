@@ -30,21 +30,21 @@ biocypher:
     root_node: entity
 
   ### Optional parameters ###
-  ## Logging granularity
-  ## Set debug to true if more granular logging is desired
 
+  ## Logging
+  # Write log to disk
+  log_to_disk: true
+
+  # Activate more granular logging
   debug: true
 
-  ## Set to change the log directory
-
+  # Change the log directory
   # log_directory: biocypher-log
 
-  ## Set to change the output directory
-
+  ## Data output directory
   # output_directory: biocypher-out
 
-  ## Set to change the cache directory
-
+  ## Resource cache directory
   # cache_directory: .cache
 
   ## Optional tail ontologies
