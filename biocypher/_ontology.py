@@ -571,7 +571,7 @@ class Ontology:
         else:
             msg = f"Showing ontology structure based on {len(self._tail_ontology_meta)+1} ontologies: "
 
-        print(msg)
+        logger.info(msg)
 
         if not full:
             # set of leaves and their intermediate parents up to the root
@@ -600,7 +600,7 @@ class Ontology:
                         f"{self.mapping.extended_schema[node].get('synonym_for')}"
                     )
 
-            tree.show()
+            logger.info(f"\n{tree}")
 
             return tree
 

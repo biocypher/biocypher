@@ -40,7 +40,7 @@ class OntologyMapping:
         Read the configuration file and store the ontology mapping and extensions.
         """
         if config_file is None:
-            schema_config = _config.module_data("schema_config")
+            schema_config = {}
 
         # load yaml file from web
         elif config_file.startswith("http"):

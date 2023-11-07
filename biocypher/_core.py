@@ -181,7 +181,7 @@ class BioCypher:
         """
 
         if not self._schema_config_path:
-            return None
+            self._ontology_mapping = OntologyMapping()
 
         if not self._ontology_mapping:
             self._ontology_mapping = OntologyMapping(
