@@ -20,8 +20,8 @@ jobs:
     env:
       PYTHON_VERSION: 3.9
     environment:
-      name: staging # uploads to test.pypi.org
-      url: https://test.pypi.org/project/biocypher/
+      name: release
+      url: https://upload.pypi.org/legacy/
     permissions:
       id-token: write
       contents: write
@@ -49,7 +49,7 @@ jobs:
     - name: Publish artifact to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        repository-url: https://test.pypi.org/legacy/
+        repository-url: https://upload.pypi.org/legacy/
     #----------------------------------------------
     #           create Github release
     #----------------------------------------------
