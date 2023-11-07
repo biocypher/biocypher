@@ -60,7 +60,7 @@ def get_logger(name: str = "biocypher") -> logging.Logger:
         now = datetime.now()
         date_time = now.strftime("%Y%m%d-%H%M%S")
 
-        log_to_disk = _config.config("biocypher").get("log_to_disk", True)
+        log_to_disk = _config.config("biocypher").get("log_to_disk")
 
         if log_to_disk:
             logdir = (
