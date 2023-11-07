@@ -3,6 +3,8 @@ import os
 import yaml
 import pytest
 
+from biocypher import BioCypher
+
 
 def test_biocypher(core):
     assert core._dbms == "neo4j"
@@ -85,6 +87,23 @@ def test_write_schema_info(core, _get_nodes, _get_edges, _get_rel_as_nodes):
         schema_loaded = yaml.safe_load(f)
 
     assert schema_loaded == schema
+
+
+def test_show_full_ontology_structure_without_schema():
+    bc = BioCypher(
+        head_ontology={
+            "url": "test/so.owl",
+            "root_node": "sequence_variant",
+        }
+    )
+    treevis = bc.show_ontology_structure(full=True)
+
+    assert "sequence variant" in treevis
+    assert "functional effect variant" in treevis
+    assert "altered gene product level" in treevis
+    assert "decreased gene product level" in treevis
+    assert "functionally abnormal" in treevis
+    assert "lethal variant" in treevis
 
 
 # def test_access_translate(driver):

@@ -62,28 +62,6 @@ def test_ontology_without_schema_config(core_no_schema):
     assert isinstance(core_no_schema._ontology._nx_graph, nx.DiGraph)
 
 
-def test_show_full_ontology_without_schema_config(core_no_schema):
-    assert core_no_schema
-
-    core_no_schema._head_ontology = {
-        "url": "http://semanticweb.cs.vu.nl/2009/11/sem/",
-        "root_node": "Core",
-        "format": "rdf",
-    }
-    core_no_schema._ontology_mapping = None
-
-    core_no_schema._get_ontology()
-
-    treevis = core_no_schema.show_ontology_structure(full=True)
-
-    assert treevis is not None
-    assert "core" in treevis
-    assert "actor" in treevis
-    assert "event" in treevis
-    assert "place" in treevis
-    assert "time" in treevis
-
-
 @pytest.mark.parametrize("length", [4], scope="function")
 def test_write_schema_info_as_node(core, _get_nodes):
     core.write_nodes(_get_nodes)
