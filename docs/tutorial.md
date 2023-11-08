@@ -272,11 +272,6 @@ bc.log_duplicates()           # show duplicates in the input data
 bc.show_ontology_structure()  # show ontological hierarchy
 ```
 
-```{testoutput} python
-:hide:
-...
-```
-
 ## Section 2: Merging data
 
 (merging)=
