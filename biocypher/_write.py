@@ -1058,9 +1058,11 @@ class _Neo4jBatchWriter(_BatchWriter):
         # Should read the configuration and setup import_call_bin_prefix.
         super().__init__(*args, **kwargs)
 
-        cmd = [f"{self.import_call_bin_prefix}neo4j-admin", "version"]
+        cmd = [f"{self.import_call_bin_prefix}neo4j-admin", "--version"]
         version = subprocess.check_output(cmd)
-        major = int(version.decode().split()[1].split(".")[0])
+        # Output of version 4: "4.4.27\n"
+        # Output of version 5: "5.11.0-SNAPSHOT\n"
+        major = int(version.decode().split(".")[0])
         if major >= 5:
             self.import_cmd = "database import full"
             self.database_cmd = ""
