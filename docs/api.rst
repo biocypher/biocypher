@@ -219,6 +219,7 @@ downloads. Example usage:
       lifetime=7,
       is_dir=True,
    )
+   resource_list = [resource1, resource2, resource3]
    paths = bc.download(resource_list)
 
 The files will be stored in the cache directory, in subfolders according to the
