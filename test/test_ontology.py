@@ -1,6 +1,4 @@
 import os
-import time
-import logging
 
 import pytest
 import networkx as nx
@@ -164,18 +162,3 @@ def test_manual_format():
 
     assert isinstance(ontology._nx_graph, nx.DiGraph)
     assert "event" in ontology._nx_graph.nodes
-
-
-class TestWarnIfSlow:
-    @warn_if_slow(1)
-    def slow_method(self):
-        time.sleep(2)  # This method deliberately takes 2 seconds to execute
-
-    def test_warn_if_slow(self, caplog):
-        with caplog.at_level(logging.WARNING):
-            self.slow_method()
-        assert len(caplog.records) == 1
-        assert (
-            "It seems the ontology is taking a long time to load."
-            in caplog.text
-        )

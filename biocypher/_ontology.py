@@ -27,28 +27,13 @@ from datetime import datetime
 import rdflib
 import networkx as nx
 
-from . import _misc
+from ._misc import (
+    to_list,
+    to_lower_sentence_case,
+    create_tree_visualisation,
+    sentencecase_to_pascalcase,
+)
 from ._mapping import OntologyMapping
-
-
-def warn_if_slow(threshold):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            start_time = time.time()
-            result = func(*args, **kwargs)
-            elapsed_time = time.time() - start_time
-            if elapsed_time > threshold:
-                logging.warning(
-                    "It seems the ontology is taking a long time to load. "
-                    "This can sometimes happen due to slow resolving of "
-                    "identifiers via identifiers.org. Most of the time, this "
-                    "issue resolves itself after a few minutes."
-                )
-            return result
-
-        return wrapper
-
-    return decorator
 
 
 class OntologyAdapter:
@@ -179,7 +164,7 @@ class OntologyAdapter:
             node_label_str = str(g.value(node, rdflib.RDFS.label)).replace(
                 "_", " "
             )
-            node_label_str = _misc.to_lower_sentence_case(node_label_str)
+            node_label_str = to_lower_sentence_case(node_label_str)
 
             nx_id = node_label_str if switch_id_and_label else node_id_str
             nx_label = node_id_str if switch_id_and_label else node_label_str
@@ -216,7 +201,6 @@ class OntologyAdapter:
         else:
             return uri
 
-    @warn_if_slow(10)
     def _load_rdf_graph(self, ontology_file):
         """
         Load the ontology into an RDFlib graph. The ontology file can be in
@@ -406,10 +390,8 @@ class Ontology:
         if not self._nx_graph:
             self._nx_graph = self._head_ontology.get_nx_graph().copy()
 
-        head_join_node = _misc.to_lower_sentence_case(
-            adapter.get_head_join_node()
-        )
-        tail_join_node = _misc.to_lower_sentence_case(adapter.get_root_label())
+        head_join_node = to_lower_sentence_case(adapter.get_head_join_node())
+        tail_join_node = to_lower_sentence_case(adapter.get_root_label())
         tail_ontology = adapter.get_nx_graph()
 
         # subtree of tail ontology at join node
@@ -465,7 +447,7 @@ class Ontology:
 
                 continue
 
-            parents = _misc.to_list(value.get("is_a"))
+            parents = to_list(value.get("is_a"))
             child = key
 
             while parents:
@@ -475,7 +457,7 @@ class Ontology:
                     self._nx_graph.add_node(parent)
                     self._nx_graph.nodes[parent][
                         "label"
-                    ] = _misc.sentencecase_to_pascalcase(parent)
+                    ] = sentencecase_to_pascalcase(parent)
 
                     # mark parent as user extension
                     self._nx_graph.nodes[parent]["user_extension"] = True
@@ -485,7 +467,7 @@ class Ontology:
                     self._nx_graph.add_node(child)
                     self._nx_graph.nodes[child][
                         "label"
-                    ] = _misc.sentencecase_to_pascalcase(child)
+                    ] = sentencecase_to_pascalcase(child)
 
                     # mark child as user extension
                     self._nx_graph.nodes[child]["user_extension"] = True
@@ -522,7 +504,7 @@ class Ontology:
                 self._nx_graph.add_node(node)
                 self._nx_graph.nodes[node][
                     "label"
-                ] = _misc.sentencecase_to_pascalcase(node)
+                ] = sentencecase_to_pascalcase(node)
 
             self._nx_graph.add_edge(node, "entity")
 
@@ -611,7 +593,7 @@ class Ontology:
 
         if not to_disk:
             # create tree
-            tree = _misc.create_tree_visualisation(G)
+            tree = create_tree_visualisation(G)
 
             # add synonym information
             for node in self.mapping.extended_schema:
