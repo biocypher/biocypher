@@ -14,6 +14,8 @@ and representation of single ontologies as well as their hybridisation and
 other advanced operations.
 """
 import os
+import time
+import logging
 
 from ._logger import logger
 
@@ -27,6 +29,26 @@ import networkx as nx
 
 from . import _misc
 from ._mapping import OntologyMapping
+
+
+def warn_if_slow(threshold):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            start_time = time.time()
+            result = func(*args, **kwargs)
+            elapsed_time = time.time() - start_time
+            if elapsed_time > threshold:
+                logging.warning(
+                    "It seems the ontology is taking a long time to load. "
+                    "This can sometimes happen due to slow resolving of "
+                    "identifiers via identifiers.org. Most of the time, this "
+                    "issue resolves itself after a few minutes."
+                )
+            return result
+
+        return wrapper
+
+    return decorator
 
 
 class OntologyAdapter:
@@ -194,6 +216,7 @@ class OntologyAdapter:
         else:
             return uri
 
+    @warn_if_slow(10)
     def _load_rdf_graph(self, ontology_file):
         """
         Load the ontology into an RDFlib graph. The ontology file can be in
