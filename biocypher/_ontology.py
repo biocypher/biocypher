@@ -14,8 +14,6 @@ and representation of single ontologies as well as their hybridisation and
 other advanced operations.
 """
 import os
-import time
-import logging
 
 from ._logger import logger
 

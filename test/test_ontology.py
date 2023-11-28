@@ -3,7 +3,7 @@ import os
 import pytest
 import networkx as nx
 
-from biocypher._ontology import Ontology, OntologyAdapter, warn_if_slow
+from biocypher._ontology import Ontology, OntologyAdapter
 
 
 def test_biolink_adapter(biolink_adapter):
