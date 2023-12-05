@@ -6,6 +6,13 @@
 Democratising Knowledge Graphs
 ##############################
 
+.. Admonition:: Hot Topics
+   :class: attention
+
+   BioCypher is the simplest way to create an AI-enabled knowledge graph for
+   biomedical (or other) tasks. See :ref:`below <connect-llm>` for more
+   information.
+
 Building a knowledge graph for biomedical tasks usually takes months or years.
 What if you could do it in weeks or days? We created BioCypher to make the
 process of creating a biomedical knowledge graph easier than ever, but still
@@ -91,13 +98,15 @@ make this framework truly accessible and comprehensive, we need the input of the
 biomedical community. We are therefore inviting you to join us in this
 endeavour!
 
+.. _connect_llm:
+
 =====================================================
 Connect your Knowledge Graph to Large Language Models
 =====================================================
 
 To facilitate the use of knowledge graphs in downstream tasks, we have developed
 a framework to connect knowledge graphs to large language models. This framework
-is called `biochatter <https://github.com/biocypher/biochatter>`_ and is used in
+is called `BioChatter <https://github.com/biocypher/biochatter>`_ and is used in
 our web app `ChatGSE <https://chat.biocypher.org/>`_. See the links for more
 information.
 
