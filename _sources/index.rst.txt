@@ -10,8 +10,9 @@ Democratising Knowledge Graphs
    :class: attention
 
    BioCypher is the simplest way to create an AI-enabled knowledge graph for
-   biomedical (or other) tasks. See `below <_connect_llm>`_ for more
-   information.
+   biomedical (or other) tasks. See
+   `below <https://biocypher.org/#connect-your-knowledge-graph-to-large-language-models>`_
+   for more information.
 
 Building a knowledge graph for biomedical tasks usually takes months or years.
 What if you could do it in weeks or days? We created BioCypher to make the
