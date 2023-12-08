@@ -10,8 +10,18 @@ from biocypher._get import Resource, Downloader
 
 
 @pytest.fixture
-def downloader():
-    return Downloader(cache_dir="./.cache")  # TODO: test both cases None)
+def downloader(request):
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture
+def downloader_without_specified_cache_dir():
+    return Downloader()
+
+
+@pytest.fixture
+def downloader_with_specified_cache_dir():
+    return Downloader(cache_dir="./.cache")
 
 
 @given(
@@ -29,11 +39,27 @@ def test_resource(resource):
     assert isinstance(resource.lifetime, int)
 
 
+@pytest.mark.parametrize(
+    "downloader",
+    [
+        "downloader_without_specified_cache_dir",
+        "downloader_with_specified_cache_dir",
+    ],
+    indirect=True,
+)
 def test_downloader(downloader):
     assert isinstance(downloader.cache_dir, str)
     assert isinstance(downloader.cache_file, str)
 
 
+@pytest.mark.parametrize(
+    "downloader",
+    [
+        "downloader_without_specified_cache_dir",
+        "downloader_with_specified_cache_dir",
+    ],
+    indirect=True,
+)
 def test_download_file(downloader):
     resource = Resource(
         "test_resource",
@@ -46,22 +72,35 @@ def test_download_file(downloader):
 
     # test caching
     paths = downloader.download(resource)
-    # should not download again
-    assert paths[0] is None
+    # should not download again (assert that cache folder is returned)
+    if downloader == "downloader_without_specified_cache_dir":
+        assert "tmp" in paths[0]
+    elif downloader == "downloader_with_specified_cache_dir":
+        assert paths[0] is "./.cache"
 
     # manipulate cache dict to test expiration (datetime format)
-    downloader.cache_dict["test_resource"][
-        "date_downloaded"
-    ] = datetime.now() - timedelta(
-        days=8
-    )  # TODO: concert to str
+    downloader.cache_dict["test_resource"]["date_downloaded"] = str(
+        datetime.now() - timedelta(days=8)
+    )
 
     paths = downloader.download(resource)
     # should download again
     assert len(paths) == 1
-    assert paths[0] is not None
+    if downloader == "downloader_without_specified_cache_dir":
+        assert "test_resource/test_config.yaml" in paths[0]
+        assert "tmp" in paths[0]
+    elif downloader == "downloader_with_specified_cache_dir":
+        assert paths[0] is ".cache/test_resource/test_config.yaml"
 
 
+@pytest.mark.parametrize(
+    "downloader",
+    [
+        "downloader_without_specified_cache_dir",
+        "downloader_with_specified_cache_dir",
+    ],
+    indirect=True,
+)
 def test_download_lists(downloader):
     resource1 = Resource(
         name="test_resource1",
@@ -113,7 +152,7 @@ def test_download_lists(downloader):
     for path in paths:
         assert os.path.realpath(path) in expected_paths
     assert isinstance(
-        downloader.cache_dict["test_resource1"]["date_downloaded"], datetime
+        downloader.cache_dict["test_resource1"]["date_downloaded"], str
     )
     assert isinstance(downloader.cache_dict["test_resource1"]["url"], list)
     assert len(downloader.cache_dict["test_resource1"]["url"]) == 2
@@ -143,7 +182,7 @@ def test_download_directory_and_caching():
     paths = downloader.download(resource)
     # should not download again
     assert len(paths) == 1
-    assert paths[0] is None
+    assert "tmp" in paths[0]
 
 
 def test_download_zip_and_expiration():
@@ -169,18 +208,18 @@ def test_download_zip_and_expiration():
         assert os.path.exists(path)
 
     # use files downloaded here and manipulate cache file to test expiration
-    downloader.cache_dict["test_resource"][
-        "date_downloaded"
-    ] = datetime.now() - timedelta(days=4)
+    downloader.cache_dict["test_resource"]["date_downloaded"] = str(
+        datetime.now() - timedelta(days=4)
+    )
 
     paths = downloader.download(resource)
     # should not download again
-    assert paths[0] is None
+    assert "tmp" in paths[0]
 
     # minus 8 days from date_downloaded
-    downloader.cache_dict["test_resource"][
-        "date_downloaded"
-    ] = datetime.now() - timedelta(days=8)
+    downloader.cache_dict["test_resource"]["date_downloaded"] = str(
+        datetime.now() - timedelta(days=8)
+    )
 
     paths = downloader.download(resource)
     # should download again

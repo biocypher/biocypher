@@ -109,24 +109,10 @@ class Downloader:
         Returns:
             str or list: The path or paths to the downloaded resource(s).
         """
-        # check if resource is cached
-        cache_record = self._get_cache_record(resource)
+        expired = self._is_cache_expired(resource)
 
-        if cache_record:
-            # check if resource is expired (formatted in days)
-            # download_time = datetime.strptime(cache_record.get("date_downloaded"), "%Y-%m-%d %H:%M:%S.%f")
-            download_time = cache_record.get("date_downloaded")
-            lifetime = timedelta(days=resource.lifetime)
-            print(type(download_time))
-            print(download_time)
-            print(type(lifetime))
-            print(lifetime)
-            expired = download_time + lifetime < datetime.now()
-        else:
-            expired = True
-
-        # download resource
         if expired or not cache:
+            # download resource
             logger.info(f"Asking for download of {resource.name}.")
 
             if resource.is_dir:
@@ -161,6 +147,33 @@ class Downloader:
             self._update_cache_record(resource)
 
             return paths
+        else:
+            cached_resource_location = os.path.join(
+                self.cache_dir, resource.name
+            )
+            logger.info(f"Use cached version from {cached_resource_location}.")
+            return cached_resource_location
+
+    def _is_cache_expired(self, resource: Resource) -> bool:
+        """
+        Check if resource cache is expired.
+
+        Args:
+            resource (Resource): The resource to download.
+
+        Returns:
+            bool: cache is expired or not.
+        """
+        cache_record = self._get_cache_record(resource)
+        if cache_record:
+            download_time = datetime.strptime(
+                cache_record.get("date_downloaded"), "%Y-%m-%d %H:%M:%S.%f"
+            )
+            lifetime = timedelta(days=resource.lifetime)
+            expired = download_time + lifetime < datetime.now()
+        else:
+            expired = True
+        return expired
 
     def _retrieve(
         self,
@@ -288,7 +301,7 @@ class Downloader:
         """
         cache_record = {}
         cache_record["url"] = to_list(resource.url_s)
-        cache_record["date_downloaded"] = datetime.now()
+        cache_record["date_downloaded"] = str(datetime.now())
         cache_record["lifetime"] = resource.lifetime
         self.cache_dict[resource.name] = cache_record
         with open(self.cache_file, "w") as f:
