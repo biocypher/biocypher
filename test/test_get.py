@@ -78,7 +78,7 @@ def test_download_file(downloader):
     elif downloader == "downloader_with_specified_cache_dir":
         assert paths[0] is "./.cache"
 
-    # manipulate cache dict to test expiration (datetime format)
+    # manipulate cache dict to test expiration
     downloader.cache_dict["test_resource"]["date_downloaded"] = str(
         datetime.now() - timedelta(days=8)
     )
