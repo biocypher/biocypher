@@ -11,7 +11,7 @@ from biocypher._get import Resource, Downloader
 
 @pytest.fixture
 def downloader():
-    return Downloader(cache_dir=None)
+    return Downloader(cache_dir="./.cache")  # TODO: test both cases None)
 
 
 @given(
@@ -52,7 +52,9 @@ def test_download_file(downloader):
     # manipulate cache dict to test expiration (datetime format)
     downloader.cache_dict["test_resource"][
         "date_downloaded"
-    ] = datetime.now() - timedelta(days=8)
+    ] = datetime.now() - timedelta(
+        days=8
+    )  # TODO: concert to str
 
     paths = downloader.download(resource)
     # should download again

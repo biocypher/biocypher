@@ -114,9 +114,14 @@ class Downloader:
 
         if cache_record:
             # check if resource is expired (formatted in days)
-            dl = cache_record.get("date_downloaded")
-            lt = timedelta(days=resource.lifetime)
-            expired = dl + lt < datetime.now()
+            # download_time = datetime.strptime(cache_record.get("date_downloaded"), "%Y-%m-%d %H:%M:%S.%f")
+            download_time = cache_record.get("date_downloaded")
+            lifetime = timedelta(days=resource.lifetime)
+            print(type(download_time))
+            print(download_time)
+            print(type(lifetime))
+            print(lifetime)
+            expired = download_time + lifetime < datetime.now()
         else:
             expired = True
 
