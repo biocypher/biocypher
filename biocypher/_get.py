@@ -115,6 +115,8 @@ class Downloader:
         if cache_record:
             # check if resource is expired (formatted in days)
             dl = cache_record.get("date_downloaded")
+            # convert string to datetime
+            dl = datetime.strptime(dl, "%Y-%m-%d %H:%M:%S.%f")
             lt = timedelta(days=resource.lifetime)
             expired = dl + lt < datetime.now()
         else:
@@ -283,7 +285,7 @@ class Downloader:
         """
         cache_record = {}
         cache_record["url"] = to_list(resource.url_s)
-        cache_record["date_downloaded"] = datetime.now()
+        cache_record["date_downloaded"] = str(datetime.now())
         cache_record["lifetime"] = resource.lifetime
         self.cache_dict[resource.name] = cache_record
         with open(self.cache_file, "w") as f:
