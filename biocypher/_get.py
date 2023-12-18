@@ -15,6 +15,7 @@ BioCypher get module. Used to download and cache data from external sources.
 from __future__ import annotations
 
 from typing import Optional
+import shutil
 
 from ._logger import logger
 
@@ -109,61 +110,16 @@ class Downloader:
         Returns:
             str or list: The path or paths to the downloaded resource(s).
         """
-        # check if resource is cached
-        cache_record = self._get_cache_record(resource)
-
-        if cache_record:
-            # check if resource is expired (formatted in days)
-            dl = cache_record.get("date_downloaded")
-            # convert string to datetime
-            dl = datetime.strptime(dl, "%Y-%m-%d %H:%M:%S.%f")
-            lt = timedelta(days=resource.lifetime)
-            expired = dl + lt < datetime.now()
-        else:
-            expired = True
+        expired = self._is_cache_expired(resource)
 
         if expired or not cache:
-            # download resource
+            self._delete_expired_resource_cache(resource)
             logger.info(f"Asking for download of {resource.name}.")
-
-            if resource.is_dir:
-                files = self._get_files(resource)
-                resource.url_s = [resource.url_s + "/" + file for file in files]
-                resource.is_dir = False
-                paths = self._download_or_cache(resource, cache)
-            elif isinstance(resource.url_s, list):
-                paths = []
-                for url in resource.url_s:
-                    fname = url[url.rfind("/") + 1 :]
-                    paths.append(
-                        self._retrieve(
-                            url=url,
-                            fname=fname,
-                            path=os.path.join(self.cache_dir, resource.name),
-                        )
-                    )
-            else:
-                fname = resource.url_s[resource.url_s.rfind("/") + 1 :]
-                paths = self._retrieve(
-                    url=resource.url_s,
-                    fname=fname,
-                    path=os.path.join(self.cache_dir, resource.name),
-                )
-
-            # sometimes a compressed file contains multiple files
-            # TODO ask for a list of files in the archive to be used from the
-            # adapter
-
-            # update cache record
-            self._update_cache_record(resource)
-
-            return paths
+            paths = self._download_resource(cache, resource)
         else:
-            cached_resource_location = os.path.join(
-                self.cache_dir, resource.name
-            )
-            logger.info(f"Use cached version from {cached_resource_location}.")
-            return cached_resource_location
+            paths = self.get_cached_version(resource)
+        self._update_cache_record(resource)
+        return paths
 
     def _is_cache_expired(self, resource: Resource) -> bool:
         """
@@ -185,6 +141,67 @@ class Downloader:
         else:
             expired = True
         return expired
+
+    def _delete_expired_resource_cache(self, resource: Resource):
+        resource_cache_path = self.cache_dir + "/" + resource.name
+        if os.path.exists(resource_cache_path) and os.path.isdir(
+            resource_cache_path
+        ):
+            shutil.rmtree(resource_cache_path)
+
+    def _download_resource(self, cache, resource):
+        """Download a resource.
+
+        Args:
+            cache (bool): Whether to cache the resource or not.
+            resource (Resource): The resource to download.
+
+        Returns:
+            str or list: The path or paths to the downloaded resource(s).
+        """
+        if resource.is_dir:
+            files = self._get_files(resource)
+            resource.url_s = [resource.url_s + "/" + file for file in files]
+            resource.is_dir = False
+            paths = self._download_or_cache(resource, cache)
+        elif isinstance(resource.url_s, list):
+            paths = []
+            for url in resource.url_s:
+                fname = url[url.rfind("/") + 1 :]
+                paths.append(
+                    self._retrieve(
+                        url=url,
+                        fname=fname,
+                        path=os.path.join(self.cache_dir, resource.name),
+                    )
+                )
+        else:
+            fname = resource.url_s[resource.url_s.rfind("/") + 1 :]
+            paths = self._retrieve(
+                url=resource.url_s,
+                fname=fname,
+                path=os.path.join(self.cache_dir, resource.name),
+            )
+        # sometimes a compressed file contains multiple files
+        # TODO ask for a list of files in the archive to be used from the
+        # adapter
+        return paths
+
+    def get_cached_version(self, resource) -> list[str]:
+        """Get the cached version of a resource.
+
+        Args:
+            resource (Resource): The resource to get the cached version of.
+
+        Returns:
+            list[str]: The paths to the cached resource(s).
+        """
+        cached_resource_location = os.path.join(self.cache_dir, resource.name)
+        logger.info(f"Use cached version from {cached_resource_location}.")
+        paths = []
+        for file in os.listdir(cached_resource_location):
+            paths.append(os.path.join(cached_resource_location, file))
+        return paths
 
     def _retrieve(
         self,

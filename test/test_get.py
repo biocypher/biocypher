@@ -20,8 +20,10 @@ def downloader_without_specified_cache_dir():
 
 
 @pytest.fixture
-def downloader_with_specified_cache_dir():
-    return Downloader(cache_dir="./.cache")
+def downloader_with_specified_cache_dir(tmp_path):
+    tmp_cache_dir = tmp_path / ".cache"
+    tmp_cache_dir.mkdir()
+    return Downloader(cache_dir=str(tmp_cache_dir))
 
 
 @given(
@@ -67,17 +69,16 @@ def test_download_file(downloader):
         lifetime=7,
     )
     paths = downloader.download(resource)
+    initial_download_time = os.path.getmtime(paths[0])
     assert len(paths) == 1
     assert os.path.exists(paths[0])
+    assert "/test_resource/test_config.yaml" in paths[0]
 
     # test caching
     paths = downloader.download(resource)
-    # manipulate cache dict to test expiration (datetime format)
-    # should not download again (assert that cache folder is returned)
-    if downloader == "downloader_without_specified_cache_dir":
-        assert "tmp" in paths[0]
-    elif downloader == "downloader_with_specified_cache_dir":
-        assert paths[0] is "./.cache"
+    assert len(paths) == 1
+    # should not download again
+    assert initial_download_time == os.path.getmtime(paths[0])
 
     # manipulate cache dict to test expiration
     downloader.cache_dict["test_resource"]["date_downloaded"] = str(
@@ -85,13 +86,9 @@ def test_download_file(downloader):
     )
 
     paths = downloader.download(resource)
-    # should download again
     assert len(paths) == 1
-    if downloader == "downloader_without_specified_cache_dir":
-        assert "test_resource/test_config.yaml" in paths[0]
-        assert "tmp" in paths[0]
-    elif downloader == "downloader_with_specified_cache_dir":
-        assert paths[0] is ".cache/test_resource/test_config.yaml"
+    # should download again
+    assert initial_download_time < os.path.getmtime(paths[0])
 
 
 @pytest.mark.parametrize(
@@ -156,6 +153,7 @@ def test_download_lists(downloader):
     dt = datetime.strptime(
         downloader.cache_dict["test_resource1"]["date_downloaded"],
         "%Y-%m-%d %H:%M:%S.%f",
+    )
     assert isinstance(dt, datetime)
     assert isinstance(downloader.cache_dict["test_resource1"]["url"], list)
     assert len(downloader.cache_dict["test_resource1"]["url"]) == 2
@@ -184,7 +182,7 @@ def test_download_directory_and_caching():
     # test caching
     paths = downloader.download(resource)
     # should not download again
-    assert len(paths) == 1
+    assert len(paths) == 17
     assert "tmp" in paths[0]
 
 
