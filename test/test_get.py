@@ -72,6 +72,7 @@ def test_download_file(downloader):
 
     # test caching
     paths = downloader.download(resource)
+    # manipulate cache dict to test expiration (datetime format)
     # should not download again (assert that cache folder is returned)
     if downloader == "downloader_without_specified_cache_dir":
         assert "tmp" in paths[0]
@@ -151,9 +152,11 @@ def test_download_lists(downloader):
     ]
     for path in paths:
         assert os.path.realpath(path) in expected_paths
-    assert isinstance(
-        downloader.cache_dict["test_resource1"]["date_downloaded"], str
-    )
+    # valid datetime
+    dt = datetime.strptime(
+        downloader.cache_dict["test_resource1"]["date_downloaded"],
+        "%Y-%m-%d %H:%M:%S.%f",
+    assert isinstance(dt, datetime)
     assert isinstance(downloader.cache_dict["test_resource1"]["url"], list)
     assert len(downloader.cache_dict["test_resource1"]["url"]) == 2
     assert downloader.cache_dict["test_resource1"]["lifetime"] == 0

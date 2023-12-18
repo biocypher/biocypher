@@ -109,7 +109,18 @@ class Downloader:
         Returns:
             str or list: The path or paths to the downloaded resource(s).
         """
-        expired = self._is_cache_expired(resource)
+        # check if resource is cached
+        cache_record = self._get_cache_record(resource)
+
+        if cache_record:
+            # check if resource is expired (formatted in days)
+            dl = cache_record.get("date_downloaded")
+            # convert string to datetime
+            dl = datetime.strptime(dl, "%Y-%m-%d %H:%M:%S.%f")
+            lt = timedelta(days=resource.lifetime)
+            expired = dl + lt < datetime.now()
+        else:
+            expired = True
 
         if expired or not cache:
             # download resource
