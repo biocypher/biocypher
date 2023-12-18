@@ -72,7 +72,7 @@ def test_download_file(downloader):
     initial_download_time = os.path.getmtime(paths[0])
     assert len(paths) == 1
     assert os.path.exists(paths[0])
-    assert "/test_resource/test_config.yaml" in paths[0]
+    assert f"{os.sep}test_resource{os.sep}test_config.yaml" in paths[0]
 
     # test caching
     paths = downloader.download(resource)
