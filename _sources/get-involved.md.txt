@@ -18,7 +18,7 @@
 :::
 
 :::{grid-item-card} Join the mailing list
-:link: https://dashboard.mailerlite.com/forms/374012/83295282984387838/share
+:link: https://biocypher.zulipchat.com/
 :text-align: center
 {octicon}`mail;3em`
 :::
@@ -58,11 +58,6 @@ alternative to Slack. It is organised by topics, which helps in keeping the
 discussions focused. It also is free of charge for open-source and academic
 projects, which means that they sponsor the cloud hosting for our channel (as
 for many other open-source projects) - thanks!
-
-If you prefer to only be updated about the most important announcements and
-events, you can also subscribe to our [mailing
-list](https://dashboard.mailerlite.com/forms/374012/83295282984387838/share). We
-will only post there with low frequency, and you can unsubscribe at any time.
 
 If you want to contribute, please have a look at our [contribution
 guidelines](https://github.com/biocypher/biocypher/blob/main/CONTRIBUTING.md),
