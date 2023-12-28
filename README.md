@@ -11,6 +11,7 @@
 
 
 ## ❓ Description
+
 Knowledge graphs (KGs) are an [approach to knowledge
 representation](https://en.wikipedia.org/wiki/Knowledge_graph) that uses graph
 structure to facilitate exploration and analysis of complex data, often
@@ -31,6 +32,7 @@ the docs [here](https://biocypher.org).
 </img>
 
 ## 📖 Documentation
+
 Tutorial and developer docs at https://biocypher.org. For a quickstart into your
 own pipeline, you can refer to our [project
 template](https://github.com/biocypher/project-template), and for an overview of
@@ -39,6 +41,7 @@ features, visit our [GitHub Project
 Board](https://github.com/orgs/biocypher/projects/3/views/2).
 
 ## ⚙️ Installation / Usage
+
 Install the package from PyPI using `pip install biocypher`. More comprehensive
 installation and configuration instructions can be found
 [here](https://biocypher.org/installation.html).
@@ -48,6 +51,7 @@ and the various pipelines we have created. You can find these on the [Components
 Project Board](https://github.com/orgs/biocypher/projects/3/views/2).
 
 ## 🤝 Getting involved
+
 We are very happy about contributions from the community, large and small!
 If you would like to contribute to BioCypher development, please refer to
 our [contribution guidelines](CONTRIBUTING.md). :)
@@ -60,11 +64,15 @@ please join our community at https://biocypher.zulipchat.com!
 > This disclaimer was adapted from the [Pooch](https://github.com/fatiando/pooch) project.
 
 ## ✍️ Citation
-The BioCypher paper has been peer-reviewed in
-[Nature Biotechnology](https://www.nature.com/articles/s41587-023-01848-y).
-Before, it was available as a preprint at https://arxiv.org/abs/2212.13543.
+
+The BioCypher paper has been peer-reviewed in [Nature
+Biotechnology](https://www.nature.com/articles/s41587-023-01848-y). It is
+available as a self-archived version on
+[Zenodo](https://zenodo.org/records/10320714).  Before, it was available as a
+preprint at https://arxiv.org/abs/2212.13543.
 
 ## Acknowledgements
+
 This project has received funding from the European Union’s Horizon 2020
 research and innovation programme under grant agreement No 965193 for DECIDER
 and No 116030 for TransQST.
