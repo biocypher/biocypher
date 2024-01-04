@@ -29,3 +29,4 @@ dist/*
 .pytest_cache
 *.graphml
 .idea/*
+.cache

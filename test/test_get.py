@@ -10,8 +10,20 @@ from biocypher._get import Resource, Downloader
 
 
 @pytest.fixture
-def downloader():
-    return Downloader(cache_dir=None)
+def downloader(request):
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture
+def downloader_without_specified_cache_dir():
+    return Downloader()
+
+
+@pytest.fixture
+def downloader_with_specified_cache_dir(tmp_path):
+    tmp_cache_dir = tmp_path / ".cache"
+    tmp_cache_dir.mkdir()
+    return Downloader(cache_dir=str(tmp_cache_dir))
 
 
 @given(
@@ -29,11 +41,27 @@ def test_resource(resource):
     assert isinstance(resource.lifetime, int)
 
 
+@pytest.mark.parametrize(
+    "downloader",
+    [
+        "downloader_without_specified_cache_dir",
+        "downloader_with_specified_cache_dir",
+    ],
+    indirect=True,
+)
 def test_downloader(downloader):
     assert isinstance(downloader.cache_dir, str)
     assert isinstance(downloader.cache_file, str)
 
 
+@pytest.mark.parametrize(
+    "downloader",
+    [
+        "downloader_without_specified_cache_dir",
+        "downloader_with_specified_cache_dir",
+    ],
+    indirect=True,
+)
 def test_download_file(downloader):
     resource = Resource(
         "test_resource",
@@ -41,25 +69,36 @@ def test_download_file(downloader):
         lifetime=7,
     )
     paths = downloader.download(resource)
+    initial_download_time = os.path.getmtime(paths[0])
     assert len(paths) == 1
     assert os.path.exists(paths[0])
+    assert f"{os.sep}test_resource{os.sep}test_config.yaml" in paths[0]
 
     # test caching
     paths = downloader.download(resource)
+    assert len(paths) == 1
     # should not download again
-    assert paths[0] is None
+    assert initial_download_time == os.path.getmtime(paths[0])
 
-    # manipulate cache dict to test expiration (datetime format)
+    # manipulate cache dict to test expiration
     downloader.cache_dict["test_resource"]["date_downloaded"] = str(
         datetime.now() - timedelta(days=8)
     )
 
     paths = downloader.download(resource)
-    # should download again
     assert len(paths) == 1
-    assert paths[0] is not None
+    # should download again
+    assert initial_download_time < os.path.getmtime(paths[0])
 
 
+@pytest.mark.parametrize(
+    "downloader",
+    [
+        "downloader_without_specified_cache_dir",
+        "downloader_with_specified_cache_dir",
+    ],
+    indirect=True,
+)
 def test_download_lists(downloader):
     resource1 = Resource(
         name="test_resource1",
@@ -143,8 +182,8 @@ def test_download_directory_and_caching():
     # test caching
     paths = downloader.download(resource)
     # should not download again
-    assert len(paths) == 1
-    assert paths[0] is None
+    assert len(paths) == 17
+    assert "tmp" in paths[0]
 
 
 def test_download_zip_and_expiration():
@@ -176,7 +215,7 @@ def test_download_zip_and_expiration():
 
     paths = downloader.download(resource)
     # should not download again
-    assert paths[0] is None
+    assert "tmp" in paths[0]
 
     # minus 8 days from date_downloaded
     downloader.cache_dict["test_resource"]["date_downloaded"] = str(
@@ -189,4 +228,5 @@ def test_download_zip_and_expiration():
 
 
 def test_cache_api_request():
+    # TODO
     pass
