@@ -15,6 +15,7 @@
    
       ~Downloader.__init__
       ~Downloader.download
+      ~Downloader.get_cached_version
    
    
 
