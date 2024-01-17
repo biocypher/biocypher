@@ -197,7 +197,10 @@ or the <code class="docutils literal notranslate"><span class="pre">config</span
 wish to override from default. If you want to create global user settings, you
 can create a <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> in your default BioCypher user directory
 (as found using <code class="docutils literal notranslate"><span class="pre">appdirs.user_config_dir('biocypher')</span></code>). For instance, on Mac
-OS, this would be <code class="docutils literal notranslate"><span class="pre">~/Library/Caches/biocypher/biocypher_config.yaml</span></code>.</p>
+OS, this would be <code class="docutils literal notranslate"><span class="pre">~/Library/Caches/biocypher/biocypher_config.yaml</span></code>. Finally,
+you can also point an instance of the
+<a class="reference external" href="https://biocypher.org/modules/biocypher.BioCypher.html#biocypher.BioCypher">BioCypher</a>
+class to any YAML file using the <code class="docutils literal notranslate"><span class="pre">biocypher_config_path</span></code> parameter.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It is important to follow the rules of indentation in the YAML file. BioCypher
