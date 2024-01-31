@@ -111,7 +111,9 @@ class OntologyAdapter:
             if not has_label(parent_node, g):
                 return
 
-            nx_parent_node_id, nx_parent_node_label = _get_nx_id_and_label(parent_node)
+            nx_parent_node_id, nx_parent_node_label = _get_nx_id_and_label(
+                parent_node
+            )
 
             if nx_parent_node_id not in G:
                 add_node(nx_parent_node_id, nx_parent_node_label)
@@ -122,7 +124,10 @@ class OntologyAdapter:
                 for child_node in child_nodes:
                     if not has_label(child_node, g):
                         continue
-                    nx_child_node_id, nx_child_node_label = _get_nx_id_and_label(child_node)
+                    (
+                        nx_child_node_id,
+                        nx_child_node_label,
+                    ) = _get_nx_id_and_label(child_node)
                     add_node(nx_child_node_id, nx_child_node_label)
                     G.add_edge(nx_child_node_id, nx_parent_node_id)
                 for child_node in child_nodes:
@@ -152,7 +157,7 @@ class OntologyAdapter:
                 add_parents(o)
 
         def has_label(node: rdflib.URIRef, g: rdflib.Graph) -> bool:
-            """ Does the node have a label in g?
+            """Does the node have a label in g?
 
             Args:
                 node (rdflib.URIRef): The node to check
@@ -164,7 +169,7 @@ class OntologyAdapter:
             return (node, rdflib.RDFS.label, None) in g
 
         def add_node(nx_node_id: str, nx_node_label: str):
-            """ Add a node to the graph.
+            """Add a node to the graph.
 
             Args:
                 nx_node_id (str): The ID of the node
@@ -184,8 +189,10 @@ class OntologyAdapter:
             nx_label = node_id_str if switch_id_and_label else node_label_str
             return nx_id, nx_label
 
-        def get_child_nodes(parent_node: rdflib.URIRef, g: rdflib.Graph) -> list:
-            """ Get the child nodes of a node in the ontology.
+        def get_child_nodes(
+            parent_node: rdflib.URIRef, g: rdflib.Graph
+        ) -> list:
+            """Get the child nodes of a node in the ontology.
             Accounts for the case of multiple parents defined in intersectionOf.
 
             Args:
@@ -197,7 +204,11 @@ class OntologyAdapter:
             """
             child_nodes = []
             for s, p, o in g.triples((None, rdflib.RDFS.subClassOf, None)):
-                if (o, rdflib.RDF.type, rdflib.OWL.Class) in g and (o, rdflib.OWL.intersectionOf, None) in g:
+                if (o, rdflib.RDF.type, rdflib.OWL.Class) in g and (
+                    o,
+                    rdflib.OWL.intersectionOf,
+                    None,
+                ) in g:
                     # Check if node has multiple parent nodes defined in intersectionOf (one of them = parent_node)
                     parent_nodes = get_nodes_in_intersectionof(o)
                     if parent_node in parent_nodes:
@@ -210,7 +221,7 @@ class OntologyAdapter:
             return child_nodes
 
         def get_nodes_in_intersectionof(o: rdflib.URIRef) -> list:
-            """ Get the nodes in an intersectionOf node.
+            """Get the nodes in an intersectionOf node.
 
             Args:
                 o (rdflib.URIRef): The intersectionOf node
@@ -219,14 +230,18 @@ class OntologyAdapter:
                 list: A list of the nodes in the intersectionOf node
             """
             anonymous_intersection_nodes = []
-            for _, _, anonymous_object in g.triples((o, rdflib.OWL.intersectionOf, None)):
+            for _, _, anonymous_object in g.triples(
+                (o, rdflib.OWL.intersectionOf, None)
+            ):
                 anonymous_intersection_nodes.append(anonymous_object)
             anonymous_intersection_node = anonymous_intersection_nodes[0]
-            nodes_in_intersection = retrieve_rdf_linked_list(anonymous_intersection_node)
+            nodes_in_intersection = retrieve_rdf_linked_list(
+                anonymous_intersection_node
+            )
             return nodes_in_intersection
 
         def retrieve_rdf_linked_list(subject: rdflib.URIRef) -> list:
-            """ Recursively retrieves a linked list from RDF.
+            """Recursively retrieves a linked list from RDF.
             Example RDF list with the items [item1, item2]:
             list_node - first -> item1
             list_node - rest -> list_node2

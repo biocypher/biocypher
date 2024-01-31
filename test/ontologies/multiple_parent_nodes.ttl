@@ -42,8 +42,8 @@ owl:Child a owl:Class ;
      rdfs:label "Child" ;
      rdfs:subClassOf [ owl:intersectionOf ( owl:Level2A
                                              owl:Level2B
-                                             owl:Level2C 
-                                        ); 
-                                        rdf:type owl:Class 
+                                             owl:Level2C
+                                        );
+                                        rdf:type owl:Class
                                         ] ;
      rdfs:comment "Child." .
