@@ -147,7 +147,7 @@ class OntologyAdapter:
 
                 o_id, o_label = _get_nx_id_and_label(o)
 
-                # Skip nodes already in the graph
+                # Skip if node already in the graph
                 if o_id in G:
                     continue
 
