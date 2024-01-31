@@ -162,3 +162,21 @@ def test_manual_format():
 
     assert isinstance(ontology._nx_graph, nx.DiGraph)
     assert "event" in ontology._nx_graph.nodes
+
+
+def test_multiple_parents():
+    ontology_adapter = OntologyAdapter(ontology_file="test/ontologies/multiple_parent_nodes.ttl", root_label="Root")
+    result = ontology_adapter.get_nx_graph()
+    # Expected hierarchy:
+    # root
+    # ├── level1A
+    # │   ├── level2A
+    # │   │   └── child
+    # │   └── level2B
+    # │       └── child
+    # └── level1B
+    #     └── level2C
+    #         └── child
+    expected_edges = [('level1A', 'root'), ('level2A', 'level1A'), ('level1B', 'root'), ('level2C', 'level1B'), ('child', 'level2A'), ('child', 'level2B'), ('child', 'level2C'), ('level2B', 'level1A')]
+    for edge in expected_edges:
+        assert edge in result.edges
