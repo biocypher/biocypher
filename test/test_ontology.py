@@ -164,8 +164,9 @@ def test_manual_format():
     assert "event" in ontology._nx_graph.nodes
 
 
-def test_multiple_parents():
-    ontology_adapter = OntologyAdapter(ontology_file="test/ontologies/multiple_parent_nodes.ttl", root_label="Root")
+@pytest.mark.parametrize("ontology_file", ["test/ontologies/multiple_parent_nodes.ttl", "test/ontologies/multiple_parent_nodes.owl"])
+def test_multiple_parents(ontology_file):
+    ontology_adapter = OntologyAdapter(ontology_file=ontology_file, root_label="Root")
     result = ontology_adapter.get_nx_graph()
     # Expected hierarchy:
     # root
@@ -178,5 +179,17 @@ def test_multiple_parents():
     #     └── level2C
     #         └── child
     expected_edges = [('level1A', 'root'), ('level2A', 'level1A'), ('level1B', 'root'), ('level2C', 'level1B'), ('child', 'level2A'), ('child', 'level2B'), ('child', 'level2C'), ('level2B', 'level1A')]
+    for edge in expected_edges:
+        assert edge in result.edges
+
+
+def test_missing_label_on_node():
+    ontology_adapter = OntologyAdapter(ontology_file="test/ontologies/missing_label.ttl", root_label="Root")
+    result = ontology_adapter.get_nx_graph()
+    # Expected hierarchy:
+    #  root
+    #  ├── level1A
+    # (└── level1B) <- missing label on this node (should not be part of the graph)
+    expected_edges = [('level1A', 'root')]
     for edge in expected_edges:
         assert edge in result.edges
