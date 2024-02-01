@@ -48,7 +48,7 @@ def get_logger(name: str = "biocypher") -> logging.Logger:
         # create logger
         logger = logging.getLogger(name)
         logger.setLevel(logging.DEBUG)
-        logger.propagate = False
+        logger.propagate = True
 
         # formatting
         file_formatter = logging.Formatter(

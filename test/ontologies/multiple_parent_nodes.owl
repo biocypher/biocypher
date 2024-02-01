@@ -1,0 +1,63 @@
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#">
+
+  <owl:Class rdf:about="#Class">
+    <rdfs:label>Class</rdfs:label>
+    <rdfs:comment>The class of OWL classes.</rdfs:comment>
+    <rdfs:isDefinedBy rdf:resource="http://www.w3.org/2002/07/owl#"/>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Root">
+    <rdfs:label>Root</rdfs:label>
+    <rdfs:comment>The Root class.</rdfs:comment>
+    <rdfs:isDefinedBy rdf:resource="http://www.w3.org/2002/07/owl#"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Level1A">
+    <rdfs:label>Level1A</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#Root"/>
+    <rdfs:comment>Level1A.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Level1B">
+    <rdfs:label>Level1B</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#Root"/>
+    <rdfs:comment>Level1B.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Level2A">
+    <rdfs:label>Level2A</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#Level1A"/>
+    <rdfs:comment>Level2A.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Level2B">
+    <rdfs:label>Level2B</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#Level1A"/>
+    <rdfs:comment>Level2B.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Level2C">
+    <rdfs:label>Level2C</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#Level1B"/>
+    <rdfs:comment>Level2C.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Child">
+    <rdfs:label>Child</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="#Level2A"/>
+          <rdf:Description rdf:about="#Level2B"/>
+          <rdf:Description rdf:about="#Level2C"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+    <rdfs:comment>Child.</rdfs:comment>
+  </owl:Class>
+
+</rdf:RDF>
