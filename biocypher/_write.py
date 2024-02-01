@@ -1087,9 +1087,8 @@ class _Neo4jBatchWriter(_BatchWriter):
             _id = ":ID"
 
             # translate label to PascalCase
-            compliant_label = parse_label(label)
             pascal_label = self.translator.name_sentence_to_pascal(
-                compliant_label
+                parse_label(label)
             )
 
             header = f"{pascal_label}-header.csv"
@@ -1169,9 +1168,8 @@ class _Neo4jBatchWriter(_BatchWriter):
 
         for label, props in self.edge_property_dict.items():
             # translate label to PascalCase
-            compliant_label = parse_label(label)
             pascal_label = self.translator.name_sentence_to_pascal(
-                compliant_label
+                parse_label(label)
             )
 
             # paths
