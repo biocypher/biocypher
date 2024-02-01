@@ -1316,8 +1316,12 @@ class _Neo4jBatchWriter(_BatchWriter):
 
 
 def parse_label(label: str) -> str:
-    """Check if the label is compliant with Neo4j naming conventions
-    https://neo4j.com/docs/cypher-manual/current/syntax/naming/
+    """
+
+    Check if the label is compliant with Neo4j naming conventions,
+    https://neo4j.com/docs/cypher-manual/current/syntax/naming/, and if not,
+    remove non-compliant characters.
+
     Args:
         label (str): The label to check
     Returns:
