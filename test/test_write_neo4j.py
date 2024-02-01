@@ -6,7 +6,7 @@ import pytest
 
 import pandas as pd
 
-from biocypher._write import check_label_name, _Neo4jBatchWriter
+from biocypher._write import parse_label, _Neo4jBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 
@@ -1077,20 +1077,20 @@ def test_tab_delimiter(bw_tab, _get_nodes):
 
 def test_check_label_name():
     # Test case 1: label with compliant characters
-    assert check_label_name("Compliant_Label") == "Compliant_Label"
+    assert parse_label("Compliant_Label") == "Compliant_Label"
 
     # Test case 2: label with non-compliant characters
-    assert check_label_name("Non@Compl<>i(an)t_Labe#l") == "NonCompliant_Label"
+    assert parse_label("Non@Compl<>i(an)t_Labe#l") == "NonCompliant_Label"
 
     # Test case 3: label starts with a number
-    assert check_label_name("15Invalid_Label") == "Invalid_Label"
+    assert parse_label("15Invalid_Label") == "Invalid_Label"
 
     # Test case 4: label starts with a non-alphanumeric character
-    assert check_label_name("@Invalid_Label") == "Invalid_Label"
+    assert parse_label("@Invalid_Label") == "Invalid_Label"
 
     # Additional test case: label with dot (for class hierarchy of BioCypher)
-    assert check_label_name("valid.label") == "valid.label"
+    assert parse_label("valid.label") == "valid.label"
 
     # Additional test case: label with dot and non-compliant characters
-    assert check_label_name("In.valid.Label@1") == "In.valid.Label1"
+    assert parse_label("In.valid.Label@1") == "In.valid.Label1"
     # Assert warning log is written

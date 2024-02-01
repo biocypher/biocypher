@@ -954,7 +954,7 @@ class _BatchWriter(ABC):
         """
         # translate label to PascalCase
         label_pascal = self.translator.name_sentence_to_pascal(
-            check_label_name(label)
+            parse_label(label)
         )
 
         # list files in self.outdir
@@ -1087,7 +1087,7 @@ class _Neo4jBatchWriter(_BatchWriter):
             _id = ":ID"
 
             # translate label to PascalCase
-            compliant_label = check_label_name(label)
+            compliant_label = parse_label(label)
             pascal_label = self.translator.name_sentence_to_pascal(
                 compliant_label
             )
@@ -1169,7 +1169,7 @@ class _Neo4jBatchWriter(_BatchWriter):
 
         for label, props in self.edge_property_dict.items():
             # translate label to PascalCase
-            compliant_label = check_label_name(label)
+            compliant_label = parse_label(label)
             pascal_label = self.translator.name_sentence_to_pascal(
                 compliant_label
             )
@@ -1317,7 +1317,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         return import_call
 
 
-def check_label_name(label: str) -> str:
+def parse_label(label: str) -> str:
     """Check if the label is compliant with Neo4j naming conventions
     https://neo4j.com/docs/cypher-manual/current/syntax/naming/
     Args:
