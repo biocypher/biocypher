@@ -136,7 +136,7 @@ def _find_root_node(inheritance_tree: dict) -> tuple[set, str]:
     root = list(parents - classes)
     if len(root) > 1:
         if "entity" in root:
-            root = "entity"  # default: good standard? TODO
+            root = "entity"  # TODO: default: good standard?
         else:
             raise ValueError(
                 "Inheritance tree cannot have more than one root node. "
