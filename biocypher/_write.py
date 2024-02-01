@@ -13,6 +13,7 @@ BioCypher 'offline' module. Handles the writing of node and edge representations
 suitable for import into a DBMS.
 """
 
+import re
 import glob
 
 from ._logger import logger
@@ -22,7 +23,6 @@ logger.debug(f"Loading module {__name__}.")
 from abc import ABC, abstractmethod
 from types import GeneratorType
 from typing import TYPE_CHECKING, Union, Optional
-from datetime import datetime
 from collections import OrderedDict, defaultdict
 import os
 
@@ -34,7 +34,6 @@ from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 __all__ = ["get_writer"]
 
 if TYPE_CHECKING:
-    from ._ontology import Ontology
     from ._translate import Translator
     from ._deduplicate import Deduplicator
 
@@ -954,7 +953,9 @@ class _BatchWriter(ABC):
             bool: The return value. True for success, False otherwise.
         """
         # translate label to PascalCase
-        label_pascal = self.translator.name_sentence_to_pascal(label)
+        label_pascal = self.translator.name_sentence_to_pascal(
+            check_label_name(label)
+        )
 
         # list files in self.outdir
         files = glob.glob(
@@ -1086,7 +1087,10 @@ class _Neo4jBatchWriter(_BatchWriter):
             _id = ":ID"
 
             # translate label to PascalCase
-            pascal_label = self.translator.name_sentence_to_pascal(label)
+            compliant_label = check_label_name(label)
+            pascal_label = self.translator.name_sentence_to_pascal(
+                compliant_label
+            )
 
             header = f"{pascal_label}-header.csv"
             header_path = os.path.join(
@@ -1165,7 +1169,10 @@ class _Neo4jBatchWriter(_BatchWriter):
 
         for label, props in self.edge_property_dict.items():
             # translate label to PascalCase
-            pascal_label = self.translator.name_sentence_to_pascal(label)
+            compliant_label = check_label_name(label)
+            pascal_label = self.translator.name_sentence_to_pascal(
+                compliant_label
+            )
 
             # paths
             header = f"{pascal_label}-header.csv"
@@ -1308,6 +1315,39 @@ class _Neo4jBatchWriter(_BatchWriter):
             import_call += f'--relationships="{header_path},{parts_path}" '
 
         return import_call
+
+
+def check_label_name(label: str) -> str:
+    """Check if the label is compliant with Neo4j naming conventions
+    https://neo4j.com/docs/cypher-manual/current/syntax/naming/
+    Args:
+        label (str): The label to check
+    Returns:
+        str: The compliant label
+    """
+    # Check if the name contains only alphanumeric characters, underscore, or dollar sign
+    # and dot (for class hierarchy of BioCypher)
+    allowed_chars = r"a-zA-Z0-9_$ ."
+    matches = re.findall(f"[{allowed_chars}]", label)
+    non_matches = re.findall(f"[^{allowed_chars}]", label)
+    if non_matches:
+        non_matches = list(set(non_matches))
+        logger.warning(
+            f"Label is not compliant with Neo4j naming rules. Removed non compliant characters: {non_matches}"
+        )
+
+    def first_character_compliant(character: str) -> bool:
+        return character.isalpha() or character == "$"
+
+    if not first_character_compliant(matches[0]):
+        for c in matches:
+            if first_character_compliant(c):
+                matches = matches[matches.index(c) :]
+                break
+        logger.warning(
+            "Label does not start with an alphabetic character or with $. Removed non compliant characters."
+        )
+    return "".join(matches).strip()
 
 
 class _ArangoDBBatchWriter(_Neo4jBatchWriter):
