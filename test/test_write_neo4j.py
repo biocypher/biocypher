@@ -1,9 +1,12 @@
 import os
+import logging
 
 from genericpath import isfile
 import pytest
 
-from biocypher._write import _Neo4jBatchWriter
+import pandas as pd
+
+from biocypher._write import parse_label, _Neo4jBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 
@@ -221,6 +224,41 @@ def test_write_node_data_from_list(bw, _get_nodes):
     assert "BiologicalEntity" in protein
     assert "m1;'StringProperty1';9606;'m1';'mirbase'" in micro_rna
     assert "ChemicalEntity" in micro_rna
+
+
+@pytest.mark.parametrize("length", [4], scope="module")
+def test_write_node_data_from_list_not_compliant_names(
+    monkeypatch, caplog, bw, _get_nodes_non_compliant_names
+):
+    nodes = _get_nodes_non_compliant_names
+
+    def mock_get_ancestors(self, label):
+        return ["First level", label]
+
+    monkeypatch.setattr(
+        "biocypher._ontology.Ontology.get_ancestors", mock_get_ancestors
+    )
+
+    with caplog.at_level(logging.INFO):
+        passed = bw._write_node_data(nodes, batch_size=1e6)
+    tmp_path = bw.outdir
+
+    expected_file_names = [
+        "PatientPerson-part000.csv",
+        "$He524lloWor.Ld-part000.csv",
+    ]
+    for file_name in os.listdir(tmp_path):
+        assert file_name in expected_file_names
+        assert any(
+            "Label is not compliant with Neo4j naming rules" in record.message
+            for record in caplog.records
+        )
+    assert any(
+        "Label does not start with an alphabetic character or with $"
+        in record.message
+        for record in caplog.records
+    )
+    assert passed
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
@@ -602,6 +640,41 @@ def test_write_edge_data_from_list(bw, _get_edges):
     assert "Is_Mutated_In" in is_mutated_in
     assert "m1;" in is_mutated_in
     assert "\n" in is_mutated_in
+
+
+@pytest.mark.parametrize("length", [4], scope="module")
+def test_write_edge_data_from_list_non_compliant_names(
+    monkeypatch, caplog, bw, _get_edges_non_compliant_names
+):
+    edges = _get_edges_non_compliant_names
+
+    def mock_get_ancestors(self, label):
+        return ["First level", label]
+
+    monkeypatch.setattr(
+        "biocypher._ontology.Ontology.get_ancestors", mock_get_ancestors
+    )
+
+    with caplog.at_level(logging.INFO):
+        passed = bw._write_edge_data(edges, batch_size=int(1e4))
+    tmp_path = bw.outdir
+
+    expected_file_names = [
+        "Is_Mutated_In-part000.csv",
+        "CompliantEdge-part000.csv",
+    ]
+    for file_name in os.listdir(tmp_path):
+        assert file_name in expected_file_names
+    assert any(
+        "Label is not compliant with Neo4j naming rules" in record.message
+        for record in caplog.records
+    )
+    assert any(
+        "Label does not start with an alphabetic character or with $"
+        in record.message
+        for record in caplog.records
+    )
+    assert passed
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
@@ -1000,3 +1073,24 @@ def test_tab_delimiter(bw_tab, _get_nodes):
     call = bw_tab._construct_import_call()
 
     assert '--delimiter="\\t"' in call
+
+
+def test_check_label_name():
+    # Test case 1: label with compliant characters
+    assert parse_label("Compliant_Label") == "Compliant_Label"
+
+    # Test case 2: label with non-compliant characters
+    assert parse_label("Non@Compl<>i(an)t_Labe#l") == "NonCompliant_Label"
+
+    # Test case 3: label starts with a number
+    assert parse_label("15Invalid_Label") == "Invalid_Label"
+
+    # Test case 4: label starts with a non-alphanumeric character
+    assert parse_label("@Invalid_Label") == "Invalid_Label"
+
+    # Additional test case: label with dot (for class hierarchy of BioCypher)
+    assert parse_label("valid.label") == "valid.label"
+
+    # Additional test case: label with dot and non-compliant characters
+    assert parse_label("In.valid.Label@1") == "In.valid.Label1"
+    # Assert warning log is written
