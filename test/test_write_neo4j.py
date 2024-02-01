@@ -6,7 +6,7 @@ import pytest
 
 import pandas as pd
 
-from biocypher._write import _Neo4jBatchWriter
+from biocypher._write import check_label_name, _Neo4jBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 
@@ -249,8 +249,6 @@ def test_write_node_data_from_list_not_compliant_names(
     ]
     for file_name in os.listdir(tmp_path):
         assert file_name in expected_file_names
-        # df = pd.read_csv(os.path.join(tmp_path, file_name))
-        # print(df)
         assert any(
             "Label is not compliant with Neo4j naming rules" in record.message
             for record in caplog.records
@@ -661,16 +659,12 @@ def test_write_edge_data_from_list_non_compliant_names(
         passed = bw._write_edge_data(edges, batch_size=int(1e4))
     tmp_path = bw.outdir
 
-    print(os.listdir(tmp_path))
-
     expected_file_names = [
         "Is_Mutated_In-part000.csv",
         "CompliantEdge-part000.csv",
     ]
     for file_name in os.listdir(tmp_path):
         assert file_name in expected_file_names
-        # df = pd.read_csv(os.path.join(tmp_path, file_name))
-        # print(df)
     assert any(
         "Label is not compliant with Neo4j naming rules" in record.message
         for record in caplog.records
@@ -1079,3 +1073,24 @@ def test_tab_delimiter(bw_tab, _get_nodes):
     call = bw_tab._construct_import_call()
 
     assert '--delimiter="\\t"' in call
+
+
+def test_check_label_name():
+    # Test case 1: label with compliant characters
+    assert check_label_name("Compliant_Label") == "Compliant_Label"
+
+    # Test case 2: label with non-compliant characters
+    assert check_label_name("Non@Compl<>i(an)t_Labe#l") == "NonCompliant_Label"
+
+    # Test case 3: label starts with a number
+    assert check_label_name("15Invalid_Label") == "Invalid_Label"
+
+    # Test case 4: label starts with a non-alphanumeric character
+    assert check_label_name("@Invalid_Label") == "Invalid_Label"
+
+    # Additional test case: label with dot (for class hierarchy of BioCypher)
+    assert check_label_name("valid.label") == "valid.label"
+
+    # Additional test case: label with dot and non-compliant characters
+    assert check_label_name("In.valid.Label@1") == "In.valid.Label1"
+    # Assert warning log is written
