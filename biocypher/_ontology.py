@@ -100,14 +100,14 @@ class OntologyAdapter:
 
         self._rdf_graph = self._load_rdf_graph(ontology_file)
 
-        start_time = time.time()
-        self._nx_graph_old = self._rdf_to_nx_old(
-            self._rdf_graph, root_label, reverse_labels
-        )
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print("Old implementation runtime: {:.2f} seconds".format(elapsed_time))
-        print(f"Expected {self._nx_graph_old}")
+        # start_time = time.time()
+        # self._nx_graph_old = self._rdf_to_nx_old(
+        #    self._rdf_graph, root_label, reverse_labels
+        # )
+        # end_time = time.time()
+        # elapsed_time = end_time - start_time
+        # print("Old implementation runtime: {:.2f} seconds".format(elapsed_time))
+        # print(f"Expected {self._nx_graph_old}")
 
         start_time = time.time()
         self._nx_graph = self._rdf_to_nx(
