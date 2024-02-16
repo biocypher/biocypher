@@ -256,9 +256,9 @@ class _BatchWriter(ABC):
 
         if import_call_file_prefix is not None:
             temp_path = os.path.relpath(self.outdir, os.getcwd())
-            logger.info(f"temp_path:  `{temp_path}`.")
+            logger.warning(f"temp_path:  `{temp_path}`.")
             self._import_call_file_prefix = os.path.join(import_call_file_prefix, temp_path)
-            logger.info(f"self._import_call_file_prefix:  `{self._import_call_file_prefix}`.")
+            logger.warning(f"self._import_call_file_prefix:  `{self._import_call_file_prefix}`.")
         else:
             self._import_call_file_prefix = import_call_file_prefix
 
