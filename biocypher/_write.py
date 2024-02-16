@@ -254,7 +254,11 @@ class _BatchWriter(ABC):
 
         self._outdir = output_directory
 
-        self._import_call_file_prefix = import_call_file_prefix
+        if import_call_file_prefix is not None:
+            temp_path = os.path.relpath(self.outdir, os.getcwd())
+            self._import_call_file_prefix = os.path.join(import_call_file_prefix, temp_path)
+        else:
+            self._import_call_file_prefix = import_call_file_prefix
 
         if os.path.exists(self.outdir):
             logger.warning(
