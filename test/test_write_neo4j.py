@@ -57,8 +57,8 @@ def test_create_import_call(bw):
     tmp_path = bw.outdir
 
     assert passed
-    assert 'neo4j-admin' in call
-    assert 'import' in call
+    assert "neo4j-admin" in call
+    assert "import" in call
     assert '--delimiter=";"' in call
     assert '--array-delimiter="|" --quote="\'"' in call
     assert (
@@ -107,15 +107,15 @@ def test_neo4j_write_node_data_headers_import_call(bw, _get_nodes):
         protein_header
         == ":ID;name;score:double;taxon:long;genes:string[];id;preferred_id;:LABEL"
     )
-    assert m == ":ID;name;taxon:long;id;preferred_id;:LABEL"
-    assert "neo4j-admin" in c
-    assert "import" in c
-    assert '--delimiter=";"' in c
-    assert '--nodes="' in c
-    assert "Protein-header.csv" in c
-    assert 'Protein-part.*"' in c
-    assert "MicroRNA-header.csv" in c
-    assert 'MicroRNA-part.*"' in c
+    assert micro_rna_header == ":ID;name;taxon:long;id;preferred_id;:LABEL"
+    assert "neo4j-admin" in call
+    assert "import" in call
+    assert '--delimiter=";"' in call
+    assert '--nodes="' in call
+    assert "Protein-header.csv" in call
+    assert 'Protein-part.*"' in call
+    assert "MicroRNA-header.csv" in call
+    assert 'MicroRNA-part.*"' in call
 
     # custom import call executable path
     bw.import_call_bin_prefix = "custom/path/"
@@ -126,8 +126,8 @@ def test_neo4j_write_node_data_headers_import_call(bw, _get_nodes):
     with open(import_call_path) as f:
         call = f.read()
 
-    assert "custom/path/neo4j-admin" in c
-    assert "import" in c
+    assert "custom/path/neo4j-admin" in call
+    assert "import" in call
 
     # custom file prefix
     # TODO
