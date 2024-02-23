@@ -113,7 +113,7 @@ class OntologyAdapter:
         )
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print("New implementation runtime: {:.2f} seconds".format(elapsed_time))
+        # print("New implementation runtime: {:.2f} seconds".format(elapsed_time))
 
     def _rdf_to_nx(
         self, _rdf_graph: rdflib.Graph, root_label: str, reverse_labels: bool
@@ -126,11 +126,11 @@ class OntologyAdapter:
             nx_graph, reverse_labels
         )
         renamed_graph = self._rename_nodes(nx_graph_with_labels, reverse_labels)
-        print(f"Nx ontology {renamed_graph}")
+        # print(f"Nx ontology {renamed_graph}")
         filtered_graph = self._get_all_ancestors(
             renamed_graph, root_label, reverse_labels
         )
-        print(f"Nx ontology filtered {filtered_graph}")
+        # print(f"Nx ontology filtered {filtered_graph}")
         return nx.DiGraph(filtered_graph)
 
     def _get_relevant_rdf_triples(self, g: rdflib.Graph) -> tuple:
