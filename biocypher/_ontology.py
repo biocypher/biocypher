@@ -16,8 +16,6 @@ other advanced operations.
 import os
 import time
 
-import pandas as pd
-
 from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
@@ -124,7 +122,10 @@ class OntologyAdapter:
             _rdf_graph
         )
         nx_graph = self._convert_to_nx(one_to_one_triples, one_to_many_dict)
-        renamed_graph = self._rename_nodes(nx_graph, reverse_labels)
+        nx_graph_with_labels = self._add_labels_to_nodes(
+            nx_graph, reverse_labels
+        )
+        renamed_graph = self._rename_nodes(nx_graph_with_labels, reverse_labels)
         print(f"Nx ontology {renamed_graph}")
         filtered_graph = self._get_all_ancestors(
             renamed_graph, root_label, reverse_labels
@@ -242,6 +243,23 @@ class OntologyAdapter:
                 ]
             )
             nx_graph.remove_node(key)
+        return nx_graph
+
+    def _add_labels_to_nodes(
+        self, nx_graph: nx.DiGraph, reverse_labels: bool
+    ) -> nx.DiGraph:
+        """Add labels to the nodes in the networkx graph.
+
+        Args:
+            nx_graph (nx.DiGraph): The networkx graph
+            reverse_labels (bool): If True, id and label are switched
+
+        Returns:
+            nx.DiGraph: The networkx graph with labels
+        """
+        for node in nx_graph.nodes:
+            nx_id, nx_label = self._get_nx_id_and_label(node, reverse_labels)
+            nx_graph.nodes[node]["label"] = nx_label
         return nx_graph
 
     def _rename_nodes(
@@ -625,7 +643,7 @@ class Ontology:
             self._extend_ontology()
 
             # experimental: add connections of disjoint classes to entity
-            self._connect_biolink_classes()
+            # self._connect_biolink_classes()
 
             self._add_properties()
 

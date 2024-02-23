@@ -10,9 +10,6 @@ def test_biolink_adapter(biolink_adapter):
     assert biolink_adapter.get_root_label() == "entity"
     assert biolink_adapter.get_nx_graph().number_of_nodes() > 100
     assert "biological entity" in biolink_adapter.get_ancestors("gene")
-    assert "macromolecular machine mixin" in biolink_adapter.get_ancestors(
-        "macromolecular complex"
-    )
 
 
 def test_so_adapter(so_adapter):
@@ -49,7 +46,7 @@ def test_ontology_functions(hybrid_ontology):
     combined_length = len(hybrid_ontology._head_ontology.get_nx_graph())
     for adapter in hybrid_ontology._tail_ontologies.values():
         combined_length += len(adapter.get_nx_graph())
-    # need to add 1 for the 'merge_nodes' = False case
+    # need to add 1 for the 'merge_nodes' = False case for mondo ontology
     combined_length += 1
     hybrid_length = len(hybrid_ontology._nx_graph)
     # subtract number of tail ontologies
@@ -67,7 +64,6 @@ def test_ontology_functions(hybrid_ontology):
     assert "biological entity" in dgpl_ancestors
     assert "named thing" in dgpl_ancestors
     assert "entity" in dgpl_ancestors
-    assert "thing with taxon" in dgpl_ancestors
     lethal_var = hybrid_ontology._nx_graph.nodes["lethal variant"]
     assert lethal_var["label"] == "SO_0001773"
     # second tail ontology: here we don't merge the nodes, but attach 'human
