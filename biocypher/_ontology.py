@@ -168,6 +168,14 @@ class OntologyAdapter:
             child_name = None
             for s_, _, _ in g.triples((None, rdflib.RDFS.subClassOf, node)):
                 child_name = s_
+
+            # Handle Snomed CT post coordinated expressions
+            if not child_name:
+                for s_, _, _ in g.triples(
+                    (None, rdflib.OWL.equivalentClass, node)
+                ):
+                    child_name = s_
+
             if child_name:
                 intersection[node] = {
                     "child_name": child_name,
@@ -229,7 +237,8 @@ class OntologyAdapter:
                     for parent in value["parent_node_names"]
                 ]
             )
-            nx_graph.remove_node(key)
+            if key in nx_graph.nodes:
+                nx_graph.remove_node(key)
         return nx_graph
 
     def _add_labels_to_nodes(
