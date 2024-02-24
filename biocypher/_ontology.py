@@ -14,7 +14,6 @@ and representation of single ontologies as well as their hybridisation and
 other advanced operations.
 """
 import os
-import time
 
 from ._logger import logger
 
@@ -113,11 +112,9 @@ class OntologyAdapter:
             nx_graph, reverse_labels
         )
         renamed_graph = self._rename_nodes(nx_graph_with_labels, reverse_labels)
-        # print(f"Nx ontology {renamed_graph}")
         filtered_graph = self._get_all_ancestors(
             renamed_graph, root_label, reverse_labels
         )
-        # print(f"Nx ontology filtered {filtered_graph}")
         return nx.DiGraph(filtered_graph)
 
     def _get_relevant_rdf_triples(self, g: rdflib.Graph) -> tuple:
