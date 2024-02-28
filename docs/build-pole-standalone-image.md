@@ -1,17 +1,18 @@
 # How to build standalone pole image
 
-1. Clone pole repository
+To build a standalone Docker image for [pole](https://github.com/biocypher/pole), please follow these steps:
+1. Clone the Pole repository
 ```
 git clone https://github.com/biocypher/pole.git
 cd pole
 ```
 2. Attach volumes to container by modifying docker-compose.yml 
-![docker-compose.yml changes](pole-docker-compose-changes.png)
-3. Run stage deploy of docker-compose.yml
+![Changes in docker-compose.yml](pole-docker-compose-changes.png)
+3. Run the deploy stage of docker-compose.yml
 ```
 docker compose up deploy
 ```
-4. Create pole standalone docker file pole-standalone.Dockerfile
+4. Create pole standalone Docker file `pole-standalone.Dockerfile`:
 ```
 # pole-standalone.Dockerfile
 
@@ -24,7 +25,7 @@ RUN chown -R 7474:7474 /data
 EXPOSE 7474
 EXPOSE 7687
 ```
-5. Build pole standalone image
+5. Build the Pole standalone image
 ```
 docker build -t pole-standalone:latest -f pole-standalone.Dockerfile .
 ```
