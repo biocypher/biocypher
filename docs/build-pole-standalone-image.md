@@ -6,7 +6,7 @@ To build a standalone Docker image for [pole](https://github.com/biocypher/pole)
 git clone https://github.com/biocypher/pole.git
 cd pole
 ```
-2. Attach volumes to container by modifying docker-compose.yml 
+2. Attach volumes to container by modifying docker-compose.yml
 ![Changes in docker-compose.yml](pole-docker-compose-changes.png)
 3. Run the deploy stage of docker-compose.yml
 ```
