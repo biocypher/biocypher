@@ -1,6 +1,6 @@
-# How to build standalone pole image
+# How to build standalone Docker image for Pole
 
-To build a standalone Docker image for [pole](https://github.com/biocypher/pole), please follow these steps:
+To build a standalone Docker image for [Pole](https://github.com/biocypher/pole), please follow these steps:
 1. Clone the Pole repository
 ```
 git clone https://github.com/biocypher/pole.git
