@@ -160,7 +160,26 @@ the container after the database has been created.</p></li>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">build</span> <span class="o">-</span><span class="n">t</span> <span class="n">drug</span><span class="o">-</span><span class="n">interactions</span><span class="p">:</span><span class="n">latest</span> <span class="o">.</span>
 </pre></div>
 </div>
-<p>This image can be deployed anywhere, without the need to run the BioCypher code.</p>
+<p>This image can be deployed anywhere, without the need to run the BioCypher code.
+For example, you can add it to a Docker Compose file (example
+<a class="reference external" href="https://github.com/biocypher/biochatter-next/blob/main/biochatter-next/docker-compose.yml">here</a>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># docker-compose.yml</span>
+<span class="n">version</span><span class="p">:</span> <span class="s1">&#39;3.9&#39;</span>
+<span class="n">services</span><span class="p">:</span>
+  <span class="p">[</span><span class="n">other</span> <span class="n">services</span> <span class="o">...</span><span class="p">]</span>
+
+  <span class="n">biocypher</span><span class="p">:</span>
+    <span class="n">container_name</span><span class="p">:</span> <span class="n">biocypher</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">biocypher</span><span class="o">/</span><span class="n">drug</span><span class="o">-</span><span class="n">interactions</span><span class="p">:</span><span class="n">latest</span>
+    <span class="n">environment</span><span class="p">:</span>
+      <span class="n">NEO4J_dbms_security_auth__enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+      <span class="n">NEO4J_dbms_databases_default__to__read__only</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+      <span class="n">NEO4J_ACCEPT_LICENSE_AGREEMENT</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span>
+    <span class="n">ports</span><span class="p">:</span>
+      <span class="o">-</span> <span class="s2">&quot;0.0.0.0:7474:7474&quot;</span>
+      <span class="o">-</span> <span class="s2">&quot;0.0.0.0:7687:7687&quot;</span>
+</pre></div>
+</div>
 </section>
 
 

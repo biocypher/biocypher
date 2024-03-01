@@ -55,3 +55,23 @@ docker build -t drug-interactions:latest .
 ```
 
 This image can be deployed anywhere, without the need to run the BioCypher code.
+For example, you can add it to a Docker Compose file (example
+[here](https://github.com/biocypher/biochatter-next/blob/main/biochatter-next/docker-compose.yml)):
+
+```
+# docker-compose.yml
+version: '3.9'
+services:
+  [other services ...]
+
+  biocypher:
+    container_name: biocypher
+    image: biocypher/drug-interactions:latest
+    environment:
+      NEO4J_dbms_security_auth__enabled: "false"
+      NEO4J_dbms_databases_default__to__read__only: "false"
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+    ports:
+      - "0.0.0.0:7474:7474"
+      - "0.0.0.0:7687:7687"
+```
