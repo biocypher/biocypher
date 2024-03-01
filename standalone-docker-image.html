@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="Standalone Docker Image" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://biocypher.org/standalone-docker-image.html" />
+<meta property="og:site_name" content="BioCypher" />
+<meta property="og:description" content="In order to build a standalone Docker image for a BioCypher KG, you only need small modifications to the Docker image of the template. We will render the data that ususally is stored in the biocyph..." />
+<meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+<meta property="og:image:alt" content="BioCypher" />
+<meta name="description" content="In order to build a standalone Docker image for a BioCypher KG, you only need small modifications to the Docker image of the template. We will render the data that ususally is stored in the biocyph..." />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="https://biocypher.org" />
+<meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
+<meta property="twitter:description" content="BioCypher is a framework to simplify the creation of robust biomedical knowledge graphs." />
+<meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Standalone Docker Image &mdash; BioCypher</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/design-tabs.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Interacting with Neo4j" href="neo4j.html" />
+    <link rel="prev" title="Tutorial - Adapters" href="tutorial-adapter.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="contents.html" class="icon icon-home">
+            BioCypher
+          </a>
+              <div class="version">
+                0.5.37
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Democratising Knowledge Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-experiences.html">User Experiences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get-involved.html">Get Involved!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#configuration">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/pandas_tutorial.html">Example Notebook: BioCypher and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial - Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">Tutorial - Handling Ontologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-adapter.html">Tutorial - Adapters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Standalone Docker Image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="r-bioc.html">R and Bioconductor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="contents.html">BioCypher</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Standalone Docker Image</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/standalone-docker-image.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="standalone-docker-image">
+<h1>Standalone Docker Image<a class="headerlink" href="#standalone-docker-image" title="Permalink to this heading"></a></h1>
+<p>In order to build a standalone Docker image for a BioCypher KG, you only need
+small modifications to the Docker image of the template. We will render the data
+that ususally is stored in the <code class="docutils literal notranslate"><span class="pre">biocypher_neo4j_volume</span></code> to our local disk by
+exchanging <code class="docutils literal notranslate"><span class="pre">biocypher_neo4j_volume</span></code> with a local directory,
+<code class="docutils literal notranslate"><span class="pre">./biocypher_neo4j_volume</span></code>. Then, we use a Dockerfile to build an image that
+contains the final database. This image can be used to deploy the database
+anywhere, without the need to run the BioCypher code. This process is
+demonstrated in the
+<a class="reference external" href="https://github.com/biocypher/drug-interactions">drug-interactions</a> example
+repository.</p>
+<ol class="arabic simple">
+<li><p>Clone the example repository</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">biocypher</span><span class="o">/</span><span class="n">drug</span><span class="o">-</span><span class="n">interactions</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">drug</span><span class="o">-</span><span class="n">interactions</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Attach volumes to disk by modifying the docker-compose.yml. In the example
+repository, we have created a dedicated compose file for the standalone image.
+You can see the differences between the standard and standalone compose files
+<a class="reference external" href="https://github.com/biocypher/drug-interactions/commit/f03360c526d2ef042d2a6a4a5e2beb27608d1d76">here</a>.
+IMPORTANT: only run the standalone compose file once, as the data in the
+<code class="docutils literal notranslate"><span class="pre">./biocypher_neo4j_volume</span></code> directory is persistent and interferes with
+subsequent runs. If you want to run it again, you need to delete the
+<code class="docutils literal notranslate"><span class="pre">./biocypher_neo4j_volume</span></code> directory.</p></li>
+<li><p>Run the standalone compose file. This will create the
+<code class="docutils literal notranslate"><span class="pre">./biocypher_neo4j_volume</span></code> directory and store the data in it. You can stop
+the container after the database has been created.</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">compose</span> <span class="o">-</span><span class="n">f</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="o">-</span><span class="n">local</span><span class="o">-</span><span class="n">disk</span><span class="o">.</span><span class="n">yml</span> <span class="n">up</span> <span class="o">-</span><span class="n">d</span>
+<span class="n">docker</span> <span class="n">compose</span> <span class="o">-</span><span class="n">f</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="o">-</span><span class="n">local</span><span class="o">-</span><span class="n">disk</span><span class="o">.</span><span class="n">yml</span> <span class="n">down</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Create standalone <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> (example
+<a class="reference external" href="https://github.com/biocypher/drug-interactions/blob/main/Dockerfile">here</a>):</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dockerfile</span>
+<span class="n">FROM</span> <span class="n">neo4j</span><span class="p">:</span><span class="mf">4.4</span><span class="o">-</span><span class="n">enterprise</span>
+<span class="n">COPY</span> <span class="o">./</span><span class="n">biocypher_neo4j_volume</span> <span class="o">/</span><span class="n">data</span>
+<span class="n">RUN</span> <span class="n">chown</span> <span class="o">-</span><span class="n">R</span> <span class="mi">7474</span><span class="p">:</span><span class="mi">7474</span> <span class="o">/</span><span class="n">data</span>
+<span class="n">EXPOSE</span> <span class="mi">7474</span>
+<span class="n">EXPOSE</span> <span class="mi">7687</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>Build the standalone image.</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">build</span> <span class="o">-</span><span class="n">t</span> <span class="n">drug</span><span class="o">-</span><span class="n">interactions</span><span class="p">:</span><span class="n">latest</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>This image can be deployed anywhere, without the need to run the BioCypher code.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial-adapter.html" class="btn btn-neutral float-left" title="Tutorial - Adapters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="neo4j.html" class="btn btn-neutral float-right" title="Interacting with Neo4j" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2024, BioCypher developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
