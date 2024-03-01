@@ -145,6 +145,9 @@ biocypher:  ### BioCypher module configuration ###
   # Set to change the output directory
   output_directory: biocypher-out
 
+  # Set to change the Resource cache directory
+  cache_directory: .cache
+
   # Optional tail ontologies
   tail_ontologies:
     so:

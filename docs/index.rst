@@ -10,9 +10,9 @@ Democratising Knowledge Graphs
    :class: attention
 
    BioCypher is the simplest way to create an AI-enabled knowledge graph for
-   biomedical (or other) tasks. See
-   `below <https://biocypher.org/#connect-your-knowledge-graph-to-large-language-models>`_
-   for more information.
+   biomedical (or other) tasks. See `below
+   <https://biocypher.org/#connect-your-knowledge-graph-to-large-language-models>`_
+   and the `BioChatter website <https://biochatter.org>`_ for more information.
 
 Building a knowledge graph for biomedical tasks usually takes months or years.
 What if you could do it in weeks or days? We created BioCypher to make the
@@ -108,20 +108,19 @@ Connect your Knowledge Graph to Large Language Models
 
 To facilitate the use of knowledge graphs in downstream tasks, we have developed
 a framework to connect knowledge graphs to large language models. This framework
-is called `BioChatter <https://github.com/biocypher/biochatter>`_ and is used in
-our web app `ChatGSE <https://chat.biocypher.org/>`_. See the links for more
-information.
+is called `BioChatter <https://biochatter.org>`_ and is used in our `web apps
+<https://chat.biocypher.org/>`_. See the links for more information.
 
 .. grid:: 2
    :gutter: 2
 
-   .. grid-item-card:: ChatGSE web app
+   .. grid-item-card:: BioChatter Light web app
       :link: https://chat.biocypher.org/
       :text-align: center
 
       :octicon:`comment-discussion;3em` :octicon:`dependabot;3em`
 
-   .. grid-item-card:: biochatter repository
+   .. grid-item-card:: BioChatter repository
       :link: https://github.com/biocypher/biochatter
       :text-align: center
 
