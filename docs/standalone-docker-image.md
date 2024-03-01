@@ -54,3 +54,4 @@ EXPOSE 7687
 docker build -t drug-interactions:latest .
 ```
 
+This image can be deployed anywhere, without the need to run the BioCypher code.
