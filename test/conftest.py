@@ -235,6 +235,15 @@ def ontology_mapping():
 
 
 @pytest.fixture(scope="module")
+def simple_ontology_mapping():
+    m = OntologyMapping()
+    m.schema = {
+        "EvaluationCriterion": {},
+    }
+    return m
+
+
+@pytest.fixture(scope="module")
 def extended_ontology_mapping():
     return OntologyMapping(
         config_file="biocypher/_config/test_schema_config_extended.yaml"
@@ -267,6 +276,24 @@ def hybrid_ontology(extended_ontology_mapping):
                 "head_join_node": "disease",
                 "tail_join_node": "human disease",
                 "merge_nodes": False,
+            },
+        },
+    )
+
+
+@pytest.fixture(scope="module")
+def simple_ontology(simple_ontology_mapping):
+    return Ontology(
+        head_ontology={
+            "url": "test/ontology1.ttl",
+            "root_node": "Thing",
+        },
+        ontology_mapping=simple_ontology_mapping,
+        tail_ontologies={
+            "test": {
+                "url": "test/ontology2.ttl",
+                "head_join_node": "entity",
+                "tail_join_node": "EvaluationCriterion",
             },
         },
     )

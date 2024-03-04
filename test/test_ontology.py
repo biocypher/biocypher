@@ -209,3 +209,7 @@ def test_reverse_labels():
     expected_not_switched = ["Root", "1", "2"]
     for node in ontology_adapter.get_nx_graph().nodes:
         assert node in expected_not_switched
+
+
+def test_simple_ontology(simple_ontology):
+    assert simple_ontology
