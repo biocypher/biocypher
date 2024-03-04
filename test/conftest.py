@@ -238,7 +238,7 @@ def ontology_mapping():
 def simple_ontology_mapping():
     m = OntologyMapping()
     m.schema = {
-        "EvaluationCriterion": {},
+        "accuracy": {},
     }
     return m
 
