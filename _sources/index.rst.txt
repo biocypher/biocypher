@@ -26,7 +26,8 @@ biomedical community.
 If you're new to knowledge graphs and want to familiarise with the concepts that
 drive BioCypher, we recommend to check out the graphical abstract below and read
 `our paper <https://www.nature.com/articles/s41587-023-01848-y>`_ (self-archived
-version `here <https://zenodo.org/records/10320714>`_)!
+version `here <https://zenodo.org/records/10320714>`_, online version `here
+<https://biocypher.github.io/biocypher-paper/>`_)!
 
 .. grid:: 2
    :gutter: 2
