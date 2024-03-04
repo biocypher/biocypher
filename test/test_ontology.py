@@ -212,4 +212,8 @@ def test_reverse_labels():
 
 
 def test_simple_ontology(simple_ontology):
-    assert simple_ontology
+    list(simple_ontology.get_ancestors("accuracy")) == [
+        "accuracy",
+        "entity",
+        "Thing",
+    ]
