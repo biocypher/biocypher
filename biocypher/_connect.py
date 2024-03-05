@@ -11,6 +11,8 @@
 """
 BioCypher 'online' mode. Handles connection and manipulation of a running DBMS.
 """
+import subprocess
+
 from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
@@ -18,7 +20,9 @@ logger.debug(f"Loading module {__name__}.")
 from typing import Optional
 from collections.abc import Iterable
 import itertools
+import traceback
 
+from neo4j_utils._neo4j_version_detection import Neo4j_Version_Detection
 import neo4j_utils
 
 from . import _misc
@@ -137,16 +141,25 @@ class _Neo4jDriver:
 
         logger.info("Creating constraints for node types in config.")
 
+        neo4j_version = Neo4j_Version_Detection()
         # get structure
         for leaf in self.translator.ontology.mapping.extended_schema.items():
-            label = _misc.sentencecase_to_pascalcase(leaf[0])
+            label = _misc.sentencecase_to_pascalcase(leaf[0], sep=r"\s\.")
             if leaf[1]["represented_as"] == "node":
-                s = (
-                    f"CREATE CONSTRAINT `{label}_id` "
-                    f"IF NOT EXISTS ON (n:`{label}`) "
-                    "ASSERT n.id IS UNIQUE"
-                )
-                self._driver.query(s)
+                if neo4j_version.get_version() >= 5:
+                    s = (
+                        f"CREATE CONSTRAINT `{label}_id` "
+                        f"IF NOT EXISTS FOR (n:`{label}`) "  # ON insted FOR changed
+                        "REQUIRE n.id IS UNIQUE"  # ASSERT insted REQUIRE changed
+                    )
+                    self._driver.query(s)
+                else:
+                    s = (
+                        f"CREATE CONSTRAINT `{label}_id` "
+                        f"IF NOT EXISTS ON (n:`{label}`) "
+                        "ASSERT n.id IS UNIQUE"
+                    )
+                    self._driver.query(s)
 
     def add_nodes(self, id_type_tuples: Iterable[tuple]) -> tuple:
         """
