@@ -1,4 +1,5 @@
 import os
+import sqlite3
 import subprocess
 
 import pytest
@@ -37,8 +38,34 @@ def test__construct_import_call(bw_tab_sqlite, _get_nodes):
     assert "sqlite3 test_sqlite.db <" in import_call
     assert "protein-create_table.sql" in import_call
     assert "microrna-create_table.sql" in import_call
-    assert "sqlite3 -separator $'\\t' test_sqlite.db \".import" in import_call
+    assert "sqlite3 -separator $'\t' test_sqlite.db \".import" in import_call
     assert "Protein-part000.csv protein" in import_call
     assert "MicroRNA-part000.csv microrna" in import_call
 
-    subprocess.check_output(import_call, shell=True)
+    write_result = bw_tab_sqlite.write_import_call()
+    assert write_result
+
+    import_script_path = os.path.join(
+        bw_tab_sqlite.outdir, bw_tab_sqlite._get_import_script_name()
+    )
+    output = subprocess.run(["bash", import_script_path])
+
+    conn = sqlite3.connect("test_sqlite.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = cursor.fetchall()
+    table_names = [row[0] for row in tables]
+    assert "protein" in table_names
+    assert "microrna" in table_names
+
+    cursor.execute("SELECT * FROM protein")
+    proteins = cursor.fetchall()
+    assert len(proteins) == 4
+
+    cursor.execute("SELECT * FROM microrna")
+    microrna = cursor.fetchall()
+    assert len(microrna) == 4
+
+    cursor.close()
+    conn.close()

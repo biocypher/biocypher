@@ -20,3 +20,5 @@ def bw_tab_sqlite(translator, deduplicator, tmp_path_session):
     # teardown
     for f in os.listdir(tmp_path_session):
         os.remove(os.path.join(tmp_path_session, f))
+
+    os.remove("test_sqlite.db")
