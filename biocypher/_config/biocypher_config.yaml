@@ -114,3 +114,15 @@ postgresql:
   delimiter: '\t'
   # import_call_bin_prefix: '' # path to "psql"
   # import_call_file_prefix: '/path/to/files'
+
+sqlite:
+  ### SQLite configuration ###
+
+  # SQLite connection credentials
+  database_name: sqlite.db # DB name
+
+  # SQLite import batch writer settings
+  quote_character: '"'
+  delimiter: '\t'
+  # import_call_bin_prefix: '' # path to "sqlite3"
+  # import_call_file_prefix: '/path/to/files'
