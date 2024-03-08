@@ -26,8 +26,8 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
+from biocypher.write.write import DBMS_TO_CLASS, get_writer
 from ._get import Downloader
-from ._write import get_writer
 from ._config import config as _config
 from ._config import update_from_file as _file_update
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
@@ -40,7 +40,7 @@ from ._deduplicate import Deduplicator
 
 __all__ = ["BioCypher"]
 
-SUPPORTED_DBMS = ["neo4j", "postgresql"]
+SUPPORTED_DBMS = DBMS_TO_CLASS.keys()
 
 REQUIRED_CONFIG = [
     "dbms",
