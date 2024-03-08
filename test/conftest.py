@@ -1,7 +1,7 @@
 from glob import glob
+from test.fixtures.ontology import hybrid_ontology
 import shutil
 
-from fixtures.ontology import hybrid_ontology
 import pytest
 
 from biocypher._pandas import Pandas
