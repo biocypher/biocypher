@@ -75,18 +75,20 @@ methods, which accept collections of nodes and edges either as :ref:`tuples
       :meth:`BioCypher.summary`. See the :class:`BioCypher` :ref:`class
       <api_core>` for more information.
 
-Details about the :mod:`biocypher._write` module responsible for these methods
+Details about the :mod:`biocypher.write` module responsible for these methods
 can be found below.
 
-.. module:: biocypher._write
+.. module:: biocypher.write
+
 .. autosummary::
    :toctree: modules
 
-   get_writer
-   _BatchWriter
-   _Neo4jBatchWriter
-   _PostgreSQLBatchWriter
-   _ArangoDBBatchWriter
+   _write.get_writer
+   _batch_writer._BatchWriter
+   graph._neo4j._Neo4jBatchWriter
+   graph._arangodb._ArangoDBBatchWriter
+   relational._postgresql._PostgreSQLBatchWriter
+   relational._sqlite._SQLiteBatchWriter
 
 .. api_pandas:
 

@@ -26,7 +26,7 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
-from biocypher.write.write import DBMS_TO_CLASS, get_writer
+from biocypher.write._write import DBMS_TO_CLASS, get_writer
 from ._get import Downloader
 from ._config import config as _config
 from ._config import update_from_file as _file_update
