@@ -19,10 +19,16 @@ def bw_tab_sqlite(translator, deduplicator, tmp_path_session):
 
     # teardown
     for f in os.listdir(tmp_path_session):
-        try:
-            os.remove(os.path.join(tmp_path_session, f))
-        except PermissionError:
-            # fix Windows error that once opened files can only be removed after a restart
-            # https://groups.google.com/g/python-sqlite/c/2KBI2cR-t70
-            os.rename(f, f"{f}_renamed")
-            os.remove(f"{f}_renamed")
+        remove_file(os.path.join(tmp_path_session, f))
+    remove_file("test_sqlite.db")
+
+
+def remove_file(file_path: str):
+    try:
+        os.remove(file_path)
+    except PermissionError:
+        # fix Windows error that once opened files can only be removed after a restart
+        # https://groups.google.com/g/python-sqlite/c/2KBI2cR-t70
+        print("Permission error")
+        os.rename(file_path, f"renamed_{file_path}")
+        os.remove(f"renamed_{file_path}")

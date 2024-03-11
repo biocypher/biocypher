@@ -45,10 +45,15 @@ def test__construct_import_call(bw_tab_sqlite, _get_nodes):
     write_result = bw_tab_sqlite.write_import_call()
     assert write_result
 
+    print("Import call:")
+    print(write_result)
+    print(bw_tab_sqlite._construct_import_call())
+
     import_script_path = os.path.join(
         bw_tab_sqlite.outdir, bw_tab_sqlite._get_import_script_name()
     )
     output = subprocess.run(["bash", import_script_path])
+    assert output.returncode == 0
 
     conn = sqlite3.connect("test_sqlite.db")
     cursor = conn.cursor()
