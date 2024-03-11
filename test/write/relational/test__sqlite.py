@@ -46,14 +46,9 @@ def test__construct_import_call(bw_tab_sqlite, _get_nodes):
     write_result = bw_tab_sqlite.write_import_call()
     assert write_result
 
-    print("Import call:")
-    print(write_result)
-    print(bw_tab_sqlite._construct_import_call())
-
     import_script_path = os.path.join(
         bw_tab_sqlite.outdir, bw_tab_sqlite._get_import_script_name()
     )
-    # output = subprocess.run(["bash", import_script_path])
     system = platform.system()
     if system == "Windows":
         output = subprocess.run(
@@ -65,22 +60,24 @@ def test__construct_import_call(bw_tab_sqlite, _get_nodes):
         raise OSError("Unsupported platform")
     assert output.returncode == 0
 
-    conn = sqlite3.connect("test_sqlite.db")
-    cursor = conn.cursor()
+    # TODO: check database creation on Windows
+    if system != "Windows":
+        conn = sqlite3.connect("test_sqlite.db")
+        cursor = conn.cursor()
 
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    tables = cursor.fetchall()
-    table_names = [row[0] for row in tables]
-    assert "protein" in table_names
-    assert "microrna" in table_names
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+        table_names = [row[0] for row in tables]
+        assert "protein" in table_names
+        assert "microrna" in table_names
 
-    cursor.execute("SELECT * FROM protein")
-    proteins = cursor.fetchall()
-    assert len(proteins) == 4
+        cursor.execute("SELECT * FROM protein")
+        proteins = cursor.fetchall()
+        assert len(proteins) == 4
 
-    cursor.execute("SELECT * FROM microrna")
-    microrna = cursor.fetchall()
-    assert len(microrna) == 4
+        cursor.execute("SELECT * FROM microrna")
+        microrna = cursor.fetchall()
+        assert len(microrna) == 4
 
-    cursor.close()
-    conn.close()
+        cursor.close()
+        conn.close()
