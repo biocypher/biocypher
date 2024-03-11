@@ -3,6 +3,7 @@ import os
 import pytest
 import networkx as nx
 
+from biocypher import BioCypher
 from biocypher._ontology import Ontology, OntologyAdapter
 
 
@@ -208,6 +209,19 @@ def test_reverse_labels():
 
     expected_not_switched = ["Root", "1", "2"]
     for node in ontology_adapter.get_nx_graph().nodes:
+        assert node in expected_not_switched
+
+
+def test_reverse_labels_from_yaml_config():
+    bc = BioCypher(
+        head_ontology={
+            "url": "test/ontologies/reverse_labels.ttl",
+            "root_node": "Root",
+            "switch_label_and_id": False,
+        },
+    )
+    expected_not_switched = ["Root", "1", "2"]
+    for node in bc._get_ontology()._nx_graph.nodes:
         assert node in expected_not_switched
 
 
