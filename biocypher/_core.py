@@ -136,6 +136,10 @@ class BioCypher:
 
         if not self._schema_config_path:
             logger.warning("Running BioCypher without schema configuration.")
+        else:
+            logger.info(
+                f"Running BioCypher with schema configuration from {self._schema_config_path}."
+            )
 
         self._head_ontology = head_ontology or self.base_config["head_ontology"]
 
@@ -476,7 +480,7 @@ class BioCypher:
         if mt:
             msg = (
                 "Input entities not accounted for due to them not being "
-                "present in the `schema_config.yaml` configuration file "
+                f"present in the schema configuration file {self._schema_config_path} "
                 "(this is not necessarily a problem, if you did not intend "
                 "to include them in the database; see the log for details): \n"
             )
