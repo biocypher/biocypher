@@ -43,19 +43,19 @@ class OntologyAdapter:
     ontology is represented by a networkx.DiGraph object; an RDFlib graph is
     also kept. By default, the DiGraph reverses the label and identifier of the
     nodes, such that the node name in the graph is the human-readable label. The
-    edges are oriented from child to parent. Going from the Biolink example,
-    labels are formatted in lower sentence case. In some cases, this means that
-    we replace underscores with spaces.
+    edges are oriented from child to parent.
+    Labels are formatted in lower sentence case and underscores are replaced by spaces.
+    Identifiers are taken as defined and the prefixes are removed by default.
     """
 
     def __init__(
         self,
         ontology_file: str,
         root_label: str,
-        format: Optional[str] = None,
-        head_join_node: Optional[str] = None,
+        ontology_file_format: Optional[str] = None,
+        head_join_node_label: Optional[str] = None,
         merge_nodes: Optional[bool] = True,
-        reverse_labels: bool = True,
+        switch_label_and_id: bool = True,
         remove_prefixes: bool = True,
     ):
         """
@@ -68,7 +68,10 @@ class OntologyAdapter:
             root_label (str): The label of the root node in the ontology. In
                 case of a tail ontology, this is the tail join node.
 
-            head_join_node (str): Optional variable to store the label of the
+            ontology_file_format (str): The format of the ontology file (e.g. "application/rdf+xml")
+                If format is not passed, it is determined automatically.
+
+            head_join_node_label (str): Optional variable to store the label of the
                 node in the head ontology that should be used to join to the
                 root node of the tail ontology. Defaults to None.
 
@@ -77,7 +80,7 @@ class OntologyAdapter:
                 tail join node will be attached as a child of the head join
                 node.
 
-            reverse_labels (bool): If True, the node names in the graph will be
+            switch_label_and_id (bool): If True, the node names in the graph will be
                 the human-readable labels. If False, the node names will be the
                 identifiers. Defaults to True.
 
@@ -89,16 +92,16 @@ class OntologyAdapter:
 
         self._ontology_file = ontology_file
         self._root_label = root_label
-        self._format = format
+        self._format = ontology_file_format
         self._merge_nodes = merge_nodes
-        self._head_join_node = head_join_node
-        self._reverse_labels = reverse_labels
+        self._head_join_node = head_join_node_label
+        self._switch_label_and_id = switch_label_and_id
         self._remove_prefixes = remove_prefixes
 
         self._rdf_graph = self._load_rdf_graph(ontology_file)
 
         self._nx_graph = self._rdf_to_nx(
-            self._rdf_graph, root_label, reverse_labels
+            self._rdf_graph, root_label, switch_label_and_id
         )
 
     def _rdf_to_nx(
@@ -398,11 +401,29 @@ class OntologyAdapter:
         """
         return self._rdf_graph
 
-    def get_root_label(self):
+    def get_root_node(self):
         """
-        Get the label of the root node in the ontology.
+        Get root node in the ontology.
+
+        Returns:
+            root_node: If _switch_label_and_id is True, the root node label is returned,
+                otherwise the root node id is returned.
         """
-        return self._root_label
+
+        root_node = None
+        root_label = self._root_label.replace("_", " ")
+
+        if self._switch_label_and_id:
+            root_node = to_lower_sentence_case(root_label)
+        elif not self._switch_label_and_id:
+            for node, data in self.get_nx_graph().nodes(data=True):
+                if "label" in data and data["label"] == to_lower_sentence_case(
+                    root_label
+                ):
+                    root_node = node
+                    break
+
+        return root_node
 
     def get_ancestors(self, node_label):
         """
@@ -465,8 +486,8 @@ class Ontology:
 
         if self._tail_ontologies:
             for adapter in self._tail_ontologies.values():
-                self._assert_join_node(adapter)
-                self._join_ontologies(adapter)
+                head_join_node = self._get_head_join_node(adapter)
+                self._join_ontologies(adapter, head_join_node)
         else:
             self._nx_graph = self._head_ontology.get_nx_graph()
 
@@ -489,7 +510,10 @@ class Ontology:
         self._head_ontology = OntologyAdapter(
             ontology_file=self._head_ontology_meta["url"],
             root_label=self._head_ontology_meta["root_node"],
-            format=self._head_ontology_meta.get("format", None),
+            ontology_file_format=self._head_ontology_meta.get("format", None),
+            switch_label_and_id=self._head_ontology_meta.get(
+                "switch_label_and_id", True
+            ),
         )
 
         if self._tail_ontology_meta:
@@ -498,12 +522,13 @@ class Ontology:
                 self._tail_ontologies[key] = OntologyAdapter(
                     ontology_file=value["url"],
                     root_label=value["tail_join_node"],
-                    head_join_node=value["head_join_node"],
-                    format=value.get("format", None),
+                    head_join_node_label=value["head_join_node"],
+                    ontology_file_format=value.get("format", None),
                     merge_nodes=value.get("merge_nodes", True),
+                    switch_label_and_id=value.get("switch_label_and_id", True),
                 )
 
-    def _assert_join_node(self, adapter: OntologyAdapter) -> None:
+    def _get_head_join_node(self, adapter: OntologyAdapter) -> str:
         """
         Tries to find the head join node of the given ontology adapter in the
         head ontology. If the join node is not found, the method will raise an
@@ -514,15 +539,31 @@ class Ontology:
                 join node in the head ontology.
         """
 
-        head_join_node = adapter.get_head_join_node()
+        head_join_node = None
+        head_join_node_label = adapter.get_head_join_node().replace("_", " ")
+
+        if self._head_ontology._switch_label_and_id:
+            head_join_node = head_join_node_label
+        elif not self._head_ontology._switch_label_and_id:
+            for node, data in self._head_ontology.get_nx_graph().nodes(
+                data=True
+            ):
+                if "label" in data and data["label"] == to_lower_sentence_case(
+                    head_join_node_label
+                ):
+                    head_join_node = node
+                    break
 
         if head_join_node not in self._head_ontology.get_nx_graph().nodes:
             raise ValueError(
                 f"Head join node {head_join_node} not found in "
                 f"head ontology."
             )
+        return head_join_node
 
-    def _join_ontologies(self, adapter: OntologyAdapter) -> None:
+    def _join_ontologies(
+        self, adapter: OntologyAdapter, head_join_node
+    ) -> None:
         """
         Joins the ontologies by adding the tail ontology as a subgraph to the
         head ontology at the specified join nodes.
@@ -535,8 +576,7 @@ class Ontology:
         if not self._nx_graph:
             self._nx_graph = self._head_ontology.get_nx_graph().copy()
 
-        head_join_node = to_lower_sentence_case(adapter.get_head_join_node())
-        tail_join_node = to_lower_sentence_case(adapter.get_root_label())
+        tail_join_node = adapter.get_root_node()
         tail_ontology = adapter.get_nx_graph()
 
         # subtree of tail ontology at join node

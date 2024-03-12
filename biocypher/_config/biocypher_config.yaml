@@ -28,6 +28,7 @@ biocypher:
   head_ontology:
     url: https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
     root_node: entity
+    # switch_label_and_id: true
 
   ### Optional parameters ###
 
@@ -54,10 +55,12 @@ biocypher:
   #     url: test/so.owl
   #     head_join_node: sequence variant
   #     tail_join_node: sequence_variant
+  #     switch_label_and_id: true
   #   mondo:
   #     url: test/mondo.owl
   #     head_join_node: disease
   #     tail_join_node: disease
+  #     switch_label_and_id: true
 
 ### DBMS configuration ###
 

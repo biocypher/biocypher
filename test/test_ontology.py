@@ -8,26 +8,25 @@ from biocypher._ontology import Ontology, OntologyAdapter
 
 
 def test_biolink_adapter(biolink_adapter):
-    assert biolink_adapter.get_root_label() == "entity"
+    assert biolink_adapter.get_root_node() == "entity"
     assert biolink_adapter.get_nx_graph().number_of_nodes() > 100
     assert "biological entity" in biolink_adapter.get_ancestors("gene")
 
 
 def test_so_adapter(so_adapter):
-    assert so_adapter.get_root_label() == "sequence_variant"
-    # here without underscores
+    assert so_adapter.get_root_node() == "sequence variant"
     assert "sequence variant" in so_adapter.get_ancestors("lethal variant")
 
 
 def test_go_adapter(go_adapter):
-    assert go_adapter.get_root_label() == "molecular_function"
+    assert go_adapter.get_root_node() == "molecular function"
     assert "molecular function" in go_adapter.get_ancestors(
         "rna helicase activity"
     )
 
 
 def test_mondo_adapter(mondo_adapter):
-    assert mondo_adapter.get_root_label() == "disease"
+    assert mondo_adapter.get_root_node() == "disease"
     assert "human disease" in mondo_adapter.get_ancestors("cystic fibrosis")
 
 
@@ -178,36 +177,40 @@ def test_multiple_parents(ontology_file):
 
 def test_missing_label_on_node():
     ontology_adapter = OntologyAdapter(
-        ontology_file="test/ontologies/missing_label.ttl", root_label="Root"
+        ontology_file="test/ontologies/missing_label.ttl",
+        root_label="Label_Root",
     )
     result = ontology_adapter.get_nx_graph()
     # Expected hierarchy:
-    #  root
-    #  ├── level1A
+    #  label root
+    #  ├── label level1a
     # (└── level1B) <- missing label on this node (should not be part of the graph)
-    expected_edges = [("level1A", "root")]
+    expected_edges = [("label level1a", "label root")]
     for edge in expected_edges:
         assert edge in result.edges
     assert len(result.edges) == len(expected_edges)
 
 
-def test_reverse_labels():
-    ontology_adapter = OntologyAdapter(
-        ontology_file="test/ontologies/reverse_labels.ttl",
-        root_label="Root",
-        reverse_labels=False,
-    )
+def test_switch_id_and_label():
     ontology_adapter_reversed = OntologyAdapter(
         ontology_file="test/ontologies/reverse_labels.ttl",
-        root_label="Root",
-        reverse_labels=True,
+        root_label="Label_Root",
+        switch_label_and_id=True,
     )
 
-    expected_switched = ["level1B", "root", "level1A"]
+    expected_switched = ["label level1b", "label root", "label level1a"]
     for node in ontology_adapter_reversed.get_nx_graph().nodes:
         assert node in expected_switched
 
-    expected_not_switched = ["Root", "1", "2"]
+
+def test_do_not_switch_id_and_label():
+    ontology_adapter = OntologyAdapter(
+        ontology_file="test/ontologies/reverse_labels.ttl",
+        root_label="Label_Root",
+        switch_label_and_id=False,
+    )
+
+    expected_not_switched = ["ID_0", "ID_1", "ID_2"]
     for node in ontology_adapter.get_nx_graph().nodes:
         assert node in expected_not_switched
 
@@ -216,18 +219,26 @@ def test_reverse_labels_from_yaml_config():
     bc = BioCypher(
         head_ontology={
             "url": "test/ontologies/reverse_labels.ttl",
-            "root_node": "Root",
+            "root_node": "Label_Root",
             "switch_label_and_id": False,
         },
+        tail_ontologies={
+            "tail": {
+                "url": "test/ontologies/missing_label.ttl",
+                "head_join_node": "Label_Level1A",
+                "tail_join_node": "Label_Root",
+                "switch_label_and_id": False,
+            }
+        },
     )
-    expected_not_switched = ["Root", "1", "2"]
+    expected_not_switched = ["ID_0", "ID_1", "ID_2", "ID_1A"]
     for node in bc._get_ontology()._nx_graph.nodes:
         assert node in expected_not_switched
 
 
 def test_simple_ontology(simple_ontology):
-    list(simple_ontology.get_ancestors("accuracy")) == [
+    assert list(simple_ontology.get_ancestors("accuracy")) == [
         "accuracy",
         "entity",
-        "Thing",
+        "thing",
     ]
