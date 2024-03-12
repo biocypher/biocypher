@@ -215,6 +215,20 @@ def test_do_not_switch_id_and_label():
         assert node in expected_not_switched
 
 
+def test_root_node_not_found():
+    with pytest.raises(ValueError) as error_message:
+        OntologyAdapter(
+            ontology_file="test/ontologies/reverse_labels.ttl",
+            root_label="not present",
+        )
+    error_message = str(error_message.value)
+    assert "Could not find root node with label 'not present'." in error_message
+    assert (
+        "The ontology contains the following labels: ['Label_Root', 'Label_Level1A', 'Label_Level1B']"
+        in error_message
+    )
+
+
 def test_reverse_labels_from_yaml_config():
     bc = BioCypher(
         head_ontology={
@@ -234,6 +248,33 @@ def test_reverse_labels_from_yaml_config():
     expected_not_switched = ["ID_0", "ID_1", "ID_2", "ID_1A"]
     for node in bc._get_ontology()._nx_graph.nodes:
         assert node in expected_not_switched
+
+
+def test_head_join_node_not_found():
+    bc = BioCypher(
+        head_ontology={
+            "url": "test/ontologies/reverse_labels.ttl",
+            "root_node": "Label_Root",
+        },
+        tail_ontologies={
+            "tail": {
+                "url": "test/ontologies/missing_label.ttl",
+                "head_join_node": "not present",
+                "tail_join_node": "Label_Root",
+            }
+        },
+    )
+    with pytest.raises(ValueError) as error_message:
+        bc._get_ontology()
+    error_message = str(error_message.value)
+    assert (
+        "Head join node 'not present' not found in head ontology."
+        in error_message
+    )
+    assert "The head ontology contains the following" in error_message
+    assert "Label_Level1A" in error_message
+    assert "Label_Root" in error_message
+    assert "Label_Level1A" in error_message
 
 
 def test_simple_ontology(simple_ontology):

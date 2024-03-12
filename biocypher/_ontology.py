@@ -105,18 +105,24 @@ class OntologyAdapter:
         )
 
     def _rdf_to_nx(
-        self, _rdf_graph: rdflib.Graph, root_label: str, reverse_labels: bool
+        self,
+        _rdf_graph: rdflib.Graph,
+        root_label: str,
+        switch_label_and_id: bool,
+        rename_nodes: bool = True,
     ) -> nx.DiGraph:
         one_to_one_triples, one_to_many_dict = self._get_relevant_rdf_triples(
             _rdf_graph
         )
         nx_graph = self._convert_to_nx(one_to_one_triples, one_to_many_dict)
         nx_graph_with_labels = self._add_labels_to_nodes(
-            nx_graph, reverse_labels
+            nx_graph, switch_label_and_id
         )
-        renamed_graph = self._rename_nodes(nx_graph_with_labels, reverse_labels)
+        renamed_graph = self._change_nodes_to_biocypher_format(
+            nx_graph_with_labels, switch_label_and_id, rename_nodes
+        )
         filtered_graph = self._get_all_ancestors(
-            renamed_graph, root_label, reverse_labels
+            renamed_graph, root_label, switch_label_and_id, rename_nodes
         )
         return nx.DiGraph(filtered_graph)
 
@@ -242,19 +248,21 @@ class OntologyAdapter:
         return nx_graph
 
     def _add_labels_to_nodes(
-        self, nx_graph: nx.DiGraph, reverse_labels: bool
+        self, nx_graph: nx.DiGraph, switch_label_and_id: bool
     ) -> nx.DiGraph:
         """Add labels to the nodes in the networkx graph.
 
         Args:
             nx_graph (nx.DiGraph): The networkx graph
-            reverse_labels (bool): If True, id and label are switched
+            switch_label_and_id (bool): If True, id and label are switched
 
         Returns:
             nx.DiGraph: The networkx graph with labels
         """
         for node in list(nx_graph.nodes):
-            nx_id, nx_label = self._get_nx_id_and_label(node, reverse_labels)
+            nx_id, nx_label = self._get_nx_id_and_label(
+                node, switch_label_and_id
+            )
             if nx_id == "none":
                 # remove node if it has no id
                 nx_graph.remove_node(node)
@@ -263,27 +271,40 @@ class OntologyAdapter:
             nx_graph.nodes[node]["label"] = nx_label
         return nx_graph
 
-    def _rename_nodes(
-        self, nx_graph: nx.DiGraph, reverse_labels: bool
+    def _change_nodes_to_biocypher_format(
+        self,
+        nx_graph: nx.DiGraph,
+        switch_label_and_id: bool,
+        rename_nodes: bool = True,
     ) -> nx.DiGraph:
-        """Rename the nodes in the networkx graph (remove prefix and switch id and label).
+        """Change the nodes in the networkx graph to BioCypher format:
+            - remove the prefix of the identifier
+            - switch id and label
+            - adapt the labels (replace _ with space and convert to lower sentence case)
 
         Args:
             nx_graph (nx.DiGraph): The networkx graph
-            reverse_labels (bool): If True, id and label are switched
+            switch_label_and_id (bool): If True, id and label are switched
+            rename_nodes (bool): If True, the nodes are renamed
 
         Returns:
-            nx.DiGraph: The renamed networkx graph
+            nx.DiGraph: The networkx ontology graph in BioCypher format
         """
         mapping = {
-            node: self._get_nx_id_and_label(node, reverse_labels)[0]
+            node: self._get_nx_id_and_label(
+                node, switch_label_and_id, rename_nodes
+            )[0]
             for node in nx_graph.nodes
         }
         renamed = nx.relabel_nodes(nx_graph, mapping, copy=False)
         return renamed
 
     def _get_all_ancestors(
-        self, renamed: nx.DiGraph, root_label: str, reverse_labels: bool
+        self,
+        renamed: nx.DiGraph,
+        root_label: str,
+        switch_label_and_id: bool,
+        rename_nodes: bool = True,
     ) -> nx.DiGraph:
         """Get all ancestors of the root node in the networkx graph.
 
@@ -295,7 +316,9 @@ class OntologyAdapter:
             nx.DiGraph: The filtered networkx graph
         """
         root = self._get_nx_id_and_label(
-            self._find_root_label(self._rdf_graph, root_label), reverse_labels
+            self._find_root_label(self._rdf_graph, root_label),
+            switch_label_and_id,
+            rename_nodes,
         )[0]
         ancestors = nx.ancestors(renamed, root)
         ancestors.add(root)
@@ -303,7 +326,7 @@ class OntologyAdapter:
         return filtered_graph
 
     def _get_nx_id_and_label(
-        self, node, switch_id_and_label: bool
+        self, node, switch_id_and_label: bool, rename_nodes: bool = True
     ) -> tuple[str, str]:
         """Rename node id and label for nx graph.
 
@@ -315,10 +338,10 @@ class OntologyAdapter:
             tuple[str, str]: The renamed node id and label
         """
         node_id_str = self._remove_prefix(str(node))
-        node_label_str = str(
-            self._rdf_graph.value(node, rdflib.RDFS.label)
-        ).replace("_", " ")
-        node_label_str = to_lower_sentence_case(node_label_str)
+        node_label_str = str(self._rdf_graph.value(node, rdflib.RDFS.label))
+        if rename_nodes:
+            node_label_str = node_label_str.replace("_", " ")
+            node_label_str = to_lower_sentence_case(node_label_str)
         nx_id = node_label_str if switch_id_and_label else node_id_str
         nx_label = node_id_str if switch_id_and_label else node_label_str
         return nx_id, nx_label
@@ -333,8 +356,14 @@ class OntologyAdapter:
                 root = label_subject
                 break
         else:
+            labels_in_ontology = []
+            for label_subject, _, label_in_ontology in g.triples(
+                (None, rdflib.RDFS.label, None)
+            ):
+                labels_in_ontology.append(str(label_in_ontology))
             raise ValueError(
-                f"Could not find root node with label {root_label}"
+                f"Could not find root node with label '{root_label}'. "
+                f"The ontology contains the following labels: {labels_in_ontology}"
             )
         return root
 
@@ -555,9 +584,15 @@ class Ontology:
                     break
 
         if head_join_node not in self._head_ontology.get_nx_graph().nodes:
+            head_ontology = self._head_ontology._rdf_to_nx(
+                self._head_ontology.get_rdf_graph(),
+                self._head_ontology._root_label,
+                self._head_ontology._switch_label_and_id,
+                rename_nodes=False,
+            )
             raise ValueError(
-                f"Head join node {head_join_node} not found in "
-                f"head ontology."
+                f"Head join node '{head_join_node}' not found in head ontology. "
+                f"The head ontology contains the following {head_ontology.nodes}."
             )
         return head_join_node
 
