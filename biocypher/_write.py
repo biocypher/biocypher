@@ -15,7 +15,6 @@ suitable for import into a DBMS.
 
 import re
 import glob
-import subprocess # neo4j version detection.
 
 from ._logger import logger
 
@@ -28,6 +27,7 @@ from collections import OrderedDict, defaultdict
 import os
 
 from more_itertools import peekable
+import neo4j_utils._n4jversion as _n4jversion
 
 from ._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
@@ -1058,12 +1058,9 @@ class _Neo4jBatchWriter(_BatchWriter):
         # Should read the configuration and setup import_call_bin_prefix.
         super().__init__(*args, **kwargs)
 
-        cmd = [f"{self.import_call_bin_prefix}neo4j-admin", "--version"]
-        version = subprocess.check_output(cmd)
-        # Output of version 4: "4.4.27\n"
-        # Output of version 5: "5.11.0-SNAPSHOT\n"
-        major = int(version.decode().split(".")[0])
-        if major >= 5:
+        neo4j_version = _n4jversion.Neo4jVersion()
+
+        if neo4j_version.version >= 5:
             self.import_cmd = "database import full"
             self.database_cmd = ""
             self.wipe_cmd = "--overwrite-destination="
@@ -1079,6 +1076,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         Returns:
             str: The default location for the neo4j admin import location
         """
+
         return "bin/"
 
     def _write_array_string(self, string_list):

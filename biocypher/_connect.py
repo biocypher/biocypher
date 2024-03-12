@@ -22,7 +22,7 @@ from collections.abc import Iterable
 import itertools
 import traceback
 
-from neo4j_utils._neo4j_version_detection import Neo4j_Version_Detection
+from neo4j_utils._n4jversion import Neo4jVersion
 import neo4j_utils
 
 from . import _misc
@@ -141,16 +141,16 @@ class _Neo4jDriver:
 
         logger.info("Creating constraints for node types in config.")
 
-        neo4j_version = Neo4j_Version_Detection()
+        neo4j_version = Neo4jVersion()
         # get structure
         for leaf in self.translator.ontology.mapping.extended_schema.items():
             label = _misc.sentencecase_to_pascalcase(leaf[0], sep=r"\s\.")
             if leaf[1]["represented_as"] == "node":
-                if neo4j_version.get_version() >= 5:
+                if neo4j_version.version >= 5:
                     s = (
                         f"CREATE CONSTRAINT `{label}_id` "
-                        f"IF NOT EXISTS FOR (n:`{label}`) "  # ON insted FOR changed
-                        "REQUIRE n.id IS UNIQUE"  # ASSERT insted REQUIRE changed
+                        f"IF NOT EXISTS FOR (n:`{label}`) "
+                        "REQUIRE n.id IS UNIQUE"
                     )
                     self._driver.query(s)
                 else:
