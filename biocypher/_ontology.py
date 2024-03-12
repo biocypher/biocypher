@@ -115,16 +115,14 @@ class OntologyAdapter:
             _rdf_graph
         )
         nx_graph = self._convert_to_nx(one_to_one_triples, one_to_many_dict)
-        nx_graph_with_labels = self._add_labels_to_nodes(
-            nx_graph, switch_label_and_id
+        nx_graph = self._add_labels_to_nodes(nx_graph, switch_label_and_id)
+        nx_graph = self._change_nodes_to_biocypher_format(
+            nx_graph, switch_label_and_id, rename_nodes
         )
-        renamed_graph = self._change_nodes_to_biocypher_format(
-            nx_graph_with_labels, switch_label_and_id, rename_nodes
+        nx_graph = self._get_all_ancestors(
+            nx_graph, root_label, switch_label_and_id, rename_nodes
         )
-        filtered_graph = self._get_all_ancestors(
-            renamed_graph, root_label, switch_label_and_id, rename_nodes
-        )
-        return nx.DiGraph(filtered_graph)
+        return nx.DiGraph(nx_graph)
 
     def _get_relevant_rdf_triples(self, g: rdflib.Graph) -> tuple:
         one_to_one_inheritance_graph = self._get_one_to_one_inheritance_triples(
