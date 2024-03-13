@@ -34,6 +34,7 @@ runs:
       if: runner.os == 'Windows'
     - name: Run tests (Linux and MacOS)
       run: |
+        python -m venv venv
         source .venv/bin/activate
         pytest --version
         pytest --password=your_password_here
