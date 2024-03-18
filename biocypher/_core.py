@@ -558,10 +558,13 @@ class BioCypher:
 
         return self._ontology.show_ontology_structure(**kwargs)
 
-    def write_import_call(self) -> None:
+    def write_import_call(self) -> str:
         """
         Write a shell script to import the database depending on the chosen
         DBMS.
+
+        Returns:
+            str: path toward the file holding the import call.
         """
 
         if not self._offline:
@@ -569,7 +572,7 @@ class BioCypher:
                 "Cannot write import call in online mode."
             )
 
-        self._writer.write_import_call()
+        return self._writer.write_import_call()
 
     def write_schema_info(self, as_node: bool = False) -> None:
         """
