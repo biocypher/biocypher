@@ -1,7 +1,7 @@
-﻿biocypher.\_write.\_PostgreSQLBatchWriter
-=========================================
+﻿biocypher.write.relational.\_postgresql.\_PostgreSQLBatchWriter
+===============================================================
 
-.. currentmodule:: biocypher._write
+.. currentmodule:: biocypher.write.relational._postgresql
 
 .. autoclass:: _PostgreSQLBatchWriter
 

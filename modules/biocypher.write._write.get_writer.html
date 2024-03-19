@@ -2,9 +2,9 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<meta property="og:title" content="biocypher._mapping.OntologyMapping" />
+<meta property="og:title" content="biocypher.write._write.get_writer" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://biocypher.org/modules/biocypher._mapping.OntologyMapping.html" />
+<meta property="og:url" content="https://biocypher.org/modules/biocypher.write._write.get_writer.html" />
 <meta property="og:site_name" content="BioCypher" />
 <meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 <meta property="og:image:alt" content="BioCypher" />
@@ -15,7 +15,7 @@
 <meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>biocypher._mapping.OntologyMapping &mdash; BioCypher</title>
+  <title>biocypher.write._write.get_writer &mdash; BioCypher</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" type="text/css" />
@@ -34,8 +34,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="biocypher._create.BioCypherNode" href="biocypher._create.BioCypherNode.html" />
-    <link rel="prev" title="biocypher._ontology.OntologyAdapter" href="biocypher._ontology.OntologyAdapter.html" /> 
+    <link rel="next" title="biocypher.write._batch_writer._BatchWriter" href="biocypher.write._batch_writer._BatchWriter.html" />
+    <link rel="prev" title="biocypher.BioCypher" href="biocypher.BioCypher.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -78,12 +78,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../r-bioc.html">R and Bioconductor</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../api.html#the-main-biocypher-interface">The main BioCypher interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-by-file">Database creation by file</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#database-creation-by-file">Database creation by file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#in-memory-pandas-knowledge-graph">In-memory Pandas knowledge graph</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-and-manipulation-by-driver">Database creation and manipulation by Driver</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#download-and-cache-functionality">Download and cache functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._ontology">Ontology ingestion, parsing, and manipulation</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-biocypher._mapping">Mapping of data inputs to KG ontology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._mapping">Mapping of data inputs to KG ontology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._create">Base classes for node and edge representations in BioCypher</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._translate">Translation functionality for implemented types of representation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._logger">Logging</a></li>
@@ -107,9 +107,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
-      <li class="breadcrumb-item active">biocypher._mapping.OntologyMapping</li>
+      <li class="breadcrumb-item active">biocypher.write._write.get_writer</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/modules/biocypher._mapping.OntologyMapping.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/modules/biocypher.write._write.get_writer.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -117,25 +117,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="biocypher-mapping-ontologymapping">
-<h1>biocypher._mapping.OntologyMapping<a class="headerlink" href="#biocypher-mapping-ontologymapping" title="Permalink to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._mapping.OntologyMapping">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._mapping.</span></span><span class="sig-name descname"><span class="pre">OntologyMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._mapping.OntologyMapping" title="Permalink to this definition"></a></dt>
-<dd><p>Class to store the ontology mapping and extensions.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="biocypher._mapping.OntologyMapping.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._mapping.OntologyMapping.__init__" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#biocypher._mapping.OntologyMapping.__init__" title="biocypher._mapping.OntologyMapping.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([config_file])</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+  <section id="biocypher-write-write-get-writer">
+<h1>biocypher.write._write.get_writer<a class="headerlink" href="#biocypher-write-write-get-writer" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="biocypher.write._write.get_writer">
+<span class="sig-prename descclassname"><span class="pre">biocypher.write._write.</span></span><span class="sig-name descname"><span class="pre">get_writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Deduplicator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write._write.get_writer" title="Permalink to this definition"></a></dt>
+<dd><p>Function to return the writer class based on the selection in the config
+file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbms</strong> – the database management system; for options, see DBMS_TO_CLASS.</p></li>
+<li><p><strong>translator</strong> – the Translator object.</p></li>
+<li><p><strong>output_directory</strong> – the directory to write the output files to.</p></li>
+<li><p><strong>strict_mode</strong> – whether to use strict mode.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an instance of the selected writer class.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>instance</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -144,8 +148,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="biocypher._ontology.OntologyAdapter.html" class="btn btn-neutral float-left" title="biocypher._ontology.OntologyAdapter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="biocypher._create.BioCypherNode.html" class="btn btn-neutral float-right" title="biocypher._create.BioCypherNode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="biocypher.BioCypher.html" class="btn btn-neutral float-left" title="biocypher.BioCypher" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="biocypher.write._batch_writer._BatchWriter.html" class="btn btn-neutral float-right" title="biocypher.write._batch_writer._BatchWriter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

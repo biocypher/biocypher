@@ -1,7 +1,7 @@
-﻿biocypher.\_write.\_BatchWriter
-===============================
+﻿biocypher.write.\_batch\_writer.\_BatchWriter
+=============================================
 
-.. currentmodule:: biocypher._write
+.. currentmodule:: biocypher.write._batch_writer
 
 .. autoclass:: _BatchWriter
 

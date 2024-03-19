@@ -74,8 +74,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#biocypher-settings">BioCypher settings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#neo4j-settings">Neo4j settings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#postgresql-settings">PostgreSQL settings</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
@@ -85,8 +83,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">Tutorial - Handling Ontologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial-adapter.html">Tutorial - Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="standalone-docker-image.html">Standalone Docker Image</a></li>
-<li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
-<li class="toctree-l1"><a class="reference internal" href="neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output/index.html">Output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="r-bioc.html">R and Bioconductor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
@@ -262,73 +259,13 @@ are available:</p>
 <span class="w">  </span><span class="c1"># Optional tail ontologies</span>
 <span class="w">  </span><span class="nt">tail_ontologies</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">so</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/so.owl</span>
+<span class="w">      </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/ontologies/so.owl</span>
 <span class="w">      </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence variant</span>
 <span class="w">      </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence_variant</span>
 <span class="w">    </span><span class="nt">mondo</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/mondo.owl</span>
+<span class="w">      </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/ontologies/mondo.owl</span>
 <span class="w">      </span><span class="nt">head_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
 <span class="w">      </span><span class="nt">tail_join_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span>
-</pre></div>
-</div>
-</div>
-</section>
-<section id="neo4j-settings">
-<h2>Neo4j settings<a class="headerlink" href="#neo4j-settings" title="Permalink to this heading"></a></h2>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id5" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">neo4j</span><span class="p">:</span><span class="w">  </span><span class="c1">### Neo4j configuration ###</span>
-
-<span class="w">  </span><span class="c1"># Database name</span>
-<span class="w">  </span><span class="nt">database_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span>
-
-<span class="w">  </span><span class="c1"># Wipe DB before import (offline mode: --force)</span>
-<span class="w">  </span><span class="nt">wipe</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-
-<span class="w">  </span><span class="c1"># Neo4j authentication</span>
-<span class="w">  </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j://localhost:7687</span>
-<span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span>
-<span class="w">  </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neo4j</span>
-
-<span class="w">  </span><span class="c1"># Neo4j admin import batch writer settings</span>
-<span class="w">  </span><span class="nt">delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;;&#39;</span>
-<span class="w">  </span><span class="nt">array_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;|&#39;</span>
-<span class="w">  </span><span class="nt">quote_character</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&#39;&quot;</span>
-
-<span class="w">  </span><span class="c1"># MultiDB functionality</span>
-<span class="w">  </span><span class="c1"># Set to false for using community edition or older versions of Neo4j</span>
-<span class="w">  </span><span class="nt">multi_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-
-<span class="w">  </span><span class="c1"># Import options</span>
-<span class="w">  </span><span class="nt">skip_duplicate_nodes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="w">  </span><span class="nt">skip_bad_relationships</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-
-<span class="w">  </span><span class="c1"># Import call prefixes to adjust the autogenerated shell script</span>
-<span class="w">  </span><span class="nt">import_call_bin_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bin/</span><span class="w">  </span><span class="c1"># path to &quot;neo4j-admin&quot;</span>
-<span class="w">  </span><span class="nt">import_call_file_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">path/to/files/</span>
-</pre></div>
-</div>
-</div>
-</section>
-<section id="postgresql-settings">
-<h2>PostgreSQL settings<a class="headerlink" href="#postgresql-settings" title="Permalink to this heading"></a></h2>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id6" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">postgresql</span><span class="p">:</span><span class="w">  </span><span class="c1">### PostgreSQL configuration ###</span>
-
-<span class="w">  </span><span class="c1"># PostgreSQL connection credentials</span>
-<span class="w">  </span><span class="nt">database_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
-<span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
-<span class="w">  </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5432</span>
-
-<span class="w">  </span><span class="c1"># PostgreSQL import batch writer settings</span>
-<span class="w">  </span><span class="nt">quote_character</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&quot;&#39;</span>
-<span class="w">  </span><span class="nt">delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;\t&#39;</span>
-
-<span class="w">  </span><span class="c1"># Import call prefixes to adjust the autogenerated shell script</span>
-<span class="w">  </span><span class="nt">import_call_bin_prefix</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w">  </span><span class="c1"># path to &quot;psql&quot;</span>
-<span class="w">  </span><span class="nt">import_call_file_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/files/</span>
 </pre></div>
 </div>
 </div>

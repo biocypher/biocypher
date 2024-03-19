@@ -1,7 +1,7 @@
-﻿biocypher.\_write.\_Neo4jBatchWriter
-====================================
+﻿biocypher.write.graph.\_neo4j.\_Neo4jBatchWriter
+================================================
 
-.. currentmodule:: biocypher._write
+.. currentmodule:: biocypher.write.graph._neo4j
 
 .. autoclass:: _Neo4jBatchWriter
 

@@ -60,8 +60,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial-ontology.html">Tutorial - Handling Ontologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial-adapter.html">Tutorial - Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="standalone-docker-image.html">Standalone Docker Image</a></li>
-<li class="toctree-l1"><a class="reference internal" href="neo4j.html">Interacting with Neo4j</a></li>
-<li class="toctree-l1"><a class="reference internal" href="neo4j.html#tutorial-neo4j">Tutorial - Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output/index.html">Output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="r-bioc.html">R and Bioconductor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
@@ -134,28 +133,32 @@
 </li>
         <li><a href="modules/biocypher._translate.Translator.html#biocypher._translate.Translator.__init__">(biocypher._translate.Translator method)</a>
 </li>
-        <li><a href="modules/biocypher._write._ArangoDBBatchWriter.html#biocypher._write._ArangoDBBatchWriter.__init__">(biocypher._write._ArangoDBBatchWriter method)</a>
-</li>
-        <li><a href="modules/biocypher._write._BatchWriter.html#biocypher._write._BatchWriter.__init__">(biocypher._write._BatchWriter method)</a>
-</li>
-        <li><a href="modules/biocypher._write._Neo4jBatchWriter.html#biocypher._write._Neo4jBatchWriter.__init__">(biocypher._write._Neo4jBatchWriter method)</a>
-</li>
-        <li><a href="modules/biocypher._write._PostgreSQLBatchWriter.html#biocypher._write._PostgreSQLBatchWriter.__init__">(biocypher._write._PostgreSQLBatchWriter method)</a>
-</li>
         <li><a href="modules/biocypher.BioCypher.html#biocypher.BioCypher.__init__">(biocypher.BioCypher method)</a>
+</li>
+        <li><a href="modules/biocypher.write._batch_writer._BatchWriter.html#biocypher.write._batch_writer._BatchWriter.__init__">(biocypher.write._batch_writer._BatchWriter method)</a>
+</li>
+        <li><a href="modules/biocypher.write.graph._arangodb._ArangoDBBatchWriter.html#biocypher.write.graph._arangodb._ArangoDBBatchWriter.__init__">(biocypher.write.graph._arangodb._ArangoDBBatchWriter method)</a>
+</li>
+        <li><a href="modules/biocypher.write.graph._neo4j._Neo4jBatchWriter.html#biocypher.write.graph._neo4j._Neo4jBatchWriter.__init__">(biocypher.write.graph._neo4j._Neo4jBatchWriter method)</a>
+</li>
+        <li><a href="modules/biocypher.write.relational._postgresql._PostgreSQLBatchWriter.html#biocypher.write.relational._postgresql._PostgreSQLBatchWriter.__init__">(biocypher.write.relational._postgresql._PostgreSQLBatchWriter method)</a>
+</li>
+        <li><a href="modules/biocypher.write.relational._sqlite._SQLiteBatchWriter.html#biocypher.write.relational._sqlite._SQLiteBatchWriter.__init__">(biocypher.write.relational._sqlite._SQLiteBatchWriter method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/biocypher._write._ArangoDBBatchWriter.html#biocypher._write._ArangoDBBatchWriter">_ArangoDBBatchWriter (class in biocypher._write)</a>
+      <li><a href="modules/biocypher.write.graph._arangodb._ArangoDBBatchWriter.html#biocypher.write.graph._arangodb._ArangoDBBatchWriter">_ArangoDBBatchWriter (class in biocypher.write.graph._arangodb)</a>
 </li>
-      <li><a href="modules/biocypher._write._BatchWriter.html#biocypher._write._BatchWriter">_BatchWriter (class in biocypher._write)</a>
+      <li><a href="modules/biocypher.write._batch_writer._BatchWriter.html#biocypher.write._batch_writer._BatchWriter">_BatchWriter (class in biocypher.write._batch_writer)</a>
 </li>
-      <li><a href="modules/biocypher._write._Neo4jBatchWriter.html#biocypher._write._Neo4jBatchWriter">_Neo4jBatchWriter (class in biocypher._write)</a>
+      <li><a href="modules/biocypher.write.graph._neo4j._Neo4jBatchWriter.html#biocypher.write.graph._neo4j._Neo4jBatchWriter">_Neo4jBatchWriter (class in biocypher.write.graph._neo4j)</a>
 </li>
       <li><a href="modules/biocypher._connect._Neo4jDriver.html#biocypher._connect._Neo4jDriver">_Neo4jDriver (class in biocypher._connect)</a>
 </li>
-      <li><a href="modules/biocypher._write._PostgreSQLBatchWriter.html#biocypher._write._PostgreSQLBatchWriter">_PostgreSQLBatchWriter (class in biocypher._write)</a>
+      <li><a href="modules/biocypher.write.relational._postgresql._PostgreSQLBatchWriter.html#biocypher.write.relational._postgresql._PostgreSQLBatchWriter">_PostgreSQLBatchWriter (class in biocypher.write.relational._postgresql)</a>
+</li>
+      <li><a href="modules/biocypher.write.relational._sqlite._SQLiteBatchWriter.html#biocypher.write.relational._sqlite._SQLiteBatchWriter">_SQLiteBatchWriter (class in biocypher.write.relational._sqlite)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -238,10 +241,10 @@
 </li>
       </ul></li>
       <li>
-    biocypher._write
+    biocypher.write
 
       <ul>
-        <li><a href="api.html#module-biocypher._write">module</a>
+        <li><a href="api.html#module-biocypher.write">module</a>
 </li>
       </ul></li>
       <li><a href="modules/biocypher._create.BioCypherEdge.html#biocypher._create.BioCypherEdge">BioCypherEdge (class in biocypher._create)</a>
@@ -294,7 +297,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/biocypher._logger.get_logger.html#biocypher._logger.get_logger">get_logger() (in module biocypher._logger)</a>
 </li>
-      <li><a href="modules/biocypher._write.get_writer.html#biocypher._write.get_writer">get_writer() (in module biocypher._write)</a>
+      <li><a href="modules/biocypher.write._write.get_writer.html#biocypher.write._write.get_writer">get_writer() (in module biocypher.write._write)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -326,7 +329,7 @@
 </li>
         <li><a href="api.html#module-biocypher._translate">biocypher._translate</a>
 </li>
-        <li><a href="api.html#module-biocypher._write">biocypher._write</a>
+        <li><a href="api.html#module-biocypher.write">biocypher.write</a>
 </li>
       </ul></li>
   </ul></td>

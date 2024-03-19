@@ -1,7 +1,7 @@
-﻿biocypher.\_write.\_ArangoDBBatchWriter
-=======================================
+﻿biocypher.write.graph.\_arangodb.\_ArangoDBBatchWriter
+======================================================
 
-.. currentmodule:: biocypher._write
+.. currentmodule:: biocypher.write.graph._arangodb
 
 .. autoclass:: _ArangoDBBatchWriter
 

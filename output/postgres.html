@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="PostgreSQL" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://biocypher.org/output/postgres.html" />
+<meta property="og:site_name" content="BioCypher" />
+<meta property="og:description" content="When setting the dbms parameter in the biocypher_config.yaml to postgres, the BioCypher Knowledge Graph is written to a PostgreSQL database. PostgreSQL is a relational database management system. I..." />
+<meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+<meta property="og:image:alt" content="BioCypher" />
+<meta name="description" content="When setting the dbms parameter in the biocypher_config.yaml to postgres, the BioCypher Knowledge Graph is written to a PostgreSQL database. PostgreSQL is a relational database management system. I..." />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="https://biocypher.org" />
+<meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
+<meta property="twitter:description" content="BioCypher is a framework to simplify the creation of robust biomedical knowledge graphs." />
+<meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PostgreSQL &mdash; BioCypher</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/design-tabs.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SQLite" href="sqlite.html" />
+    <link rel="prev" title="ArangoDB" href="arangodb.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html" class="icon icon-home">
+            BioCypher
+          </a>
+              <div class="version">
+                0.5.39
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Democratising Knowledge Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-experiences.html">User Experiences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-involved.html">Get Involved!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#configuration">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters.html">Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/pandas_tutorial.html">Example Notebook: BioCypher and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial - Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-ontology.html">Tutorial - Handling Ontologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-adapter.html">Tutorial - Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../standalone-docker-image.html">Standalone Docker Image</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Output</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="neo4j.html">Neo4j</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arangodb.html">ArangoDB</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlite.html">SQLite</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../r-bioc.html">R and Bioconductor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">BioCypher</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Output</a></li>
+      <li class="breadcrumb-item active">PostgreSQL</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/output/postgres.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="postgresql">
+<h1>PostgreSQL<a class="headerlink" href="#postgresql" title="Permalink to this heading"></a></h1>
+<p>When setting the <code class="docutils literal notranslate"><span class="pre">dbms</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> to <code class="docutils literal notranslate"><span class="pre">postgres</span></code>, the BioCypher Knowledge Graph is written to a PostgreSQL database.
+<a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a> is a relational database management system.</p>
+<section id="install-postgresql">
+<h2>Install PostgreSQL<a class="headerlink" href="#install-postgresql" title="Permalink to this heading"></a></h2>
+<p>To get a PostgreSQL instance running quickly, you can use Docker. The following command will start a PostgreSQL instance with the password <code class="docutils literal notranslate"><span class="pre">postgres</span></code> and the port <code class="docutils literal notranslate"><span class="pre">5432</span></code> exposed to the host system.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">--</span><span class="n">restart</span> <span class="n">always</span> <span class="o">--</span><span class="n">publish</span><span class="o">=</span><span class="mi">5432</span><span class="p">:</span><span class="mi">5432</span> <span class="o">--</span><span class="n">env</span> <span class="n">POSTGRES_PASSWORD</span><span class="o">=</span><span class="n">postgres</span> <span class="o">-</span><span class="n">d</span> <span class="n">postgres</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">postgresql-client</span></code> (also known as <code class="docutils literal notranslate"><span class="pre">psql</span></code> command line tool) can be used to connect and interact with the running PostgreSQL database instance. Installation instructions can be found <a class="reference external" href="https://www.postgresql.org/download/">here</a>.</p>
+</section>
+<section id="postgresql-settings">
+<h2>PostgreSQL settings<a class="headerlink" href="#postgresql-settings" title="Permalink to this heading"></a></h2>
+<p>To overwrite the standard settings of PostgreSQL, add a <code class="docutils literal notranslate"><span class="pre">postgresql</span></code> section to the <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> file.
+The following settings are possible:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">postgresql</span><span class="p">:</span><span class="w">  </span><span class="c1">### PostgreSQL configuration ###</span>
+
+<span class="w">  </span><span class="c1"># PostgreSQL connection credentials</span>
+<span class="w">  </span><span class="nt">database_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="w">  </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5432</span>
+
+<span class="w">  </span><span class="c1"># PostgreSQL import batch writer settings</span>
+<span class="w">  </span><span class="nt">quote_character</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&quot;&#39;</span>
+<span class="w">  </span><span class="nt">delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;\t&#39;</span>
+
+<span class="w">  </span><span class="c1"># Import call prefixes to adjust the autogenerated shell script</span>
+<span class="w">  </span><span class="nt">import_call_bin_prefix</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w">  </span><span class="c1"># path to &quot;psql&quot;</span>
+<span class="w">  </span><span class="nt">import_call_file_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/files/</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="offline-mode">
+<h2>Offline mode<a class="headerlink" href="#offline-mode" title="Permalink to this heading"></a></h2>
+<section id="running-biocypher">
+<h3>Running BioCypher<a class="headerlink" href="#running-biocypher" title="Permalink to this heading"></a></h3>
+<p>After running BioCypher with the <code class="docutils literal notranslate"><span class="pre">offline</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">true</span></code> and the <code class="docutils literal notranslate"><span class="pre">dbms</span></code> set to <code class="docutils literal notranslate"><span class="pre">postgres</span></code>,
+the output folder contains:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">entity-create_table.sql</span></code>: The SQL scripts to create the tables for the nodes/edges. Entity is replaced by your nodes and edges and for each node and edge type an own SQL script is generated.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">entity-part000.csv</span></code>: The CSV file containing the data for the entity.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">postgres-import-call.sh</span></code>: The import script to create a database with the SQL scripts and insert the data from the CSV files.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">postgres-import-call.sh</span></code> is missing, you can create it by running <code class="docutils literal notranslate"><span class="pre">bc.write_import_call()</span></code>.</p>
+</div>
+</section>
+<section id="create-the-postgresql-database">
+<h3>Create the PostgreSQL database<a class="headerlink" href="#create-the-postgresql-database" title="Permalink to this heading"></a></h3>
+<p>A running PostgreSQL instance (e.g. in a Docker container created with the command from above) is required to create the database and import the data.
+By running the import script <code class="docutils literal notranslate"><span class="pre">postgres-import-call.sh</span></code>, the content should be written to the PostgreSQL database.</p>
+</section>
+<section id="access-the-postgresql-database">
+<h3>Access the PostgreSQL database<a class="headerlink" href="#access-the-postgresql-database" title="Permalink to this heading"></a></h3>
+<p>To check the content of the database, you can use the <code class="docutils literal notranslate"><span class="pre">psql</span></code> command line tool.</p>
+<p>First connect to the running PostgreSQL database instance:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>psql<span class="w"> </span>-h<span class="w"> </span>localhost<span class="w"> </span>-p<span class="w"> </span><span class="m">5432</span><span class="w"> </span>-U<span class="w"> </span>postgres
+</pre></div>
+</div>
+<p>Then you can execute SQL queries.
+For example, you can list all tables in the database by running the following command in the terminal:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">table_name</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">information_schema</span><span class="p">.</span><span class="n">tables</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">table_schema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;public&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="arangodb.html" class="btn btn-neutral float-left" title="ArangoDB" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sqlite.html" class="btn btn-neutral float-right" title="SQLite" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2024, BioCypher developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
