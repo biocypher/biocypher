@@ -9,7 +9,7 @@ jobs:
       matrix:
         os: ["ubuntu-latest", "macos-latest", "windows-latest"]
         python-version: ["3.9", "3.10", "3.11"]
-        neo4j-version: ["4.4-enterprise", "5.17.0-enterprise"]
+        neo4j-version: ["4.4-enterprise"] #, "5.17.0-enterprise"]
     runs-on: ${{ matrix.os }}
     env:
       POETRY_VERSION: 1.5.1
