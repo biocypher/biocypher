@@ -44,12 +44,12 @@ def hybrid_ontology(extended_ontology_mapping):
         ontology_mapping=extended_ontology_mapping,
         tail_ontologies={
             "so": {
-                "url": "test/so.owl",
+                "url": "test/ontologies/so.owl",
                 "head_join_node": "sequence variant",
                 "tail_join_node": "sequence_variant",
             },
             "mondo": {
-                "url": "test/mondo.owl",
+                "url": "test/ontologies/mondo.owl",
                 "head_join_node": "disease",
                 "tail_join_node": "human disease",
                 "merge_nodes": False,
@@ -62,13 +62,13 @@ def hybrid_ontology(extended_ontology_mapping):
 def simple_ontology(simple_ontology_mapping):
     return Ontology(
         head_ontology={
-            "url": "test/ontology1.ttl",
+            "url": "test/ontologies/ontology1.ttl",
             "root_node": "Thing",
         },
         ontology_mapping=simple_ontology_mapping,
         tail_ontologies={
             "test": {
-                "url": "test/ontology2.ttl",
+                "url": "test/ontologies/ontology2.ttl",
                 "head_join_node": "entity",
                 "tail_join_node": "EvaluationCriterion",
             },
@@ -86,14 +86,14 @@ def biolink_adapter():
 
 @pytest.fixture(scope="module")
 def so_adapter():
-    return OntologyAdapter("test/so.owl", "sequence_variant")
+    return OntologyAdapter("test/ontologies/so.owl", "sequence_variant")
 
 
 @pytest.fixture(scope="module")
 def go_adapter():
-    return OntologyAdapter("test/go.owl", "molecular_function")
+    return OntologyAdapter("test/ontologies/go.owl", "molecular_function")
 
 
 @pytest.fixture(scope="module")
 def mondo_adapter():
-    return OntologyAdapter("test/mondo.owl", "disease")
+    return OntologyAdapter("test/ontologies/mondo.owl", "disease")

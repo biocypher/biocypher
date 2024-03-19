@@ -92,7 +92,7 @@ def test_write_schema_info(core, _get_nodes, _get_edges, _get_rel_as_nodes):
 def test_show_full_ontology_structure_without_schema():
     bc = BioCypher(
         head_ontology={
-            "url": "test/so.owl",
+            "url": "test/ontologies/so.owl",
             "root_node": "sequence_variant",
         }
     )
