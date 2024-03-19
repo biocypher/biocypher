@@ -7,7 +7,7 @@ import pytest
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
-def test__construct_import_call(bw_tab_sqlite, _get_nodes):
+def test_construct_import_call(bw_tab_sqlite, _get_nodes):
     nodes = _get_nodes
 
     def node_gen(nodes):
