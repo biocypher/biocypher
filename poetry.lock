@@ -1714,21 +1714,25 @@ pytz = "*"
 [[package]]
 name = "neo4j-utils"
 version = "0.0.12"
-description = "Little extra convenience in managing Neo4j access"
+description = ""
 category = "main"
 optional = false
-python-versions = ">=3.8,<4.0"
-files = [
-    {file = "neo4j_utils-0.0.12-py3-none-any.whl", hash = "sha256:dea42db976b9a38f2bb2bb8d051e05ee08702dd892ab582b00c8963c8c2e16c9"},
-    {file = "neo4j_utils-0.0.12.tar.gz", hash = "sha256:4049e8a7f02e9557b3f11cc3f4e48599d9d720718e789e4470bab6c4c38530ce"},
-]
+python-versions = "^3.8"
+files = []
+develop = false
 
 [package.dependencies]
 appdirs = ">=1.4.4"
 colorlog = "*"
-neo4j = ">=4.4,<5.0"
+neo4j = "^4.4"
 PyYAML = ">=5.0"
 toml = "*"
+
+[package.source]
+type = "git"
+url = "https://github.com/nilskre/neo4j-utils.git"
+reference = "HEAD"
+resolved_reference = "bdab94677fbdd9572da5651d3182827d3540aa7b"
 
 [[package]]
 name = "nest-asyncio"
@@ -3312,4 +3316,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "afecd88d3c78878b3322630a4eda2b775fda6ccb06101ecc7f8b88def00cc5c9"
+content-hash = "8716c0e98727027875dfd2f28477582917e0b9dd689f0126f26243b399830d43"
