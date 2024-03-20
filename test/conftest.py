@@ -435,7 +435,7 @@ def neo4j_param(request):
     return cli
 
 
-# skip test if neo4j is offline
+# Skip test if neo4j is offline
 @pytest.fixture(autouse=True)
 def skip_if_offline_neo4j(request, neo4j_param, translator):
     marker = request.node.get_closest_marker("requires_neo4j")
