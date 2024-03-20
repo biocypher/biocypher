@@ -12,11 +12,12 @@ owl:Root a owl:Class ;
      rdfs:comment "The class of OWL individuals." ;
      rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> .
 
-owl:Level1A a owl:Class ;
+owl:1 a owl:Class ;
      rdfs:label "Level1A" ;
      rdfs:subClassOf owl:Root ;
      rdfs:comment "Level1A." .
 
-owl:Level1B a owl:Class ;
+owl:2 a owl:Class ;
+     rdfs:label "Level1B" ;
      rdfs:subClassOf owl:Root ;
-     rdfs:comment "Level1B label missing." .
+     rdfs:comment "Level1B." .

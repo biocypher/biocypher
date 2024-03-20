@@ -6,8 +6,9 @@ import pytest
 
 import pandas as pd
 
-from biocypher._write import parse_label, _Neo4jBatchWriter
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from biocypher.write.graph._neo4j import _Neo4jBatchWriter
+from biocypher.write._batch_writer import parse_label
 
 
 def test_neo4j_writer_and_output_dir(bw):

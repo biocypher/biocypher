@@ -22,6 +22,8 @@ logger.debug(f"Loading module {__name__}.")
 from typing import Optional
 from datetime import datetime
 
+from rdflib import Graph
+from rdflib.extras.external_graph_libs import rdflib_to_networkx_digraph
 import rdflib
 import networkx as nx
 
@@ -93,179 +95,230 @@ class OntologyAdapter:
         self._reverse_labels = reverse_labels
         self._remove_prefixes = remove_prefixes
 
-        # Load the ontology into a rdflib Graph according to the file extension
         self._rdf_graph = self._load_rdf_graph(ontology_file)
 
         self._nx_graph = self._rdf_to_nx(
             self._rdf_graph, root_label, reverse_labels
         )
 
-    def _rdf_to_nx(self, g, root_label, switch_id_and_label=True):
-        root = self._find_root_label(g, root_label)
+    def _rdf_to_nx(
+        self, _rdf_graph: rdflib.Graph, root_label: str, reverse_labels: bool
+    ) -> nx.DiGraph:
+        one_to_one_triples, one_to_many_dict = self._get_relevant_rdf_triples(
+            _rdf_graph
+        )
+        nx_graph = self._convert_to_nx(one_to_one_triples, one_to_many_dict)
+        nx_graph_with_labels = self._add_labels_to_nodes(
+            nx_graph, reverse_labels
+        )
+        renamed_graph = self._rename_nodes(nx_graph_with_labels, reverse_labels)
+        filtered_graph = self._get_all_ancestors(
+            renamed_graph, root_label, reverse_labels
+        )
+        return nx.DiGraph(filtered_graph)
 
-        # Create a directed graph to represent the ontology as a tree
-        G = nx.DiGraph()
+    def _get_relevant_rdf_triples(self, g: rdflib.Graph) -> tuple:
+        one_to_one_inheritance_graph = self._get_one_to_one_inheritance_triples(
+            g
+        )
+        intersection = self._get_multiple_inheritance_dict(g)
+        return one_to_one_inheritance_graph, intersection
 
-        # Define a recursive function to add subclasses to the graph
-        def add_subclasses(parent_node):
-            if not has_label(parent_node, g):
-                return
+    def _get_one_to_one_inheritance_triples(
+        self, g: rdflib.Graph
+    ) -> rdflib.Graph:
+        """Get the one to one inheritance triples from the RDF graph.
 
-            nx_parent_node_id, nx_parent_node_label = _get_nx_id_and_label(
-                parent_node
+        Args:
+            g (rdflib.Graph): The RDF graph
+
+        Returns:
+            rdflib.Graph: The one to one inheritance graph
+        """
+        one_to_one_inheritance_graph = Graph()
+        for s, p, o in g.triples((None, rdflib.RDFS.subClassOf, None)):
+            if self.has_label(s, g):
+                one_to_one_inheritance_graph.add((s, p, o))
+        return one_to_one_inheritance_graph
+
+    def _get_multiple_inheritance_dict(self, g: rdflib.Graph) -> dict:
+        """Get the multiple inheritance dictionary from the RDF graph.
+
+        Args:
+            g (rdflib.Graph): The RDF graph
+
+        Returns:
+            dict: The multiple inheritance dictionary
+        """
+        multiple_inheritance = g.triples(
+            (None, rdflib.OWL.intersectionOf, None)
+        )
+        intersection = {}
+        for (
+            node,
+            has_multiple_parents,
+            first_node_of_intersection_list,
+        ) in multiple_inheritance:
+            parents = self._retrieve_rdf_linked_list(
+                first_node_of_intersection_list
             )
+            child_name = None
+            for s_, _, _ in g.triples((None, rdflib.RDFS.subClassOf, node)):
+                child_name = s_
 
-            if nx_parent_node_id not in G:
-                add_node(nx_parent_node_id, nx_parent_node_label)
+            # Handle Snomed CT post coordinated expressions
+            if not child_name:
+                for s_, _, _ in g.triples(
+                    (None, rdflib.OWL.equivalentClass, node)
+                ):
+                    child_name = s_
 
-            child_nodes = get_child_nodes(parent_node, g)
+            if child_name:
+                intersection[node] = {
+                    "child_name": child_name,
+                    "parent_node_names": parents,
+                }
+        return intersection
 
-            if child_nodes:
-                for child_node in child_nodes:
-                    if not has_label(child_node, g):
-                        continue
-                    (
-                        nx_child_node_id,
-                        nx_child_node_label,
-                    ) = _get_nx_id_and_label(child_node)
-                    add_node(nx_child_node_id, nx_child_node_label)
-                    G.add_edge(nx_child_node_id, nx_parent_node_id)
-                for child_node in child_nodes:
-                    add_subclasses(child_node)
-                    add_parents(child_node)
+    def has_label(self, node: rdflib.URIRef, g: rdflib.Graph) -> bool:
+        """Does the node have a label in g?
 
-        def add_parents(node):
-            if not has_label(node, g):
-                return
+        Args:
+            node (rdflib.URIRef): The node to check
+            g (rdflib.Graph): The graph to check in
+        Returns:
+            bool: True if the node has a label, False otherwise
+        """
+        return (node, rdflib.RDFS.label, None) in g
 
-            nx_id, nx_label = _get_nx_id_and_label(node)
+    def _retrieve_rdf_linked_list(self, subject: rdflib.URIRef) -> list:
+        """Recursively retrieves a linked list from RDF.
+        Example RDF list with the items [item1, item2]:
+        list_node - first -> item1
+        list_node - rest -> list_node2
+        list_node2 - first -> item2
+        list_node2 - rest -> nil
+        Args:
+            subject (rdflib.URIRef): One list_node of the RDF list
+        Returns:
+            list: The items of the RDF list
+        """
+        g = self._rdf_graph
+        rdf_list = []
+        for s, p, o in g.triples((subject, rdflib.RDF.first, None)):
+            rdf_list.append(o)
+        for s, p, o in g.triples((subject, rdflib.RDF.rest, None)):
+            if o != rdflib.RDF.nil:
+                rdf_list.extend(self._retrieve_rdf_linked_list(o))
+        return rdf_list
 
-            # Recursively add all parents of the node to the graph
-            for s, _, o in g.triples((node, rdflib.RDFS.subClassOf, None)):
-                if not has_label(o, g):
-                    continue
+    def _convert_to_nx(
+        self, one_to_one: rdflib.Graph, one_to_many: dict
+    ) -> nx.DiGraph:
+        """Convert the one to one and one to many inheritance graphs to networkx.
 
-                o_id, o_label = _get_nx_id_and_label(o)
+        Args:
+            one_to_one (rdflib.Graph): The one to one inheritance graph
+            one_to_many (dict): The one to many inheritance dictionary
 
-                # Skip if node already in the graph
-                if o_id in G:
-                    continue
-
-                add_node(o_id, o_label)
-
-                G.add_edge(nx_id, o_id)
-                add_parents(o)
-
-        def has_label(node: rdflib.URIRef, g: rdflib.Graph) -> bool:
-            """Does the node have a label in g?
-
-            Args:
-                node (rdflib.URIRef): The node to check
-                g (rdflib.Graph): The graph to check in
-
-            Returns:
-                bool: True if the node has a label, False otherwise
-            """
-            return (node, rdflib.RDFS.label, None) in g
-
-        def add_node(nx_node_id: str, nx_node_label: str):
-            """Add a node to the graph.
-
-            Args:
-                nx_node_id (str): The ID of the node
-                nx_node_label (str): The label of the node
-            """
-            G.add_node(nx_node_id)
-            G.nodes[nx_node_id]["label"] = nx_node_label
-
-        def _get_nx_id_and_label(node):
-            node_id_str = self._remove_prefix(str(node))
-            node_label_str = str(g.value(node, rdflib.RDFS.label)).replace(
-                "_", " "
+        Returns:
+            nx.DiGraph: The networkx graph
+        """
+        nx_graph = rdflib_to_networkx_digraph(
+            one_to_one, edge_attrs=lambda s, p, o: {}, calc_weights=False
+        )
+        for key, value in one_to_many.items():
+            nx_graph.add_edges_from(
+                [
+                    (value["child_name"], parent)
+                    for parent in value["parent_node_names"]
+                ]
             )
-            node_label_str = to_lower_sentence_case(node_label_str)
+            if key in nx_graph.nodes:
+                nx_graph.remove_node(key)
+        return nx_graph
 
-            nx_id = node_label_str if switch_id_and_label else node_id_str
-            nx_label = node_id_str if switch_id_and_label else node_label_str
-            return nx_id, nx_label
+    def _add_labels_to_nodes(
+        self, nx_graph: nx.DiGraph, reverse_labels: bool
+    ) -> nx.DiGraph:
+        """Add labels to the nodes in the networkx graph.
 
-        def get_child_nodes(
-            parent_node: rdflib.URIRef, g: rdflib.Graph
-        ) -> list:
-            """Get the child nodes of a node in the ontology.
-            Accounts for the case of multiple parents defined in intersectionOf.
+        Args:
+            nx_graph (nx.DiGraph): The networkx graph
+            reverse_labels (bool): If True, id and label are switched
 
-            Args:
-                parent_node (rdflib.URIRef): The parent node to get the children of
-                g (rdflib.Graph): The graph to get the children from
+        Returns:
+            nx.DiGraph: The networkx graph with labels
+        """
+        for node in list(nx_graph.nodes):
+            nx_id, nx_label = self._get_nx_id_and_label(node, reverse_labels)
+            if nx_id == "none":
+                # remove node if it has no id
+                nx_graph.remove_node(node)
+                continue
 
-            Returns:
-                list: A list of the child nodes
-            """
-            child_nodes = []
-            for s, p, o in g.triples((None, rdflib.RDFS.subClassOf, None)):
-                if (o, rdflib.RDF.type, rdflib.OWL.Class) in g and (
-                    o,
-                    rdflib.OWL.intersectionOf,
-                    None,
-                ) in g:
-                    # Check if node has multiple parent nodes defined in intersectionOf (one of them = parent_node)
-                    parent_nodes = get_nodes_in_intersectionof(o)
-                    if parent_node in parent_nodes:
-                        child_nodes.append(s)
-                        for node in parent_nodes:
-                            add_parents(node)
-                elif o == parent_node:
-                    # only one parent node
-                    child_nodes.append(s)
-            return child_nodes
+            nx_graph.nodes[node]["label"] = nx_label
+        return nx_graph
 
-        def get_nodes_in_intersectionof(o: rdflib.URIRef) -> list:
-            """Get the nodes in an intersectionOf node.
+    def _rename_nodes(
+        self, nx_graph: nx.DiGraph, reverse_labels: bool
+    ) -> nx.DiGraph:
+        """Rename the nodes in the networkx graph (remove prefix and switch id and label).
 
-            Args:
-                o (rdflib.URIRef): The intersectionOf node
+        Args:
+            nx_graph (nx.DiGraph): The networkx graph
+            reverse_labels (bool): If True, id and label are switched
 
-            Returns:
-                list: A list of the nodes in the intersectionOf node
-            """
-            anonymous_intersection_nodes = []
-            for _, _, anonymous_object in g.triples(
-                (o, rdflib.OWL.intersectionOf, None)
-            ):
-                anonymous_intersection_nodes.append(anonymous_object)
-            anonymous_intersection_node = anonymous_intersection_nodes[0]
-            nodes_in_intersection = retrieve_rdf_linked_list(
-                anonymous_intersection_node
-            )
-            return nodes_in_intersection
+        Returns:
+            nx.DiGraph: The renamed networkx graph
+        """
+        mapping = {
+            node: self._get_nx_id_and_label(node, reverse_labels)[0]
+            for node in nx_graph.nodes
+        }
+        renamed = nx.relabel_nodes(nx_graph, mapping, copy=False)
+        return renamed
 
-        def retrieve_rdf_linked_list(subject: rdflib.URIRef) -> list:
-            """Recursively retrieves a linked list from RDF.
-            Example RDF list with the items [item1, item2]:
-            list_node - first -> item1
-            list_node - rest -> list_node2
-            list_node2 - first -> item2
-            list_node2 - rest -> nil
+    def _get_all_ancestors(
+        self, renamed: nx.DiGraph, root_label: str, reverse_labels: bool
+    ) -> nx.DiGraph:
+        """Get all ancestors of the root node in the networkx graph.
 
-            Args:
-                subject (rdflib.URIRef): One list_node of the RDF list
+        Args:
+            renamed (nx.DiGraph): The renamed networkx graph
+            root_label (str): The label of the root node in the ontology
 
-            Returns:
-                list: The items of the RDF list
-            """
-            rdf_list = []
-            for s, p, o in g.triples((subject, rdflib.RDF.first, None)):
-                rdf_list.append(o)
-            for s, p, o in g.triples((subject, rdflib.RDF.rest, None)):
-                if o != rdflib.RDF.nil:
-                    rdf_list.extend(retrieve_rdf_linked_list(o))
-            return rdf_list
+        Returns:
+            nx.DiGraph: The filtered networkx graph
+        """
+        root = self._get_nx_id_and_label(
+            self._find_root_label(self._rdf_graph, root_label), reverse_labels
+        )[0]
+        ancestors = nx.ancestors(renamed, root)
+        ancestors.add(root)
+        filtered_graph = renamed.subgraph(ancestors)
+        return filtered_graph
 
-        # Add all subclasses of the root node to the graph
-        add_subclasses(root)
+    def _get_nx_id_and_label(
+        self, node, switch_id_and_label: bool
+    ) -> tuple[str, str]:
+        """Rename node id and label for nx graph.
 
-        return G
+        Args:
+            node (str): The node to rename
+            switch_id_and_label (bool): If True, switch id and label
+
+        Returns:
+            tuple[str, str]: The renamed node id and label
+        """
+        node_id_str = self._remove_prefix(str(node))
+        node_label_str = str(
+            self._rdf_graph.value(node, rdflib.RDFS.label)
+        ).replace("_", " ")
+        node_label_str = to_lower_sentence_case(node_label_str)
+        nx_id = node_label_str if switch_id_and_label else node_id_str
+        nx_label = node_id_str if switch_id_and_label else node_label_str
+        return nx_id, nx_label
 
     def _find_root_label(self, g, root_label):
         # Loop through all labels in the ontology
@@ -421,7 +474,7 @@ class Ontology:
             self._extend_ontology()
 
             # experimental: add connections of disjoint classes to entity
-            self._connect_biolink_classes()
+            # self._connect_biolink_classes()
 
             self._add_properties()
 
@@ -534,7 +587,7 @@ class Ontology:
                     raise ValueError(
                         f"Node {key} not found in ontology, but also has no "
                         "inheritance definition. Please check your schema for "
-                        "spelling errors or a missing `is_a` definition."
+                        "spelling errors, first letter not in lower case, use of underscores, a missing `is_a` definition (SubClassOf a root node), or missing labels in class or super-classes."
                     )
 
                 continue

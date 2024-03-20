@@ -102,7 +102,7 @@ class Translator:
                             "Strict mode is enabled, so this is not allowed."
                         )
 
-            # find the node in leaves that represents biolink node type
+            # find the node in leaves that represents ontology node type
             _ontology_class = self._get_ontology_mapping(_type)
 
             if _ontology_class:
@@ -324,7 +324,7 @@ class Translator:
         schema_config.
         """
 
-        logger.debug(f"No Biolink type defined for `{_type}`: {what}")
+        logger.debug(f"No ontology type defined for `{_type}`: {what}")
 
         if self.notype.get(_type, None):
             self.notype[_type] += 1

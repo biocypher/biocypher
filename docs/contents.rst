@@ -12,6 +12,7 @@
    tutorial
    tutorial-ontology
    tutorial-adapter
-   neo4j
+   standalone-docker-image
+   output/index
    r-bioc
    api
