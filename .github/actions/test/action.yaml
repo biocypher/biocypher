@@ -27,9 +27,8 @@ runs:
     #----------------------------------------------
     - name: Run Tests (Windows)
       run: |
-        source .venv/scripts/activate
-        pytest --version
-        pytest --password=your_password_here
+        poetry run pytest --version
+        poetry run pytest --password=your_password_here
       shell: bash
       if: runner.os == 'Windows'
     - name: Run tests (Linux and MacOS)
@@ -40,4 +39,3 @@ runs:
       if: runner.os != 'Windows'
     - name: Check code quality
       uses: pre-commit/action@v3.0.0
-#source .venv/bin/activate
