@@ -108,6 +108,10 @@ running database (``<db_name>`` being the name assigned in the method):
 2. ``create database <db_name>``
 3. ``:use <db_name>``
 
+Note: starting from major version 5.0, Neo4j ``import`` command needs the
+``database`` scope. Biocypher will take care of changing the import command to
+``neo4j-admin database import`` if that’s the case.
+
 After writing knowledge graph files with BioCypher in offline mode for the Neo4j
 DBMS (database management system), the graph can now be imported into Neo4j
 using the `neo4j-admin` command line tool. This is not necessary if the graph is
