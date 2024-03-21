@@ -1,4 +1,5 @@
 import os
+import logging
 
 import pytest
 import networkx as nx
@@ -217,3 +218,38 @@ def test_simple_ontology(simple_ontology):
         "entity",
         "Thing",
     ]
+
+
+def test_duplicated_tail_ontologies(caplog, extended_ontology_mapping):
+    ontology = Ontology(
+        head_ontology={
+            "url": "https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl",
+            "root_node": "entity",
+        },
+        ontology_mapping=extended_ontology_mapping,
+        tail_ontologies={
+            "so": {
+                "url": "test/so.owl",
+                "head_join_node": "sequence variant",
+                "tail_join_node": "sequence_variant",
+            },
+            "so_2": {
+                "url": "test/so.owl",
+                "head_join_node": "device",
+                "tail_join_node": "sequence_variant",
+            },
+            "mondo": {
+                "url": "test/mondo.owl",
+                "head_join_node": "disease",
+                "tail_join_node": "human disease",
+            },
+        },
+    )
+    assert ontology
+    with caplog.at_level(logging.INFO):
+        tree = ontology.show_ontology_structure()
+    assert tree
+    assert any(
+        "The ontology contains multiple inheritance" in record.message
+        for record in caplog.records
+    )

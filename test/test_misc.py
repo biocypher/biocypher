@@ -1,7 +1,6 @@
 import logging
 
 import pytest
-import treelib
 import networkx as nx
 
 from biocypher._misc import create_tree_visualisation
