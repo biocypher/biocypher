@@ -137,7 +137,7 @@ class _Neo4jDriver:
 
         logger.info("Creating constraints for node types in config.")
 
-        neo4j_version = int(self._driver.get_neo4j_version().split(".")[0])
+        neo4j_version = self._driver.get_neo4j_major_version()
         # get structure
         for leaf in self.translator.ontology.mapping.extended_schema.items():
             label = _misc.sentencecase_to_pascalcase(leaf[0], sep=r"\s\.")
