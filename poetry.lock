@@ -1732,7 +1732,7 @@ toml = "*"
 type = "git"
 url = "https://github.com/nilskre/neo4j-utils.git"
 reference = "HEAD"
-resolved_reference = "4103ba77165a805d5db048bc964370ac41641609"
+resolved_reference = "5279f03f9590f6854135e874990d27d3c2762032"
 
 [[package]]
 name = "nest-asyncio"
