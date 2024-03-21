@@ -37,12 +37,16 @@ class _Neo4jBatchWriter(_BatchWriter):
         # Should read the configuration and setup import_call_bin_prefix.
         super().__init__(*args, **kwargs)
 
-        neo4j_version = _n4jversion.Neo4jVersion()
-
-        if not neo4j_version.version:
+        try:
+            neo4j_version = _n4jversion.Neo4jVersion()
+            neo4j_version = neo4j_version.version
+        except:
+            logger.info(
+                "Not able to determine Neo4j version. Use default (version 4)."
+            )
             neo4j_version = 4
 
-        if neo4j_version.version >= 5:
+        if neo4j_version >= 5:
             self.import_cmd = "database import full"
             self.database_cmd = ""
             self.wipe_cmd = "--overwrite-destination="
