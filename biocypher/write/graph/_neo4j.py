@@ -39,6 +39,9 @@ class _Neo4jBatchWriter(_BatchWriter):
 
         neo4j_version = _n4jversion.Neo4jVersion()
 
+        if not neo4j_version.version:
+            neo4j_version = 4
+
         if neo4j_version.version >= 5:
             self.import_cmd = "database import full"
             self.database_cmd = ""

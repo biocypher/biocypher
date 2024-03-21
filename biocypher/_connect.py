@@ -17,18 +17,14 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
-from typing import Optional
 from collections.abc import Iterable
 import itertools
-import traceback
 
-from neo4j_utils._n4jversion import Neo4jVersion
 import neo4j_utils
 
 from . import _misc
 from ._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode
-from ._ontology import Ontology
 from ._translate import Translator
 
 __all__ = ["_Neo4jDriver"]
@@ -141,12 +137,12 @@ class _Neo4jDriver:
 
         logger.info("Creating constraints for node types in config.")
 
-        neo4j_version = Neo4jVersion()
+        neo4j_version = int(self._driver.get_neo4j_version().split(".")[0])
         # get structure
         for leaf in self.translator.ontology.mapping.extended_schema.items():
             label = _misc.sentencecase_to_pascalcase(leaf[0], sep=r"\s\.")
             if leaf[1]["represented_as"] == "node":
-                if neo4j_version.version >= 5:
+                if neo4j_version >= 5:
                     s = (
                         f"CREATE CONSTRAINT `{label}_id` "
                         f"IF NOT EXISTS FOR (n:`{label}`) "
