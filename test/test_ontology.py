@@ -274,7 +274,7 @@ def test_head_join_node_not_found():
     assert "The head ontology contains the following" in error_message
     assert "Label_Level1A" in error_message
     assert "Label_Root" in error_message
-    assert "Label_Level1A" in error_message
+    assert "Label_Level1B" in error_message
 
 
 def test_simple_ontology(simple_ontology):
