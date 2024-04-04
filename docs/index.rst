@@ -6,6 +6,19 @@
 Democratising Knowledge Graphs
 ##############################
 
+.. Admonition:: Hot Topics
+   :class: attention
+
+   BioCypher is the simplest way to create an AI-enabled knowledge graph for
+   biomedical (or other) tasks. See `below
+   <https://biocypher.org/#connect-your-knowledge-graph-to-large-language-models>`_
+   and the `BioChatter website <https://biochatter.org>`_ for more information.
+
+   We have also recently published a perspective on connecting knowledge and
+   machine learning to enable causal reasoning in biomedicine, with a particular
+   focus on the currently emerging "foundation models." You can read it `here
+   <https://arxiv.org/abs/2401.09558>`_.
+
 Building a knowledge graph for biomedical tasks usually takes months or years.
 What if you could do it in weeks or days? We created BioCypher to make the
 process of creating a biomedical knowledge graph easier than ever, but still
@@ -17,7 +30,9 @@ biomedical community.
 
 If you're new to knowledge graphs and want to familiarise with the concepts that
 drive BioCypher, we recommend to check out the graphical abstract below and read
-our paper!
+`our paper <https://www.nature.com/articles/s41587-023-01848-y>`_ (self-archived
+version `here <https://zenodo.org/records/10320714>`_, online version `here
+<https://biocypher.github.io/biocypher-paper/>`_)!
 
 .. grid:: 2
    :gutter: 2
@@ -29,7 +44,7 @@ our paper!
       :octicon:`mark-github;3em` :octicon:`repo;3em`
 
    .. grid-item-card:: Read the paper
-      :link: https://arxiv.org/abs/2212.13543
+      :link: https://zenodo.org/records/10320714
       :text-align: center
 
       :octicon:`book;3em` :octicon:`light-bulb;3em`
@@ -61,7 +76,7 @@ our paper!
    on `GitHub <https://github.com/biocypher/biocypher>`_ or via email at
    sebastian.lobentanzer (at) uni-heidelberg.de.
 
-.. figure:: ../graphical_abstract.png
+.. figure:: graphical_abstract.png
    :width: 95%
    :align: center
    :alt: BioCypher graphical abstract
@@ -90,3 +105,29 @@ developments in the field of biomedical knowledge representation. However, to
 make this framework truly accessible and comprehensive, we need the input of the
 biomedical community. We are therefore inviting you to join us in this
 endeavour!
+
+.. _connect_llm:
+
+=====================================================
+Connect your Knowledge Graph to Large Language Models
+=====================================================
+
+To facilitate the use of knowledge graphs in downstream tasks, we have developed
+a framework to connect knowledge graphs to large language models. This framework
+is called `BioChatter <https://biochatter.org>`_ and is used in our `web apps
+<https://chat.biocypher.org/>`_. See the links for more information.
+
+.. grid:: 2
+   :gutter: 2
+
+   .. grid-item-card:: BioChatter Light web app
+      :link: https://chat.biocypher.org/
+      :text-align: center
+
+      :octicon:`comment-discussion;3em` :octicon:`dependabot;3em`
+
+   .. grid-item-card:: BioChatter repository
+      :link: https://github.com/biocypher/biochatter
+      :text-align: center
+
+      :octicon:`mark-github;3em` :octicon:`repo;3em`

@@ -1,0 +1,49 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+owl:Class a rdfs:Class ;
+     rdfs:label "Class" ;
+     rdfs:comment "The class of OWL classes." ;
+     rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
+     rdfs:subClassOf rdfs:Class .
+
+owl:Root a owl:Class ;
+     rdfs:label "Root" ;
+     rdfs:comment "The Root class." ;
+     rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> .
+
+owl:Level1A a owl:Class ;
+     rdfs:label "Level1A" ;
+     rdfs:subClassOf owl:Root ;
+     rdfs:comment "Level1A." .
+
+owl:Level1B a owl:Class ;
+     rdfs:label "Level1B" ;
+     rdfs:subClassOf owl:Root ;
+     rdfs:comment "Level1B." .
+
+owl:Level2A a owl:Class ;
+     rdfs:label "Level2A" ;
+     rdfs:subClassOf owl:Level1A ;
+     rdfs:comment "Level2A." .
+
+owl:Level2B a owl:Class ;
+     rdfs:label "Level2B" ;
+     rdfs:subClassOf owl:Level1A ;
+     rdfs:comment "Level2B." .
+
+owl:Level2C a owl:Class ;
+     rdfs:label "Level2C" ;
+     rdfs:subClassOf owl:Level1B ;
+     rdfs:comment "Level2C." .
+
+owl:Child a owl:Class ;
+     rdfs:label "Child" ;
+     rdfs:subClassOf [ owl:intersectionOf ( owl:Level2A
+                                             owl:Level2B
+                                             owl:Level2C
+                                        );
+                                        rdf:type owl:Class
+                                        ] ;
+     rdfs:comment "Child." .

@@ -12,7 +12,7 @@ def test_node(node):
     assert isinstance(node.get_properties(), dict)
     assert isinstance(node.get_dict(), dict)
 
-    assert 'id' in node.get_properties().keys()
+    assert "id" in node.get_properties().keys()
 
 
 @given(st.builds(BioCypherEdge))
@@ -34,4 +34,4 @@ def test_rel_as_node(rel_as_node):
 
 def test_rel_as_node_invalid_node():
     with pytest.raises(TypeError):
-        BioCypherRelAsNode('str', 1, 2.5122)
+        BioCypherRelAsNode("str", 1, 2.5122)

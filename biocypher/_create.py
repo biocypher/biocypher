@@ -13,16 +13,16 @@ dataclasses.
 """
 from ._logger import logger
 
-logger.debug(f'Loading module {__name__}.')
+logger.debug(f"Loading module {__name__}.")
 
 from typing import Union
 from dataclasses import field, dataclass
 import os
 
 __all__ = [
-    'BioCypherEdge',
-    'BioCypherNode',
-    'BioCypherRelAsNode',
+    "BioCypherEdge",
+    "BioCypherNode",
+    "BioCypherRelAsNode",
 ]
 
 
@@ -53,7 +53,7 @@ class BioCypherNode:
 
     node_id: str
     node_label: str
-    preferred_id: str = 'id'
+    preferred_id: str = "id"
     properties: dict = field(default_factory=dict)
 
     def __post_init__(self):
@@ -64,47 +64,50 @@ class BioCypherNode:
 
         Replace unwanted characters in properties.
         """
-        self.properties['id'] = self.node_id
-        self.properties['preferred_id'] = self.preferred_id or None
+        self.properties["id"] = self.node_id
+        self.properties["preferred_id"] = self.preferred_id or None
         # TODO actually make None possible here; as is, "id" is the default in
         # the dataclass as well as in the configuration file
 
-        if ':TYPE' in self.properties.keys():
+        if ":TYPE" in self.properties.keys():
             logger.warning(
                 "Keyword ':TYPE' is reserved for Neo4j. "
-                'Removing from properties.',
+                "Removing from properties.",
                 # "Renaming to 'type'."
             )
             # self.properties["type"] = self.properties[":TYPE"]
-            del self.properties[':TYPE']
+            del self.properties[":TYPE"]
 
         for k, v in self.properties.items():
             if isinstance(v, str):
                 self.properties[k] = (
                     v.replace(
                         os.linesep,
-                        ' ',
-                    ).replace(
-                        '\n',
-                        ' ',
-                    ).replace(
-                        '\r',
-                        ' ',
+                        " ",
+                    )
+                    .replace(
+                        "\n",
+                        " ",
+                    )
+                    .replace(
+                        "\r",
+                        " ",
                     )
                 )
 
             elif isinstance(v, list):
-                self.properties[k] = (
-                    [
-                        val.replace(
-                            os.linesep,
-                            ' ',
-                        ).replace(
-                            '\n',
-                            ' ',
-                        ).replace('\r', ' ') for val in v
-                    ]
-                )
+                self.properties[k] = [
+                    val.replace(
+                        os.linesep,
+                        " ",
+                    )
+                    .replace(
+                        "\n",
+                        " ",
+                    )
+                    .replace("\r", " ")
+                    for val in v
+                ]
 
     def get_id(self) -> str:
         """
@@ -123,7 +126,7 @@ class BioCypherNode:
             str: node_label
         """
         return self.node_label
-    
+
     def get_type(self) -> str:
         """
         Returns primary node label.
@@ -161,9 +164,9 @@ class BioCypherNode:
             properties as second-level dict.
         """
         return {
-            'node_id': self.node_id,
-            'node_label': self.node_label,
-            'properties': self.properties,
+            "node_id": self.node_id,
+            "node_label": self.node_label,
+            "properties": self.properties,
         }
 
 
@@ -204,30 +207,30 @@ class BioCypherEdge:
         Check for reserved keywords.
         """
 
-        if ':TYPE' in self.properties.keys():
+        if ":TYPE" in self.properties.keys():
             logger.debug(
                 "Keyword ':TYPE' is reserved for Neo4j. "
-                'Removing from properties.',
+                "Removing from properties.",
                 # "Renaming to 'type'."
             )
             # self.properties["type"] = self.properties[":TYPE"]
-            del self.properties[':TYPE']
-        elif 'id' in self.properties.keys():
+            del self.properties[":TYPE"]
+        elif "id" in self.properties.keys():
             logger.debug(
                 "Keyword 'id' is reserved for Neo4j. "
-                'Removing from properties.',
+                "Removing from properties.",
                 # "Renaming to 'type'."
             )
             # self.properties["type"] = self.properties[":TYPE"]
-            del self.properties['id']
-        elif '_ID' in self.properties.keys():
+            del self.properties["id"]
+        elif "_ID" in self.properties.keys():
             logger.debug(
                 "Keyword '_ID' is reserved for Postgres. "
-                'Removing from properties.',
+                "Removing from properties.",
                 # "Renaming to 'type'."
             )
             # self.properties["type"] = self.properties[":TYPE"]
-            del self.properties['_ID']
+            del self.properties["_ID"]
 
     def get_id(self) -> Union[str, None]:
         """
@@ -295,11 +298,11 @@ class BioCypherEdge:
                 dict.
         """
         return {
-            'relationship_id': self.relationship_id or None,
-            'source_id': self.source_id,
-            'target_id': self.target_id,
-            'relationship_label': self.relationship_label,
-            'properties': self.properties,
+            "relationship_id": self.relationship_id or None,
+            "source_id": self.source_id,
+            "target_id": self.target_id,
+            "relationship_label": self.relationship_label,
+            "properties": self.properties,
         }
 
 
@@ -331,20 +334,20 @@ class BioCypherRelAsNode:
     def __post_init__(self):
         if not isinstance(self.node, BioCypherNode):
             raise TypeError(
-                f'BioCypherRelAsNode.node must be a BioCypherNode, '
-                f'not {type(self.node)}.',
+                f"BioCypherRelAsNode.node must be a BioCypherNode, "
+                f"not {type(self.node)}.",
             )
 
         if not isinstance(self.source_edge, BioCypherEdge):
             raise TypeError(
-                f'BioCypherRelAsNode.source_edge must be a BioCypherEdge, '
-                f'not {type(self.source_edge)}.',
+                f"BioCypherRelAsNode.source_edge must be a BioCypherEdge, "
+                f"not {type(self.source_edge)}.",
             )
 
         if not isinstance(self.target_edge, BioCypherEdge):
             raise TypeError(
-                f'BioCypherRelAsNode.target_edge must be a BioCypherEdge, '
-                f'not {type(self.target_edge)}.',
+                f"BioCypherRelAsNode.target_edge must be a BioCypherEdge, "
+                f"not {type(self.target_edge)}.",
             )
 
     def get_node(self) -> BioCypherNode:

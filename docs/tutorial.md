@@ -1,4 +1,4 @@
-(tutorial)=
+(tutorial_basic)=
 # Tutorial - Basics
 The main purpose of BioCypher is to facilitate the pre-processing of biomedical
 data to save development time in the maintenance of curated knowledge graphs
@@ -66,8 +66,9 @@ other options. For this tutorial, we will use a dedicated configuration file for
 each of the steps. The configuration files are located in the `tutorial`
 directory, and are called using the `biocypher_config_path` argument at
 instantiation of the BioCypher interface. For more information, see also the
-[Quickstart Configuration](quick_config) section.
+[Quickstart Configuration](qs_config) section.
 
+(tut_01)=
 ## Section 1: Adding data
 ```{admonition} Tutorial files
 :class: note
@@ -85,11 +86,9 @@ components: an input stream of data (which we call adapter) and a configuration
 for the resulting desired output (the schema configuration). The former will be
 simulated by calling the `Protein` class of our data generator 10 times.
 
-```{code-block} python
-
-from data_generator import Protein
+```{testcode} python
+from tutorial.data_generator import Protein
 proteins = [Protein() for _ in range(10)]
-
 ```
 
 Each protein in our simulated data has a UniProt ID, a label
@@ -105,14 +104,14 @@ simulated input data and, for each entity, forms the corresponding tuple. The
 use of a generator allows for efficient streaming of larger datasets where
 required.
 
-```{code-block} python
+```{testcode} python
 def node_generator():
-    for protein in proteins:
-        yield (
-          protein.get_id(),
-          protein.get_label(),
-          protein.get_properties()
-        )
+      for protein in proteins:
+          yield (
+            protein.get_id(),
+            protein.get_label(),
+            protein.get_properties()
+          )
 ```
 
 The concept of an adapter can become arbitrarily complex and involve
@@ -164,20 +163,19 @@ protein:                            # mapping
   input_label: uniprot_protein      # connection to input stream
 ```
 
-The first line (`protein`) identifies our entity and connects to the
-ontological backbone; here we define the first class to be represented in the
-graph. In the configuration YAML, we represent entities — similar to the
-internal representation of Biolink — in lower sentence case (e.g., "small
-molecule"). Conversely, for class names, in file names, and property graph
-labels, we use PascalCase instead (e.g., "SmallMolecule") to avoid issues with
-handling spaces. The transformation is done by BioCypher internally. BioCypher
-does not strictly enforce the entities allowed in this class definition; in
-fact, we provide [several methods of extending the existing ontological
-backbone *ad hoc* by providing custom inheritance or hybridising
-ontologies](biolink). However, every entity should at some point be connected
-to the underlying ontology, otherwise the multiple hierarchical labels will not
-be populated. Following this first line are three indented values of the
-protein class.
+The first line (`protein`) identifies our entity and connects to the ontological
+backbone; here we define the first class to be represented in the graph. In the
+configuration YAML, we represent entities — similar to the internal
+representation of Biolink — in lower sentence case (e.g., "small molecule").
+Conversely, for class names, in file names, and property graph labels, we use
+PascalCase instead (e.g., "SmallMolecule") to avoid issues with handling spaces.
+The transformation is done by BioCypher internally. BioCypher does not strictly
+enforce the entities allowed in this class definition; in fact, we provide
+[several methods of extending the existing ontological backbone *ad hoc* by
+providing custom inheritance or hybridising ontologies](tut_hybridising).
+However, every entity should at some point be connected to the underlying
+ontology, otherwise the multiple hierarchical labels will not be populated.
+Following this first line are three indented values of the protein class.
 
 The second line (`represented_as`) tells BioCypher in which way each entity
 should be represented in the graph; the only options are `node` and `edge`.
@@ -220,12 +218,17 @@ not require setting up a graph database instance. The following code will use
 the data stream and configuration set up above to write the files for knowledge
 graph creation:
 
-```{code-block} python
+```{testsetup} python
+import os
+os.chdir('../')
+```
+
+```{testcode} python
 from biocypher import BioCypher
 bc = BioCypher(
-    biocypher_config_path='tutorial/01_biocypher_config.yaml',
-    schema_config_path="tutorial/01_schema_config.yaml",
-)
+  biocypher_config_path='tutorial/01_biocypher_config.yaml',
+  schema_config_path='tutorial/01_schema_config.yaml',
+  )
 bc.write_nodes(node_generator())
 ```
 
@@ -263,8 +266,8 @@ input data (for the level of granularity that was used for the import). We can
 also print the ontological hierarchy derived from the underlying model(s)
 according to the classes that were given in the schema configuration:
 
-```{code-block} python
-bc.log_missing_bl_types()     # show input unaccounted for in the schema
+```{testcode} python
+bc.log_missing_input_labels() # show input unaccounted for in the schema
 bc.log_duplicates()           # show duplicates in the input data
 bc.show_ontology_structure()  # show ontological hierarchy
 ```
@@ -553,7 +556,8 @@ hash of the concatenation of these values. Edge IDs are active by default, but
 can be deactivated by setting the `use_id` field to `false` in the
 `schema_config.yaml` file.
 
-```{yaml} schema_config.yaml
+```{code-block} yaml
+:caption: schema_config.yaml
 protein protein interaction:
   is_a: pairwise molecular interaction
   represented_as: edge

@@ -1,8 +1,9 @@
 from ._logger import logger
 
-logger.debug(f'Loading module {__name__}.')
+logger.debug(f"Loading module {__name__}.")
 
-from ._create import BioCypherEdge, BioCypherNode
+from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+
 
 class Deduplicator:
     """
@@ -18,15 +19,17 @@ class Deduplicator:
     """
 
     def __init__(self):
-        self.seen_node_ids = set()  
-        self.duplicate_node_ids = set()  
-        self.duplicate_node_types = set()  
+        self.seen_entity_ids = set()
+        self.duplicate_entity_ids = set()
 
-        self.seen_edges = {}  
-        self.duplicate_edge_ids = set()  
-        self.duplicate_edge_types = set()  
+        self.entity_types = set()
+        self.duplicate_entity_types = set()
 
-    def node_seen(self, node: BioCypherNode) -> bool:
+        self.seen_relationships = {}
+        self.duplicate_relationship_ids = set()
+        self.duplicate_relationship_types = set()
+
+    def node_seen(self, entity: BioCypherNode) -> bool:
         """
         Adds a node to the instance and checks if it has been seen before.
 
@@ -36,17 +39,22 @@ class Deduplicator:
         Returns:
             True if the node has been seen before, False otherwise.
         """
-        if node.get_id() in self.seen_node_ids:
-            self.duplicate_node_ids.add(node.get_id())
-            if node.get_label() not in self.duplicate_node_types:
-                logger.warning(f"Duplicate node type {node.get_label()} found. ")
-                self.duplicate_node_types.add(node.get_label())
+        if entity.get_label() not in self.entity_types:
+            self.entity_types.add(entity.get_label())
+
+        if entity.get_id() in self.seen_entity_ids:
+            self.duplicate_entity_ids.add(entity.get_id())
+            if entity.get_label() not in self.duplicate_entity_types:
+                logger.warning(
+                    f"Duplicate node type {entity.get_label()} found. "
+                )
+                self.duplicate_entity_types.add(entity.get_label())
             return True
-        
-        self.seen_node_ids.add(node.get_id())
+
+        self.seen_entity_ids.add(entity.get_id())
         return False
-    
-    def edge_seen(self, edge: BioCypherEdge) -> bool:
+
+    def edge_seen(self, relationship: BioCypherEdge) -> bool:
         """
         Adds an edge to the instance and checks if it has been seen before.
 
@@ -56,25 +64,59 @@ class Deduplicator:
         Returns:
             True if the edge has been seen before, False otherwise.
         """
-        if edge.get_type() not in self.seen_edges:
-            self.seen_edges[edge.get_type()] = set()
+        if relationship.get_type() not in self.seen_relationships:
+            self.seen_relationships[relationship.get_type()] = set()
 
         # concatenate source and target if no id is present
-        if not edge.get_id():
-            _id = f"{edge.get_source_id()}_{edge.get_target_id()}"
+        if not relationship.get_id():
+            _id = (
+                f"{relationship.get_source_id()}_{relationship.get_target_id()}"
+            )
         else:
-            _id = edge.get_id()
+            _id = relationship.get_id()
 
-        if _id in self.seen_edges[edge.get_type()]:
-            self.duplicate_edge_ids.add(_id)
-            if edge.get_type() not in self.duplicate_edge_types:
-                logger.warning(f"Duplicate edge type {edge.get_type()} found. ")
-                self.duplicate_edge_types.add(edge.get_type())
+        if _id in self.seen_relationships[relationship.get_type()]:
+            self.duplicate_relationship_ids.add(_id)
+            if relationship.get_type() not in self.duplicate_relationship_types:
+                logger.warning(
+                    f"Duplicate edge type {relationship.get_type()} found. "
+                )
+                self.duplicate_relationship_types.add(relationship.get_type())
             return True
-        
-        self.seen_edges[edge.get_type()].add(_id)
+
+        self.seen_relationships[relationship.get_type()].add(_id)
         return False
-    
+
+    def rel_as_node_seen(self, rel_as_node: BioCypherRelAsNode) -> bool:
+        """
+        Adds a rel_as_node to the instance (one entity and two relationships)
+        and checks if it has been seen before. Only the node is relevant for
+        identifying the rel_as_node as a duplicate.
+
+        Args:
+            rel_as_node: BioCypherRelAsNode to be added.
+
+        Returns:
+            True if the rel_as_node has been seen before, False otherwise.
+        """
+        node = rel_as_node.get_node()
+
+        if node.get_label() not in self.seen_relationships:
+            self.seen_relationships[node.get_label()] = set()
+
+        # rel as node always has an id
+        _id = node.get_id()
+
+        if _id in self.seen_relationships[node.get_type()]:
+            self.duplicate_relationship_ids.add(_id)
+            if node.get_type() not in self.duplicate_relationship_types:
+                logger.warning(f"Duplicate edge type {node.get_type()} found. ")
+                self.duplicate_relationship_types.add(node.get_type())
+            return True
+
+        self.seen_relationships[node.get_type()].add(_id)
+        return False
+
     def get_duplicate_nodes(self):
         """
         Function to return a list of duplicate nodes.
@@ -83,8 +125,8 @@ class Deduplicator:
             list: list of duplicate nodes
         """
 
-        if self.duplicate_node_types:
-            return (self.duplicate_node_types, self.duplicate_node_ids)
+        if self.duplicate_entity_types:
+            return (self.duplicate_entity_types, self.duplicate_entity_ids)
         else:
             return None
 
@@ -96,7 +138,10 @@ class Deduplicator:
             list: list of duplicate edges
         """
 
-        if self.duplicate_edge_types:
-            return (self.duplicate_edge_types, self.duplicate_edge_ids)
+        if self.duplicate_relationship_types:
+            return (
+                self.duplicate_relationship_types,
+                self.duplicate_relationship_ids,
+            )
         else:
             return None

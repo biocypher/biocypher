@@ -1,3 +1,4 @@
+(tutorial_ontologies)=
 # Tutorial - Handling Ontologies
 
 ![Adapters and ontologies](figure_modularity.png)
@@ -33,7 +34,12 @@ PascalCase ("Protein", "PairwiseMolecularInteraction"). BioCypher uses the same
 paradigm: in most cases (input, schema configuration, internally), the lower
 sentence case is used, while in the output (Neo4j labels, file system names) the
 PascalCase is more suitable; Neo4j labels and system file names don't deal well
-with spaces and special characters. We also remove the "biolink:"
+with spaces and special characters. Therefore, we check the output file names
+for their compliance with the [Neo4j naming
+rules](https://neo4j.com/docs/cypher-manual/current/syntax/naming/). All non
+compliant characters are removed from the file name (e.g. if the ontology class
+is called "desk (piece of furniture)", the brackets would be removed and the
+file name will be "DeskPieceOfFurniture"). We also remove the "biolink:"
 [CURIE](https://en.wikipedia.org/wiki/CURIE) prefix for use in file names and
 Neo4j labels.
 
@@ -60,11 +66,13 @@ same project. For instance, one might want to extend the rather basic classes
 relating to molecular interactions in Biolink (the most specific being `pairwise
 molecular interaction`) with more specific classes from a more domain-specific
 ontology, such as the EBI molecular interactions ontology
-([PSI-MI](https://www.ebi.ac.uk/ols/ontologies/mi)).  A different project may
+([PSI-MI](https://www.ebi.ac.uk/ols/ontologies/mi)). A different project may
 need to define very specific genetics concepts, and thus extend the Biolink
 model at the terminal node ``sequence variant`` with the corresponding subtree
 of the [Sequence Ontology](http://www.sequenceontology.org/). The [OBO
-Foundry](https://obofoundry.org) collects many such specialised ontologies.
+Foundry](https://obofoundry.org) and the
+[BioPortal](https://bioportal.bioontology.org/) collect many such specialised
+ontologies.
 
 The default format for ingesting ontology definitions into BioCypher is the Web
 Ontology Language (OWL); BioCypher can read ``.owl``, ``.rdf``, and ``.ttl``
@@ -76,15 +84,42 @@ nodes as fusion points for all "tail" ontologies. For more info, see the
 [section on hybridising ontologies](tut_hybridising).
 
 ## Visualising ontologies
+
 BioCypher provides a simple way of visualising the ontology hierarchy. This is
 useful for debugging and for getting a quick overview of the ontology and which
-parts are actually used in the knowledge graph to be created. To get an overview
+parts are actually used in the knowledge graph to be created. Depending on your
+use case you can either visualise the [parts of the ontology](vis_parts) used in
+the knowledge graph (sufficient for most use cases) or the [full
+ontology](vis_full). If the used ontology is more complex and contains multiple
+inheritance please refer to the section on [visualising complex
+ontologies](vis_complex).
+
+(vis_parts)=
+### Visualise only the parts of the ontology used in the knowledge graph
+
+To get an overview
 of the structure of our project, we can run the following command via the
 interface:
 
+```{testcode} python
+:hide:
+from biocypher import BioCypher
+bc = BioCypher()
+
+def check_if_function_exists(module_name, function_name):
+    if hasattr(module_name, function_name):
+        print("Functions exists")
+    else:
+        print("Function does not exist")
+check_if_function_exists(bc, "show_ontology_structure")
+```
+```{testoutput} python
+:hide:
+Functions exists
+```
+
 ```{code-block} python
 :caption: Visualising the ontology hierarchy
-
 from biocypher import BioCypher
 bc = BioCypher(
     offline=True,  # no need to connect or to load data
@@ -124,6 +159,53 @@ build a complete tree. For instance, the `protein` class is linked to the root
 class `entity` via `polypeptide`, `biological entity`, and `named thing`, all
 of which are not part of the input data.
 ```
+
+(vis_full)=
+### Visualise the full ontology
+
+If you want to see the complete ontology tree, you can call
+`show_ontology_structure` with the parameter `full=True`.
+
+```{code-block} python
+:caption: Visualising the full ontology hierarchy
+from biocypher import BioCypher
+bc = BioCypher(
+    offline=True,  # no need to connect or to load data
+    schema_config_path="tutorial/06_schema_config.yaml",
+)
+bc.show_ontology_structure(full=True)
+
+```
+
+(vis_complex)=
+### Visualise complex ontologies
+
+Not all ontologies can be easily visualised as a tree, such as ontologies with
+multiple inheritance, where classes in the ontology can have multiple parent
+classes. This violates the definition of a tree, where each node can only have
+one parent node. Consequently, ontologies with multiple inheritance cannot be
+visualised as a tree.
+
+BioCypher can still handle these ontologies, and you can call
+`show_ontology_structure()` to get a visualisation of the ontology. However,
+each ontology class will only be added to the hierarchy tree once (a class with
+multiple parent classes is only placed under one parent in the hierarchy tree).
+Since this will occur the first time the class is seen, the ontology class might
+not be placed where you would expect it. This only applies to the visualisation;
+the underlying ontology is still correct and contains all ontology classes and
+their relationships.
+
+```{note}
+
+When calling `show_ontology_structure()`, BioCypher automatically checks if the
+ontology contains multiple inheritance and logs a warning message if so.
+
+```
+
+If you need to get a visualisation of the ontology with multiple inheritance,
+you can call `show_ontology_structure()` with the parameter
+`to_disk=/some/path/where_to_store_the_file`. This creates a `GraphML` file and
+stores it at the specified location.
 
 ## Using ontologies: plain Biolink
 BioCypher maps any input data to the underlying ontology; in the basic case, the
@@ -310,10 +392,10 @@ In some cases, an ontology may contain a biological concept, but the name of the
 concept does for some reason not agree with the users desired knowledge graph
 structure. For instance, the user may not want to represent protein complexes in
 the graph as `macromolecular complex` nodes due to ease of use and/or
-readability criteria and rather call these nodes `complex`.  In such cases, the
+readability criteria and rather call these nodes `complex`. In such cases, the
 user can introduce a synonym for the ontology class. This is done by selecting
 another, more desirable name for the respective class(es) and specifying the
-`synonym_for` field in their schema configuration.  In this case, as we would
+`synonym_for` field in their schema configuration. In this case, as we would
 like to represent protein complexes as `complex` nodes, we can do so as follows:
 
 ```{code-block} yaml
@@ -462,13 +544,13 @@ bc = BioCypher(
     tail_ontologies={
         'so':
             {
-                'url': 'test/so.owl',
+                'url': 'test/ontologies/so.owl',
                 'head_join_node': 'sequence variant',
                 'tail_join_node': 'sequence_variant',
             },
         'mondo':
             {
-                'url': 'test/mondo.owl',
+                'url': 'test/ontologies/mondo.owl',
                 'head_join_node': 'disease',
                 'tail_join_node': 'human disease',
                 'merge_nodes': False,

@@ -1,0 +1,64 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+    # TODO: ensure semver style - "[0-9]+.[0-9]+.[0-9]+(-[a-z]+)?(.[0-9]+)?"
+
+jobs:
+  call-tests_and_code_quality:
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    uses: "./.github/workflows/tests_and_code_quality.yaml"
+
+  build_and_deploy_artifact:
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    needs: call-tests_and_code_quality
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: 3.9
+    environment:
+      name: release
+      url: https://upload.pypi.org/legacy/
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+    #----------------------------------------------
+    # check-out repo and set-up python and poetry
+    #----------------------------------------------
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Setup Python and Poetry
+      uses: ./.github/actions/setup
+    #----------------------------------------------
+    #            install dependencies
+    #----------------------------------------------
+    - name: Install dependencies
+      uses: ./.github/actions/install
+    #----------------------------------------------
+    #             build artifact
+    #----------------------------------------------
+    - name: Build artifact
+      run: poetry build
+    #----------------------------------------------
+    #             upload to PyPi
+    #----------------------------------------------
+    - name: Publish artifact to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://upload.pypi.org/legacy/
+    #----------------------------------------------
+    #           create Github release
+    #----------------------------------------------
+    - name: Create Github release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.ref_name }}
+      run: |
+        gh release create "$tag" \
+            --repo="$GITHUB_REPOSITORY" \
+            --title="$tag" \
+            --generate-notes

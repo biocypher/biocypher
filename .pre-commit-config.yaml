@@ -8,42 +8,21 @@ default_stages:
 -   push
 minimum_pre_commit_version: 2.7.1
 repos:
--   repo: https://github.com/google/yapf
-    rev: v0.32.0
+-   repo: https://github.com/ambv/black
+    rev: 23.7.0
     hooks:
-    -   id: yapf
-        language: python
-        additional_dependencies: [toml]
-        # stages: [manual]
--   repo: https://github.com/Instagram/Fixit
-    rev: 9d59f968e84bd2773f34b0069eeeaad3ce783254
-    hooks:
-    -   id: fixit-run-rules
-        stages: [manual]
+    -   id: black
 -   repo: https://github.com/timothycrosley/isort
-    rev: 5.10.1
+    rev: 5.12.0
     hooks:
     -   id: isort
         additional_dependencies: [toml]
-# -   repo: https://github.com/hakancelikdev/pyall
-#     rev: 0.2.0
-#     hooks:
-#     -   id: pyall
-#         args: [--refactor]
 -   repo: https://github.com/snok/pep585-upgrade
-    rev: v1.0.1
+    rev: v1.0
     hooks:
     -   id: upgrade-type-hints
-# -   repo: https://github.com/asottile/add-trailing-comma
-#     rev: v2.2.3
-#     hooks:
-#     -   id: add-trailing-comma
--   repo: https://github.com/myint/unify
-    rev: v0.5
-    hooks:
-    -   id: unify
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
+    rev: v4.4.0
     hooks:
     -   id: check-docstring-first
     -   id: end-of-file-fixer
@@ -60,22 +39,8 @@ repos:
     -   id: fix-encoding-pragma
         args: [--remove] # for Python3 codebase, it's not necessary
     -   id: requirements-txt-fixer
-# -   repo: https://github.com/john-hen/Flake8-pyproject
-#     rev: 1.1.0
-#     hooks:
-#     -   id: Flake8-pyproject
-#         additional_dependencies: [flake8-docstrings, flake8-comprehensions, flake8-bugbear]
-# -   repo: https://github.com/myint/rstcheck
-#     rev: v6.0.0rc3
-#     hooks:
-#     -   id: rstcheck
-# -   repo: https://github.com/asottile/pyupgrade
-#     rev: v2.23.1
-#     hooks:
-#     -   id: pyupgrade
-#         args: [--py3-plus, --py36-plus]
 -   repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.9.0
+    rev: v1.10.0
     hooks:
     -   id: python-no-eval
     -   id: python-use-type-annotations

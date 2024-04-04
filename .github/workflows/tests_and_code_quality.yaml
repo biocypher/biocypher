@@ -1,0 +1,38 @@
+name: Tests and code quality
+
+on:
+  push:
+    branches:
+      - "*"
+  workflow_call:
+
+jobs:
+  tests_and_code_quality:
+    runs-on: ubuntu-latest
+
+    steps:
+    #----------------------------------------------
+    #  checkout repo and set-up python and poetry
+    #----------------------------------------------
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Setup Python and Poetry
+      uses: ./.github/actions/setup
+    #----------------------------------------------
+    #            install dependencies
+    #----------------------------------------------
+    - name: Install dependencies
+      uses: ./.github/actions/install
+    #----------------------------------------------
+    #      run tests and code quality checks
+    #----------------------------------------------
+    - name: Run tests
+      uses: ./.github/actions/test
+    #----------------------------------------------
+    #        generate test coverage badge
+    #----------------------------------------------
+    - name: Generate test coverage badge
+      uses: ./.github/actions/test_coverage
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+      if: github.ref == 'refs/heads/main'
