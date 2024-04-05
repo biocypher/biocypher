@@ -137,7 +137,7 @@ class _Neo4jDriver:
 
         logger.info("Creating constraints for node types in config.")
 
-        major_neo4j_version = int(self._driver.neo4j_version.split(".")[0])
+        major_neo4j_version = int(self._get_neo4j_version().split(".")[0])
         # get structure
         for leaf in self.translator.ontology.mapping.extended_schema.items():
             label = _misc.sentencecase_to_pascalcase(leaf[0], sep=r"\s\.")
@@ -156,6 +156,24 @@ class _Neo4jDriver:
                         "ASSERT n.id IS UNIQUE"
                     )
                     self._driver.query(s)
+
+    def _get_neo4j_version(self):
+        """Get neo4j version."""
+        try:
+            neo4j_version = self._driver.query(
+                """
+                    CALL dbms.components()
+                    YIELD name, versions, edition
+                    UNWIND versions AS version
+                    RETURN version AS version
+                """,
+            )[0][0]["version"]
+            return neo4j_version
+        except Exception as e:
+            logger.warning(
+                f"Error detecting Neo4j version: {e} use default version 4.0.0."
+            )
+            return "4.0.0"
 
     def add_nodes(self, id_type_tuples: Iterable[tuple]) -> tuple:
         """

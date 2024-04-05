@@ -7,7 +7,6 @@ import re
 import glob
 
 from more_itertools import peekable
-import neo4j_utils._n4jversion as _n4jversion
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._logger import logger

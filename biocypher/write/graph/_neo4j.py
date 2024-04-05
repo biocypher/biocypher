@@ -1,6 +1,6 @@
 import os
-
-import neo4j_utils._n4jversion as _n4jversion
+import re
+import subprocess
 
 from biocypher._logger import logger
 from biocypher.write._batch_writer import parse_label, _BatchWriter
@@ -37,10 +37,24 @@ class _Neo4jBatchWriter(_BatchWriter):
         # Should read the configuration and setup import_call_bin_prefix.
         super().__init__(*args, **kwargs)
 
+        # TODO: refactor this
+        neo4j_version = None
         try:
-            neo4j_version = _n4jversion.Neo4jVersion()
-            neo4j_version = neo4j_version.version
-        except:
+            cmd = ["neo4j-admin", "--version"]
+            output = subprocess.check_output(cmd).decode().strip()
+            version_match = re.search(r"(\d+\.\d+\.\d+)", output)
+            if version_match:
+                neo4j_version = int(version_match.group(1).split(".")[0])
+            else:
+                logger.warning(
+                    f"Unable to parse Neo4j version from command "
+                    f"output: {output}",
+                )
+        except subprocess.CalledProcessError as e:
+            logger.warning(f"Error running neo4j-admin: {e}")
+        except (ValueError, IndexError) as e:
+            logger.warning(f"Error detecting Neo4j version: {e}")
+        if neo4j_version is None:
             logger.info(
                 "Not able to determine Neo4j version. Use default (version 4)."
             )
