@@ -37,38 +37,6 @@ class _Neo4jBatchWriter(_BatchWriter):
         # Should read the configuration and setup import_call_bin_prefix.
         super().__init__(*args, **kwargs)
 
-        # TODO: refactor this
-        neo4j_version = None
-        try:
-            cmd = ["neo4j-admin", "--version"]
-            output = subprocess.check_output(cmd).decode().strip()
-            version_match = re.search(r"(\d+\.\d+\.\d+)", output)
-            if version_match:
-                neo4j_version = int(version_match.group(1).split(".")[0])
-            else:
-                logger.warning(
-                    f"Unable to parse Neo4j version from command "
-                    f"output: {output}",
-                )
-        except subprocess.CalledProcessError as e:
-            logger.warning(f"Error running neo4j-admin: {e}")
-        except (ValueError, IndexError) as e:
-            logger.warning(f"Error detecting Neo4j version: {e}")
-        if neo4j_version is None:
-            logger.info(
-                "Not able to determine Neo4j version. Use default (version 4)."
-            )
-            neo4j_version = 4
-
-        if neo4j_version >= 5:
-            self.import_cmd = "database import full"
-            self.database_cmd = ""
-            self.wipe_cmd = "--overwrite-destination="
-        else:
-            self.import_cmd = "import"
-            self.database_cmd = "--database="
-            self.wipe_cmd = "--force="
-
     def _get_default_import_call_bin_prefix(self):
         """
         Method to provide the default string for the import call bin prefix.
@@ -311,8 +279,30 @@ class _Neo4jBatchWriter(_BatchWriter):
         Returns:
             str: a bash command for neo4j-admin import
         """
+        import_call_neo4j_v4 = self._get_import_call(
+            "import", "--database=", "--force="
+        )
+        import_call_neo4j_v5 = self._get_import_call(
+            "database import full", "", "--overwrite-destination="
+        )
+        import_script = f"# Neo4j v4 import call:\n{import_call_neo4j_v4}\n# Neo4j v5 import call:\n{import_call_neo4j_v5}\n"
+        return import_script
+
+    def _get_import_call(
+        self, import_cmd: str, database_cmd: str, wipe_cmd: str
+    ) -> str:
+        """Get parametrized import call for Neo4j 4 or 5+.
+
+        Args:
+            import_cmd (str): The import command to use.
+            database_cmd (str): The database command to use.
+            wipe_cmd (str): The wipe command to use.
+
+        Returns:
+            str: The import call.
+        """
         import_call = (
-            f"{self.import_call_bin_prefix}neo4j-admin {self.import_cmd} "
+            f"{self.import_call_bin_prefix}neo4j-admin {import_cmd} "
             f'--delimiter="{self.escaped_delim}" '
             f'--array-delimiter="{self.escaped_adelim}" '
         )
@@ -323,7 +313,7 @@ class _Neo4jBatchWriter(_BatchWriter):
             import_call += f"--quote='{self.quote}' "
 
         if self.wipe:
-            import_call += f"{self.wipe_cmd}true "
+            import_call += f"{wipe_cmd}true "
         if self.skip_bad_relationships:
             import_call += "--skip-bad-relationships=true "
         if self.skip_duplicate_nodes:
@@ -338,5 +328,5 @@ class _Neo4jBatchWriter(_BatchWriter):
             import_call += f'--relationships="{header_path},{parts_path}" '
 
         # Database needs to be at the end starting with Neo4j 5.0+.
-        import_call += f"{self.database_cmd}{self.db_name} "
+        import_call += f"{database_cmd}{self.db_name} "
         return import_call
