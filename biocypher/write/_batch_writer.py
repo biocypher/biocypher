@@ -117,6 +117,7 @@ class _BatchWriter(ABC):
         db_password: str = None,
         db_host: str = None,
         db_port: str = None,
+        rdf_format: str = None
     ):
         """
 
@@ -202,6 +203,7 @@ class _BatchWriter(ABC):
         self.db_password = db_password
         self.db_host = db_host or "localhost"
         self.db_port = db_port
+        self.rdf_format = rdf_format
 
         self.delim, self.escaped_delim = self._process_delimiter(delimiter)
         self.adelim, self.escaped_adelim = self._process_delimiter(
