@@ -7,6 +7,7 @@ import re
 import glob
 
 from more_itertools import peekable
+from rdflib import Graph
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._logger import logger
@@ -204,6 +205,7 @@ class _BatchWriter(ABC):
         self.db_host = db_host or "localhost"
         self.db_port = db_port
         self.rdf_format = rdf_format
+        self.rdf_graph = Graph()
 
         self.delim, self.escaped_delim = self._process_delimiter(delimiter)
         self.adelim, self.escaped_adelim = self._process_delimiter(

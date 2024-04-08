@@ -17,7 +17,7 @@ from types import GeneratorType
 from typing import Union, Optional
 
 from collections import OrderedDict, defaultdict
-from rdflib import Graph, Literal, RDFS
+from rdflib import Literal, RDFS, URIRef, Namespace, RDF
 import os
 
 from more_itertools import peekable
@@ -130,15 +130,22 @@ class _RDFwriter(_BatchWriter):
 
         # write data in graph
 
-        g = Graph()
+        # g = Graph()
 
+        # TODO: prefix should be specified in the config
+        prefix = "http://example.org/"
+        biocypher_prefix = "biocypher"
+        biocypher_namespace = Namespace(f"http://example.org/{biocypher_prefix}#")
+        self.rdf_graph.bind(biocypher_prefix, biocypher_namespace)
         for e in edge_list:
             rdf_subject = e.get_source_id()
             rdf_object = e.get_target_id()
             rdf_predicate = e.get_id()
-            g.add((Literal(rdf_subject), Literal(rdf_predicate), Literal(rdf_object)))
+
+            edge_label = self.translator.name_sentence_to_pascal(e.get_label())
+            self.rdf_graph.add((URIRef(prefix + rdf_subject), URIRef(biocypher_namespace[edge_label]), URIRef(prefix + rdf_object)))
         
-        g.serialize(destination=fileName, format=self.rdf_format)
+        # g.serialize(destination=fileName, format=self.rdf_format)
         
         # write to file
         logger.info(
@@ -204,18 +211,27 @@ class _RDFwriter(_BatchWriter):
         label_pascal = self.translator.name_sentence_to_pascal(label)
 
         # create file name
-        fileName = os.path.join(self._outdir, f'{label_pascal}.{self.rdf_format}')
+        # fileName = os.path.join(self._outdir, f'{label_pascal}.{self.rdf_format}')
 
         # write data in graph
 
-        g = Graph()
-
+        # g = Graph()
+        biocypher_prefix = "biocypher"
+        biocypher_namespace = Namespace(f"http://example.org/{biocypher_prefix}#")
+        self.rdf_graph.bind(biocypher_prefix, biocypher_namespace)
+        prefix = "http://example.org/"
         for n in node_list:
             rdf_subject = n.get_id()
             rdf_object = n.get_label()
-            g.add((Literal(rdf_subject), RDFS.label, Literal(rdf_object)))
+            properties = n.get_properties()
+            class_name = self.translator.name_sentence_to_pascal(rdf_object)
+            self.rdf_graph.add((biocypher_namespace[class_name], RDF.type, RDFS.Class))
+            self.rdf_graph.add((URIRef(prefix + rdf_subject), RDFS.Class, biocypher_namespace[class_name]))
+            for key, value in properties.items():
+                self.rdf_graph.add((URIRef(prefix + rdf_subject), URIRef(biocypher_namespace[key]), Literal(value)))
+                
         
-        g.serialize(destination=fileName, format=self.rdf_format)
+        # g.serialize(destination=fileName, format=self.rdf_format)
         
         # write to file
         logger.info(
@@ -542,7 +558,7 @@ class _RDFwriter(_BatchWriter):
                         yield from edges
 
                     return self._write_edge_data(gen(nodes_or_edges), batch_size=batch_size)
-                
+        
         return True
         
     def write_nodes(self, nodes, batch_size: int = int(1e6)):
@@ -602,6 +618,7 @@ class _RDFwriter(_BatchWriter):
         Returns:
             bool: The return value. True for success, False otherwise.
         """
+        self.rdf_graph.serialize(destination=os.path.join(self._outdir, f'rdf_output.{self.rdf_format}'), format=self.rdf_format)
 
         return ""
 
