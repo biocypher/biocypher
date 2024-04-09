@@ -17,7 +17,7 @@ from types import GeneratorType
 from typing import Union, Optional
 
 from collections import OrderedDict, defaultdict
-from rdflib import Literal, RDFS, URIRef, Namespace, RDF
+from rdflib import Literal, RDFS, URIRef, Namespace, RDF, Graph
 import os
 
 from more_itertools import peekable
@@ -132,18 +132,13 @@ class _RDFwriter(_BatchWriter):
 
         # g = Graph()
 
-        # TODO: prefix should be specified in the config
-        prefix = "http://example.org/"
-        biocypher_prefix = "biocypher"
-        biocypher_namespace = Namespace(f"http://example.org/{biocypher_prefix}#")
-        self.rdf_graph.bind(biocypher_prefix, biocypher_namespace)
         for e in edge_list:
             rdf_subject = e.get_source_id()
             rdf_object = e.get_target_id()
             rdf_predicate = e.get_id()
 
             edge_label = self.translator.name_sentence_to_pascal(e.get_label())
-            self.rdf_graph.add((URIRef(prefix + rdf_subject), URIRef(biocypher_namespace[edge_label]), URIRef(prefix + rdf_object)))
+            self.rdf_graph.add((self.label_to_uri(rdf_subject), self.namespaces["biocypher"][edge_label], self.label_to_uri((rdf_object))))
         
         # g.serialize(destination=fileName, format=self.rdf_format)
         
@@ -215,20 +210,19 @@ class _RDFwriter(_BatchWriter):
 
         # write data in graph
 
+        # print(self.translator.ontology.mapping.schema)
+        # quit()
         # g = Graph()
-        biocypher_prefix = "biocypher"
-        biocypher_namespace = Namespace(f"http://example.org/{biocypher_prefix}#")
-        self.rdf_graph.bind(biocypher_prefix, biocypher_namespace)
-        prefix = "http://example.org/"
+
         for n in node_list:
             rdf_subject = n.get_id()
             rdf_object = n.get_label()
             properties = n.get_properties()
             class_name = self.translator.name_sentence_to_pascal(rdf_object)
-            self.rdf_graph.add((biocypher_namespace[class_name], RDF.type, RDFS.Class))
-            self.rdf_graph.add((URIRef(prefix + rdf_subject), RDFS.Class, biocypher_namespace[class_name]))
+            self.rdf_graph.add((self.namespaces["biocypher"][class_name], RDF.type, RDFS.Class))
+            self.rdf_graph.add((self.label_to_uri(rdf_subject), RDFS.Class, self.namespaces["biocypher"][class_name]))
             for key, value in properties.items():
-                self.rdf_graph.add((URIRef(prefix + rdf_subject), URIRef(biocypher_namespace[key]), Literal(value)))
+                self.rdf_graph.add((self.label_to_uri(rdf_subject), self.namespaces["biocypher"][key], Literal(value)))
                 
         
         # g.serialize(destination=fileName, format=self.rdf_format)
@@ -264,6 +258,8 @@ class _RDFwriter(_BatchWriter):
         self.seen_edges = {}
         self.duplicate_edge_ids = set()
         self.duplicate_edge_types = set()
+        self._init_namespaces()
+
         if is_node:
             #### _write_node_data() function
             if isinstance(nodes_or_edges, GeneratorType) or isinstance(nodes_or_edges, peekable):
@@ -666,4 +662,31 @@ class _RDFwriter(_BatchWriter):
             bool: The return value. True for success, False otherwise.
         """
         return True
+    
+    def label_to_uri(self, input):
+        """
+        Try to convert the input to a proper uri. 
+        otherwise default to biocypher prefix
+        """
+        _pref, _id = input.split(":")
+
+        if _pref in self.namespaces.keys():
+            return self.namespaces[_pref][_id]
+        else:
+            return self.namespaces["biocypher"][input]
         
+
+        # TODO: this should flow out of the config file!
+        # hardcoded it for now
+    def _init_namespaces(self):
+        self.namespaces = {}
+        self.namespaces["biocypher"] = Namespace("http://example.org/biocypher#")
+        self.namespaces["chembl"] = Namespace("https://www.ebi.ac.uk/chembl/compound_report_card/")
+        self.namespaces["go"] = Namespace("http://purl.obolibrary.org/obo/GO_")
+        self.namespaces["mondo"] = Namespace("http://purl.obolibrary.org/obo/MONDO_")
+        self.namespaces["efo"] = Namespace("http://purl.obolibrary.org/obo/EFO_")
+        self.namespaces["hp"] = Namespace("http://purl.obolibrary.org/obo/HP_")
+
+        for key, value in self.namespaces.items():
+            self.rdf_graph.bind(key, Namespace(value)) 
+    
