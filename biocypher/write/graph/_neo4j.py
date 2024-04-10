@@ -285,7 +285,11 @@ class _Neo4jBatchWriter(_BatchWriter):
         import_call_neo4j_v5 = self._get_import_call(
             "database import full", "", "--overwrite-destination="
         )
-        import_script = f"# Neo4j v4 import call:\n{import_call_neo4j_v4}\n# Neo4j v5 import call:\n{import_call_neo4j_v5}\n"
+        neo4j_verison_check = (
+            f"version=$(neo4j-admin --version | cut -d '.' -f 1)"
+        )
+        output_command = '"${cmd[@]}"'
+        import_script = f"#!/bin/bash\n# Check Neo4j version\n{neo4j_verison_check}\nif [ $version -ge 5 ]; then\n\t # Neo4j v5 import call:\n\t{import_call_neo4j_v5}\nelse\n\t# Neo4j v4 import call:\n{import_call_neo4j_v4}\nfi\n{output_command}"
         return import_script
 
     def _get_import_call(
