@@ -287,7 +287,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         )
         neo4j_version_check = f"version=$({self._get_default_import_call_bin_prefix()}neo4j-admin --version | cut -d '.' -f 1)"
 
-        import_script = f"#!/bin/bash\n{neo4j_version_check}\nif [ $version -ge 5 ]; then\n\t{import_call_neo4j_v5}\nelse\n\t{import_call_neo4j_v4}\nfi"
+        import_script = f"#!/bin/bash\n{neo4j_version_check}\nif [[ $version -ge 5 ]]; then\n\t{import_call_neo4j_v5}\nelse\n\t{import_call_neo4j_v4}\nfi"
         return import_script
 
     def _get_import_call(
