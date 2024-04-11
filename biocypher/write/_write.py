@@ -18,7 +18,7 @@ from biocypher.write.graph._neo4j import _Neo4jBatchWriter
 from biocypher.write.graph._arangodb import _ArangoDBBatchWriter
 from biocypher.write.relational._sqlite import _SQLiteBatchWriter
 from biocypher.write.relational._postgresql import _PostgreSQLBatchWriter
-from biocypher.write.relational._rdf import _RDFwriter
+from biocypher.write.graph._rdf import _RDFwriter
 
 logger.debug(f"Loading module {__name__}.")
 

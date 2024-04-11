@@ -124,13 +124,23 @@ class _RDFwriter(_BatchWriter):
         
         # translate label to PascalCase
         label_pascal = self.translator.name_sentence_to_pascal(label)
-
+       
+        # RDF graph does not support 'ttl' format, but only "turtle" format. while the preferred extension is always .ttl
+        if self.rdf_format == "turtle":
+            extension = "ttl"
+        elif self.rdf_format == "ttl":
+            self.rdf_format = "turtle"
+            extension = "ttl"
+        else:
+            extension = self.rdf_format
+            
         # create file name
-        fileName = os.path.join(self._outdir, f'{label_pascal}.{self.rdf_format}')
+        fileName = os.path.join(self._outdir, f'{label_pascal}.{extension}')
 
         # write data in graph
 
-        # g = Graph()
+        g = Graph()
+        self._init_namespaces(g)
 
         for e in edge_list:
             rdf_subject = e.get_source_id()
@@ -138,9 +148,9 @@ class _RDFwriter(_BatchWriter):
             rdf_predicate = e.get_id()
 
             edge_label = self.translator.name_sentence_to_pascal(e.get_label())
-            self.rdf_graph.add((self.label_to_uri(rdf_subject), self.namespaces["biocypher"][edge_label], self.label_to_uri((rdf_object))))
+            g.add((self.label_to_uri(rdf_subject), self.namespaces["biocypher"][edge_label], self.label_to_uri((rdf_object))))
         
-        # g.serialize(destination=fileName, format=self.rdf_format)
+        g.serialize(destination=fileName, format=self.rdf_format)
         
         # write to file
         logger.info(
@@ -205,27 +215,36 @@ class _RDFwriter(_BatchWriter):
         # translate label to PascalCase
         label_pascal = self.translator.name_sentence_to_pascal(label)
 
+        
+
+        # RDF graph does not support 'ttl' format, but only "turtle" format. while the preferred extension is always .ttl
+        if self.rdf_format == "turtle":
+            extension = "ttl"
+        elif self.rdf_format == "ttl":
+            self.rdf_format = "turtle"
+            extension = "ttl"
+        else:
+            extension = self.rdf_format
+
         # create file name
-        # fileName = os.path.join(self._outdir, f'{label_pascal}.{self.rdf_format}')
+        fileName = os.path.join(self._outdir, f'{label_pascal}.{extension}')
 
         # write data in graph
-
-        # print(self.translator.ontology.mapping.schema)
-        # quit()
-        # g = Graph()
+        g = Graph()
+        self._init_namespaces(g)
 
         for n in node_list:
             rdf_subject = n.get_id()
             rdf_object = n.get_label()
             properties = n.get_properties()
             class_name = self.translator.name_sentence_to_pascal(rdf_object)
-            self.rdf_graph.add((self.namespaces["biocypher"][class_name], RDF.type, RDFS.Class))
-            self.rdf_graph.add((self.label_to_uri(rdf_subject), RDFS.Class, self.namespaces["biocypher"][class_name]))
+            g.add((self.namespaces["biocypher"][class_name], RDF.type, RDFS.Class))
+            g.add((self.label_to_uri(rdf_subject), RDFS.Class, self.namespaces["biocypher"][class_name]))
             for key, value in properties.items():
-                self.rdf_graph.add((self.label_to_uri(rdf_subject), self.namespaces["biocypher"][key], Literal(value)))
+                g.add((self.label_to_uri(rdf_subject), self.namespaces["biocypher"][key], Literal(value)))
                 
         
-        # g.serialize(destination=fileName, format=self.rdf_format)
+        g.serialize(destination=fileName, format=self.rdf_format)
         
         # write to file
         logger.info(
@@ -258,7 +277,6 @@ class _RDFwriter(_BatchWriter):
         self.seen_edges = {}
         self.duplicate_edge_ids = set()
         self.duplicate_edge_types = set()
-        self._init_namespaces()
 
         if is_node:
             #### _write_node_data() function
@@ -614,8 +632,6 @@ class _RDFwriter(_BatchWriter):
         Returns:
             bool: The return value. True for success, False otherwise.
         """
-        self.rdf_graph.serialize(destination=os.path.join(self._outdir, f'rdf_output.{self.rdf_format}'), format=self.rdf_format)
-
         return ""
 
     def _write_array_string(self, string_list):
@@ -678,7 +694,7 @@ class _RDFwriter(_BatchWriter):
 
         # TODO: this should flow out of the config file!
         # hardcoded it for now
-    def _init_namespaces(self):
+    def _init_namespaces(self, graph):
         self.namespaces = {}
         self.namespaces["biocypher"] = Namespace("http://example.org/biocypher#")
         self.namespaces["chembl"] = Namespace("https://www.ebi.ac.uk/chembl/compound_report_card/")
@@ -688,5 +704,5 @@ class _RDFwriter(_BatchWriter):
         self.namespaces["hp"] = Namespace("http://purl.obolibrary.org/obo/HP_")
 
         for key, value in self.namespaces.items():
-            self.rdf_graph.bind(key, Namespace(value)) 
+            graph.bind(key, Namespace(value)) 
     

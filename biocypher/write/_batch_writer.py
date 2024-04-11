@@ -205,7 +205,6 @@ class _BatchWriter(ABC):
         self.db_host = db_host or "localhost"
         self.db_port = db_port
         self.rdf_format = rdf_format
-        self.rdf_graph = Graph()
 
         self.delim, self.escaped_delim = self._process_delimiter(delimiter)
         self.adelim, self.escaped_adelim = self._process_delimiter(
