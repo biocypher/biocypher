@@ -198,6 +198,9 @@ class _BatchWriter(ABC):
 
             db_port:
                 The database port.
+            
+            rdf_format:
+                The format of RDF.
         """
         self.db_name = db_name
         self.db_user = db_user
