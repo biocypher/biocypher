@@ -140,7 +140,7 @@ files on disk, so no data need to be copied around.
 ```{note}
 The generated import call differs between Neo4j version 4 and 5.
 Starting from major version 5, Neo4j ``import`` command needs the
-``database`` scope. BioCpher takes care of this.
+``database`` scope. BioCypher takes care of this.
 The generated import script ``neo4j-admin-import-call.sh``
 first checks the Neo4j database version and uses the correct
 import statement for the detected version. Therefore make sure to run
