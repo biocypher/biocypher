@@ -15,7 +15,7 @@ suitable for import into a DBMS.
 
 from types import GeneratorType
 from typing import Union, Optional
-
+from ast import literal_eval
 from collections import OrderedDict, defaultdict
 from rdflib import Literal, RDFS, URIRef, Namespace, RDF, Graph
 import os
@@ -137,7 +137,6 @@ class _RDFwriter(_BatchWriter):
         fileName = os.path.join(self._outdir, f'{label_pascal}.{self.extension}')
 
         # write data in graph
-
         g = Graph()
         self._init_namespaces(g)
 
@@ -145,10 +144,34 @@ class _RDFwriter(_BatchWriter):
             rdf_subject = e.get_source_id()
             rdf_object = e.get_target_id()
             rdf_predicate = e.get_id()
+            rdf_properties = e.get_properties()
+            if rdf_predicate == None:
+                rdf_predicate = rdf_subject + rdf_object
 
             edge_label = self.translator.name_sentence_to_pascal(e.get_label())
-            g.add((self.label_to_uri(rdf_subject), self.namespaces["biocypher"][edge_label], self.label_to_uri((rdf_object))))
-        
+            edge_uri = self.namespaces["biocypher"][edge_label]
+            g.add((edge_uri, RDF.type, RDFS.Class))
+            g.add((self.namespaces["biocypher"][rdf_predicate], RDFS.Class, edge_uri))
+            g.add((self.namespaces["biocypher"][rdf_predicate],  self.namespaces["biocypher"]["subject"], self.label_to_uri(rdf_subject)))
+            g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"]["object"], self.label_to_uri(rdf_object)))
+            
+            for key, value in rdf_properties.items():
+                    # only write value if it exists.
+                    if value:
+                        if type(value) == list:
+                            for v in value:
+                                g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(v)))
+                        elif type(value) == str:
+                            if value.startswith("[") and value.endswith("]"):  
+                                value = value.replace("[", "").replace("]", "").replace("'", "").split(", ")
+                                try:
+                                    for v in value:
+                                        g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(v)))
+                                except (SyntaxError, ValueError, TypeError):
+                                    g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(value)))
+                        else:
+                            g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(value)))
+                    
         g.serialize(destination=fileName, format=self.rdf_format)
         
         # write to file
