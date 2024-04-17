@@ -118,7 +118,8 @@ class _BatchWriter(ABC):
         db_password: str = None,
         db_host: str = None,
         db_port: str = None,
-        rdf_format: str = None
+        rdf_format: str = None,
+        rdf_namespaces: dict = {}
     ):
         """
 
@@ -201,6 +202,9 @@ class _BatchWriter(ABC):
             
             rdf_format:
                 The format of RDF.
+            
+            rdf_namespaces:
+                The namespaces for RDF.
         """
         self.db_name = db_name
         self.db_user = db_user
@@ -208,6 +212,7 @@ class _BatchWriter(ABC):
         self.db_host = db_host or "localhost"
         self.db_port = db_port
         self.rdf_format = rdf_format
+        self.rdf_namespaces = rdf_namespaces
 
         self.delim, self.escaped_delim = self._process_delimiter(delimiter)
         self.adelim, self.escaped_adelim = self._process_delimiter(

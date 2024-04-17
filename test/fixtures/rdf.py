@@ -14,6 +14,7 @@ def bw_rdf(translator, deduplicator, tmp_path_session):
         delimiter=",",
     )
     bw_rdf.rdf_format = "xml"
+    bw_rdf.namespaces = {}
     yield bw_rdf
 
     # teardown

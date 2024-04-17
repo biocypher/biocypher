@@ -65,7 +65,6 @@ def test_rdf_write_data(bw_rdf, length, _get_nodes, _get_edges):
 
     g = Graph()
     for file in rdf_files:
-        print(file)
         with open(file) as f:
             g_temp = Graph().parse(data=f.read(), format="xml")
             g += g_temp

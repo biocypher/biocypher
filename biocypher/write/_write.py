@@ -105,5 +105,6 @@ def get_writer(
             db_user=dbms_config.get("user"),  # psql
             db_password=dbms_config.get("password"),  # psql
             db_port=dbms_config.get("port"),  # psql
-            rdf_format= dbms_config.get("rdf_format")
+            rdf_format= dbms_config.get("rdf_format"), # rdf
+            rdf_namespaces= dbms_config.get("rdf_namespaces")# rdf
         )

@@ -17,7 +17,8 @@ from types import GeneratorType
 from typing import Union, Optional
 from ast import literal_eval
 from collections import OrderedDict, defaultdict
-from rdflib import Literal, RDFS, URIRef, Namespace, RDF, Graph
+from rdflib import Literal, Namespace, Graph, RDF, RDFS, SKOS, DC, DCTERMS
+from rdflib.namespace import _NAMESPACE_PREFIXES_CORE, _NAMESPACE_PREFIXES_RDFLIB
 import os
 
 from more_itertools import peekable
@@ -149,31 +150,30 @@ class _RDFwriter(_BatchWriter):
                 rdf_predicate = rdf_subject + rdf_object
 
             edge_label = self.translator.name_sentence_to_pascal(e.get_label())
-            edge_uri = self.namespaces["biocypher"][edge_label]
+            edge_uri = self.rdf_namespaces["biocypher"][edge_label]
             g.add((edge_uri, RDF.type, RDFS.Class))
-            g.add((self.namespaces["biocypher"][rdf_predicate], RDFS.Class, edge_uri))
-            g.add((self.namespaces["biocypher"][rdf_predicate],  self.namespaces["biocypher"]["subject"], self.label_to_uri(rdf_subject)))
-            g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"]["object"], self.label_to_uri(rdf_object)))
+            g.add((self.rdf_namespaces["biocypher"][rdf_predicate], RDF.type, edge_uri))
+            g.add((self.rdf_namespaces["biocypher"][rdf_predicate],  self.rdf_namespaces["biocypher"]["subject"], self.label_to_uri(rdf_subject)))
+            g.add((self.rdf_namespaces["biocypher"][rdf_predicate], self.rdf_namespaces["biocypher"]["object"], self.label_to_uri(rdf_object)))
             
             for key, value in rdf_properties.items():
                     # only write value if it exists.
                     if value:
                         if type(value) == list:
                             for v in value:
-                                g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(v)))
+                                g.add((self.rdf_namespaces["biocypher"][rdf_predicate], self.property_to_uri(key), Literal(v)))
                         elif type(value) == str:
                             if value.startswith("[") and value.endswith("]"):  
                                 value = value.replace("[", "").replace("]", "").replace("'", "").split(", ")
                                 try:
                                     for v in value:
-                                        g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(v)))
+                                        g.add((self.rdf_namespaces["biocypher"][rdf_predicate], self.property_to_uri(key), Literal(v)))
                                 except (SyntaxError, ValueError, TypeError):
-                                    g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(value)))
+                                    g.add((self.rdf_namespaces["biocypher"][rdf_predicate], self.property_to_uri(key), Literal(value)))
                             else:
-                                g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(value)))
-
+                                g.add((self.rdf_namespaces["biocypher"][rdf_predicate], self.property_to_uri(key), Literal(value)))
                         else:
-                            g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(value)))
+                            g.add((self.rdf_namespaces["biocypher"][rdf_predicate], self.property_to_uri(key), Literal(value)))
                     
         g.serialize(destination=fileName, format=self.rdf_format)
         
@@ -210,33 +210,6 @@ class _RDFwriter(_BatchWriter):
             logger.error('Nodes must be passed as type BioCypherNode.')
             return False
 
-        for n in node_list:
-            
-            # do not check for deviations in properties.
-            # This is not applicable for rdf.
-            if False:
-                # check for deviations in properties
-                # node properties
-                n_props = n.get_properties()
-                n_keys = list(n_props.keys())
-                # reference properties
-                ref_props = list(prop_dict.keys())
-
-                # compare lists order invariant
-                if not set(ref_props) == set(n_keys):
-                    onode = n.get_id()
-                    oprop1 = set(ref_props).difference(n_keys)
-                    oprop2 = set(n_keys).difference(ref_props)
-                    logger.error(
-                        f'At least one node of the class {n.get_label()} '
-                        f'has more or fewer properties than another. '
-                        f'Offending node: {onode!r}, offending property: '
-                        f'{max([oprop1, oprop2])}. '
-                        f'All reference properties: {ref_props}, '
-                        f'All node properties: {n_keys}.',
-                    )
-                    return False
-
         # translate label to PascalCase
         label_pascal = self.translator.name_sentence_to_pascal(label)
 
@@ -252,12 +225,12 @@ class _RDFwriter(_BatchWriter):
             rdf_object = n.get_label()
             properties = n.get_properties()
             class_name = self.translator.name_sentence_to_pascal(rdf_object)
-            g.add((self.namespaces["biocypher"][class_name], RDF.type, RDFS.Class))
-            g.add((self.label_to_uri(rdf_subject), RDFS.Class, self.namespaces["biocypher"][class_name]))
+            g.add((self.rdf_namespaces["biocypher"][class_name], RDF.type, RDFS.Class))
+            g.add((self.label_to_uri(rdf_subject), RDF.type, self.rdf_namespaces["biocypher"][class_name]))
             for key, value in properties.items():
                 # only write value if it exists.
                 if value:
-                    g.add((self.label_to_uri(rdf_subject), self.namespaces["biocypher"][key], Literal(value)))
+                    g.add((self.label_to_uri(rdf_subject), self.property_to_uri(key), Literal(value)))
                 
         
         g.serialize(destination=fileName, format=self.rdf_format)
@@ -383,24 +356,49 @@ class _RDFwriter(_BatchWriter):
         """
         _pref, _id = input.split(":")
 
-        if _pref in self.namespaces.keys():
-            return self.namespaces[_pref][_id]
+        if _pref in self.rdf_namespaces.keys():
+            return self.rdf_namespaces[_pref][_id]
         else:
-            return self.namespaces["biocypher"][input]
+            return self.rdf_namespaces["biocypher"][input]
         
 
         # TODO: this should flow out of the config file!
         # hardcoded it for now
     
-    def _init_namespaces(self, graph):
-        self.namespaces = {}
-        self.namespaces["biocypher"] = Namespace("http://example.org/biocypher#")
-        self.namespaces["chembl"] = Namespace("https://www.ebi.ac.uk/chembl/compound_report_card/")
-        self.namespaces["go"] = Namespace("http://purl.obolibrary.org/obo/GO_")
-        self.namespaces["mondo"] = Namespace("http://purl.obolibrary.org/obo/MONDO_")
-        self.namespaces["efo"] = Namespace("http://purl.obolibrary.org/obo/EFO_")
-        self.namespaces["hp"] = Namespace("http://purl.obolibrary.org/obo/HP_")
+    def property_to_uri(self, input):
+        # These namespaces are core for rdflib; owl, rdf, rdfs, xsd and xml
+        for namespace in _NAMESPACE_PREFIXES_CORE.values():
+            if input in namespace:
+                return namespace[input]
+            
+        # If the input is not found in the core, I want to search in these first
+        for namespace in [SKOS, DC, DCTERMS]:
+            if input in namespace:
+                return namespace[input]
+            
+        # Otherwise, try these other namespaces from rdflib
+        for namespace in _NAMESPACE_PREFIXES_RDFLIB.values():
+            if input in namespace:
+                return namespace[input]
+        
+        # If "licence" is not found, we can try "license"
+        if input == "licence":
+            self.property_to_uri("license")
+        
+        # As a last resort return the biocypher namespace
+        return self.rdf_namespaces["biocypher"][input]
+            
 
-        for key, value in self.namespaces.items():
-            graph.bind(key, Namespace(value)) 
+    def _init_namespaces(self, graph):
+        # add biocypher standard to self.rdf_namespaces
+        biocypher_standard = {"biocypher": "http://example.org/biocypher#"}
+        if not self.rdf_namespaces:
+            self.rdf_namespaces = biocypher_standard
+        else:
+            self.rdf_namespaces = self.rdf_namespaces | biocypher_standard
+
+        for key, value in self.rdf_namespaces.items():
+            namespace = Namespace(value)
+            self.rdf_namespaces[key] = namespace
+            graph.bind(key, namespace) 
     
