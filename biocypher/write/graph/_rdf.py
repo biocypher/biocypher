@@ -169,6 +169,9 @@ class _RDFwriter(_BatchWriter):
                                         g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(v)))
                                 except (SyntaxError, ValueError, TypeError):
                                     g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(value)))
+                            else:
+                                g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(value)))
+
                         else:
                             g.add((self.namespaces["biocypher"][rdf_predicate], self.namespaces["biocypher"][key], Literal(value)))
                     
@@ -288,6 +291,7 @@ class _RDFwriter(_BatchWriter):
         if not passed:
             logger.error('Error while writing node data.')
             return False
+        return True
         
     def write_edges(
         self,
@@ -315,6 +319,8 @@ class _RDFwriter(_BatchWriter):
         if not passed:
             logger.error('Error while writing edge data.')
             return False
+        
+        return True
     
     def _construct_import_call(self) -> bool:
         """
