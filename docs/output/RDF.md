@@ -5,7 +5,8 @@ In this section, we will learn how to use and implement the output to RDF using 
 
 ## RDF settings
 
-To write your output to RDF, you have to specify some RDF settings in the biocypher_config.yaml. Using `rdf_format`, you can choose to export to xml, turtle or any other format `rdflib` supports. The second configuration is the `rdf_namespaces` where you can specify which namespaces exist in your data. if e.g. your data contains SO (Sequence ontology) terms, like `SO:0000001`, it will convert the id to a working URI to allow referencing. So `SO:0000001` will be converted into `http://purl.obolibrary.org/obo/SO_0000001`.
+To write your output to RDF, you have to specify some RDF settings in the biocypher_config.yaml. Using `rdf_format`, you can choose to export to xml, turtle or any other format `rdflib` supports. The second configuration is the `rdf_namespaces` where you can specify which namespaces exist in your data. if e.g. your data contains SO (Sequence ontology) terms, like `SO:0000001`, it will convert the id to a working URI to allow referencing. Thus `SO:0000001` will be converted into `http://purl.obolibrary.org/obo/SO_0000001`.
+When a node cannot be converted, it will use a default uri `https://biocypher.org/biocypher#<node_id>`.
 
 ```{code-block} yaml
 :caption: biocypher_config.yaml
