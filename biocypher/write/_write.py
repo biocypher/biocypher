@@ -14,11 +14,11 @@ suitable for import into a DBMS.
 """
 
 from biocypher._logger import logger
+from biocypher.write.graph._rdf import _RDFWriter
 from biocypher.write.graph._neo4j import _Neo4jBatchWriter
 from biocypher.write.graph._arangodb import _ArangoDBBatchWriter
 from biocypher.write.relational._sqlite import _SQLiteBatchWriter
 from biocypher.write.relational._postgresql import _PostgreSQLBatchWriter
-from biocypher.write.graph._rdf import _RDFwriter
 
 logger.debug(f"Loading module {__name__}.")
 
@@ -44,8 +44,8 @@ DBMS_TO_CLASS = {
     "ArangoDB": _ArangoDBBatchWriter,
     "sqlite": _SQLiteBatchWriter,
     "sqlite3": _SQLiteBatchWriter,
-    "rdf": _RDFwriter,
-    "RDF": _RDFwriter,
+    "rdf": _RDFWriter,
+    "RDF": _RDFWriter,
 }
 
 
@@ -105,6 +105,6 @@ def get_writer(
             db_user=dbms_config.get("user"),  # psql
             db_password=dbms_config.get("password"),  # psql
             db_port=dbms_config.get("port"),  # psql
-            rdf_format= dbms_config.get("rdf_format"), # rdf
-            rdf_namespaces= dbms_config.get("rdf_namespaces")# rdf
+            rdf_format=dbms_config.get("rdf_format"),  # rdf
+            rdf_namespaces=dbms_config.get("rdf_namespaces"),  # rdf
         )

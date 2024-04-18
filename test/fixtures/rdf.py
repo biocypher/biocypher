@@ -2,12 +2,12 @@ import os
 
 import pytest
 
-from biocypher.write.graph._rdf import _RDFwriter
+from biocypher.write.graph._rdf import _RDFWriter
 
 
 @pytest.fixture(scope="function")
 def bw_rdf(translator, deduplicator, tmp_path_session):
-    bw_rdf = _RDFwriter(
+    bw_rdf = _RDFWriter(
         translator=translator,
         deduplicator=deduplicator,
         output_directory=tmp_path_session,

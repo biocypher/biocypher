@@ -286,9 +286,7 @@ class BioCypher:
         else:
             tnodes = nodes
         # write node files
-        return self._writer.write_nodes(
-            tnodes, batch_size=batch_size
-        )
+        return self._writer.write_nodes(tnodes, batch_size=batch_size)
 
     def write_edges(self, edges, batch_size: int = int(1e6)) -> bool:
         """

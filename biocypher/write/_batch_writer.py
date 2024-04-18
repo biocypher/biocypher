@@ -6,8 +6,8 @@ import os
 import re
 import glob
 
-from more_itertools import peekable
 from rdflib import Graph
+from more_itertools import peekable
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._logger import logger
@@ -119,7 +119,7 @@ class _BatchWriter(ABC):
         db_host: str = None,
         db_port: str = None,
         rdf_format: str = None,
-        rdf_namespaces: dict = {}
+        rdf_namespaces: dict = {},
     ):
         """
 
@@ -199,10 +199,10 @@ class _BatchWriter(ABC):
 
             db_port:
                 The database port.
-            
+
             rdf_format:
                 The format of RDF.
-            
+
             rdf_namespaces:
                 The namespaces for RDF.
         """
