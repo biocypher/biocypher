@@ -58,8 +58,10 @@ def test_create_import_call(bw):
     tmp_path = bw.outdir
 
     assert passed
-    assert 'bin/neo4j-admin import --database=neo4j --delimiter=";" ' in call
-    assert '--array-delimiter="|" --quote="\'" --force=true ' in call
+    assert "neo4j-admin" in call
+    assert "import" in call
+    assert '--delimiter=";"' in call
+    assert '--array-delimiter="|" --quote="\'"' in call
     assert (
         f'--nodes="{tmp_path}{os.sep}PostTranslationalInteraction-header.csv,{tmp_path}{os.sep}PostTranslationalInteraction-part.*" '
         in call
@@ -107,10 +109,9 @@ def test_neo4j_write_node_data_headers_import_call(bw, _get_nodes):
         == ":ID;name;score:double;taxon:long;genes:string[];id;preferred_id;:LABEL"
     )
     assert micro_rna_header == ":ID;name;taxon:long;id;preferred_id;:LABEL"
-    assert "bin/neo4j-admin import" in call
-    assert "--database=neo4j" in call
+    assert "neo4j-admin" in call
+    assert "import" in call
     assert '--delimiter=";"' in call
-    assert "--force=true" in call
     assert '--nodes="' in call
     assert "Protein-header.csv" in call
     assert 'Protein-part.*"' in call
@@ -126,10 +127,24 @@ def test_neo4j_write_node_data_headers_import_call(bw, _get_nodes):
     with open(import_call_path) as f:
         call = f.read()
 
-    assert "custom/path/neo4j-admin import" in call
+    assert "custom/path/neo4j-admin" in call
+    assert "import" in call
 
     # custom file prefix
     # TODO
+
+
+def test_construct_import_call(bw):
+    assert isinstance(bw, _Neo4jBatchWriter)
+
+    import_script = bw._construct_import_call()
+
+    assert "bin/neo4j-admin database import full" in import_script
+    assert "--overwrite-destination=true" in import_script
+    assert "bin/neo4j-admin import" in import_script
+    assert "--force=true" in import_script
+    assert "--database=neo4j" in import_script
+    assert "neo4j" in import_script
 
 
 def test_write_hybrid_ontology_nodes(bw):
@@ -817,10 +832,9 @@ def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
     )
     assert is_mutated_in == ":START_ID;id;site;confidence:long;:END_ID;:TYPE"
 
-    assert "bin/neo4j-admin import" in call
-    assert "--database=neo4j" in call
+    assert "neo4j-admin" in call
+    assert "import" in call
     assert '--delimiter=";"' in call
-    assert "--force=true" in call
     assert '--nodes="' in call
     assert "PERTURBED_IN_DISEASE" in call
     assert "Is_Mutated_In" in call

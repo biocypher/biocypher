@@ -19,11 +19,11 @@ def test_connect_to_db(driver):
 def test_increment_version(driver):
     driver._driver.wipe_db()
     query = "CREATE (n:BioCypher {id: 'v19700101-000000'})"
-    driver._driver.query(query)
+    driver._driver.query(query, db="test")
     driver._update_meta_graph()
 
     result, summary = driver._driver.query(
-        "MATCH (n:BioCypher) " "RETURN n",
+        "MATCH (n:BioCypher) " "RETURN n", db="test"
     )
 
     assert len(result) == 2

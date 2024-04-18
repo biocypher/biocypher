@@ -1,4 +1,6 @@
 import os
+import re
+import subprocess
 
 from biocypher._logger import logger
 from biocypher.write._batch_writer import parse_label, _BatchWriter
@@ -22,6 +24,19 @@ class _Neo4jBatchWriter(_BatchWriter):
         - _write_array_string
     """
 
+    def __init__(self, *args, **kwargs):
+        """
+        Constructor.
+
+        Check the version of Neo4j and adds a command scope if version >= 5.
+
+        Returns:
+            _Neo4jBatchWriter: An instance of the writer.
+        """
+
+        # Should read the configuration and setup import_call_bin_prefix.
+        super().__init__(*args, **kwargs)
+
     def _get_default_import_call_bin_prefix(self):
         """
         Method to provide the default string for the import call bin prefix.
@@ -29,6 +44,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         Returns:
             str: The default location for the neo4j admin import location
         """
+
         return "bin/"
 
     def _write_array_string(self, string_list):
@@ -263,9 +279,32 @@ class _Neo4jBatchWriter(_BatchWriter):
         Returns:
             str: a bash command for neo4j-admin import
         """
+        import_call_neo4j_v4 = self._get_import_call(
+            "import", "--database=", "--force="
+        )
+        import_call_neo4j_v5 = self._get_import_call(
+            "database import full", "", "--overwrite-destination="
+        )
+        neo4j_version_check = f"version=$({self._get_default_import_call_bin_prefix()}neo4j-admin --version | cut -d '.' -f 1)"
+
+        import_script = f"#!/bin/bash\n{neo4j_version_check}\nif [[ $version -ge 5 ]]; then\n\t{import_call_neo4j_v5}\nelse\n\t{import_call_neo4j_v4}\nfi"
+        return import_script
+
+    def _get_import_call(
+        self, import_cmd: str, database_cmd: str, wipe_cmd: str
+    ) -> str:
+        """Get parametrized import call for Neo4j 4 or 5+.
+
+        Args:
+            import_cmd (str): The import command to use.
+            database_cmd (str): The database command to use.
+            wipe_cmd (str): The wipe command to use.
+
+        Returns:
+            str: The import call.
+        """
         import_call = (
-            f"{self.import_call_bin_prefix}neo4j-admin import "
-            f"--database={self.db_name} "
+            f"{self.import_call_bin_prefix}neo4j-admin {import_cmd} "
             f'--delimiter="{self.escaped_delim}" '
             f'--array-delimiter="{self.escaped_adelim}" '
         )
@@ -276,7 +315,7 @@ class _Neo4jBatchWriter(_BatchWriter):
             import_call += f"--quote='{self.quote}' "
 
         if self.wipe:
-            import_call += f"--force=true "
+            import_call += f"{wipe_cmd}true "
         if self.skip_bad_relationships:
             import_call += "--skip-bad-relationships=true "
         if self.skip_duplicate_nodes:
@@ -290,4 +329,6 @@ class _Neo4jBatchWriter(_BatchWriter):
         for header_path, parts_path in self.import_call_edges:
             import_call += f'--relationships="{header_path},{parts_path}" '
 
+        # Database needs to be at the end starting with Neo4j 5.0+.
+        import_call += f"{database_cmd}{self.db_name} "
         return import_call

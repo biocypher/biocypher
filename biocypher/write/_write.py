@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING
 
 from biocypher._config import config as _config
 
-__all__ = ["get_writer"]
+__all__ = ["get_writer", "DBMS_TO_CLASS"]
 
 if TYPE_CHECKING:
     from biocypher._translate import Translator

@@ -1,5 +1,8 @@
 name: 'Test and code quality'
 description: 'Run tests and code quality checks'
+inputs:
+  NEO4J_VERSION:
+    description: 'Neo4j version'
 
 runs:
   using: "composite"
@@ -12,7 +15,7 @@ runs:
       uses: douglascamata/setup-docker-macos-action@v1-alpha
       if: ${{ runner.os == 'macOS' }}
     - name: Start Neo4j Docker
-      run: docker run --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/your_password_here --env NEO4J_PLUGINS='["apoc"]' --env=NEO4J_ACCEPT_LICENSE_AGREEMENT=yes -d neo4j:4.4-enterprise
+      run: docker run --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/your_password_here --env NEO4J_PLUGINS='["apoc"]' --env=NEO4J_ACCEPT_LICENSE_AGREEMENT=yes -d neo4j:${{ inputs.NEO4J_VERSION }}
       shell: bash
       if: ${{ runner.os != 'Windows' }}
     - name: Start Postgres Docker
@@ -24,16 +27,14 @@ runs:
     #----------------------------------------------
     - name: Run Tests (Windows)
       run: |
-        source .venv/scripts/activate
-        pytest --version
-        pytest --password=your_password_here
+        poetry run pytest --version
+        poetry run pytest --password=your_password_here
       shell: bash
       if: runner.os == 'Windows'
     - name: Run tests (Linux and MacOS)
       run: |
-        source .venv/bin/activate
-        pytest --version
-        pytest --password=your_password_here
+        poetry run pytest --version
+        poetry run pytest --password=your_password_here
       shell: bash
       if: runner.os != 'Windows'
     - name: Check code quality
