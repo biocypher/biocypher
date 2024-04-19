@@ -229,17 +229,17 @@ def test_duplicated_tail_ontologies(caplog, extended_ontology_mapping):
         ontology_mapping=extended_ontology_mapping,
         tail_ontologies={
             "so": {
-                "url": "test/so.owl",
+                "url": "test/ontologies/so.owl",
                 "head_join_node": "sequence variant",
                 "tail_join_node": "sequence_variant",
             },
             "so_2": {
-                "url": "test/so.owl",
+                "url": "test/ontologies/so.owl",
                 "head_join_node": "device",
                 "tail_join_node": "sequence_variant",
             },
             "mondo": {
-                "url": "test/mondo.owl",
+                "url": "test/ontologies/mondo.owl",
                 "head_join_node": "disease",
                 "tail_join_node": "human disease",
             },
