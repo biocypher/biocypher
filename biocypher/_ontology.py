@@ -695,8 +695,9 @@ class Ontology:
         Args:
 
             to_disk (str): If specified, the ontology structure will be saved
-                to disk as a GRAPHML file, to be opened in your favourite
-                graph visualisation tool.
+                to disk as a GRAPHML file at the location (directory) specified
+                by the `to_disk` string, to be opened in your favourite graph
+                visualisation tool.
 
             full (bool): If True, the full ontology structure will be shown,
                 including all nodes and edges. If False, only the nodes and
