@@ -592,7 +592,7 @@ class Ontology:
             )
             raise ValueError(
                 f"Head join node '{head_join_node}' not found in head ontology. "
-                f"The head ontology contains the following {head_ontology.nodes}."
+                f"The head ontology contains the following nodes: {head_ontology.nodes}."
             )
         return head_join_node
 
