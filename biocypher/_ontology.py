@@ -675,9 +675,9 @@ class Ontology:
 
                 if parent not in self._nx_graph.nodes:
                     self._nx_graph.add_node(parent)
-                    self._nx_graph.nodes[parent]["label"] = (
-                        sentencecase_to_pascalcase(parent)
-                    )
+                    self._nx_graph.nodes[parent][
+                        "label"
+                    ] = sentencecase_to_pascalcase(parent)
 
                     # mark parent as user extension
                     self._nx_graph.nodes[parent]["user_extension"] = True
@@ -685,9 +685,9 @@ class Ontology:
 
                 if child not in self._nx_graph.nodes:
                     self._nx_graph.add_node(child)
-                    self._nx_graph.nodes[child]["label"] = (
-                        sentencecase_to_pascalcase(child)
-                    )
+                    self._nx_graph.nodes[child][
+                        "label"
+                    ] = sentencecase_to_pascalcase(child)
 
                     # mark child as user extension
                     self._nx_graph.nodes[child]["user_extension"] = True
@@ -722,9 +722,9 @@ class Ontology:
         for node in disjoint_classes:
             if not self._nx_graph.nodes.get(node):
                 self._nx_graph.add_node(node)
-                self._nx_graph.nodes[node]["label"] = (
-                    sentencecase_to_pascalcase(node)
-                )
+                self._nx_graph.nodes[node][
+                    "label"
+                ] = sentencecase_to_pascalcase(node)
 
             self._nx_graph.add_edge(node, "entity")
 
