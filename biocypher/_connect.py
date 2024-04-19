@@ -11,11 +11,12 @@
 """
 BioCypher 'online' mode. Handles connection and manipulation of a running DBMS.
 """
+import subprocess
+
 from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
-from typing import Optional
 from collections.abc import Iterable
 import itertools
 
@@ -24,7 +25,6 @@ import neo4j_utils
 from . import _misc
 from ._config import config as _config
 from ._create import BioCypherEdge, BioCypherNode
-from ._ontology import Ontology
 from ._translate import Translator
 
 __all__ = ["_Neo4jDriver"]
@@ -137,16 +137,43 @@ class _Neo4jDriver:
 
         logger.info("Creating constraints for node types in config.")
 
+        major_neo4j_version = int(self._get_neo4j_version().split(".")[0])
         # get structure
         for leaf in self.translator.ontology.mapping.extended_schema.items():
-            label = _misc.sentencecase_to_pascalcase(leaf[0])
+            label = _misc.sentencecase_to_pascalcase(leaf[0], sep=r"\s\.")
             if leaf[1]["represented_as"] == "node":
-                s = (
-                    f"CREATE CONSTRAINT `{label}_id` "
-                    f"IF NOT EXISTS ON (n:`{label}`) "
-                    "ASSERT n.id IS UNIQUE"
-                )
-                self._driver.query(s)
+                if major_neo4j_version >= 5:
+                    s = (
+                        f"CREATE CONSTRAINT `{label}_id` "
+                        f"IF NOT EXISTS FOR (n:`{label}`) "
+                        "REQUIRE n.id IS UNIQUE"
+                    )
+                    self._driver.query(s)
+                else:
+                    s = (
+                        f"CREATE CONSTRAINT `{label}_id` "
+                        f"IF NOT EXISTS ON (n:`{label}`) "
+                        "ASSERT n.id IS UNIQUE"
+                    )
+                    self._driver.query(s)
+
+    def _get_neo4j_version(self):
+        """Get neo4j version."""
+        try:
+            neo4j_version = self._driver.query(
+                """
+                    CALL dbms.components()
+                    YIELD name, versions, edition
+                    UNWIND versions AS version
+                    RETURN version AS version
+                """,
+            )[0][0]["version"]
+            return neo4j_version
+        except Exception as e:
+            logger.warning(
+                f"Error detecting Neo4j version: {e} use default version 4.0.0."
+            )
+            return "4.0.0"
 
     def add_nodes(self, id_type_tuples: Iterable[tuple]) -> tuple:
         """

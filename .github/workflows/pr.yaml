@@ -9,6 +9,11 @@ jobs:
       matrix:
         os: ["ubuntu-latest", "macos-latest", "windows-latest"]
         python-version: ["3.9", "3.10", "3.11"]
+        neo4j-version: ["4.4-enterprise", "5.17.0-enterprise"]
+        exclude:
+          # Windows tests don't use the PostgreSQL/Neo4j Docker containers
+          - os: "windows-latest"
+            neo4j-version: "5.17.0-enterprise"
     runs-on: ${{ matrix.os }}
     env:
       POETRY_VERSION: 1.5.1
@@ -34,8 +39,11 @@ jobs:
       uses: ./.github/actions/install
       with:
         PYTHON_VERSION: ${{ matrix.python-version }}
+
     #----------------------------------------------
     #      run tests and code quality checks
     #----------------------------------------------
     - name: Run tests
       uses: ./.github/actions/test
+      with:
+        NEO4J_VERSION: ${{ matrix.neo4j-version }}

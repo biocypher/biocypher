@@ -3,7 +3,6 @@ Title: BioCypher python module configuration file
 ## Some options are not used by default. Uncomment them to use them.
 
 biocypher:
-
   ### Required parameters ###
   ## DBMS type
 
@@ -52,12 +51,12 @@ biocypher:
 
   # tail_ontologies:
   #   so:
-  #     url: test/so.owl
+  #     url: test/ontologies/so.owl
   #     head_join_node: sequence variant
   #     tail_join_node: sequence_variant
   #     switch_label_and_id: true
   #   mondo:
-  #     url: test/mondo.owl
+  #     url: test/ontologies/mondo.owl
   #     head_join_node: disease
   #     tail_join_node: disease
   #     switch_label_and_id: true
@@ -65,7 +64,6 @@ biocypher:
 ### DBMS configuration ###
 
 neo4j:
-
   ### Neo4j configuration ###
   ## Database name
 
@@ -83,8 +81,8 @@ neo4j:
 
   ## Neo4j admin import batch writer settings
 
-  delimiter: ';'
-  array_delimiter: '|'
+  delimiter: ";"
+  array_delimiter: "|"
   quote_character: "'"
 
   ## MultiDB functionality
@@ -107,8 +105,8 @@ postgresql:
 
   # PostgreSQL connection credentials
   database_name: postgres # DB name
-  user: postgres  # user name
-  password: postgres  # password
+  user: postgres # user name
+  password: postgres # password
   host: localhost # host
   port: 5432 # port
 
@@ -116,4 +114,16 @@ postgresql:
   quote_character: '"'
   delimiter: '\t'
   # import_call_bin_prefix: '' # path to "psql"
+  # import_call_file_prefix: '/path/to/files'
+
+sqlite:
+  ### SQLite configuration ###
+
+  # SQLite connection credentials
+  database_name: sqlite.db # DB name
+
+  # SQLite import batch writer settings
+  quote_character: '"'
+  delimiter: '\t'
+  # import_call_bin_prefix: '' # path to "sqlite3"
   # import_call_file_prefix: '/path/to/files'

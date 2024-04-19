@@ -14,6 +14,11 @@ Democratising Knowledge Graphs
    <https://biocypher.org/#connect-your-knowledge-graph-to-large-language-models>`_
    and the `BioChatter website <https://biochatter.org>`_ for more information.
 
+   We have also recently published a perspective on connecting knowledge and
+   machine learning to enable causal reasoning in biomedicine, with a particular
+   focus on the currently emerging "foundation models." You can read it `here
+   <https://arxiv.org/abs/2401.09558>`_.
+
 Building a knowledge graph for biomedical tasks usually takes months or years.
 What if you could do it in weeks or days? We created BioCypher to make the
 process of creating a biomedical knowledge graph easier than ever, but still

@@ -662,7 +662,7 @@ class Ontology:
                     raise ValueError(
                         f"Node {key} not found in ontology, but also has no "
                         "inheritance definition. Please check your schema for "
-                        "spelling errors or a missing `is_a` definition."
+                        "spelling errors, first letter not in lower case, use of underscores, a missing `is_a` definition (SubClassOf a root node), or missing labels in class or super-classes."
                     )
 
                 continue
