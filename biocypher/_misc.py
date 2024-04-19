@@ -210,7 +210,7 @@ def sentencecase_to_snakecase(s: str) -> str:
     return stringcase.snakecase(s).lower()
 
 
-def sentencecase_to_pascalcase(s: str) -> str:
+def sentencecase_to_pascalcase(s: str, sep: str = r"\s") -> str:
     """
     Convert sentence case to PascalCase.
 
@@ -220,7 +220,11 @@ def sentencecase_to_pascalcase(s: str) -> str:
     Returns:
         string in PascalCase form
     """
-    return re.sub(r"(?:^| )([a-zA-Z])", lambda match: match.group(1).upper(), s)
+    return re.sub(
+        r"(?:^|[" + sep + "])([a-zA-Z])",
+        lambda match: match.group(1).upper(),
+        s,
+    )
 
 
 def to_lower_sentence_case(s: str) -> str:

@@ -33,7 +33,7 @@ def test_mondo_adapter(mondo_adapter):
 
 def test_ontology_adapter_root_node_missing():
     with pytest.raises(ValueError):
-        OntologyAdapter("test/so.owl", "not_in_tree")
+        OntologyAdapter("test/ontologies/so.owl", "not_in_tree")
 
 
 def test_ontology_functions(hybrid_ontology):
@@ -116,7 +116,7 @@ def test_disconnected_exception(disconnected_mapping):
     with pytest.raises(ValueError):
         Ontology(
             head_ontology={
-                "url": "test/so.owl",
+                "url": "test/ontologies/so.owl",
                 "root_node": "sequence_variant",
             },
             ontology_mapping=disconnected_mapping,

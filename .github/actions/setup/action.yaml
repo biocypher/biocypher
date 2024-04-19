@@ -28,7 +28,7 @@ runs:
       with:
         version: 1.5.1
         virtualenvs-create: true
-        virtualenvs-in-project: true
+        virtualenvs-in-project: false
     - name: Check Poetry installation
       run: poetry --version
       shell: bash
