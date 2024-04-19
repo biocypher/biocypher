@@ -10,7 +10,7 @@ are currently working on other output formats, such as RDF, SQL, and ArangoDB,
 and will update the documentation accordingly.
 
 The used output format is specified via the ``dbms`` parameter in the ``biocypher_config.yaml`` (see the :ref:`config` for an example).
-Currently supported are ``neo4j``, ``arangodb``, ``postgres``, and ``sqlite``.
+Currently supported are ``neo4j``, ``arangodb``, ``rdf``, ``postgres``, and ``sqlite``.
 
 Furthermore you can specify whether to use the ``offline`` or ``online`` mode.
 
@@ -29,5 +29,6 @@ Details about the usage of the ``online`` and ``offline`` mode and the different
 
     neo4j.md
     arangodb.md
+    RDF.md
     postgres.md
     sqlite.md

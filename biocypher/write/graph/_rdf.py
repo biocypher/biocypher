@@ -3,8 +3,8 @@
 #
 # Copyright 2021, Heidelberg University Clinic
 #
-# File author(s): Sebastian Lobentanzer
-#                 Michael Hartung
+# File author(s):  Loes van den Biggelaar
+#                  Sebastian Lobentanzer
 #
 # Distributed under MIT licence, see the file `LICENSE`.
 #
@@ -56,14 +56,17 @@ class _RDFWriter(_BatchWriter):
         """
         return "bin/"
 
-    def _get_rdf_format(self, string) -> bool:
+    def _is_rdf_format_supported(self, rdf_format: str) -> bool:
         """
         Function to check if the specified RDF format is supported.
 
+        Args:
+            rdf_format (str): The RDF format to check.
+
         Returns:
-            bool: The return value. True for success, False otherwise.
+            bool: Returns True if rdf format supported, False otherwise.
         """
-        formats = [
+        supported_formats = [
             "xml",
             "n3",
             "turtle",
@@ -74,9 +77,9 @@ class _RDFWriter(_BatchWriter):
             "nquads",
             "json-ld",
         ]
-        if string not in formats:
+        if rdf_format not in supported_formats:
             logger.error(
-                f"{string}; Incorrect or unsupported RDF format, use one of the following: "
+                f"{rdf_format}; Incorrect or unsupported RDF format, use one of the following: "
                 f'"xml", "n3", "turtle", "nt", "pretty-xml", "trix", "trig", "nquads", "json-ld" ',
             )
             return False
@@ -169,7 +172,7 @@ class _RDFWriter(_BatchWriter):
             for key, value in rdf_properties.items():
                 # only write value if it exists.
                 if value:
-                    if type(value) == list:
+                    if isinstance(value, list):
                         for v in value:
                             graph.add(
                                 (
@@ -180,7 +183,7 @@ class _RDFWriter(_BatchWriter):
                                     Literal(v),
                                 )
                             )
-                    elif type(value) == str:
+                    elif isinstance(value, str):
                         if value.startswith("[") and value.endswith("]"):
                             value = (
                                 value.replace("[", "")
@@ -230,7 +233,6 @@ class _RDFWriter(_BatchWriter):
 
         graph.serialize(destination=file_name, format=self.rdf_format)
 
-        # write to file
         logger.info(
             f"Writing {len(edge_list)} entries to {label_pascal}.{self.rdf_format}",
         )
@@ -306,7 +308,6 @@ class _RDFWriter(_BatchWriter):
 
         graph.serialize(destination=file_name, format=self.rdf_format)
 
-        # write to file
         logger.info(
             f"Writing {len(node_list)} entries to {label_pascal}.{self.rdf_format}",
         )
@@ -315,7 +316,7 @@ class _RDFWriter(_BatchWriter):
 
     def write_nodes(
         self, nodes, batch_size: int = int(1e6), force: bool = False
-    ):
+    ) -> bool:
         """
         Wrapper for writing nodes in RDF format. It calls the _write_node_data() function, specifying the node data.
 
@@ -328,7 +329,7 @@ class _RDFWriter(_BatchWriter):
             bool: True if the writing is successful, False otherwise.
         """
         # check if specified output format is correct
-        passed = self._get_rdf_format(self.rdf_format)
+        passed = self._is_rdf_format_supported(self.rdf_format)
         if not passed:
             logger.error("Error while writing node data, wrong RDF format")
             return False
@@ -349,14 +350,15 @@ class _RDFWriter(_BatchWriter):
         functions specifying it's edge data.
 
         Args:
-            nodes (BioCypherEdge): a list or generator of edges in
+            edges (BioCypherEdge): a list or generator of edges in
                 :py:class:`BioCypherEdge` format
+            batch_size (int): The number of edges to write in each batch.
 
         Returns:
             bool: The return value. True for success, False otherwise.
         """
         # check if specified output format is correct
-        passed = self._get_rdf_format(self.rdf_format)
+        passed = self._is_rdf_format_supported(self.rdf_format)
         if not passed:
             logger.error("Error while writing edge data, wrong RDF format")
             return False
@@ -421,7 +423,7 @@ class _RDFWriter(_BatchWriter):
         Converts the subject to a proper URI using the available namespaces.
         If the conversion fails, it defaults to the biocypher prefix.
 
-        args:
+        Args:
             subject (str): The subject to be converted to a URI.
 
         Returns:
@@ -444,11 +446,11 @@ class _RDFWriter(_BatchWriter):
         This function takes a property name and searches for its corresponding URI in various namespaces.
         It first checks the core namespaces for rdflib, including owl, rdf, rdfs, xsd, and xml.
 
-        Parameters:
-        - input (str): The property name to be converted to a URI.
+        Args:
+            property_name (str): The property name to be converted to a URI.
 
         Returns:
-        - str: The corresponding URI for the input property name.
+            str: The corresponding URI for the input property name.
         """
         # These namespaces are core for rdflib; owl, rdf, rdfs, xsd and xml
         for namespace in _NAMESPACE_PREFIXES_CORE.values():
@@ -483,7 +485,7 @@ class _RDFWriter(_BatchWriter):
         If `rdf_namespaces` is empty, it sets it to the biocypher standard namespace. Otherwise, it merges
         the biocypher standard namespace with the namespaces defined in the biocypher_config.yaml.
 
-        Parameters:
+        Args:
             graph (RDFLib.Graph): The RDF graph to bind the namespaces to.
 
         Returns:
