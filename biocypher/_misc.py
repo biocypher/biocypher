@@ -115,7 +115,12 @@ def _get_inheritance_tree(inheritance_graph: Union[dict, nx.Graph]) -> dict:
         )
         if multiple_parents_present:
             logger.warning(
-                "The ontology contains multiple inheritance (one child node has multiple parent nodes). This is not visualized in the following hierarchy tree (the child node is only added once). If you want to browse all relationships of the parsed ontology write a graphml file to disk and view this file."
+                "The ontology contains multiple inheritance (one child node "
+                "has multiple parent nodes). This is not visualized in the "
+                "following hierarchy tree (the child node is only added once). "
+                "If you wish to browse all relationships of the parsed "
+                "ontologies, write a graphml file to disk using "
+                "`to_disk = <directory>` and view this file."
             )
 
         # unlist values
