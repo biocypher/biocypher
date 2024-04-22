@@ -13,7 +13,10 @@ jobs:
         exclude:
           # Windows tests don't use the PostgreSQL/Neo4j Docker containers
           - os: "windows-latest"
-            neo4j-version: "5.17.0-enterprise"
+            neo4j-version: "4.4-enterprise"
+          # https://github.com/biocypher/biocypher/issues/339
+          - os: "macos-latest"
+            neo4j-version: "4.4-enterprise"
     runs-on: ${{ matrix.os }}
     env:
       POETRY_VERSION: 1.5.1
