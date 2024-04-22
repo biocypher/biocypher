@@ -168,68 +168,10 @@ class _RDFWriter(_BatchWriter):
             )
 
             # add properties to the transformed edge --> node
-            # we need to check the type of value since strings of structure "[1,2,3]" might exist, which are actually lists.
             for key, value in rdf_properties.items():
                 # only write value if it exists.
                 if value:
-                    if isinstance(value, list):
-                        for v in value:
-                            graph.add(
-                                (
-                                    self.rdf_namespaces["biocypher"][
-                                        rdf_predicate
-                                    ],
-                                    self.property_to_uri(key),
-                                    Literal(v),
-                                )
-                            )
-                    elif isinstance(value, str):
-                        if value.startswith("[") and value.endswith("]"):
-                            value = (
-                                value.replace("[", "")
-                                .replace("]", "")
-                                .replace("'", "")
-                                .split(", ")
-                            )
-                            try:
-                                for v in value:
-                                    graph.add(
-                                        (
-                                            self.rdf_namespaces["biocypher"][
-                                                rdf_predicate
-                                            ],
-                                            self.property_to_uri(key),
-                                            Literal(v),
-                                        )
-                                    )
-                            except (SyntaxError, ValueError, TypeError):
-                                graph.add(
-                                    (
-                                        self.rdf_namespaces["biocypher"][
-                                            rdf_predicate
-                                        ],
-                                        self.property_to_uri(key),
-                                        Literal(value),
-                                    )
-                                )
-                        else:
-                            graph.add(
-                                (
-                                    self.rdf_namespaces["biocypher"][
-                                        rdf_predicate
-                                    ],
-                                    self.property_to_uri(key),
-                                    Literal(value),
-                                )
-                            )
-                    else:
-                        graph.add(
-                            (
-                                self.rdf_namespaces["biocypher"][rdf_predicate],
-                                self.property_to_uri(key),
-                                Literal(value),
-                            )
-                        )
+                    self.add_property_to_graph(graph, rdf_predicate, value, key)
 
         graph.serialize(destination=file_name, format=self.rdf_format)
 
@@ -238,6 +180,82 @@ class _RDFWriter(_BatchWriter):
         )
 
         return True
+
+    def add_property_to_graph(
+        self,
+        graph: Graph,
+        rdf_subject: str,
+        rdf_object: str,
+        rdf_predicate: str,
+    ):
+        """
+        Function to add the properties to an RDF node. It takes the graph, the subject, object, and predicate of the RDF triple.
+        It checks if the property is a list and adds it to the graph accordingly. otherwise it checks if the string represents a list.
+        If it does, it transforms it to a list and adds it to the graph. if not, it adds the property to the graph as a literal.
+        If the property is neither a list or string, it will also be added as a literal.
+
+        Args:
+            graph (RDFLib.Graph): The RDF graph to add the nodes to.
+
+            rdf_subject (str): The subject of the RDF triple.
+
+            rdf_object (str): The object of the RDF triple.
+
+            rdf_predicate (str): The predicate of the RDF triple.
+
+        Returns:
+            None
+        """
+        if isinstance(rdf_object, list):
+            for obj in rdf_object:
+                graph.add(
+                    (
+                        self.subject_to_uri(rdf_subject),
+                        self.property_to_uri(rdf_predicate),
+                        Literal(obj),
+                    )
+                )
+        elif isinstance(rdf_object, str):
+            if rdf_object.startswith("[") and rdf_object.endswith("]"):
+                self.add_property_to_graph(
+                    graph,
+                    rdf_subject,
+                    self.transform_string_to_list(rdf_object),
+                    rdf_predicate,
+                )
+            else:
+                graph.add(
+                    (
+                        self.subject_to_uri(rdf_subject),
+                        self.property_to_uri(rdf_predicate),
+                        Literal(rdf_object),
+                    )
+                )
+        else:
+            graph.add(
+                (
+                    self.subject_to_uri(rdf_subject),
+                    self.property_to_uri(rdf_predicate),
+                    Literal(rdf_object),
+                )
+            )
+
+    def transform_string_to_list(self, string_list: str) -> list:
+        """
+        Function to transform a string representation of a list into a list.
+
+        Args:
+            string_list (str): The string representation of the list.
+
+        Returns:
+            list: The list representation of the input string.
+        """
+        return (
+            string_list.replace("[", "")
+            .replace("]", "")
+            .replace("'", "")
+            .split(", ")
+        )
 
     def _write_single_node_list_to_file(
         self,
@@ -298,13 +316,7 @@ class _RDFWriter(_BatchWriter):
             for key, value in properties.items():
                 # only write value if it exists.
                 if value:
-                    graph.add(
-                        (
-                            self.subject_to_uri(rdf_subject),
-                            self.property_to_uri(key),
-                            Literal(value),
-                        )
-                    )
+                    self.add_property_to_graph(graph, rdf_subject, value, key)
 
         graph.serialize(destination=file_name, format=self.rdf_format)
 
