@@ -569,18 +569,22 @@ class Ontology:
         """
 
         head_join_node = None
-        head_join_node_label = adapter.get_head_join_node().replace("_", " ")
+        user_defined_head_join_node_label = adapter.get_head_join_node()
+        head_join_node_label_in_bc_format = to_lower_sentence_case(
+            user_defined_head_join_node_label.replace("_", " ")
+        )
 
         if self._head_ontology._switch_label_and_id:
-            head_join_node = head_join_node_label
+            head_join_node = head_join_node_label_in_bc_format
         elif not self._head_ontology._switch_label_and_id:
-            for node, data in self._head_ontology.get_nx_graph().nodes(
+            for node_id, data in self._head_ontology.get_nx_graph().nodes(
                 data=True
             ):
-                if "label" in data and data["label"] == to_lower_sentence_case(
-                    head_join_node_label
+                if (
+                    "label" in data
+                    and data["label"] == head_join_node_label_in_bc_format
                 ):
-                    head_join_node = node
+                    head_join_node = node_id
                     break
 
         if head_join_node not in self._head_ontology.get_nx_graph().nodes:

@@ -2,11 +2,11 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 owl:ID_0 a owl:Class ;
-     rdfs:label "Label_Root" ;
+     rdfs:label "Test_Missing_Label_Root" ;
      rdfs:comment "The class of OWL individuals." .
 
 owl:ID_1A a owl:Class ;
-     rdfs:label "Label_Level1A" ;
+     rdfs:label "Test_Missing_Label_Level1A" ;
      rdfs:subClassOf owl:ID_0 ;
      rdfs:comment "Level1A." .
 

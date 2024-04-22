@@ -178,14 +178,14 @@ def test_multiple_parents(ontology_file):
 def test_missing_label_on_node():
     ontology_adapter = OntologyAdapter(
         ontology_file="test/ontologies/missing_label.ttl",
-        root_label="Label_Root",
+        root_label="Test_Missing_Label_Root",
     )
     result = ontology_adapter.get_nx_graph()
     # Expected hierarchy:
-    #  label root
-    #  ├── label level1a
+    #  test missing label root
+    #  ├── test missing label level1a
     # (└── level1B) <- missing label on this node (should not be part of the graph)
-    expected_edges = [("label level1a", "label root")]
+    expected_edges = [("test missing label level1a", "test missing label root")]
     for edge in expected_edges:
         assert edge in result.edges
     assert len(result.edges) == len(expected_edges)
@@ -229,7 +229,59 @@ def test_root_node_not_found():
     )
 
 
-def test_reverse_labels_from_yaml_config():
+def test_switch_id_and_label_from_yaml_config():
+    bc = BioCypher(
+        head_ontology={
+            "url": "test/ontologies/reverse_labels.ttl",
+            "root_node": "Label_Root",
+            "switch_label_and_id": True,
+        },
+        tail_ontologies={
+            "tail": {
+                "url": "test/ontologies/missing_label.ttl",
+                "head_join_node": "Label_Level1A",
+                "tail_join_node": "Test_Missing_Label_Root",
+                "switch_label_and_id": True,
+            }
+        },
+    )
+    expected_not_switched = [
+        "label level1b",
+        "label root",
+        "label level1a",
+        "test missing label level1a",
+    ]
+    for node in bc._get_ontology()._nx_graph.nodes:
+        assert node in expected_not_switched
+
+
+def test_mixed_switch_id_and_label_from_yaml_config():
+    bc = BioCypher(
+        head_ontology={
+            "url": "test/ontologies/reverse_labels.ttl",
+            "root_node": "Label_Root",
+            "switch_label_and_id": True,
+        },
+        tail_ontologies={
+            "tail": {
+                "url": "test/ontologies/missing_label.ttl",
+                "head_join_node": "Label_Level1A",
+                "tail_join_node": "Test_Missing_Label_Root",
+                "switch_label_and_id": False,
+            }
+        },
+    )
+    expected_not_switched = [
+        "label level1b",
+        "label root",
+        "label level1a",
+        "ID_1A",
+    ]
+    for node in bc._get_ontology()._nx_graph.nodes:
+        assert node in expected_not_switched
+
+
+def test_do_not_switch_id_and_label_from_yaml_config():
     bc = BioCypher(
         head_ontology={
             "url": "test/ontologies/reverse_labels.ttl",
@@ -240,7 +292,7 @@ def test_reverse_labels_from_yaml_config():
             "tail": {
                 "url": "test/ontologies/missing_label.ttl",
                 "head_join_node": "Label_Level1A",
-                "tail_join_node": "Label_Root",
+                "tail_join_node": "Test_Missing_Label_Root",
                 "switch_label_and_id": False,
             }
         },
@@ -260,7 +312,7 @@ def test_head_join_node_not_found():
             "tail": {
                 "url": "test/ontologies/missing_label.ttl",
                 "head_join_node": "not present",
-                "tail_join_node": "Label_Root",
+                "tail_join_node": "Test_Missing_Label_Root",
             }
         },
     )
