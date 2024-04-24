@@ -8,11 +8,11 @@
    installation
    quickstart
    adapters
+   output/index
    notebooks/pandas_tutorial.ipynb
    tutorial
    tutorial-ontology
    tutorial-adapter
    standalone-docker-image
-   output/index
    r-bioc
    api

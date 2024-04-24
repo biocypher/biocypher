@@ -2,12 +2,14 @@
 <html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta property="og:title" content="biocypher._misc.pascalcase_to_sentencecase" />
+<meta property="og:title" content="Output to RDF" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://biocypher.org/modules/biocypher._misc.pascalcase_to_sentencecase.html" />
+<meta property="og:url" content="https://biocypher.org/output/RDF.html" />
 <meta property="og:site_name" content="BioCypher" />
+<meta property="og:description" content="In this section, we will learn how to use and implement the output to RDF using the_RDFWriter module. RDF settings: To write your output to RDF, you have to specify some RDF settings in the biocyph..." />
 <meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 <meta property="og:image:alt" content="BioCypher" />
+<meta name="description" content="In this section, we will learn how to use and implement the output to RDF using the_RDFWriter module. RDF settings: To write your output to RDF, you have to specify some RDF settings in the biocyph..." />
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content="https://biocypher.org" />
 <meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
@@ -15,7 +17,7 @@
 <meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>biocypher._misc.pascalcase_to_sentencecase &mdash; BioCypher</title>
+  <title>Output to RDF &mdash; BioCypher</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -36,8 +38,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="biocypher._misc.snakecase_to_sentencecase" href="biocypher._misc.snakecase_to_sentencecase.html" />
-    <link rel="prev" title="biocypher._misc.from_pascal" href="biocypher._misc.from_pascal.html" /> 
+    <link rel="next" title="PostgreSQL" href="postgres.html" />
+    <link rel="prev" title="ArangoDB" href="arangodb.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -71,27 +73,21 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html#configuration">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../adapters.html">Adapters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../output/index.html">Output</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Output</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="neo4j.html">Neo4j</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arangodb.html">ArangoDB</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Output to RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postgres.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlite.html">SQLite</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/pandas_tutorial.html">Example Notebook: BioCypher and Pandas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial - Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial-ontology.html">Tutorial - Handling Ontologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial-adapter.html">Tutorial - Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../standalone-docker-image.html">Standalone Docker Image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../r-bioc.html">R and Bioconductor</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../api.html#the-main-biocypher-interface">The main BioCypher interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-by-file">Database creation by file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#in-memory-pandas-knowledge-graph">In-memory Pandas knowledge graph</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-and-manipulation-by-driver">Database creation and manipulation by Driver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#download-and-cache-functionality">Download and cache functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._ontology">Ontology ingestion, parsing, and manipulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._mapping">Mapping of data inputs to KG ontology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._create">Base classes for node and edge representations in BioCypher</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._translate">Translation functionality for implemented types of representation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._logger">Logging</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-biocypher._misc">Miscellaneous utility functions</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -108,10 +104,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
-      <li class="breadcrumb-item active">biocypher._misc.pascalcase_to_sentencecase</li>
+          <li class="breadcrumb-item"><a href="index.html">Output</a></li>
+      <li class="breadcrumb-item active">Output to RDF</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/modules/biocypher._misc.pascalcase_to_sentencecase.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/output/RDF.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -119,30 +115,52 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="biocypher-misc-pascalcase-to-sentencecase">
-<h1>biocypher._misc.pascalcase_to_sentencecase<a class="headerlink" href="#biocypher-misc-pascalcase-to-sentencecase" title="Permalink to this heading"></a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="biocypher._misc.pascalcase_to_sentencecase">
-<span class="sig-prename descclassname"><span class="pre">biocypher._misc.</span></span><span class="sig-name descname"><span class="pre">pascalcase_to_sentencecase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#biocypher._misc.pascalcase_to_sentencecase" title="Permalink to this definition"></a></dt>
-<dd><p>Convert PascalCase to sentence case.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>s</strong> – Input string in PascalCase</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>string in sentence case form</p>
-</dd>
-</dl>
-</dd></dl>
+  <section id="output-to-rdf">
+<h1>Output to RDF<a class="headerlink" href="#output-to-rdf" title="Permalink to this heading"></a></h1>
+<p>In this section, we will learn how to use and implement the output to RDF using
+the <code class="docutils literal notranslate"><span class="pre">_RDFWriter</span></code> module.</p>
+<section id="rdf-settings">
+<h2>RDF settings<a class="headerlink" href="#rdf-settings" title="Permalink to this heading"></a></h2>
+<p>To write your output to RDF, you have to specify some RDF settings in the
+biocypher_config.yaml. Using <code class="docutils literal notranslate"><span class="pre">rdf_format</span></code>, you can choose to export to xml,
+turtle or any other format <code class="docutils literal notranslate"><span class="pre">rdflib</span></code> supports. The second configuration is the
+<code class="docutils literal notranslate"><span class="pre">rdf_namespaces</span></code>, where you can specify which namespaces exist in your data. If,
+for instance, your data contain SO (Sequence ontology) terms such as
+<code class="docutils literal notranslate"><span class="pre">SO:0000001</span></code>, IDs will be converted into valid URIs to allow referencing. Thus,
+<code class="docutils literal notranslate"><span class="pre">SO:0000001</span></code> will be converted into <code class="docutils literal notranslate"><span class="pre">http://purl.obolibrary.org/obo/SO_0000001</span></code>.
+When a node cannot be converted, a default URI will be used
+(<code class="docutils literal notranslate"><span class="pre">https://biocypher.org/biocypher#&lt;node_id&gt;</span></code>).</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">biocypher</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">strict_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">schema_config_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/schema_config.yaml</span>
+<span class="w">  </span><span class="nt">dbms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdf</span>
 
+<span class="c1">### RDF configuration ###</span>
+<span class="nt">rdf</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">rdf_format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">turtle</span>
+<span class="w">  </span><span class="c1"># options: xml, n3, turtle, nt, pretty-xml, trix, trig, nquads, json-ld</span>
+<span class="w">  </span><span class="nt">rdf_namespaces</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">so</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/SO_</span>
+<span class="w">    </span><span class="nt">efo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://www.ebi.ac.uk/efo/EFO_</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">_RDFWriter</span></code> will create a file for every node and relationship type you
+have specified.</p>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="biocypher._misc.from_pascal.html" class="btn btn-neutral float-left" title="biocypher._misc.from_pascal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="biocypher._misc.snakecase_to_sentencecase.html" class="btn btn-neutral float-right" title="biocypher._misc.snakecase_to_sentencecase" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="arangodb.html" class="btn btn-neutral float-left" title="ArangoDB" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="postgres.html" class="btn btn-neutral float-right" title="PostgreSQL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

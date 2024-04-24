@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Neo4j" href="neo4j.html" />
-    <link rel="prev" title="Standalone Docker Image" href="../standalone-docker-image.html" /> 
+    <link rel="prev" title="Adapters" href="../adapters.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -73,18 +73,19 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html#configuration">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../adapters.html">Adapters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Output</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="neo4j.html">Neo4j</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arangodb.html">ArangoDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RDF.html">Output to RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postgres.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlite.html">SQLite</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/pandas_tutorial.html">Example Notebook: BioCypher and Pandas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial - Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial-ontology.html">Tutorial - Handling Ontologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial-adapter.html">Tutorial - Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../standalone-docker-image.html">Standalone Docker Image</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Output</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="neo4j.html">Neo4j</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arangodb.html">ArangoDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="postgres.html">PostgreSQL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sqlite.html">SQLite</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="../r-bioc.html">R and Bioconductor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
 </ul>
@@ -121,18 +122,28 @@ BioCypher as an abstraction of the build process of a biomedical knowledge graph
 and thus are open towards any output format for the knowledge representation. We
 are currently working on other output formats, such as RDF, SQL, and ArangoDB,
 and will update the documentation accordingly.</p>
-<p>The used output format is specified via the <code class="docutils literal notranslate"><span class="pre">dbms</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> (see the <a class="reference internal" href="../installation.html#config"><span class="std std-ref">Configuration</span></a> for an example).
-Currently supported are <code class="docutils literal notranslate"><span class="pre">neo4j</span></code>, <code class="docutils literal notranslate"><span class="pre">arangodb</span></code>, <code class="docutils literal notranslate"><span class="pre">postgres</span></code>, and <code class="docutils literal notranslate"><span class="pre">sqlite</span></code>.</p>
-<p>Furthermore you can specify whether to use the <code class="docutils literal notranslate"><span class="pre">offline</span></code> or <code class="docutils literal notranslate"><span class="pre">online</span></code> mode.</p>
+<p>The used output format is specified via the <code class="docutils literal notranslate"><span class="pre">dbms</span></code> parameter in the
+<code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> (see the <a class="reference internal" href="../installation.html#config"><span class="std std-ref">Configuration</span></a> for an example).  Currently
+supported are <code class="docutils literal notranslate"><span class="pre">neo4j</span></code>, <code class="docutils literal notranslate"><span class="pre">arangodb</span></code>, <code class="docutils literal notranslate"><span class="pre">rdf</span></code>, <code class="docutils literal notranslate"><span class="pre">postgres</span></code>, and <code class="docutils literal notranslate"><span class="pre">sqlite</span></code>.</p>
+<p>Furthermore, you can specify whether to use the <code class="docutils literal notranslate"><span class="pre">offline</span></code> or <code class="docutils literal notranslate"><span class="pre">online</span></code> mode.</p>
 <ul class="simple">
-<li><p>For the online mode set <code class="docutils literal notranslate"><span class="pre">offline:</span> <span class="pre">false</span></code>. You need a running database instance and BioCypher will connect to this instance and directly writes the output to the database.</p></li>
-<li><p>For the offline mode set <code class="docutils literal notranslate"><span class="pre">offline:</span> <span class="pre">true</span></code>. BioCypher will write the knowledge graph to files in a designated output folder (standard being <code class="docutils literal notranslate"><span class="pre">biocypher-out/</span></code> and the current datetime). Furthermore you can generate a bash script to insert the knowledge graph files into the specified <code class="docutils literal notranslate"><span class="pre">dbms</span></code> by running <code class="docutils literal notranslate"><span class="pre">bc.write_import_call()</span></code>.</p></li>
+<li><p>For the online mode set <code class="docutils literal notranslate"><span class="pre">offline:</span> <span class="pre">false</span></code>. You need a running database</p></li>
 </ul>
+<p>instance and BioCypher will connect to this instance and directly writes the
+output to the database.</p>
+<ul class="simple">
+<li><p>For the offline mode set <code class="docutils literal notranslate"><span class="pre">offline:</span> <span class="pre">true</span></code>. BioCypher will write the knowledge</p></li>
+</ul>
+<p>graph to files in a designated output folder (standard being <code class="docutils literal notranslate"><span class="pre">biocypher-out/</span></code>
+and the current datetime). Furthermore you can generate a bash script to insert
+the knowledge graph files into the specified <code class="docutils literal notranslate"><span class="pre">dbms</span></code> by running
+<code class="docutils literal notranslate"><span class="pre">bc.write_import_call()</span></code>.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">online</span></code> mode is currently only supported for the <code class="docutils literal notranslate"><span class="pre">neo4j</span></code> database.</p>
 </div>
-<p>Details about the usage of the <code class="docutils literal notranslate"><span class="pre">online</span></code> and <code class="docutils literal notranslate"><span class="pre">offline</span></code> mode and the different supported output formats are described on the following pages:</p>
+<p>Details about the usage of the <code class="docutils literal notranslate"><span class="pre">online</span></code> and <code class="docutils literal notranslate"><span class="pre">offline</span></code> mode and the different
+supported output formats are described on the following pages:</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="neo4j.html">Neo4j</a><ul>
@@ -143,6 +154,11 @@ Currently supported are <code class="docutils literal notranslate"><span class="
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="arangodb.html">ArangoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RDF.html">Output to RDF</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="RDF.html#rdf-settings">RDF settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RDF.html#output">Output</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="postgres.html">PostgreSQL</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="postgres.html#install-postgresql">Install PostgreSQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="postgres.html#postgresql-settings">PostgreSQL settings</a></li>
@@ -162,7 +178,7 @@ Currently supported are <code class="docutils literal notranslate"><span class="
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../standalone-docker-image.html" class="btn btn-neutral float-left" title="Standalone Docker Image" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../adapters.html" class="btn btn-neutral float-left" title="Adapters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="neo4j.html" class="btn btn-neutral float-right" title="Neo4j" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
