@@ -1,22 +1,15 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-owl:Class a rdfs:Class ;
-     rdfs:label "Class" ;
-     rdfs:comment "The class of OWL classes." ;
-     rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
-     rdfs:subClassOf rdfs:Class .
+owl:ID_0 a owl:Class ;
+     rdfs:label "Test_Missing_Label_Root" ;
+     rdfs:comment "The class of OWL individuals." .
 
-owl:Root a owl:Class ;
-     rdfs:label "Root" ;
-     rdfs:comment "The class of OWL individuals." ;
-     rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> .
-
-owl:Level1A a owl:Class ;
-     rdfs:label "Level1A" ;
-     rdfs:subClassOf owl:Root ;
+owl:ID_1A a owl:Class ;
+     rdfs:label "Test_Missing_Label_Level1A" ;
+     rdfs:subClassOf owl:ID_0 ;
      rdfs:comment "Level1A." .
 
-owl:Level1B a owl:Class ;
-     rdfs:subClassOf owl:Root ;
+owl:ID_1B a owl:Class ;
+     rdfs:subClassOf owl:ID_0 ;
      rdfs:comment "Level1B label missing." .
