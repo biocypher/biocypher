@@ -1,4 +1,4 @@
-# Output to RDF
+# RDF
 
 In this section, we will learn how to use and implement the output to RDF using
 the `_RDFWriter` module.
@@ -13,7 +13,9 @@ for instance, your data contain SO (Sequence ontology) terms such as
 `SO:0000001`, IDs will be converted into valid URIs to allow referencing. Thus,
 `SO:0000001` will be converted into `http://purl.obolibrary.org/obo/SO_0000001`.
 When a node cannot be converted, a default URI will be used
-(`https://biocypher.org/biocypher#<node_id>`).
+(`https://biocypher.org/biocypher#<node_id>`). Running the pipeline, the
+`_RDFWriter` will create a file for every node and relationship type you have
+specified.
 
 ```{code-block} yaml
 :caption: biocypher_config.yaml
@@ -32,8 +34,3 @@ rdf:
     efo: http://www.ebi.ac.uk/efo/EFO_
 
 ```
-
-## Output
-
-The `_RDFWriter` will create a file for every node and relationship type you
-have specified.
