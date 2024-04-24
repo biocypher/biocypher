@@ -18,7 +18,7 @@
       ~OntologyAdapter.get_head_join_node
       ~OntologyAdapter.get_nx_graph
       ~OntologyAdapter.get_rdf_graph
-      ~OntologyAdapter.get_root_label
+      ~OntologyAdapter.get_root_node
       ~OntologyAdapter.has_label
    
    
