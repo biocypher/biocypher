@@ -37,6 +37,6 @@ supported output formats are described on the following pages:
 
     neo4j.md
     arangodb.md
-    RDF.md
+    rdf.md
     postgres.md
     sqlite.md
