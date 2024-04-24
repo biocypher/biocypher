@@ -9,20 +9,28 @@ and thus are open towards any output format for the knowledge representation. We
 are currently working on other output formats, such as RDF, SQL, and ArangoDB,
 and will update the documentation accordingly.
 
-The used output format is specified via the ``dbms`` parameter in the ``biocypher_config.yaml`` (see the :ref:`config` for an example).
-Currently supported are ``neo4j``, ``arangodb``, ``rdf``, ``postgres``, and ``sqlite``.
+The used output format is specified via the ``dbms`` parameter in the
+``biocypher_config.yaml`` (see the :ref:`config` for an example).  Currently
+supported are ``neo4j``, ``arangodb``, ``rdf``, ``postgres``, and ``sqlite``.
 
-Furthermore you can specify whether to use the ``offline`` or ``online`` mode.
+Furthermore, you can specify whether to use the ``offline`` or ``online`` mode.
 
-- For the online mode set ``offline: false``. You need a running database instance and BioCypher will connect to this instance and directly writes the output to the database.
-- For the offline mode set ``offline: true``. BioCypher will write the knowledge graph to files in a designated output folder (standard being ``biocypher-out/`` and the current datetime). Furthermore you can generate a bash script to insert the knowledge graph files into the specified ``dbms`` by running ``bc.write_import_call()``.
+- For the online mode set ``offline: false``. You need a running database
+instance and BioCypher will connect to this instance and directly writes the
+output to the database.
+
+- For the offline mode set ``offline: true``. BioCypher will write the knowledge
+graph to files in a designated output folder (standard being ``biocypher-out/``
+and the current datetime). Furthermore you can generate a bash script to insert
+the knowledge graph files into the specified ``dbms`` by running
+``bc.write_import_call()``.
 
 .. caution::
 
    The ``online`` mode is currently only supported for the ``neo4j`` database.
 
-
-Details about the usage of the ``online`` and ``offline`` mode and the different supported output formats are described on the following pages:
+Details about the usage of the ``online`` and ``offline`` mode and the different
+supported output formats are described on the following pages:
 
 .. toctree::
     :maxdepth: 2
