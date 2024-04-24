@@ -1,18 +1,18 @@
-name: 'Setup'
-description: 'Setup Python and Poetry'
+name: "Setup"
+description: "Setup Python and Poetry"
 inputs:
   PYTHON_VERSION:
-    description: 'Python version'
+    description: "Python version"
     default: 3.9
   POETRY_VERSION:
-    description: 'Poetry version'
+    description: "Poetry version"
     default: 1.5.1
 
 runs:
   using: "composite"
   steps:
     - name: Set up Python ${{inputs.PYTHON_VERSION}}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{inputs.PYTHON_VERSION}}
     - name: Load cached Poetry installation
