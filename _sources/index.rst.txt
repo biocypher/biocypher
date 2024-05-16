@@ -106,6 +106,21 @@ make this framework truly accessible and comprehensive, we need the input of the
 biomedical community. We are therefore inviting you to join us in this
 endeavour!
 
+=================
+Vision Statement
+=================
+
+The machine learning models we train are only as good as the data they are
+trained on. However, most developments today still rely on manually engineered
+and non-reproducible data processing. We envision a future where the creation of
+knowledge graphs is as easy as running a script, enabling researchers to build
+reliable knowledge representations with up-to-date information. We believe that
+making the knowledge representation process more agile and lifting it to the
+same level of attention as the process of algorithm development will lead to
+more robust and reliable machine learning models. We are convinced that this
+will be a crucial step towards the democratization of AI in biomedicine and
+beyond.
+
 .. _connect_llm:
 
 =====================================================
