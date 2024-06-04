@@ -130,7 +130,7 @@ def test_manual_format():
     """
     ontology = Ontology(
         head_ontology={
-            "url": "test/ontologies/sem.rdf",
+            "url": "test/ontologies/sem.file",
             "root_node": "Core",
             "format": "rdf",
         },

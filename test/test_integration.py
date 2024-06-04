@@ -50,7 +50,7 @@ def test_ontology_without_schema_config(core_no_schema):
     assert core_no_schema
 
     core_no_schema._head_ontology = {
-        "url": "http://semanticweb.cs.vu.nl/2009/11/sem/",
+        "url": "test/ontologies/sem.file",  # any file suffix
         "root_node": "Core",
         "format": "rdf",
     }
