@@ -130,7 +130,7 @@ def test_manual_format():
     """
     ontology = Ontology(
         head_ontology={
-            "url": "http://semanticweb.cs.vu.nl/2009/11/sem/",
+            "url": "test/ontologies/sem.rdf",
             "root_node": "Core",
             "format": "rdf",
         },
