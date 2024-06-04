@@ -45,8 +45,8 @@
     xmlns:cs="&cs;"
 >
 
-<!-- 
-  meta classes 
+<!--
+  meta classes
 -->
 <owl:Class rdf:about="&sem;Core" rdfs:label="Core">
   <rdfs:comment>The SEM Core class contains all entities that make up the context of an event: Events, Actors, Places, Times. This class is meant to be extended for each application domain.</rdfs:comment>
