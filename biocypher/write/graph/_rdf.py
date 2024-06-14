@@ -125,7 +125,7 @@ class _RDFWriter(_BatchWriter):
 
         # create file name
         file_name = os.path.join(
-            self._outdir, f"{label_pascal}.{self.extension}"
+            self.outdir, f"{label_pascal}.{self.extension}"
         )
 
         # write data in graph
@@ -287,7 +287,7 @@ class _RDFWriter(_BatchWriter):
 
         # create file name
         file_name = os.path.join(
-            self._outdir, f"{label_pascal}.{self.extension}"
+            self.outdir, f"{label_pascal}.{self.extension}"
         )
 
         # write data in graph

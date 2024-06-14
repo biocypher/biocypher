@@ -87,3 +87,4 @@ class Pandas:
             self.dfs[_type] = pd.concat(
                 [self.dfs[_type], df], ignore_index=True
             )
+        return self.dfs[_type]
