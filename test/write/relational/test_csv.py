@@ -4,7 +4,7 @@ import pytest
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
-def test_construct_import_call(bw_comma_csv, _get_nodes):
+def test_pandas_csv_writer(bw_comma_csv, _get_nodes):
     nodes = _get_nodes
 
     def node_gen(nodes):

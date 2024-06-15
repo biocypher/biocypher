@@ -45,15 +45,14 @@ class _Writer(ABC):
         self.translator = translator
         self.deduplicator = deduplicator
         self.strict_mode = strict_mode
-
-        # set property
-
         self.output_directory = output_directory
+
         if os.path.exists(self.output_directory):
-            logger.warning(
-                f"Output directory `{self.output_directory}` already exists. "
-                "If this is not planned, file consistency may be compromised."
-            )
+            if kwargs.get("write_to_file", True):
+                logger.warning(
+                    f"Output directory `{self.output_directory}` already exists. "
+                    "If this is not planned, file consistency may be compromised."
+                )
         else:
             logger.info(f"Creating output directory `{self.output_directory}`.")
             os.makedirs(self.output_directory)

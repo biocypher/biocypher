@@ -10,7 +10,8 @@ class _PandasCSVWriter(_Writer):
     Class for writing node and edge representations to a CSV file.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, write_to_file: bool = True, **kwargs):
+        kwargs["write_to_file"] = write_to_file
         super().__init__(*args, **kwargs)
         self.in_memory_dfs = {}
         self.stored_dfs = {}
@@ -21,6 +22,7 @@ class _PandasCSVWriter(_Writer):
         self.delimiter = kwargs.get("delimiter")
         if not self.delimiter:
             self.delimiter = ","
+        self.write_to_file = write_to_file
 
     def _construct_import_call(self) -> str:
         """Function to construct the Python code to load all node and edge csv files again into Pandas dfs.
@@ -61,12 +63,14 @@ class _PandasCSVWriter(_Writer):
             entity_df = self.in_memory_dfs[entity_type]
             if " " in entity_type or "." in entity_type:
                 entity_type = entity_type.replace(" ", "_").replace(".", "_")
-            logger.info(
-                f"Writing {entity_df.shape[0]} entries to {entity_type}.csv."
-            )
-            entity_df.to_csv(
-                f"{self.output_directory}/{entity_type}.csv", sep=self.delimiter
-            )
+            if self.write_to_file:
+                logger.info(
+                    f"Writing {entity_df.shape[0]} entries to {entity_type}.csv."
+                )
+                entity_df.to_csv(
+                    f"{self.output_directory}/{entity_type}.csv",
+                    sep=self.delimiter,
+                )
             self.stored_dfs[entity_type] = entity_df
         self.in_memory_dfs = {}
         return True

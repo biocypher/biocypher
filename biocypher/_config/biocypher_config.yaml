@@ -135,3 +135,7 @@ sqlite:
 csv:
   ### CSV/Pandas configuration ###
   delimiter: ','
+
+networkx:
+  ### NetworkX configuration ###
+  some_config: some_value

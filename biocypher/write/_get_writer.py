@@ -17,6 +17,7 @@ from biocypher._logger import logger
 from biocypher.write.graph._rdf import _RDFWriter
 from biocypher.write.graph._neo4j import _Neo4jBatchWriter
 from biocypher.write.graph._arangodb import _ArangoDBBatchWriter
+from biocypher.write.graph._networkx import _NetworkXWriter
 from biocypher.write.relational._csv import _PandasCSVWriter
 from biocypher.write.relational._sqlite import _SQLiteBatchWriter
 from biocypher.write.relational._postgresql import _PostgreSQLBatchWriter
@@ -51,6 +52,8 @@ DBMS_TO_CLASS = {
     "CSV": _PandasCSVWriter,
     "pandas": _PandasCSVWriter,
     "Pandas": _PandasCSVWriter,
+    "networkx": _NetworkXWriter,
+    "NetworkX": _NetworkXWriter,
 }
 
 
