@@ -1,7 +1,7 @@
 import os
 
 from biocypher._logger import logger
-from biocypher.write.graph._neo4j import _Neo4jBatchWriter
+from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
 
 
 class _ArangoDBBatchWriter(_Neo4jBatchWriter):

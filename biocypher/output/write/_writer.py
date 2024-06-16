@@ -8,8 +8,35 @@ from biocypher._logger import logger
 from biocypher._translate import Translator
 from biocypher._deduplicate import Deduplicator
 
+__all__ = ["_Writer"]
+
 
 class _Writer(ABC):
+    """Abstract class for writing node and edge representations to disk.
+    Specifics of the different writers (e.g. neo4j, postgresql, csv, etc.)
+    are implemented in the child classes. Any concrete writer needs to
+    implement at least:
+    - _write_node_data
+    - _write_edge_data
+    - _construct_import_call
+    - _get_import_script_name
+
+    Args:
+        translator (Translator): Instance of :py:class:`Translator` to enable translation of
+            nodes and manipulation of properties.
+        deduplicator (Deduplicator): Instance of :py:class:`Deduplicator` to enable deduplication
+            of nodes and edges.
+        output_directory (str, optional): Path for exporting CSV files. Defaults to None.
+        strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.
+    strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.
+
+    Raises:
+        NotImplementedError: Writer implementation must override '_write_node_data'
+        NotImplementedError: Writer implementation must override '_write_edge_data'
+        NotImplementedError: Writer implementation must override '_construct_import_call'
+        NotImplementedError: Writer implementation must override '_get_import_script_name'
+    """
+
     def __init__(
         self,
         translator: Translator,
@@ -20,13 +47,6 @@ class _Writer(ABC):
         **kwargs,
     ):
         """Abstract class for writing node and edge representations to disk.
-        Specifics of the different writers (e.g. neo4j, postgresql, csv, etc.)
-        are implemented in the child classes. Any concrete writer needs to
-        implement at least:
-        - _write_node_data
-        - _write_edge_data
-        - _construct_import_call
-        - _get_import_script_name
 
         Args:
             translator (Translator): Instance of :py:class:`Translator` to enable translation of
@@ -35,12 +55,7 @@ class _Writer(ABC):
                 of nodes and edges.
             output_directory (str, optional): Path for exporting CSV files. Defaults to None.
             strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.
-
-        Raises:
-            NotImplementedError: Writer implementation must override '_write_node_data'
-            NotImplementedError: Writer implementation must override '_write_edge_data'
-            NotImplementedError: Writer implementation must override '_construct_import_call'
-            NotImplementedError: Writer implementation must override '_get_import_script_name'
+        strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.
         """
         self.translator = translator
         self.deduplicator = deduplicator
@@ -64,7 +79,7 @@ class _Writer(ABC):
             Union[BioCypherNode, BioCypherEdge, BioCypherRelAsNode]
         ],
     ) -> bool:
-        """Implement how to write nodes to disk.
+        """Implement how to output.write nodes to disk.
 
         Args:
             nodes (Iterable): An iterable of BioCypherNode / BioCypherEdge / BioCypherRelAsNode objects.
@@ -83,7 +98,7 @@ class _Writer(ABC):
             Union[BioCypherNode, BioCypherEdge, BioCypherRelAsNode]
         ],
     ) -> bool:
-        """Implement how to write edges to disk.
+        """Implement how to output.write edges to disk.
 
         Args:
             edges (Iterable): An iterable of BioCypherNode / BioCypherEdge / BioCypherRelAsNode objects.
@@ -165,7 +180,7 @@ class _Writer(ABC):
 
     def write_import_call(self):
         """
-        Function to write the import call detailing folder and
+        Function to output.write the import call detailing folder and
         individual node and edge headers and data files, as well as
         delimiters and database name, to the export folder as txt.
 

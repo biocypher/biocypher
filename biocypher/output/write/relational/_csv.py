@@ -1,8 +1,8 @@
 from more_itertools import peekable
 
 from biocypher._logger import logger
-from biocypher._pandas import Pandas
-from biocypher.write._writer import _Writer
+from biocypher.output.write._writer import _Writer
+from biocypher.output.in_memory._pandas import Pandas
 
 
 class _PandasCSVWriter(_Writer):
@@ -48,7 +48,7 @@ class _PandasCSVWriter(_Writer):
         return passed
 
     def _write_entities_to_file(self, entities: iter) -> bool:
-        """Function to write the entities to a CSV file.
+        """Function to output.write the entities to a CSV file.
 
         Args:
             entities (iterable): An iterable of BioCypherNode / BioCypherEdge / BioCypherRelAsNode objects.

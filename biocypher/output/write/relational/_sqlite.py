@@ -1,11 +1,11 @@
-from biocypher.write.relational._postgresql import _PostgreSQLBatchWriter
+from biocypher.output.write.relational._postgresql import _PostgreSQLBatchWriter
 
 
 class _SQLiteBatchWriter(_PostgreSQLBatchWriter):
     """
     Class for writing node and edge representations to a SQLite database.
     It uses the _PostgreSQLBatchWriter class under the hood, which already
-    implements the logic to write the nodes/edges to a relational DBMS.
+    implements the logic to output.write the nodes/edges to a relational DBMS.
     Only the import bash script differs between PostgreSQL and SQLite
     and is therefore implemented in this class.
 

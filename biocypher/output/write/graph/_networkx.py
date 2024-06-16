@@ -3,8 +3,8 @@ import pickle
 import networkx as nx
 
 from biocypher._logger import logger
-from biocypher.write._writer import _Writer
-from biocypher.write.relational._csv import _PandasCSVWriter
+from biocypher.output.write._writer import _Writer
+from biocypher.output.write.relational._csv import _PandasCSVWriter
 
 
 class _NetworkXWriter(_Writer):

@@ -2,7 +2,7 @@ import os
 import glob
 
 from biocypher._logger import logger
-from biocypher.write._batch_writer import _BatchWriter
+from biocypher.output.write._batch_writer import _BatchWriter
 
 
 class _PostgreSQLBatchWriter(_BatchWriter):
@@ -59,7 +59,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
 
     def _write_array_string(self, string_list) -> str:
         """
-        Abstract method to write the string representation of an array into a .csv file
+        Abstract method to output.write the string representation of an array into a .csv file
         as required by the postgresql COPY command, with '{','}' brackets and ',' separation.
 
         Args:

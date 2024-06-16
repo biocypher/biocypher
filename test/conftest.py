@@ -5,9 +5,9 @@ import shutil
 
 import pytest
 
-from biocypher._pandas import Pandas
 from biocypher._translate import Translator
 from biocypher._deduplicate import Deduplicator
+from biocypher.output.in_memory._pandas import Pandas
 
 # load all fixtures from the fixtures directory
 pytest_plugins = [

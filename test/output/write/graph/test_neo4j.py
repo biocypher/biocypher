@@ -4,11 +4,9 @@ import logging
 from genericpath import isfile
 import pytest
 
-import pandas as pd
-
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from biocypher.write.graph._neo4j import _Neo4jBatchWriter
-from biocypher.write._batch_writer import parse_label
+from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
+from biocypher.output.write._batch_writer import parse_label
 
 
 def test_neo4j_writer_and_output_dir(bw):
@@ -900,7 +898,7 @@ def test_BioCypherRelAsNode_implementation(bw, _get_rel_as_nodes):
 
 @pytest.mark.parametrize("length", [8], scope="module")
 def test_RelAsNode_overwrite_behaviour(bw, _get_rel_as_nodes):
-    # if rel as node is called from successive write calls, SOURCE_OF,
+    # if rel as node is called from successive output.write calls, SOURCE_OF,
     # TARGET_OF, and PART_OF should be continued, not overwritten
     trips = _get_rel_as_nodes
 

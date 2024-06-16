@@ -26,17 +26,17 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
-from biocypher.write._get_writer import DBMS_TO_CLASS, get_writer
 from ._get import Downloader
 from ._config import config as _config
 from ._config import update_from_file as _file_update
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from ._pandas import Pandas
-from ._connect import get_driver
 from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator
 from ._deduplicate import Deduplicator
+from .output.in_memory._pandas import Pandas
+from .output.write._get_writer import DBMS_TO_CLASS, get_writer
+from .output.connect._neo4j_driver import get_driver
 
 __all__ = ["BioCypher"]
 

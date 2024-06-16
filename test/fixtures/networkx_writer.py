@@ -1,6 +1,6 @@
 import pytest
 
-from biocypher.write.graph._networkx import _NetworkXWriter
+from biocypher.output.write.graph._networkx import _NetworkXWriter
 
 
 @pytest.fixture(scope="function")

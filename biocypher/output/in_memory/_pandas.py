@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 
 class Pandas:

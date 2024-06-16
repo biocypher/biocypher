@@ -1,6 +1,6 @@
 import pytest
 
-from biocypher.write.relational._csv import _PandasCSVWriter
+from biocypher.output.write.relational._csv import _PandasCSVWriter
 
 
 @pytest.fixture(scope="function")

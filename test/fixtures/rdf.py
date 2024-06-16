@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from biocypher.write.graph._rdf import _RDFWriter
+from biocypher.output.write.graph._rdf import _RDFWriter
 
 
 @pytest.fixture(scope="function")
