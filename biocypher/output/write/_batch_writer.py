@@ -248,14 +248,6 @@ class _BatchWriter(_Writer, ABC):
         self.import_call_edges = set()
 
         self.outdir = output_directory
-        # if os.path.exists(self.outdir):
-        #    logger.warning(
-        #        f"Output directory `{self.outdir}` already exists. "
-        #        "If this is not planned, file consistency may be compromised."
-        #    )
-        # else:
-        #    logger.info(f"Creating output directory `{self.outdir}`.")
-        #    os.makedirs(self.outdir)
 
         self._import_call_file_prefix = import_call_file_prefix
 
