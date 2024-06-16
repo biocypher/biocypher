@@ -49,26 +49,28 @@ class _NetworkXWriter(_Writer):
 
     def add_to_networkx(self) -> bool:
         all_dfs = self.csv_writer.stored_dfs
-        node_dfs = []
-        edge_dfs = []
-        for key, df in all_dfs.items():
-            if df.columns.str.contains("node_id").any():
-                node_dfs.append(df)
-            elif (
-                df.columns.str.contains("source_id").any()
-                and df.columns.str.contains("target_id").any()
-            ):
-                edge_dfs.append(df)
-
+        node_dfs = [
+            df
+            for df in all_dfs.values()
+            if df.columns.str.contains("node_id").any()
+        ]
+        edge_dfs = [
+            df
+            for df in all_dfs.values()
+            if df.columns.str.contains("source_id").any()
+            and df.columns.str.contains("target_id").any()
+        ]
         for df in node_dfs:
-            for _, row in df.iterrows():
-                node_id = row["node_id"]
-                attributes = row.drop("node_id").to_dict()
-                self.G.add_node(node_id, **attributes)
+            nodes = df.set_index("node_id").to_dict(orient="index")
+            self.G.add_nodes_from(nodes.items())
         for df in edge_dfs:
-            for _, row in df.iterrows():
-                source_id = row["source_id"]
-                target_id = row["target_id"]
-                edge_attributes = row.drop(["source_id", "target_id"]).to_dict()
-                self.G.add_edge(source_id, target_id, **edge_attributes)
+            edges = df.set_index(["source_id", "target_id"]).to_dict(
+                orient="index"
+            )
+            self.G.add_edges_from(
+                (
+                    (source, target, attrs)
+                    for (source, target), attrs in edges.items()
+                )
+            )
         return True

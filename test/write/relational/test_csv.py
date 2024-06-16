@@ -4,7 +4,7 @@ import pytest
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
-def test_pandas_csv_writer(bw_comma_csv, _get_nodes):
+def test_pandas_csv_writer_nodes(bw_comma_csv, _get_nodes):
     nodes = _get_nodes
 
     def node_gen(nodes):
@@ -52,3 +52,51 @@ def test_pandas_csv_writer(bw_comma_csv, _get_nodes):
         bw_comma_csv.output_directory, bw_comma_csv._get_import_script_name()
     )
     assert "import_pandas_csv.py" in import_script_path
+
+
+@pytest.mark.parametrize("length", [4], scope="module")
+def test_pandas_csv_writer_edges(bw_comma_csv, _get_edges):
+    edges = _get_edges
+
+    def edge_gen(edges):
+        yield from edges
+
+    passed = bw_comma_csv._write_edge_data(edge_gen(edges))
+
+    tmp_path = bw_comma_csv.output_directory
+
+    pid_csv = os.path.join(tmp_path, "PERTURBED_IN_DISEASE.csv")
+    imi_csv = os.path.join(tmp_path, "Is_Mutated_In.csv")
+
+    with open(pid_csv) as f:
+        perturbed_in_disease = f.read()
+    with open(imi_csv) as f:
+        is_mutated_in = f.read()
+
+    assert passed
+    assert "p0," in perturbed_in_disease
+    assert "prel0," in perturbed_in_disease
+    assert "T253," in perturbed_in_disease
+    assert "4," in perturbed_in_disease
+    assert "p1," in perturbed_in_disease
+    assert "PERTURBED_IN_DISEASE" in perturbed_in_disease
+    assert "p1," in perturbed_in_disease
+    assert "prel1," in perturbed_in_disease
+    assert "T253," in perturbed_in_disease
+    assert "4," in perturbed_in_disease
+    assert "p2," in perturbed_in_disease
+    assert "PERTURBED_IN_DISEASE" in perturbed_in_disease
+    assert "\n" in perturbed_in_disease
+    assert "m0," in is_mutated_in
+    assert "mrel0," in is_mutated_in
+    assert "3-UTR," in is_mutated_in
+    assert "1," in is_mutated_in
+    assert "p1," in is_mutated_in
+    assert "Is_Mutated_In" in is_mutated_in
+    assert "m1," in is_mutated_in
+    assert "mrel1," in is_mutated_in
+    assert "3-UTR," in is_mutated_in
+    assert "1," in is_mutated_in
+    assert "p2," in is_mutated_in
+    assert "Is_Mutated_In" in is_mutated_in
+    assert "\n" in is_mutated_in
