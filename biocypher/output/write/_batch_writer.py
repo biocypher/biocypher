@@ -33,7 +33,7 @@ class _BatchWriter(_Writer, ABC):
     @abstractmethod
     def _write_array_string(self, string_list):
         """
-        Abstract method to output.write the string representation of an array into a .csv file.
+        Abstract method to write the string representation of an array into a .csv file.
         Different databases require different formats of array to optimize import speed.
 
         Args:
@@ -62,7 +62,7 @@ class _BatchWriter(_Writer, ABC):
     @abstractmethod
     def _write_edge_headers(self):
         """
-        Abstract method to output.write a database import-file for a graph entity that is represented
+        Abstract method to write a database import-file for a graph entity that is represented
         as an edge as per the definition in the `schema_config.yaml`,
         containing only the header for this type of edge.
 
@@ -308,7 +308,7 @@ class _BatchWriter(_Writer, ABC):
         """
         # TODO check represented_as
 
-        # output.write node data
+        # write node data
         passed = self._write_node_data(nodes, batch_size, force)
         if not passed:
             logger.error("Error while writing node data.")
@@ -369,9 +369,9 @@ class _BatchWriter(_Writer, ABC):
 
         else:
             # is this a problem? if the generator or list is empty, we
-            # don't output.write anything.
+            # don't write anything.
             logger.debug(
-                "No edges to output.write, possibly due to no matched Biolink classes.",
+                "No edges to write, possibly due to no matched Biolink classes.",
             )
             pass
 
@@ -525,7 +525,7 @@ class _BatchWriter(_Writer, ABC):
                         bins[label] = []
                         bin_l[label] = 0
 
-            # after generator depleted, output.write remainder of bins
+            # after generator depleted, write remainder of bins
             for label, nl in bins.items():
                 passed = self._write_single_node_list_to_file(
                     nl,
@@ -537,7 +537,7 @@ class _BatchWriter(_Writer, ABC):
                 if not passed:
                     return False
 
-            # use complete bin list to output.write header files
+            # use complete bin list to write header files
             # TODO if a node type has varying properties
             # (ie missingness), we'd need to collect all possible
             # properties in the generator pass
@@ -766,7 +766,7 @@ class _BatchWriter(_Writer, ABC):
                         bins[label] = []
                         bin_l[label] = 0
 
-            # after generator depleted, output.write remainder of bins
+            # after generator depleted, write remainder of bins
             for label, nl in bins.items():
                 passed = self._write_single_edge_list_to_file(
                     nl,
@@ -777,7 +777,7 @@ class _BatchWriter(_Writer, ABC):
                 if not passed:
                     return False
 
-            # use complete bin list to output.write header files
+            # use complete bin list to write header files
             # TODO if a edge type has varying properties
             # (ie missingness), we'd need to collect all possible
             # properties in the generator pass
@@ -962,7 +962,7 @@ class _BatchWriter(_Writer, ABC):
                 + 1
             )
 
-        # output.write to file
+        # write to file
         padded_part = str(next_part).zfill(3)
         logger.info(
             f"Writing {len(lines)} entries to {label_pascal}-part{padded_part}.csv",
@@ -995,7 +995,7 @@ class _BatchWriter(_Writer, ABC):
 
     def write_import_call(self) -> str:
         """
-        Function to output.write the import call detailing folder and
+        Function to write the import call detailing folder and
         individual node and edge headers and data files, as well as
         delimiters and database name, to the export folder as txt.
 

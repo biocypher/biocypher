@@ -5,7 +5,7 @@ the `_RDFWriter` module.
 
 ## RDF settings
 
-To output.write your output to RDF, you have to specify some RDF settings in the
+To write your output to RDF, you have to specify some RDF settings in the
 biocypher_config.yaml. Using `rdf_format`, you can choose to export to xml,
 turtle or any other format `rdflib` supports. The second configuration is the
 `rdf_namespaces`, where you can specify which namespaces exist in your data. If,
