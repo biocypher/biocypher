@@ -28,7 +28,6 @@ from biocypher.output.write._batch_writer import _BatchWriter
 
 
 class _RDFWriter(_BatchWriter):
-
     """
     Class to write BioCypher's property graph into an RDF format using
     rdflib and all the extensions it supports (RDF/XML, N3, NTriples,
@@ -169,7 +168,6 @@ class _RDFWriter(_BatchWriter):
 
             # add properties to the transformed edge --> node
             for key, value in rdf_properties.items():
-                # only write value if it exists.
                 # only write value if it exists.
                 if value:
                     self.add_property_to_graph(graph, rdf_predicate, value, key)
