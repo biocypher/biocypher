@@ -75,8 +75,8 @@ methods, which accept collections of nodes and edges either as :ref:`tuples
       :meth:`BioCypher.summary`. See the :class:`BioCypher` :ref:`class
       <api_core>` for more information.
 
-Details about the :mod:`biocypher.output.write` module responsible for these methods
-can be found below.
+Details about the :mod:`biocypher.output.write` module responsible for these
+methods can be found below.
 
 .. module:: biocypher.output.write
 
@@ -126,8 +126,8 @@ Example usage:
    # show list of dataframes (one per node/edge type)
    dfs = bc.to_df()
 
-Details about the :mod:`biocypher.output.in_memory` module responsible for these methods
-can be found below.
+Details about the :mod:`biocypher.output.in_memory` module responsible for these
+methods can be found below.
 
 .. module:: biocypher.output.in_memory
 .. autosummary::
@@ -167,8 +167,8 @@ example:
    bc.merge_nodes(node_set_2)
    bc.merge_edges(edge_set_2)
 
-Details about the :mod:`biocypher.output.connect` module responsible for these methods
-can be found below.
+Details about the :mod:`biocypher.output.connect` module responsible for these
+methods can be found below.
 
 .. module:: biocypher.output.connect
 .. autosummary::
