@@ -134,8 +134,8 @@ sqlite:
 
 csv:
   ### CSV/Pandas configuration ###
-  delimiter: ','
+  delimiter: ","
 
 networkx:
   ### NetworkX configuration ###
-  some_config: some_value
+  some_config: some_value # placeholder for technical reasons TODO
