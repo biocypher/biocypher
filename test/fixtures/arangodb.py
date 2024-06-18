@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from biocypher.write.graph._arangodb import _ArangoDBBatchWriter
+from biocypher.output.write.graph._arangodb import _ArangoDBBatchWriter
 
 
 @pytest.fixture(scope="function")

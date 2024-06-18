@@ -1,9 +1,7 @@
 import os
-import re
-import subprocess
 
 from biocypher._logger import logger
-from biocypher.write._batch_writer import parse_label, _BatchWriter
+from biocypher.output.write._batch_writer import parse_label, _BatchWriter
 
 
 class _Neo4jBatchWriter(_BatchWriter):
@@ -49,7 +47,7 @@ class _Neo4jBatchWriter(_BatchWriter):
 
     def _write_array_string(self, string_list):
         """
-        Abstract method to write the string representation of an array into a .csv file
+        Abstract method to output.write the string representation of an array into a .csv file
         as required by the neo4j admin-import.
 
         Args:

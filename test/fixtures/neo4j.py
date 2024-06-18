@@ -4,8 +4,8 @@ from neo4j.exceptions import ServiceUnavailable
 import pytest
 
 from biocypher import config as bcy_config
-from biocypher._connect import _Neo4jDriver
-from biocypher.write.graph._neo4j import _Neo4jBatchWriter
+from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
+from biocypher.output.connect._neo4j_driver import _Neo4jDriver
 
 
 @pytest.fixture(scope="function")

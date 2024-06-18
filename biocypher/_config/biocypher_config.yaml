@@ -131,3 +131,11 @@ sqlite:
   delimiter: '\t'
   # import_call_bin_prefix: '' # path to "sqlite3"
   # import_call_file_prefix: '/path/to/files'
+
+csv:
+  ### CSV/Pandas configuration ###
+  delimiter: ","
+
+networkx:
+  ### NetworkX configuration ###
+  some_config: some_value # placeholder for technical reasons TODO

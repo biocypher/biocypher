@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 
 class Pandas:
@@ -87,3 +87,4 @@ class Pandas:
             self.dfs[_type] = pd.concat(
                 [self.dfs[_type], df], ignore_index=True
             )
+        return self.dfs[_type]

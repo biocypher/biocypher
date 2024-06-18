@@ -4,7 +4,7 @@ import subprocess
 import pytest
 
 from biocypher import config as bcy_config
-from biocypher.write.relational._postgresql import _PostgreSQLBatchWriter
+from biocypher.output.write.relational._postgresql import _PostgreSQLBatchWriter
 
 
 @pytest.fixture(scope="session")

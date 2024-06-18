@@ -4,11 +4,9 @@ import logging
 from genericpath import isfile
 import pytest
 
-import pandas as pd
-
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from biocypher.write.graph._neo4j import _Neo4jBatchWriter
-from biocypher.write._batch_writer import parse_label
+from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
+from biocypher.output.write._batch_writer import parse_label
 
 
 def test_neo4j_writer_and_output_dir(bw):

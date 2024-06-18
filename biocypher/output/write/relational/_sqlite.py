@@ -1,4 +1,4 @@
-from biocypher.write.relational._postgresql import _PostgreSQLBatchWriter
+from biocypher.output.write.relational._postgresql import _PostgreSQLBatchWriter
 
 
 class _SQLiteBatchWriter(_PostgreSQLBatchWriter):

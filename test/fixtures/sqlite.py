@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from biocypher.write.relational._sqlite import _SQLiteBatchWriter
+from biocypher.output.write.relational._sqlite import _SQLiteBatchWriter
 
 
 @pytest.fixture(scope="function")

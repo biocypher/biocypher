@@ -6,16 +6,18 @@ import os
 import re
 import glob
 
-from rdflib import Graph
 from more_itertools import peekable
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._logger import logger
 from biocypher._translate import Translator
 from biocypher._deduplicate import Deduplicator
+from biocypher.output.write._writer import _Writer
 
 
-class _BatchWriter(ABC):
+class _BatchWriter(_Writer, ABC):
+    """Abstract batch writer class"""
+
     @abstractmethod
     def _get_default_import_call_bin_prefix(self):
         """
@@ -41,7 +43,7 @@ class _BatchWriter(ABC):
             str: The database-specific string representation of an array
         """
         raise NotImplementedError(
-            "Database writer must override '_write_node_headers'"
+            "Database writer must override '_write_array_string'"
         )
 
     @abstractmethod
@@ -206,6 +208,12 @@ class _BatchWriter(ABC):
             rdf_namespaces:
                 The namespaces for RDF.
         """
+        super().__init__(
+            translator=translator,
+            deduplicator=deduplicator,
+            output_directory=output_directory,
+            strict_mode=strict_mode,
+        )
         self.db_name = db_name
         self.db_user = db_user
         self.db_password = db_password
@@ -239,31 +247,14 @@ class _BatchWriter(ABC):
         self.import_call_nodes = set()
         self.import_call_edges = set()
 
-        self._outdir = output_directory
+        self.outdir = output_directory
 
         self._import_call_file_prefix = import_call_file_prefix
-
-        if os.path.exists(self.outdir):
-            logger.warning(
-                f"Output directory `{self.outdir}` already exists. "
-                "If this is not planned, file consistency may be compromised."
-            )
-        else:
-            logger.info(f"Creating output directory `{self.outdir}`.")
-            os.makedirs(self.outdir)
 
         self.parts = {}  # dict to store the paths of part files for each label
 
         # TODO not memory efficient, but should be fine for most cases; is
         # there a more elegant solution?
-
-    @property
-    def outdir(self):
-        """
-        Property for output directory path.
-        """
-
-        return self._outdir
 
     @property
     def import_call_file_prefix(self):
@@ -272,7 +263,7 @@ class _BatchWriter(ABC):
         """
 
         if self._import_call_file_prefix is None:
-            return self._outdir
+            return self.outdir
         else:
             return self._import_call_file_prefix
 
@@ -1005,7 +996,9 @@ class _BatchWriter(ABC):
         """
 
         file_path = os.path.join(self.outdir, self._get_import_script_name())
-        logger.info(f"Writing {self.db_name} import call to `{file_path}`.")
+        logger.info(
+            f"Writing {self.db_name + ' ' if self.db_name else ''}import call to `{file_path}`."
+        )
 
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(self._construct_import_call())

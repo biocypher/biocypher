@@ -24,11 +24,10 @@ from rdflib.namespace import (
 
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._logger import logger
-from biocypher.write._batch_writer import _BatchWriter
+from biocypher.output.write._batch_writer import _BatchWriter
 
 
 class _RDFWriter(_BatchWriter):
-
     """
     Class to write BioCypher's property graph into an RDF format using
     rdflib and all the extensions it supports (RDF/XML, N3, NTriples,
@@ -125,7 +124,7 @@ class _RDFWriter(_BatchWriter):
 
         # create file name
         file_name = os.path.join(
-            self._outdir, f"{label_pascal}.{self.extension}"
+            self.outdir, f"{label_pascal}.{self.extension}"
         )
 
         # write data in graph
@@ -287,7 +286,7 @@ class _RDFWriter(_BatchWriter):
 
         # create file name
         file_name = os.path.join(
-            self._outdir, f"{label_pascal}.{self.extension}"
+            self.outdir, f"{label_pascal}.{self.extension}"
         )
 
         # write data in graph

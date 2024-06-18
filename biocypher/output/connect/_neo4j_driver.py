@@ -13,7 +13,7 @@ BioCypher 'online' mode. Handles connection and manipulation of a running DBMS.
 """
 import subprocess
 
-from ._logger import logger
+from biocypher._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
@@ -22,10 +22,10 @@ import itertools
 
 import neo4j_utils
 
-from . import _misc
-from ._config import config as _config
-from ._create import BioCypherEdge, BioCypherNode
-from ._translate import Translator
+from biocypher import _misc
+from biocypher._config import config as _config
+from biocypher._create import BioCypherEdge, BioCypherNode
+from biocypher._translate import Translator
 
 __all__ = ["_Neo4jDriver"]
 
