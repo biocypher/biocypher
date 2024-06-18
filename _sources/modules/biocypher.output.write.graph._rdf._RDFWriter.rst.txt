@@ -1,0 +1,36 @@
+﻿biocypher.output.write.graph.\_rdf.\_RDFWriter
+==============================================
+
+.. currentmodule:: biocypher.output.write.graph._rdf
+
+.. autoclass:: _RDFWriter
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~_RDFWriter.__init__
+      ~_RDFWriter.add_property_to_graph
+      ~_RDFWriter.get_import_call
+      ~_RDFWriter.property_to_uri
+      ~_RDFWriter.subject_to_uri
+      ~_RDFWriter.transform_string_to_list
+      ~_RDFWriter.write_edges
+      ~_RDFWriter.write_import_call
+      ~_RDFWriter.write_nodes
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~_RDFWriter.import_call_file_prefix
+   
+   

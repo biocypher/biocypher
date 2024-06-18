@@ -1,0 +1,26 @@
+﻿biocypher.output.write.graph.\_networkx.\_NetworkXWriter
+========================================================
+
+.. currentmodule:: biocypher.output.write.graph._networkx
+
+.. autoclass:: _NetworkXWriter
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~_NetworkXWriter.__init__
+      ~_NetworkXWriter.add_to_networkx
+      ~_NetworkXWriter.write_edges
+      ~_NetworkXWriter.write_import_call
+      ~_NetworkXWriter.write_nodes
+   
+   
+
+   
+   
+   

@@ -2,9 +2,9 @@
 <html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta property="og:title" content="biocypher.write.graph._arangodb._ArangoDBBatchWriter" />
+<meta property="og:title" content="biocypher.output.write.graph._networkx._NetworkXWriter" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://biocypher.org/modules/biocypher.write.graph._arangodb._ArangoDBBatchWriter.html" />
+<meta property="og:url" content="https://biocypher.org/modules/biocypher.output.write.graph._networkx._NetworkXWriter.html" />
 <meta property="og:site_name" content="BioCypher" />
 <meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 <meta property="og:image:alt" content="BioCypher" />
@@ -15,7 +15,7 @@
 <meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>biocypher.write.graph._arangodb._ArangoDBBatchWriter &mdash; BioCypher</title>
+  <title>biocypher.output.write.graph._networkx._NetworkXWriter &mdash; BioCypher</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -36,8 +36,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="biocypher.write.relational._postgresql._PostgreSQLBatchWriter" href="biocypher.write.relational._postgresql._PostgreSQLBatchWriter.html" />
-    <link rel="prev" title="biocypher.write.graph._neo4j._Neo4jBatchWriter" href="biocypher.write.graph._neo4j._Neo4jBatchWriter.html" /> 
+    <link rel="next" title="biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter" href="biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter.html" />
+    <link rel="prev" title="biocypher.output.write.graph._rdf._RDFWriter" href="biocypher.output.write.graph._rdf._RDFWriter.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -109,9 +109,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
-      <li class="breadcrumb-item active">biocypher.write.graph._arangodb._ArangoDBBatchWriter</li>
+      <li class="breadcrumb-item active">biocypher.output.write.graph._networkx._NetworkXWriter</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/modules/biocypher.write.graph._arangodb._ArangoDBBatchWriter.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/modules/biocypher.output.write.graph._networkx._NetworkXWriter.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -119,57 +119,48 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="biocypher-write-graph-arangodb-arangodbbatchwriter">
-<h1>biocypher.write.graph._arangodb._ArangoDBBatchWriter<a class="headerlink" href="#biocypher-write-graph-arangodb-arangodbbatchwriter" title="Permalink to this heading"></a></h1>
+  <section id="biocypher-output-write-graph-networkx-networkxwriter">
+<h1>biocypher.output.write.graph._networkx._NetworkXWriter<a class="headerlink" href="#biocypher-output-write-graph-networkx-networkxwriter" title="Permalink to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="biocypher.write.graph._arangodb._ArangoDBBatchWriter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.write.graph._arangodb.</span></span><span class="sig-name descname"><span class="pre">_ArangoDBBatchWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.graph._arangodb._ArangoDBBatchWriter" title="Permalink to this definition"></a></dt>
-<dd><p>Class for writing node and edge representations to disk using the format
-specified by ArangoDB for the use of “arangoimport”. Output files are
-similar to Neo4j, but with a different header format.</p>
+<dt class="sig sig-object py" id="biocypher.output.write.graph._networkx._NetworkXWriter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.output.write.graph._networkx.</span></span><span class="sig-name descname"><span class="pre">_NetworkXWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write.graph._networkx._NetworkXWriter" title="Permalink to this definition"></a></dt>
+<dd><p>Class for writing node and edges to a networkx DiGraph.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="biocypher.write.graph._arangodb._ArangoDBBatchWriter.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.graph._arangodb._ArangoDBBatchWriter.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>Constructor.</p>
-<p>Check the version of Neo4j and adds a command scope if version &gt;= 5.</p>
+<dt class="sig sig-object py" id="biocypher.output.write.graph._networkx._NetworkXWriter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write.graph._networkx._NetworkXWriter.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Abstract class for writing node and edge representations to disk.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An instance of the writer.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="biocypher.write.graph._neo4j._Neo4jBatchWriter.html#biocypher.write.graph._neo4j._Neo4jBatchWriter" title="biocypher.write.graph._neo4j._Neo4jBatchWriter">_Neo4jBatchWriter</a></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>translator</strong> (<a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><em>Translator</em></a>) – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Translator</span></code> to enable translation of
+nodes and manipulation of properties.</p></li>
+<li><p><strong>deduplicator</strong> (<em>Deduplicator</em>) – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code> to enable deduplication
+of nodes and edges.</p></li>
+<li><p><strong>output_directory</strong> (<em>str</em><em>, </em><em>optional</em>) – Path for exporting CSV files. Defaults to None.</p></li>
+<li><p><strong>strict_mode</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to enforce source, version, and license properties. Defaults to False.</p></li>
+</ul>
 </dd>
 </dl>
+<p>strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#biocypher.write.graph._arangodb._ArangoDBBatchWriter.__init__" title="biocypher.write.graph._arangodb._ArangoDBBatchWriter.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
-<td><p>Constructor.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biocypher.output.write.graph._networkx._NetworkXWriter.__init__" title="biocypher.output.write.graph._networkx._NetworkXWriter.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Abstract class for writing node and edge representations to disk.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_import_call</span></code>()</p></td>
-<td><p>Function to return the import call detailing folder and individual node and edge headers and data files, as well as delimiters and database name.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_to_networkx</span></code>()</p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_edges</span></code>(edges[, batch_size])</p></td>
-<td><p>Wrapper for writing edges and their headers.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_edges</span></code>(edges[, batch_size, force])</p></td>
+<td><p>Wrapper for writing edges.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_import_call</span></code>()</p></td>
-<td><p>Function to write the import call detailing folder and individual node and edge headers and data files, as well as delimiters and database name, to the export folder as txt.</p></td>
+<td><p>Function to output.write the import call detailing folder and individual node and edge headers and data files, as well as delimiters and database name, to the export folder as txt.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_nodes</span></code>(nodes[, batch_size, force])</p></td>
-<td><p>Wrapper for writing nodes and their headers.</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Attributes</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_call_file_prefix</span></code></p></td>
-<td><p>Property for output directory path.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">outdir</span></code></p></td>
-<td><p>Property for output directory path.</p></td>
+<td><p>Wrapper for writing nodes.</p></td>
 </tr>
 </tbody>
 </table>
@@ -181,8 +172,8 @@ similar to Neo4j, but with a different header format.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="biocypher.write.graph._neo4j._Neo4jBatchWriter.html" class="btn btn-neutral float-left" title="biocypher.write.graph._neo4j._Neo4jBatchWriter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="biocypher.write.relational._postgresql._PostgreSQLBatchWriter.html" class="btn btn-neutral float-right" title="biocypher.write.relational._postgresql._PostgreSQLBatchWriter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="biocypher.output.write.graph._rdf._RDFWriter.html" class="btn btn-neutral float-left" title="biocypher.output.write.graph._rdf._RDFWriter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter.html" class="btn btn-neutral float-right" title="biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

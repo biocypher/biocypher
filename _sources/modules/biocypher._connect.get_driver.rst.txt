@@ -1,6 +1,0 @@
-﻿biocypher.\_connect.get\_driver
-===============================
-
-.. currentmodule:: biocypher._connect
-
-.. autofunction:: get_driver

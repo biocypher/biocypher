@@ -158,27 +158,39 @@ admin import statement to be used for creating a Neo4j database
 functions are also available in the wrapper function
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">BioCypher.summary()</span></code>. See the <a class="reference internal" href="modules/biocypher.BioCypher.html#biocypher.BioCypher" title="biocypher.BioCypher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BioCypher</span></code></a> <a class="reference internal" href="#api-core"><span class="std std-ref">class</span></a> for more information.</p>
 </div>
-<p>Details about the <a class="reference internal" href="#module-biocypher.write" title="biocypher.write"><code class="xref py py-mod docutils literal notranslate"><span class="pre">biocypher.write</span></code></a> module responsible for these methods
-can be found below.</p>
-<span class="target" id="module-biocypher.write"></span><table class="autosummary longtable docutils align-default">
+<p>Details about the <a class="reference internal" href="#module-biocypher.output.write" title="biocypher.output.write"><code class="xref py py-mod docutils literal notranslate"><span class="pre">biocypher.output.write</span></code></a> module responsible for these
+methods can be found below.</p>
+<span class="target" id="module-biocypher.output.write"></span><table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.write._write.get_writer.html#biocypher.write._write.get_writer" title="biocypher.write._write.get_writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_write.get_writer</span></code></a>(dbms, translator, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.write._get_writer.get_writer.html#biocypher.output.write._get_writer.get_writer" title="biocypher.output.write._get_writer.get_writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_writer.get_writer</span></code></a>(dbms, translator, ...)</p></td>
 <td><p>Function to return the writer class based on the selection in the config file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.write._batch_writer._BatchWriter.html#biocypher.write._batch_writer._BatchWriter" title="biocypher.write._batch_writer._BatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_batch_writer._BatchWriter</span></code></a>(translator, ...)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.output.write._writer._Writer.html#biocypher.output.write._writer._Writer" title="biocypher.output.write._writer._Writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_writer._Writer</span></code></a>(translator, deduplicator[, ...])</p></td>
+<td><p>Abstract class for writing node and edge representations to disk.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.write.graph._neo4j._Neo4jBatchWriter.html#biocypher.write.graph._neo4j._Neo4jBatchWriter" title="biocypher.write.graph._neo4j._Neo4jBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph._neo4j._Neo4jBatchWriter</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.write._batch_writer._BatchWriter.html#biocypher.output.write._batch_writer._BatchWriter" title="biocypher.output.write._batch_writer._BatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_batch_writer._BatchWriter</span></code></a>(translator, ...)</p></td>
+<td><p>Abstract batch writer class</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.output.write.graph._neo4j._Neo4jBatchWriter.html#biocypher.output.write.graph._neo4j._Neo4jBatchWriter" title="biocypher.output.write.graph._neo4j._Neo4jBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph._neo4j._Neo4jBatchWriter</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Class for writing node and edge representations to disk using the format specified by Neo4j for the use of admin import.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.write.graph._arangodb._ArangoDBBatchWriter.html#biocypher.write.graph._arangodb._ArangoDBBatchWriter" title="biocypher.write.graph._arangodb._ArangoDBBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph._arangodb._ArangoDBBatchWriter</span></code></a>(*args, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.write.graph._arangodb._ArangoDBBatchWriter.html#biocypher.output.write.graph._arangodb._ArangoDBBatchWriter" title="biocypher.output.write.graph._arangodb._ArangoDBBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph._arangodb._ArangoDBBatchWriter</span></code></a>(*args, ...)</p></td>
 <td><p>Class for writing node and edge representations to disk using the format specified by ArangoDB for the use of &quot;arangoimport&quot;.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.write.relational._postgresql._PostgreSQLBatchWriter.html#biocypher.write.relational._postgresql._PostgreSQLBatchWriter" title="biocypher.write.relational._postgresql._PostgreSQLBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relational._postgresql._PostgreSQLBatchWriter</span></code></a>(...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.output.write.graph._rdf._RDFWriter.html#biocypher.output.write.graph._rdf._RDFWriter" title="biocypher.output.write.graph._rdf._RDFWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph._rdf._RDFWriter</span></code></a>(translator, ...[, ...])</p></td>
+<td><p>Class to write BioCypher's property graph into an RDF format using rdflib and all the extensions it supports (RDF/XML, N3, NTriples, N-Quads, Turtle, TriX, Trig and JSON-LD).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.write.graph._networkx._NetworkXWriter.html#biocypher.output.write.graph._networkx._NetworkXWriter" title="biocypher.output.write.graph._networkx._NetworkXWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph._networkx._NetworkXWriter</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Class for writing node and edges to a networkx DiGraph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter.html#biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter" title="biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relational._postgresql._PostgreSQLBatchWriter</span></code></a>(...)</p></td>
 <td><p>Class for writing node and edge representations to disk using the format specified by PostgreSQL for the use of &quot;COPY FROM...&quot;.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.write.relational._sqlite._SQLiteBatchWriter.html#biocypher.write.relational._sqlite._SQLiteBatchWriter" title="biocypher.write.relational._sqlite._SQLiteBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relational._sqlite._SQLiteBatchWriter</span></code></a>(*args, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.write.relational._sqlite._SQLiteBatchWriter.html#biocypher.output.write.relational._sqlite._SQLiteBatchWriter" title="biocypher.output.write.relational._sqlite._SQLiteBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relational._sqlite._SQLiteBatchWriter</span></code></a>(*args, ...)</p></td>
 <td><p>Class for writing node and edge representations to a SQLite database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.output.write.relational._csv._PandasCSVWriter.html#biocypher.output.write.relational._csv._PandasCSVWriter" title="biocypher.output.write.relational._csv._PandasCSVWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relational._csv._PandasCSVWriter</span></code></a>(*args[, ...])</p></td>
+<td><p>Class for writing node and edge representations to a CSV file.</p></td>
 </tr>
 </tbody>
 </table>
@@ -198,11 +210,11 @@ Example usage:</p>
 <span class="n">dfs</span> <span class="o">=</span> <span class="n">bc</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Details about the <a class="reference internal" href="#module-biocypher._pandas" title="biocypher._pandas"><code class="xref py py-mod docutils literal notranslate"><span class="pre">biocypher._pandas</span></code></a> module responsible for these methods
-can be found below.</p>
-<span class="target" id="module-biocypher._pandas"></span><table class="autosummary longtable docutils align-default">
+<p>Details about the <a class="reference internal" href="#module-biocypher.output.in_memory" title="biocypher.output.in_memory"><code class="xref py py-mod docutils literal notranslate"><span class="pre">biocypher.output.in_memory</span></code></a> module responsible for these
+methods can be found below.</p>
+<span class="target" id="module-biocypher.output.in_memory"></span><table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._pandas.Pandas.html#biocypher._pandas.Pandas" title="biocypher._pandas.Pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Pandas</span></code></a>(translator, deduplicator)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.in_memory._pandas.Pandas.html#biocypher.output.in_memory._pandas.Pandas" title="biocypher.output.in_memory._pandas.Pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_pandas.Pandas</span></code></a>(translator, deduplicator)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -225,14 +237,14 @@ example:</p>
 <span class="n">bc</span><span class="o">.</span><span class="n">merge_edges</span><span class="p">(</span><span class="n">edge_set_2</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Details about the <a class="reference internal" href="#module-biocypher._connect" title="biocypher._connect"><code class="xref py py-mod docutils literal notranslate"><span class="pre">biocypher._connect</span></code></a> module responsible for these methods
-can be found below.</p>
-<span class="target" id="module-biocypher._connect"></span><table class="autosummary longtable docutils align-default">
+<p>Details about the <a class="reference internal" href="#module-biocypher.output.connect" title="biocypher.output.connect"><code class="xref py py-mod docutils literal notranslate"><span class="pre">biocypher.output.connect</span></code></a> module responsible for these
+methods can be found below.</p>
+<span class="target" id="module-biocypher.output.connect"></span><table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._connect.get_driver.html#biocypher._connect.get_driver" title="biocypher._connect.get_driver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_driver</span></code></a>(dbms, translator)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.connect._neo4j_driver.get_driver.html#biocypher.output.connect._neo4j_driver.get_driver" title="biocypher.output.connect._neo4j_driver.get_driver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_neo4j_driver.get_driver</span></code></a>(dbms, translator)</p></td>
 <td><p>Function to return the writer class.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._connect._Neo4jDriver.html#biocypher._connect._Neo4jDriver" title="biocypher._connect._Neo4jDriver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Neo4jDriver</span></code></a>(database_name, uri, user, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.output.connect._neo4j_driver._Neo4jDriver.html#biocypher.output.connect._neo4j_driver._Neo4jDriver" title="biocypher.output.connect._neo4j_driver._Neo4jDriver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_neo4j_driver._Neo4jDriver</span></code></a>(database_name, ...)</p></td>
 <td><p>Manages a BioCypher connection to a Neo4j database using the <code class="docutils literal notranslate"><span class="pre">neo4j_utils.Driver</span></code> class.</p></td>
 </tr>
 </tbody>

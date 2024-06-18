@@ -2,9 +2,9 @@
 <html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta property="og:title" content="biocypher._get.Resource" />
+<meta property="og:title" content="biocypher.output.write._get_writer.get_writer" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://biocypher.org/modules/biocypher._get.Resource.html" />
+<meta property="og:url" content="https://biocypher.org/modules/biocypher.output.write._get_writer.get_writer.html" />
 <meta property="og:site_name" content="BioCypher" />
 <meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 <meta property="og:image:alt" content="BioCypher" />
@@ -15,7 +15,7 @@
 <meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>biocypher._get.Resource &mdash; BioCypher</title>
+  <title>biocypher.output.write._get_writer.get_writer &mdash; BioCypher</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -36,8 +36,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="biocypher._get.Downloader" href="biocypher._get.Downloader.html" />
-    <link rel="prev" title="biocypher.output.connect._neo4j_driver._Neo4jDriver" href="biocypher.output.connect._neo4j_driver._Neo4jDriver.html" /> 
+    <link rel="next" title="biocypher.output.write._writer._Writer" href="biocypher.output.write._writer._Writer.html" />
+    <link rel="prev" title="biocypher.BioCypher" href="biocypher.BioCypher.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -80,10 +80,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../r-bioc.html">R and Bioconductor</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../api.html#the-main-biocypher-interface">The main BioCypher interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-by-file">Database creation by file</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#database-creation-by-file">Database creation by file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#in-memory-pandas-knowledge-graph">In-memory Pandas knowledge graph</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-and-manipulation-by-driver">Database creation and manipulation by Driver</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api.html#download-and-cache-functionality">Download and cache functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#download-and-cache-functionality">Download and cache functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._ontology">Ontology ingestion, parsing, and manipulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._mapping">Mapping of data inputs to KG ontology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._create">Base classes for node and edge representations in BioCypher</a></li>
@@ -109,9 +109,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
-      <li class="breadcrumb-item active">biocypher._get.Resource</li>
+      <li class="breadcrumb-item active">biocypher.output.write._get_writer.get_writer</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/modules/biocypher._get.Resource.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/modules/biocypher.output.write._get_writer.get_writer.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -119,38 +119,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="biocypher-get-resource">
-<h1>biocypher._get.Resource<a class="headerlink" href="#biocypher-get-resource" title="Permalink to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._get.Resource">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._get.</span></span><span class="sig-name descname"><span class="pre">Resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lifetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._get.Resource" title="Permalink to this definition"></a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="biocypher._get.Resource.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lifetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._get.Resource.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>A resource is a file that can be downloaded from a URL and cached
-locally. This class implements checks of the minimum requirements for
-a resource, to be implemented by a biocypher adapter.</p>
+  <section id="biocypher-output-write-get-writer-get-writer">
+<h1>biocypher.output.write._get_writer.get_writer<a class="headerlink" href="#biocypher-output-write-get-writer-get-writer" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="biocypher.output.write._get_writer.get_writer">
+<span class="sig-prename descclassname"><span class="pre">biocypher.output.write._get_writer.</span></span><span class="sig-name descname"><span class="pre">get_writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Deduplicator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write._get_writer.get_writer" title="Permalink to this definition"></a></dt>
+<dd><p>Function to return the writer class based on the selection in the config
+file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The name of the resource.</p></li>
-<li><p><strong>url_s</strong> (<em>str</em><em> | </em><em>list</em><em>[</em><em>str</em><em>]</em>) – The URL or URLs of the resource.</p></li>
-<li><p><strong>lifetime</strong> (<em>int</em>) – The lifetime of the resource in days. If 0, the
-resource is considered to be permanent.</p></li>
-<li><p><strong>is_dir</strong> (<em>bool</em>) – Whether the resource is a directory or not.</p></li>
+<li><p><strong>dbms</strong> – the database management system; for options, see DBMS_TO_CLASS.</p></li>
+<li><p><strong>translator</strong> – the Translator object.</p></li>
+<li><p><strong>deduplicator</strong> – the Deduplicator object.</p></li>
+<li><p><strong>output_directory</strong> – the directory to output.write the output files to.</p></li>
+<li><p><strong>strict_mode</strong> – whether to use strict mode.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an instance of the selected writer class.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>instance</p>
+</dd>
 </dl>
-</dd></dl>
-
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#biocypher._get.Resource.__init__" title="biocypher._get.Resource.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(name, url_s[, lifetime, is_dir])</p></td>
-<td><p>A resource is a file that can be downloaded from a URL and cached locally.</p></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </section>
@@ -159,8 +151,8 @@ resource is considered to be permanent.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="biocypher.output.connect._neo4j_driver._Neo4jDriver.html" class="btn btn-neutral float-left" title="biocypher.output.connect._neo4j_driver._Neo4jDriver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="biocypher._get.Downloader.html" class="btn btn-neutral float-right" title="biocypher._get.Downloader" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="biocypher.BioCypher.html" class="btn btn-neutral float-left" title="biocypher.BioCypher" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="biocypher.output.write._writer._Writer.html" class="btn btn-neutral float-right" title="biocypher.output.write._writer._Writer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

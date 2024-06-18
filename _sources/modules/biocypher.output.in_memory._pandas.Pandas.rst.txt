@@ -1,7 +1,7 @@
-﻿biocypher.\_pandas.Pandas
-=========================
+﻿biocypher.output.in\_memory.\_pandas.Pandas
+===========================================
 
-.. currentmodule:: biocypher._pandas
+.. currentmodule:: biocypher.output.in_memory._pandas
 
 .. autoclass:: Pandas
 

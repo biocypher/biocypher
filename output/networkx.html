@@ -2,14 +2,14 @@
 <html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta property="og:title" content="SQLite" />
+<meta property="og:title" content="NetworkX" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://biocypher.org/output/sqlite.html" />
+<meta property="og:url" content="https://biocypher.org/output/networkx.html" />
 <meta property="og:site_name" content="BioCypher" />
-<meta property="og:description" content="When setting the dbms parameter in the biocypher_config.yaml to sqlite, the BioCypher Knowledge Graph is written to a SQLite database. SQLite is a lightweight relational database management system...." />
+<meta property="og:description" content="When setting the dbms parameter in the biocypher_config.yaml to networkx, the BioCypher Knowledge Graph is transformed into a NetworkX DiGraph and then written to a pickle file. NetworkX settings: ..." />
 <meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 <meta property="og:image:alt" content="BioCypher" />
-<meta name="description" content="When setting the dbms parameter in the biocypher_config.yaml to sqlite, the BioCypher Knowledge Graph is written to a SQLite database. SQLite is a lightweight relational database management system...." />
+<meta name="description" content="When setting the dbms parameter in the biocypher_config.yaml to networkx, the BioCypher Knowledge Graph is transformed into a NetworkX DiGraph and then written to a pickle file. NetworkX settings: ..." />
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content="https://biocypher.org" />
 <meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
@@ -17,7 +17,7 @@
 <meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SQLite &mdash; BioCypher</title>
+  <title>NetworkX &mdash; BioCypher</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -38,8 +38,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="NetworkX" href="networkx.html" />
-    <link rel="prev" title="PostgreSQL" href="postgres.html" /> 
+    <link rel="next" title="Example Notebook: BioCypher and Pandas" href="../notebooks/pandas_tutorial.html" />
+    <link rel="prev" title="SQLite" href="sqlite.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -79,8 +79,8 @@
 <li class="toctree-l2"><a class="reference internal" href="csv.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rdf.html">RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="postgres.html">PostgreSQL</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">SQLite</a></li>
-<li class="toctree-l2"><a class="reference internal" href="networkx.html">NetworkX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlite.html">SQLite</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">NetworkX</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/pandas_tutorial.html">Example Notebook: BioCypher and Pandas</a></li>
@@ -107,9 +107,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Output</a></li>
-      <li class="breadcrumb-item active">SQLite</li>
+      <li class="breadcrumb-item active">NetworkX</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/output/sqlite.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/output/networkx.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -117,30 +117,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="sqlite">
-<h1>SQLite<a class="headerlink" href="#sqlite" title="Permalink to this heading"></a></h1>
-<p>When setting the <code class="docutils literal notranslate"><span class="pre">dbms</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> to <code class="docutils literal notranslate"><span class="pre">sqlite</span></code>, the BioCypher Knowledge Graph is written to a SQLite database.
-<a class="reference external" href="https://www.sqlite.org/">SQLite</a> is a lightweight relational database management system.
-It is suitable for fast prototyping and development. For more mature applications have a look at <a class="reference internal" href="postgres.html"><span class="doc std std-doc">PostgreSQL</span></a>.</p>
-<!--## Install SQLite
-
-TODO-->
-<section id="sqlite-settings">
-<h2>SQLite settings<a class="headerlink" href="#sqlite-settings" title="Permalink to this heading"></a></h2>
-<p>To overwrite the standard settings of SQLite, add a <code class="docutils literal notranslate"><span class="pre">sqlite</span></code> section to the <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> file.
-The following settings are possible:</p>
+  <section id="networkx">
+<h1>NetworkX<a class="headerlink" href="#networkx" title="Permalink to this heading"></a></h1>
+<p>When setting the <code class="docutils literal notranslate"><span class="pre">dbms</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> to <code class="docutils literal notranslate"><span class="pre">networkx</span></code>,
+the BioCypher Knowledge Graph is transformed into a <a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/digraph.html">NetworkX
+DiGraph</a>
+and then written to a pickle file.</p>
+<section id="networkx-settings">
+<h2>NetworkX settings<a class="headerlink" href="#networkx-settings" title="Permalink to this heading"></a></h2>
+<p>To overwrite the standard settings of NetworkX, add a <code class="docutils literal notranslate"><span class="pre">networkx</span></code> section to the
+<code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> file.  At the moment there are no configuration options
+supported/implemented.  Feel free to reach out and create issues or pull
+requests if you need specific configuration options.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">sqlite</span><span class="p">:</span>
-<span class="w">  </span><span class="c1">### SQLite configuration ###</span>
-
-<span class="w">  </span><span class="nt">database_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sqlite.db</span><span class="w"> </span><span class="c1"># DB name</span>
-
-<span class="w">  </span><span class="c1"># SQLite import batch writer settings</span>
-<span class="w">  </span><span class="nt">quote_character</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&quot;&#39;</span>
-<span class="w">  </span><span class="nt">delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;\t&#39;</span>
-<span class="w">  </span><span class="c1"># import_call_bin_prefix: &#39;&#39; # path to &quot;sqlite3&quot;</span>
-<span class="w">  </span><span class="c1"># import_call_file_prefix: &#39;/path/to/files&#39;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">networkx</span><span class="p">:</span>
+<span class="w">  </span><span class="c1">### NetworkX configuration ###</span>
 </pre></div>
 </div>
 </div>
@@ -149,34 +141,16 @@ The following settings are possible:</p>
 <h2>Offline mode<a class="headerlink" href="#offline-mode" title="Permalink to this heading"></a></h2>
 <section id="running-biocypher">
 <h3>Running BioCypher<a class="headerlink" href="#running-biocypher" title="Permalink to this heading"></a></h3>
-<p>After running BioCypher with the <code class="docutils literal notranslate"><span class="pre">offline</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">true</span></code> and the <code class="docutils literal notranslate"><span class="pre">dbms</span></code> set to <code class="docutils literal notranslate"><span class="pre">sqlite</span></code>,
-the output folder contains:</p>
+<p>After running BioCypher with the <code class="docutils literal notranslate"><span class="pre">offline</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">true</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">dbms</span></code> set to <code class="docutils literal notranslate"><span class="pre">networkx</span></code>, the output folder contains:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">entity-create_table.sql</span></code>: The SQL scripts to create the tables for the nodes/edges. Entity is replaced by your nodes and edges and for each node and edge type an own SQL script is generated.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">entity-part000.csv</span></code>: The CSV file containing the data for the entity.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sqlite-import-call.sh</span></code>: The import script to create a database with the SQL scripts and insert the data from the CSV files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">networkx_graph.pkl</span></code>: The pickle file containing with the BioCypher
+Knowledge Graph as NetworkX DiGraph.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">import_networkx.py</span></code>: A Python script to load the created pickle file.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If the <code class="docutils literal notranslate"><span class="pre">sqlite-import-call.sh</span></code> is missing, you can create it by running <code class="docutils literal notranslate"><span class="pre">bc.write_import_call()</span></code>.</p>
-</div>
-</section>
-<section id="create-the-sqlite-database">
-<h3>Create the SQLite database<a class="headerlink" href="#create-the-sqlite-database" title="Permalink to this heading"></a></h3>
-<p>To create the SQLite database, run the import script <code class="docutils literal notranslate"><span class="pre">sqlite-import-call.sh</span></code>.
-In the default case (without any changes to the <code class="docutils literal notranslate"><span class="pre">database_name</span></code>in the configuration), the file containing the database is created with the name <code class="docutils literal notranslate"><span class="pre">sqlite.db</span></code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The import script expects, that the sqlite3 command line tool is installed on your system.</p>
-</div>
-</section>
-<section id="access-the-sqlite-database">
-<h3>Access the SQLite database<a class="headerlink" href="#access-the-sqlite-database" title="Permalink to this heading"></a></h3>
-<p>Now you can access the created SQLite database.
-This can be done with the sqlite3 command line tool.
-For example, you can list all tables in the database by running the following command in the terminal:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sqlite3<span class="w"> </span>sqlite.db<span class="w"> </span><span class="s2">&quot;SELECT name FROM sqlite_master WHERE type=&#39;table&#39;;&quot;</span>
-</pre></div>
+<p>If any of the files is missing make sure to run <code class="docutils literal notranslate"><span class="pre">bc.write_import_call()</span></code>.</p>
 </div>
 </section>
 </section>
@@ -186,8 +160,8 @@ For example, you can list all tables in the database by running the following co
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="postgres.html" class="btn btn-neutral float-left" title="PostgreSQL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="networkx.html" class="btn btn-neutral float-right" title="NetworkX" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="sqlite.html" class="btn btn-neutral float-left" title="SQLite" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../notebooks/pandas_tutorial.html" class="btn btn-neutral float-right" title="Example Notebook: BioCypher and Pandas" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

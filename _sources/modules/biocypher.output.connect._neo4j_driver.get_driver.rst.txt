@@ -1,0 +1,6 @@
+﻿biocypher.output.connect.\_neo4j\_driver.get\_driver
+====================================================
+
+.. currentmodule:: biocypher.output.connect._neo4j_driver
+
+.. autofunction:: get_driver

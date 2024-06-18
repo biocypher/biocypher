@@ -1,7 +1,7 @@
-﻿biocypher.write.relational.\_sqlite.\_SQLiteBatchWriter
-=======================================================
+﻿biocypher.output.write.relational.\_sqlite.\_SQLiteBatchWriter
+==============================================================
 
-.. currentmodule:: biocypher.write.relational._sqlite
+.. currentmodule:: biocypher.output.write.relational._sqlite
 
 .. autoclass:: _SQLiteBatchWriter
 
@@ -29,6 +29,5 @@
    
       ~_SQLiteBatchWriter.DATA_TYPE_LOOKUP
       ~_SQLiteBatchWriter.import_call_file_prefix
-      ~_SQLiteBatchWriter.outdir
    
    

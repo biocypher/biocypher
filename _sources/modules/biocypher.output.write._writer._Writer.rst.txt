@@ -1,0 +1,25 @@
+﻿biocypher.output.write.\_writer.\_Writer
+========================================
+
+.. currentmodule:: biocypher.output.write._writer
+
+.. autoclass:: _Writer
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~_Writer.__init__
+      ~_Writer.write_edges
+      ~_Writer.write_import_call
+      ~_Writer.write_nodes
+   
+   
+
+   
+   
+   

@@ -1,7 +1,7 @@
-﻿biocypher.\_connect.\_Neo4jDriver
-=================================
+﻿biocypher.output.connect.\_neo4j\_driver.\_Neo4jDriver
+======================================================
 
-.. currentmodule:: biocypher._connect
+.. currentmodule:: biocypher.output.connect._neo4j_driver
 
 .. autoclass:: _Neo4jDriver
 

@@ -1,7 +1,7 @@
-﻿biocypher.write.graph.\_arangodb.\_ArangoDBBatchWriter
-======================================================
+﻿biocypher.output.write.graph.\_arangodb.\_ArangoDBBatchWriter
+=============================================================
 
-.. currentmodule:: biocypher.write.graph._arangodb
+.. currentmodule:: biocypher.output.write.graph._arangodb
 
 .. autoclass:: _ArangoDBBatchWriter
 
@@ -28,6 +28,5 @@
    .. autosummary::
    
       ~_ArangoDBBatchWriter.import_call_file_prefix
-      ~_ArangoDBBatchWriter.outdir
    
    

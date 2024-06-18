@@ -2,12 +2,14 @@
 <html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta property="og:title" content="biocypher._pandas.Pandas" />
+<meta property="og:title" content="CSV" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://biocypher.org/modules/biocypher._pandas.Pandas.html" />
+<meta property="og:url" content="https://biocypher.org/output/csv.html" />
 <meta property="og:site_name" content="BioCypher" />
+<meta property="og:description" content="When setting the dbms parameter in the biocypher_config.yaml to csv, the BioCypher Knowledge Graph is written to CSV files. CSV settings: To overwrite the standard settings of the CSV writer, add a..." />
 <meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 <meta property="og:image:alt" content="BioCypher" />
+<meta name="description" content="When setting the dbms parameter in the biocypher_config.yaml to csv, the BioCypher Knowledge Graph is written to CSV files. CSV settings: To overwrite the standard settings of the CSV writer, add a..." />
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content="https://biocypher.org" />
 <meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
@@ -15,7 +17,7 @@
 <meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>biocypher._pandas.Pandas &mdash; BioCypher</title>
+  <title>CSV &mdash; BioCypher</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -36,8 +38,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="biocypher._connect.get_driver" href="biocypher._connect.get_driver.html" />
-    <link rel="prev" title="biocypher.write.relational._sqlite._SQLiteBatchWriter" href="biocypher.write.relational._sqlite._SQLiteBatchWriter.html" /> 
+    <link rel="next" title="RDF" href="rdf.html" />
+    <link rel="prev" title="ArangoDB" href="arangodb.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -71,27 +73,23 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html#configuration">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../adapters.html">Adapters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../output/index.html">Output</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Output</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="neo4j.html">Neo4j</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arangodb.html">ArangoDB</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html">RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postgres.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlite.html">SQLite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.html">NetworkX</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/pandas_tutorial.html">Example Notebook: BioCypher and Pandas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial - Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial-ontology.html">Tutorial - Handling Ontologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial-adapter.html">Tutorial - Adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../standalone-docker-image.html">Standalone Docker Image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../r-bioc.html">R and Bioconductor</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../api.html#the-main-biocypher-interface">The main BioCypher interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-by-file">Database creation by file</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api.html#in-memory-pandas-knowledge-graph">In-memory Pandas knowledge graph</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-and-manipulation-by-driver">Database creation and manipulation by Driver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#download-and-cache-functionality">Download and cache functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._ontology">Ontology ingestion, parsing, and manipulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._mapping">Mapping of data inputs to KG ontology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._create">Base classes for node and edge representations in BioCypher</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._translate">Translation functionality for implemented types of representation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._logger">Logging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._misc">Miscellaneous utility functions</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -108,10 +106,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
-      <li class="breadcrumb-item active">biocypher._pandas.Pandas</li>
+          <li class="breadcrumb-item"><a href="index.html">Output</a></li>
+      <li class="breadcrumb-item active">CSV</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/modules/biocypher._pandas.Pandas.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/output/csv.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -119,37 +117,44 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="biocypher-pandas-pandas">
-<h1>biocypher._pandas.Pandas<a class="headerlink" href="#biocypher-pandas-pandas" title="Permalink to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher._pandas.Pandas">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._pandas.</span></span><span class="sig-name descname"><span class="pre">Pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">translator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._pandas.Pandas" title="Permalink to this definition"></a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="biocypher._pandas.Pandas.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">translator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._pandas.Pandas.__init__" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#biocypher._pandas.Pandas.__init__" title="biocypher._pandas.Pandas.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(translator, deduplicator)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_tables</span></code>(entities)</p></td>
-<td><p>Add Pandas dataframes for each node and edge type in the input.</p></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+  <section id="csv">
+<h1>CSV<a class="headerlink" href="#csv" title="Permalink to this heading"></a></h1>
+<p>When setting the <code class="docutils literal notranslate"><span class="pre">dbms</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> to <code class="docutils literal notranslate"><span class="pre">csv</span></code>, the
+BioCypher Knowledge Graph is written to CSV files.</p>
+<section id="csv-settings">
+<h2>CSV settings<a class="headerlink" href="#csv-settings" title="Permalink to this heading"></a></h2>
+<p>To overwrite the standard settings of the CSV writer, add a <code class="docutils literal notranslate"><span class="pre">csv</span></code> section to the
+<code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> file. The following settings are possible:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">csv</span><span class="p">:</span>
+<span class="w">  </span><span class="c1">### CSV/Pandas configuration ###</span>
+<span class="w">  </span><span class="nt">delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;,&#39;</span><span class="w">  </span><span class="c1"># The delimiter used in the CSV files. Default is &#39;,&#39;.</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="offline-mode">
+<h2>Offline mode<a class="headerlink" href="#offline-mode" title="Permalink to this heading"></a></h2>
+<section id="running-biocypher">
+<h3>Running BioCypher<a class="headerlink" href="#running-biocypher" title="Permalink to this heading"></a></h3>
+<p>After running BioCypher with the <code class="docutils literal notranslate"><span class="pre">offline</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">true</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">dbms</span></code> set to <code class="docutils literal notranslate"><span class="pre">csv</span></code>, the output folder contains:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">*.csv</span></code>: The CSV files containing the node/edge data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">import_pandas_csv.csv</span></code>: A Python script to load the created CSV files into
+Pandas DataFrames.</p></li>
+</ul>
+</section>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="biocypher.write.relational._sqlite._SQLiteBatchWriter.html" class="btn btn-neutral float-left" title="biocypher.write.relational._sqlite._SQLiteBatchWriter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="biocypher._connect.get_driver.html" class="btn btn-neutral float-right" title="biocypher._connect.get_driver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="arangodb.html" class="btn btn-neutral float-left" title="ArangoDB" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rdf.html" class="btn btn-neutral float-right" title="RDF" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

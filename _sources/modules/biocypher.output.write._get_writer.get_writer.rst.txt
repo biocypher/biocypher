@@ -1,0 +1,6 @@
+﻿biocypher.output.write.\_get\_writer.get\_writer
+================================================
+
+.. currentmodule:: biocypher.output.write._get_writer
+
+.. autofunction:: get_writer

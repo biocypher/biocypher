@@ -1,7 +1,7 @@
-﻿biocypher.write.graph.\_neo4j.\_Neo4jBatchWriter
-================================================
+﻿biocypher.output.write.graph.\_neo4j.\_Neo4jBatchWriter
+=======================================================
 
-.. currentmodule:: biocypher.write.graph._neo4j
+.. currentmodule:: biocypher.output.write.graph._neo4j
 
 .. autoclass:: _Neo4jBatchWriter
 
@@ -28,6 +28,5 @@
    .. autosummary::
    
       ~_Neo4jBatchWriter.import_call_file_prefix
-      ~_Neo4jBatchWriter.outdir
    
    

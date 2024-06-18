@@ -2,9 +2,9 @@
 <html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta property="og:title" content="biocypher.write.relational._postgresql._PostgreSQLBatchWriter" />
+<meta property="og:title" content="biocypher.output.write.relational._sqlite._SQLiteBatchWriter" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://biocypher.org/modules/biocypher.write.relational._postgresql._PostgreSQLBatchWriter.html" />
+<meta property="og:url" content="https://biocypher.org/modules/biocypher.output.write.relational._sqlite._SQLiteBatchWriter.html" />
 <meta property="og:site_name" content="BioCypher" />
 <meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 <meta property="og:image:alt" content="BioCypher" />
@@ -15,7 +15,7 @@
 <meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>biocypher.write.relational._postgresql._PostgreSQLBatchWriter &mdash; BioCypher</title>
+  <title>biocypher.output.write.relational._sqlite._SQLiteBatchWriter &mdash; BioCypher</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -36,8 +36,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="biocypher.write.relational._sqlite._SQLiteBatchWriter" href="biocypher.write.relational._sqlite._SQLiteBatchWriter.html" />
-    <link rel="prev" title="biocypher.write.graph._arangodb._ArangoDBBatchWriter" href="biocypher.write.graph._arangodb._ArangoDBBatchWriter.html" /> 
+    <link rel="next" title="biocypher.output.write.relational._csv._PandasCSVWriter" href="biocypher.output.write.relational._csv._PandasCSVWriter.html" />
+    <link rel="prev" title="biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter" href="biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -109,9 +109,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
-      <li class="breadcrumb-item active">biocypher.write.relational._postgresql._PostgreSQLBatchWriter</li>
+      <li class="breadcrumb-item active">biocypher.output.write.relational._sqlite._SQLiteBatchWriter</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/modules/biocypher.write.relational._postgresql._PostgreSQLBatchWriter.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/modules/biocypher.output.write.relational._sqlite._SQLiteBatchWriter.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -119,30 +119,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="biocypher-write-relational-postgresql-postgresqlbatchwriter">
-<h1>biocypher.write.relational._postgresql._PostgreSQLBatchWriter<a class="headerlink" href="#biocypher-write-relational-postgresql-postgresqlbatchwriter" title="Permalink to this heading"></a></h1>
+  <section id="biocypher-output-write-relational-sqlite-sqlitebatchwriter">
+<h1>biocypher.output.write.relational._sqlite._SQLiteBatchWriter<a class="headerlink" href="#biocypher-output-write-relational-sqlite-sqlitebatchwriter" title="Permalink to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="biocypher.write.relational._postgresql._PostgreSQLBatchWriter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.write.relational._postgresql.</span></span><span class="sig-name descname"><span class="pre">_PostgreSQLBatchWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.relational._postgresql._PostgreSQLBatchWriter" title="Permalink to this definition"></a></dt>
-<dd><p>Class for writing node and edge representations to disk using the
-format specified by PostgreSQL for the use of “COPY FROM…”. Each batch
-writer instance has a fixed representation that needs to be passed
-at instantiation via the <code class="xref py py-attr docutils literal notranslate"><span class="pre">schema</span></code> argument. The instance
-also expects an ontology adapter via <code class="xref py py-attr docutils literal notranslate"><span class="pre">ontology_adapter</span></code> to be able
-to convert and extend the hierarchy.</p>
-<p>This class inherits from the abstract class “_BatchWriter” and implements the
-PostgreSQL-specific methods:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>_write_node_headers</p></li>
-<li><p>_write_edge_headers</p></li>
+<dt class="sig sig-object py" id="biocypher.output.write.relational._sqlite._SQLiteBatchWriter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.output.write.relational._sqlite.</span></span><span class="sig-name descname"><span class="pre">_SQLiteBatchWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write.relational._sqlite._SQLiteBatchWriter" title="Permalink to this definition"></a></dt>
+<dd><p>Class for writing node and edge representations to a SQLite database.
+It uses the _PostgreSQLBatchWriter class under the hood, which already
+implements the logic to write the nodes/edges to a relational DBMS.
+Only the import bash script differs between PostgreSQL and SQLite
+and is therefore implemented in this class.</p>
+<ul class="simple">
 <li><p>_construct_import_call</p></li>
-<li><p>_write_array_string</p></li>
 </ul>
-</div></blockquote>
 <dl class="py method">
-<dt class="sig sig-object py" id="biocypher.write.relational._postgresql._PostgreSQLBatchWriter.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.write.relational._postgresql._PostgreSQLBatchWriter.__init__" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="biocypher.output.write.relational._sqlite._SQLiteBatchWriter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write.relational._sqlite._SQLiteBatchWriter.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Abtract parent class for writing node and edge representations to disk
 using the format specified by each database type. The database-specific
 functions are implemented by the respective child-classes. This abstract
@@ -198,7 +190,7 @@ start and end node. (Specific to Neo4j.)</p></li>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#biocypher.write.relational._postgresql._PostgreSQLBatchWriter.__init__" title="biocypher.write.relational._postgresql._PostgreSQLBatchWriter.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#biocypher.output.write.relational._sqlite._SQLiteBatchWriter.__init__" title="biocypher.output.write.relational._sqlite._SQLiteBatchWriter.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Abtract parent class for writing node and edge representations to disk using the format specified by each database type.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_import_call</span></code>()</p></td>
@@ -224,9 +216,6 @@ start and end node. (Specific to Neo4j.)</p></li>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_call_file_prefix</span></code></p></td>
 <td><p>Property for output directory path.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">outdir</span></code></p></td>
-<td><p>Property for output directory path.</p></td>
-</tr>
 </tbody>
 </table>
 </dd></dl>
@@ -237,8 +226,8 @@ start and end node. (Specific to Neo4j.)</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="biocypher.write.graph._arangodb._ArangoDBBatchWriter.html" class="btn btn-neutral float-left" title="biocypher.write.graph._arangodb._ArangoDBBatchWriter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="biocypher.write.relational._sqlite._SQLiteBatchWriter.html" class="btn btn-neutral float-right" title="biocypher.write.relational._sqlite._SQLiteBatchWriter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter.html" class="btn btn-neutral float-left" title="biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="biocypher.output.write.relational._csv._PandasCSVWriter.html" class="btn btn-neutral float-right" title="biocypher.output.write.relational._csv._PandasCSVWriter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

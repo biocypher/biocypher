@@ -1,7 +1,7 @@
-﻿biocypher.write.\_batch\_writer.\_BatchWriter
-=============================================
+﻿biocypher.output.write.\_batch\_writer.\_BatchWriter
+====================================================
 
-.. currentmodule:: biocypher.write._batch_writer
+.. currentmodule:: biocypher.output.write._batch_writer
 
 .. autoclass:: _BatchWriter
 
@@ -28,6 +28,5 @@
    .. autosummary::
    
       ~_BatchWriter.import_call_file_prefix
-      ~_BatchWriter.outdir
    
    

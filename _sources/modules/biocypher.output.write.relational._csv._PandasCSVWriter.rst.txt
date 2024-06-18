@@ -1,0 +1,25 @@
+﻿biocypher.output.write.relational.\_csv.\_PandasCSVWriter
+=========================================================
+
+.. currentmodule:: biocypher.output.write.relational._csv
+
+.. autoclass:: _PandasCSVWriter
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~_PandasCSVWriter.__init__
+      ~_PandasCSVWriter.write_edges
+      ~_PandasCSVWriter.write_import_call
+      ~_PandasCSVWriter.write_nodes
+   
+   
+
+   
+   
+   
