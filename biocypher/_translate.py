@@ -25,7 +25,7 @@ from . import _misc
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from ._ontology import Ontology
 
-__all__ = ["BiolinkAdapter", "Translator"]
+__all__ = ["Translator"]
 
 
 class Translator:
@@ -66,6 +66,20 @@ class Translator:
         self.reverse_mappings = {}
 
         self._update_ontology_types()
+
+    def translate_entities(self, entities):
+        entities = peekable(entities)
+        if (
+            isinstance(entities.peek(), BioCypherNode)
+            or isinstance(entities.peek(), BioCypherEdge)
+            or isinstance(entities.peek(), BioCypherRelAsNode)
+        ):
+            translated_entities = entities
+        elif len(entities.peek()) < 4:
+            translated_entities = self.translate_nodes(entities)
+        else:
+            translated_entities = self.translate_edges(entities)
+        return translated_entities
 
     def translate_nodes(
         self,

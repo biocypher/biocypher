@@ -39,6 +39,8 @@ def test_log_duplicates(core, deduplicator, _get_nodes):
 
 @pytest.mark.parametrize("length", [4], scope="function")
 def test_write_schema_info(core, _get_nodes, _get_edges, _get_rel_as_nodes):
+    core._offline = False
+    core._dbms = "csv"
     core.add(_get_nodes)
     core.add(_get_edges)
     core.add(_get_rel_as_nodes)

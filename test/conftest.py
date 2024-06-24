@@ -7,7 +7,7 @@ import pytest
 
 from biocypher._translate import Translator
 from biocypher._deduplicate import Deduplicator
-from biocypher.output.in_memory._pandas import Pandas
+from biocypher.output.in_memory._pandas import PandasKG
 
 # load all fixtures from the fixtures directory
 pytest_plugins = [
@@ -89,7 +89,7 @@ def translator(hybrid_ontology):
 
 @pytest.fixture(scope="function")
 def _pd(deduplicator):
-    return Pandas(
+    return PandasKG(
         translator=None,
         deduplicator=deduplicator,
     )

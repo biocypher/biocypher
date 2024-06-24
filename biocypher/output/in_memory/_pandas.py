@@ -3,12 +3,21 @@ import pandas as pd
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 
-class Pandas:
+class PandasKG:
     def __init__(self, translator, deduplicator):
         self.translator = translator
         self.deduplicator = deduplicator
 
         self.dfs = {}
+
+    def get_kg(self):
+        return self.dfs
+
+    def add_biocypher_nodes(self, nodes):
+        self.add_tables(nodes)
+
+    def add_biocypher_edges(self, edges):
+        self.add_tables(edges)
 
     def _separate_entity_types(self, entities):
         """
