@@ -375,7 +375,7 @@ class BioCypher:
                 DataFrame.
 
         Returns:
-            pd.DataFrame: A list of pandas DataFrames for the.
+            pd.DataFrame: A pandas DataFrame.
         """
         return self.get_kg()
 
