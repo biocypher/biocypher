@@ -1,14 +1,14 @@
 import networkx as nx
 
 from biocypher.output.in_memory._pandas import PandasKG
+from biocypher.output.in_memory._in_memory_kg import _InMemoryKG
 
 
-class NetworkxKG:
-    def __init__(self, translator, deduplicator):
-        self.translator = translator
+class NetworkxKG(_InMemoryKG):
+    def __init__(self, deduplicator):
+        super().__init__()
         self.deduplicator = deduplicator
         self._pd = PandasKG(
-            translator=self.translator,
             deduplicator=self.deduplicator,
         )
         self.KG = None
@@ -18,12 +18,12 @@ class NetworkxKG:
             self.KG = self._create_networkx_kg()
         return self.KG
 
-    def add_biocypher_nodes(self, nodes):
-        self._pd.add_biocypher_nodes(nodes)
+    def add_nodes(self, nodes):
+        self._pd.add_nodes(nodes)
         return True
 
-    def add_biocypher_edges(self, edges):
-        self._pd.add_biocypher_edges(edges)
+    def add_edges(self, edges):
+        self._pd.add_edges(edges)
         return True
 
     def _create_networkx_kg(self) -> nx.DiGraph:

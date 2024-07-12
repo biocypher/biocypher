@@ -265,37 +265,48 @@ class BioCypher:
         if not self._in_memory_kg:
             self._in_memory_kg = get_in_memory_kg(
                 dbms=self._dbms,
-                translator=self._get_translator(),
                 deduplicator=self._get_deduplicator(),
             )
 
     def _add_nodes(
         self, nodes, batch_size: int = int(1e6), force: bool = False
     ):
+        """Add nodes to the BioCypher KG.
+        First uses the `_translator` to translate the nodes to `BioCypherNode` objects.
+        Depending on the configuration the translated nodes are then passed to the
+        - `_writer`: if `_offline` is set to `False`
+        - `_in_memory_kg`: if `_offline` is set to `False` and the `_dbms` is an `IN_MEMORY_DBMS`
+        - `_driver`: if `_offline` is set to `True` and the `_dbms` is not an `IN_MEMORY_DBMS`
+        """
         if not self._translator:
             self._get_translator()
-        tnodes = self._translator.translate_entities(nodes)
+        translated_nodes = self._translator.translate_entities(nodes)
 
         if self._offline:
             if not self._writer:
                 self._initialize_writer()
             passed = self._writer.write_nodes(
-                tnodes, batch_size=batch_size, force=force
+                translated_nodes, batch_size=batch_size, force=force
             )
         elif self._is_online_and_in_memory():
             if not self._in_memory_kg:
                 self._initialize_in_memory_kg()
-            passed = self._in_memory_kg.add_biocypher_nodes(tnodes)
+            passed = self._in_memory_kg.add_nodes(translated_nodes)
         else:
             if not self._driver:
                 self._initialize_driver()
-            passed = self._driver.add_biocypher_nodes(tnodes)
+            passed = self._driver.add_biocypher_nodes(translated_nodes)
 
         return passed
 
-    def _add_edges(
-        self, edges, batch_size: int = int(1e6), force: bool = False
-    ):
+    def _add_edges(self, edges, batch_size: int = int(1e6)):
+        """Add edges to the BioCypher KG.
+        First uses the `_translator` to translate the edges to `BioCypherEdge` objects.
+        Depending on the configuration the translated edges are then passed to the
+        - `_writer`: if `_offline` is set to `False`
+        - `_in_memory_kg`: if `_offline` is set to `False` and the `_dbms` is an `IN_MEMORY_DBMS`
+        - `_driver`: if `_offline` is set to `True` and the `_dbms` is not an `IN_MEMORY_DBMS`
+        """
         if not self._translator:
             self._get_translator()
         translated_edges = self._translator.translate_entities(edges)
@@ -304,12 +315,12 @@ class BioCypher:
             if not self._writer:
                 self._initialize_writer()
             passed = self._writer.write_edges(
-                translated_edges, batch_size=batch_size, force=force
+                translated_edges, batch_size=batch_size
             )
         elif self._is_online_and_in_memory():
             if not self._in_memory_kg:
                 self._initialize_in_memory_kg()
-            passed = self._in_memory_kg.add_biocypher_edges(translated_edges)
+            passed = self._in_memory_kg.add_edges(translated_edges)
         else:
             if not self._driver:
                 self._initialize_driver()
@@ -441,7 +452,7 @@ class BioCypher:
         """Get the in-memory KG instance. Depending on the specified `dbms` this could either be Pandas dfs or a NetworkX DiGraph."""
         if not self._is_online_and_in_memory():
             raise ValueError(
-                "Getting the in-memory KG is only available in online mode for TODO."
+                f"Getting the in-memory KG is only available in online mode for {IN_MEMORY_DBMS}."
             )
         if not self._in_memory_kg:
             raise ValueError(

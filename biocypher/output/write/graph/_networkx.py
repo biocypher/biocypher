@@ -14,7 +14,6 @@ class _NetworkXWriter(_Writer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.in_memory_networkx_kg = NetworkxKG(
-            translator=self.translator,
             deduplicator=self.deduplicator,
         )
 
@@ -40,9 +39,9 @@ class _NetworkXWriter(_Writer):
         return "import_networkx.py"
 
     def _write_node_data(self, nodes) -> bool:
-        passed = self.in_memory_networkx_kg.add_biocypher_nodes(nodes)
+        passed = self.in_memory_networkx_kg.add_nodes(nodes)
         return passed
 
     def _write_edge_data(self, edges) -> bool:
-        passed = self.in_memory_networkx_kg.add_biocypher_edges(edges)
+        passed = self.in_memory_networkx_kg.add_edges(edges)
         return passed

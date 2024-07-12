@@ -16,7 +16,6 @@ class _PandasCSVWriter(_Writer):
         self.in_memory_dfs = {}
         self.stored_dfs = {}
         self.pandas_in_memory = PandasKG(
-            translator=self.translator,
             deduplicator=self.deduplicator,
         )
         self.delimiter = kwargs.get("delimiter")

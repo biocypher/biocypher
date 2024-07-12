@@ -90,6 +90,5 @@ def translator(hybrid_ontology):
 @pytest.fixture(scope="function")
 def _pd(deduplicator):
     return PandasKG(
-        translator=None,
         deduplicator=deduplicator,
     )
