@@ -1,9 +1,12 @@
 import os
+import logging
 
 import yaml
 import pytest
 
 from biocypher import BioCypher
+from biocypher.output.write._get_writer import DBMS_TO_CLASS
+from biocypher.output.in_memory._get_in_memory_kg import IN_MEMORY_DBMS
 
 
 def test_biocypher(core):
@@ -39,6 +42,8 @@ def test_log_duplicates(core, deduplicator, _get_nodes):
 
 @pytest.mark.parametrize("length", [4], scope="function")
 def test_write_schema_info(core, _get_nodes, _get_edges, _get_rel_as_nodes):
+    core._offline = False
+    core._dbms = "csv"
     core.add(_get_nodes)
     core.add(_get_edges)
     core.add(_get_rel_as_nodes)
@@ -104,6 +109,71 @@ def test_show_full_ontology_structure_without_schema():
     assert "decreased gene product level" in treevis
     assert "functionally abnormal" in treevis
     assert "lethal variant" in treevis
+
+
+def test_in_memory_kg_only_in_online_mode(core):
+    for in_memory_dbms in IN_MEMORY_DBMS:
+        core._dbms = in_memory_dbms
+        core._offline = True
+        with pytest.raises(ValueError) as e:
+            core.get_kg()
+        assert (
+            str(e.value)
+            == "Getting the in-memory KG is only available in online mode for ['csv', 'networkx']."
+        )
+
+
+def test_no_in_memory_kg_for_dbms(core):
+    for dbms in ["neo4j", "arangodb", "rdf"]:
+        core._dbms = dbms
+        core._offline = False
+        with pytest.raises(ValueError) as e:
+            core.get_kg()
+        assert (
+            str(e.value)
+            == "Getting the in-memory KG is only available in online mode for ['csv', 'networkx']."
+        )
+
+
+def test_no_in_memory_instance_found(core):
+    core._dbms = "csv"
+    core._offline = False
+
+    with pytest.raises(ValueError) as e:
+        core.get_kg()
+    assert (
+        str(e.value)
+        == "No in-memory KG instance found. Please call `add()` first."
+    )
+
+
+def test_online_mode_not_supported_for_dbms(core):
+    for dbms in ["arangodb", "rdf", "postgres", "sqlite3"]:
+        core._dbms = dbms
+        core._offline = False
+        with pytest.raises(NotImplementedError) as e:
+            core._initialize_driver()
+        assert (
+            str(e.value) == f"Online mode is not supported for the DBMS {dbms}."
+        )
+
+
+def test_get_driver_in_offline_mode(core):
+    for dbms in ["neo4j"]:
+        core._dbms = dbms
+        core._offline = True
+        with pytest.raises(NotImplementedError) as e:
+            core._initialize_driver()
+        assert str(e.value) == "Cannot get driver in offline mode."
+
+
+def test_get_writer_in_online_mode(core):
+    for dbms in DBMS_TO_CLASS.keys():
+        core._dbms = dbms
+        core._offline = False
+        with pytest.raises(NotImplementedError) as e:
+            core._initialize_writer()
+        assert str(e.value) == "Cannot get writer in online mode."
 
 
 # def test_access_translate(driver):
