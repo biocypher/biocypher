@@ -253,7 +253,6 @@ class BioCypher:
             self._driver = get_connector(
                 dbms=self._dbms,
                 translator=self._get_translator(),
-                deduplicator=self._get_deduplicator(),
             )
         else:
             raise NotImplementedError("Cannot get driver in offline mode.")
@@ -454,7 +453,7 @@ class BioCypher:
             raise ValueError(
                 f"Getting the in-memory KG is only available in online mode for {IN_MEMORY_DBMS}."
             )
-        if not self._in_memory_kg:
+        elif not self._in_memory_kg:
             raise ValueError(
                 "No in-memory KG instance found. Please call `add()` first."
             )
