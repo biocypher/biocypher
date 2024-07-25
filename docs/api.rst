@@ -75,18 +75,24 @@ methods, which accept collections of nodes and edges either as :ref:`tuples
       :meth:`BioCypher.summary`. See the :class:`BioCypher` :ref:`class
       <api_core>` for more information.
 
-Details about the :mod:`biocypher._write` module responsible for these methods
-can be found below.
+Details about the :mod:`biocypher.output.write` module responsible for these
+methods can be found below.
 
-.. module:: biocypher._write
+.. module:: biocypher.output.write
+
 .. autosummary::
    :toctree: modules
 
-   get_writer
-   _BatchWriter
-   _Neo4jBatchWriter
-   _PostgreSQLBatchWriter
-   _ArangoDBBatchWriter
+   _get_writer.get_writer
+   _writer._Writer
+   _batch_writer._BatchWriter
+   graph._neo4j._Neo4jBatchWriter
+   graph._arangodb._ArangoDBBatchWriter
+   graph._rdf._RDFWriter
+   graph._networkx._NetworkXWriter
+   relational._postgresql._PostgreSQLBatchWriter
+   relational._sqlite._SQLiteBatchWriter
+   relational._csv._PandasCSVWriter
 
 .. api_pandas:
 
@@ -120,14 +126,14 @@ Example usage:
    # show list of dataframes (one per node/edge type)
    dfs = bc.to_df()
 
-Details about the :mod:`biocypher._pandas` module responsible for these methods
-can be found below.
+Details about the :mod:`biocypher.output.in_memory` module responsible for these
+methods can be found below.
 
-.. module:: biocypher._pandas
+.. module:: biocypher.output.in_memory
 .. autosummary::
    :toctree: modules
 
-   Pandas
+   _pandas.Pandas
 
 .. _api_connect:
 
@@ -161,15 +167,15 @@ example:
    bc.merge_nodes(node_set_2)
    bc.merge_edges(edge_set_2)
 
-Details about the :mod:`biocypher._connect` module responsible for these methods
-can be found below.
+Details about the :mod:`biocypher.output.connect` module responsible for these
+methods can be found below.
 
-.. module:: biocypher._connect
+.. module:: biocypher.output.connect
 .. autosummary::
    :toctree: modules
 
-   get_driver
-   _Neo4jDriver
+   _neo4j_driver.get_driver
+   _neo4j_driver._Neo4jDriver
 
 
 .. api_get:

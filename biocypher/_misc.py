@@ -115,7 +115,12 @@ def _get_inheritance_tree(inheritance_graph: Union[dict, nx.Graph]) -> dict:
         )
         if multiple_parents_present:
             logger.warning(
-                "The ontology contains multiple inheritance (one child node has multiple parent nodes). This is not visualized in the following hierarchy tree (the child node is only added once). If you want to browse all relationships of the parsed ontology write a graphml file to disk and view this file."
+                "The ontology contains multiple inheritance (one child node "
+                "has multiple parent nodes). This is not visualized in the "
+                "following hierarchy tree (the child node is only added once). "
+                "If you wish to browse all relationships of the parsed "
+                "ontologies, write a graphml file to disk using "
+                "`to_disk = <directory>` and view this file."
             )
 
         # unlist values
@@ -205,7 +210,7 @@ def sentencecase_to_snakecase(s: str) -> str:
     return stringcase.snakecase(s).lower()
 
 
-def sentencecase_to_pascalcase(s: str) -> str:
+def sentencecase_to_pascalcase(s: str, sep: str = r"\s") -> str:
     """
     Convert sentence case to PascalCase.
 
@@ -215,7 +220,11 @@ def sentencecase_to_pascalcase(s: str) -> str:
     Returns:
         string in PascalCase form
     """
-    return re.sub(r"(?:^| )([a-zA-Z])", lambda match: match.group(1).upper(), s)
+    return re.sub(
+        r"(?:^|[" + sep + "])([a-zA-Z])",
+        lambda match: match.group(1).upper(),
+        s,
+    )
 
 
 def to_lower_sentence_case(s: str) -> str:

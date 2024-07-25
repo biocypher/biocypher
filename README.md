@@ -68,8 +68,9 @@ please join our community at https://biocypher.zulipchat.com!
 The BioCypher paper has been peer-reviewed in [Nature
 Biotechnology](https://www.nature.com/articles/s41587-023-01848-y). It is
 available as a self-archived version on
-[Zenodo](https://zenodo.org/records/10320714).  Before, it was available as a
-preprint at https://arxiv.org/abs/2212.13543.
+[Zenodo](https://zenodo.org/records/10320714), online version
+[here](https://biocypher.github.io/biocypher-paper/).  Before, it was available
+as a preprint at https://arxiv.org/abs/2212.13543.
 
 ## Acknowledgements
 

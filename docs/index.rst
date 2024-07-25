@@ -14,6 +14,11 @@ Democratising Knowledge Graphs
    <https://biocypher.org/#connect-your-knowledge-graph-to-large-language-models>`_
    and the `BioChatter website <https://biochatter.org>`_ for more information.
 
+   We have also recently published a perspective on connecting knowledge and
+   machine learning to enable causal reasoning in biomedicine, with a particular
+   focus on the currently emerging "foundation models." You can read it `here
+   <https://arxiv.org/abs/2401.09558>`_.
+
 Building a knowledge graph for biomedical tasks usually takes months or years.
 What if you could do it in weeks or days? We created BioCypher to make the
 process of creating a biomedical knowledge graph easier than ever, but still
@@ -26,7 +31,8 @@ biomedical community.
 If you're new to knowledge graphs and want to familiarise with the concepts that
 drive BioCypher, we recommend to check out the graphical abstract below and read
 `our paper <https://www.nature.com/articles/s41587-023-01848-y>`_ (self-archived
-version `here <https://zenodo.org/records/10320714>`_)!
+version `here <https://zenodo.org/records/10320714>`_, online version `here
+<https://biocypher.github.io/biocypher-paper/>`_)!
 
 .. grid:: 2
    :gutter: 2
@@ -99,6 +105,21 @@ developments in the field of biomedical knowledge representation. However, to
 make this framework truly accessible and comprehensive, we need the input of the
 biomedical community. We are therefore inviting you to join us in this
 endeavour!
+
+=================
+Vision Statement
+=================
+
+The machine learning models we train are only as good as the data they are
+trained on. However, most developments today still rely on manually engineered
+and non-reproducible data processing. We envision a future where the creation of
+knowledge graphs is as easy as running a script, enabling researchers to build
+reliable knowledge representations with up-to-date information. We believe that
+making the knowledge representation process more agile and lifting it to the
+same level of attention as the process of algorithm development will lead to
+more robust and reliable machine learning models. We are convinced that this
+will be a crucial step towards the democratization of AI in biomedicine and
+beyond.
 
 .. _connect_llm:
 

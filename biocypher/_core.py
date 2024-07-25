@@ -27,20 +27,20 @@ from ._logger import logger
 logger.debug(f"Loading module {__name__}.")
 
 from ._get import Downloader
-from ._write import get_writer
 from ._config import config as _config
 from ._config import update_from_file as _file_update
 from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from ._pandas import Pandas
-from ._connect import get_driver
 from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator
 from ._deduplicate import Deduplicator
+from .output.in_memory._pandas import Pandas
+from .output.write._get_writer import DBMS_TO_CLASS, get_writer
+from .output.connect._neo4j_driver import get_driver
 
 __all__ = ["BioCypher"]
 
-SUPPORTED_DBMS = ["neo4j", "postgresql"]
+SUPPORTED_DBMS = DBMS_TO_CLASS.keys()
 
 REQUIRED_CONFIG = [
     "dbms",
@@ -136,6 +136,10 @@ class BioCypher:
 
         if not self._schema_config_path:
             logger.warning("Running BioCypher without schema configuration.")
+        else:
+            logger.info(
+                f"Running BioCypher with schema configuration from {self._schema_config_path}."
+            )
 
         self._head_ontology = head_ontology or self.base_config["head_ontology"]
 
@@ -476,7 +480,7 @@ class BioCypher:
         if mt:
             msg = (
                 "Input entities not accounted for due to them not being "
-                "present in the `schema_config.yaml` configuration file "
+                f"present in the schema configuration file {self._schema_config_path} "
                 "(this is not necessarily a problem, if you did not intend "
                 "to include them in the database; see the log for details): \n"
             )
@@ -558,10 +562,13 @@ class BioCypher:
 
         return self._ontology.show_ontology_structure(**kwargs)
 
-    def write_import_call(self) -> None:
+    def write_import_call(self) -> str:
         """
         Write a shell script to import the database depending on the chosen
         DBMS.
+
+        Returns:
+            str: path toward the file holding the import call.
         """
 
         if not self._offline:
@@ -569,7 +576,7 @@ class BioCypher:
                 "Cannot write import call in online mode."
             )
 
-        self._writer.write_import_call()
+        return self._writer.write_import_call()
 
     def write_schema_info(self, as_node: bool = False) -> None:
         """

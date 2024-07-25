@@ -8,10 +8,11 @@
    installation
    quickstart
    adapters
+   output/index
    notebooks/pandas_tutorial.ipynb
    tutorial
    tutorial-ontology
    tutorial-adapter
-   neo4j
+   standalone-docker-image
    r-bioc
    api

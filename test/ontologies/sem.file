@@ -1,0 +1,374 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY ex 'http://example.org/test/'>
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+    <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+    <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
+    <!ENTITY sem 'http://semanticweb.cs.vu.nl/2009/11/sem/'>
+    <!ENTITY wgs84 'http://www.w3.org/2003/01/geo/wgs84_pos#'>
+    <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+    <!ENTITY skos 'http://www.w3.org/2004/02/skos/core#'>
+    <!ENTITY dolce 'http://www.loa-cnr.it/ontologies/DOLCE-Lite.owl#'>
+    <!ENTITY cidoc 'http://www8.informatik.uni-erlangen.de/IMMD8/Services/cidoc-crm/erlangen-crm_090330_5_0_1.owl#'>
+    <!ENTITY cyc 'http://sw.opencyc.org/2009/04/07/concept/en/'>
+    <!ENTITY sumo 'http://www.ontologyportal.org/translations/SUMO.owl.txt#'>
+    <!ENTITY lode 'http://linkedevents.org/ontology/'>
+    <!ENTITY eo 'http://purl.org/NET/c4dm/event.owl#'>
+    <!ENTITY dc 'http://purl.org/dc/elements/1.1/'>
+    <!ENTITY dctype 'http://purl.org/dc/dcmitype/'>
+    <!ENTITY dcterms 'http://purl.org/dc/terms/'>
+    <!ENTITY time 'http://www.w3.org/2006/time'>
+    <!ENTITY foaf 'http://xmlns.com/foaf/0.1/'>
+    <!ENTITY cs 'http://www.kulttuurisampo.fi/ebkr/'>
+]>
+
+<rdf:RDF
+    xmlns:ex="&ex;"
+    xmlns:owl="&owl;"
+    xmlns:rdf="&rdf;"
+    xmlns:rdfs="&rdfs;"
+    xmlns:sem="&sem;"
+    xmlns:wgs84="&wgs84;"
+    xmlns:xsd="&xsd;"
+    xmlns:skos="&skos;"
+    xmlns:dolce="&dolce;"
+    xmlns:cidoc="&cidoc;"
+    xmlns:cyc="&cyc;"
+    xmlns:sumo="&sumo;"
+    xmlns:lode="&lode;"
+    xmlns:eo="&eo;"
+    xmlns:dc="&dc;"
+    xmlns:dctype="&dctype;"
+    xmlns:dcterms="&dcterms;"
+    xmlns:time="&time;"
+    xmlns:foaf="&foaf;"
+    xmlns:cs="&cs;"
+>
+
+<!--
+  meta classes
+-->
+<owl:Class rdf:about="&sem;Core" rdfs:label="Core">
+  <rdfs:comment>The SEM Core class contains all entities that make up the context of an event: Events, Actors, Places, Times. This class is meant to be extended for each application domain.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="&sem;Type" rdfs:label="Type">
+  <rdfs:comment>The SEM Type class contains all types of Core instances. These can be either individuals of classes themselves. This class is meant to be extended for each application domain.</rdfs:comment>
+  <skos:closeMatch rdf:resource="&dolce;AbstractRegion"/>
+  <skos:closeMatch rdf:resource="&cidoc;E55.Type"/>
+</owl:Class>
+<rdf:Description rdf:about="&dolce;AbstractRegion"><rdfs:isDefinedBy rdf:resource="&dolce;"/></rdf:Description>
+<rdf:Description rdf:about="&cidoc;E55.Type"><rdfs:isDefinedBy rdf:resource="&cidoc;"/></rdf:Description>
+
+<owl:Class rdf:about="&sem;Constraint" rdfs:label="Constraint">
+  <rdfs:comment>The SEM Constraint class contains instances of properties that have a constrained (i.e. not universal) validity. This includes time dependent validity (Temporary), validity in the guise of a specific role (Role), or validity according to a given Authority (View).</rdfs:comment>
+</owl:Class>
+
+
+<!--
+  classes
+-->
+<!-- core classes -->
+<owl:Class rdf:about="&sem;Event" rdfs:label="Event">
+  <rdfs:comment>Events are things that happen. This comprises everything from historical events to web site sessions and mythical journeys. Event is the central class of SEM.</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Core"/>
+  <skos:broadMatch rdf:resource="&lode;Event"/>
+  <skos:broadMatch rdf:resource="&eo;Event"/>
+  <skos:closeMatch rdf:resource="&dctype;Event"/>
+  <skos:closeMatch rdf:resource="&cyc;Situation"/>
+  <skos:closeMatch rdf:resource="&dolce;perdurant"/>
+  <skos:closeMatch rdf:resource="&sumo;Process"/>
+  <skos:closeMatch rdf:resource="&cidoc;E5.Event"/>
+</owl:Class>
+<rdf:Description rdf:about="&lode;Event"><rdfs:isDefinedBy rdf:resource="&lode;"/></rdf:Description>
+<rdf:Description rdf:about="&eo;Event"><rdfs:isDefinedBy rdf:resource="&eo;"/></rdf:Description>
+<rdf:Description rdf:about="&dctype;Event"><rdfs:isDefinedBy rdf:resource="&dctype;"/></rdf:Description>
+<rdf:Description rdf:about="&cyc;Situation"><rdfs:isDefinedBy rdf:resource="&cyc;"/></rdf:Description>
+<rdf:Description rdf:about="&dolce;perdurant"><rdfs:isDefinedBy rdf:resource="&dolce;"/></rdf:Description>
+<rdf:Description rdf:about="&sumo;Process"><rdfs:isDefinedBy rdf:resource="&sumo;"/></rdf:Description>
+<rdf:Description rdf:about="&cidoc;E5.Event"><rdfs:isDefinedBy rdf:resource="&cidoc;"/></rdf:Description>
+
+<owl:Class rdf:about="&sem;Actor" rdfs:label="Actor">
+  <rdfs:comment>Actors are entities that take part in an Event, either actively or passively. Actors do not necessarily have to be sentient. They can also be objects. Actors are a thing, animate or inanimate, physical or non-physical.
+</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Core"/>
+  <rdfs:subClassOf rdf:resource="&sem;Authority"/>
+  <skos:broadMatch rdf:resource="&cyc;SomethingExisting"/>
+  <skos:closeMatch rdf:resource="&cyc;Agent-Generic"/>
+  <skos:broadMatch rdf:resource="&dolce;endurant"/>
+  <skos:closeMatch rdf:resource="&dcterms;Agent"/>
+  <skos:closeMatch rdf:resource="&dcterms;AgentClass"/>
+  <skos:closeMatch rdf:resource="&sumo;Agent"/>
+  <skos:closeMatch rdf:resource="&cidoc;E39.Actor"/>
+  <skos:closeMatch rdf:resource="&foaf;Agent"/>
+</owl:Class>
+<rdf:Description rdf:about="&cyc;SomethingExisting"><rdfs:isDefinedBy rdf:resource="&cyc;"/></rdf:Description>
+<rdf:Description rdf:about="&cyc;Agent-Generic"><rdfs:isDefinedBy rdf:resource="&cyc;"/></rdf:Description>
+<rdf:Description rdf:about="&dolce;endurant"><rdfs:isDefinedBy rdf:resource="&dolce;"/></rdf:Description>
+<rdf:Description rdf:about="&dcterms;Agent"><rdfs:isDefinedBy rdf:resource="&dcterms;"/></rdf:Description>
+<rdf:Description rdf:about="&dcterms;AgentClass"><rdfs:isDefinedBy rdf:resource="&dcterms;"/></rdf:Description>
+<rdf:Description rdf:about="&sumo;Agent"><rdfs:isDefinedBy rdf:resource="&sumo;"/></rdf:Description>
+<rdf:Description rdf:about="&cidoc;E39.Actor"><rdfs:isDefinedBy rdf:resource="&cidoc;"/></rdf:Description>
+<rdf:Description rdf:about="&foaf;Agent"><rdfs:isDefinedBy rdf:resource="&foaf;"/></rdf:Description>
+
+<owl:Class rdf:about="&sem;Object" rdfs:label="Object">
+  <rdfs:comment>Objects are passive, inanimate Actors.</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Actor"/>
+  <skos:narrowMatch rdf:resource="&eo;Factor"/>
+  <skos:narrowMatch rdf:resource="&eo;Product"/>
+  <skos:broadMatch rdf:resource="&cyc;SomethingExisting"/>
+  <skos:broadMatch rdf:resource="&dolce;endurant"/>
+  <skos:closeMatch rdf:resource="&sumo;Object"/>
+  <skos:closeMatch rdf:resource="&cidoc;E19.Physical_Object"/>
+  <skos:closeMatch rdf:resource="&cidoc;E21.Person"/>
+  <skos:narrowMatch rdf:resource="&dctype;PhysicalObject"/>
+  <skos:narrowMatch rdf:resource="&dcterms;PhysicalResource"/>
+</owl:Class>
+<owl:Class rdf:about="&sem;Authority" rdfs:label="Authority">
+  <rdfs:comment>Authorities are entities that state SEM properties. Their nature is not specified. They can symbolize people, organizations, sources of information, etc.</rdfs:comment>
+</owl:Class>
+<rdf:Description rdf:about="&eo;Factor"><rdfs:isDefinedBy rdf:resource="&eo;"/></rdf:Description>
+<rdf:Description rdf:about="&eo;Product"><rdfs:isDefinedBy rdf:resource="&eo;"/></rdf:Description>
+<rdf:Description rdf:about="&cyc;SomethingExisting"><rdfs:isDefinedBy rdf:resource="&cyc;"/></rdf:Description>
+<rdf:Description rdf:about="&dolce;endurant"><rdfs:isDefinedBy rdf:resource="&dolce;"/></rdf:Description>
+<rdf:Description rdf:about="&sumo;Object"><rdfs:isDefinedBy rdf:resource="&sumo;"/></rdf:Description>
+<rdf:Description rdf:about="&cidoc;E19.Physical_Object"><rdfs:isDefinedBy rdf:resource="&cidoc;"/></rdf:Description>
+<rdf:Description rdf:about="&cidoc;E21.Person"><rdfs:isDefinedBy rdf:resource="&cidoc;"/></rdf:Description>
+<rdf:Description rdf:about="&dctype;PhysicalObject"><rdfs:isDefinedBy rdf:resource="&dctype;"/></rdf:Description>
+<rdf:Description rdf:about="&dcterms;PhysicalResource"><rdfs:isDefinedBy rdf:resource="&dcterms;"/></rdf:Description>
+
+
+<owl:Class rdf:about="&sem;Place" rdfs:label="Place">
+  <rdfs:comment>Places are locations where an Event happens. They do not need to be physical places and hence do not necessarily need coordinates. Neither do they need to have any significance apart from them being the location of an Event.</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Core"/>
+  <skos:narrowMatch rdf:resource="&wgs84;SpatialThing"/>
+  <skos:closeMatch rdf:resource="&dcterms;Location"/>
+  <skos:closeMatch rdf:resource="&cyc;EnduringThing-Localized"/>
+  <skos:closeMatch rdf:resource="&sumo;GeographicArea"/>
+  <skos:closeMatch rdf:resource="&cidoc;E53.Place"/>
+  <skos:narrowMatch rdf:resource="&dolce;PhysicalRegion"/>
+</owl:Class>
+<rdf:Description rdf:about="&wgs84;SpatialThing"><rdfs:isDefinedBy rdf:resource="&wgs84;"/></rdf:Description>
+<rdf:Description rdf:about="&dcterms;Location"><rdfs:isDefinedBy rdf:resource="&dcterms;"/></rdf:Description>
+<rdf:Description rdf:about="&cyc;EnduringThing-Localized"><rdfs:isDefinedBy rdf:resource="&cyc;"/></rdf:Description>
+<rdf:Description rdf:about="&sumo;GeographicArea"><rdfs:isDefinedBy rdf:resource="&sumo;"/></rdf:Description>
+<rdf:Description rdf:about="&cidoc;E53.Place"><rdfs:isDefinedBy rdf:resource="&cidoc;"/></rdf:Description>
+<rdf:Description rdf:about="&dolce;PhysicalRegion"><rdfs:isDefinedBy rdf:resource="&dolce;"/></rdf:Description>
+
+
+<owl:Class rdf:about="&sem;Time" rdfs:label="Time">
+  <rdfs:comment>Time contains symbolic representations of when an Event took place. Time instances do not necessarily need to have a timestamp associated with them. The Time class exists to represent semantics of time, e.g. that one thing happens before another, even though the exact timestamps are unknown.</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Core"/>
+  <skos:broadMatch rdf:resource="&time;TemporalEntity"/>
+</owl:Class>
+<rdf:Description rdf:about="&time;TemporalEntity"><rdfs:isDefinedBy rdf:resource="&time;"/></rdf:Description>
+
+<!-- type classes -->
+<owl:Class rdf:about="&sem;EventType" rdfs:label="Event type">
+  <rdfs:comment>EventType contains all resources that are used to classify Events, e.g. meeting.</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Type"/>
+</owl:Class>
+
+<owl:Class rdf:about="&sem;ActorType" rdfs:label="Actor type">
+  <rdfs:comment>EventType contains all resources that are used to classify Actors, e.g. person</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Type"/>
+</owl:Class>
+
+<owl:Class rdf:about="&sem;RoleType" rdfs:label="Role type">
+  <rdfs:comment>EventType contains all resources that are used to classify Roles, e.g. receiver.</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Type"/>
+</owl:Class>
+
+<owl:Class rdf:about="&sem;PlaceType" rdfs:label="Place type">
+  <rdfs:comment>EventType contains all resources that are used to classify Places, e.g. river.</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Type"/>
+</owl:Class>
+
+<owl:Class rdf:about="&sem;TimeType" rdfs:label="Time type">
+  <rdfs:comment>EventType contains all resources that are used to classify Time, e.g. century.</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Type"/>
+</owl:Class>
+
+<!-- constraint classes -->
+<owl:Class rdf:about="&sem;View" rdfs:label="View">
+  <rdfs:comment>Views are properties that only hold according to a certain Authority.</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Constraint"/>
+</owl:Class>
+<owl:Class rdf:about="&sem;Temporary" rdfs:label="Temporary">
+  <rdfs:comment>Temporaries are properties that only hold during a certain Time, which is either indicated with the sem:hasTime property to an instance of sem:Time, or with the sem:hasTimeStamp property to some timestamp(s).</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Constraint"/>
+</owl:Class>
+<owl:Class rdf:about="&sem;Role" rdfs:label="Role">
+  <rdfs:comment>Roles are properties with a subspecified function or position indicated by a RoleType in the scope of an Event. For example, the sem:hasActor property can be subspecified with the RoleType attacker, to denote that the type of participation of the Actor in the scope of the Event is "attacker". The sem:hasPlace property can be subspecified with the RoleType origin, to denote that within the scope of the Event it is the origin.</rdfs:comment>
+  <rdfs:subClassOf rdf:resource="&sem;Constraint"/>
+  <skos:relatedMatch rdf:resource="&cyc;Role"/>
+  <skos:relatedMatch rdf:resource="&dolce;region"/>
+  <skos:relatedMatch rdf:resource="&sumo;IntentionalProcess"/>
+</owl:Class>
+<rdf:Description rdf:about="&cyc;Role"><rdfs:isDefinedBy rdf:resource="&cyc;"/></rdf:Description>
+<rdf:Description rdf:about="&dolce;region"><rdfs:isDefinedBy rdf:resource="&dolce;"/></rdf:Description>
+<rdf:Description rdf:about="&sumo;IntentionalProcess"><rdfs:isDefinedBy rdf:resource="&sumo;"/></rdf:Description>
+
+
+<!--
+  properties
+-->
+
+<owl:ObjectProperty rdf:about="&sem;eventProperty" rdfs:label="event property">
+  <rdfs:comment>Event properties connect Events to other SEM Core entities.</rdfs:comment>
+</owl:ObjectProperty>
+
+<!-- event-event properties -->
+<owl:ObjectProperty rdf:about="&sem;hasSubEvent" rdfs:label="has subevent">
+  <rdfs:comment>Has subevent connects an Event to other Events that belong to it. This is a very generic property that does not mean the subevents fully define the superconcept or that there is any causal relationship.</rdfs:comment>
+  <rdfs:subPropertyOf rdf:resource="&sem;eventProperty"/>
+  <rdfs:domain rdf:resource="&sem;Event"/>
+  <rdfs:range rdf:resource="&sem;Event"/>
+  <owl:inverseOf rdf:resource="&sem;subEventOf"/>
+  <skos:exactMatch rdf:resource="&eo;sub_event"/>
+</owl:ObjectProperty>
+<owl:ObjectProperty rdf:about="&sem;subEventOf" rdfs:label="subevent of">
+  <rdfs:comment>Inverse property of hasSubEvent</rdfs:comment>
+</owl:ObjectProperty>
+<rdf:Description rdf:about="&eo;sub_event"><rdfs:isDefinedBy rdf:resource="&eo;"/></rdf:Description>
+
+<!-- actor properties -->
+<owl:ObjectProperty rdf:about="&sem;hasActor" rdfs:label="has Actor">
+  <rdfs:comment>Has actor is used to state which Actors or Objects participate in an Event.</rdfs:comment>
+  <rdfs:range rdf:resource="&sem;Actor"/>
+  <rdfs:subPropertyOf rdf:resource="&sem;eventProperty"/>
+  <skos:exactMatch rdf:resource="&lode;involved"/>
+  <skos:narrowMatch rdf:resource="&cs;agent"/>
+</owl:ObjectProperty>
+<rdf:Description rdf:about="&lode;involved"><rdfs:isDefinedBy rdf:resource="&lode;"/></rdf:Description>
+<rdf:Description rdf:about="&cs;agent"><rdfs:isDefinedBy rdf:resource="&cs;"/></rdf:Description>
+
+<!-- place properties -->
+<owl:ObjectProperty rdf:about="&sem;hasPlace" rdfs:label="has Place">
+  <rdfs:comment>Has place is used to state in which Place(s) an Event happened. Coordinates can be attached to the Place with the W3C Geospatial Vocabulary (http://www.w3.org/2005/Incubator/geo/XGR-geo-20071023/).</rdfs:comment>
+  <rdfs:range rdf:resource="&sem;Place"/>
+  <rdfs:subPropertyOf rdf:resource="&sem;eventProperty"/>
+  <skos:narrowMatch rdf:resource="&lode;inSpace"/>
+  <skos:exactMatch rdf:resource="&cs;place"/>
+</owl:ObjectProperty>
+<rdf:Description rdf:about="&lode;inSpace"><rdfs:isDefinedBy rdf:resource="&lode;"/></rdf:Description>
+<rdf:Description rdf:about="&cs;place"><rdfs:isDefinedBy rdf:resource="&cs;"/></rdf:Description>
+
+<!-- time datatype properties -->
+<!-- time point -->
+<owl:DatatypeProperty rdf:about="&sem;hasTimeStamp" rdfs:label="has timestamp">
+  <rdfs:comment>Has timestamp is used to put time indicators on any individual. It is the most common way to state when an Event took place. There are subproperties of hasTimeStamp to represent time intervals and uncertain time intervals. If the exact moment is not known, but it is necessary to specify a certain time, use hasTime instead. All of these properties are also used to indicate the time at which a property under the Temporary Constraint is valid.</rdfs:comment>
+  <skos:closeMatch rdf:resource="&cs;time"/>
+</owl:DatatypeProperty>
+<rdf:Description rdf:about="&cs;time"><rdfs:isDefinedBy rdf:resource="&cs;"/></rdf:Description>
+
+<!-- time interval -->
+<owl:DatatypeProperty rdf:about="&sem;hasBeginTimeStamp" rdfs:label="has begin timestamp">
+  <rdfs:comment>Has begin timestamp is used to indicate the beginning of a time interval. Omitting the hasBeginTimeStamp while stating a hasEndTimeStamp is interpreted as an open ended interval.</rdfs:comment>
+  <rdfs:subPropertyOf rdf:resource="&sem;hasTimeStamp"/>
+</owl:DatatypeProperty>
+<owl:DatatypeProperty rdf:about="&sem;hasEndTimeStamp" rdfs:label="has end timestamp">
+  <rdfs:comment>Has end timestamp is used to indicate the end of a time interval. Omitting the hasEndTimeStamp while stating a hasBeginTimeStamp is interpreted as an open ended interval.</rdfs:comment>
+  <rdfs:subPropertyOf rdf:resource="&sem;hasTimeStamp"/>
+</owl:DatatypeProperty>
+
+<!-- approximate time interval -->
+<owl:DatatypeProperty rdf:about="&sem;hasEarliestBeginTimeStamp" rdfs:label="has earliest begin timestamp">
+  <rdfs:comment>Has earliest begin timestamp is used to indicate the earliest possible starting time of an uncertain time interval.</rdfs:comment>
+  <rdfs:subPropertyOf rdf:resource="&sem;hasBeginTimeStamp"/>
+</owl:DatatypeProperty>
+<owl:DatatypeProperty rdf:about="&sem;hasLatestBeginTimeStamp" rdfs:label="has latest begin timestamp">
+  <rdfs:comment>Has latest begin timestamp is used to indicate the latest possible starting time of an uncertain time interval.</rdfs:comment>
+  <rdfs:subPropertyOf rdf:resource="&sem;hasBeginTimeStamp"/>
+</owl:DatatypeProperty>
+<owl:DatatypeProperty rdf:about="&sem;hasEarliestEndTimeStamp" rdfs:label="has earliest end timestamp">
+  <rdfs:comment>Has earliest end timestamp is used to indicate the earliest possible ending time of an uncertain time interval.</rdfs:comment>
+  <rdfs:subPropertyOf rdf:resource="&sem;hasEndTimeStamp"/>
+</owl:DatatypeProperty>
+<owl:DatatypeProperty rdf:about="&sem;hasLatestEndTimeStamp" rdfs:label="has latest end timestamp">
+  <rdfs:comment>Has latest end timestamp is used to indicate the latest possible ending time of an uncertain time interval.</rdfs:comment>
+  <rdfs:subPropertyOf rdf:resource="&sem;hasEndTimeStamp"/>
+</owl:DatatypeProperty>
+
+<!-- time object property -->
+<owl:ObjectProperty rdf:about="&sem;hasTime" rdfs:label="has Time">
+  <rdfs:comment>Has time is used to indicate at which time an Event took place or when a property under the Temporary Constraint is valid. Has time points to a symbolic representation of time, which allows semantic relations between time resources. (see http://www.w3.org/TR/owl-time/)</rdfs:comment>
+  <rdfs:subPropertyOf rdf:resource="&sem;eventProperty"/>
+  <rdfs:range rdf:resource="&sem;Time"/>
+  <skos:broadMatch rdf:resource="&lode;atTime"/>
+</owl:ObjectProperty>
+<rdf:Description rdf:about="&lode;atTime"><rdfs:isDefinedBy rdf:resource="&lode;"/></rdf:Description>
+
+<!-- end event properties -->
+
+
+<!-- type properties -->
+<owl:ObjectProperty rdf:about="&sem;type" rdfs:label="type property">
+  <rdfs:comment>Type is the super property of the properties that are used to indicate the type of a Core instance, eventType, actorType, placeType, timeType; and of roleType. Types can be both classes and individuals, cf. OWL 2 punning.</rdfs:comment>
+  <rdfs:range rdf:resource="&sem;Type"/>
+  <rdfs:subPropertyOf rdf:resource="&rdf;type"/>
+  <skos:closeMatch rdf:resource="&dc;type"/>
+  <skos:relatedMatch rdf:resource="&cs;quality"/>
+</owl:ObjectProperty>
+<rdf:Description rdf:about="&dc;type"><rdfs:isDefinedBy rdf:resource="&dc;"/></rdf:Description>
+<rdf:Description rdf:about="&cs;quality"><rdfs:isDefinedBy rdf:resource="&cs;"/></rdf:Description>
+
+<owl:ObjectProperty rdf:about="&sem;eventType" rdfs:label="has event type">
+  <rdfs:comment>Has event type is used to assign a type to an event.</rdfs:comment>
+  <rdfs:domain rdf:resource="&sem;Event"/>
+  <rdfs:range rdf:resource="&sem;EventType"/>
+  <rdfs:subPropertyOf rdf:resource="&sem;type"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&sem;actorType" rdfs:label="has actor type">
+  <rdfs:comment>Has actor type is used to assign a type to an actor.</rdfs:comment>
+  <rdfs:domain rdf:resource="&sem;Actor"/>
+  <rdfs:range rdf:resource="&sem;ActorType"/>
+  <rdfs:subPropertyOf rdf:resource="&sem;type"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&sem;placeType" rdfs:label="has place type">
+  <rdfs:comment>Has place type is used to assign a type to a place.</rdfs:comment>
+  <rdfs:domain rdf:resource="&sem;Place"/>
+  <rdfs:range rdf:resource="&sem;PlaceType"/>
+  <rdfs:subPropertyOf rdf:resource="&sem;type"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&sem;timeType" rdfs:label="has time type">
+  <rdfs:comment>Has time type is used to assign a type to a time individual.</rdfs:comment>
+  <rdfs:domain rdf:resource="&sem;Time"/>
+  <rdfs:range rdf:resource="&sem;TimeType"/>
+  <rdfs:subPropertyOf rdf:resource="&sem;type"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&sem;roleType" rdfs:label="has role type">
+  <rdfs:comment>Has role type is used to assign a role type to a Role property constraint. This role is a subspecification of the eventProperty which it constrains. For example, if an Event hasActor an Actor and this property is given a Role Constraint, then roleType can be used to assign a role to the participation of the Actor in the Event indicated by hasActor.</rdfs:comment>
+  <rdfs:domain rdf:resource="&sem;Role"/>
+  <rdfs:range rdf:resource="&sem;RoleType"/>
+  <rdfs:subPropertyOf rdf:resource="&sem;type"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&sem;hasSubType" rdfs:label="has subtype">
+  <rdfs:comment>Has sub type is used to state that a type falls under another type. This is a generic aggregation relation that is used to generalize over various hierarchical relations that can exist between types.</rdfs:comment>
+  <rdfs:domain rdf:resource="&sem;Type"/>
+  <rdfs:range rdf:resource="&sem;Type"/>
+  <owl:inverseOf rdf:resource="&sem;subTypeOf"/>
+</owl:ObjectProperty>
+<owl:ObjectProperty rdf:about="&sem;subTypeOf" rdfs:label="subtype of">
+  <rdfs:comment>The inverse property of hasSubType.</rdfs:comment>
+  <rdfs:subPropertyOf rdf:resource="&rdfs;subClassOf"/>
+</owl:ObjectProperty>
+
+<!-- end type properties -->
+
+
+<!-- constraint properties -->
+
+<!-- view properties -->
+<owl:ObjectProperty rdf:about="&sem;accordingTo" rdfs:label="according to">
+  <rdfs:comment>According to is used to state which Authority sais that a property constrained by the View Constraint is true.</rdfs:comment>
+  <rdfs:domain rdf:resource="&sem;View"/>
+  <rdfs:range rdf:resource="&sem;Authority"/>
+</owl:ObjectProperty>
+
+</rdf:RDF>

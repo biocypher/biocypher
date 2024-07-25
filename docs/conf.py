@@ -3,7 +3,6 @@
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
-
 # -- Path setup --------------------------------------------------------------
 
 from datetime import datetime
@@ -56,6 +55,7 @@ extensions = [
     "nbsphinx",
 ]
 myst_enable_extensions = ["colon_fence"]
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
