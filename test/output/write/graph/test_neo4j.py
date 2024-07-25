@@ -1,5 +1,6 @@
 import os
 import logging
+import subprocess
 
 from genericpath import isfile
 import pytest
@@ -144,6 +145,28 @@ def test_construct_import_call(bw):
     assert "--database=neo4j" in import_script
     assert "neo4j" in import_script
 
+@pytest.mark.parametrize("length", [4], scope="module")
+def test_import_call(bw, _get_nodes):
+    assert isinstance(bw, _Neo4jBatchWriter)
+
+    nodes = _get_nodes
+
+    passed = bw.write_nodes(nodes)
+
+    assert passed
+
+    bw.write_import_call()
+
+    tmp_path = bw.outdir
+
+    import_call_path = os.path.join(tmp_path, "neo4j-admin-import-call.sh")
+
+    with open(import_call_path) as f:
+        call = f.read()
+
+    result = subprocess.run(call, capture_output=True, text=True, shell=True)
+
+    assert result.returncode == 0, f"Import failed with error: {result.stderr}"
 
 def test_write_hybrid_ontology_nodes(bw):
     nodes = []
