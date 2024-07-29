@@ -146,6 +146,7 @@ def test_construct_import_call(bw):
     assert "bin/neo4j-admin database import full neo4j" in import_script
     assert "bin/neo4j-admin import --database=neo4j" in import_script
 
+
 def test_write_hybrid_ontology_nodes(bw):
     nodes = []
     for i in range(4):
