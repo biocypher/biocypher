@@ -249,7 +249,13 @@ class _BatchWriter(_Writer, ABC):
 
         self.outdir = output_directory
 
-        self._import_call_file_prefix = import_call_file_prefix
+        if import_call_file_prefix is not None:
+            temp_path = os.path.relpath(self.outdir, os.getcwd())
+            logger.warning(f"temp_path:  `{temp_path}`.")
+            self._import_call_file_prefix = os.path.join(import_call_file_prefix, temp_path)
+            logger.warning(f"self._import_call_file_prefix:  `{self._import_call_file_prefix}`.")
+        else:
+            self._import_call_file_prefix = import_call_file_prefix
 
         self.parts = {}  # dict to store the paths of part files for each label
 
