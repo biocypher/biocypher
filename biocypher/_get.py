@@ -163,14 +163,16 @@ class Downloader:
             expired = True
         return expired
 
-    def _is_cached_api_expired(self, api: API) -> bool:
+    def _is_cached_api_expired(self, api: APIRequest) -> bool:
         """
+        Check if resource cache is expired.
 
         Args:
-            api:
+            api(APIRequest): API instance representing the API request
+                   that is being cached.
 
         Returns:
-            bool:
+            bool: cache is expired or not.
 
         """
         path = os.path.join(self.cache_dir, api.name)
@@ -196,7 +198,7 @@ class Downloader:
         ):
             shutil.rmtree(resource_cache_path)
 
-    def _delete_expired_api_cache(self, api: API):
+    def _delete_expired_api_cache(self, api: APIRequest):
         api_cache_path = self.cache_dir + "/" + api.name
         if os.path.exists(api_cache_path):
             shutil.rmtree(api_cache_path)
@@ -393,7 +395,7 @@ class Downloader:
         cache it in JSON format to the specified file path.
 
         Args:
-            api(API): an API instance representing the API request
+            api(APIRequest): an API instance representing the API request
                    that is being cached.
 
         Returns:
@@ -424,7 +426,7 @@ class Downloader:
         Cache the API request and return the path.
         Args:
             response_data(dict): API request in json format.
-            api(API): API instance representing the API request
+            api(APIRequest): API instance representing the API request
                    that is being cached.
 
         Returns:
