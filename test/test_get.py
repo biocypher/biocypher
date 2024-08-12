@@ -6,7 +6,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 import pytest
 
-from biocypher._get import Resource, Downloader
+from biocypher._get import Resource, APIRequest, Downloader
 
 
 @pytest.fixture
@@ -39,6 +39,20 @@ def test_resource(resource):
     assert isinstance(resource.name, str)
     assert isinstance(resource.url_s, str) or isinstance(resource.url_s, list)
     assert isinstance(resource.lifetime, int)
+
+
+@given(
+    st.builds(
+        APIRequest,
+        name=st.text(),
+        url=st.text(),
+        lifetime=st.integers(),
+    )
+)
+def test_API(api):
+    assert isinstance(api.name, str)
+    assert isinstance(api.url, str)
+    assert isinstance(api.lifetime, int)
 
 
 @pytest.mark.parametrize(
@@ -227,6 +241,45 @@ def test_download_zip_and_expiration():
     assert paths[0] is not None
 
 
-def test_cache_api_request():
-    # TODO
-    pass
+@pytest.mark.parametrize(
+    "downloader",
+    [
+        "downloader_without_specified_cache_dir",
+        "downloader_with_specified_cache_dir",
+    ],
+    indirect=True,
+)
+def test_cache_api_request(downloader):
+    api1 = APIRequest(
+        name="uniprot",
+        url="https://rest.uniprot.org/uniprotkb/P12345.json",
+        lifetime=1,
+    )
+    api2 = APIRequest(
+        name="intact",
+        url="https://www.ebi.ac.uk/intact/ws/interactor/countTotal",
+        lifetime=1,
+    )
+
+    response_data1 = downloader._get_api_request(api1)
+
+    paths1 = downloader._cache_api_request(response_data1, api1)
+
+    assert os.path.exists(paths1)
+
+    with open(paths1, "r") as file:
+        cached_data1 = json.load(file)
+
+    assert isinstance(cached_data1, dict)
+    assert cached_data1["api_request"] == response_data1
+
+    response_data2 = downloader._get_api_request(api2)
+
+    paths2 = downloader._cache_api_request(response_data2, api2)
+
+    assert os.path.exists(paths2)
+    with open(paths2, "r") as file:
+        cached_data2 = json.load(file)
+    assert isinstance(cached_data2, dict)
+
+    assert cached_data2["api_request"] == response_data2

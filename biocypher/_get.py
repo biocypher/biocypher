@@ -17,6 +17,8 @@ from __future__ import annotations
 from typing import Optional
 import shutil
 
+import requests
+
 from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
@@ -59,6 +61,25 @@ class Resource:
         self.url_s = url_s
         self.lifetime = lifetime
         self.is_dir = is_dir
+
+
+class APIRequest:
+    def __init__(self, name: str, url: str, lifetime: int):
+        """
+        Represents basic information for an API request.
+
+        Args:
+            name(str): The name of the API request.
+
+            url(str): The URL of the API endpoint.
+
+            lifetime(int): The lifetime of the API request in days. If 0, the
+                API request is considered to be permanent.
+
+        """
+        self.name = name
+        self.url = url
+        self.lifetime = lifetime
 
 
 class Downloader:
@@ -142,12 +163,45 @@ class Downloader:
             expired = True
         return expired
 
+    def _is_cached_api_expired(self, api: APIRequest) -> bool:
+        """
+        Check if resource cache is expired.
+
+        Args:
+            api(APIRequest): API instance representing the API request
+                   that is being cached.
+
+        Returns:
+            bool: cache is expired or not.
+
+        """
+        path = os.path.join(self.cache_dir, api.name)
+        cache_record = {}
+        if os.path.exists(path):
+            with open(path, "r") as file:
+                cache_record = json.load(file)
+
+        if cache_record:
+            download_time = datetime.strptime(
+                cache_record.get("date_downloaded"), "%Y-%m-%d %H:%M:%S.%f"
+            )
+            lifetime = timedelta(days=api.lifetime)
+            expired = download_time + lifetime < datetime.now()
+        else:
+            expired = True
+        return expired
+
     def _delete_expired_resource_cache(self, resource: Resource):
         resource_cache_path = self.cache_dir + "/" + resource.name
         if os.path.exists(resource_cache_path) and os.path.isdir(
             resource_cache_path
         ):
             shutil.rmtree(resource_cache_path)
+
+    def _delete_expired_api_cache(self, api: APIRequest):
+        api_cache_path = self.cache_dir + "/" + api.name
+        if os.path.exists(api_cache_path):
+            shutil.rmtree(api_cache_path)
 
     def _download_resource(self, cache, resource):
         """Download a resource.
@@ -334,6 +388,71 @@ class Downloader:
         self.cache_dict[resource.name] = cache_record
         with open(self.cache_file, "w") as f:
             json.dump(self.cache_dict, f, default=str)
+
+    def _get_api_request(self, api: APIRequest):
+        """
+        Send a GET request to the provided API endpoint,
+        cache it in JSON format to the specified file path.
+
+        Args:
+            api(APIRequest): an API instance representing the API request
+                   that is being cached.
+
+        Returns:
+            dict: The JSON response data from the API request,or from cache.
+
+
+        """
+        cache_file_path = f"{api.name}.json"
+        path = os.path.join(self.cache_dir, cache_file_path)
+        if not os.path.exists(path):
+            logger.info(f"Sending GET request to API URL: {api.url}.")
+            response = requests.get(url=api.url)
+            if response.status_code != 200:
+                raise response.raise_for_status()
+            response_data = response.json()
+
+        else:
+            with open(path, "r") as file:
+                logger.info(
+                    f"Attempting to load {api.name} API request data from file: {path}."
+                )
+                response_data = json.load(file)["api_request"]
+
+        return response_data
+
+    def _cache_api_request(self, response_data, api: APIRequest):
+        """
+        Cache the API request and return the path.
+        Args:
+            response_data(dict): API request in json format.
+            api(APIRequest): API instance representing the API request
+                   that is being cached.
+
+        Returns:
+            str: The path to the cached API request.
+
+        """
+
+        cache_file_path = f"{api.name}.json"
+        date_downloaded = str(datetime.now())
+        path = os.path.join(self.cache_dir, cache_file_path)
+        expired = self._is_cached_api_expired(api)
+        if expired:
+            self._delete_expired_api_cache(api)
+            logger.info(f"Asking for caching of {api.name}.")
+            cache_data = {
+                "api_request": response_data,
+                "date_downloaded": date_downloaded,
+                "lifetime": api.lifetime,
+            }
+            with open(path, "w") as file:
+                json.dump(cache_data, file)
+
+                logger.info(f"Caching API request to {path}.")
+        else:
+            logger.info(f"Cached API request for {api.name} is still valid.")
+        return path
 
 
 def is_nested(lst):
