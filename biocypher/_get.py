@@ -159,6 +159,7 @@ class Downloader:
             )
             lifetime = timedelta(days=resource.lifetime)
             expired = download_time + lifetime < datetime.now()
+
         else:
             expired = True
         return expired
@@ -175,8 +176,9 @@ class Downloader:
             bool: cache is expired or not.
 
         """
-        path = os.path.join(self.cache_dir, api.name)
+        path = os.path.join(self.cache_dir, f"{api.name}.json")
         cache_record = {}
+
         if os.path.exists(path):
             with open(path, "r") as file:
                 cache_record = json.load(file)
@@ -189,6 +191,7 @@ class Downloader:
             expired = download_time + lifetime < datetime.now()
         else:
             expired = True
+
         return expired
 
     def _delete_expired_resource_cache(self, resource: Resource):
