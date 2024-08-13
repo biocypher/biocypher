@@ -159,7 +159,6 @@ class Downloader:
             )
             lifetime = timedelta(days=resource.lifetime)
             expired = download_time + lifetime < datetime.now()
-
         else:
             expired = True
         return expired
@@ -178,7 +177,6 @@ class Downloader:
         """
         path = os.path.join(self.cache_dir, f"{api.name}.json")
         cache_record = {}
-
         if os.path.exists(path):
             with open(path, "r") as file:
                 cache_record = json.load(file)
