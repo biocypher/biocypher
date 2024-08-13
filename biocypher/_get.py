@@ -159,7 +159,6 @@ class Downloader:
             )
             lifetime = timedelta(days=resource.lifetime)
             expired = download_time + lifetime < datetime.now()
-
         else:
             expired = True
         return expired
