@@ -74,7 +74,7 @@ class APIRequest:
             url(str): The URL of the API endpoint.
 
             lifetime(int): The lifetime of the API request in days. If 0, the
-                API request is considered to be permanent.
+                API request is cached indefinitely.
 
         """
         self.name = name
@@ -168,11 +168,10 @@ class Downloader:
         Check if resource cache is expired.
 
         Args:
-            api(APIRequest): API instance representing the API request
-                   that is being cached.
+            api(APIRequest): The API request result that is being cached.
 
         Returns:
-            bool: cache is expired or not.
+            bool: True if expired, False if not.
 
         """
         path = os.path.join(self.cache_dir, f"{api.name}.json")
@@ -396,11 +395,10 @@ class Downloader:
         cache it in JSON format to the specified file path.
 
         Args:
-            api(APIRequest): an API instance representing the API request
-                   that is being cached.
+            api(APIRequest): The API request result that is being cached.
 
         Returns:
-            dict: The JSON response data from the API request,or from cache.
+            dict: The JSON response data from the API request, or from cache.
 
 
         """
