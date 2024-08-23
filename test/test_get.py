@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import os
 import json
+import pprint
 
 from hypothesis import given
 from hypothesis import strategies as st
@@ -45,13 +46,13 @@ def test_resource(resource):
     st.builds(
         APIRequest,
         name=st.text(),
-        url=st.text(),
+        url_s=st.text(),
         lifetime=st.integers(),
     )
 )
 def test_API(api):
     assert isinstance(api.name, str)
-    assert isinstance(api.url, str)
+    assert isinstance(api.url_s, str)
     assert isinstance(api.lifetime, int)
 
 
@@ -210,15 +211,25 @@ def test_download_zip_and_expiration():
         "https://github.com/biocypher/biocypher/raw/main/test/test_CSVs.zip",
         lifetime=7,
     )
-    paths = downloader.download(resource)
+    api = APIRequest(
+        "test_api",
+        "https://rest.uniprot.org/uniprotkb/P12345.json",
+        lifetime=7,
+    )
+    paths = downloader.download(resource, api)
     with open(downloader.cache_file, "r") as f:
         cache = json.load(f)
     assert (
         cache["test_resource"]["url"][0]
-        == "https://github.com/biocypher/biocypher/raw/main/test/test_CSVs.zip"
+        == "https://github.com/biocypher/biocypher/raw/main/test/test_CSVs.zip",
+        cache["test_api"]["url"][0]
+        == "https://rest.uniprot.org/uniprotkb/P12345.json",
     )
     assert cache["test_resource"]["lifetime"] == 7
+    assert cache["test_api"]["lifetime"] == 7
     assert cache["test_resource"]["date_downloaded"]
+    assert cache["test_api"]["date_downloaded"]
+
     for path in paths:
         assert os.path.exists(path)
 
@@ -226,19 +237,27 @@ def test_download_zip_and_expiration():
     downloader.cache_dict["test_resource"]["date_downloaded"] = str(
         datetime.now() - timedelta(days=4)
     )
+    downloader.cache_dict["test_api"]["date_downloaded"] = str(
+        datetime.now() - timedelta(days=4)
+    )
 
-    paths = downloader.download(resource)
+    paths = downloader.download(resource, api)
     # should not download again
     assert "tmp" in paths[0]
+    assert "tmp" in paths[1]
 
     # minus 8 days from date_downloaded
     downloader.cache_dict["test_resource"]["date_downloaded"] = str(
         datetime.now() - timedelta(days=8)
     )
+    downloader.cache_dict["test_api"]["date_downloaded"] = str(
+        datetime.now() - timedelta(days=8)
+    )
 
-    paths = downloader.download(resource)
+    paths = downloader.download(resource, api)
     # should download again
     assert paths[0] is not None
+    assert paths[1] is not None
 
 
 @pytest.mark.parametrize(
@@ -251,35 +270,71 @@ def test_download_zip_and_expiration():
 )
 def test_cache_api_request(downloader):
     api1 = APIRequest(
-        name="uniprot",
-        url="https://rest.uniprot.org/uniprotkb/P12345.json",
+        name="uniprot_api",
+        url_s=[
+            "https://rest.uniprot.org/uniprotkb/P12345.json",
+            "https://rest.uniprot.org/uniprotkb/P69905.json",
+        ],
         lifetime=1,
     )
     api2 = APIRequest(
-        name="intact",
-        url="https://www.ebi.ac.uk/intact/ws/interactor/countTotal",
+        name="intact_api",
+        url_s="https://www.ebi.ac.uk/intact/ws/interactor/countTotal",
         lifetime=1,
     )
 
-    response_data1 = downloader._get_api_request(api1)
+    paths = downloader.download(api1, api2)
 
-    paths1 = downloader._cache_api_request(response_data1, api1)
+    # test download list
+    assert isinstance(paths, list)
+    assert len(paths) == 3  # 2 API requests from api1, 1 API request from api2
+    for path in paths:
+        assert os.path.exists(path)
+    assert f"{os.sep}{api1.name}{os.sep}P12345.json" in paths[0]
+    assert f"{os.sep}{api1.name}{os.sep}P69905.json" in paths[1]
+    assert f"{os.sep}{api2.name}{os.sep}countTotal.json" in paths[2]
 
-    assert os.path.exists(paths1)
+    # api1 and api2 have been cached
+    # test cached api request
+    test_paths = downloader.download(
+        api1, api2
+    )  # get the path(s) of cached API request(s)
+    assert isinstance(test_paths, list)
+    assert len(paths) == len(test_paths)
 
-    with open(paths1, "r") as file:
-        cached_data1 = json.load(file)
+    paths.sort()
+    test_paths.sort()
+    for i in range(len(paths)):
+        with open(paths[i], "r") as file1:
+            api_request1 = json.load(file1)
 
-    assert isinstance(cached_data1, dict)
-    assert cached_data1["api_request"] == response_data1
+        with open(test_paths[i], "r") as file2:
+            api_request2 = json.load(file2)
+        assert api_request1 == api_request2
 
-    response_data2 = downloader._get_api_request(api2)
 
-    paths2 = downloader._cache_api_request(response_data2, api2)
+@pytest.mark.parametrize(
+    "downloader",
+    [
+        "downloader_without_specified_cache_dir",
+        "downloader_with_specified_cache_dir",
+    ],
+    indirect=True,
+)
+def test_path_splitted(downloader):
+    resourc1 = Resource(
+        "test_resource1",
+        "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_config.yaml",
+        lifetime=7,
+    )
+    resource2 = Resource(
+        name="test_resource2",
+        url_s=[
+            "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_config.yaml",
+            "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_schema_config_disconnected.yaml",
+        ],
+    )
 
-    assert os.path.exists(paths2)
-    with open(paths2, "r") as file:
-        cached_data2 = json.load(file)
-    assert isinstance(cached_data2, dict)
-
-    assert cached_data2["api_request"] == response_data2
+    paths = downloader.download(resourc1, resource2)
+    assert isinstance(paths, list)
+    assert len(paths) == 3  # if len(paths) == 3, then not splitted
