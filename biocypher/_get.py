@@ -106,7 +106,7 @@ class Downloader:
         Download one or multiple resources, APIrequest, or both.
 
         Args:
-            downloads (Resource or APIRequest): The resource(s) or API request(s) to download
+            downloads (Resource or APIRequest): The resource(s) or API request(s) to download.
 
         Returns:
             list[str]: The path or paths to the downloaded resource(s) or API request(s).
@@ -128,7 +128,7 @@ class Downloader:
         Download a resource or an API request if it is not cached or exceeded its lifetime.
 
         Args:
-            download (Resource or APIRequest): The resource or api request to download.
+            download (Resource or APIRequest): The resource or API request to download.
         Returns:
             list[str]: The path or paths to the downloaded resource(s) or API request(s).
         """
