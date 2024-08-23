@@ -14,7 +14,7 @@ BioCypher get module. Used to download and cache data from external sources.
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Union, Optional
 import shutil
 
 import requests
@@ -64,21 +64,21 @@ class Resource:
 
 
 class APIRequest:
-    def __init__(self, name: str, url: str, lifetime: int):
+    def __init__(self, name: str, url_s: str | list, lifetime: int = 0):
         """
         Represents basic information for an API request.
 
         Args:
             name(str): The name of the API request.
 
-            url(str): The URL of the API endpoint.
+            url(str|list): The URL of the API endpoint.
 
             lifetime(int): The lifetime of the API request in days. If 0, the
                 API request is cached indefinitely.
 
         """
         self.name = name
-        self.url = url
+        self.url_s = url_s
         self.lifetime = lifetime
 
 
@@ -101,19 +101,19 @@ class Downloader:
         self.cache_dict = self._load_cache_dict()
 
     # download function that accepts a resource or a list of resources
-    def download(self, *resources: Resource):
+    def download(self, *downloads: Union[Resource, APIRequest]):
         """
-        Download one or multiple resources.
+        Download one or multiple resources, APIrequest, or both.
 
         Args:
-            resources (Resource): The resource or resources to download.
+            downloads (Resource or APIRequest): The resource(s) or API request(s) to download.
 
         Returns:
-            str or list: The path or paths to the downloaded resource(s).
+            list[str]: The path or paths to the downloaded resource(s) or API request(s).
         """
         paths = []
-        for resource in resources:
-            paths.append(self._download_or_cache(resource))
+        for download in downloads:
+            paths.append(self._download_or_cache(download))
 
         # flatten list if it is nested
         if is_nested(paths):
@@ -121,87 +121,61 @@ class Downloader:
 
         return paths
 
-    def _download_or_cache(self, resource: Resource, cache: bool = True):
+    def _download_or_cache(
+        self, download: Union[Resource, APIRequest], cache: bool = True
+    ):
         """
-        Download a resource if it is not cached or exceeded its lifetime.
+        Download a resource or an API request if it is not cached or exceeded its lifetime.
 
         Args:
-            resource (Resource): The resource to download.
-
+            download (Resource or APIRequest): The resource or API request to download.
         Returns:
-            str or list: The path or paths to the downloaded resource(s).
+            list[str]: The path or paths to the downloaded resource(s) or API request(s).
         """
-        expired = self._is_cache_expired(resource)
+        expired = self._is_cache_expired(download)
 
         if expired or not cache:
-            self._delete_expired_resource_cache(resource)
-            logger.info(f"Asking for download of {resource.name}.")
-            paths = self._download_resource(cache, resource)
+            self._delete_expired_cache(download)
+            if isinstance(download, Resource):
+                logger.info(f"Asking for download of resource {download.name}.")
+                paths = self._download_resource(cache, download)
+            else:
+                logger.info(
+                    f"Asking for download of api request {download.name}."
+                )
+                paths = self._download_api_request(download)
         else:
-            paths = self.get_cached_version(resource)
-        self._update_cache_record(resource)
+            paths = self.get_cached_version(download)
+        self._update_cache_record(download)
         return paths
 
-    def _is_cache_expired(self, resource: Resource) -> bool:
+    def _is_cache_expired(self, download: Union[Resource, APIRequest]) -> bool:
         """
-        Check if resource cache is expired.
+        Check if resource or API request cache is expired.
 
         Args:
-            resource (Resource): The resource to download.
+            download (Resource or APIRequest): The resource or API request to download.
 
         Returns:
             bool: cache is expired or not.
         """
-        cache_record = self._get_cache_record(resource)
+        cache_record = self._get_cache_record(download)
         if cache_record:
             download_time = datetime.strptime(
                 cache_record.get("date_downloaded"), "%Y-%m-%d %H:%M:%S.%f"
             )
-            lifetime = timedelta(days=resource.lifetime)
+            lifetime = timedelta(days=download.lifetime)
             expired = download_time + lifetime < datetime.now()
         else:
             expired = True
         return expired
 
-    def _is_cached_api_expired(self, api: APIRequest) -> bool:
-        """
-        Check if resource cache is expired.
 
-        Args:
-            api(APIRequest): The API request result that is being cached.
-
-        Returns:
-            bool: True if expired, False if not.
-
-        """
-        path = os.path.join(self.cache_dir, f"{api.name}.json")
-        cache_record = {}
-        if os.path.exists(path):
-            with open(path, "r") as file:
-                cache_record = json.load(file)
-
-        if cache_record:
-            download_time = datetime.strptime(
-                cache_record.get("date_downloaded"), "%Y-%m-%d %H:%M:%S.%f"
-            )
-            lifetime = timedelta(days=api.lifetime)
-            expired = download_time + lifetime < datetime.now()
-        else:
-            expired = True
-
-        return expired
-
-    def _delete_expired_resource_cache(self, resource: Resource):
-        resource_cache_path = self.cache_dir + "/" + resource.name
-        if os.path.exists(resource_cache_path) and os.path.isdir(
-            resource_cache_path
-        ):
-            shutil.rmtree(resource_cache_path)
-
-    def _delete_expired_api_cache(self, api: APIRequest):
-        api_cache_path = self.cache_dir + "/" + api.name
-        if os.path.exists(api_cache_path):
-            shutil.rmtree(api_cache_path)
+    def _delete_expired_cache(self, download: Union[Resource, APIRequest]):
+        cache_path = self.cache_dir + "/" + download.name
+        if os.path.exists(cache_path) and os.path.isdir(cache_path):
+            shutil.rmtree(cache_path)
+   
 
     def _download_resource(self, cache, resource):
         """Download a resource.
@@ -211,7 +185,7 @@ class Downloader:
             resource (Resource): The resource to download.
 
         Returns:
-            str or list: The path or paths to the downloaded resource(s).
+            list[str]: The path or paths to the downloaded resource(s).
         """
         if resource.is_dir:
             files = self._get_files(resource)
@@ -230,31 +204,76 @@ class Downloader:
                     )
                 )
         else:
+            paths = []
             fname = resource.url_s[resource.url_s.rfind("/") + 1 :]
-            paths = self._retrieve(
+            results = self._retrieve(
                 url=resource.url_s,
                 fname=fname,
                 path=os.path.join(self.cache_dir, resource.name),
             )
+            if isinstance(results, list):
+                paths.extend(results)
+            else:
+                paths.append(results)
+
         # sometimes a compressed file contains multiple files
         # TODO ask for a list of files in the archive to be used from the
         # adapter
         return paths
 
-    def get_cached_version(self, resource) -> list[str]:
+    def _download_api_request(self, api_request: APIRequest):
+        """
+        Download the API request and return the path.
+        Args:
+
+            api_request(APIRequest): The API request result that is being cached.
+        Returns:
+            list[str]: The path to the cached API request.
+
+        """
+        urls = (
+            api_request.url_s
+            if isinstance(api_request.url_s, list)
+            else [api_request.url_s]
+        )
+        paths = []
+        for url in urls:
+            fname = url[url.rfind("/") + 1 :].rsplit(".", 1)[0]
+            logger.info(
+                f"Asking for caching API of {api_request.name} {fname}."
+            )
+            response = requests.get(url=url)
+
+            if response.status_code != 200:
+                response.raise_for_status()
+            response_data = response.json()
+            api_path = os.path.join(
+                self.cache_dir, api_request.name, f"{fname}.json"
+            )
+
+            os.makedirs(os.path.dirname(api_path), exist_ok=True)
+            with open(api_path, "w") as f:
+                json.dump(response_data, f)
+                logger.info(f"Caching API request to {api_path}.")
+            paths.append(api_path)
+        return paths
+
+    def get_cached_version(
+        self, download: Union[Resource, APIRequest]
+    ) -> list[str]:
         """Get the cached version of a resource.
 
         Args:
-            resource (Resource): The resource to get the cached version of.
+            download(Resource or APIRequest): The resource or API request to get the cached version of.
 
         Returns:
-            list[str]: The paths to the cached resource(s).
+            list[str]: The paths to the cached resource(s) or API request(s).
         """
-        cached_resource_location = os.path.join(self.cache_dir, resource.name)
-        logger.info(f"Use cached version from {cached_resource_location}.")
+        cached_location = os.path.join(self.cache_dir, download.name)
+        logger.info(f"Use cached version from {cached_location}.")
         paths = []
-        for file in os.listdir(cached_resource_location):
-            paths.append(os.path.join(cached_resource_location, file))
+        for file in os.listdir(cached_location):
+            paths.append(os.path.join(cached_location, file))
         return paths
 
     def _retrieve(
@@ -362,96 +381,34 @@ class Downloader:
             logger.info(f"Loading cache file {self.cache_file}.")
             return json.load(f)
 
-    def _get_cache_record(self, resource: Resource):
+    def _get_cache_record(self, download: Union[Resource, APIRequest]):
         """
-        Get the cache record of a resource.
+        Get the cache record of a resource or an API request.
 
         Args:
-            resource (Resource): The resource to get the cache record of.
+            download (Resource or APIRequest): The resource or API request to get the cache record of.
 
         Returns:
             The cache record of the resource.
         """
-        return self.cache_dict.get(resource.name, {})
+        return self.cache_dict.get(download.name, {})
 
-    def _update_cache_record(self, resource: Resource):
+    def _update_cache_record(self, download: Union[Resource, APIRequest]):
         """
-        Update the cache record of a resource.
+        Update the cache record of a resource or an API request.
 
         Args:
-            resource (Resource): The resource to update the cache record of.
+            download (Resource or APIrequest): The resource or API request to update the cache record of.
         """
         cache_record = {}
-        cache_record["url"] = to_list(resource.url_s)
+        cache_record["url"] = to_list(download.url_s)
         cache_record["date_downloaded"] = str(datetime.now())
-        cache_record["lifetime"] = resource.lifetime
-        self.cache_dict[resource.name] = cache_record
+        cache_record["lifetime"] = download.lifetime
+        self.cache_dict[download.name] = cache_record
         with open(self.cache_file, "w") as f:
             json.dump(self.cache_dict, f, default=str)
 
-    def _get_api_request(self, api: APIRequest):
-        """
-        Send a GET request to the provided API endpoint,
-        cache it in JSON format to the specified file path.
 
-        Args:
-            api(APIRequest): The API request result that is being cached.
-
-        Returns:
-            dict: The JSON response data from the API request, or from cache.
-
-
-        """
-        cache_file_path = f"{api.name}.json"
-        path = os.path.join(self.cache_dir, cache_file_path)
-        if not os.path.exists(path):
-            logger.info(f"Sending GET request to API URL: {api.url}.")
-            response = requests.get(url=api.url)
-            if response.status_code != 200:
-                raise response.raise_for_status()
-            response_data = response.json()
-
-        else:
-            with open(path, "r") as file:
-                logger.info(
-                    f"Attempting to load {api.name} API request data from file: {path}."
-                )
-                response_data = json.load(file)["api_request"]
-
-        return response_data
-
-    def _cache_api_request(self, response_data, api: APIRequest):
-        """
-        Cache the API request and return the path.
-        Args:
-            response_data(dict): API request in json format.
-            api(APIRequest): API instance representing the API request
-                   that is being cached.
-
-        Returns:
-            str: The path to the cached API request.
-
-        """
-
-        cache_file_path = f"{api.name}.json"
-        date_downloaded = str(datetime.now())
-        path = os.path.join(self.cache_dir, cache_file_path)
-        expired = self._is_cached_api_expired(api)
-        if expired:
-            self._delete_expired_api_cache(api)
-            logger.info(f"Asking for caching of {api.name}.")
-            cache_data = {
-                "api_request": response_data,
-                "date_downloaded": date_downloaded,
-                "lifetime": api.lifetime,
-            }
-            with open(path, "w") as file:
-                json.dump(cache_data, file)
-
-                logger.info(f"Caching API request to {path}.")
-        else:
-            logger.info(f"Cached API request for {api.name} is still valid.")
-        return path
 
 
 def is_nested(lst):
