@@ -262,7 +262,7 @@ class Downloader:
         """Get the cached version of a resource.
 
         Args:
-            download_item(Union[Resource, APIRequest]): The resource or API request to get the cached version of.
+            download(Resource or APIRequest): The resource or API request to get the cached version of.
 
         Returns:
             list[str]: The paths to the cached resource(s) or API request(s).
