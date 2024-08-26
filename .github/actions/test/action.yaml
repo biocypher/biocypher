@@ -11,9 +11,9 @@ runs:
     #    setup docker containers for testing
     #----------------------------------------------
     # currently only available for ubuntu and macos
-    - name: Install Docker
-      uses: douglascamata/setup-docker-macos-action@v1-alpha
-      if: ${{ runner.os == 'macOS' }}
+#    - name: Install Docker
+#      uses: douglascamata/setup-docker-macos-action@v1-alpha
+#      if: ${{ runner.os == 'macOS' }}
     - name: Start Neo4j Docker
       run: docker run --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/your_password_here --env NEO4J_PLUGINS='["apoc"]' --env=NEO4J_ACCEPT_LICENSE_AGREEMENT=yes -d neo4j:${{ inputs.NEO4J_VERSION }}
       shell: bash
