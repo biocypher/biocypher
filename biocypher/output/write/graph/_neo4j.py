@@ -301,11 +301,13 @@ class _Neo4jBatchWriter(_BatchWriter):
         Returns:
             str: The import call.
         """
-        import_call = (
-            f"{self.import_call_bin_prefix}neo4j-admin {import_cmd} "
-            f'--delimiter="{self.escaped_delim}" '
-            f'--array-delimiter="{self.escaped_adelim}" '
-        )
+        import_call = f"{self.import_call_bin_prefix}neo4j-admin {import_cmd} "
+
+        import_call += f"{database_cmd}{self.db_name} "
+
+        import_call += f'--delimiter="{self.escaped_delim}" '
+
+        import_call += f'--array-delimiter="{self.escaped_adelim}" '
 
         if self.quote == "'":
             import_call += f'--quote="{self.quote}" '
@@ -327,6 +329,4 @@ class _Neo4jBatchWriter(_BatchWriter):
         for header_path, parts_path in self.import_call_edges:
             import_call += f'--relationships="{header_path},{parts_path}" '
 
-        # Database needs to be at the end starting with Neo4j 5.0+.
-        import_call += f"{database_cmd}{self.db_name} "
         return import_call

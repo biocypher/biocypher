@@ -137,12 +137,13 @@ def test_construct_import_call(bw):
 
     import_script = bw._construct_import_call()
 
-    assert "bin/neo4j-admin database import full" in import_script
     assert "--overwrite-destination=true" in import_script
     assert "bin/neo4j-admin import" in import_script
     assert "--force=true" in import_script
     assert "--database=neo4j" in import_script
     assert "neo4j" in import_script
+    assert "bin/neo4j-admin database import full neo4j" in import_script
+    assert "bin/neo4j-admin import --database=neo4j" in import_script
 
 
 def test_write_hybrid_ontology_nodes(bw):
