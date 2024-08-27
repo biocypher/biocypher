@@ -23,6 +23,12 @@ classifiers = [
 repository = "https://github.com/biocypher/biocypher"
 readme = "README.md"
 
+[project.urls]
+Homepage = "https://biocypher.org"
+Documentation = "https://biocypher.org"
+Repository = "https://github.com/biocypher/biocypher.git"
+Issues = "https://github.com/biocypher/biocypher/issues"
+
 [tool.poetry.dependencies]
 python = "^3.9"
 PyYAML = ">=5.0"
