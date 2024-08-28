@@ -227,6 +227,19 @@ def test_download_zip_and_expiration():
     assert paths[0] is not None
 
 
-def test_cache_api_request():
-    # TODO
-    pass
+def test_download_with_parameter():
+    downloader = Downloader(cache_dir=None)
+    resource = Resource(
+        name="zenodo",
+        url_s="https://zenodo.org/records/7773985/files/CollecTRI_source.tsv?download=1",
+        lifetime=1,
+    )
+
+    paths1 = downloader.download(resource)
+    assert isinstance(paths1, list)
+    assert os.path.exists(paths1[0])
+
+    # load resource from cache
+    paths2 = downloader.download(resource)
+    assert isinstance(paths2, list)
+    assert "tmp" in paths2[0]
