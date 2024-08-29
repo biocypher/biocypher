@@ -105,7 +105,7 @@ class Downloader:
     # download function that accepts a resource or a list of resources
     def download(self, *resources: Union[Resource, APIRequest]):
         """
-        Download one or multiple files, APIrequest, or both.
+        Download one or multiple file(s), APIRequest(s), or both.
 
         Args:
             resources (Resource or APIRequest): The resource(s), i.e., file(s)
@@ -230,9 +230,10 @@ class Downloader:
     def _download_api_request(self, api_request: APIRequest):
         """
         Download the API request and return the path.
-        Args:
 
-            api_request(APIRequest): The API request result that is being cached.
+        Args:
+            api_request(APIRequest): The API request result that is being
+                cached.
         Returns:
             list[str]: The path to the cached API request.
 
