@@ -101,19 +101,21 @@ class Downloader:
         self.cache_dict = self._load_cache_dict()
 
     # download function that accepts a resource or a list of resources
-    def download(self, *downloads: Union[Resource, APIRequest]):
+    def download(self, *resources: Union[Resource, APIRequest]):
         """
-        Download one or multiple resources, APIrequest, or both.
+        Download one or multiple files, APIrequest, or both.
 
         Args:
-            downloads (Resource or APIRequest): The resource(s) or API request(s) to download.
+            resources (Resource or APIRequest): The resource(s), i.e., file(s)
+                or API request(s), to download.
 
         Returns:
-            list[str]: The path or paths to the downloaded resource(s) or API request(s).
+            list[str]: The path or paths to the downloaded resource(s) or API
+                request(s).
         """
         paths = []
-        for download in downloads:
-            paths.append(self._download_or_cache(download))
+        for resource in resources:
+            paths.append(self._download_or_cache(resource))
 
         # flatten list if it is nested
         if is_nested(paths):
@@ -122,56 +124,60 @@ class Downloader:
         return paths
 
     def _download_or_cache(
-        self, download: Union[Resource, APIRequest], cache: bool = True
+        self, resource: Union[Resource, APIRequest], cache: bool = True
     ):
         """
-        Download a resource or an API request if it is not cached or exceeded its lifetime.
+        Download a resource or an API request if it is not cached or exceeded
+            its lifetime.
 
         Args:
-            download (Resource or APIRequest): The resource or API request to download.
+            resource (Resource or APIRequest): The file or API request to
+                download.
         Returns:
-            list[str]: The path or paths to the downloaded resource(s) or API request(s).
+            list[str]: The path or paths to the downloaded resource(s) or API
+                request(s).
         """
-        expired = self._is_cache_expired(download)
+        expired = self._is_cache_expired(resource)
 
         if expired or not cache:
-            self._delete_expired_cache(download)
-            if isinstance(download, Resource):
-                logger.info(f"Asking for download of resource {download.name}.")
-                paths = self._download_resource(cache, download)
+            self._delete_expired_cache(resource)
+            if isinstance(resource, Resource):
+                logger.info(f"Asking for download of resource {resource.name}.")
+                paths = self._download_resource(cache, resource)
             else:
                 logger.info(
-                    f"Asking for download of api request {download.name}."
+                    f"Asking for download of api request {resource.name}."
                 )
-                paths = self._download_api_request(download)
+                paths = self._download_api_request(resource)
         else:
-            paths = self.get_cached_version(download)
-        self._update_cache_record(download)
+            paths = self.get_cached_version(resource)
+        self._update_cache_record(resource)
         return paths
 
-    def _is_cache_expired(self, download: Union[Resource, APIRequest]) -> bool:
+    def _is_cache_expired(self, resource: Union[Resource, APIRequest]) -> bool:
         """
         Check if resource or API request cache is expired.
 
         Args:
-            download (Resource or APIRequest): The resource or API request to download.
+            resource (Resource or APIRequest): The file or API request to
+                download.
 
         Returns:
-            bool: cache is expired or not.
+            bool: True if cache is expired, False if not.
         """
-        cache_record = self._get_cache_record(download)
+        cache_record = self._get_cache_record(resource)
         if cache_record:
             download_time = datetime.strptime(
                 cache_record.get("date_downloaded"), "%Y-%m-%d %H:%M:%S.%f"
             )
-            lifetime = timedelta(days=download.lifetime)
+            lifetime = timedelta(days=resource.lifetime)
             expired = download_time + lifetime < datetime.now()
         else:
             expired = True
         return expired
 
-    def _delete_expired_cache(self, download: Union[Resource, APIRequest]):
-        cache_path = self.cache_dir + "/" + download.name
+    def _delete_expired_cache(self, resource: Union[Resource, APIRequest]):
+        cache_path = self.cache_dir + "/" + resource.name
         if os.path.exists(cache_path) and os.path.isdir(cache_path):
             shutil.rmtree(cache_path)
 
@@ -257,17 +263,18 @@ class Downloader:
         return paths
 
     def get_cached_version(
-        self, download: Union[Resource, APIRequest]
+        self, resource: Union[Resource, APIRequest]
     ) -> list[str]:
         """Get the cached version of a resource.
 
         Args:
-            download(Resource or APIRequest): The resource or API request to get the cached version of.
+            resource(Resource or APIRequest): The file or API request to get the
+                cached version of.
 
         Returns:
-            list[str]: The paths to the cached resource(s) or API request(s).
+            list[str]: The paths to the cached file(s) or API request(s).
         """
-        cached_location = os.path.join(self.cache_dir, download.name)
+        cached_location = os.path.join(self.cache_dir, resource.name)
         logger.info(f"Use cached version from {cached_location}.")
         paths = []
         for file in os.listdir(cached_location):
@@ -379,30 +386,32 @@ class Downloader:
             logger.info(f"Loading cache file {self.cache_file}.")
             return json.load(f)
 
-    def _get_cache_record(self, download: Union[Resource, APIRequest]):
+    def _get_cache_record(self, resource: Union[Resource, APIRequest]):
         """
-        Get the cache record of a resource or an API request.
+        Get the cache record of a file or an API request.
 
         Args:
-            download (Resource or APIRequest): The resource or API request to get the cache record of.
+            resource (Resource or APIRequest): The file or API request to get
+                the cache record of.
 
         Returns:
             The cache record of the resource.
         """
-        return self.cache_dict.get(download.name, {})
+        return self.cache_dict.get(resource.name, {})
 
-    def _update_cache_record(self, download: Union[Resource, APIRequest]):
+    def _update_cache_record(self, resource: Union[Resource, APIRequest]):
         """
-        Update the cache record of a resource or an API request.
+        Update the cache record of a file or an API request.
 
         Args:
-            download (Resource or APIrequest): The resource or API request to update the cache record of.
+            resource (Resource or APIrequest): The file or API request to update
+                the cache record of.
         """
         cache_record = {}
-        cache_record["url"] = to_list(download.url_s)
+        cache_record["url"] = to_list(resource.url_s)
         cache_record["date_downloaded"] = str(datetime.now())
-        cache_record["lifetime"] = download.lifetime
-        self.cache_dict[download.name] = cache_record
+        cache_record["lifetime"] = resource.lifetime
+        self.cache_dict[resource.name] = cache_record
         with open(self.cache_file, "w") as f:
             json.dump(self.cache_dict, f, default=str)
 
