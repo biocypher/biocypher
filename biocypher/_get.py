@@ -43,14 +43,16 @@ class Resource:
         is_dir: bool = False,
     ):
         """
-        A resource is a file that can be downloaded from a URL and cached
-        locally. This class implements checks of the minimum requirements for
-        a resource, to be implemented by a biocypher adapter.
+
+        A Resource is a file (or a list of files) that can be downloaded from a
+        URL and cached locally. This class implements checks of the minimum
+        requirements for a resource file or list of files, to be implemented by
+        a biocypher adapter.
 
         Args:
-            name (str): The name of the resource.
+            name (str): The name of the resource file or files.
 
-            url_s (str | list[str]): The URL or URLs of the resource.
+            url_s (str | list[str]): The URL or URLs of the resource file(s).
 
             lifetime (int): The lifetime of the resource in days. If 0, the
                 resource is considered to be permanent.
