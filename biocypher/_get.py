@@ -31,7 +31,7 @@ import ftplib
 
 import pooch
 
-from ._misc import to_list
+from ._misc import to_list, is_nested
 
 
 class Resource:
@@ -170,12 +170,10 @@ class Downloader:
             expired = True
         return expired
 
-
     def _delete_expired_cache(self, download: Union[Resource, APIRequest]):
         cache_path = self.cache_dir + "/" + download.name
         if os.path.exists(cache_path) and os.path.isdir(cache_path):
             shutil.rmtree(cache_path)
-   
 
     def _download_resource(self, cache, resource):
         """Download a resource.
@@ -407,21 +405,3 @@ class Downloader:
         self.cache_dict[download.name] = cache_record
         with open(self.cache_file, "w") as f:
             json.dump(self.cache_dict, f, default=str)
-
-
-
-
-def is_nested(lst):
-    """
-    Check if a list is nested.
-
-    Args:
-        lst (list): The list to check.
-
-    Returns:
-        bool: True if the list is nested, False otherwise.
-    """
-    for item in lst:
-        if isinstance(item, list):
-            return True
-    return False
