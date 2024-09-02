@@ -175,7 +175,7 @@ class Downloader:
         Check if resource or API request cache is expired.
 
         Args:
-            resource (Resource): The resource or API request to download.
+            resource (Resource): The resource to download.
 
         Returns:
             bool: cache is expired or not.
