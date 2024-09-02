@@ -357,7 +357,14 @@ def test_download_with_parameter():
     paths1 = downloader.download(resource)
     assert isinstance(paths1, list)
     assert os.path.exists(paths1[0])
+    assert "?download=1" not in paths1[0]
 
+    with open(downloader.cache_file, "r") as f:
+        cache = json.load(f)
+    assert (
+        cache["zenodo"]["url"][0]
+        == "https://zenodo.org/records/7773985/files/CollecTRI_source.tsv",
+    )
     # load resource from cache
     paths2 = downloader.download(resource)
     assert "tmp" in paths2[0]

@@ -218,7 +218,7 @@ class Downloader:
         elif isinstance(file_download.url_s, list):
             paths = []
             for url in file_download.url_s:
-                fname = url[url.rfind("/") + 1 :]
+                fname = url[url.rfind("/") + 1 :].split("?")[0]
                 paths.append(
                     self._retrieve(
                         url=url,
@@ -228,7 +228,9 @@ class Downloader:
                 )
         else:
             paths = []
-            fname = file_download.url_s[file_download.url_s.rfind("/") + 1 :]
+            fname = file_download.url_s[
+                file_download.url_s.rfind("/") + 1 :
+            ].split("?")[0]
             results = self._retrieve(
                 url=file_download.url_s,
                 fname=fname,
