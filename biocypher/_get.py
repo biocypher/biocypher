@@ -146,7 +146,6 @@ class Downloader:
 
         return paths
 
-
     def _download_or_cache(self, resource: Resource, cache: bool = True):
         """
         Download a resource if it is not cached or exceeded its lifetime.
@@ -156,7 +155,7 @@ class Downloader:
         Returns:
             list[str]: The path or paths to the downloaded resource(s).
 
-  
+
         """
         expired = self._is_cache_expired(resource)
 
@@ -166,7 +165,6 @@ class Downloader:
                 logger.info(f"Asking for download of resource {resource.name}.")
                 paths = self._download_files(cache, resource)
             elif isinstance(resource, APIRequest):
-
                 logger.info(
                     f"Asking for download of api request {resource.name}."
                 )
@@ -180,10 +178,7 @@ class Downloader:
         self._update_cache_record(resource)
         return paths
 
-
     def _is_cache_expired(self, resource: Resource) -> bool:
-
-
         """
         Check if resource or API request cache is expired.
 
@@ -205,7 +200,6 @@ class Downloader:
             expired = True
         return expired
 
-
     def _delete_expired_cache(self, resource: Resource):
         cache_resource_path = self.cache_dir + "/" + resource.name
         if os.path.exists(cache_resource_path) and os.path.isdir(
@@ -214,8 +208,6 @@ class Downloader:
             shutil.rmtree(cache_resource_path)
 
     def _download_files(self, cache, file_download: FileDownload):
-
-
         """Download a resource.
 
         Args:
@@ -300,7 +292,6 @@ class Downloader:
                 logger.info(f"Caching API request to {api_path}.")
             paths.append(api_path)
         return paths
-
 
     def get_cached_version(self, resource: Resource) -> list[str]:
         """Get the cached version of a resource.
@@ -424,7 +415,6 @@ class Downloader:
             logger.info(f"Loading cache file {self.cache_file}.")
             return json.load(f)
 
-
     def _get_cache_record(self, resource: Resource):
         """
         Get the cache record of a resource.
@@ -436,7 +426,6 @@ class Downloader:
             The cache record of the resource.
         """
         return self.cache_dict.get(resource.name, {})
-
 
     def _update_cache_record(self, resource: Resource):
         """
@@ -452,5 +441,3 @@ class Downloader:
         self.cache_dict[resource.name] = cache_record
         with open(self.cache_file, "w") as f:
             json.dump(self.cache_dict, f, default=str)
-
-
