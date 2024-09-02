@@ -246,19 +246,3 @@ def to_lower_sentence_case(s: str) -> str:
         return pascalcase_to_sentencecase(s)
     else:
         return s
-
-
-def is_nested(lst) -> bool:
-    """
-    Check if a list is nested.
-
-    Args:
-        lst (list): The list to check.
-
-    Returns:
-        bool: True if the list is nested, False otherwise.
-    """
-    for item in lst:
-        if isinstance(item, list):
-            return True
-    return False

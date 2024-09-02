@@ -184,14 +184,12 @@ Download and cache functionality
 ================================
 
 BioCypher provides a download and cache functionality for resources. Resources
-are defined via the abstract ``Resource`` class, which have a name, a (set of)
-URL(s), and a lifetime (in days, set to 0 for infinite). The ``Resource`` classs
-is inhereted by ``FileDownload`` class and ``APIRequest`` class. The ``Downloader``
-can deal with single and lists of files, compressed files, and directories (which
-needs to be indicated using the ``is_dir`` parameter of the ``FileDownload``). It
-uses `Pooch <https://www.fatiando.org/pooch/latest/>`_ under the hood to handle the
-downloading of files and Python's `requests <https://pypi.org/project/requests/>`_
-library to perform API requests. Example usage:
+are defined via the ``Resource`` class, which have a name, a (set of) URL(s),
+and a lifetime (in days, set to 0 for infinite). The ``Downloader`` can deal
+with single and lists of files, compressed files, and directories (which needs
+to be indicated using the ``is_dir`` parameter of the resource). It uses `Pooch
+<https://www.fatiando.org/pooch/latest/>`_ under the hood to handle the
+downloads. Example usage:
 
 .. testcode:: python
    :hide:
@@ -205,59 +203,44 @@ library to perform API requests. Example usage:
 
 .. code-block:: python
 
-   from biocypher import BioCypher, FileDownload, APIRequest
+   from biocypher import BioCypher, Resource
    bc = BioCypher()
 
-   resource1 = FileDownload(
-       name="file_list_resource",
-       url_s=[
-           "https://example.com/file_download1.txt",
-           "https://example.com/file_download2.txt"
-       ],
-       lifetime=1
+   resource1 = Resource(
+      name="file_list_resource",
+      url_s=[
+         "https://example.com/resource1.txt"
+         "https://example.com/resource2.txt"
+      ],
+      lifetime=1
    )
-   resource2 = FileDownload(
-       name="zipped_resource",
-       url_s="https://example.com/file_download3.zip",
-       lifetime=7
+   resource2 = Resource(
+      name="zipped_resource",
+      url_s="https://example.com/resource3.zip",
+      lifetime=7
    )
-   resource3 = FileDownload(
-       name="directory_resource",
-       url_s="https://example.com/file_download4/",
-       lifetime=7,
-       is_dir=True,
+   resource3 = Resource(
+      name="directory_resource",
+      url_s="https://example.com/resource4/",
+      lifetime=7,
+      is_dir=True,
    )
-   resource4 = APIRequest(
-       name="list_api_request",
-       url_s=[
-           "https://api.example.org/api_request1",
-           "https://api.example.org/api_request2",
-       ],
-       life_time=7,
-   )
-   resource5 = APIRequest(
-       name="api_request",
-       url_s="https://api.example.org/api_request1",
-       life_time=7,
-   )
-   resource_list = [resource1, resource2, resource3, resource4, reousrce5]
+   resource_list = [resource1, resource2, resource3]
    paths = bc.download(resource_list)
 
-The files and API requests will be stored in the cache directory, in subfolders according to the
+The files will be stored in the cache directory, in subfolders according to the
 names of the resources, and additionally determined by Pooch (e.g. extraction).
 All paths of downloaded files are returned by the ``download`` method. The
 ``Downloader`` class can also be used directly, without the BioCypher instance.
 You can set the cache directory in the configuration file; if not set, it will
 use the ``TemporaryDirectory.name()`` method from the ``tempfile`` module. More
-details about the ``Resource`` , ``FileDownload`` , ``APIRequest`` and ``Downloader`` classes can be found below.
+details about the ``Resource`` and ``Downloader`` classes can be found below.
 
 .. module:: biocypher._get
 .. autosummary::
    :toctree: modules
 
    Resource
-   APIRequest
-   FileDownload
    Downloader
 
 Ontology ingestion, parsing, and manipulation
