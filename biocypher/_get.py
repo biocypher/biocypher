@@ -43,14 +43,16 @@ class Resource(ABC):
         lifetime: int = 0,
     ):
         """
-        A resource is a file that can be downloaded from a URL and cached
-        locally. This class implements checks of the minimum requirements for
-        a resource, to be implemented by a biocypher adapter.
+
+        A Resource is a file (or a list of files) that can be downloaded from a
+        URL and cached locally. This class implements checks of the minimum
+        requirements for a resource file or list of files, to be implemented by
+        a biocypher adapter.
 
         Args:
-            name (str): The name of the resource.
+            name (str): The name of the resource file or files.
 
-            url_s (str | list[str]): The URL or URLs of the resource.
+            url_s (str | list[str]): The URL or URLs of the resource file(s).
 
             lifetime (int): The lifetime of the resource in days. If 0, the
                 resource is considered to be permanent.
@@ -122,6 +124,7 @@ class Downloader:
         self.cache_dict = self._load_cache_dict()
 
     # download function that accepts a resource or a list of resources
+
     def download(self, *resources: Resource):
         """
         Download one or multiple resources.
@@ -131,6 +134,7 @@ class Downloader:
 
         Returns:
             list[str]: The path or paths to the downloaded resource(s).
+
         """
         paths = []
         for resource in resources:
@@ -142,6 +146,7 @@ class Downloader:
 
         return paths
 
+
     def _download_or_cache(self, resource: Resource, cache: bool = True):
         """
         Download a resource if it is not cached or exceeded its lifetime.
@@ -150,6 +155,8 @@ class Downloader:
             resource (Resource): The resource to download.
         Returns:
             list[str]: The path or paths to the downloaded resource(s).
+
+  
         """
         expired = self._is_cache_expired(resource)
 
@@ -159,26 +166,33 @@ class Downloader:
                 logger.info(f"Asking for download of resource {resource.name}.")
                 paths = self._download_files(cache, resource)
             elif isinstance(resource, APIRequest):
+
                 logger.info(
                     f"Asking for download of api request {resource.name}."
                 )
                 paths = self._download_api_request(resource)
+
             else:
                 raise TypeError(f"Unknown resource type: {type(resource)}")
+
         else:
             paths = self.get_cached_version(resource)
         self._update_cache_record(resource)
         return paths
 
+
     def _is_cache_expired(self, resource: Resource) -> bool:
+
+
         """
         Check if resource or API request cache is expired.
 
         Args:
+
             resource (Resource): The resource or API request to download.
 
         Returns:
-            bool: cache is expired or not.
+            bool: True if cache is expired, False if not.
         """
         cache_record = self._get_cache_record(resource)
         if cache_record:
@@ -191,6 +205,7 @@ class Downloader:
             expired = True
         return expired
 
+
     def _delete_expired_cache(self, resource: Resource):
         cache_resource_path = self.cache_dir + "/" + resource.name
         if os.path.exists(cache_resource_path) and os.path.isdir(
@@ -199,6 +214,8 @@ class Downloader:
             shutil.rmtree(cache_resource_path)
 
     def _download_files(self, cache, file_download: FileDownload):
+
+
         """Download a resource.
 
         Args:
@@ -249,9 +266,10 @@ class Downloader:
     def _download_api_request(self, api_request: APIRequest):
         """
         Download the API request and return the path.
-        Args:
 
-            api_request(APIRequest): The API request result that is being cached.
+        Args:
+            api_request(APIRequest): The API request result that is being
+                cached.
         Returns:
             list[str]: The path to the cached API request.
 
@@ -283,6 +301,7 @@ class Downloader:
             paths.append(api_path)
         return paths
 
+
     def get_cached_version(self, resource: Resource) -> list[str]:
         """Get the cached version of a resource.
 
@@ -291,6 +310,7 @@ class Downloader:
 
         Returns:
             list[str]: The paths to the cached resource(s).
+
         """
         cached_location = os.path.join(self.cache_dir, resource.name)
         logger.info(f"Use cached version from {cached_location}.")
@@ -404,6 +424,7 @@ class Downloader:
             logger.info(f"Loading cache file {self.cache_file}.")
             return json.load(f)
 
+
     def _get_cache_record(self, resource: Resource):
         """
         Get the cache record of a resource.
@@ -415,6 +436,7 @@ class Downloader:
             The cache record of the resource.
         """
         return self.cache_dict.get(resource.name, {})
+
 
     def _update_cache_record(self, resource: Resource):
         """
@@ -430,3 +452,5 @@ class Downloader:
         self.cache_dict[resource.name] = cache_record
         with open(self.cache_file, "w") as f:
             json.dump(self.cache_dict, f, default=str)
+
+
