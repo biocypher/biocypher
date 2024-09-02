@@ -14,7 +14,7 @@ BioCypher get module. Used to download and cache data from external sources.
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Union, Optional
 import shutil
 
 import requests
@@ -23,7 +23,6 @@ from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
-from abc import ABC
 from datetime import datetime, timedelta
 from tempfile import TemporaryDirectory
 import os
@@ -32,15 +31,16 @@ import ftplib
 
 import pooch
 
-from ._misc import to_list, is_nested
+from ._misc import to_list
 
 
-class Resource(ABC):
+class Resource:
     def __init__(
         self,
         name: str,
         url_s: str | list[str],
         lifetime: int = 0,
+        is_dir: bool = False,
     ):
         """
 
@@ -56,53 +56,32 @@ class Resource(ABC):
 
             lifetime (int): The lifetime of the resource in days. If 0, the
                 resource is considered to be permanent.
+
+            is_dir (bool): Whether the resource is a directory or not.
         """
         self.name = name
         self.url_s = url_s
         self.lifetime = lifetime
-
-
-class FileDownload(Resource):
-    def __init__(
-        self,
-        name: str,
-        url_s: str | list[str],
-        lifetime: int = 0,
-        is_dir: bool = False,
-    ):
-        """
-        Represents basic information for a File Download.
-
-        Args:
-            name(str):The name of the File Download.
-
-            url_s(str|list[str]):The URL of the File Download.
-
-            lifetime(int): The lifetime of the File Download in days. If 0, the
-                File Download is cached indefinitely.
-
-            is_dir (bool): Whether the File Download is a directory or not.
-        """
-
-        super().__init__(name, url_s, lifetime)
         self.is_dir = is_dir
 
 
-class APIRequest(Resource):
-    def __init__(self, name: str, url_s: str | list[str], lifetime: int = 0):
+class APIRequest:
+    def __init__(self, name: str, url_s: str | list, lifetime: int = 0):
         """
-        Represents basic information for an API Request.
+        Represents basic information for an API request.
 
         Args:
-            name(str): The name of the API Request.
+            name(str): The name of the API request.
 
-            url_s(str|list): The URL of the API endpoint.
+            url(str|list): The URL of the API endpoint.
 
-            lifetime(int): The lifetime of the API Request in days. If 0, the
-                API Request is cached indefinitely.
+            lifetime(int): The lifetime of the API request in days. If 0, the
+                API request is cached indefinitely.
 
         """
-        super().__init__(name, url_s, lifetime)
+        self.name = name
+        self.url_s = url_s
+        self.lifetime = lifetime
 
 
 class Downloader:
@@ -124,17 +103,17 @@ class Downloader:
         self.cache_dict = self._load_cache_dict()
 
     # download function that accepts a resource or a list of resources
-
-    def download(self, *resources: Resource):
+    def download(self, *resources: Union[Resource, APIRequest]):
         """
-        Download one or multiple resources.
+        Download one or multiple file(s), APIRequest(s), or both.
 
         Args:
-            reousrces (Resource): The resource(s) to download.
+            resources (Resource or APIRequest): The resource(s), i.e., file(s)
+                or API request(s), to download.
 
         Returns:
-            list[str]: The path or paths to the downloaded resource(s).
-
+            list[str]: The path or paths to the downloaded resource(s) or API
+                request(s).
         """
         paths = []
         for resource in resources:
@@ -146,50 +125,44 @@ class Downloader:
 
         return paths
 
-
-    def _download_or_cache(self, resource: Resource, cache: bool = True):
+    def _download_or_cache(
+        self, resource: Union[Resource, APIRequest], cache: bool = True
+    ):
         """
-        Download a resource if it is not cached or exceeded its lifetime.
+        Download a resource or an API request if it is not cached or exceeded
+            its lifetime.
 
         Args:
-            resource (Resource): The resource to download.
+            resource (Resource or APIRequest): The file or API request to
+                download.
         Returns:
-            list[str]: The path or paths to the downloaded resource(s).
-
-  
+            list[str]: The path or paths to the downloaded resource(s) or API
+                request(s).
         """
         expired = self._is_cache_expired(resource)
 
         if expired or not cache:
             self._delete_expired_cache(resource)
-            if isinstance(resource, FileDownload):
+            if isinstance(resource, Resource):
                 logger.info(f"Asking for download of resource {resource.name}.")
-                paths = self._download_files(cache, resource)
-            elif isinstance(resource, APIRequest):
-
+                paths = self._download_resource(cache, resource)
+            else:
                 logger.info(
                     f"Asking for download of api request {resource.name}."
                 )
                 paths = self._download_api_request(resource)
-
-            else:
-                raise TypeError(f"Unknown resource type: {type(resource)}")
-
         else:
             paths = self.get_cached_version(resource)
         self._update_cache_record(resource)
         return paths
 
-
-    def _is_cache_expired(self, resource: Resource) -> bool:
-
-
+    def _is_cache_expired(self, resource: Union[Resource, APIRequest]) -> bool:
         """
         Check if resource or API request cache is expired.
 
         Args:
-
-            resource (Resource): The resource or API request to download.
+            resource (Resource or APIRequest): The file or API request to
+                download.
 
         Returns:
             bool: True if cache is expired, False if not.
@@ -205,53 +178,44 @@ class Downloader:
             expired = True
         return expired
 
+    def _delete_expired_cache(self, resource: Union[Resource, APIRequest]):
+        cache_path = self.cache_dir + "/" + resource.name
+        if os.path.exists(cache_path) and os.path.isdir(cache_path):
+            shutil.rmtree(cache_path)
 
-    def _delete_expired_cache(self, resource: Resource):
-        cache_resource_path = self.cache_dir + "/" + resource.name
-        if os.path.exists(cache_resource_path) and os.path.isdir(
-            cache_resource_path
-        ):
-            shutil.rmtree(cache_resource_path)
-
-    def _download_files(self, cache, file_download: FileDownload):
-
-
+    def _download_resource(self, cache, resource):
         """Download a resource.
 
         Args:
             cache (bool): Whether to cache the resource or not.
-            file_download (FileDownload): The resource to download.
+            resource (Resource): The resource to download.
 
         Returns:
             list[str]: The path or paths to the downloaded resource(s).
         """
-        if file_download.is_dir:
-            files = self._get_files(file_download)
-            file_download.url_s = [
-                file_download.url_s + "/" + file for file in files
-            ]
-            file_download.is_dir = False
-            paths = self._download_or_cache(file_download, cache)
-        elif isinstance(file_download.url_s, list):
+        if resource.is_dir:
+            files = self._get_files(resource)
+            resource.url_s = [resource.url_s + "/" + file for file in files]
+            resource.is_dir = False
+            paths = self._download_or_cache(resource, cache)
+        elif isinstance(resource.url_s, list):
             paths = []
-            for url in file_download.url_s:
-                fname = url[url.rfind("/") + 1 :].split("?")[0]
+            for url in resource.url_s:
+                fname = url[url.rfind("/") + 1 :]
                 paths.append(
                     self._retrieve(
                         url=url,
                         fname=fname,
-                        path=os.path.join(self.cache_dir, file_download.name),
+                        path=os.path.join(self.cache_dir, resource.name),
                     )
                 )
         else:
             paths = []
-            fname = file_download.url_s[
-                file_download.url_s.rfind("/") + 1 :
-            ].split("?")[0]
+            fname = resource.url_s[resource.url_s.rfind("/") + 1 :]
             results = self._retrieve(
-                url=file_download.url_s,
+                url=resource.url_s,
                 fname=fname,
-                path=os.path.join(self.cache_dir, file_download.name),
+                path=os.path.join(self.cache_dir, resource.name),
             )
             if isinstance(results, list):
                 paths.extend(results)
@@ -301,16 +265,17 @@ class Downloader:
             paths.append(api_path)
         return paths
 
-
-    def get_cached_version(self, resource: Resource) -> list[str]:
+    def get_cached_version(
+        self, resource: Union[Resource, APIRequest]
+    ) -> list[str]:
         """Get the cached version of a resource.
 
         Args:
-            resource(Resource): The resource to get the cached version of.
+            resource(Resource or APIRequest): The file or API request to get the
+                cached version of.
 
         Returns:
-            list[str]: The paths to the cached resource(s).
-
+            list[str]: The paths to the cached file(s) or API request(s).
         """
         cached_location = os.path.join(self.cache_dir, resource.name)
         logger.info(f"Use cached version from {cached_location}.")
@@ -376,23 +341,23 @@ class Downloader:
                 progressbar=True,
             )
 
-    def _get_files(self, file_download: FileDownload):
+    def _get_files(self, resource: Resource):
         """
-        Get the files contained in a directory file.
+        Get the files contained in a directory resource.
 
         Args:
-            file_download (FileDownload): The directory file.
+            resource (Resource): The directory resource.
 
         Returns:
             list: The files contained in the directory.
         """
-        if file_download.url_s.startswith("ftp://"):
+        if resource.url_s.startswith("ftp://"):
             # remove protocol
-            url = file_download.url_s[6:]
+            url = resource.url_s[6:]
             # get base url
             url = url[: url.find("/")]
             # get directory (remove initial slash as well)
-            dir = file_download.url_s[7 + len(url) :]
+            dir = resource.url_s[7 + len(url) :]
             # get files
             ftp = ftplib.FTP(url)
             ftp.login()
@@ -424,26 +389,26 @@ class Downloader:
             logger.info(f"Loading cache file {self.cache_file}.")
             return json.load(f)
 
-
-    def _get_cache_record(self, resource: Resource):
+    def _get_cache_record(self, resource: Union[Resource, APIRequest]):
         """
-        Get the cache record of a resource.
+        Get the cache record of a file or an API request.
 
         Args:
-            resource (Resource): The resource to get the cache record of.
+            resource (Resource or APIRequest): The file or API request to get
+                the cache record of.
 
         Returns:
             The cache record of the resource.
         """
         return self.cache_dict.get(resource.name, {})
 
-
-    def _update_cache_record(self, resource: Resource):
+    def _update_cache_record(self, resource: Union[Resource, APIRequest]):
         """
-        Update the cache record of a resource.
+        Update the cache record of a file or an API request.
 
         Args:
-            resource (Resource): The resource to update the cache record of.
+            resource (Resource or APIrequest): The file or API request to update
+                the cache record of.
         """
         cache_record = {}
         cache_record["url"] = to_list(resource.url_s)
@@ -454,3 +419,17 @@ class Downloader:
             json.dump(self.cache_dict, f, default=str)
 
 
+def is_nested(lst):
+    """
+    Check if a list is nested.
+
+    Args:
+        lst (list): The list to check.
+
+    Returns:
+        bool: True if the list is nested, False otherwise.
+    """
+    for item in lst:
+        if isinstance(item, list):
+            return True
+    return False
