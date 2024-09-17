@@ -185,13 +185,15 @@ Download and cache functionality
 
 BioCypher provides a download and cache functionality for resources. Resources
 are defined via the abstract ``Resource`` class, which have a name, a (set of)
-URL(s), and a lifetime (in days, set to 0 for infinite). The ``Resource`` classs
-is inhereted by ``FileDownload`` class and ``APIRequest`` class. The ``Downloader``
-can deal with single and lists of files, compressed files, and directories (which
-needs to be indicated using the ``is_dir`` parameter of the ``FileDownload``). It
-uses `Pooch <https://www.fatiando.org/pooch/latest/>`_ under the hood to handle the
-downloading of files and Python's `requests <https://pypi.org/project/requests/>`_
-library to perform API requests. Example usage:
+URL(s), and a lifetime (in days, set to 0 for infinite). Two classes inherit
+from the ``Resource`` class, the ``FileDownload`` class and ``APIRequest``
+class. The ``Downloader`` can deal with single files, lists of files, compressed
+files, and directories (which needs to be indicated using the ``is_dir`` 
+parameter of the ``FileDownload``). It uses `Pooch
+<https://www.fatiando.org/pooch/latest/>`_ under the hood to handle the
+downloading of files and Python's `requests
+<https://pypi.org/project/requests/>`_ library to perform API requests. Example
+usage:
 
 .. testcode:: python
    :hide:
@@ -240,16 +242,18 @@ library to perform API requests. Example usage:
        url_s="https://api.example.org/api_request1",
        life_time=7,
    )
-   resource_list = [resource1, resource2, resource3, resource4, reousrce5]
+   resource_list = [resource1, resource2, resource3, resource4, resource5]
    paths = bc.download(resource_list)
 
-The files and API requests will be stored in the cache directory, in subfolders according to the
-names of the resources, and additionally determined by Pooch (e.g. extraction).
-All paths of downloaded files are returned by the ``download`` method. The
-``Downloader`` class can also be used directly, without the BioCypher instance.
-You can set the cache directory in the configuration file; if not set, it will
-use the ``TemporaryDirectory.name()`` method from the ``tempfile`` module. More
-details about the ``Resource`` , ``FileDownload`` , ``APIRequest`` and ``Downloader`` classes can be found below.
+The files and API requests will be stored in the cache directory, in subfolders
+according to the names of the resources, and additionally determined by Pooch
+(e.g., extraction of zip files can result in multiple new files). All paths of
+downloaded files are returned by the ``download`` method. The ``Downloader``
+class can also be used directly, without the BioCypher instance. You can set
+the cache directory in the configuration file; if not set, it will use the
+``TemporaryDirectory.name()`` method from the ``tempfile`` module. More details
+about the ``Resource`` , ``FileDownload`` , ``APIRequest`` and ``Downloader``
+classes can be found below.
 
 .. module:: biocypher._get
 .. autosummary::
