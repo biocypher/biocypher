@@ -1,0 +1,22 @@
+﻿biocypher.\_get.APIRequest
+==========================
+
+.. currentmodule:: biocypher._get
+
+.. autoclass:: APIRequest
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~APIRequest.__init__
+   
+   
+
+   
+   
+   

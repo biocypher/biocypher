@@ -253,47 +253,71 @@ methods can be found below.</p>
 <section id="download-and-cache-functionality">
 <h2>Download and cache functionality<a class="headerlink" href="#download-and-cache-functionality" title="Permalink to this heading"></a></h2>
 <p>BioCypher provides a download and cache functionality for resources. Resources
-are defined via the <code class="docutils literal notranslate"><span class="pre">Resource</span></code> class, which have a name, a (set of) URL(s),
-and a lifetime (in days, set to 0 for infinite). The <code class="docutils literal notranslate"><span class="pre">Downloader</span></code> can deal
-with single and lists of files, compressed files, and directories (which needs
-to be indicated using the <code class="docutils literal notranslate"><span class="pre">is_dir</span></code> parameter of the resource). It uses <a class="reference external" href="https://www.fatiando.org/pooch/latest/">Pooch</a> under the hood to handle the
-downloads. Example usage:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span><span class="p">,</span> <span class="n">Resource</span>
+are defined via the abstract <code class="docutils literal notranslate"><span class="pre">Resource</span></code> class, which have a name, a (set of)
+URL(s), and a lifetime (in days, set to 0 for infinite). Two classes inherit
+from the <code class="docutils literal notranslate"><span class="pre">Resource</span></code> class, the <code class="docutils literal notranslate"><span class="pre">FileDownload</span></code> class and <code class="docutils literal notranslate"><span class="pre">APIRequest</span></code>
+class. The <code class="docutils literal notranslate"><span class="pre">Downloader</span></code> can deal with single files, lists of files, compressed
+files, and directories (which needs to be indicated using the <code class="docutils literal notranslate"><span class="pre">is_dir</span></code>
+parameter of the <code class="docutils literal notranslate"><span class="pre">FileDownload</span></code>). It uses <a class="reference external" href="https://www.fatiando.org/pooch/latest/">Pooch</a> under the hood to handle the
+downloading of files and Python’s <a class="reference external" href="https://pypi.org/project/requests/">requests</a> library to perform API requests. Example
+usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span><span class="p">,</span> <span class="n">FileDownload</span><span class="p">,</span> <span class="n">APIRequest</span>
 <span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
 
-<span class="n">resource1</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span>
-   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;file_list_resource&quot;</span><span class="p">,</span>
-   <span class="n">url_s</span><span class="o">=</span><span class="p">[</span>
-      <span class="s2">&quot;https://example.com/resource1.txt&quot;</span>
-      <span class="s2">&quot;https://example.com/resource2.txt&quot;</span>
-   <span class="p">],</span>
-   <span class="n">lifetime</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">resource1</span> <span class="o">=</span> <span class="n">FileDownload</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;file_list_resource&quot;</span><span class="p">,</span>
+    <span class="n">url_s</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;https://example.com/file_download1.txt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;https://example.com/file_download2.txt&quot;</span>
+    <span class="p">],</span>
+    <span class="n">lifetime</span><span class="o">=</span><span class="mi">1</span>
 <span class="p">)</span>
-<span class="n">resource2</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span>
-   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;zipped_resource&quot;</span><span class="p">,</span>
-   <span class="n">url_s</span><span class="o">=</span><span class="s2">&quot;https://example.com/resource3.zip&quot;</span><span class="p">,</span>
-   <span class="n">lifetime</span><span class="o">=</span><span class="mi">7</span>
+<span class="n">resource2</span> <span class="o">=</span> <span class="n">FileDownload</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;zipped_resource&quot;</span><span class="p">,</span>
+    <span class="n">url_s</span><span class="o">=</span><span class="s2">&quot;https://example.com/file_download3.zip&quot;</span><span class="p">,</span>
+    <span class="n">lifetime</span><span class="o">=</span><span class="mi">7</span>
 <span class="p">)</span>
-<span class="n">resource3</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span>
-   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;directory_resource&quot;</span><span class="p">,</span>
-   <span class="n">url_s</span><span class="o">=</span><span class="s2">&quot;https://example.com/resource4/&quot;</span><span class="p">,</span>
-   <span class="n">lifetime</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
-   <span class="n">is_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="n">resource3</span> <span class="o">=</span> <span class="n">FileDownload</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;directory_resource&quot;</span><span class="p">,</span>
+    <span class="n">url_s</span><span class="o">=</span><span class="s2">&quot;https://example.com/file_download4/&quot;</span><span class="p">,</span>
+    <span class="n">lifetime</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+    <span class="n">is_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">resource_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">resource1</span><span class="p">,</span> <span class="n">resource2</span><span class="p">,</span> <span class="n">resource3</span><span class="p">]</span>
+<span class="n">resource4</span> <span class="o">=</span> <span class="n">APIRequest</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;list_api_request&quot;</span><span class="p">,</span>
+    <span class="n">url_s</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;https://api.example.org/api_request1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;https://api.example.org/api_request2&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">life_time</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">resource5</span> <span class="o">=</span> <span class="n">APIRequest</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;api_request&quot;</span><span class="p">,</span>
+    <span class="n">url_s</span><span class="o">=</span><span class="s2">&quot;https://api.example.org/api_request1&quot;</span><span class="p">,</span>
+    <span class="n">life_time</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">resource_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">resource1</span><span class="p">,</span> <span class="n">resource2</span><span class="p">,</span> <span class="n">resource3</span><span class="p">,</span> <span class="n">resource4</span><span class="p">,</span> <span class="n">resource5</span><span class="p">]</span>
 <span class="n">paths</span> <span class="o">=</span> <span class="n">bc</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">resource_list</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The files will be stored in the cache directory, in subfolders according to the
-names of the resources, and additionally determined by Pooch (e.g. extraction).
-All paths of downloaded files are returned by the <code class="docutils literal notranslate"><span class="pre">download</span></code> method. The
-<code class="docutils literal notranslate"><span class="pre">Downloader</span></code> class can also be used directly, without the BioCypher instance.
-You can set the cache directory in the configuration file; if not set, it will
-use the <code class="docutils literal notranslate"><span class="pre">TemporaryDirectory.name()</span></code> method from the <code class="docutils literal notranslate"><span class="pre">tempfile</span></code> module. More
-details about the <code class="docutils literal notranslate"><span class="pre">Resource</span></code> and <code class="docutils literal notranslate"><span class="pre">Downloader</span></code> classes can be found below.</p>
+<p>The files and API requests will be stored in the cache directory, in subfolders
+according to the names of the resources, and additionally determined by Pooch
+(e.g., extraction of zip files can result in multiple new files). All paths of
+downloaded files are returned by the <code class="docutils literal notranslate"><span class="pre">download</span></code> method. The <code class="docutils literal notranslate"><span class="pre">Downloader</span></code>
+class can also be used directly, without the BioCypher instance. You can set
+the cache directory in the configuration file; if not set, it will use the
+<code class="docutils literal notranslate"><span class="pre">TemporaryDirectory.name()</span></code> method from the <code class="docutils literal notranslate"><span class="pre">tempfile</span></code> module. More details
+about the <code class="docutils literal notranslate"><span class="pre">Resource</span></code> , <code class="docutils literal notranslate"><span class="pre">FileDownload</span></code> , <code class="docutils literal notranslate"><span class="pre">APIRequest</span></code> and <code class="docutils literal notranslate"><span class="pre">Downloader</span></code>
+classes can be found below.</p>
 <span class="target" id="module-biocypher._get"></span><table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._get.Resource.html#biocypher._get.Resource" title="biocypher._get.Resource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resource</span></code></a>(name, url_s[, lifetime, is_dir])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._get.Resource.html#biocypher._get.Resource" title="biocypher._get.Resource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resource</span></code></a>(name, url_s[, lifetime])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._get.APIRequest.html#biocypher._get.APIRequest" title="biocypher._get.APIRequest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">APIRequest</span></code></a>(name, url_s[, lifetime])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._get.FileDownload.html#biocypher._get.FileDownload" title="biocypher._get.FileDownload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FileDownload</span></code></a>(name, url_s[, lifetime, is_dir])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._get.Downloader.html#biocypher._get.Downloader" title="biocypher._get.Downloader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Downloader</span></code></a>([cache_dir])</p></td>

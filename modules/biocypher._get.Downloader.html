@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="biocypher._ontology.Ontology" href="biocypher._ontology.Ontology.html" />
-    <link rel="prev" title="biocypher._get.Resource" href="biocypher._get.Resource.html" /> 
+    <link rel="prev" title="biocypher._get.FileDownload" href="biocypher._get.FileDownload.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -127,19 +127,13 @@
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="biocypher._get.Downloader.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#biocypher._get.Downloader.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>A downloader is a collection of resources that can be downloaded
+<dd><p>The Downloader is a class that manages resources that can be downloaded
 and cached locally. It manages the lifetime of downloaded resources by
 keeping a JSON record of the download date of each resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cache_dir</strong> (<em>str</em>) – The directory where the resources are cached. If
 not given, a temporary directory is created.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The downloader object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#biocypher._get.Downloader" title="biocypher._get.Downloader">Downloader</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -148,7 +142,7 @@ not given, a temporary directory is created.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biocypher._get.Downloader.__init__" title="biocypher._get.Downloader.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([cache_dir])</p></td>
-<td><p>A downloader is a collection of resources that can be downloaded and cached locally.</p></td>
+<td><p>The Downloader is a class that manages resources that can be downloaded and cached locally.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">download</span></code>(*resources)</p></td>
 <td><p>Download one or multiple resources.</p></td>
@@ -166,7 +160,7 @@ not given, a temporary directory is created.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="biocypher._get.Resource.html" class="btn btn-neutral float-left" title="biocypher._get.Resource" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="biocypher._get.FileDownload.html" class="btn btn-neutral float-left" title="biocypher._get.FileDownload" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="biocypher._ontology.Ontology.html" class="btn btn-neutral float-right" title="biocypher._ontology.Ontology" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

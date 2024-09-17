@@ -1,0 +1,22 @@
+﻿biocypher.\_get.FileDownload
+============================
+
+.. currentmodule:: biocypher._get
+
+.. autoclass:: FileDownload
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FileDownload.__init__
+   
+   
+
+   
+   
+   
