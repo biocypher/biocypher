@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biocypher"
-version = "0.5.44"
+version = "0.6.0"
 description = "A unifying framework for biomedical research knowledge graphs"
 authors = [
     "Sebastian Lobentanzer <sebastian.lobentanzer@gmail.com>",
