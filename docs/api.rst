@@ -188,7 +188,7 @@ are defined via the abstract ``Resource`` class, which have a name, a (set of)
 URL(s), and a lifetime (in days, set to 0 for infinite). Two classes inherit
 from the ``Resource`` class, the ``FileDownload`` class and ``APIRequest``
 class. The ``Downloader`` can deal with single files, lists of files, compressed
-files, and directories (which needs to be indicated using the ``is_dir`` 
+files, and directories (which needs to be indicated using the ``is_dir``
 parameter of the ``FileDownload``). It uses `Pooch
 <https://www.fatiando.org/pooch/latest/>`_ under the hood to handle the
 downloading of files and Python's `requests
