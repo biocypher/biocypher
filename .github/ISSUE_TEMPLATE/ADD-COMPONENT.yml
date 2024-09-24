@@ -1,7 +1,7 @@
 name: Add New Component
 description: Add a new BioCypher component (input, output, ontology, pipeline) to the overview board.
 title: "[Component Name]"
-projects: ["biocypher/2"]
+projects: ["biocypher/3"]
 body:
   - type: markdown
     attributes:
