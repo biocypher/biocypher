@@ -58,8 +58,8 @@ body:
         - RDF
         - NA
         - Other (state below)
-      validations:
-        required: true
+    validations:
+      required: true
   - type: textarea
     id: resource-url
     attributes:
