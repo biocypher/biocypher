@@ -56,7 +56,7 @@ body:
         - SQL
         - ArangoDB
         - RDF
-        - None
+        - NA
         - Other (state below)
       validations:
         required: true
