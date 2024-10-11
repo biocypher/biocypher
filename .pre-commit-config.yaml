@@ -4,8 +4,8 @@ fail_fast: false
 default_language_version:
     python: python3
 default_stages:
--   pre-commit
--   pre-push
+-   commit
+-   push
 minimum_pre_commit_version: 2.7.1
 repos:
 -   repo: https://github.com/ambv/black
