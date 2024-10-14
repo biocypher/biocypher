@@ -11,7 +11,6 @@
 """
 BioCypher 'online' mode. Handles connection and manipulation of a running DBMS.
 """
-import subprocess
 
 from biocypher._logger import logger
 
@@ -23,7 +22,6 @@ import itertools
 import neo4j_utils
 
 from biocypher import _misc
-from biocypher._config import config as _config
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._translate import Translator
 
@@ -393,30 +391,3 @@ class _Neo4jDriver:
         logger.info("Finished merging edges.")
 
         return result
-
-
-def get_driver(
-    dbms: str,
-    translator: "Translator",
-):
-    """
-    Function to return the writer class.
-
-    Returns:
-        class: the writer class
-    """
-
-    dbms_config = _config(dbms)
-
-    if dbms == "neo4j":
-        return _Neo4jDriver(
-            database_name=dbms_config["database_name"],
-            wipe=dbms_config["wipe"],
-            uri=dbms_config["uri"],
-            user=dbms_config["user"],
-            password=dbms_config["password"],
-            multi_db=dbms_config["multi_db"],
-            translator=translator,
-        )
-
-    return None
