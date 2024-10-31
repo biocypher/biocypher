@@ -17,14 +17,14 @@ supported are ``neo4j``, ``arangodb``, ``rdf``, ``csv``, ``postgres``,
 Furthermore, you can specify whether to use the ``offline`` or ``online`` mode.
 
 - For the online mode set ``offline: false``. You need a running database
-instance and BioCypher will connect to this instance and directly writes the
-output to the database.
+  instance and BioCypher will connect to this instance and directly writes the
+  output to the database.
 
 - For the offline mode set ``offline: true``. BioCypher will ``output.write``
-the knowledge graph to files in a designated output folder (standard being
-``biocypher-out/`` and the current datetime). Furthermore you can generate a
-bash script to insert the knowledge graph files into the specified ``dbms`` by
-running ``bc.write_import_call()``.
+  the knowledge graph to files in a designated output folder (standard being
+  ``biocypher-out/`` and the current datetime). Furthermore you can generate a
+  bash script to insert the knowledge graph files into the specified ``dbms`` by
+  running ``bc.write_import_call()``.
 
 .. caution::
 
