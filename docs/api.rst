@@ -198,6 +198,32 @@ usage:
 .. testcode:: python
    :hide:
 
+   from biocypher import FileDownload, APIRequest
+
+   # Check if the classes can be instantiated
+   file_download_instance = FileDownload(
+       name="test_file",
+       url_s="https://example.com/test_file.txt",
+       lifetime=1
+   )
+   api_request_instance = APIRequest(
+       name="test_api",
+       url_s="https://api.example.com/test_api",
+       lifetime=1
+   )
+
+   print(isinstance(file_download_instance, FileDownload))
+   print(isinstance(api_request_instance, APIRequest))
+
+.. testoutput:: python
+   :hide:
+
+   True
+   True
+
+.. testcode:: python
+   :hide:
+
    check_if_function_exists(bc, 'download')
 
 .. testoutput:: python
