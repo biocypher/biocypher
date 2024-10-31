@@ -228,13 +228,12 @@ class Downloader:
             paths = []
             for url in file_download.url_s:
                 fname = url[url.rfind("/") + 1 :].split("?")[0]
-                paths.append(
-                    self._retrieve(
-                        url=url,
-                        fname=fname,
-                        path=os.path.join(self.cache_dir, file_download.name),
-                    )
+                path = self._retrieve(
+                    url=url,
+                    fname=fname,
+                    path=os.path.join(self.cache_dir, file_download.name),
                 )
+                paths.append(path)
         else:
             paths = []
             fname = file_download.url_s[
