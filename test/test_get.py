@@ -190,6 +190,7 @@ def test_download_lists(downloader):
     assert downloader.cache_dict["test_resource2"]["lifetime"] == 0
 
 
+@pytest.mark.skip(reason="Inconsistent FTP server response")
 def test_download_directory_and_caching():
     # use temp dir, no cache file present
     downloader = Downloader(cache_dir=None)
@@ -197,7 +198,7 @@ def test_download_directory_and_caching():
     assert os.path.exists(downloader.cache_file)
     resource = FileDownload(
         "ot_indication",
-        "ftp://ftp.ebi.ac.uk/pub/databases/opentargets/platform/23.06/output/etl/parquet/go",
+        "ftp://ftp.ebi.ac.uk/pub/databases/opentargets/platform/24.09/output/etl/parquet/go",
         lifetime=7,
         is_dir=True,
     )
