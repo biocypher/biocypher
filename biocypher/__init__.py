@@ -25,7 +25,7 @@ __all__ = [
     "APIRequest",
 ]
 
-from ._get import FileDownload, APIRequest
+from ._get import APIRequest, FileDownload
 from ._core import BioCypher
 from ._config import config, module_data
 from ._logger import log, logger, logfile
