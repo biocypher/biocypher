@@ -130,17 +130,15 @@ supported are <code class="docutils literal notranslate"><span class="pre">neo4j
 <code class="docutils literal notranslate"><span class="pre">sqlite</span></code>, and <code class="docutils literal notranslate"><span class="pre">networkx</span></code>.</p>
 <p>Furthermore, you can specify whether to use the <code class="docutils literal notranslate"><span class="pre">offline</span></code> or <code class="docutils literal notranslate"><span class="pre">online</span></code> mode.</p>
 <ul class="simple">
-<li><p>For the online mode set <code class="docutils literal notranslate"><span class="pre">offline:</span> <span class="pre">false</span></code>. You need a running database</p></li>
-</ul>
-<p>instance and BioCypher will connect to this instance and directly writes the
-output to the database.</p>
-<ul class="simple">
-<li><p>For the offline mode set <code class="docutils literal notranslate"><span class="pre">offline:</span> <span class="pre">true</span></code>. BioCypher will <code class="docutils literal notranslate"><span class="pre">output.write</span></code></p></li>
-</ul>
-<p>the knowledge graph to files in a designated output folder (standard being
+<li><p>For the online mode set <code class="docutils literal notranslate"><span class="pre">offline:</span> <span class="pre">false</span></code>. You need a running database
+instance and BioCypher will connect to this instance and directly writes the
+output to the database.</p></li>
+<li><p>For the offline mode set <code class="docutils literal notranslate"><span class="pre">offline:</span> <span class="pre">true</span></code>. BioCypher will <code class="docutils literal notranslate"><span class="pre">output.write</span></code>
+the knowledge graph to files in a designated output folder (standard being
 <code class="docutils literal notranslate"><span class="pre">biocypher-out/</span></code> and the current datetime). Furthermore you can generate a
 bash script to insert the knowledge graph files into the specified <code class="docutils literal notranslate"><span class="pre">dbms</span></code> by
-running <code class="docutils literal notranslate"><span class="pre">bc.write_import_call()</span></code>.</p>
+running <code class="docutils literal notranslate"><span class="pre">bc.write_import_call()</span></code>.</p></li>
+</ul>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">online</span></code> mode is currently only supported for the <code class="docutils literal notranslate"><span class="pre">neo4j</span></code> database.</p>
