@@ -119,7 +119,6 @@ class Downloader:
         self.cache_file = os.path.join(self.cache_dir, "cache.json")
         self.cache_dict = self._load_cache_dict()
 
-
     def download(self, *resources: Resource):
         """
         Download one or multiple resources. Load from cache if the resource is
