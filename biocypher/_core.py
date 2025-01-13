@@ -188,7 +188,7 @@ class BioCypher:
     def add_nodes(self, nodes):
         """
         Add new nodes to the internal representation.
-        Initially, recieve nodes data from adaptor and create internal representation for nodes.
+        Initially, receive nodes data from adaptor and create internal representation for nodes.
         Args:
             nodes(iterable): An iterable of nodes
         """
@@ -200,7 +200,7 @@ class BioCypher:
     def add_edges(self, edges):
         """
         Add new nodes to the internal representation.
-        Initially, recieve edges data from adaptor and create internal representation for edges.
+        Initially, receive edges data from adaptor and create internal representation for edges.
         Args:
              edges(iterable): An iterable of edges.
         """
@@ -222,6 +222,12 @@ class BioCypher:
         return self._to_KG()
 
     def _to_KG(self):
+        """
+        Convert the internal representation to knowledge graph based on dbms parameter in biocpyher configuration file.
+        Returns:
+             Any: knowledge graph.
+
+        """
         if not self._in_memory_kg:
             self._initialize_in_memory_kg()
         if not self._translator:
