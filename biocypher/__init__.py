@@ -21,10 +21,11 @@ __all__ = [
     "log",
     "Driver",
     "BioCypher",
-    "Resource",
+    "FileDownload",
+    "APIRequest",
 ]
 
-from ._get import Resource
+from ._get import APIRequest, FileDownload
 from ._core import BioCypher
 from ._config import config, module_data
 from ._logger import log, logger, logfile

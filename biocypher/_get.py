@@ -43,9 +43,10 @@ class Resource(ABC):
         lifetime: int = 0,
     ):
         """
-        A resource is a file that can be downloaded from a URL and cached
-        locally. This class implements checks of the minimum requirements for
-        a resource, to be implemented by a biocypher adapter.
+        A Resource is a file, a list of files, an API request, or a list of API
+        requests, any of which can be downloaded from the given URL(s) and
+        cached locally. This class implements checks of the minimum requirements
+        for a resource, to be implemented by a biocypher adapter.
 
         Args:
             name (str): The name of the resource.
@@ -72,14 +73,14 @@ class FileDownload(Resource):
         Represents basic information for a File Download.
 
         Args:
-            name(str):The name of the File Download.
+            name(str): The name of the File Download.
 
-            url_s(str|list[str]):The URL of the File Download.
+            url_s(str|list[str]): The URL(s) of the File Download.
 
             lifetime(int): The lifetime of the File Download in days. If 0, the
                 File Download is cached indefinitely.
 
-            is_dir (bool): Whether the File Download is a directory or not.
+            is_dir (bool): Whether the URL points to a directory or not.
         """
 
         super().__init__(name, url_s, lifetime)
@@ -106,31 +107,32 @@ class APIRequest(Resource):
 class Downloader:
     def __init__(self, cache_dir: Optional[str] = None) -> None:
         """
-        A downloader is a collection of resources that can be downloaded
+        The Downloader is a class that manages resources that can be downloaded
         and cached locally. It manages the lifetime of downloaded resources by
         keeping a JSON record of the download date of each resource.
 
         Args:
             cache_dir (str): The directory where the resources are cached. If
                 not given, a temporary directory is created.
-
-        Returns:
-            Downloader: The downloader object.
         """
         self.cache_dir = cache_dir or TemporaryDirectory().name
         self.cache_file = os.path.join(self.cache_dir, "cache.json")
         self.cache_dict = self._load_cache_dict()
 
-    # download function that accepts a resource or a list of resources
+
     def download(self, *resources: Resource):
         """
-        Download one or multiple resources.
+        Download one or multiple resources. Load from cache if the resource is
+        already downloaded and the cache is not expired.
 
         Args:
-            reousrces (Resource): The resource(s) to download.
+            resources (Resource): The resource(s) to download or load from
+                cache.
 
         Returns:
-            list[str]: The path or paths to the downloaded resource(s).
+            list[str]: The path or paths to the resource(s) that were downloaded
+                or loaded from cache.
+
         """
         paths = []
         for resource in resources:
@@ -150,6 +152,7 @@ class Downloader:
             resource (Resource): The resource to download.
         Returns:
             list[str]: The path or paths to the downloaded resource(s).
+
         """
         expired = self._is_cache_expired(resource)
 
@@ -199,7 +202,9 @@ class Downloader:
             shutil.rmtree(cache_resource_path)
 
     def _download_files(self, cache, file_download: FileDownload):
-        """Download a resource.
+        """
+        Download a resource given it is a file or a directory and return the
+        path.
 
         Args:
             cache (bool): Whether to cache the resource or not.
@@ -219,13 +224,12 @@ class Downloader:
             paths = []
             for url in file_download.url_s:
                 fname = url[url.rfind("/") + 1 :].split("?")[0]
-                paths.append(
-                    self._retrieve(
-                        url=url,
-                        fname=fname,
-                        path=os.path.join(self.cache_dir, file_download.name),
-                    )
+                path = self._retrieve(
+                    url=url,
+                    fname=fname,
+                    path=os.path.join(self.cache_dir, file_download.name),
                 )
+                paths.append(path)
         else:
             paths = []
             fname = file_download.url_s[
@@ -248,7 +252,8 @@ class Downloader:
 
     def _download_api_request(self, api_request: APIRequest):
         """
-        Download the API request and return the path.
+        Download an API request and return the path.
+
         Args:
 
             api_request(APIRequest): The API request result that is being cached.
