@@ -261,11 +261,19 @@ class BioCypher:
         self, nodes, batch_size: int = int(1e6), force: bool = False
     ):
         """Add nodes to the BioCypher KG.
-        First uses the `_translator` to translate the nodes to `BioCypherNode` objects.
-        Depending on the configuration the translated nodes are then passed to the
+
+        First uses the `_translator` to translate the nodes to `BioCypherNode`
+        objects. Depending on the configuration the translated nodes are then
+        passed to the
+
         - `_writer`: if `_offline` is set to `False`
-        - `_in_memory_kg`: if `_offline` is set to `False` and the `_dbms` is an `IN_MEMORY_DBMS`
-        - `_driver`: if `_offline` is set to `True` and the `_dbms` is not an `IN_MEMORY_DBMS`
+
+        - `_in_memory_kg`: if `_offline` is set to `False` and the `_dbms` is an
+            `IN_MEMORY_DBMS`
+
+        - `_driver`: if `_offline` is set to `True` and the `_dbms` is not an
+            `IN_MEMORY_DBMS`
+
         """
         if not self._translator:
             self._get_translator()
@@ -290,11 +298,19 @@ class BioCypher:
 
     def _add_edges(self, edges, batch_size: int = int(1e6)):
         """Add edges to the BioCypher KG.
-        First uses the `_translator` to translate the edges to `BioCypherEdge` objects.
-        Depending on the configuration the translated edges are then passed to the
+
+        First uses the `_translator` to translate the edges to `BioCypherEdge`
+        objects. Depending on the configuration the translated edges are then
+        passed to the
+
         - `_writer`: if `_offline` is set to `False`
-        - `_in_memory_kg`: if `_offline` is set to `False` and the `_dbms` is an `IN_MEMORY_DBMS`
-        - `_driver`: if `_offline` is set to `True` and the `_dbms` is not an `IN_MEMORY_DBMS`
+
+        - `_in_memory_kg`: if `_offline` is set to `False` and the `_dbms` is an
+            `IN_MEMORY_DBMS`
+
+        - `_driver`: if `_offline` is set to `True` and the `_dbms` is not an
+            `IN_MEMORY_DBMS`
+
         """
         if not self._translator:
             self._get_translator()
@@ -438,7 +454,11 @@ class BioCypher:
         return self._add_edges(edges)
 
     def get_kg(self):
-        """Get the in-memory KG instance. Depending on the specified `dbms` this could either be Pandas dfs or a NetworkX DiGraph."""
+        """Get the in-memory KG instance.
+
+        Depending on the specified `dbms` this could either be a list of Pandas
+        dataframes or a NetworkX DiGraph.
+        """
         if not self._is_online_and_in_memory():
             raise ValueError(
                 f"Getting the in-memory KG is only available in online mode for {IN_MEMORY_DBMS}."
