@@ -55,7 +55,7 @@ def skip_if_offline_postgresql(request, postgresql_param):
         # an empty command, just to test if connection is possible
         command = (
             f"PGPASSWORD={password} psql -c '' --host {host} "
-            "--port {port} --user {user}"
+            f"--port {port} --user {user}"
         )
         process = subprocess.run(command, shell=True)
 
@@ -65,9 +65,7 @@ def skip_if_offline_postgresql(request, postgresql_param):
 
 
 @pytest.fixture(scope="function")
-def bw_comma_postgresql(
-    postgresql_param, translator, deduplicator, tmp_path_session
-):
+def bw_comma_postgresql(postgresql_param, translator, deduplicator, tmp_path_session):
     bw_comma = _PostgreSQLBatchWriter(
         translator=translator,
         deduplicator=deduplicator,
@@ -84,9 +82,7 @@ def bw_comma_postgresql(
 
 
 @pytest.fixture(scope="function")
-def bw_tab_postgresql(
-    postgresql_param, translator, deduplicator, tmp_path_session
-):
+def bw_tab_postgresql(postgresql_param, translator, deduplicator, tmp_path_session):
     bw_tab = _PostgreSQLBatchWriter(
         translator=translator,
         deduplicator=deduplicator,
@@ -116,7 +112,7 @@ def create_database_postgres(postgresql_param):
     # create the database
     command = (
         f"PGPASSWORD={password} psql -c 'CREATE DATABASE \"{dbname}\";' "
-        "--host {host} --port {port} --user {user}"
+        f"--host {host} --port {port} --user {user}"
     )
     process = subprocess.run(command, shell=True)
 
@@ -126,6 +122,6 @@ def create_database_postgres(postgresql_param):
     # teardown
     command = (
         f"PGPASSWORD={password} psql -c 'DROP DATABASE \"{dbname}\";' "
-        "--host {host} --port {port} --user {user}"
+        f"--host {host} --port {port} --user {user}"
     )
     process = subprocess.run(command, shell=True)
