@@ -37,5 +37,8 @@ runs:
         poetry run pytest --password=your_password_here
       shell: bash
       if: runner.os != 'Windows'
-    - name: Check code quality
-      uses: pre-commit/action@v3.0.0
+    - name: Run Ruff
+      run: |
+        poetry run ruff check .
+        poetry run ruff format --check .
+      shell: bash
