@@ -5,8 +5,7 @@ from biocypher.output.write._batch_writer import _BatchWriter, parse_label
 
 
 class _Neo4jBatchWriter(_BatchWriter):
-    """
-    Class for writing node and edge representations to disk using the
+    """Class for writing node and edge representations to disk using the
     format specified by Neo4j for the use of admin import. Each batch
     writer instance has a fixed representation that needs to be passed
     at instantiation via the :py:attr:`schema` argument. The instance
@@ -23,50 +22,53 @@ class _Neo4jBatchWriter(_BatchWriter):
     """
 
     def __init__(self, *args, **kwargs):
-        """
-        Constructor.
+        """Constructor.
 
         Check the version of Neo4j and adds a command scope if version >= 5.
 
-        Returns:
+        Returns
+        -------
             _Neo4jBatchWriter: An instance of the writer.
-        """
 
+        """
         # Should read the configuration and setup import_call_bin_prefix.
         super().__init__(*args, **kwargs)
 
     def _get_default_import_call_bin_prefix(self):
-        """
-        Method to provide the default string for the import call bin prefix.
+        """Method to provide the default string for the import call bin prefix.
 
-        Returns:
+        Returns
+        -------
             str: The default location for the neo4j admin import location
-        """
 
+        """
         return "bin/"
 
     def _write_array_string(self, string_list):
-        """
-        Abstract method to output.write the string representation of an array into a .csv file
+        """Abstract method to output.write the string representation of an array into a .csv file
         as required by the neo4j admin-import.
 
         Args:
+        ----
             string_list (list): list of ontology strings
 
         Returns:
+        -------
             str: The string representation of an array for the neo4j admin import
+
         """
         string = self.adelim.join(string_list)
         return f"{self.quote}{string}{self.quote}"
 
     def _write_node_headers(self):
-        """
-        Writes single CSV file for a graph entity that is represented
+        """Writes single CSV file for a graph entity that is represented
         as a node as per the definition in the `schema_config.yaml`,
         containing only the header for this type of node.
 
-        Returns:
+        Returns
+        -------
             bool: The return value. True for success, False otherwise.
+
         """
         # load headers from data parse
         if not self.node_property_dict:
@@ -139,13 +141,14 @@ class _Neo4jBatchWriter(_BatchWriter):
         return True
 
     def _write_edge_headers(self):
-        """
-        Writes single CSV file for a graph entity that is represented
+        """Writes single CSV file for a graph entity that is represented
         as an edge as per the definition in the `schema_config.yaml`,
         containing only the header for this type of edge.
 
-        Returns:
+        Returns
+        -------
             bool: The return value. True for success, False otherwise.
+
         """
         # load headers from data parse
         if not self.edge_property_dict:
@@ -214,10 +217,10 @@ class _Neo4jBatchWriter(_BatchWriter):
 
             if schema_label:
                 if (
-                    self.translator.ontology.mapping.extended_schema.get(  # noqa: E712 (seems to not work with 'not')
-                        schema_label
+                    self.translator.ontology.mapping.extended_schema.get(  # (seems to not work with 'not')
+                        schema_label,
                     ).get("use_id")
-                    == False
+                    == False  # noqa: E712 (seems to not work with 'not')
                 ):
                     skip_id = True
 
@@ -247,23 +250,25 @@ class _Neo4jBatchWriter(_BatchWriter):
         return True
 
     def _get_import_script_name(self) -> str:
-        """
-        Returns the name of the neo4j admin import script
+        """Returns the name of the neo4j admin import script
 
-        Returns:
+        Returns
+        -------
             str: The name of the import script (ending in .sh)
+
         """
         return "neo4j-admin-import-call.sh"
 
     def _construct_import_call(self) -> str:
-        """
-        Function to construct the import call detailing folder and
+        """Function to construct the import call detailing folder and
         individual node and edge headers and data files, as well as
         delimiters and database name. Built after all data has been
         processed to ensure that nodes are called before any edges.
 
-        Returns:
+        Returns
+        -------
             str: a bash command for neo4j-admin import
+
         """
         import_call_neo4j_v4 = self._get_import_call("import", "--database=", "--force=")
         import_call_neo4j_v5 = self._get_import_call("database import full", "", "--overwrite-destination=")
@@ -271,19 +276,25 @@ class _Neo4jBatchWriter(_BatchWriter):
             f"version=$({self._get_default_import_call_bin_prefix()}neo4j-admin --version | cut -d '.' -f 1)"
         )
 
-        import_script = f"#!/bin/bash\n{neo4j_version_check}\nif [[ $version -ge 5 ]]; then\n\t{import_call_neo4j_v5}\nelse\n\t{import_call_neo4j_v4}\nfi"
+        import_script = (
+            f"#!/bin/bash\n{neo4j_version_check}\nif [[ $version -ge 5 ]]; "
+            f"then\n\t{import_call_neo4j_v5}\nelse\n\t{import_call_neo4j_v4}\nfi"
+        )
         return import_script
 
     def _get_import_call(self, import_cmd: str, database_cmd: str, wipe_cmd: str) -> str:
         """Get parametrized import call for Neo4j 4 or 5+.
 
         Args:
+        ----
             import_cmd (str): The import command to use.
             database_cmd (str): The database command to use.
             wipe_cmd (str): The wipe command to use.
 
         Returns:
+        -------
             str: The import call.
+
         """
         import_call = f"{self.import_call_bin_prefix}neo4j-admin {import_cmd} "
 

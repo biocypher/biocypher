@@ -64,7 +64,7 @@ def test_write_node_data_from_gen_tab_postgresql(bw_tab_postgresql, _get_nodes):
     assert "ChemicalEntity" in micro_rna
 
 
-@pytest.mark.requires_postgresql
+@pytest.mark.requires_postgresql()
 @pytest.mark.parametrize("length", [4], scope="module")
 def test_database_import_node_data_from_gen_comma_postgresql(bw_comma_postgresql, _get_nodes, create_database_postgres):
     (
@@ -93,7 +93,7 @@ def test_database_import_node_data_from_gen_comma_postgresql(bw_comma_postgresql
             "Protein-part000.csv",
             "microrna-create_table.sql",
             "MicroRNA-part000.csv",
-        ]
+        ],
     )
 
     bw_comma_postgresql.write_import_call()
@@ -108,27 +108,33 @@ def test_database_import_node_data_from_gen_comma_postgresql(bw_comma_postgresql
         assert len(commands) == 16
 
     for command in commands:
-        result = subprocess.run(command, shell=True)
+        result = subprocess.run(command, shell=True, check=False)
         assert result.returncode == 0
 
     # check data in the databases
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM protein;' --dbname {dbname} --host {host} --port {port} --user {user}"
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    command = (
+        f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM protein;' "
+        f"--dbname {dbname} --host {host} --port {port} --user {user}"
+    )
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     # subprocess success
     assert result.returncode == 0
     # 4 entires in table
     assert "4" in result.stdout.decode()
 
     # check data in the databases
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM microrna;' --dbname {dbname} --host {host} --port {port} --user {user}"
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    command = (
+        f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM microrna;' "
+        f"--dbname {dbname} --host {host} --port {port} --user {user}"
+    )
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     # subprocess success
     assert result.returncode == 0
     # 4 entires in table
     assert "4" in result.stdout.decode()
 
 
-@pytest.mark.requires_postgresql
+@pytest.mark.requires_postgresql()
 @pytest.mark.parametrize("length", [5], scope="module")
 def test_database_import_node_data_from_gen_tab_postgresql(bw_tab_postgresql, _get_nodes, create_database_postgres):
     (
@@ -157,7 +163,7 @@ def test_database_import_node_data_from_gen_tab_postgresql(bw_tab_postgresql, _g
             "Protein-part000.csv",
             "microrna-create_table.sql",
             "MicroRNA-part000.csv",
-        ]
+        ],
     )
 
     bw_tab_postgresql.write_import_call()
@@ -172,30 +178,39 @@ def test_database_import_node_data_from_gen_tab_postgresql(bw_tab_postgresql, _g
         assert len(commands) == 16
 
     for command in commands:
-        result = subprocess.run(command, shell=True)
+        result = subprocess.run(command, shell=True, check=False)
         assert result.returncode == 0
 
     # check data in the databases
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM protein;' --dbname {dbname} --host {host} --port {port} --user {user}"
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    command = (
+        f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM protein;' "
+        f"--dbname {dbname} --host {host} --port {port} --user {user}"
+    )
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     # subprocess success
     assert result.returncode == 0
     # 5 entires in table
     assert "5" in result.stdout.decode()
 
     # check data in the databases
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM microrna;' --dbname {dbname} --host {host} --port {port} --user {user}"
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    command = (
+        f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM microrna;' "
+        f"--dbname {dbname} --host {host} --port {port} --user {user}"
+    )
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     # subprocess success
     assert result.returncode == 0
     # 5 entires in table
     assert "5" in result.stdout.decode()
 
 
-@pytest.mark.requires_postgresql
+@pytest.mark.requires_postgresql()
 @pytest.mark.parametrize("length", [8], scope="module")
 def test_database_import_edge_data_from_gen_comma_postgresql(
-    bw_comma_postgresql, _get_nodes, create_database_postgres, _get_edges
+    bw_comma_postgresql,
+    _get_nodes,
+    create_database_postgres,
+    _get_edges,
 ):
     (
         dbname,
@@ -242,30 +257,39 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
     assert "--user" in "\n".join(commands)
 
     for command in commands:
-        result = subprocess.run(command, shell=True)
+        result = subprocess.run(command, shell=True, check=False)
 
     assert result.returncode == 0
 
     # check data in the databases
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM is_mutated_in;' --dbname {dbname} --host {host} --port {port} --user {user}"
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    command = (
+        f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM is_mutated_in;' "
+        f"--dbname {dbname} --host {host} --port {port} --user {user}"
+    )
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     # subprocess success
     assert result.returncode == 0
     # 2 entries in table
     assert "8" in result.stdout.decode()
 
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM perturbed_in_disease;' --dbname {dbname} --host {host} --port {port} --user {user}"
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    command = (
+        f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM perturbed_in_disease;' "
+        f"--dbname {dbname} --host {host} --port {port} --user {user}"
+    )
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     # subprocess success
     assert result.returncode == 0
     # 2 entries in table
     assert "8" in result.stdout.decode()
 
 
-@pytest.mark.requires_postgresql
+@pytest.mark.requires_postgresql()
 @pytest.mark.parametrize("length", [8], scope="module")
 def test_database_import_edge_data_from_gen_tab_postgresql(
-    bw_tab_postgresql, _get_nodes, create_database_postgres, _get_edges
+    bw_tab_postgresql,
+    _get_nodes,
+    create_database_postgres,
+    _get_edges,
 ):
     (
         dbname,
@@ -312,19 +336,25 @@ def test_database_import_edge_data_from_gen_tab_postgresql(
     assert "--user" in "\n".join(commands)
 
     for command in commands:
-        result = subprocess.run(command, shell=True)
+        result = subprocess.run(command, shell=True, check=False)
         assert result.returncode == 0
 
     # check data in the databases
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM is_mutated_in;' --dbname {dbname} --host {host} --port {port} --user {user}"
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    command = (
+        f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM is_mutated_in;' "
+        f"--dbname {dbname} --host {host} --port {port} --user {user}"
+    )
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     # subprocess success
     assert result.returncode == 0
     # 2 entires in table
     assert "8" in result.stdout.decode()
 
-    command = f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM perturbed_in_disease;' --dbname {dbname} --host {host} --port {port} --user {user}"
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    command = (
+        f"PGPASSWORD={password} psql -c 'SELECT COUNT(*) FROM perturbed_in_disease;' "
+        f"--dbname {dbname} --host {host} --port {port} --user {user}"
+    )
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     # subprocess success
     assert result.returncode == 0
     # 2 entires in table

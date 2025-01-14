@@ -11,8 +11,6 @@ from datetime import datetime
 
 import yaml
 
-import pandas as pd
-
 from ._config import (
     config as _config,
     update_from_file as _file_update,
@@ -288,7 +286,10 @@ class BioCypher:
         Set as instance variable `self._writer`.
         """
         if self._offline:
-            timestamp = lambda: datetime.now().strftime("%Y%m%d%H%M%S")
+
+            def timestamp() -> str:
+                return datetime.now().strftime("%Y%m%d%H%M%S")
+
             outdir = self._output_directory or os.path.join(
                 "biocypher-out",
                 timestamp(),
@@ -458,23 +459,6 @@ class BioCypher:
 
         """
         return self._add_edges(edges, batch_size=batch_size)
-
-    def to_df(self) -> list[pd.DataFrame]:
-        """Convert entities to a pandas DataFrame.
-
-        For each entity type, a DataFrame is created and returned as a list.
-
-        Args:
-        ----
-            entities (iterable): An iterable of entities to convert to a
-                DataFrame.
-
-        Returns:
-        -------
-            pd.DataFrame: A pandas DataFrame.
-
-        """
-        return self.get_kg()
 
     def add(self, entities) -> None:
         """Add entities to the in-memory database.

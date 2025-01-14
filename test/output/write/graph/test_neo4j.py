@@ -58,15 +58,19 @@ def test_create_import_call(bw):
     assert '--delimiter=";"' in call
     assert '--array-delimiter="|" --quote="\'"' in call
     assert (
-        f'--nodes="{tmp_path}{os.sep}PostTranslationalInteraction-header.csv,{tmp_path}{os.sep}PostTranslationalInteraction-part.*" '
-        in call
-    )
-    assert f'--relationships="{tmp_path}{os.sep}IS_SOURCE_OF-header.csv,{tmp_path}{os.sep}IS_SOURCE_OF-part.*" ' in call
-    assert f'--relationships="{tmp_path}{os.sep}IS_TARGET_OF-header.csv,{tmp_path}{os.sep}IS_TARGET_OF-part.*" ' in call
+        f'--nodes="{tmp_path}{os.sep}PostTranslationalInteraction-header.csv,'
+        f'{tmp_path}{os.sep}PostTranslationalInteraction-part.*" '
+    ) in call
     assert (
-        f'--relationships="{tmp_path}{os.sep}PERTURBED_IN_DISEASE-header.csv,{tmp_path}{os.sep}PERTURBED_IN_DISEASE-part.*" '
-        in call
-    )
+        f'--relationships="{tmp_path}{os.sep}IS_SOURCE_OF-header.csv,{tmp_path}{os.sep}IS_SOURCE_OF-part.*" '
+    ) in call
+    assert (
+        f'--relationships="{tmp_path}{os.sep}IS_TARGET_OF-header.csv,{tmp_path}{os.sep}IS_TARGET_OF-part.*" '
+    ) in call
+    assert (
+        f'--relationships="{tmp_path}{os.sep}PERTURBED_IN_DISEASE-header.csv,'
+        f'{tmp_path}{os.sep}PERTURBED_IN_DISEASE-part.*" '
+    ) in call
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
@@ -142,7 +146,7 @@ def test_write_hybrid_ontology_nodes(bw):
                 node_id=f"agpl:000{i}",
                 node_label="altered gene product level",
                 properties={},
-            )
+            ),
         )
 
     passed = bw.write_nodes(nodes)
