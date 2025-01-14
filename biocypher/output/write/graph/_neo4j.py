@@ -215,10 +215,11 @@ class _Neo4jBatchWriter(_BatchWriter):
             out_list = [":START_ID"]
 
             if schema_label:
-                if not (
-                    self.translator.ontology.mapping.extended_schema.get(
+                if (
+                    self.translator.ontology.mapping.extended_schema.get(  # noqa: E712 (seems to not work with 'not')
                         schema_label
                     ).get("use_id")
+                    == False
                 ):
                     skip_id = True
 

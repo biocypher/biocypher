@@ -266,7 +266,7 @@ class Translator:
                     # directionality check TODO generalise to account for
                     # different descriptions of directionality or find a
                     # more consistent solution for indicating directionality
-                    if _filtered_props.get("directed"):
+                    if _filtered_props.get("directed") == True:  # noqa: E712 (seems to not work without '== True')
                         l1 = "IS_SOURCE_OF"
                         l2 = "IS_TARGET_OF"
 

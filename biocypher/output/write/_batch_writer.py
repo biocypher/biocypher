@@ -858,10 +858,11 @@ class _BatchWriter(_Writer, ABC):
                 schema_label = label
 
             if schema_label:
-                if not (
-                    self.translator.ontology.mapping.extended_schema.get(
+                if (
+                    self.translator.ontology.mapping.extended_schema.get(  # noqa: E712 (seems to not work with 'not')
                         schema_label
                     ).get("use_id")
+                    == False
                 ):
                     skip_id = True
 
