@@ -1,13 +1,3 @@
-#!/usr/bin/env python
-
-#
-# Copyright 2021, Heidelberg University Clinic
-#
-# File author(s): Sebastian Lobentanzer
-#                 ...
-#
-# Distributed under MIT licence, see the file `LICENSE`.
-#
 """
 BioCypher core module. Interfaces with the user and distributes tasks to
 submodules.
@@ -16,8 +6,8 @@ from typing import Optional
 from datetime import datetime
 import os
 import json
+import itertools
 
-from more_itertools import peekable
 import yaml
 
 import pandas as pd
@@ -29,14 +19,14 @@ logger.debug(f"Loading module {__name__}.")
 from ._get import Downloader
 from ._config import config as _config
 from ._config import update_from_file as _file_update
-from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from ._create import BioCypherNode
 from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator
 from ._deduplicate import Deduplicator
-from .output.in_memory._pandas import Pandas
 from .output.write._get_writer import DBMS_TO_CLASS, get_writer
-from .output.connect._neo4j_driver import get_driver
+from .output.connect._get_connector import get_connector
+from .output.in_memory._get_in_memory_kg import IN_MEMORY_DBMS, get_in_memory_kg
 
 __all__ = ["BioCypher"]
 
@@ -60,8 +50,9 @@ class BioCypher:
         dbms (str): The database management system to use. For supported
             systems see SUPPORTED_DBMS.
 
-        offline (bool): Whether to run in offline mode. If True, no
-            connection to the database will be made.
+        offline (bool): Whether to run in offline mode. In offline mode
+            the Knowledge Graph is written to files. In online mode, it
+            is written to a database or hold in memory.
 
         strict_mode (bool): Whether to run in strict mode. If True, the
             translator will raise an error if a node or edge does not
@@ -81,6 +72,7 @@ class BioCypher:
         output_directory (str): Path to the output directory. If not
             provided, the default value 'biocypher-out' will be used.
 
+        cache_directory (str): Path to the cache directory.
     """
 
     def __init__(
@@ -167,7 +159,75 @@ class BioCypher:
         self._downloader = None
         self._ontology = None
         self._writer = None
-        self._pd = None
+        self._driver = None
+        self._in_memory_kg = None
+
+        self._in_memory_kg = None
+        self._nodes = None
+        self._edges = None
+
+    def _initialize_in_memory_kg(self):
+        """
+        Create in memory KG instance. Set as instance variable `self._in_memory_kg`.
+        """
+        if not self._in_memory_kg:
+            self._in_memory_kg = get_in_memory_kg(
+                dbms=self._dbms,
+                deduplicator=self._get_deduplicator(),
+            )
+
+    def add_nodes(self, nodes):
+        """
+        Add new nodes to the internal representation.
+        Initially, receive nodes data from adaptor and create internal representation for nodes.
+        Args:
+            nodes(iterable): An iterable of nodes
+        """
+        if isinstance(nodes, list):
+            self._nodes = list(itertools.chain(self._nodes, nodes))
+        else:
+            self._nodes = itertools.chain(self._nodes, nodes)
+
+    def add_edges(self, edges):
+        """
+        Add new nodes to the internal representation.
+        Initially, receive edges data from adaptor and create internal representation for edges.
+        Args:
+             edges(iterable): An iterable of edges.
+        """
+        if isinstance(edges, list):
+            self._edges = list(itertools.chain(self._edges, edges))
+        else:
+            self._edges = itertools.chain(self._edges, edges)
+
+    def to_df(self):
+        """
+        Create DataFrame using internal representation.
+        """
+        return self._to_KG()
+
+    def to_networkx(self):
+        """
+        Create networkx using internal representation.
+        """
+        return self._to_KG()
+
+    def _to_KG(self):
+        """
+        Convert the internal representation to knowledge graph based on dbms parameter in biocpyher configuration file.
+        Returns:
+             Any: knowledge graph.
+
+        """
+        if not self._in_memory_kg:
+            self._initialize_in_memory_kg()
+        if not self._translator:
+            self._get_translator()
+        tnodes = self._translator.translate_entities(self._nodes)
+        tedges = self._translator.translate_entities(self._edges)
+        self._in_memory_kg.add_nodes(tnodes)
+        self._in_memory_kg.add_edges(tedges)
+        return self._in_memory_kg.get_kg()
 
     def _get_deduplicator(self) -> Deduplicator:
         """
@@ -225,7 +285,6 @@ class BioCypher:
         """
         Create writer if not online. Set as instance variable `self._writer`.
         """
-
         if self._offline:
             timestamp = lambda: datetime.now().strftime("%Y%m%d%H%M%S")
             outdir = self._output_directory or os.path.join(
@@ -243,19 +302,107 @@ class BioCypher:
         else:
             raise NotImplementedError("Cannot get writer in online mode.")
 
+        return self._writer
+
     def _get_driver(self):
         """
         Create driver if not exists. Set as instance variable `self._driver`.
         """
-
         if not self._offline:
-            self._driver = get_driver(
+            self._driver = get_connector(
                 dbms=self._dbms,
                 translator=self._get_translator(),
-                deduplicator=self._get_deduplicator(),
             )
         else:
             raise NotImplementedError("Cannot get driver in offline mode.")
+
+        return self._driver
+
+    def _get_in_memory_kg(self):
+        """
+        Create in memory KG instance. Set as instance variable `self._in_memory_kg`.
+        """
+        if not self._in_memory_kg:
+            self._in_memory_kg = get_in_memory_kg(
+                dbms=self._dbms,
+                deduplicator=self._get_deduplicator(),
+            )
+
+        return self._in_memory_kg
+
+    def _add_nodes(
+        self, nodes, batch_size: int = int(1e6), force: bool = False
+    ):
+        """Add nodes to the BioCypher KG.
+
+        First uses the `_translator` to translate the nodes to `BioCypherNode`
+        objects. Depending on the configuration the translated nodes are then
+        passed to the
+
+        - `_writer`: if `_offline` is set to `False`
+
+        - `_in_memory_kg`: if `_offline` is set to `False` and the `_dbms` is an
+            `IN_MEMORY_DBMS`
+
+        - `_driver`: if `_offline` is set to `True` and the `_dbms` is not an
+            `IN_MEMORY_DBMS`
+
+        """
+        if not self._translator:
+            self._get_translator()
+        translated_nodes = self._translator.translate_entities(nodes)
+
+        if self._offline:
+            passed = self._get_writer().write_nodes(
+                translated_nodes, batch_size=batch_size, force=force
+            )
+        elif self._is_online_and_in_memory():
+            passed = self._get_in_memory_kg().add_nodes(translated_nodes)
+        else:
+            passed = self._get_driver().add_biocypher_nodes(translated_nodes)
+
+        return passed
+
+    def _add_edges(self, edges, batch_size: int = int(1e6)):
+        """Add edges to the BioCypher KG.
+
+        First uses the `_translator` to translate the edges to `BioCypherEdge`
+        objects. Depending on the configuration the translated edges are then
+        passed to the
+
+        - `_writer`: if `_offline` is set to `False`
+
+        - `_in_memory_kg`: if `_offline` is set to `False` and the `_dbms` is an
+            `IN_MEMORY_DBMS`
+
+        - `_driver`: if `_offline` is set to `True` and the `_dbms` is not an
+            `IN_MEMORY_DBMS`
+
+        """
+        if not self._translator:
+            self._get_translator()
+        translated_edges = self._translator.translate_entities(edges)
+
+        if self._offline:
+            if not self._writer:
+                self._initialize_writer()
+            passed = self._writer.write_edges(
+                translated_edges, batch_size=batch_size
+            )
+        elif self._is_online_and_in_memory():
+            if not self._in_memory_kg:
+                self._initialize_in_memory_kg()
+            passed = self._in_memory_kg.add_edges(translated_edges)
+        else:
+            if not self._driver:
+                self._initialize_driver()
+            passed = self._driver.add_biocypher_nodes(translated_edges)
+
+        return passed
+
+    def _is_online_and_in_memory(self) -> bool:
+        """Return True if in online mode and in-memory dbms is used."""
+        return (not self._offline) & (self._dbms in IN_MEMORY_DBMS)
 
     def write_nodes(
         self, nodes, batch_size: int = int(1e6), force: bool = False
@@ -267,28 +414,14 @@ class BioCypher:
 
         Args:
             nodes (iterable): An iterable of nodes to write to the database.
-
             batch_size (int): The batch size to use when writing to disk.
-
             force (bool): Whether to force writing to the output directory even
                 if the node type is not present in the schema config file.
 
         Returns:
             bool: True if successful.
         """
-
-        if not self._writer:
-            self._get_writer()
-
-        nodes = peekable(nodes)
-        if not isinstance(nodes.peek(), BioCypherNode):
-            tnodes = self._translator.translate_nodes(nodes)
-        else:
-            tnodes = nodes
-        # write node files
-        return self._writer.write_nodes(
-            tnodes, batch_size=batch_size, force=force
-        )
+        return self._add_nodes(nodes, batch_size=batch_size, force=force)
 
     def write_edges(self, edges, batch_size: int = int(1e6)) -> bool:
         """
@@ -302,17 +435,7 @@ class BioCypher:
         Returns:
             bool: True if successful.
         """
-
-        if not self._writer:
-            self._get_writer()
-
-        edges = peekable(edges)
-        if not isinstance(edges.peek(), BioCypherEdge):
-            tedges = self._translator.translate_edges(edges)
-        else:
-            tedges = edges
-        # write edge files
-        return self._writer.write_edges(tedges, batch_size=batch_size)
+        return self._add_edges(edges, batch_size=batch_size)
 
     def to_df(self) -> list[pd.DataFrame]:
         """
@@ -326,12 +449,7 @@ class BioCypher:
         Returns:
             pd.DataFrame: A pandas DataFrame.
         """
-        if not self._pd:
-            raise ValueError(
-                "No pandas instance found. Please call `add()` first."
-            )
-
-        return self._pd.dfs
+        return self.get_kg()
 
     def add(self, entities) -> None:
         """
@@ -348,50 +466,7 @@ class BioCypher:
         Returns:
             None
         """
-        if not self._pd:
-            self._pd = Pandas(
-                translator=self._get_translator(),
-                deduplicator=self._get_deduplicator(),
-            )
-
-        entities = peekable(entities)
-
-        if (
-            isinstance(entities.peek(), BioCypherNode)
-            or isinstance(entities.peek(), BioCypherEdge)
-            or isinstance(entities.peek(), BioCypherRelAsNode)
-        ):
-            tentities = entities
-        elif len(entities.peek()) < 4:
-            tentities = self._translator.translate_nodes(entities)
-        else:
-            tentities = self._translator.translate_edges(entities)
-
-        self._pd.add_tables(tentities)
-
-    def add_nodes(self, nodes) -> None:
-        """
-        Wrapper for ``add()`` to add nodes to the in-memory database.
-
-        Args:
-            nodes (iterable): An iterable of node tuples to add to the database.
-
-        Returns:
-            None
-        """
-        self.add(nodes)
-
-    def add_edges(self, edges) -> None:
-        """
-        Wrapper for ``add()`` to add edges to the in-memory database.
-
-        Args:
-            edges (iterable): An iterable of edge tuples to add to the database.
-
-        Returns:
-            None
-        """
-        self.add(edges)
+        return self._add_nodes(entities)
 
     def merge_nodes(self, nodes) -> bool:
         """
@@ -405,17 +480,7 @@ class BioCypher:
         Returns:
             bool: True if successful.
         """
-
-        if not self._driver:
-            self._get_driver()
-
-        nodes = peekable(nodes)
-        if not isinstance(nodes.peek(), BioCypherNode):
-            tnodes = self._translator.translate_nodes(nodes)
-        else:
-            tnodes = nodes
-        # write node files
-        return self._driver.add_biocypher_nodes(tnodes)
+        return self._add_nodes(nodes)
 
     def merge_edges(self, edges) -> bool:
         """
@@ -429,17 +494,26 @@ class BioCypher:
         Returns:
             bool: True if successful.
         """
+        return self._add_edges(edges)
 
-        if not self._driver:
-            self._get_driver()
+    def get_kg(self):
+        """Get the in-memory KG instance.
 
-        edges = peekable(edges)
-        if not isinstance(edges.peek(), BioCypherEdge):
-            tedges = self._translator.translate_edges(edges)
-        else:
-            tedges = edges
-        # write edge files
-        return self._driver.add_biocypher_edges(tedges)
+        Depending on the specified `dbms` this could either be a list of Pandas
+        dataframes or a NetworkX DiGraph.
+        """
+        if not self._is_online_and_in_memory():
+            raise ValueError(
+                f"Getting the in-memory KG is only available in online mode for {IN_MEMORY_DBMS}."
+            )
+        elif not self._in_memory_kg:
+            raise ValueError(
+                "No in-memory KG instance found. Please call `add()` first."
+            )
+
+        if not self._in_memory_kg:
+            self._initialize_in_memory_kg()
+        return self._in_memory_kg.get_kg()
 
     # DOWNLOAD AND CACHE MANAGEMENT METHODS ###
 
@@ -596,7 +670,7 @@ class BioCypher:
         have been seen.
         """
 
-        if not self._offline:
+        if (not self._offline) and self._dbms not in IN_MEMORY_DBMS:
             raise NotImplementedError(
                 "Cannot write schema info in online mode."
             )
