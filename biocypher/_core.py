@@ -233,7 +233,7 @@ class BioCypher:
             )
         else:
             raise NotImplementedError("Cannot get writer in online mode.")
-        
+
         return self._writer
 
     def _get_driver(self):
@@ -247,7 +247,7 @@ class BioCypher:
             )
         else:
             raise NotImplementedError("Cannot get driver in offline mode.")
-        
+
         return self._driver
 
     def _get_in_memory_kg(self):
@@ -259,7 +259,7 @@ class BioCypher:
                 dbms=self._dbms,
                 deduplicator=self._get_deduplicator(),
             )
-        
+
         return self._in_memory_kg
 
     def _add_nodes(

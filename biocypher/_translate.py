@@ -17,6 +17,7 @@ from ._ontology import Ontology
 
 __all__ = ["Translator"]
 
+
 class Translator:
     """
     Class responsible for exacting the translation process that is configured in
