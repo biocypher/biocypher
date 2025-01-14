@@ -1,17 +1,17 @@
-from abc import ABC, abstractmethod
-from types import GeneratorType
-from typing import Union, Optional
-from collections import OrderedDict, defaultdict
+import glob
 import os
 import re
-import glob
+from abc import ABC, abstractmethod
+from collections import OrderedDict, defaultdict
+from types import GeneratorType
+from typing import Optional, Union
 
 from more_itertools import peekable
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from biocypher._deduplicate import Deduplicator
 from biocypher._logger import logger
 from biocypher._translate import Translator
-from biocypher._deduplicate import Deduplicator
 from biocypher.output.write._writer import _Writer
 
 
@@ -42,9 +42,7 @@ class _BatchWriter(_Writer, ABC):
         Returns:
             str: The database-specific string representation of an array
         """
-        raise NotImplementedError(
-            "Database writer must override '_write_array_string'"
-        )
+        raise NotImplementedError("Database writer must override '_write_array_string'")
 
     @abstractmethod
     def _write_node_headers(self):
@@ -55,9 +53,7 @@ class _BatchWriter(_Writer, ABC):
         Returns:
             bool: The return value. True for success, False otherwise.
         """
-        raise NotImplementedError(
-            "Database writer must override '_write_node_headers'"
-        )
+        raise NotImplementedError("Database writer must override '_write_node_headers'")
 
     @abstractmethod
     def _write_edge_headers(self):
@@ -69,9 +65,7 @@ class _BatchWriter(_Writer, ABC):
         Returns:
             bool: The return value. True for success, False otherwise.
         """
-        raise NotImplementedError(
-            "Database writer must override '_write_edge_headers'"
-        )
+        raise NotImplementedError("Database writer must override '_write_edge_headers'")
 
     @abstractmethod
     def _construct_import_call(self) -> str:
@@ -223,17 +217,13 @@ class _BatchWriter(_Writer, ABC):
         self.rdf_namespaces = rdf_namespaces
 
         self.delim, self.escaped_delim = self._process_delimiter(delimiter)
-        self.adelim, self.escaped_adelim = self._process_delimiter(
-            array_delimiter
-        )
+        self.adelim, self.escaped_adelim = self._process_delimiter(array_delimiter)
         self.quote = quote
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
 
         if import_call_bin_prefix is None:
-            self.import_call_bin_prefix = (
-                self._get_default_import_call_bin_prefix()
-            )
+            self.import_call_bin_prefix = self._get_default_import_call_bin_prefix()
         else:
             self.import_call_bin_prefix = import_call_bin_prefix
 
@@ -279,9 +269,7 @@ class _BatchWriter(_Writer, ABC):
         else:
             return delimiter, delimiter
 
-    def write_nodes(
-        self, nodes, batch_size: int = int(1e6), force: bool = False
-    ):
+    def write_nodes(self, nodes, batch_size: int = int(1e6), force: bool = False):
         """
         Wrapper for writing nodes and their headers.
 
@@ -422,17 +410,14 @@ class _BatchWriter(_Writer, ABC):
                     logger.warning(f"Node {label} has no id; skipping.")
                     continue
 
-                if not label in bins.keys():
+                if label not in bins.keys():
                     # start new list
                     all_labels = None
                     bins[label].append(node)
                     bin_l[label] = 1
 
                     # get properties from config if present
-                    if (
-                        label
-                        in self.translator.ontology.mapping.extended_schema
-                    ):
+                    if label in self.translator.ontology.mapping.extended_schema:
                         cprops = self.translator.ontology.mapping.extended_schema.get(
                             label
                         ).get(
@@ -473,9 +458,7 @@ class _BatchWriter(_Writer, ABC):
                     # get label hierarchy
                     # multiple labels:
                     if not force:
-                        all_labels = self.translator.ontology.get_ancestors(
-                            label
-                        )
+                        all_labels = self.translator.ontology.get_ancestors(label)
                     else:
                         all_labels = None
 
@@ -492,9 +475,7 @@ class _BatchWriter(_Writer, ABC):
                         # concatenate with array delimiter
                         all_labels = self._write_array_string(all_labels)
                     else:
-                        all_labels = self.translator.name_sentence_to_pascal(
-                            label
-                        )
+                        all_labels = self.translator.name_sentence_to_pascal(label)
 
                     labels[label] = all_labels
 
@@ -675,14 +656,13 @@ class _BatchWriter(_Writer, ABC):
             for edge in edges:
                 if not (edge.get_source_id() and edge.get_target_id()):
                     logger.error(
-                        "Edge must have source and target node. "
-                        f"Caused by: {edge}",
+                        f"Edge must have source and target node. Caused by: {edge}",
                     )
                     continue
 
                 label = edge.get_label()
 
-                if not label in bins.keys():
+                if label not in bins.keys():
                     # start new list
                     bins[label].append(edge)
                     bin_l[label] = 1
@@ -693,10 +673,7 @@ class _BatchWriter(_Writer, ABC):
                     # (may not be if it is an edge that carries the
                     # "label_as_edge" property)
                     cprops = None
-                    if (
-                        label
-                        in self.translator.ontology.mapping.extended_schema
-                    ):
+                    if label in self.translator.ontology.mapping.extended_schema:
                         cprops = self.translator.ontology.mapping.extended_schema.get(
                             label
                         ).get(
@@ -707,9 +684,7 @@ class _BatchWriter(_Writer, ABC):
                         for (
                             k,
                             v,
-                        ) in (
-                            self.translator.ontology.mapping.extended_schema.items()
-                        ):
+                        ) in self.translator.ontology.mapping.extended_schema.items():
                             if isinstance(v, dict):
                                 if v.get("label_as_edge") == label:
                                     cprops = v.get("properties")
@@ -870,9 +845,7 @@ class _BatchWriter(_Writer, ABC):
 
             if label in ["IS_SOURCE_OF", "IS_TARGET_OF", "IS_PART_OF"]:
                 skip_id = True
-            elif not self.translator.ontology.mapping.extended_schema.get(
-                label
-            ):
+            elif not self.translator.ontology.mapping.extended_schema.get(label):
                 # find label in schema by label_as_edge
                 for (
                     k,
@@ -885,11 +858,10 @@ class _BatchWriter(_Writer, ABC):
                 schema_label = label
 
             if schema_label:
-                if (
+                if not (
                     self.translator.ontology.mapping.extended_schema.get(
                         schema_label
                     ).get("use_id")
-                    == False
                 ):
                     skip_id = True
 
@@ -931,14 +903,10 @@ class _BatchWriter(_Writer, ABC):
             bool: The return value. True for success, False otherwise.
         """
         # translate label to PascalCase
-        label_pascal = self.translator.name_sentence_to_pascal(
-            parse_label(label)
-        )
+        label_pascal = self.translator.name_sentence_to_pascal(parse_label(label))
 
         # list files in self.outdir
-        files = glob.glob(
-            os.path.join(self.outdir, f"{label_pascal}-part*.csv")
-        )
+        files = glob.glob(os.path.join(self.outdir, f"{label_pascal}-part*.csv"))
         # find file with highest part number
         if not files:
             next_part = 0

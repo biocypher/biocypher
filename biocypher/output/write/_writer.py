@@ -1,12 +1,12 @@
-from abc import ABC, abstractmethod
-from typing import Union, Optional
-from collections.abc import Iterable
 import os
+from abc import ABC, abstractmethod
+from collections.abc import Iterable
+from typing import Optional, Union
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from biocypher._deduplicate import Deduplicator
 from biocypher._logger import logger
 from biocypher._translate import Translator
-from biocypher._deduplicate import Deduplicator
 
 __all__ = ["_Writer"]
 
@@ -75,9 +75,7 @@ class _Writer(ABC):
     @abstractmethod
     def _write_node_data(
         self,
-        nodes: Iterable[
-            Union[BioCypherNode, BioCypherEdge, BioCypherRelAsNode]
-        ],
+        nodes: Iterable[Union[BioCypherNode, BioCypherEdge, BioCypherRelAsNode]],
     ) -> bool:
         """Implement how to output.write nodes to disk.
 
@@ -87,16 +85,12 @@ class _Writer(ABC):
         Returns:
             bool: The return value. True for success, False otherwise.
         """
-        raise NotImplementedError(
-            "Writer implementation must override 'write_nodes'"
-        )
+        raise NotImplementedError("Writer implementation must override 'write_nodes'")
 
     @abstractmethod
     def _write_edge_data(
         self,
-        edges: Iterable[
-            Union[BioCypherNode, BioCypherEdge, BioCypherRelAsNode]
-        ],
+        edges: Iterable[Union[BioCypherNode, BioCypherEdge, BioCypherRelAsNode]],
     ) -> bool:
         """Implement how to output.write edges to disk.
 
@@ -106,9 +100,7 @@ class _Writer(ABC):
         Returns:
             bool: The return value. True for success, False otherwise.
         """
-        raise NotImplementedError(
-            "Writer implementation must override 'write_edges'"
-        )
+        raise NotImplementedError("Writer implementation must override 'write_edges'")
 
     @abstractmethod
     def _construct_import_call(self) -> str:
@@ -136,9 +128,7 @@ class _Writer(ABC):
             "Writer implementation must override '_get_import_script_name'"
         )
 
-    def write_nodes(
-        self, nodes, batch_size: int = int(1e6), force: bool = False
-    ):
+    def write_nodes(self, nodes, batch_size: int = int(1e6), force: bool = False):
         """Wrapper for writing nodes.
 
         Args:
@@ -157,9 +147,7 @@ class _Writer(ABC):
             return False
         return True
 
-    def write_edges(
-        self, edges, batch_size: int = int(1e6), force: bool = False
-    ):
+    def write_edges(self, edges, batch_size: int = int(1e6), force: bool = False):
         """Wrapper for writing edges.
 
         Args:
@@ -187,12 +175,8 @@ class _Writer(ABC):
         Returns:
             str: The path of the file holding the import call.
         """
-        file_path = os.path.join(
-            self.output_directory, self._get_import_script_name()
-        )
-        logger.info(
-            f"Writing {self.__class__.__name__} import call to `{file_path}`."
-        )
+        file_path = os.path.join(self.output_directory, self._get_import_script_name())
+        logger.info(f"Writing {self.__class__.__name__} import call to `{file_path}`.")
 
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(self._construct_import_call())

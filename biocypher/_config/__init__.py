@@ -5,12 +5,12 @@ Module data directory, including:
 * The default config files
 """
 
-from typing import Any, Optional
 import os
 import warnings
+from typing import Any, Optional
 
-import yaml
 import appdirs
+import yaml
 
 __all__ = ["module_data", "module_data_path", "read_config", "config", "reset"]
 
@@ -85,14 +85,10 @@ def read_config() -> dict:
     )
 
     for key in defaults:
-        value = (
-            local[key] if key in local else user[key] if key in user else None
-        )
+        value = local[key] if key in local else user[key] if key in user else None
 
         if value is not None:
-            if isinstance(
-                defaults[key], str
-            ):  # first level config (like title)
+            if isinstance(defaults[key], str):  # first level config (like title)
                 defaults[key] = value
             else:
                 defaults[key].update(value)

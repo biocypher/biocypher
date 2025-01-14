@@ -1,8 +1,8 @@
 import pickle
 
 from biocypher._logger import logger
-from biocypher.output.write._writer import _Writer
 from biocypher.output.in_memory._networkx import NetworkxKG
+from biocypher.output.write._writer import _Writer
 
 
 class _NetworkXWriter(_Writer):
@@ -28,14 +28,14 @@ class _NetworkXWriter(_Writer):
             str: Python code to load the networkx graph from a pickle file.
         """
         self.G = self.in_memory_networkx_kg._create_networkx_kg()
-        logger.info(
-            f"Writing networkx {self.G} to pickle file networkx_graph.pkl."
-        )
+        logger.info(f"Writing networkx {self.G} to pickle file networkx_graph.pkl.")
         with open(f"{self.output_directory}/networkx_graph.pkl", "wb") as f:
             pickle.dump(self.G, f)
 
         import_call = "import pickle\n"
-        import_call += "with open('./networkx_graph.pkl', 'rb') as f:\n\tG_loaded = pickle.load(f)"
+        import_call += (
+            "with open('./networkx_graph.pkl', 'rb') as f:\n\tG_loaded = pickle.load(f)"
+        )
         return import_call
 
     def _get_import_script_name(self) -> str:

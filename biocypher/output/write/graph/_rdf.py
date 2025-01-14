@@ -2,11 +2,12 @@
 BioCypher 'offline' module. Handles the writing of node and edge representations
 suitable for import into a DBMS.
 """
+
+import os
 from types import GeneratorType
 from typing import Union
-import os
 
-from rdflib import DC, RDF, RDFS, SKOS, DCTERMS, Graph, Literal, Namespace
+from rdflib import DC, DCTERMS, RDF, RDFS, SKOS, Graph, Literal, Namespace
 from rdflib.namespace import (
     _NAMESPACE_PREFIXES_CORE,
     _NAMESPACE_PREFIXES_RDFLIB,
@@ -113,9 +114,7 @@ class _RDFWriter(_BatchWriter):
         label_pascal = self.translator.name_sentence_to_pascal(label)
 
         # create file name
-        file_name = os.path.join(
-            self.outdir, f"{label_pascal}.{self.extension}"
-        )
+        file_name = os.path.join(self.outdir, f"{label_pascal}.{self.extension}")
 
         # write data in graph
         graph = Graph()
@@ -129,9 +128,7 @@ class _RDFWriter(_BatchWriter):
             if rdf_predicate is None:
                 rdf_predicate = rdf_subject + rdf_object
 
-            edge_label = self.translator.name_sentence_to_pascal(
-                edge.get_label()
-            )
+            edge_label = self.translator.name_sentence_to_pascal(edge.get_label())
             edge_uri = self.rdf_namespaces["biocypher"][edge_label]
             graph.add((edge_uri, RDF.type, RDFS.Class))
             graph.add(
@@ -240,10 +237,7 @@ class _RDFWriter(_BatchWriter):
             list: The list representation of the input string.
         """
         return (
-            string_list.replace("[", "")
-            .replace("]", "")
-            .replace("'", "")
-            .split(", ")
+            string_list.replace("[", "").replace("]", "").replace("'", "").split(", ")
         )
 
     def _write_single_node_list_to_file(
@@ -275,9 +269,7 @@ class _RDFWriter(_BatchWriter):
         label_pascal = self.translator.name_sentence_to_pascal(label)
 
         # create file name
-        file_name = os.path.join(
-            self.outdir, f"{label_pascal}.{self.extension}"
-        )
+        file_name = os.path.join(self.outdir, f"{label_pascal}.{self.extension}")
 
         # write data in graph
         graph = Graph()

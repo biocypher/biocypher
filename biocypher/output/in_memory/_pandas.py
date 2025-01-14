@@ -86,15 +86,11 @@ class PandasKG(_InMemoryKG):
             self._add_entity_df(_type, _entities)
 
     def _add_entity_df(self, _type, _entities):
-        df = pd.DataFrame(
-            pd.json_normalize([node.get_dict() for node in _entities])
-        )
+        df = pd.DataFrame(pd.json_normalize([node.get_dict() for node in _entities]))
         # replace "properties." with "" in column names
         df.columns = [col.replace("properties.", "") for col in df.columns]
         if _type not in self.dfs:
             self.dfs[_type] = df
         else:
-            self.dfs[_type] = pd.concat(
-                [self.dfs[_type], df], ignore_index=True
-            )
+            self.dfs[_type] = pd.concat([self.dfs[_type], df], ignore_index=True)
         return self.dfs[_type]

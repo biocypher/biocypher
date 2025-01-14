@@ -4,25 +4,22 @@ BioCypher get module. Used to download and cache data from external sources.
 
 from __future__ import annotations
 
-from typing import Optional
+import ftplib
+import json
+import os
 import shutil
-
-import requests
-
-from ._logger import logger
-
-logger.debug(f"Loading module {__name__}.")
-
 from abc import ABC
 from datetime import datetime, timedelta
 from tempfile import TemporaryDirectory
-import os
-import json
-import ftplib
+from typing import Optional
 
 import pooch
+import requests
 
-from ._misc import to_list, is_nested
+from ._logger import logger
+from ._misc import is_nested, to_list
+
+logger.debug(f"Loading module {__name__}.")
 
 
 class Resource(ABC):
@@ -151,9 +148,7 @@ class Downloader:
                 logger.info(f"Asking for download of resource {resource.name}.")
                 paths = self._download_files(cache, resource)
             elif isinstance(resource, APIRequest):
-                logger.info(
-                    f"Asking for download of api request {resource.name}."
-                )
+                logger.info(f"Asking for download of api request {resource.name}.")
                 paths = self._download_api_request(resource)
             else:
                 raise TypeError(f"Unknown resource type: {type(resource)}")
@@ -185,9 +180,7 @@ class Downloader:
 
     def _delete_expired_cache(self, resource: Resource):
         cache_resource_path = self.cache_dir + "/" + resource.name
-        if os.path.exists(cache_resource_path) and os.path.isdir(
-            cache_resource_path
-        ):
+        if os.path.exists(cache_resource_path) and os.path.isdir(cache_resource_path):
             shutil.rmtree(cache_resource_path)
 
     def _download_files(self, cache, file_download: FileDownload):
@@ -204,9 +197,7 @@ class Downloader:
         """
         if file_download.is_dir:
             files = self._get_files(file_download)
-            file_download.url_s = [
-                file_download.url_s + "/" + file for file in files
-            ]
+            file_download.url_s = [file_download.url_s + "/" + file for file in files]
             file_download.is_dir = False
             paths = self._download_or_cache(file_download, cache)
         elif isinstance(file_download.url_s, list):
@@ -221,9 +212,9 @@ class Downloader:
                 paths.append(path)
         else:
             paths = []
-            fname = file_download.url_s[
-                file_download.url_s.rfind("/") + 1 :
-            ].split("?")[0]
+            fname = file_download.url_s[file_download.url_s.rfind("/") + 1 :].split(
+                "?"
+            )[0]
             results = self._retrieve(
                 url=file_download.url_s,
                 fname=fname,
@@ -258,17 +249,13 @@ class Downloader:
         paths = []
         for url in urls:
             fname = url[url.rfind("/") + 1 :].rsplit(".", 1)[0]
-            logger.info(
-                f"Asking for caching API of {api_request.name} {fname}."
-            )
+            logger.info(f"Asking for caching API of {api_request.name} {fname}.")
             response = requests.get(url=url)
 
             if response.status_code != 200:
                 response.raise_for_status()
             response_data = response.json()
-            api_path = os.path.join(
-                self.cache_dir, api_request.name, f"{fname}.json"
-            )
+            api_path = os.path.join(self.cache_dir, api_request.name, f"{fname}.json")
 
             os.makedirs(os.path.dirname(api_path), exist_ok=True)
             with open(api_path, "w") as f:

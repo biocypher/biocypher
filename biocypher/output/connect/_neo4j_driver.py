@@ -2,19 +2,17 @@
 BioCypher 'online' mode. Handles connection and manipulation of a running DBMS.
 """
 
-from biocypher._logger import logger
-
-logger.debug(f"Loading module {__name__}.")
-
-from collections.abc import Iterable
 import itertools
+from collections.abc import Iterable
 
 import neo4j_utils
 
 from biocypher import _misc
 from biocypher._create import BioCypherEdge, BioCypherNode
+from biocypher._logger import logger
 from biocypher._translate import Translator
 
+logger.debug(f"Loading module {__name__}.")
 __all__ = ["_Neo4jDriver"]
 
 
@@ -84,7 +82,7 @@ class _Neo4jDriver:
 
         # find current version node
         db_version = self._driver.query(
-            "MATCH (v:BioCypher) " "WHERE NOT (v)-[:PRECEDES]->() " "RETURN v",
+            "MATCH (v:BioCypher) WHERE NOT (v)-[:PRECEDES]->() RETURN v",
         )
         # add version node
         self.add_biocypher_nodes(self.translator.ontology)
@@ -374,9 +372,7 @@ class _Neo4jDriver:
 
         method = "explain" if explain else "profile" if profile else "query"
 
-        result = getattr(self._driver, method)(
-            edge_query, parameters={"rels": rels}
-        )
+        result = getattr(self._driver, method)(edge_query, parameters={"rels": rels})
 
         logger.info("Finished merging edges.")
 

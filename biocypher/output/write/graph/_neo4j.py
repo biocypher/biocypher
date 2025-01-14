@@ -1,7 +1,7 @@
 import os
 
 from biocypher._logger import logger
-from biocypher.output.write._batch_writer import parse_label, _BatchWriter
+from biocypher.output.write._batch_writer import _BatchWriter, parse_label
 
 
 class _Neo4jBatchWriter(_BatchWriter):
@@ -79,9 +79,7 @@ class _Neo4jBatchWriter(_BatchWriter):
             _id = ":ID"
 
             # translate label to PascalCase
-            pascal_label = self.translator.name_sentence_to_pascal(
-                parse_label(label)
-            )
+            pascal_label = self.translator.name_sentence_to_pascal(parse_label(label))
 
             header = f"{pascal_label}-header.csv"
             header_path = os.path.join(
@@ -160,9 +158,7 @@ class _Neo4jBatchWriter(_BatchWriter):
 
         for label, props in self.edge_property_dict.items():
             # translate label to PascalCase
-            pascal_label = self.translator.name_sentence_to_pascal(
-                parse_label(label)
-            )
+            pascal_label = self.translator.name_sentence_to_pascal(parse_label(label))
 
             # paths
             header = f"{pascal_label}-header.csv"
@@ -174,9 +170,7 @@ class _Neo4jBatchWriter(_BatchWriter):
 
             # check for file exists
             if os.path.exists(header_path):
-                logger.warning(
-                    f"File {header_path} already exists. Overwriting."
-                )
+                logger.warning(f"File {header_path} already exists. Overwriting.")
 
             # concatenate key:value in props
             props_list = []
@@ -206,9 +200,7 @@ class _Neo4jBatchWriter(_BatchWriter):
 
             if label in ["IS_SOURCE_OF", "IS_TARGET_OF", "IS_PART_OF"]:
                 skip_id = True
-            elif not self.translator.ontology.mapping.extended_schema.get(
-                label
-            ):
+            elif not self.translator.ontology.mapping.extended_schema.get(label):
                 # find label in schema by label_as_edge
                 for (
                     k,
@@ -223,11 +215,10 @@ class _Neo4jBatchWriter(_BatchWriter):
             out_list = [":START_ID"]
 
             if schema_label:
-                if (
+                if not (
                     self.translator.ontology.mapping.extended_schema.get(
                         schema_label
                     ).get("use_id")
-                    == False
                 ):
                     skip_id = True
 

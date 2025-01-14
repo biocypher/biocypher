@@ -2,9 +2,6 @@
 BioCypher 'mapping' module. Handles the mapping of user-defined schema to the
 underlying ontology.
 """
-from ._logger import logger
-
-logger.debug(f"Loading module {__name__}.")
 
 from typing import Optional
 from urllib.request import urlopen
@@ -12,7 +9,9 @@ from urllib.request import urlopen
 import yaml
 
 from . import _misc
-from ._config import config as _config
+from ._logger import logger
+
+logger.debug(f"Loading module {__name__}.")
 
 
 class OntologyMapping:
@@ -141,9 +140,7 @@ class OntologyMapping:
                 if parent_props:
                     v["properties"].update(parent_props)
 
-                parent_excl_props = self.schema[parent].get(
-                    "exclude_properties", {}
-                )
+                parent_excl_props = self.schema[parent].get("exclude_properties", {})
                 if parent_excl_props:
                     v["exclude_properties"].update(parent_excl_props)
 

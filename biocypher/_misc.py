@@ -1,25 +1,26 @@
 """
 Handy functions for use in various places.
 """
+
+import re
+from collections.abc import Iterable
+from typing import (
+    Any,
+    Generator,
+    ItemsView,
+    KeysView,
+    Mapping,
+    Union,
+    ValuesView,
+)
+
+import networkx as nx
+import stringcase
+from treelib import Tree
+
 from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
-
-from typing import (
-    Any,
-    Union,
-    Mapping,
-    KeysView,
-    Generator,
-    ItemsView,
-    ValuesView,
-)
-from collections.abc import Iterable
-import re
-
-from treelib import Tree
-import networkx as nx
-import stringcase
 
 __all__ = ["LIST_LIKE", "SIMPLE_TYPES", "ensure_iterable", "to_list"]
 
@@ -100,9 +101,7 @@ def _get_inheritance_tree(inheritance_graph: Union[dict, nx.Graph]) -> dict:
     if isinstance(inheritance_graph, nx.Graph):
         inheritance_tree = nx.to_dict_of_lists(inheritance_graph)
 
-        multiple_parents_present = _multiple_inheritance_present(
-            inheritance_tree
-        )
+        multiple_parents_present = _multiple_inheritance_present(inheritance_tree)
         if multiple_parents_present:
             logger.warning(
                 "The ontology contains multiple inheritance (one child node "

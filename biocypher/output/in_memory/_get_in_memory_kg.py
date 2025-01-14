@@ -1,10 +1,11 @@
 """
 BioCypher 'in_memory' module. Handles the in-memory Knowledge Graph instance.
 """
-from biocypher._logger import logger
+
 from biocypher._deduplicate import Deduplicator
-from biocypher.output.in_memory._pandas import PandasKG
+from biocypher._logger import logger
 from biocypher.output.in_memory._networkx import NetworkxKG
+from biocypher.output.in_memory._pandas import PandasKG
 
 logger.debug(f"Loading module {__name__}.")
 

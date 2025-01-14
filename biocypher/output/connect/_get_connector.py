@@ -2,13 +2,13 @@
 
 Handles the connecting and writing a Knowledge Graph to a database.
 """
+
+from biocypher._config import config as _config
 from biocypher._logger import logger
 from biocypher._translate import Translator
 from biocypher.output.connect._neo4j_driver import _Neo4jDriver
 
 logger.debug(f"Loading module {__name__}.")
-
-from biocypher._config import config as _config
 
 __all__ = ["get_connector"]
 
@@ -37,6 +37,4 @@ def get_connector(
             translator=translator,
         )
     else:
-        raise NotImplementedError(
-            f"Online mode is not supported for the DBMS {dbms}."
-        )
+        raise NotImplementedError(f"Online mode is not supported for the DBMS {dbms}.")

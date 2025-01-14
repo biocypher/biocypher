@@ -1,7 +1,7 @@
 import networkx as nx
 
-from biocypher.output.in_memory._pandas import PandasKG
 from biocypher.output.in_memory._in_memory_kg import _InMemoryKG
+from biocypher.output.in_memory._pandas import PandasKG
 
 
 class NetworkxKG(_InMemoryKG):
@@ -30,9 +30,7 @@ class NetworkxKG(_InMemoryKG):
         self.KG = nx.DiGraph()
         all_dfs = self._pd.dfs
         node_dfs = [
-            df
-            for df in all_dfs.values()
-            if df.columns.str.contains("node_id").any()
+            df for df in all_dfs.values() if df.columns.str.contains("node_id").any()
         ]
         edge_dfs = [
             df
@@ -44,13 +42,8 @@ class NetworkxKG(_InMemoryKG):
             nodes = df.set_index("node_id").to_dict(orient="index")
             self.KG.add_nodes_from(nodes.items())
         for df in edge_dfs:
-            edges = df.set_index(["source_id", "target_id"]).to_dict(
-                orient="index"
-            )
+            edges = df.set_index(["source_id", "target_id"]).to_dict(orient="index")
             self.KG.add_edges_from(
-                (
-                    (source, target, attrs)
-                    for (source, target), attrs in edges.items()
-                )
+                ((source, target, attrs) for (source, target), attrs in edges.items())
             )
         return self.KG

@@ -61,9 +61,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
 
             # check if file already exists
             if os.path.exists(header_path):
-                logger.warning(
-                    f"File {header_path} already exists. Overwriting."
-                )
+                logger.warning(f"File {header_path} already exists. Overwriting.")
 
             # concatenate key:value in props
             props_list = []
@@ -81,9 +79,9 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                 f.write(row)
 
             # add collection from schema config
-            collection = self.translator.ontology.mapping.extended_schema[
-                label
-            ].get("db_collection_name", None)
+            collection = self.translator.ontology.mapping.extended_schema[label].get(
+                "db_collection_name", None
+            )
 
             # add file path to neo4 admin import statement
             # do once for each part file
@@ -221,11 +219,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
 
         # node import calls: one line per node type
         for header_path, parts_path, collection in self.import_call_nodes:
-            line = (
-                f"{import_call} "
-                f"--headers-file {header_path} "
-                f"--file= {parts_path} "
-            )
+            line = f"{import_call} --headers-file {header_path} --file= {parts_path} "
 
             if collection:
                 line += f"--create-collection --collection {collection} "

@@ -2,31 +2,31 @@
 BioCypher core module. Interfaces with the user and distributes tasks to
 submodules.
 """
-from typing import Optional
-from datetime import datetime
-import os
-import json
-import itertools
 
-import yaml
+import itertools
+import json
+import os
+from datetime import datetime
+from typing import Optional
 
 import pandas as pd
+import yaml
 
 from ._logger import logger
 
 logger.debug(f"Loading module {__name__}.")
 
-from ._get import Downloader
 from ._config import config as _config
 from ._config import update_from_file as _file_update
 from ._create import BioCypherNode
+from ._deduplicate import Deduplicator
+from ._get import Downloader
 from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator
-from ._deduplicate import Deduplicator
-from .output.write._get_writer import DBMS_TO_CLASS, get_writer
 from .output.connect._get_connector import get_connector
 from .output.in_memory._get_in_memory_kg import IN_MEMORY_DBMS, get_in_memory_kg
+from .output.write._get_writer import DBMS_TO_CLASS, get_writer
 
 __all__ = ["BioCypher"]
 
@@ -148,8 +148,7 @@ class BioCypher:
 
         if self._dbms not in SUPPORTED_DBMS:
             raise ValueError(
-                f"DBMS {self._dbms} not supported. "
-                f"Please select from {SUPPORTED_DBMS}."
+                f"DBMS {self._dbms} not supported. Please select from {SUPPORTED_DBMS}."
             )
 
         # Initialize
@@ -330,9 +329,7 @@ class BioCypher:
 
         return self._in_memory_kg
 
-    def _add_nodes(
-        self, nodes, batch_size: int = int(1e6), force: bool = False
-    ):
+    def _add_nodes(self, nodes, batch_size: int = int(1e6), force: bool = False):
         """Add nodes to the BioCypher KG.
 
         First uses the `_translator` to translate the nodes to `BioCypherNode`
@@ -386,9 +383,7 @@ class BioCypher:
         if self._offline:
             if not self._writer:
                 self._initialize_writer()
-            passed = self._writer.write_edges(
-                translated_edges, batch_size=batch_size
-            )
+            passed = self._writer.write_edges(translated_edges, batch_size=batch_size)
         elif self._is_online_and_in_memory():
             if not self._in_memory_kg:
                 self._initialize_in_memory_kg()
@@ -646,9 +641,7 @@ class BioCypher:
         """
 
         if not self._offline:
-            raise NotImplementedError(
-                "Cannot write import call in online mode."
-            )
+            raise NotImplementedError("Cannot write import call in online mode.")
 
         return self._writer.write_import_call()
 
@@ -671,9 +664,7 @@ class BioCypher:
         """
 
         if (not self._offline) and self._dbms not in IN_MEMORY_DBMS:
-            raise NotImplementedError(
-                "Cannot write schema info in online mode."
-            )
+            raise NotImplementedError("Cannot write schema info in online mode.")
 
         ontology = self._get_ontology()
         schema = ontology.mapping.extended_schema.copy()
@@ -686,8 +677,7 @@ class BioCypher:
                 schema[node]["is_relationship"] = False
             else:
                 logger.info(
-                    f"Node {node} not present in extended schema. "
-                    "Skipping schema info."
+                    f"Node {node} not present in extended schema. Skipping schema info."
                 )
 
         # find 'label_as_edge' cases in schema entries
@@ -708,8 +698,7 @@ class BioCypher:
                 # TODO information about source and target nodes
             else:
                 logger.info(
-                    f"Edge {edge} not present in extended schema. "
-                    "Skipping schema info."
+                    f"Edge {edge} not present in extended schema. Skipping schema info."
                 )
 
         # write to output directory as YAML file

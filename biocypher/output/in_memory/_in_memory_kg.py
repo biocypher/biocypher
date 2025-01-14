@@ -23,9 +23,7 @@ class _InMemoryKG(ABC):
         Args:
             nodes (Iterable[BioCypherNode]): Iterable of BioCypherNode objects.
         """
-        raise NotImplementedError(
-            "InMemoryKG implementation must override 'add_nodes'"
-        )
+        raise NotImplementedError("InMemoryKG implementation must override 'add_nodes'")
 
     @abstractmethod
     def add_edges(self, edges):
@@ -34,13 +32,9 @@ class _InMemoryKG(ABC):
         Args:
             edges (Iterable[BioCypherEdge]): Iterable of BioCypherEdge objects.
         """
-        raise NotImplementedError(
-            "InMemoryKG implementation must override 'add_edges'"
-        )
+        raise NotImplementedError("InMemoryKG implementation must override 'add_edges'")
 
     @abstractmethod
     def get_kg(self):
         """Return the in-memory knowledge graph."""
-        raise NotImplementedError(
-            "InMemoryKG implementation must override 'get_kg'"
-        )
+        raise NotImplementedError("InMemoryKG implementation must override 'get_kg'")
