@@ -6,6 +6,7 @@ from typing import Optional
 from datetime import datetime
 import os
 import json
+import itertools
 
 import yaml
 
@@ -160,6 +161,73 @@ class BioCypher:
         self._writer = None
         self._driver = None
         self._in_memory_kg = None
+
+        self._in_memory_kg = None
+        self._nodes = None
+        self._edges = None
+
+    def _initialize_in_memory_kg(self):
+        """
+        Create in memory KG instance. Set as instance variable `self._in_memory_kg`.
+        """
+        if not self._in_memory_kg:
+            self._in_memory_kg = get_in_memory_kg(
+                dbms=self._dbms,
+                deduplicator=self._get_deduplicator(),
+            )
+
+    def add_nodes(self, nodes):
+        """
+        Add new nodes to the internal representation.
+        Initially, receive nodes data from adaptor and create internal representation for nodes.
+        Args:
+            nodes(iterable): An iterable of nodes
+        """
+        if isinstance(nodes, list):
+            self._nodes = list(itertools.chain(self._nodes, nodes))
+        else:
+            self._nodes = itertools.chain(self._nodes, nodes)
+
+    def add_edges(self, edges):
+        """
+        Add new nodes to the internal representation.
+        Initially, receive edges data from adaptor and create internal representation for edges.
+        Args:
+             edges(iterable): An iterable of edges.
+        """
+        if isinstance(edges, list):
+            self._edges = list(itertools.chain(self._edges, edges))
+        else:
+            self._edges = itertools.chain(self._edges, edges)
+
+    def to_df(self):
+        """
+        Create DataFrame using internal representation.
+        """
+        return self._to_KG()
+
+    def to_networkx(self):
+        """
+        Create networkx using internal representation.
+        """
+        return self._to_KG()
+
+    def _to_KG(self):
+        """
+        Convert the internal representation to knowledge graph based on dbms parameter in biocpyher configuration file.
+        Returns:
+             Any: knowledge graph.
+
+        """
+        if not self._in_memory_kg:
+            self._initialize_in_memory_kg()
+        if not self._translator:
+            self._get_translator()
+        tnodes = self._translator.translate_entities(self._nodes)
+        tedges = self._translator.translate_entities(self._edges)
+        self._in_memory_kg.add_nodes(tnodes)
+        self._in_memory_kg.add_edges(tedges)
+        return self._in_memory_kg.get_kg()
 
     def _get_deduplicator(self) -> Deduplicator:
         """
@@ -399,30 +467,6 @@ class BioCypher:
             None
         """
         return self._add_nodes(entities)
-
-    def add_nodes(self, nodes) -> None:
-        """
-        Wrapper for ``add()`` to add nodes to the in-memory database.
-
-        Args:
-            nodes (iterable): An iterable of node tuples to add to the database.
-
-        Returns:
-            None
-        """
-        self.add(nodes)
-
-    def add_edges(self, edges) -> None:
-        """
-        Wrapper for ``add()`` to add edges to the in-memory database.
-
-        Args:
-            edges (iterable): An iterable of edge tuples to add to the database.
-
-        Returns:
-            None
-        """
-        self.add(edges)
 
     def merge_nodes(self, nodes) -> bool:
         """

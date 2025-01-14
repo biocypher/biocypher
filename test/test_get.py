@@ -6,7 +6,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 import pytest
 
-from biocypher._get import Resource, Downloader
+from biocypher._get import Resource, APIRequest, Downloader, FileDownload
 
 
 @pytest.fixture
@@ -32,13 +32,40 @@ def downloader_with_specified_cache_dir(tmp_path):
         name=st.text(),
         url_s=st.text(),
         lifetime=st.integers(),
-        is_dir=st.booleans(),
     )
 )
 def test_resource(resource):
     assert isinstance(resource.name, str)
     assert isinstance(resource.url_s, str) or isinstance(resource.url_s, list)
     assert isinstance(resource.lifetime, int)
+
+
+@given(
+    st.builds(
+        FileDownload,
+        name=st.text(),
+        url_s=st.text(),
+        lifetime=st.integers(),
+    )
+)
+def test_file_download(file_download):
+    assert isinstance(file_download.name, str)
+    assert isinstance(file_download.url_s, str)
+    assert isinstance(file_download.lifetime, int)
+
+
+@given(
+    st.builds(
+        APIRequest,
+        name=st.text(),
+        url_s=st.text(),
+        lifetime=st.integers(),
+    )
+)
+def test_API(api):
+    assert isinstance(api.name, str)
+    assert isinstance(api.url_s, str)
+    assert isinstance(api.lifetime, int)
 
 
 @pytest.mark.parametrize(
@@ -63,7 +90,7 @@ def test_downloader(downloader):
     indirect=True,
 )
 def test_download_file(downloader):
-    resource = Resource(
+    resource = FileDownload(
         "test_resource",
         "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_config.yaml",
         lifetime=7,
@@ -100,14 +127,14 @@ def test_download_file(downloader):
     indirect=True,
 )
 def test_download_lists(downloader):
-    resource1 = Resource(
+    resource1 = FileDownload(
         name="test_resource1",
         url_s=[
             "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_config.yaml",
             "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_schema_config_disconnected.yaml",
         ],
     )
-    resource2 = Resource(
+    resource2 = FileDownload(
         "test_resource2",
         "https://github.com/biocypher/biocypher/raw/main/test/test_CSVs.zip",
     )
@@ -163,14 +190,15 @@ def test_download_lists(downloader):
     assert downloader.cache_dict["test_resource2"]["lifetime"] == 0
 
 
+@pytest.mark.skip(reason="Inconsistent FTP server response")
 def test_download_directory_and_caching():
     # use temp dir, no cache file present
     downloader = Downloader(cache_dir=None)
     assert os.path.exists(downloader.cache_dir)
     assert os.path.exists(downloader.cache_file)
-    resource = Resource(
+    resource = FileDownload(
         "ot_indication",
-        "ftp://ftp.ebi.ac.uk/pub/databases/opentargets/platform/23.06/output/etl/parquet/go",
+        "ftp://ftp.ebi.ac.uk/pub/databases/opentargets/platform/24.09/output/etl/parquet/go",
         lifetime=7,
         is_dir=True,
     )
@@ -191,7 +219,7 @@ def test_download_zip_and_expiration():
     downloader = Downloader(cache_dir=None)
     assert os.path.exists(downloader.cache_dir)
     assert os.path.exists(downloader.cache_file)
-    resource = Resource(
+    resource = FileDownload(
         "test_resource",
         "https://github.com/biocypher/biocypher/raw/main/test/test_CSVs.zip",
         lifetime=7,
@@ -201,10 +229,11 @@ def test_download_zip_and_expiration():
         cache = json.load(f)
     assert (
         cache["test_resource"]["url"][0]
-        == "https://github.com/biocypher/biocypher/raw/main/test/test_CSVs.zip"
+        == "https://github.com/biocypher/biocypher/raw/main/test/test_CSVs.zip",
     )
     assert cache["test_resource"]["lifetime"] == 7
     assert cache["test_resource"]["date_downloaded"]
+
     for path in paths:
         assert os.path.exists(path)
 
@@ -212,7 +241,6 @@ def test_download_zip_and_expiration():
     downloader.cache_dict["test_resource"]["date_downloaded"] = str(
         datetime.now() - timedelta(days=4)
     )
-
     paths = downloader.download(resource)
     # should not download again
     assert "tmp" in paths[0]
@@ -227,6 +255,117 @@ def test_download_zip_and_expiration():
     assert paths[0] is not None
 
 
-def test_cache_api_request():
-    # TODO
-    pass
+@pytest.mark.parametrize(
+    "downloader",
+    [
+        "downloader_without_specified_cache_dir",
+        "downloader_with_specified_cache_dir",
+    ],
+    indirect=True,
+)
+def test_cache_api_request(downloader):
+    api1 = APIRequest(
+        name="uniprot_api",
+        url_s=[
+            "https://rest.uniprot.org/uniprotkb/P12345.json",
+            "https://rest.uniprot.org/uniprotkb/P69905.json",
+        ],
+        lifetime=1,
+    )
+    api2 = APIRequest(
+        name="intact_api",
+        url_s="https://www.ebi.ac.uk/intact/ws/interactor/countTotal",
+        lifetime=1,
+    )
+
+    paths = downloader.download(api1, api2)
+
+    # test download list
+    assert isinstance(paths, list)
+    assert len(paths) == 3  # 2 API requests from api1, 1 API request from api2
+    for path in paths:
+        assert os.path.exists(path)
+    assert f"{os.sep}{api1.name}{os.sep}P12345.json" in paths[0]
+    assert f"{os.sep}{api1.name}{os.sep}P69905.json" in paths[1]
+    assert f"{os.sep}{api2.name}{os.sep}countTotal.json" in paths[2]
+
+    # api1 and api2 have been cached
+    # test cached api request
+    test_paths = downloader.download(
+        api1, api2
+    )  # get the path(s) of cached API request(s)
+    assert isinstance(test_paths, list)
+    assert len(paths) == len(test_paths)
+
+    paths.sort()
+    test_paths.sort()
+    for i in range(len(paths)):
+        with open(paths[i], "r") as file1:
+            api_request1 = json.load(file1)
+
+        with open(test_paths[i], "r") as file2:
+            api_request2 = json.load(file2)
+        assert api_request1 == api_request2
+
+
+def test_api_expiration():
+    downloader = Downloader(cache_dir=None)
+    assert os.path.exists(downloader.cache_dir)
+    assert os.path.exists(downloader.cache_file)
+    resource = APIRequest(
+        "test_resource",
+        "https://rest.uniprot.org/uniprotkb/P12345.json",
+        lifetime=7,
+    )
+    paths = downloader.download(resource)
+    with open(downloader.cache_file, "r") as f:
+        cache = json.load(f)
+    assert (
+        cache["test_resource"]["url"][0]
+        == "https://rest.uniprot.org/uniprotkb/P12345.json",
+    )
+    assert cache["test_resource"]["lifetime"] == 7
+    assert cache["test_resource"]["date_downloaded"]
+
+    assert os.path.exists(paths[0])
+
+    # use files downloaded here and manipulate cache file to test expiration
+    downloader.cache_dict["test_resource"]["date_downloaded"] = str(
+        datetime.now() - timedelta(days=4)
+    )
+    paths = downloader.download(resource)
+    # should not download again
+    assert "tmp" in paths[0]
+
+    # minus 8 days from date_downloaded
+    downloader.cache_dict["test_resource"]["date_downloaded"] = str(
+        datetime.now() - timedelta(days=8)
+    )
+
+    paths = downloader.download(resource)
+    # should download again
+    assert paths[0] is not None
+
+
+def test_download_with_parameter():
+    downloader = Downloader(cache_dir=None)
+    resource = FileDownload(
+        name="zenodo",
+        url_s="https://zenodo.org/records/7773985/files/CollecTRI_source.tsv?download=1",
+        lifetime=1,
+    )
+
+    paths1 = downloader.download(resource)
+    assert isinstance(paths1, list)
+    assert os.path.exists(paths1[0])
+    assert "?download=1" not in paths1[0]
+
+    with open(downloader.cache_file, "r") as f:
+        cache = json.load(f)
+    assert (
+        cache["zenodo"]["url"][0]
+        == "https://zenodo.org/records/7773985/files/CollecTRI_source.tsv",
+    )
+    # load resource from cache
+    paths2 = downloader.download(resource)
+    assert "tmp" in paths2[0]

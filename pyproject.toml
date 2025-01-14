@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biocypher"
-version = "0.5.43"
+version = "0.6.1"
 description = "A unifying framework for biomedical research knowledge graphs"
 authors = [
     "Sebastian Lobentanzer <sebastian.lobentanzer@gmail.com>",
@@ -22,6 +22,12 @@ classifiers = [
 ]
 repository = "https://github.com/biocypher/biocypher"
 readme = "README.md"
+
+[project.urls]
+Homepage = "https://biocypher.org"
+Documentation = "https://biocypher.org"
+Repository = "https://github.com/biocypher/biocypher.git"
+Issues = "https://github.com/biocypher/biocypher/issues"
 
 [tool.poetry.dependencies]
 python = "^3.9"

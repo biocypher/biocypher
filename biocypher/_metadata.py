@@ -10,7 +10,7 @@ import importlib.metadata
 
 import toml
 
-_VERSION = "0.5.43"
+_VERSION = "0.6.1"
 
 
 def get_metadata():
