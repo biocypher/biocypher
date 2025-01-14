@@ -1,5 +1,4 @@
 import os
-import logging
 
 import yaml
 import pytest
@@ -11,14 +10,14 @@ from biocypher.output.in_memory._get_in_memory_kg import IN_MEMORY_DBMS
 
 def test_biocypher(core):
     assert core._dbms == "neo4j"
-    assert core._offline == True
-    assert core._strict_mode == False
+    assert core._offline
+    assert not core._strict_mode
 
 
 def test_log_missing_types(core, translator):
     core._translator = translator
     core._translator.notype = {}
-    assert core.log_missing_input_labels() == None
+    assert core.log_missing_input_labels() is None
 
     core._translator.notype = {"a": 1, "b": 2}
     real_missing_types = core.log_missing_input_labels()
@@ -50,40 +49,24 @@ def test_write_schema_info(core, _get_nodes, _get_edges, _get_rel_as_nodes):
 
     schema = core.write_schema_info()
 
-    assert schema.get("is_schema_info") == True
-    assert schema.get("protein").get("present_in_knowledge_graph") == True
-    assert schema.get("protein").get("is_relationship") == False
-    assert schema.get("microRNA").get("present_in_knowledge_graph") == True
-    assert schema.get("microRNA").get("is_relationship") == False
-    assert (
-        schema.get("gene to disease association").get(
-            "present_in_knowledge_graph"
-        )
-        == True
+    assert schema.get("is_schema_info")
+    assert schema.get("protein").get("present_in_knowledge_graph")
+    assert not schema.get("protein").get("is_relationship")
+    assert schema.get("microRNA").get("present_in_knowledge_graph")
+    assert not schema.get("microRNA").get("is_relationship")
+    assert schema.get("gene to disease association").get(
+        "present_in_knowledge_graph"
     )
-    assert (
-        schema.get("gene to disease association").get("is_relationship") == True
+
+    assert schema.get("gene to disease association").get("is_relationship")
+    assert schema.get("mutation to tissue association").get(
+        "present_in_knowledge_graph"
     )
-    assert (
-        schema.get("mutation to tissue association").get(
-            "present_in_knowledge_graph"
-        )
-        == True
+    assert schema.get("mutation to tissue association").get("is_relationship")
+    assert schema.get("post translational interaction").get(
+        "present_in_knowledge_graph"
     )
-    assert (
-        schema.get("mutation to tissue association").get("is_relationship")
-        == True
-    )
-    assert (
-        schema.get("post translational interaction").get(
-            "present_in_knowledge_graph"
-        )
-        == True
-    )
-    assert (
-        schema.get("post translational interaction").get("is_relationship")
-        == True
-    )
+    assert schema.get("post translational interaction").get("is_relationship")
 
     path = os.path.join(core._output_directory, "schema_info.yaml")
     assert os.path.exists(path)
