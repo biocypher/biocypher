@@ -83,7 +83,7 @@ markers = [
 ]
 
 [tool.ruff]
-line-length = 80
+line-length = 120
 select = ["ALL"]
 
 [tool.ruff.lint]
