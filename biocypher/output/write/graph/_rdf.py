@@ -126,7 +126,7 @@ class _RDFWriter(_BatchWriter):
             rdf_object = edge.get_target_id()
             rdf_predicate = edge.get_id()
             rdf_properties = edge.get_properties()
-            if rdf_predicate == None:
+            if rdf_predicate is None:
                 rdf_predicate = rdf_subject + rdf_object
 
             edge_label = self.translator.name_sentence_to_pascal(
