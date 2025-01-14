@@ -23,6 +23,9 @@ classifiers = [
 repository = "https://github.com/biocypher/biocypher"
 readme = "README.md"
 
+[project]
+requires-python = ">=3.10"
+
 [project.urls]
 Homepage = "https://biocypher.org"
 Documentation = "https://biocypher.org"
@@ -30,7 +33,7 @@ Repository = "https://github.com/biocypher/biocypher.git"
 Issues = "https://github.com/biocypher/biocypher/issues"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 PyYAML = ">=5.0"
 more_itertools = "*"
 appdirs = "*"
@@ -81,7 +84,6 @@ markers = [
 
 [tool.ruff]
 line-length = 80
-target-version = ["py310"]
 select = ["ALL"]
 
 [tool.ruff.lint]
