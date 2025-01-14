@@ -6,7 +6,7 @@ from biocypher.output.in_memory._in_memory_kg import _InMemoryKG
 
 class NetworkxKG(_InMemoryKG):
     def __init__(self, deduplicator):
-        super().__init__()
+        super().__init__()  # keeping in spite of ABC not having __init__
         self.deduplicator = deduplicator
         self._pd = PandasKG(
             deduplicator=self.deduplicator,
