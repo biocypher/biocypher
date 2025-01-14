@@ -1,13 +1,3 @@
-#!/usr/bin/env python
-
-#
-# Copyright 2021, Heidelberg University Clinic
-#
-# File author(s): Sebastian Lobentanzer
-#                 Michael Hartung
-#
-# Distributed under MIT licence, see the file `LICENSE`.
-#
 """
 BioCypher 'offline' module. Handles the writing of node and edge representations
 suitable for import into a DBMS.

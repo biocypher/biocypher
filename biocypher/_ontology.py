@@ -1,13 +1,3 @@
-#!/usr/bin/env python
-
-#
-# Copyright 2021, Heidelberg University Clinic
-#
-# File author(s): Sebastian Lobentanzer
-#                 ...
-#
-# Distributed under MIT licence, see the file `LICENSE`.
-#
 """
 BioCypher 'ontology' module. Contains classes and functions to handle parsing
 and representation of single ontologies as well as their hybridisation and

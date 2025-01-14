@@ -1,13 +1,3 @@
-#!/usr/bin/env python
-
-#
-# Copyright 2021, Heidelberg University Clinic
-#
-# File author(s): Sebastian Lobentanzer
-#                 ...
-#
-# Distributed under MIT licence, see the file `LICENSE`.
-#
 """
 BioCypher 'translation' module. Responsible for translating between the raw
 input data and the BioCypherNode and BioCypherEdge objects.
@@ -26,7 +16,6 @@ from ._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from ._ontology import Ontology
 
 __all__ = ["Translator"]
-
 
 class Translator:
     """

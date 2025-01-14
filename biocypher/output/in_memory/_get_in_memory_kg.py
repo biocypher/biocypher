@@ -1,12 +1,3 @@
-#!/usr/bin/env python
-
-#
-# Copyright 2021, Heidelberg University Clinic
-#
-# File author(s): Sebastian Lobentanzer
-#                 Nils Krehl
-# Distributed under MIT licence, see the file `LICENSE`.
-#
 """
 BioCypher 'in_memory' module. Handles the in-memory Knowledge Graph instance.
 """
