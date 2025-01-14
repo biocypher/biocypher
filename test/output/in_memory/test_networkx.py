@@ -114,11 +114,7 @@ def test_duplicates(in_memory_networkx_kg, _get_nodes):
     nodes = _get_nodes + _get_nodes
     in_memory_networkx_kg.add_nodes(nodes)
     networkx_kg = in_memory_networkx_kg.get_kg()
-    protein_nodes = [
-        node
-        for node in networkx_kg.nodes(data=True)
-        if node[1]["node_label"] == "protein"
-    ]
+    protein_nodes = [node for node in networkx_kg.nodes(data=True) if node[1]["node_label"] == "protein"]
     assert len(protein_nodes) == 4
 
 
@@ -127,11 +123,7 @@ def test_two_step_add(in_memory_networkx_kg, _get_nodes):
     in_memory_networkx_kg.add_nodes(_get_nodes[:4])
     in_memory_networkx_kg.add_nodes(_get_nodes[4:])
     networkx_kg = in_memory_networkx_kg.get_kg()
-    protein_nodes = [
-        node
-        for node in networkx_kg.nodes(data=True)
-        if node[1]["node_label"] == "protein"
-    ]
+    protein_nodes = [node for node in networkx_kg.nodes(data=True) if node[1]["node_label"] == "protein"]
     assert len(protein_nodes) == 8
 
 

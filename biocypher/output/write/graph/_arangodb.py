@@ -79,9 +79,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                 f.write(row)
 
             # add collection from schema config
-            collection = self.translator.ontology.mapping.extended_schema[label].get(
-                "db_collection_name", None
-            )
+            collection = self.translator.ontology.mapping.extended_schema[label].get("db_collection_name", None)
 
             # add file path to neo4 admin import statement
             # do once for each part file
@@ -89,8 +87,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
 
             if not parts:
                 raise ValueError(
-                    f"No parts found for node label {label}. "
-                    f"Check that the data was parsed first.",
+                    f"No parts found for node label {label}. " f"Check that the data was parsed first.",
                 )
 
             for part in parts:
@@ -143,9 +140,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
 
             # check for file exists
             if os.path.exists(header_path):
-                logger.warning(
-                    f"Header file {header_path} already exists. Overwriting."
-                )
+                logger.warning(f"Header file {header_path} already exists. Overwriting.")
 
             # concatenate key:value in props
             props_list = []
@@ -170,9 +165,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
                         break
 
             else:
-                collection = self.translator.ontology.mapping.extended_schema[
-                    label
-                ].get("db_collection_name", None)
+                collection = self.translator.ontology.mapping.extended_schema[label].get("db_collection_name", None)
 
             # add file path to neo4 admin import statement (import call path
             # may be different from actual output path)
@@ -204,11 +197,7 @@ class _ArangoDBBatchWriter(_Neo4jBatchWriter):
         Returns:
             str: a bash command for neo4j-admin import
         """
-        import_call = (
-            f"{self.import_call_bin_prefix}arangoimp "
-            f"--type csv "
-            f'--separator="{self.escaped_delim}" '
-        )
+        import_call = f"{self.import_call_bin_prefix}arangoimp " f"--type csv " f'--separator="{self.escaped_delim}" '
 
         if self.quote == "'":
             import_call += f'--quote="{self.quote}" '

@@ -33,9 +33,7 @@ class _NetworkXWriter(_Writer):
             pickle.dump(self.G, f)
 
         import_call = "import pickle\n"
-        import_call += (
-            "with open('./networkx_graph.pkl', 'rb') as f:\n\tG_loaded = pickle.load(f)"
-        )
+        import_call += "with open('./networkx_graph.pkl', 'rb') as f:\n\tG_loaded = pickle.load(f)"
         return import_call
 
     def _get_import_script_name(self) -> str:

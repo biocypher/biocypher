@@ -7,6 +7,7 @@ __all__ = ["get_logger", "log", "logfile"]
 import logging
 import os
 import pydoc
+
 from datetime import datetime
 
 from biocypher import _config

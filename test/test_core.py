@@ -57,13 +57,9 @@ def test_write_schema_info(core, _get_nodes, _get_edges, _get_rel_as_nodes):
     assert schema.get("gene to disease association").get("present_in_knowledge_graph")
 
     assert schema.get("gene to disease association").get("is_relationship")
-    assert schema.get("mutation to tissue association").get(
-        "present_in_knowledge_graph"
-    )
+    assert schema.get("mutation to tissue association").get("present_in_knowledge_graph")
     assert schema.get("mutation to tissue association").get("is_relationship")
-    assert schema.get("post translational interaction").get(
-        "present_in_knowledge_graph"
-    )
+    assert schema.get("post translational interaction").get("present_in_knowledge_graph")
     assert schema.get("post translational interaction").get("is_relationship")
 
     path = os.path.join(core._output_directory, "schema_info.yaml")
@@ -98,9 +94,7 @@ def test_in_memory_kg_only_in_online_mode(core):
         core._offline = True
         with pytest.raises(ValueError) as e:
             core.get_kg()
-        assert "Getting the in-memory KG is only available in online mode for " in str(
-            e.value
-        )
+        assert "Getting the in-memory KG is only available in online mode for " in str(e.value)
 
 
 def test_no_in_memory_kg_for_dbms(core):
@@ -109,9 +103,7 @@ def test_no_in_memory_kg_for_dbms(core):
         core._offline = False
         with pytest.raises(ValueError) as e:
             core.get_kg()
-        assert "Getting the in-memory KG is only available in online mode for " in str(
-            e.value
-        )
+        assert "Getting the in-memory KG is only available in online mode for " in str(e.value)
 
 
 def test_no_in_memory_instance_found(core):

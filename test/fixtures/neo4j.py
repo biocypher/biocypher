@@ -1,6 +1,7 @@
 import os
 
 import pytest
+
 from neo4j.exceptions import ServiceUnavailable
 
 from biocypher import config as bcy_config

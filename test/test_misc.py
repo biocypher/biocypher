@@ -82,10 +82,7 @@ def test_tree_vis_multiple_inheritance(caplog):
     }
     expected_tree_vis = create_tree_visualisation(nx.DiGraph(expected_tree))
 
-    assert any(
-        "The ontology contains multiple inheritance" in record.message
-        for record in caplog.records
-    )
+    assert any("The ontology contains multiple inheritance" in record.message for record in caplog.records)
     assert tree_vis.to_json(with_data=True) == expected_tree_vis.to_json(with_data=True)
 
 

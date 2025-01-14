@@ -3,6 +3,7 @@ BioCypher 'online' mode. Handles connection and manipulation of a running DBMS.
 """
 
 import itertools
+
 from collections.abc import Iterable
 
 import neo4j_utils
@@ -129,18 +130,10 @@ class _Neo4jDriver:
             label = _misc.sentencecase_to_pascalcase(leaf[0], sep=r"\s\.")
             if leaf[1]["represented_as"] == "node":
                 if major_neo4j_version >= 5:
-                    s = (
-                        f"CREATE CONSTRAINT `{label}_id` "
-                        f"IF NOT EXISTS FOR (n:`{label}`) "
-                        "REQUIRE n.id IS UNIQUE"
-                    )
+                    s = f"CREATE CONSTRAINT `{label}_id` " f"IF NOT EXISTS FOR (n:`{label}`) " "REQUIRE n.id IS UNIQUE"
                     self._driver.query(s)
                 else:
-                    s = (
-                        f"CREATE CONSTRAINT `{label}_id` "
-                        f"IF NOT EXISTS ON (n:`{label}`) "
-                        "ASSERT n.id IS UNIQUE"
-                    )
+                    s = f"CREATE CONSTRAINT `{label}_id` " f"IF NOT EXISTS ON (n:`{label}`) " "ASSERT n.id IS UNIQUE"
                     self._driver.query(s)
 
     def _get_neo4j_version(self):
@@ -156,9 +149,7 @@ class _Neo4jDriver:
             )[0][0]["version"]
             return neo4j_version
         except Exception as e:
-            logger.warning(
-                f"Error detecting Neo4j version: {e} use default version 4.0.0."
-            )
+            logger.warning(f"Error detecting Neo4j version: {e} use default version 4.0.0.")
             return "4.0.0"
 
     def add_nodes(self, id_type_tuples: Iterable[tuple]) -> tuple:
@@ -350,11 +341,7 @@ class _Neo4jDriver:
         # merging only on the ids of the entities, passing the
         # properties on match and on create;
         # TODO add node labels?
-        node_query = (
-            "UNWIND $rels AS r "
-            "MERGE (src {id: r.source_id}) "
-            "MERGE (tar {id: r.target_id}) "
-        )
+        node_query = "UNWIND $rels AS r " "MERGE (src {id: r.source_id}) " "MERGE (tar {id: r.target_id}) "
 
         self._driver.query(node_query, parameters={"rels": rels})
 

@@ -8,6 +8,7 @@ import ftplib
 import json
 import os
 import shutil
+
 from abc import ABC
 from datetime import datetime, timedelta
 from tempfile import TemporaryDirectory
@@ -169,9 +170,7 @@ class Downloader:
         """
         cache_record = self._get_cache_record(resource)
         if cache_record:
-            download_time = datetime.strptime(
-                cache_record.get("date_downloaded"), "%Y-%m-%d %H:%M:%S.%f"
-            )
+            download_time = datetime.strptime(cache_record.get("date_downloaded"), "%Y-%m-%d %H:%M:%S.%f")
             lifetime = timedelta(days=resource.lifetime)
             expired = download_time + lifetime < datetime.now()
         else:
@@ -212,9 +211,7 @@ class Downloader:
                 paths.append(path)
         else:
             paths = []
-            fname = file_download.url_s[file_download.url_s.rfind("/") + 1 :].split(
-                "?"
-            )[0]
+            fname = file_download.url_s[file_download.url_s.rfind("/") + 1 :].split("?")[0]
             results = self._retrieve(
                 url=file_download.url_s,
                 fname=fname,
@@ -240,11 +237,7 @@ class Downloader:
             list[str]: The path to the cached API request.
 
         """
-        urls = (
-            api_request.url_s
-            if isinstance(api_request.url_s, list)
-            else [api_request.url_s]
-        )
+        urls = api_request.url_s if isinstance(api_request.url_s, list) else [api_request.url_s]
         paths = []
         for url in urls:
             fname = url[url.rfind("/") + 1 :].rsplit(".", 1)[0]
@@ -360,9 +353,7 @@ class Downloader:
             files = ftp.nlst()
             ftp.quit()
         else:
-            raise NotImplementedError(
-                "Only FTP directories are supported at the moment."
-            )
+            raise NotImplementedError("Only FTP directories are supported at the moment.")
 
         return files
 

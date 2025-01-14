@@ -4,6 +4,7 @@ suitable for import into a DBMS.
 """
 
 import os
+
 from types import GeneratorType
 from typing import Union
 
@@ -236,9 +237,7 @@ class _RDFWriter(_BatchWriter):
         Returns:
             list: The list representation of the input string.
         """
-        return (
-            string_list.replace("[", "").replace("]", "").replace("'", "").split(", ")
-        )
+        return string_list.replace("[", "").replace("]", "").replace("'", "").split(", ")
 
     def _write_single_node_list_to_file(
         self,
@@ -307,9 +306,7 @@ class _RDFWriter(_BatchWriter):
 
         return True
 
-    def write_nodes(
-        self, nodes, batch_size: int = int(1e6), force: bool = False
-    ) -> bool:
+    def write_nodes(self, nodes, batch_size: int = int(1e6), force: bool = False) -> bool:
         """
         Wrapper for writing nodes in RDF format. It calls the _write_node_data() function, specifying the node data.
 

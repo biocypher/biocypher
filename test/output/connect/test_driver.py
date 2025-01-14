@@ -146,11 +146,7 @@ def test_add_single_biocypher_edge_explicit_node_creation(driver):
         "WITH n1, n2, n1.id AS id1, n2.id AS id2, type(r) AS label "
         "RETURN id1, id2, label",
     )
-    assert (
-        result[0]["id1"] == "src"
-        and result[0]["id2"] == "tar"
-        and result[0]["label"] == "Test"
-    )
+    assert result[0]["id1"] == "src" and result[0]["id2"] == "tar" and result[0]["label"] == "Test"
 
 
 @pytest.mark.requires_neo4j
@@ -166,11 +162,7 @@ def test_add_single_biocypher_edge_missing_nodes(driver):
         "WITH n1, n2, n1.id AS id1, n2.id AS id2, type(r) AS label "
         "RETURN id1, id2, label",
     )
-    assert (
-        result[0]["id1"] == "src"
-        and result[0]["id2"] == "tar"
-        and result[0]["label"] == "Test"
-    )
+    assert result[0]["id1"] == "src" and result[0]["id2"] == "tar" and result[0]["label"] == "Test"
 
 
 @pytest.mark.requires_neo4j

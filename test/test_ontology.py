@@ -77,9 +77,7 @@ def test_ontology_functions(hybrid_ontology):
     # user extensions
     dsdna_ancestors = list(hybrid_ontology.get_ancestors("dsDNA sequence"))
     assert "chemical entity" in dsdna_ancestors
-    assert "association" in hybrid_ontology.get_ancestors(
-        "mutation to tissue association"
-    )
+    assert "association" in hybrid_ontology.get_ancestors("mutation to tissue association")
     # properties
     protein = hybrid_ontology._nx_graph.nodes["protein"]
     assert protein["label"] == "Protein"
@@ -217,8 +215,7 @@ def test_root_node_not_found():
     error_message = str(error_message.value)
     assert "Could not find root node with label 'not present'." in error_message
     assert (
-        "The ontology contains the following labels: ['Label_Root', 'Label_Level1A', 'Label_Level1B']"
-        in error_message
+        "The ontology contains the following labels: ['Label_Root', 'Label_Level1A', 'Label_Level1B']" in error_message
     )
 
 
@@ -356,7 +353,4 @@ def test_duplicated_tail_ontologies(caplog, extended_ontology_mapping):
     with caplog.at_level(logging.INFO):
         tree = ontology.show_ontology_structure()
     assert tree
-    assert any(
-        "The ontology contains multiple inheritance" in record.message
-        for record in caplog.records
-    )
+    assert any("The ontology contains multiple inheritance" in record.message for record in caplog.records)

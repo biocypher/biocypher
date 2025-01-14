@@ -7,6 +7,7 @@ Module data directory, including:
 
 import os
 import warnings
+
 from typing import Any, Optional
 
 import appdirs
@@ -78,11 +79,7 @@ def read_config() -> dict:
     defaults = module_data("biocypher_config")
     user = _read_yaml(_USER_CONFIG_FILE) or {}
     # TODO account for .yml?
-    local = (
-        _read_yaml("biocypher_config.yaml")
-        or _read_yaml("config/biocypher_config.yaml")
-        or {}
-    )
+    local = _read_yaml("biocypher_config.yaml") or _read_yaml("config/biocypher_config.yaml") or {}
 
     for key in defaults:
         value = local[key] if key in local else user[key] if key in user else None

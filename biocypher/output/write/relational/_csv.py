@@ -31,9 +31,7 @@ class _PandasCSVWriter(_Writer):
         """
         import_call = "import pandas as pd\n\n"
         for df_name in self.stored_dfs.keys():
-            import_call += (
-                f"{df_name} = pd.read_csv('./{df_name}.csv', header=0, index_col=0)\n"
-            )
+            import_call += f"{df_name} = pd.read_csv('./{df_name}.csv', header=0, index_col=0)\n"
         return import_call
 
     def _get_import_script_name(self) -> str:
@@ -57,17 +55,13 @@ class _PandasCSVWriter(_Writer):
         entities = peekable(entities)
         entity_list = self.pandas_in_memory._separate_entity_types(entities)
         for entity_type, entities in entity_list.items():
-            self.in_memory_dfs[entity_type] = self.pandas_in_memory._add_entity_df(
-                entity_type, entities
-            )
+            self.in_memory_dfs[entity_type] = self.pandas_in_memory._add_entity_df(entity_type, entities)
         for entity_type in self.in_memory_dfs.keys():
             entity_df = self.in_memory_dfs[entity_type]
             if " " in entity_type or "." in entity_type:
                 entity_type = entity_type.replace(" ", "_").replace(".", "_")
             if self.write_to_file:
-                logger.info(
-                    f"Writing {entity_df.shape[0]} entries to {entity_type}.csv."
-                )
+                logger.info(f"Writing {entity_df.shape[0]} entries to {entity_type}.csv.")
                 entity_df.to_csv(
                     f"{self.output_directory}/{entity_type}.csv",
                     sep=self.delimiter,

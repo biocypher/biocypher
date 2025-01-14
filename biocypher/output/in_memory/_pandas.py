@@ -33,8 +33,7 @@ class PandasKG(_InMemoryKG):
                 and not isinstance(entity, BioCypherRelAsNode)
             ):
                 raise TypeError(
-                    "Expected a BioCypherNode / BioCypherEdge / "
-                    f"BioCypherRelAsNode, got {type(entity)}."
+                    "Expected a BioCypherNode / BioCypherEdge / " f"BioCypherRelAsNode, got {type(entity)}."
                 )
 
             if isinstance(entity, BioCypherNode):

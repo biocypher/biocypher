@@ -2,6 +2,7 @@ import glob
 import os
 
 import pytest
+
 from rdflib import CSVW, RDF, RDFS, Graph, Literal, Namespace
 
 

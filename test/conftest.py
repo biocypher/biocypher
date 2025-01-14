@@ -1,5 +1,6 @@
 import os
 import shutil
+
 from glob import glob
 
 import pytest
@@ -25,8 +26,7 @@ def pytest_addoption(parser):
         # postgresl
         (
             "database_name_postgresql",
-            "The PostgreSQL database to be used for tests. Defaults to "
-            '"postgresql-biocypher-test-TG2C7GsdNw".',
+            "The PostgreSQL database to be used for tests. Defaults to " '"postgresql-biocypher-test-TG2C7GsdNw".',
         ),
         ("user_postgresql", "Tests access PostgreSQL as this user."),
         ("password_postgresql", "Password to access PostgreSQL."),

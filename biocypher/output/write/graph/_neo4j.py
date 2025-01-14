@@ -134,9 +134,7 @@ class _Neo4jBatchWriter(_BatchWriter):
                 self.import_call_file_prefix,
                 parts,
             )
-            self.import_call_nodes.add(
-                (import_call_header_path, import_call_parts_path)
-            )
+            self.import_call_nodes.add((import_call_header_path, import_call_parts_path))
 
         return True
 
@@ -244,9 +242,7 @@ class _Neo4jBatchWriter(_BatchWriter):
                 self.import_call_file_prefix,
                 parts,
             )
-            self.import_call_edges.add(
-                (import_call_header_path, import_call_parts_path)
-            )
+            self.import_call_edges.add((import_call_header_path, import_call_parts_path))
 
         return True
 
@@ -269,20 +265,16 @@ class _Neo4jBatchWriter(_BatchWriter):
         Returns:
             str: a bash command for neo4j-admin import
         """
-        import_call_neo4j_v4 = self._get_import_call(
-            "import", "--database=", "--force="
+        import_call_neo4j_v4 = self._get_import_call("import", "--database=", "--force=")
+        import_call_neo4j_v5 = self._get_import_call("database import full", "", "--overwrite-destination=")
+        neo4j_version_check = (
+            f"version=$({self._get_default_import_call_bin_prefix()}neo4j-admin --version | cut -d '.' -f 1)"
         )
-        import_call_neo4j_v5 = self._get_import_call(
-            "database import full", "", "--overwrite-destination="
-        )
-        neo4j_version_check = f"version=$({self._get_default_import_call_bin_prefix()}neo4j-admin --version | cut -d '.' -f 1)"
 
         import_script = f"#!/bin/bash\n{neo4j_version_check}\nif [[ $version -ge 5 ]]; then\n\t{import_call_neo4j_v5}\nelse\n\t{import_call_neo4j_v4}\nfi"
         return import_script
 
-    def _get_import_call(
-        self, import_cmd: str, database_cmd: str, wipe_cmd: str
-    ) -> str:
+    def _get_import_call(self, import_cmd: str, database_cmd: str, wipe_cmd: str) -> str:
         """Get parametrized import call for Neo4j 4 or 5+.
 
         Args:

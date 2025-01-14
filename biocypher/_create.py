@@ -4,6 +4,7 @@ dataclasses.
 """
 
 import os
+
 from dataclasses import dataclass, field
 from typing import Union
 
@@ -322,20 +323,17 @@ class BioCypherRelAsNode:
     def __post_init__(self):
         if not isinstance(self.node, BioCypherNode):
             raise TypeError(
-                f"BioCypherRelAsNode.node must be a BioCypherNode, "
-                f"not {type(self.node)}.",
+                f"BioCypherRelAsNode.node must be a BioCypherNode, " f"not {type(self.node)}.",
             )
 
         if not isinstance(self.source_edge, BioCypherEdge):
             raise TypeError(
-                f"BioCypherRelAsNode.source_edge must be a BioCypherEdge, "
-                f"not {type(self.source_edge)}.",
+                f"BioCypherRelAsNode.source_edge must be a BioCypherEdge, " f"not {type(self.source_edge)}.",
             )
 
         if not isinstance(self.target_edge, BioCypherEdge):
             raise TypeError(
-                f"BioCypherRelAsNode.target_edge must be a BioCypherEdge, "
-                f"not {type(self.target_edge)}.",
+                f"BioCypherRelAsNode.target_edge must be a BioCypherEdge, " f"not {type(self.target_edge)}.",
             )
 
     def get_node(self) -> BioCypherNode:

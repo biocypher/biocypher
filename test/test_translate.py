@@ -196,20 +196,8 @@ def test_merge_multiple_inputs_node(ontology_mapping, translator):
     assert translated_nodes
 
     # check unique node type
-    assert not any(
-        [
-            schema
-            for schema in ontology_mapping.extended_schema.keys()
-            if ".gene" in schema
-        ]
-    )
-    assert any(
-        [
-            schema
-            for schema in ontology_mapping.extended_schema.keys()
-            if ".pathway" in schema
-        ]
-    )
+    assert not any([schema for schema in ontology_mapping.extended_schema.keys() if ".gene" in schema])
+    assert any([schema for schema in ontology_mapping.extended_schema.keys() if ".pathway" in schema])
 
     # check translator.translate_nodes for unique return type
     assert all([type(node) is BioCypherNode for node in translated_nodes])
@@ -266,25 +254,15 @@ def test_merge_multiple_inputs_edge(ontology_mapping, translator):
 
     # check unique edge type
     assert not any(
-        [
-            schema
-            for schema in ontology_mapping.extended_schema.keys()
-            if ".gene to disease association" in schema
-        ],
+        [schema for schema in ontology_mapping.extended_schema.keys() if ".gene to disease association" in schema],
     )
     assert any(
-        [
-            schema
-            for schema in ontology_mapping.extended_schema.keys()
-            if ".sequence variant" in schema
-        ],
+        [schema for schema in ontology_mapping.extended_schema.keys() if ".sequence variant" in schema],
     )
 
     # check translator.translate_nodes for unique return type
     assert all([type(edge) is BioCypherEdge for edge in translated_edges])
-    assert all(
-        [edge.get_label() == "PERTURBED_IN_DISEASE" for edge in translated_edges]
-    )
+    assert all([edge.get_label() == "PERTURBED_IN_DISEASE" for edge in translated_edges])
 
 
 def test_implicit_inheritance_edge(translator):
@@ -307,14 +285,8 @@ def test_implicit_inheritance_edge(translator):
     translated_edges = list(translator.translate_edges(src_tar_type))
 
     assert all([type(edge) is BioCypherEdge for edge in translated_edges])
-    assert (
-        translated_edges[0].get_label()
-        == "known.sequence variant.variant to gene association"
-    )
-    assert (
-        translated_edges[1].get_label()
-        == "somatic.sequence variant.variant to gene association"
-    )
+    assert translated_edges[0].get_label() == "known.sequence variant.variant to gene association"
+    assert translated_edges[1].get_label() == "somatic.sequence variant.variant to gene association"
 
 
 def test_virtual_leaves_inherit_is_a(ontology_mapping):
@@ -501,10 +473,7 @@ def test_translate_query(translator):
     # we translate to PascalCase for cypher queries, not to internal
     # sentence case
     query = "MATCH (n:hgnc)-[r:gene_disease]->(d:Disease) RETURN n"
-    assert (
-        translator.translate(query)
-        == "MATCH (n:Gene)-[r:PERTURBED_IN_DISEASE]->(d:Disease) RETURN n"
-    )
+    assert translator.translate(query) == "MATCH (n:Gene)-[r:PERTURBED_IN_DISEASE]->(d:Disease) RETURN n"
 
 
 def test_reverse_translate_query(translator):

@@ -1,6 +1,7 @@
 import glob
 import os
 import re
+
 from abc import ABC, abstractmethod
 from collections import OrderedDict, defaultdict
 from types import GeneratorType
@@ -26,9 +27,7 @@ class _BatchWriter(_Writer, ABC):
         Returns:
             str: The database-specific string for the path to the import call bin prefix
         """
-        raise NotImplementedError(
-            "Database writer must override '_get_default_import_call_bin_prefix'"
-        )
+        raise NotImplementedError("Database writer must override '_get_default_import_call_bin_prefix'")
 
     @abstractmethod
     def _write_array_string(self, string_list):
@@ -78,9 +77,7 @@ class _BatchWriter(_Writer, ABC):
         Returns:
             str: A bash command for csv import.
         """
-        raise NotImplementedError(
-            "Database writer must override '_construct_import_call'"
-        )
+        raise NotImplementedError("Database writer must override '_construct_import_call'")
 
     @abstractmethod
     def _get_import_script_name(self) -> str:
@@ -91,9 +88,7 @@ class _BatchWriter(_Writer, ABC):
         Returns:
             str: The name of the import script (ending in .sh)
         """
-        raise NotImplementedError(
-            "Database writer must override '_get_import_script_name'"
-        )
+        raise NotImplementedError("Database writer must override '_get_import_script_name'")
 
     def __init__(
         self,
@@ -418,9 +413,7 @@ class _BatchWriter(_Writer, ABC):
 
                     # get properties from config if present
                     if label in self.translator.ontology.mapping.extended_schema:
-                        cprops = self.translator.ontology.mapping.extended_schema.get(
-                            label
-                        ).get(
+                        cprops = self.translator.ontology.mapping.extended_schema.get(label).get(
                             "properties",
                         )
                     else:
@@ -464,10 +457,7 @@ class _BatchWriter(_Writer, ABC):
 
                     if all_labels:
                         # convert to pascal case
-                        all_labels = [
-                            self.translator.name_sentence_to_pascal(label)
-                            for label in all_labels
-                        ]
+                        all_labels = [self.translator.name_sentence_to_pascal(label) for label in all_labels]
                         # remove duplicates
                         all_labels = list(OrderedDict.fromkeys(all_labels))
                         # order alphabetically
@@ -674,9 +664,7 @@ class _BatchWriter(_Writer, ABC):
                     # "label_as_edge" property)
                     cprops = None
                     if label in self.translator.ontology.mapping.extended_schema:
-                        cprops = self.translator.ontology.mapping.extended_schema.get(
-                            label
-                        ).get(
+                        cprops = self.translator.ontology.mapping.extended_schema.get(label).get(
                             "properties",
                         )
                     else:
@@ -915,10 +903,7 @@ class _BatchWriter(_Writer, ABC):
         else:
             next_part = (
                 max(
-                    [
-                        int(f.split(".")[-2].split("-")[-1].replace("part", ""))
-                        for f in files
-                    ],
+                    [int(f.split(".")[-2].split("-")[-1].replace("part", "")) for f in files],
                 )
                 + 1
             )
@@ -965,9 +950,7 @@ class _BatchWriter(_Writer, ABC):
         """
 
         file_path = os.path.join(self.outdir, self._get_import_script_name())
-        logger.info(
-            f"Writing {self.db_name + ' ' if self.db_name else ''}import call to `{file_path}`."
-        )
+        logger.info(f"Writing {self.db_name + ' ' if self.db_name else ''}import call to `{file_path}`.")
 
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(self._construct_import_call())
@@ -1006,7 +989,5 @@ def parse_label(label: str) -> str:
             if first_character_compliant(c):
                 matches = matches[matches.index(c) :]
                 break
-        logger.warning(
-            "Label does not start with an alphabetic character or with $. Removed non compliant characters."
-        )
+        logger.warning("Label does not start with an alphabetic character or with $. Removed non compliant characters.")
     return "".join(matches).strip()

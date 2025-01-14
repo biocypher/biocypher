@@ -1,4 +1,5 @@
 import os
+
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import Optional, Union
@@ -113,9 +114,7 @@ class _Writer(ABC):
         Returns:
             str: command for importing the output files into a DBMS.
         """
-        raise NotImplementedError(
-            "Writer implementation must override '_construct_import_call'"
-        )
+        raise NotImplementedError("Writer implementation must override '_construct_import_call'")
 
     @abstractmethod
     def _get_import_script_name(self) -> str:
@@ -124,9 +123,7 @@ class _Writer(ABC):
         Returns:
             str: The name of the import script (ending in .sh)
         """
-        raise NotImplementedError(
-            "Writer implementation must override '_get_import_script_name'"
-        )
+        raise NotImplementedError("Writer implementation must override '_get_import_script_name'")
 
     def write_nodes(self, nodes, batch_size: int = int(1e6), force: bool = False):
         """Wrapper for writing nodes.

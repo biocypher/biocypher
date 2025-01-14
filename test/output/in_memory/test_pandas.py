@@ -65,14 +65,9 @@ def test_edges_gen(in_memory_pandas_kg, _get_edges):
 def test_rel_as_nodes(in_memory_pandas_kg, _get_rel_as_nodes):
     in_memory_pandas_kg.add_tables(_get_rel_as_nodes)
     assert "post translational interaction" in in_memory_pandas_kg.dfs.keys()
-    assert (
-        "directed" in in_memory_pandas_kg.dfs["post translational interaction"].columns
-    )
+    assert "directed" in in_memory_pandas_kg.dfs["post translational interaction"].columns
     assert "effect" in in_memory_pandas_kg.dfs["post translational interaction"].columns
-    assert (
-        "i1"
-        in in_memory_pandas_kg.dfs["post translational interaction"]["node_id"].values
-    )
+    assert "i1" in in_memory_pandas_kg.dfs["post translational interaction"]["node_id"].values
     assert "IS_SOURCE_OF" in in_memory_pandas_kg.dfs.keys()
     assert "IS_TARGET_OF" in in_memory_pandas_kg.dfs.keys()
     assert "source_id" in in_memory_pandas_kg.dfs["IS_SOURCE_OF"].columns
