@@ -1,12 +1,3 @@
-#!/usr/bin/env python
-
-#
-# Copyright 2021, Heidelberg University Clinic
-#
-# File author(s): Sebastian Lobentanzer
-#                 Nils Krehl
-# Distributed under MIT licence, see the file `LICENSE`.
-#
 """
 BioCypher 'in_memory' module. Handles the in-memory Knowledge Graph instance.
 """
@@ -19,7 +10,7 @@ logger.debug(f"Loading module {__name__}.")
 
 __all__ = ["get_in_memory_kg"]
 
-IN_MEMORY_DBMS = ["csv", "networkx"]
+IN_MEMORY_DBMS = ["csv", "pandas", "tabular", "networkx"]
 
 
 def get_in_memory_kg(
@@ -32,7 +23,7 @@ def get_in_memory_kg(
     Returns:
         class: the in-memory KG class
     """
-    if dbms == "csv":
+    if dbms in ["csv", "pandas", "tabular"]:
         return PandasKG(deduplicator)
     elif dbms == "networkx":
         return NetworkxKG(deduplicator)

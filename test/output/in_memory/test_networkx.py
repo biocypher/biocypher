@@ -95,11 +95,7 @@ def test_nodes(in_memory_networkx_kg, _get_nodes):
             },
         ),
     ]
-
-    print(list(networkx_kg.nodes(data=True)))
-    assert sorted(
-        list(networkx_kg.nodes(data=True)), key=lambda x: x[0]
-    ) == sorted(expected_nodes, key=lambda x: x[0])
+    assert list(networkx_kg.nodes(data=True)) == expected_nodes
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
@@ -225,11 +221,7 @@ def test_edges(in_memory_networkx_kg, _get_edges):
             },
         ),
     ]
-
-    assert sorted(
-        list(networkx_kg.edges(data=True)),
-        key=lambda x: x[2]["relationship_id"],
-    ) == sorted(expected_edges, key=lambda x: x[2]["relationship_id"])
+    assert list(networkx_kg.edges(data=True)) == expected_edges
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
@@ -322,11 +314,7 @@ def test_edges_gen(in_memory_networkx_kg, _get_edges):
             },
         ),
     ]
-    print(networkx_kg.edges(data=True))
-    assert sorted(
-        list(networkx_kg.edges(data=True)),
-        key=lambda x: x[2]["relationship_id"],
-    ) == sorted(expected_edges, key=lambda x: x[2]["relationship_id"])
+    assert list(networkx_kg.edges(data=True)) == expected_edges
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
@@ -375,18 +363,4 @@ def test_rel_as_nodes(in_memory_networkx_kg, _get_rel_as_nodes):
             {"relationship_id": None, "relationship_label": "IS_TARGET_OF"},
         ),
     ]
-    assert sorted(
-        list(networkx_kg.edges(data=True)),
-        key=lambda x: (
-            x[0],
-            x[1],
-            x[2]["relationship_label"],
-        ),
-    ) == sorted(
-        expected_edges,
-        key=lambda x: (
-            x[0],
-            x[1],
-            x[2]["relationship_label"],
-        ),
-    )
+    assert list(networkx_kg.edges(data=True)) == expected_edges

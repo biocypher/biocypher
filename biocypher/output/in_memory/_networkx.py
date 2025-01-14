@@ -1,80 +1,56 @@
 import networkx as nx
 
-from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+from biocypher.output.in_memory._pandas import PandasKG
 from biocypher.output.in_memory._in_memory_kg import _InMemoryKG
 
 
 class NetworkxKG(_InMemoryKG):
     def __init__(self, deduplicator):
-        super().__init__()
+        super().__init__()  # keeping in spite of ABC not having __init__
         self.deduplicator = deduplicator
-        self._KG = nx.DiGraph()
+        self._pd = PandasKG(
+            deduplicator=self.deduplicator,
+        )
+        self.KG = None
 
     def get_kg(self):
-        return self._KG
-
-    def add_edges(self, edges):
-        """
-        Add muliples edges to the networkx graph.
-
-        Args:
-            edges(Iterable): A collection of BiocypherEdge to add to the graph.
-
-        """
-        self._KG.add_edges_from(
-            (
-                edge.get_source_id(),
-                edge.get_target_id(),
-                {
-                    **{
-                        "relationship_id": edge.get_id(),
-                        "relationship_label": edge.get_label(),
-                    },
-                    **edge.get_properties(),
-                },
-            )
-            for edge in edges
-            if self.deduplicator.edge_seen(edge) is False
-        )
+        if not self.KG:
+            self.KG = self._create_networkx_kg()
+        return self.KG
 
     def add_nodes(self, nodes):
-        """
-        Add multiple nodes to the networkx graph.
-        If nodes contains BiocypherRelAsNode, also add associated edges to the networkx graph.
-        Args:
-            nodes: A collection of BiocypherNode or a collection of BiocypherNode and BiocypherRelasNode.
+        self._pd.add_nodes(nodes)
+        return True
 
-        """
-        edges_to_add = []
-        nodes_to_add = []
-        for node in nodes:
-            if isinstance(node, BioCypherNode):
-                if self.deduplicator.node_seen(node) is False:
-                    nodes_to_add.append(
-                        (
-                            node.get_id(),
-                            {
-                                **{"node_label": node.get_label()},
-                                **node.get_properties(),
-                            },
-                        )
-                    )
-            else:
-                if self.deduplicator.rel_as_node_seen(node) is False:
-                    nodes_to_add.append(
-                        (
-                            node.get_node().get_id(),
-                            {
-                                **{"node_label": node.get_node().get_label()},
-                                **(node.get_node().get_properties()),
-                            },
-                        )
-                    )
-                    edges_to_add.extend(
-                        [node.get_source_edge(), node.get_target_edge()]
-                    )
+    def add_edges(self, edges):
+        self._pd.add_edges(edges)
+        return True
 
-        if nodes_to_add:
-            self._KG.add_nodes_from(nodes_to_add)
-        if edges_to_add:
-            self.add_edges(edges_to_add)
+    def _create_networkx_kg(self) -> nx.DiGraph:
+        self.KG = nx.DiGraph()
+        all_dfs = self._pd.dfs
+        node_dfs = [
+            df
+            for df in all_dfs.values()
+            if df.columns.str.contains("node_id").any()
+        ]
+        edge_dfs = [
+            df
+            for df in all_dfs.values()
+            if df.columns.str.contains("source_id").any()
+            and df.columns.str.contains("target_id").any()
+        ]
+        for df in node_dfs:
+            nodes = df.set_index("node_id").to_dict(orient="index")
+            self.KG.add_nodes_from(nodes.items())
+        for df in edge_dfs:
+            edges = df.set_index(["source_id", "target_id"]).to_dict(
+                orient="index"
+            )
+            self.KG.add_edges_from(
+                (
+                    (source, target, attrs)
+                    for (source, target), attrs in edges.items()
+                )
+            )
+        return self.KG

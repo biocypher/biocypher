@@ -7,7 +7,7 @@ from biocypher.output.in_memory._pandas import PandasKG
 
 class _PandasCSVWriter(_Writer):
     """
-    Class for writing node and edge representations to a CSV file.
+    Class for writing node and edge representations to CSV files.
     """
 
     def __init__(self, *args, write_to_file: bool = True, **kwargs):
@@ -47,7 +47,7 @@ class _PandasCSVWriter(_Writer):
         return passed
 
     def _write_entities_to_file(self, entities: iter) -> bool:
-        """Function to output.write the entities to a CSV file.
+        """Function to write the entities to a CSV file.
 
         Args:
             entities (iterable): An iterable of BioCypherNode / BioCypherEdge / BioCypherRelAsNode objects.
