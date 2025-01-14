@@ -1,19 +1,16 @@
-from glob import glob
-from test.fixtures.ontology import hybrid_ontology
 import os
 import shutil
+from glob import glob
 
 import pytest
 
-from biocypher._translate import Translator
 from biocypher._deduplicate import Deduplicator
+from biocypher._translate import Translator
 
 # load all fixtures from the fixtures directory
 pytest_plugins = [
     fixture_file.replace(os.sep, ".").replace(".py", "")
-    for fixture_file in glob(
-        f"test{os.sep}fixtures{os.sep}[!__]*.py", recursive=True
-    )
+    for fixture_file in glob(f"test{os.sep}fixtures{os.sep}[!__]*.py", recursive=True)
 ]
 
 

@@ -235,7 +235,6 @@ class Downloader:
         Download an API request and return the path.
 
         Args:
-
             api_request(APIRequest): The API request result that is being cached.
         Returns:
             list[str]: The path to the cached API request.

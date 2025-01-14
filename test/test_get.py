@@ -1,12 +1,12 @@
-from datetime import datetime, timedelta
-import os
 import json
+import os
+from datetime import datetime, timedelta
 
+import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-import pytest
 
-from biocypher._get import Resource, APIRequest, Downloader, FileDownload
+from biocypher._get import APIRequest, Downloader, FileDownload, Resource
 
 
 @pytest.fixture
@@ -146,9 +146,7 @@ def test_download_lists(downloader):
     assert os.path.exists(paths[3])
     expected_paths = [
         os.path.realpath(
-            os.path.join(
-                downloader.cache_dir, "test_resource1", "test_config.yaml"
-            )
+            os.path.join(downloader.cache_dir, "test_resource1", "test_config.yaml")
         ),
         os.path.realpath(
             os.path.join(
@@ -229,7 +227,7 @@ def test_download_zip_and_expiration():
         cache = json.load(f)
     assert (
         cache["test_resource"]["url"][0]
-        == "https://github.com/biocypher/biocypher/raw/main/test/test_CSVs.zip",
+        == "https://github.com/biocypher/biocypher/raw/main/test/test_CSVs.zip"
     )
     assert cache["test_resource"]["lifetime"] == 7
     assert cache["test_resource"]["date_downloaded"]
@@ -322,7 +320,7 @@ def test_api_expiration():
         cache = json.load(f)
     assert (
         cache["test_resource"]["url"][0]
-        == "https://rest.uniprot.org/uniprotkb/P12345.json",
+        == "https://rest.uniprot.org/uniprotkb/P12345.json"
     )
     assert cache["test_resource"]["lifetime"] == 7
     assert cache["test_resource"]["date_downloaded"]
@@ -364,7 +362,7 @@ def test_download_with_parameter():
         cache = json.load(f)
     assert (
         cache["zenodo"]["url"][0]
-        == "https://zenodo.org/records/7773985/files/CollecTRI_source.tsv",
+        == "https://zenodo.org/records/7773985/files/CollecTRI_source.tsv?download=1"
     )
     # load resource from cache
     paths2 = downloader.download(resource)

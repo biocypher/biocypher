@@ -1,11 +1,11 @@
 import os
 
-import yaml
 import pytest
+import yaml
 
 from biocypher import BioCypher
-from biocypher.output.write._get_writer import DBMS_TO_CLASS
 from biocypher.output.in_memory._get_in_memory_kg import IN_MEMORY_DBMS
+from biocypher.output.write._get_writer import DBMS_TO_CLASS
 
 
 def test_biocypher(core):
@@ -54,9 +54,7 @@ def test_write_schema_info(core, _get_nodes, _get_edges, _get_rel_as_nodes):
     assert not schema.get("protein").get("is_relationship")
     assert schema.get("microRNA").get("present_in_knowledge_graph")
     assert not schema.get("microRNA").get("is_relationship")
-    assert schema.get("gene to disease association").get(
-        "present_in_knowledge_graph"
-    )
+    assert schema.get("gene to disease association").get("present_in_knowledge_graph")
 
     assert schema.get("gene to disease association").get("is_relationship")
     assert schema.get("mutation to tissue association").get(
@@ -100,9 +98,8 @@ def test_in_memory_kg_only_in_online_mode(core):
         core._offline = True
         with pytest.raises(ValueError) as e:
             core.get_kg()
-        assert (
-            "Getting the in-memory KG is only available in online mode for "
-            in str(e.value)
+        assert "Getting the in-memory KG is only available in online mode for " in str(
+            e.value
         )
 
 
@@ -112,9 +109,8 @@ def test_no_in_memory_kg_for_dbms(core):
         core._offline = False
         with pytest.raises(ValueError) as e:
             core.get_kg()
-        assert (
-            "Getting the in-memory KG is only available in online mode for "
-            in str(e.value)
+        assert "Getting the in-memory KG is only available in online mode for " in str(
+            e.value
         )
 
 
@@ -124,10 +120,7 @@ def test_no_in_memory_instance_found(core):
 
     with pytest.raises(ValueError) as e:
         core.get_kg()
-    assert (
-        str(e.value)
-        == "No in-memory KG instance found. Please call `add()` first."
-    )
+    assert str(e.value) == "No in-memory KG instance found. Please call `add()` first."
 
 
 def test_online_mode_not_supported_for_dbms(core):
@@ -136,9 +129,7 @@ def test_online_mode_not_supported_for_dbms(core):
         core._offline = False
         with pytest.raises(NotImplementedError) as e:
             core._get_driver()
-        assert (
-            str(e.value) == f"Online mode is not supported for the DBMS {dbms}."
-        )
+        assert str(e.value) == f"Online mode is not supported for the DBMS {dbms}."
 
 
 def test_get_driver_in_offline_mode(core):

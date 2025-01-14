@@ -1,10 +1,9 @@
-import os
 import json
+import os
 
-import pytest
 import networkx as nx
-
 import pandas as pd
+import pytest
 
 from biocypher._ontology import Ontology
 
@@ -31,10 +30,7 @@ def test_write_node_data_from_gen(core, _get_nodes):
         micro_rna_data = f.read()
 
     assert passed
-    assert (
-        "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'uniprot'"
-        in protein_data
-    )
+    assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'uniprot'" in protein_data
     assert "BiologicalEntity" in protein_data
     assert "m1;'StringProperty1';9606;'m1';'mirbase'" in micro_rna_data
     assert "ChemicalEntity" in micro_rna_data
@@ -70,9 +66,7 @@ def test_write_schema_info_as_node(core, _get_nodes):
 
     header_path = os.path.join(core._output_directory, "Schema_info-header.csv")
     assert os.path.exists(header_path)
-    schema_path = os.path.join(
-        core._output_directory, "Schema_info-part000.csv"
-    )
+    schema_path = os.path.join(core._output_directory, "Schema_info-part000.csv")
     assert os.path.exists(schema_path)
 
     with open(header_path, "r") as f:

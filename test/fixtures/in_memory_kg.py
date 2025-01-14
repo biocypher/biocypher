@@ -1,7 +1,7 @@
 import pytest
 
-from biocypher.output.in_memory._pandas import PandasKG
 from biocypher.output.in_memory._networkx import NetworkxKG
+from biocypher.output.in_memory._pandas import PandasKG
 
 
 @pytest.fixture(scope="function")

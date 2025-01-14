@@ -1,6 +1,6 @@
 import os
-import sqlite3
 import platform
+import sqlite3
 import subprocess
 
 import pytest

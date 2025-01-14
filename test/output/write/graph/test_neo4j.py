@@ -1,12 +1,12 @@
-import os
 import logging
-
+import os
 from genericpath import isfile
+
 import pytest
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
-from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
 from biocypher.output.write._batch_writer import parse_label
+from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
 
 
 def test_neo4j_writer_and_output_dir(bw):
@@ -24,24 +24,24 @@ def test_create_import_call(bw):
     number_of_items = 4
     for i in range(number_of_items):
         node = BioCypherNode(
-            f"i{i+1}",
+            f"i{i + 1}",
             "post translational interaction",
         )
         edge_1 = BioCypherEdge(
-            source_id=f"i{i+1}",
-            target_id=f"p{i+1}",
+            source_id=f"i{i + 1}",
+            target_id=f"p{i + 1}",
             relationship_label="IS_SOURCE_OF",
         )
         edge_2 = BioCypherEdge(
             source_id=f"i{i}",
-            target_id=f"p{i+2}",
+            target_id=f"p{i + 2}",
             relationship_label="IS_TARGET_OF",
         )
         mixed.append(BioCypherRelAsNode(node, edge_1, edge_2))
 
         edge_3 = BioCypherEdge(
-            source_id=f"p{i+1}",
-            target_id=f"p{i+1}",
+            source_id=f"p{i + 1}",
+            target_id=f"p{i + 1}",
             relationship_label="PERTURBED_IN_DISEASE",
         )
         mixed.append(edge_3)
@@ -182,7 +182,7 @@ def test_property_types(bw):
     nodes = []
     for i in range(4):
         biocypher_node_protein = BioCypherNode(
-            node_id=f"p{i+1}",
+            node_id=f"p{i + 1}",
             node_label="protein",
             properties={
                 "score": 4 / (i + 1),
@@ -233,9 +233,7 @@ def test_write_node_data_from_list(bw, _get_nodes):
         micro_rna = f.read()
 
     assert passed
-    assert (
-        "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'uniprot'" in protein
-    )
+    assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'uniprot'" in protein
     assert "BiologicalEntity" in protein
     assert "m1;'StringProperty1';9606;'m1';'mirbase'" in micro_rna
     assert "ChemicalEntity" in micro_rna
@@ -269,8 +267,7 @@ def test_write_node_data_from_list_not_compliant_names(
             for record in caplog.records
         )
     assert any(
-        "Label does not start with an alphabetic character or with $"
-        in record.message
+        "Label does not start with an alphabetic character or with $" in record.message
         for record in caplog.records
     )
     assert passed
@@ -297,9 +294,7 @@ def test_write_node_data_from_gen(bw, _get_nodes):
         micro_rna = f.read()
 
     assert passed
-    assert (
-        "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'uniprot'" in protein
-    )
+    assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'uniprot'" in protein
     assert "BiologicalEntity" in protein
     assert "m1;'StringProperty1';9606;'m1';'mirbase'" in micro_rna
     assert "ChemicalEntity" in micro_rna
@@ -310,7 +305,7 @@ def test_write_node_data_from_gen_no_props(bw):
     number_of_items = 4
     for i in range(number_of_items):
         biocypher_node_protein = BioCypherNode(
-            node_id=f"p{i+1}",
+            node_id=f"p{i + 1}",
             node_label="protein",
             properties={
                 "score": 4 / (i + 1),
@@ -321,7 +316,7 @@ def test_write_node_data_from_gen_no_props(bw):
         )
         nodes.append(biocypher_node_protein)
         biocypher_node_micro_rna = BioCypherNode(
-            node_id=f"m{i+1}",
+            node_id=f"m{i + 1}",
             node_label="microRNA",
         )
         nodes.append(biocypher_node_micro_rna)
@@ -442,7 +437,7 @@ def test_write_none_type_property_and_order_invariance(bw):
     nodes = []
 
     biocypher_node_protein_1 = BioCypherNode(
-        node_id=f"p1",
+        node_id="p1",
         node_label="protein",
         properties={
             "taxon": 9606,
@@ -452,7 +447,7 @@ def test_write_none_type_property_and_order_invariance(bw):
         },
     )
     biocypher_node_protein_2 = BioCypherNode(
-        node_id=f"p2",
+        node_id="p2",
         node_label="protein",
         properties={
             "name": None,
@@ -462,7 +457,7 @@ def test_write_none_type_property_and_order_invariance(bw):
         },
     )
     biocypher_node_micro_rna = BioCypherNode(
-        node_id=f"m1",
+        node_id="m1",
         node_label="microRNA",
         properties={
             "name": None,
@@ -602,13 +597,9 @@ def test_write_edge_data_from_large_gen(bw, _get_edges):
     )
     is_mutated_in_1_csv = os.path.join(tmp_path, "Is_Mutated_In-part001.csv")
 
-    perturbed_in_disease_data_0 = sum(
-        1 for _ in open(perturbed_in_disease_data_0_csv)
-    )
+    perturbed_in_disease_data_0 = sum(1 for _ in open(perturbed_in_disease_data_0_csv))
     is_mutated_in_0 = sum(1 for _ in open(is_mutated_in_0_csv))
-    perturbed_in_disease_data_1 = sum(
-        1 for _ in open(perturbed_in_disease_data_1_csv)
-    )
+    perturbed_in_disease_data_1 = sum(1 for _ in open(perturbed_in_disease_data_1_csv))
     is_mutated_in_1 = sum(1 for _ in open(is_mutated_in_1_csv))
 
     assert (
@@ -685,8 +676,7 @@ def test_write_edge_data_from_list_non_compliant_names(
         for record in caplog.records
     )
     assert any(
-        "Label does not start with an alphabetic character or with $"
-        in record.message
+        "Label does not start with an alphabetic character or with $" in record.message
         for record in caplog.records
     )
     assert passed
@@ -727,9 +717,7 @@ def test_write_edge_id_optional(bw, _get_edges):
     perturbed_in_disease_header = os.path.join(
         tmp_path, "PERTURBED_IN_DISEASE-header.csv"
     )
-    phosphorylation_header = os.path.join(
-        tmp_path, "Phosphorylation-header.csv"
-    )
+    phosphorylation_header = os.path.join(tmp_path, "Phosphorylation-header.csv")
 
     with open(perturbed_in_disease_header) as f:
         perturbed_in_disease_header = f.read()
@@ -813,9 +801,7 @@ def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
 
     tmp_path = bw.outdir
 
-    perturbed_in_disease_csv = os.path.join(
-        tmp_path, "PERTURBED_IN_DISEASE-header.csv"
-    )
+    perturbed_in_disease_csv = os.path.join(tmp_path, "PERTURBED_IN_DISEASE-header.csv")
     is_mutated_in_csv = os.path.join(tmp_path, "Is_Mutated_In-header.csv")
     call_csv = os.path.join(tmp_path, "neo4j-admin-import-call.sh")
 
@@ -826,9 +812,7 @@ def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
     with open(call_csv) as f:
         call = f.read()
 
-    assert (
-        perturbed_in_disease == ":START_ID;id;residue;level:long;:END_ID;:TYPE"
-    )
+    assert perturbed_in_disease == ":START_ID;id;residue;level:long;:END_ID;:TYPE"
     assert is_mutated_in == ":START_ID;id;site;confidence:long;:END_ID;:TYPE"
 
     assert "neo4j-admin" in call
@@ -924,24 +908,24 @@ def test_write_mixed_edges(bw):
     number_of_items = 4
     for i in range(number_of_items):
         edge_3 = BioCypherEdge(
-            source_id=f"p{i+1}",
-            target_id=f"p{i+1}",
+            source_id=f"p{i + 1}",
+            target_id=f"p{i + 1}",
             relationship_label="PERTURBED_IN_DISEASE",
         )
         mixed.append(edge_3)
 
         node = BioCypherNode(
-            f"i{i+1}",
+            f"i{i + 1}",
             "post translational interaction",
         )
         edge_1 = BioCypherEdge(
-            source_id=f"i{i+1}",
-            target_id=f"p{i+1}",
+            source_id=f"i{i + 1}",
+            target_id=f"p{i + 1}",
             relationship_label="IS_SOURCE_OF",
         )
         edge_2 = BioCypherEdge(
             source_id=f"i{i}",
-            target_id=f"p{i+2}",
+            target_id=f"p{i + 2}",
             relationship_label="IS_TARGET_OF",
         )
         mixed.append(BioCypherRelAsNode(node, edge_1, edge_2))
@@ -958,9 +942,7 @@ def test_write_mixed_edges(bw):
     )
     is_source_of_csv = os.path.join(tmp_path, "IS_SOURCE_OF-header.csv")
     is_target_of_csv = os.path.join(tmp_path, "IS_TARGET_OF-header.csv")
-    perturbed_in_disease_csv = os.path.join(
-        tmp_path, "PERTURBED_IN_DISEASE-header.csv"
-    )
+    perturbed_in_disease_csv = os.path.join(tmp_path, "PERTURBED_IN_DISEASE-header.csv")
 
     assert (
         passed
@@ -985,7 +967,7 @@ def test_duplicate_id(bw):
     # four proteins, four miRNAs
     for _ in range(2):
         biocypher_node_protein = BioCypherNode(
-            node_id=f"p1",
+            node_id="p1",
             node_label="protein",
             properties={
                 "name": "StringProperty1",
@@ -1016,7 +998,7 @@ def test_write_synonym(bw):
     # four proteins, four miRNAs
     for _ in range(4):
         biocypher_node_protein = BioCypherNode(
-            node_id=f"p{_+1}",
+            node_id=f"p{_ + 1}",
             node_label="complex",
             properties={
                 "name": "StringProperty1",

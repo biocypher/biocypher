@@ -5,17 +5,13 @@ import pytest
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
-def test_write_node_data_from_gen_comma_postgresql(
-    bw_comma_postgresql, _get_nodes
-):
+def test_write_node_data_from_gen_comma_postgresql(bw_comma_postgresql, _get_nodes):
     nodes = _get_nodes
 
     def node_gen(nodes):
         yield from nodes
 
-    passed = bw_comma_postgresql._write_node_data(
-        node_gen(nodes), batch_size=1e6
-    )
+    passed = bw_comma_postgresql._write_node_data(node_gen(nodes), batch_size=1e6)
     assert passed
 
     tmp_path = bw_comma_postgresql.outdir
@@ -105,9 +101,7 @@ def test_database_import_node_data_from_gen_comma_postgresql(
     bw_comma_postgresql.write_import_call()
     # verify that import call has been created
     import_scripts = [
-        name
-        for name in os.listdir(tmp_path)
-        if name.endswith("-import-call.sh")
+        name for name in os.listdir(tmp_path) if name.endswith("-import-call.sh")
     ]
     assert len(import_scripts) == 1
 
@@ -179,9 +173,7 @@ def test_database_import_node_data_from_gen_tab_postgresql(
     bw_tab_postgresql.write_import_call()
     # verify that import call has been created
     import_scripts = [
-        name
-        for name in os.listdir(tmp_path)
-        if name.endswith("-import-call.sh")
+        name for name in os.listdir(tmp_path) if name.endswith("-import-call.sh")
     ]
     assert len(import_scripts) == 1
 
@@ -253,9 +245,7 @@ def test_database_import_edge_data_from_gen_comma_postgresql(
 
     # verify that import call has been created
     import_scripts = [
-        name
-        for name in os.listdir(tmp_path)
-        if name.endswith("-import-call.sh")
+        name for name in os.listdir(tmp_path) if name.endswith("-import-call.sh")
     ]
     assert len(import_scripts) == 1
 
@@ -331,9 +321,7 @@ def test_database_import_edge_data_from_gen_tab_postgresql(
 
     # verify that import call has been created
     import_scripts = [
-        name
-        for name in os.listdir(tmp_path)
-        if name.endswith("-import-call.sh")
+        name for name in os.listdir(tmp_path) if name.endswith("-import-call.sh")
     ]
     assert len(import_scripts) == 1
 

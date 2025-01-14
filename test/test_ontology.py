@@ -1,8 +1,8 @@
-import os
 import logging
+import os
 
-import pytest
 import networkx as nx
+import pytest
 
 from biocypher import BioCypher
 from biocypher._ontology import Ontology, OntologyAdapter
@@ -21,9 +21,7 @@ def test_so_adapter(so_adapter):
 
 def test_go_adapter(go_adapter):
     assert go_adapter.get_root_node() == "molecular function"
-    assert "molecular function" in go_adapter.get_ancestors(
-        "rna helicase activity"
-    )
+    assert "molecular function" in go_adapter.get_ancestors("rna helicase activity")
 
 
 def test_mondo_adapter(mondo_adapter):
@@ -38,9 +36,7 @@ def test_ontology_adapter_root_node_missing():
 
 def test_ontology_functions(hybrid_ontology):
     assert isinstance(hybrid_ontology, Ontology)
-    first_tail_ontology = hybrid_ontology._tail_ontologies.get(
-        "so"
-    ).get_nx_graph()
+    first_tail_ontology = hybrid_ontology._tail_ontologies.get("so").get_nx_graph()
     assert len(first_tail_ontology) == 6
     assert nx.is_directed_acyclic_graph(first_tail_ontology)
     # subgraph combination
@@ -55,9 +51,7 @@ def test_ontology_functions(hybrid_ontology):
     # subtract user extensions
     num_ext = len(hybrid_ontology._extended_nodes)
     assert hybrid_length - num_ext == combined_length - num_tail
-    dgpl_ancestors = list(
-        hybrid_ontology.get_ancestors("decreased gene product level")
-    )
+    dgpl_ancestors = list(hybrid_ontology.get_ancestors("decreased gene product level"))
     assert "decreased gene product level" in dgpl_ancestors
     assert "altered gene product level" in dgpl_ancestors
     assert "functional effect variant" in dgpl_ancestors
@@ -148,9 +142,7 @@ def test_manual_format():
     ],
 )
 def test_multiple_parents(ontology_file):
-    ontology_adapter = OntologyAdapter(
-        ontology_file=ontology_file, root_label="Root"
-    )
+    ontology_adapter = OntologyAdapter(ontology_file=ontology_file, root_label="Root")
     result = ontology_adapter.get_nx_graph()
     # Expected hierarchy:
     # root
@@ -320,10 +312,7 @@ def test_head_join_node_not_found():
     with pytest.raises(ValueError) as error_message:
         bc._get_ontology()
     error_message = str(error_message.value)
-    assert (
-        "Head join node 'not present' not found in head ontology."
-        in error_message
-    )
+    assert "Head join node 'not present' not found in head ontology." in error_message
     assert "The head ontology contains the following" in error_message
     assert "Label_Level1A" in error_message
     assert "Label_Root" in error_message
