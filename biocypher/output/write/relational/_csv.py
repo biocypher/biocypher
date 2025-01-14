@@ -2,7 +2,7 @@ from more_itertools import peekable
 
 from biocypher._logger import logger
 from biocypher.output.write._writer import _Writer
-from biocypher.output.in_memory._pandas import Pandas
+from biocypher.output.in_memory._pandas import PandasKG
 
 
 class _PandasCSVWriter(_Writer):
@@ -15,8 +15,7 @@ class _PandasCSVWriter(_Writer):
         super().__init__(*args, **kwargs)
         self.in_memory_dfs = {}
         self.stored_dfs = {}
-        self.pandas_in_memory = Pandas(
-            translator=self.translator,
+        self.pandas_in_memory = PandasKG(
             deduplicator=self.deduplicator,
         )
         self.delimiter = kwargs.get("delimiter")

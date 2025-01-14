@@ -16,6 +16,7 @@ from typing import Optional
 from datetime import datetime
 import os
 import json
+import itertools
 
 from more_itertools import peekable
 import yaml
@@ -34,9 +35,10 @@ from ._mapping import OntologyMapping
 from ._ontology import Ontology
 from ._translate import Translator
 from ._deduplicate import Deduplicator
-from .output.in_memory._pandas import Pandas
+from .output.in_memory._pandas import PandasKG
 from .output.write._get_writer import DBMS_TO_CLASS, get_writer
 from .output.connect._neo4j_driver import get_driver
+from .output.in_memory._get_in_memory_kg import get_in_memory_kg
 
 __all__ = ["BioCypher"]
 
@@ -169,6 +171,73 @@ class BioCypher:
         self._writer = None
         self._pd = None
 
+        self._in_memory_kg = None
+        self._nodes = None
+        self._edges = None
+
+    def _initialize_in_memory_kg(self):
+        """
+        Create in memory KG instance. Set as instance variable `self._in_memory_kg`.
+        """
+        if not self._in_memory_kg:
+            self._in_memory_kg = get_in_memory_kg(
+                dbms=self._dbms,
+                deduplicator=self._get_deduplicator(),
+            )
+
+    def add_nodes(self, nodes):
+        """
+        Add new nodes to the internal representation.
+        Initially, receive nodes data from adaptor and create internal representation for nodes.
+        Args:
+            nodes(iterable): An iterable of nodes
+        """
+        if isinstance(nodes, list):
+            self._nodes = list(itertools.chain(self._nodes, nodes))
+        else:
+            self._nodes = itertools.chain(self._nodes, nodes)
+
+    def add_edges(self, edges):
+        """
+        Add new nodes to the internal representation.
+        Initially, receive edges data from adaptor and create internal representation for edges.
+        Args:
+             edges(iterable): An iterable of edges.
+        """
+        if isinstance(edges, list):
+            self._edges = list(itertools.chain(self._edges, edges))
+        else:
+            self._edges = itertools.chain(self._edges, edges)
+
+    def to_df(self):
+        """
+        Create DataFrame using internal representation.
+        """
+        return self._to_KG()
+
+    def to_networkx(self):
+        """
+        Create networkx using internal representation.
+        """
+        return self._to_KG()
+
+    def _to_KG(self):
+        """
+        Convert the internal representation to knowledge graph based on dbms parameter in biocpyher configuration file.
+        Returns:
+             Any: knowledge graph.
+
+        """
+        if not self._in_memory_kg:
+            self._initialize_in_memory_kg()
+        if not self._translator:
+            self._get_translator()
+        tnodes = self._translator.translate_entities(self._nodes)
+        tedges = self._translator.translate_entities(self._edges)
+        self._in_memory_kg.add_nodes(tnodes)
+        self._in_memory_kg.add_edges(tedges)
+        return self._in_memory_kg.get_kg()
+
     def _get_deduplicator(self) -> Deduplicator:
         """
         Create deduplicator if not exists and return.
@@ -252,7 +321,6 @@ class BioCypher:
             self._driver = get_driver(
                 dbms=self._dbms,
                 translator=self._get_translator(),
-                deduplicator=self._get_deduplicator(),
             )
         else:
             raise NotImplementedError("Cannot get driver in offline mode.")
@@ -314,25 +382,6 @@ class BioCypher:
         # write edge files
         return self._writer.write_edges(tedges, batch_size=batch_size)
 
-    def to_df(self) -> list[pd.DataFrame]:
-        """
-        Convert entities to a pandas DataFrame for each entity type and return
-        a list.
-
-        Args:
-            entities (iterable): An iterable of entities to convert to a
-                DataFrame.
-
-        Returns:
-            pd.DataFrame: A pandas DataFrame.
-        """
-        if not self._pd:
-            raise ValueError(
-                "No pandas instance found. Please call `add()` first."
-            )
-
-        return self._pd.dfs
-
     def add(self, entities) -> None:
         """
         Function to add entities to the in-memory database. Accepts an iterable
@@ -349,8 +398,7 @@ class BioCypher:
             None
         """
         if not self._pd:
-            self._pd = Pandas(
-                translator=self._get_translator(),
+            self._pd = PandasKG(
                 deduplicator=self._get_deduplicator(),
             )
 
@@ -368,30 +416,6 @@ class BioCypher:
             tentities = self._translator.translate_edges(entities)
 
         self._pd.add_tables(tentities)
-
-    def add_nodes(self, nodes) -> None:
-        """
-        Wrapper for ``add()`` to add nodes to the in-memory database.
-
-        Args:
-            nodes (iterable): An iterable of node tuples to add to the database.
-
-        Returns:
-            None
-        """
-        self.add(nodes)
-
-    def add_edges(self, edges) -> None:
-        """
-        Wrapper for ``add()`` to add edges to the in-memory database.
-
-        Args:
-            edges (iterable): An iterable of edge tuples to add to the database.
-
-        Returns:
-            None
-        """
-        self.add(edges)
 
     def merge_nodes(self, nodes) -> bool:
         """

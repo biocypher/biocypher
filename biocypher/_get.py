@@ -43,7 +43,6 @@ class Resource(ABC):
         lifetime: int = 0,
     ):
         """
-
         A Resource is a file, a list of files, an API request, or a list of API
         requests, any of which can be downloaded from the given URL(s) and
         cached locally. This class implements checks of the minimum requirements
@@ -153,7 +152,6 @@ class Downloader:
         Returns:
             list[str]: The path or paths to the downloaded resource(s).
 
-
         """
         expired = self._is_cache_expired(resource)
 
@@ -167,10 +165,8 @@ class Downloader:
                     f"Asking for download of api request {resource.name}."
                 )
                 paths = self._download_api_request(resource)
-
             else:
                 raise TypeError(f"Unknown resource type: {type(resource)}")
-
         else:
             paths = self.get_cached_version(resource)
         self._update_cache_record(resource)
@@ -181,11 +177,10 @@ class Downloader:
         Check if resource or API request cache is expired.
 
         Args:
-
-            resource (Resource): The resource or API request to download.
+            resource (Resource): The resource to download.
 
         Returns:
-            bool: True if cache is expired, False if not.
+            bool: cache is expired or not.
         """
         cache_record = self._get_cache_record(resource)
         if cache_record:
@@ -259,8 +254,8 @@ class Downloader:
         Download an API request and return the path.
 
         Args:
-            api_request(APIRequest): The API request result that is being
-                cached.
+
+            api_request(APIRequest): The API request result that is being cached.
         Returns:
             list[str]: The path to the cached API request.
 
@@ -300,7 +295,6 @@ class Downloader:
 
         Returns:
             list[str]: The paths to the cached resource(s).
-
         """
         cached_location = os.path.join(self.cache_dir, resource.name)
         logger.info(f"Use cached version from {cached_location}.")
