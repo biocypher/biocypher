@@ -1,5 +1,6 @@
-"""
-BioCypher 'connect' module. Handles the connecting and writing a Knowledge Graph to a database.
+"""BioCypher 'connect' module.
+
+Handles the connecting and writing a Knowledge Graph to a database.
 """
 from biocypher._logger import logger
 from biocypher._translate import Translator

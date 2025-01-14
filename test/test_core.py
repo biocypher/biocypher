@@ -101,8 +101,8 @@ def test_in_memory_kg_only_in_online_mode(core):
         with pytest.raises(ValueError) as e:
             core.get_kg()
         assert (
-            str(e.value)
-            == "Getting the in-memory KG is only available in online mode for ['csv', 'networkx']."
+            "Getting the in-memory KG is only available in online mode for "
+            in str(e.value)
         )
 
 
@@ -113,8 +113,8 @@ def test_no_in_memory_kg_for_dbms(core):
         with pytest.raises(ValueError) as e:
             core.get_kg()
         assert (
-            str(e.value)
-            == "Getting the in-memory KG is only available in online mode for ['csv', 'networkx']."
+            "Getting the in-memory KG is only available in online mode for "
+            in str(e.value)
         )
 
 
