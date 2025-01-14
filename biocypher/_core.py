@@ -213,7 +213,7 @@ class BioCypher:
 
         return self._translator
 
-    def _initialize_writer(self):
+    def _get_writer(self):
         """
         Create writer if not online. Set as instance variable `self._writer`.
         """
@@ -233,12 +233,13 @@ class BioCypher:
             )
         else:
             raise NotImplementedError("Cannot get writer in online mode.")
+        
+        return self._writer
 
-    def _initialize_driver(self):
+    def _get_driver(self):
         """
         Create driver if not exists. Set as instance variable `self._driver`.
         """
-
         if not self._offline:
             self._driver = get_connector(
                 dbms=self._dbms,
@@ -246,8 +247,10 @@ class BioCypher:
             )
         else:
             raise NotImplementedError("Cannot get driver in offline mode.")
+        
+        return self._driver
 
-    def _initialize_in_memory_kg(self):
+    def _get_in_memory_kg(self):
         """
         Create in memory KG instance. Set as instance variable `self._in_memory_kg`.
         """
@@ -256,6 +259,8 @@ class BioCypher:
                 dbms=self._dbms,
                 deduplicator=self._get_deduplicator(),
             )
+        
+        return self._in_memory_kg
 
     def _add_nodes(
         self, nodes, batch_size: int = int(1e6), force: bool = False
@@ -280,19 +285,13 @@ class BioCypher:
         translated_nodes = self._translator.translate_entities(nodes)
 
         if self._offline:
-            if not self._writer:
-                self._initialize_writer()
-            passed = self._writer.write_nodes(
+            passed = self._get_writer().write_nodes(
                 translated_nodes, batch_size=batch_size, force=force
             )
         elif self._is_online_and_in_memory():
-            if not self._in_memory_kg:
-                self._initialize_in_memory_kg()
-            passed = self._in_memory_kg.add_nodes(translated_nodes)
+            passed = self._get_in_memory_kg().add_nodes(translated_nodes)
         else:
-            if not self._driver:
-                self._initialize_driver()
-            passed = self._driver.add_biocypher_nodes(translated_nodes)
+            passed = self._get_driver().add_biocypher_nodes(translated_nodes)
 
         return passed
 

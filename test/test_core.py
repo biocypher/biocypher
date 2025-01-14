@@ -135,7 +135,7 @@ def test_online_mode_not_supported_for_dbms(core):
         core._dbms = dbms
         core._offline = False
         with pytest.raises(NotImplementedError) as e:
-            core._initialize_driver()
+            core._get_driver()
         assert (
             str(e.value) == f"Online mode is not supported for the DBMS {dbms}."
         )
@@ -146,7 +146,7 @@ def test_get_driver_in_offline_mode(core):
         core._dbms = dbms
         core._offline = True
         with pytest.raises(NotImplementedError) as e:
-            core._initialize_driver()
+            core._get_driver()
         assert str(e.value) == "Cannot get driver in offline mode."
 
 
@@ -155,22 +155,5 @@ def test_get_writer_in_online_mode(core):
         core._dbms = dbms
         core._offline = False
         with pytest.raises(NotImplementedError) as e:
-            core._initialize_writer()
+            core._get_writer()
         assert str(e.value) == "Cannot get writer in online mode."
-
-
-# def test_access_translate(driver):
-
-#     driver.start_ontology()
-
-#     assert driver.translate_term('mirna') == 'MicroRNA'
-#     assert (driver.reverse_translate_term('SideEffect') == 'sider')
-#     assert (
-#         driver.translate_query('MATCH (n:reactome) RETURN n') ==
-#         'MATCH (n:Reactome.Pathway) RETURN n'
-#     )
-#     assert (
-#         driver.reverse_translate_query(
-#             'MATCH (n:Wikipathways.Pathway) RETURN n',
-#         ) == 'MATCH (n:wikipathways) RETURN n'
-#     )
