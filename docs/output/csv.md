@@ -1,9 +1,10 @@
-# CSV
+# Tabular output
 
-When setting the `dbms` parameter in the `biocypher_config.yaml` to `csv`, the
-BioCypher Knowledge Graph is created in CSV format.
+When setting the `dbms` parameter in the `biocypher_config.yaml` to `tabular`,
+`csv`, or `pandas`, the BioCypher Knowledge Graph is created in one of several
+possible tabular formats.
 
-## CSV settings
+## Tabular output settings
 
 To overwrite the standard settings of the CSV writer, add a `csv` section to the
 `biocypher_config.yaml` file. The following settings are possible:
@@ -13,7 +14,7 @@ To overwrite the standard settings of the CSV writer, add a `csv` section to the
 
 csv:
   ### CSV/Pandas configuration ###
-  delimiter: ','  # The delimiter used in the CSV files. Default is ','.
+  delimiter: ','  # The delimiter to be used in the CSV files. Default is ','.
 ```
 
 ## Offline mode
@@ -21,7 +22,7 @@ csv:
 ### Running BioCypher
 
 After running BioCypher with the ``offline`` parameter set to ``true`` and the
-``dbms`` set to ``csv``, the output folder contains:
+``dbms`` set to ``tabular``, ``csv``, or ``pandas``, the output folder contains:
 
 - ``*.csv``: The CSV files containing the node/edge data.
 
@@ -31,9 +32,10 @@ Pandas DataFrames.
 ## Online mode
 
 After running BioCypher with the ``offline`` parameter set to ``false`` and the
-``dbms`` set to ``csv``, you can get the in-memory csv representation of the
-Knowledge Graph directly from BioCypher by calling the `get_kg()` function.
-This returns a dictionary with ``Pandas`` dataframes for every node and edge type.
+``dbms`` set to ``tabular``, ``csv``, or ``pandas``, you can get the in-memory
+representation of the Knowledge Graph directly from BioCypher by calling the
+`get_kg()` function. This returns a dictionary with the corresponding data type
+(e.g., ``Pandas`` dataframes) for every node and edge type.
 
 ```{testcode} python
 :hide:

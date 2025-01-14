@@ -42,6 +42,8 @@ DBMS_TO_CLASS = {
     "CSV": _PandasCSVWriter,
     "pandas": _PandasCSVWriter,
     "Pandas": _PandasCSVWriter,
+    "tabular": _PandasCSVWriter,
+    "Tabular": _PandasCSVWriter,
     "networkx": _NetworkXWriter,
     "NetworkX": _NetworkXWriter,
 }
