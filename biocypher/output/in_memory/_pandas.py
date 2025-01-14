@@ -53,23 +53,23 @@ class PandasKG(_InMemoryKG):
                 target_edge = entity.get_target_edge()
 
                 _type = node.get_type()
-                if not _type in lists:
+                if _type not in lists:
                     lists[_type] = []
                 lists[_type].append(node)
 
                 _source_type = source_edge.get_type()
-                if not _source_type in lists:
+                if _source_type not in lists:
                     lists[_source_type] = []
                 lists[_source_type].append(source_edge)
 
                 _target_type = target_edge.get_type()
-                if not _target_type in lists:
+                if _target_type not in lists:
                     lists[_target_type] = []
                 lists[_target_type].append(target_edge)
                 continue
 
             _type = entity.get_type()
-            if not _type in lists:
+            if _type not in lists:
                 lists[_type] = []
             lists[_type].append(entity)
 
