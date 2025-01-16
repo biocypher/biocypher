@@ -395,7 +395,7 @@ class _RDFWriter(_BatchWriter):
         """
         Quote a string.
         """
-        
+
         return f"{self.quote}{value}{self.quote}"
 
     def _write_array_string(self, string_list):
