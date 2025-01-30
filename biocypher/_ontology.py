@@ -6,6 +6,7 @@ other advanced operations.
 import os
 
 from datetime import datetime
+from itertools import chain
 from typing import Optional
 
 import networkx as nx
@@ -123,7 +124,14 @@ class OntologyAdapter:
 
         """
         one_to_one_inheritance_graph = Graph()
-        for s, p, o in g.triples((None, rdflib.RDFS.subClassOf, None)):
+        # for s, p, o in g.triples((None, rdflib.RDFS.subClassOf, None)):
+        for s, p, o in chain(
+            g.triples((None, rdflib.RDFS.subClassOf, None)),  # Node classes
+            g.triples((None, rdflib.RDF.type, rdflib.RDFS.Class)),  # Root classes
+            g.triples((None, rdflib.RDFS.subPropertyOf, None)),  # OWL "edges" classes
+            g.triples((None, rdflib.RDF.type, rdflib.OWL.ObjectProperty)),  # OWL "edges" root classes
+            # HERE
+        ):
             if self.has_label(s, g):
                 one_to_one_inheritance_graph.add((s, p, o))
         return one_to_one_inheritance_graph
@@ -149,7 +157,12 @@ class OntologyAdapter:
         ) in multiple_inheritance:
             parents = self._retrieve_rdf_linked_list(first_node_of_intersection_list)
             child_name = None
-            for s_, _, _ in g.triples((None, rdflib.RDFS.subClassOf, node)):
+            for s_, _, _ in chain(
+                g.triples((None, rdflib.RDFS.subClassOf, node)),
+                g.triples((None, rdflib.RDFS.subPropertyOf, node)),
+                # FIXME check RDF.type as well to avoid missing the root class(es)
+                # HERE
+            ):
                 child_name = s_
 
             # Handle Snomed CT post coordinated expressions
@@ -175,6 +188,7 @@ class OntologyAdapter:
             bool: True if the node has a label, False otherwise
 
         """
+        # FIXME check IRI and RDF.label
         return (node, rdflib.RDFS.label, None) in g
 
     def _retrieve_rdf_linked_list(self, subject: rdflib.URIRef) -> list:
@@ -251,7 +265,7 @@ class OntologyAdapter:
             - remove the prefix of the identifier
             - switch id and label
             - adapt the labels (replace _ with space and convert to lower sentence case)
-
+            FIXME why is a BioCypher format even needed?
         Args:
         ----
             nx_graph (nx.DiGraph): The networkx graph
@@ -593,10 +607,13 @@ class Ontology:
             self._nx_graph = self._head_ontology.get_nx_graph().copy()
 
         for key, value in self.mapping.extended_schema.items():
+            # If this class is either a root or a synonym.
             if not value.get("is_a"):
+                # If it is a synonym.
                 if self._nx_graph.has_node(value.get("synonym_for")):
                     continue
 
+                # If this class is in the schema, but not in the loaded vocabulary.
                 if not self._nx_graph.has_node(key):
                     msg = (
                         f"Node {key} not found in ontology, but also has no inheritance definition. Please check your "
@@ -606,8 +623,10 @@ class Ontology:
                     logger.error(msg)
                     raise ValueError(msg)
 
+                # It is a root and it is in the loaded vocabulary.
                 continue
 
+            # It is not a root.
             parents = to_list(value.get("is_a"))
             child = key
 
@@ -800,3 +819,15 @@ class Ontology:
         """
         now = datetime.now()
         return now.strftime("v%Y%m%d-%H%M%S")
+
+    def get_rdf_graph(self):
+        """
+        Returns the merged RDF graphs of all loaded ontologies (head and tails).
+        """
+        graph = self._head_ontology.get_rdf_graph()
+        if self._tail_ontologies:
+            for key, onto in self._tail_ontologies.items():
+                assert type(onto) == OntologyAdapter
+                # RDFlib uses the + operator for merging.
+                graph += onto.get_rdf_graph()
+        return graph

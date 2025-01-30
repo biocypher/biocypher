@@ -3,6 +3,18 @@ BioCypher 'offline' module. Handles the writing of node and edge representations
 suitable for import into a DBMS.
 """
 
+from biocypher._logger import logger
+from biocypher.output.write.graph._rdf import _RDFWriter
+from biocypher.output.write.graph._owl import _OWLWriter
+from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
+from biocypher.output.write.graph._arangodb import _ArangoDBBatchWriter
+from biocypher.output.write.graph._networkx import _NetworkXWriter
+from biocypher.output.write.relational._csv import _PandasCSVWriter
+from biocypher.output.write.relational._sqlite import _SQLiteBatchWriter
+from biocypher.output.write.relational._postgresql import _PostgreSQLBatchWriter
+
+logger.debug(f"Loading module {__name__}.")
+
 from typing import TYPE_CHECKING
 
 from biocypher._config import config as _config
@@ -37,6 +49,8 @@ DBMS_TO_CLASS = {
     "sqlite3": _SQLiteBatchWriter,
     "rdf": _RDFWriter,
     "RDF": _RDFWriter,
+    "owl": _OWLWriter,
+    "OWL": _OWLWriter,
     "csv": _PandasCSVWriter,
     "CSV": _PandasCSVWriter,
     "pandas": _PandasCSVWriter,
@@ -97,4 +111,5 @@ def get_writer(
             db_port=dbms_config.get("port"),  # psql
             rdf_format=dbms_config.get("rdf_format"),  # rdf
             rdf_namespaces=dbms_config.get("rdf_namespaces"),  # rdf
+            edge_model=dbms_config.get("edge_model"),  # owl
         )

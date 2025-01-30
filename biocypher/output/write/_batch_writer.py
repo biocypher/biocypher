@@ -125,6 +125,7 @@ class _BatchWriter(_Writer, ABC):
         rdf_format: str = None,
         rdf_namespaces: dict = {},
         labels_order: str = "Ascending",
+        **kwargs,
     ):
         """Abtract parent class for writing node and edge representations to disk
         using the format specified by each database type. The database-specific

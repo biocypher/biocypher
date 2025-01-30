@@ -219,7 +219,7 @@ class Translator:
                     )
 
             # match the input label (_type) to
-            # a Biolink label from schema_config
+            # a Biolink label from schema_config # FIXME this may be any ontology, remove comment?
             bl_type = self._get_ontology_mapping(_type)
 
             if bl_type:
@@ -300,7 +300,7 @@ class Translator:
         schema_config.
         """
 
-        logger.debug(f"No ontology type defined for `{_type}`: {what}")
+        logger.error(f"No ontology type defined for `{_type}`: {what}")
 
         if self.notype.get(_type, None):
             self.notype[_type] += 1
@@ -362,7 +362,7 @@ class Translator:
                 The input type to find (`input_label` or `label_in_input` in
                 `schema_config.yaml`).
         """
-
+        # FIXME does not seem like a necessary function.
         # commented out until behaviour of _update_bl_types is fixed
         return self._ontology_mapping.get(label, None)
 
