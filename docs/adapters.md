@@ -81,17 +81,11 @@ meta-graph described below.
 (metagraph)=
 ## BioCypher meta-graph
 
-::::{grid} 2
+::::{grid} 1
 :gutter: 2
 
-:::{grid-item-card} Online meta-graph:
-:link: https://github.com/biocypher/meta-graph
-:text-align: center
-{octicon}`globe;3em` {octicon}`browser;3em` {octicon}`share-android;3em`
-:::
-
 :::{grid-item-card} Repo with Docker setup:
-:link: https://github.com/biocypher/meta-graph/tree/read_only
+:link: https://github.com/biocypher/meta-graph
 :text-align: center
 {octicon}`mark-github;3em` {octicon}`project;3em` {octicon}`container;3em`
 :::
@@ -103,11 +97,9 @@ repository](https://github.com/biocypher/project-template)) that fetches
 information about all adapters from the BioCypher GitHub repository via the
 GitHub API and builds a graph of all adapters and their dependencies.  Browsing
 this graph can give an overview of the current state of the adapters supported
-by BioCypher and the pipelines they are used in. It is built daily and available
-at [https://meta.biocypher.org](https://meta.biocypher.org). The graph can also
-be built locally by cloning the repository and running the pipeline using
-`docker compose up`. The graph is then available at `localhost:7474/browser/` in
-the Neo4j Browser.
+by BioCypher and the pipelines they are used in. The graph can be built locally
+by cloning the repository and running the pipeline using `docker compose up`.
+The graph is then available at `localhost:7474/browser/` in the Neo4j Browser.
 
 If you're unfamiliar with Neo4j, you can use the following Cypher query to
 retrieve an overview of all graph contents:
