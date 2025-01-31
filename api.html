@@ -125,7 +125,7 @@
 <section id="the-main-biocypher-interface">
 <span id="api-core"></span><h2>The main BioCypher interface<a class="headerlink" href="#the-main-biocypher-interface" title="Permalink to this heading"></a></h2>
 <p>Create a BioCypher instance by running:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">BioCypher</span>
 <span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -181,7 +181,7 @@ methods can be found below.</p>
 <td><p>Class to write BioCypher's property graph into an RDF format using rdflib and all the extensions it supports (RDF/XML, N3, NTriples, N-Quads, Turtle, TriX, Trig and JSON-LD).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.write.graph._networkx._NetworkXWriter.html#biocypher.output.write.graph._networkx._NetworkXWriter" title="biocypher.output.write.graph._networkx._NetworkXWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph._networkx._NetworkXWriter</span></code></a>(*args, **kwargs)</p></td>
-<td><p>Class for writing node and edges to a networkx DiGraph.</p></td>
+<td><p>Class for writing the in-memory networkx DiGraph to file.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter.html#biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter" title="biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relational._postgresql._PostgreSQLBatchWriter</span></code></a>(...)</p></td>
 <td><p>Class for writing node and edge representations to disk using the format specified by PostgreSQL for the use of &quot;COPY FROM...&quot;.</p></td>
@@ -190,7 +190,7 @@ methods can be found below.</p>
 <td><p>Class for writing node and edge representations to a SQLite database.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.output.write.relational._csv._PandasCSVWriter.html#biocypher.output.write.relational._csv._PandasCSVWriter" title="biocypher.output.write.relational._csv._PandasCSVWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relational._csv._PandasCSVWriter</span></code></a>(*args[, ...])</p></td>
-<td><p>Class for writing node and edge representations to a CSV file.</p></td>
+<td><p>Class for writing node and edge representations to CSV files.</p></td>
 </tr>
 </tbody>
 </table>
@@ -201,7 +201,7 @@ methods can be found below.</p>
 facilitate the creation of a knowledge graph in memory. This is useful for
 testing, small datasets, and for workflows that should remain purely in Python.
 Example usage:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">BioCypher</span>
 <span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
 <span class="c1"># given lists of nodes and edges</span>
 <span class="n">bc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_list</span><span class="p">)</span>
@@ -214,7 +214,7 @@ Example usage:</p>
 methods can be found below.</p>
 <span class="target" id="module-biocypher.output.in_memory"></span><table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.in_memory._pandas.Pandas.html#biocypher.output.in_memory._pandas.Pandas" title="biocypher.output.in_memory._pandas.Pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_pandas.Pandas</span></code></a>(translator, deduplicator)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.in_memory._pandas.PandasKG.html#biocypher.output.in_memory._pandas.PandasKG" title="biocypher.output.in_memory._pandas.PandasKG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_pandas.PandasKG</span></code></a>(deduplicator)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -228,7 +228,7 @@ allowing more subtle manipulation usually not encountered in creating a database
 from scratch as in the <a class="reference internal" href="#api-write"><span class="std std-ref">file-based workflow</span></a>. This includes
 merging (creation of entities only if they don’t exist) and deletion. For
 example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">BioCypher</span>
 <span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
 <span class="c1"># given lists of nodes and edges</span>
 <span class="n">bc</span><span class="o">.</span><span class="n">merge_nodes</span><span class="p">(</span><span class="n">node_set_1</span><span class="p">)</span>
@@ -241,8 +241,8 @@ example:</p>
 methods can be found below.</p>
 <span class="target" id="module-biocypher.output.connect"></span><table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.connect._neo4j_driver.get_driver.html#biocypher.output.connect._neo4j_driver.get_driver" title="biocypher.output.connect._neo4j_driver.get_driver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_neo4j_driver.get_driver</span></code></a>(dbms, translator)</p></td>
-<td><p>Function to return the writer class.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.connect._get_connector.get_connector.html#biocypher.output.connect._get_connector.get_connector" title="biocypher.output.connect._get_connector.get_connector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_connector.get_connector</span></code></a>(dbms, translator)</p></td>
+<td><p>Function to return the connector class.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.output.connect._neo4j_driver._Neo4jDriver.html#biocypher.output.connect._neo4j_driver._Neo4jDriver" title="biocypher.output.connect._neo4j_driver._Neo4jDriver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_neo4j_driver._Neo4jDriver</span></code></a>(database_name, ...)</p></td>
 <td><p>Manages a BioCypher connection to a Neo4j database using the <code class="docutils literal notranslate"><span class="pre">neo4j_utils.Driver</span></code> class.</p></td>
@@ -261,7 +261,7 @@ files, and directories (which needs to be indicated using the <code class="docut
 parameter of the <code class="docutils literal notranslate"><span class="pre">FileDownload</span></code>). It uses <a class="reference external" href="https://www.fatiando.org/pooch/latest/">Pooch</a> under the hood to handle the
 downloading of files and Python’s <a class="reference external" href="https://pypi.org/project/requests/">requests</a> library to perform API requests. Example
 usage:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span><span class="p">,</span> <span class="n">FileDownload</span><span class="p">,</span> <span class="n">APIRequest</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">BioCypher</span><span class="p">,</span> <span class="n">FileDownload</span><span class="p">,</span> <span class="n">APIRequest</span>
 <span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
 
 <span class="n">resource1</span> <span class="o">=</span> <span class="n">FileDownload</span><span class="p">(</span>

@@ -189,7 +189,7 @@ names, and molecular masses from a (fictional) CSV:</p>
   <span class="n">proteins</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
 <span class="c1"># yield proteins from data frame</span>
-<span class="k">def</span> <span class="nf">node_generator</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">node_generator</span><span class="p">():</span>
   <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
     <span class="n">_id</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;uniprot_id&quot;</span><span class="p">]</span>
     <span class="n">_type</span> <span class="o">=</span> <span class="s2">&quot;protein&quot;</span>
@@ -213,7 +213,7 @@ information is determined largely by the schema configuration detailed below.</p
   <span class="n">interactions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
 <span class="c1"># yield interactions from data frame</span>
-<span class="k">def</span> <span class="nf">edge_generator</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">edge_generator</span><span class="p">():</span>
   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">interactions</span><span class="p">:</span>
     <span class="n">_id</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
     <span class="n">_source</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span>
@@ -291,7 +291,7 @@ this node or edge type.</p>
 without arguments, given that the <a class="reference internal" href="#qs-config"><span class="std std-ref">configuration</span></a> files are either
 present in the working directory, or the pipeline should be run with default
 settings.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">BioCypher</span>
 <span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">()</span>
 </pre></div>
 </div>

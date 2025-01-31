@@ -1,0 +1,26 @@
+﻿biocypher.output.in\_memory.\_pandas.PandasKG
+=============================================
+
+.. currentmodule:: biocypher.output.in_memory._pandas
+
+.. autoclass:: PandasKG
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PandasKG.__init__
+      ~PandasKG.add_edges
+      ~PandasKG.add_nodes
+      ~PandasKG.add_tables
+      ~PandasKG.get_kg
+   
+   
+
+   
+   
+   

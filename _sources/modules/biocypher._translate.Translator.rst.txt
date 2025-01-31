@@ -20,6 +20,7 @@
       ~Translator.reverse_translate_term
       ~Translator.translate
       ~Translator.translate_edges
+      ~Translator.translate_entities
       ~Translator.translate_nodes
       ~Translator.translate_term
    

@@ -1,0 +1,6 @@
+﻿biocypher.output.connect.\_get\_connector.get\_connector
+========================================================
+
+.. currentmodule:: biocypher.output.connect._get_connector
+
+.. autofunction:: get_connector

@@ -14,7 +14,6 @@
    .. autosummary::
    
       ~_NetworkXWriter.__init__
-      ~_NetworkXWriter.add_to_networkx
       ~_NetworkXWriter.write_edges
       ~_NetworkXWriter.write_import_call
       ~_NetworkXWriter.write_nodes

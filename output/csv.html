@@ -2,14 +2,14 @@
 <html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta property="og:title" content="CSV" />
+<meta property="og:title" content="Tabular output" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://biocypher.org/output/csv.html" />
 <meta property="og:site_name" content="BioCypher" />
-<meta property="og:description" content="When setting the dbms parameter in the biocypher_config.yaml to csv, the BioCypher Knowledge Graph is written to CSV files. CSV settings: To overwrite the standard settings of the CSV writer, add a..." />
+<meta property="og:description" content="When setting the dbms parameter in the biocypher_config.yaml to tabular, csv, or pandas, the BioCypher Knowledge Graph is created in one of several possible tabular formats. Tabular output settings..." />
 <meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 <meta property="og:image:alt" content="BioCypher" />
-<meta name="description" content="When setting the dbms parameter in the biocypher_config.yaml to csv, the BioCypher Knowledge Graph is written to CSV files. CSV settings: To overwrite the standard settings of the CSV writer, add a..." />
+<meta name="description" content="When setting the dbms parameter in the biocypher_config.yaml to tabular, csv, or pandas, the BioCypher Knowledge Graph is created in one of several possible tabular formats. Tabular output settings..." />
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content="https://biocypher.org" />
 <meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
@@ -17,7 +17,7 @@
 <meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CSV &mdash; BioCypher</title>
+  <title>Tabular output &mdash; BioCypher</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -76,7 +76,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Output</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="neo4j.html">Neo4j</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arangodb.html">ArangoDB</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">CSV</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tabular output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rdf.html">RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="postgres.html">PostgreSQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sqlite.html">SQLite</a></li>
@@ -107,7 +107,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Output</a></li>
-      <li class="breadcrumb-item active">CSV</li>
+      <li class="breadcrumb-item active">Tabular output</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/output/csv.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -117,19 +117,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="csv">
-<h1>CSV<a class="headerlink" href="#csv" title="Permalink to this heading"></a></h1>
-<p>When setting the <code class="docutils literal notranslate"><span class="pre">dbms</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> to <code class="docutils literal notranslate"><span class="pre">csv</span></code>, the
-BioCypher Knowledge Graph is written to CSV files.</p>
-<section id="csv-settings">
-<h2>CSV settings<a class="headerlink" href="#csv-settings" title="Permalink to this heading"></a></h2>
+  <section id="tabular-output">
+<h1>Tabular output<a class="headerlink" href="#tabular-output" title="Permalink to this heading"></a></h1>
+<p>When setting the <code class="docutils literal notranslate"><span class="pre">dbms</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> to <code class="docutils literal notranslate"><span class="pre">tabular</span></code>,
+<code class="docutils literal notranslate"><span class="pre">csv</span></code>, or <code class="docutils literal notranslate"><span class="pre">pandas</span></code>, the BioCypher Knowledge Graph is created in one of several
+possible tabular formats.</p>
+<section id="tabular-output-settings">
+<h2>Tabular output settings<a class="headerlink" href="#tabular-output-settings" title="Permalink to this heading"></a></h2>
 <p>To overwrite the standard settings of the CSV writer, add a <code class="docutils literal notranslate"><span class="pre">csv</span></code> section to the
 <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> file. The following settings are possible:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">csv</span><span class="p">:</span>
 <span class="w">  </span><span class="c1">### CSV/Pandas configuration ###</span>
-<span class="w">  </span><span class="nt">delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;,&#39;</span><span class="w">  </span><span class="c1"># The delimiter used in the CSV files. Default is &#39;,&#39;.</span>
+<span class="w">  </span><span class="nt">delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;,&#39;</span><span class="w">  </span><span class="c1"># The delimiter to be used in the CSV files. Default is &#39;,&#39;.</span>
 </pre></div>
 </div>
 </div>
@@ -139,13 +140,35 @@ BioCypher Knowledge Graph is written to CSV files.</p>
 <section id="running-biocypher">
 <h3>Running BioCypher<a class="headerlink" href="#running-biocypher" title="Permalink to this heading"></a></h3>
 <p>After running BioCypher with the <code class="docutils literal notranslate"><span class="pre">offline</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">true</span></code> and the
-<code class="docutils literal notranslate"><span class="pre">dbms</span></code> set to <code class="docutils literal notranslate"><span class="pre">csv</span></code>, the output folder contains:</p>
+<code class="docutils literal notranslate"><span class="pre">dbms</span></code> set to <code class="docutils literal notranslate"><span class="pre">tabular</span></code>, <code class="docutils literal notranslate"><span class="pre">csv</span></code>, or <code class="docutils literal notranslate"><span class="pre">pandas</span></code>, the output folder contains:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">*.csv</span></code>: The CSV files containing the node/edge data.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">import_pandas_csv.csv</span></code>: A Python script to load the created CSV files into
 Pandas DataFrames.</p></li>
 </ul>
 </section>
+</section>
+<section id="online-mode">
+<h2>Online mode<a class="headerlink" href="#online-mode" title="Permalink to this heading"></a></h2>
+<p>After running BioCypher with the <code class="docutils literal notranslate"><span class="pre">offline</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">false</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">dbms</span></code> set to <code class="docutils literal notranslate"><span class="pre">tabular</span></code>, <code class="docutils literal notranslate"><span class="pre">csv</span></code>, or <code class="docutils literal notranslate"><span class="pre">pandas</span></code>, you can get the in-memory
+representation of the Knowledge Graph directly from BioCypher by calling the
+<code class="docutils literal notranslate"><span class="pre">get_kg()</span></code> function. This returns a dictionary with the corresponding data type
+(e.g., <code class="docutils literal notranslate"><span class="pre">Pandas</span></code> dataframes) for every node and edge type.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize BioCypher</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span>
+    <span class="n">biocypher_config_path</span><span class="o">=</span><span class="s2">&quot;biocypher_config.yaml&quot;</span><span class="p">,</span>
+    <span class="n">schema_config_path</span><span class="o">=</span><span class="s2">&quot;schema_config.yaml&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Add nodes and edges</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+
+<span class="c1"># Get the in-memory representation of the Knowledge Graph</span>
+<span class="n">in_memory_kg</span> <span class="o">=</span> <span class="n">bc</span><span class="o">.</span><span class="n">get_kg</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
 </section>
 

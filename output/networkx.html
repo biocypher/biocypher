@@ -6,10 +6,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://biocypher.org/output/networkx.html" />
 <meta property="og:site_name" content="BioCypher" />
-<meta property="og:description" content="When setting the dbms parameter in the biocypher_config.yaml to networkx, the BioCypher Knowledge Graph is transformed into a NetworkX DiGraph and then written to a pickle file. NetworkX settings: ..." />
+<meta property="og:description" content="When setting the dbms parameter in the biocypher_config.yaml to networkx, the BioCypher Knowledge Graph is transformed into a NetworkX DiGraph. NetworkX settings: To overwrite the standard settings..." />
 <meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 <meta property="og:image:alt" content="BioCypher" />
-<meta name="description" content="When setting the dbms parameter in the biocypher_config.yaml to networkx, the BioCypher Knowledge Graph is transformed into a NetworkX DiGraph and then written to a pickle file. NetworkX settings: ..." />
+<meta name="description" content="When setting the dbms parameter in the biocypher_config.yaml to networkx, the BioCypher Knowledge Graph is transformed into a NetworkX DiGraph. NetworkX settings: To overwrite the standard settings..." />
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content="https://biocypher.org" />
 <meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
@@ -76,7 +76,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Output</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="neo4j.html">Neo4j</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arangodb.html">ArangoDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csv.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csv.html">Tabular output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rdf.html">RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="postgres.html">PostgreSQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sqlite.html">SQLite</a></li>
@@ -121,8 +121,7 @@
 <h1>NetworkX<a class="headerlink" href="#networkx" title="Permalink to this heading"></a></h1>
 <p>When setting the <code class="docutils literal notranslate"><span class="pre">dbms</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> to <code class="docutils literal notranslate"><span class="pre">networkx</span></code>,
 the BioCypher Knowledge Graph is transformed into a <a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/digraph.html">NetworkX
-DiGraph</a>
-and then written to a pickle file.</p>
+DiGraph</a>.</p>
 <section id="networkx-settings">
 <h2>NetworkX settings<a class="headerlink" href="#networkx-settings" title="Permalink to this heading"></a></h2>
 <p>To overwrite the standard settings of NetworkX, add a <code class="docutils literal notranslate"><span class="pre">networkx</span></code> section to the
@@ -153,6 +152,26 @@ Knowledge Graph as NetworkX DiGraph.</p></li>
 <p>If any of the files is missing make sure to run <code class="docutils literal notranslate"><span class="pre">bc.write_import_call()</span></code>.</p>
 </div>
 </section>
+</section>
+<section id="online-mode">
+<h2>Online mode<a class="headerlink" href="#online-mode" title="Permalink to this heading"></a></h2>
+<p>After running BioCypher with the <code class="docutils literal notranslate"><span class="pre">offline</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">false</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">dbms</span></code> set to <code class="docutils literal notranslate"><span class="pre">networkx</span></code>, you can get the in-memory networkx representation of the
+Knowledge Graph directly from BioCypher by calling the <code class="docutils literal notranslate"><span class="pre">get_kg()</span></code> function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize BioCypher</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span>
+    <span class="n">biocypher_config_path</span><span class="o">=</span><span class="s2">&quot;biocypher_config.yaml&quot;</span><span class="p">,</span>
+    <span class="n">schema_config_path</span><span class="o">=</span><span class="s2">&quot;schema_config.yaml&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Add nodes and edges</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+<span class="n">bc</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+
+<span class="c1"># Get the in-memory representation of the Knowledge Graph</span>
+<span class="n">in_memory_kg</span> <span class="o">=</span> <span class="n">bc</span><span class="o">.</span><span class="n">get_kg</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
 </section>
 

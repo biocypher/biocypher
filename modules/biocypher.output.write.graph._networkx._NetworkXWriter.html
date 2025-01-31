@@ -124,7 +124,10 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher.output.write.graph._networkx._NetworkXWriter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.output.write.graph._networkx.</span></span><span class="sig-name descname"><span class="pre">_NetworkXWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write.graph._networkx._NetworkXWriter" title="Permalink to this definition"></a></dt>
-<dd><p>Class for writing node and edges to a networkx DiGraph.</p>
+<dd><p>Class for writing the in-memory networkx DiGraph to file.</p>
+<p>Call <cite>_construct_import_call</cite> to write the networkx DiGraph to a pickle
+file and return the Python call to load it.</p>
+<p>TODO: this is a non-intuitive name, should be adjusted.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.output.write.graph._networkx._NetworkXWriter.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write.graph._networkx._NetworkXWriter.__init__" title="Permalink to this definition"></a></dt>
@@ -150,16 +153,13 @@ of nodes and edges.</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biocypher.output.write.graph._networkx._NetworkXWriter.__init__" title="biocypher.output.write.graph._networkx._NetworkXWriter.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Abstract class for writing node and edge representations to disk.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_to_networkx</span></code>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_edges</span></code>(edges[, batch_size, force])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_edges</span></code>(edges[, batch_size, force])</p></td>
 <td><p>Wrapper for writing edges.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_import_call</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_import_call</span></code>()</p></td>
 <td><p>Function to output.write the import call detailing folder and individual node and edge headers and data files, as well as delimiters and database name, to the export folder as txt.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_nodes</span></code>(nodes[, batch_size, force])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_nodes</span></code>(nodes[, batch_size, force])</p></td>
 <td><p>Wrapper for writing nodes.</p></td>
 </tr>
 </tbody>

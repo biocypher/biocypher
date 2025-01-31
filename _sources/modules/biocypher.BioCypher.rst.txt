@@ -18,6 +18,7 @@
       ~BioCypher.add_edges
       ~BioCypher.add_nodes
       ~BioCypher.download
+      ~BioCypher.get_kg
       ~BioCypher.log_duplicates
       ~BioCypher.log_missing_input_labels
       ~BioCypher.merge_edges
@@ -27,6 +28,7 @@
       ~BioCypher.show_ontology_structure
       ~BioCypher.summary
       ~BioCypher.to_df
+      ~BioCypher.to_networkx
       ~BioCypher.translate_query
       ~BioCypher.translate_term
       ~BioCypher.write_edges

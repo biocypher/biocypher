@@ -2,9 +2,9 @@
 <html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta property="og:title" content="biocypher.output.in_memory._pandas.Pandas" />
+<meta property="og:title" content="biocypher.output.connect._get_connector.get_connector" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://biocypher.org/modules/biocypher.output.in_memory._pandas.Pandas.html" />
+<meta property="og:url" content="https://biocypher.org/modules/biocypher.output.connect._get_connector.get_connector.html" />
 <meta property="og:site_name" content="BioCypher" />
 <meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 <meta property="og:image:alt" content="BioCypher" />
@@ -15,7 +15,7 @@
 <meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>biocypher.output.in_memory._pandas.Pandas &mdash; BioCypher</title>
+  <title>biocypher.output.connect._get_connector.get_connector &mdash; BioCypher</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -36,8 +36,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="biocypher.output.connect._neo4j_driver.get_driver" href="biocypher.output.connect._neo4j_driver.get_driver.html" />
-    <link rel="prev" title="biocypher.output.write.relational._csv._PandasCSVWriter" href="biocypher.output.write.relational._csv._PandasCSVWriter.html" /> 
+    <link rel="next" title="biocypher.output.connect._neo4j_driver._Neo4jDriver" href="biocypher.output.connect._neo4j_driver._Neo4jDriver.html" />
+    <link rel="prev" title="biocypher.output.in_memory._pandas.PandasKG" href="biocypher.output.in_memory._pandas.PandasKG.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -81,8 +81,8 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../api.html#the-main-biocypher-interface">The main BioCypher interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-by-file">Database creation by file</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api.html#in-memory-pandas-knowledge-graph">In-memory Pandas knowledge graph</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#database-creation-and-manipulation-by-driver">Database creation and manipulation by Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#in-memory-pandas-knowledge-graph">In-memory Pandas knowledge graph</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#database-creation-and-manipulation-by-driver">Database creation and manipulation by Driver</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#download-and-cache-functionality">Download and cache functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._ontology">Ontology ingestion, parsing, and manipulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#module-biocypher._mapping">Mapping of data inputs to KG ontology</a></li>
@@ -109,9 +109,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
-      <li class="breadcrumb-item active">biocypher.output.in_memory._pandas.Pandas</li>
+      <li class="breadcrumb-item active">biocypher.output.connect._get_connector.get_connector</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/modules/biocypher.output.in_memory._pandas.Pandas.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/modules/biocypher.output.connect._get_connector.get_connector.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -119,27 +119,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="biocypher-output-in-memory-pandas-pandas">
-<h1>biocypher.output.in_memory._pandas.Pandas<a class="headerlink" href="#biocypher-output-in-memory-pandas-pandas" title="Permalink to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="biocypher.output.in_memory._pandas.Pandas">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.output.in_memory._pandas.</span></span><span class="sig-name descname"><span class="pre">Pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">translator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.in_memory._pandas.Pandas" title="Permalink to this definition"></a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="biocypher.output.in_memory._pandas.Pandas.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">translator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.in_memory._pandas.Pandas.__init__" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#biocypher.output.in_memory._pandas.Pandas.__init__" title="biocypher.output.in_memory._pandas.Pandas.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(translator, deduplicator)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_tables</span></code>(entities)</p></td>
-<td><p>Add Pandas dataframes for each node and edge type in the input.</p></td>
-</tr>
-</tbody>
-</table>
+  <section id="biocypher-output-connect-get-connector-get-connector">
+<h1>biocypher.output.connect._get_connector.get_connector<a class="headerlink" href="#biocypher-output-connect-get-connector-get-connector" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="biocypher.output.connect._get_connector.get_connector">
+<span class="sig-prename descclassname"><span class="pre">biocypher.output.connect._get_connector.</span></span><span class="sig-name descname"><span class="pre">get_connector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.connect._get_connector.get_connector" title="Permalink to this definition"></a></dt>
+<dd><p>Function to return the connector class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the connector class</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>class</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -148,8 +141,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="biocypher.output.write.relational._csv._PandasCSVWriter.html" class="btn btn-neutral float-left" title="biocypher.output.write.relational._csv._PandasCSVWriter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="biocypher.output.connect._neo4j_driver.get_driver.html" class="btn btn-neutral float-right" title="biocypher.output.connect._neo4j_driver.get_driver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="biocypher.output.in_memory._pandas.PandasKG.html" class="btn btn-neutral float-left" title="biocypher.output.in_memory._pandas.PandasKG" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="biocypher.output.connect._neo4j_driver._Neo4jDriver.html" class="btn btn-neutral float-right" title="biocypher.output.connect._neo4j_driver._Neo4jDriver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

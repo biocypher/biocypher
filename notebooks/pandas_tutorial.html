@@ -151,9 +151,9 @@ not follow this link on colab, as you will be taken back to the website; please 
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">subprocess</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 
 <span class="n">schema_path</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/biocypher/biocypher/main/tutorial/&quot;</span>
 </pre></div>
@@ -200,8 +200,8 @@ not follow this link on colab, as you will be taken back to the website; please 
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># helper function to print yaml files</span>
-<span class="kn">import</span> <span class="nn">yaml</span>
-<span class="k">def</span> <span class="nf">print_yaml</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">print_yaml</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">yaml_data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 
@@ -228,19 +228,24 @@ not follow this link on colab, as you will be taken back to the website; please 
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a list of proteins to be imported</span>
-<span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">Protein</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protein</span>
 <span class="n">n_proteins</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="n">proteins</span> <span class="o">=</span> <span class="p">[</span><span class="n">Protein</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_proteins</span><span class="p">)]</span>
 </pre></div>
 </div>
 </div>
-<p>Each protein in our simulated data has a UniProt ID, a label (“uniprot_protein”), and a dictionary of properties describing it. This is - purely by coincidence - very close to the input BioCypher expects (for nodes): - a unique identifier - an input label (to allow mapping to the ontology, see the second step below) - a dictionary of further properties (which can be empty)</p>
+<p>Each protein in our simulated data has a UniProt ID, a label (“uniprot_protein”), and a dictionary of properties describing it. This is - purely by coincidence - very close to the input BioCypher expects (for nodes):</p>
+<ul class="simple">
+<li><p>a unique identifier</p></li>
+<li><p>an input label (to allow mapping to the ontology, see the second step below)</p></li>
+<li><p>a dictionary of further properties (which can be empty)</p></li>
+</ul>
 <p>These should be presented to BioCypher in the form of a tuple. To achieve this representation, we can use a generator function that iterates through our simulated input data and, for each entity, forms the corresponding tuple. The use of a generator allows for efficient streaming of larger datasets where required.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_generator</span><span class="p">(</span><span class="n">proteins</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">node_generator</span><span class="p">(</span><span class="n">proteins</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
         <span class="k">yield</span> <span class="p">(</span>
             <span class="n">protein</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span>
@@ -311,7 +316,7 @@ preferred values for this field.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">biocypher</span> <span class="kn">import</span> <span class="n">BioCypher</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">BioCypher</span>
 <span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span>
     <span class="n">biocypher_config_path</span><span class="o">=</span><span class="s1">&#39;01_biocypher_config.yaml&#39;</span><span class="p">,</span>
     <span class="n">schema_config_path</span><span class="o">=</span><span class="s1">&#39;01_schema_config.yaml&#39;</span><span class="p">,</span>
@@ -366,7 +371,7 @@ INFO -- Instantiating OntologyAdapter class for https://github.com/biolink/bioli
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">Protein</span><span class="p">,</span> <span class="n">EntrezProtein</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">data_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protein</span><span class="p">,</span> <span class="n">EntrezProtein</span>
 </pre></div>
 </div>
 </div>
@@ -606,7 +611,7 @@ protein:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">EntrezProtein</span><span class="p">,</span> <span class="n">RandomPropertyProtein</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">data_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntrezProtein</span><span class="p">,</span> <span class="n">RandomPropertyProtein</span>
 </pre></div>
 </div>
 </div>
@@ -677,7 +682,7 @@ INFO -- Instantiating OntologyAdapter class for https://github.com/biolink/bioli
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">RandomPropertyProteinIsoform</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">data_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomPropertyProteinIsoform</span>
 </pre></div>
 </div>
 </div>
@@ -852,7 +857,7 @@ protein protein interaction:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">data_generator</span> <span class="kn">import</span> <span class="n">InteractionGenerator</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">data_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">InteractionGenerator</span>
 
 <span class="c1"># Simulate edges for proteins we defined above</span>
 <span class="n">ppi</span> <span class="o">=</span> <span class="n">InteractionGenerator</span><span class="p">(</span>
@@ -917,7 +922,7 @@ protein protein interaction:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract id, source, target, label, and property dictionary</span>
-<span class="k">def</span> <span class="nf">edge_generator</span><span class="p">(</span><span class="n">ppi</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">edge_generator</span><span class="p">(</span><span class="n">ppi</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">interaction</span> <span class="ow">in</span> <span class="n">ppi</span><span class="p">:</span>
         <span class="k">yield</span> <span class="p">(</span>
             <span class="n">interaction</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span>

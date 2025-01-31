@@ -124,30 +124,34 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher.BioCypher">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.</span></span><span class="sig-name descname"><span class="pre">BioCypher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">biocypher_config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head_ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail_ontologies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.BioCypher" title="Permalink to this definition"></a></dt>
-<dd><p>Orchestration of BioCypher operations. Instantiate this class to interact
-with BioCypher.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dbms</strong> (<em>str</em>) – The database management system to use. For supported
-systems see SUPPORTED_DBMS.</p></li>
-<li><p><strong>offline</strong> (<em>bool</em>) – Whether to run in offline mode. If True, no
-connection to the database will be made.</p></li>
-<li><p><strong>strict_mode</strong> (<em>bool</em>) – Whether to run in strict mode. If True, the
-translator will raise an error if a node or edge does not
-provide source, version, and licence information.</p></li>
-<li><p><strong>biocypher_config_path</strong> (<em>str</em>) – Path to the BioCypher config file.</p></li>
-<li><p><strong>schema_config_path</strong> (<em>str</em>) – Path to the user schema config
-file.</p></li>
-<li><p><strong>head_ontology</strong> (<em>dict</em>) – The head ontology defined by URL (‘url’) and root
-node (‘root_node’).</p></li>
-<li><p><strong>tail_ontologies</strong> (<em>dict</em>) – The tail ontologies defined by URL and
-join nodes for both head and tail ontology.</p></li>
-<li><p><strong>output_directory</strong> (<em>str</em>) – Path to the output directory. If not
-provided, the default value ‘biocypher-out’ will be used.</p></li>
-</ul>
+<dd><p>Orchestration of BioCypher operations.</p>
+<p>Instantiate this class to interact with BioCypher.</p>
+<section id="args">
+<h2>Args:<a class="headerlink" href="#args" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><dl class="simple">
+<dt>dbms (str): The database management system to use. For supported</dt><dd><p>systems see SUPPORTED_DBMS.</p>
+</dd>
+<dt>offline (bool): Whether to run in offline mode. In offline mode</dt><dd><p>the Knowledge Graph is written to files. In online mode, it
+is written to a database or hold in memory.</p>
+</dd>
+<dt>strict_mode (bool): Whether to run in strict mode. If True, the</dt><dd><p>translator will raise an error if a node or edge does not
+provide source, version, and licence information.</p>
 </dd>
 </dl>
+<p>biocypher_config_path (str): Path to the BioCypher config file.</p>
+<dl class="simple">
+<dt>schema_config_path (str): Path to the user schema config</dt><dd><p>file.</p>
+</dd>
+<dt>head_ontology (dict): The head ontology defined by URL (‘url’) and root</dt><dd><p>node (‘root_node’).</p>
+</dd>
+<dt>tail_ontologies (dict): The tail ontologies defined by URL and</dt><dd><p>join nodes for both head and tail ontology.</p>
+</dd>
+<dt>output_directory (str): Path to the output directory. If not</dt><dd><p>provided, the default value ‘biocypher-out’ will be used.</p>
+</dd>
+</dl>
+<p>cache_directory (str): Path to the cache directory.</p>
+</div></blockquote>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.BioCypher.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">biocypher_config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head_ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail_ontologies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.BioCypher.__init__" title="Permalink to this definition"></a></dt>
@@ -160,43 +164,49 @@ provided, the default value ‘biocypher-out’ will be used.</p></li>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code>(entities)</p></td>
-<td><p>Function to add entities to the in-memory database.</p></td>
+<td><p>Add entities to the in-memory database.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_edges</span></code>(edges)</p></td>
-<td><p>Wrapper for <code class="docutils literal notranslate"><span class="pre">add()</span></code> to add edges to the in-memory database.</p></td>
+<td><p>Add new edges to the internal representation.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_nodes</span></code>(nodes)</p></td>
-<td><p>Wrapper for <code class="docutils literal notranslate"><span class="pre">add()</span></code> to add nodes to the in-memory database.</p></td>
+<td><p>Add new nodes to the internal representation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">download</span></code>(*resources)</p></td>
-<td><p>Use the <code class="xref py py-class docutils literal notranslate"><span class="pre">Downloader</span></code> class to download or load from cache the resources given by the adapter.</p></td>
+<td><p>Download or load from cache the resources given by the adapter.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_duplicates</span></code>()</p></td>
-<td><p>Get the set of duplicate nodes and edges encountered and print them to the logger.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_kg</span></code>()</p></td>
+<td><p>Get the in-memory KG instance.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_missing_input_labels</span></code>()</p></td>
-<td><p>Get the set of input labels encountered without an entry in the <cite>schema_config.yaml</cite> and print them to the logger.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_duplicates</span></code>()</p></td>
+<td><p>Log duplicate nodes and edges.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_edges</span></code>(edges)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_missing_input_labels</span></code>()</p></td>
+<td><p>Log missing input labels.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_edges</span></code>(edges)</p></td>
 <td><p>Merge edges into database.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_nodes</span></code>(nodes)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_nodes</span></code>(nodes)</p></td>
 <td><p>Merge nodes into database.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_translate_query</span></code>(query)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_translate_query</span></code>(query)</p></td>
 <td><p>Reverse translate a query from its BioCypher equivalent.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_translate_term</span></code>(term)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_translate_term</span></code>(term)</p></td>
 <td><p>Reverse translate a term from its BioCypher equivalent.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_ontology_structure</span></code>(**kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_ontology_structure</span></code>(**kwargs)</p></td>
 <td><p>Show the ontology structure using treelib or write to GRAPHML file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">summary</span></code>()</p></td>
-<td><p>Wrapper for showing ontology structure and logging duplicates and missing input types.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">summary</span></code>()</p></td>
+<td><p>Call convenience and reporting methods.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code>()</p></td>
-<td><p>Convert entities to a pandas DataFrame for each entity type and return a list.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code>()</p></td>
+<td><p>Create DataFrame using internal representation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_networkx</span></code>()</p></td>
+<td><p>Create networkx using internal representation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_query</span></code>(query)</p></td>
 <td><p>Translate a query to its BioCypher equivalent.</p></td>
@@ -208,16 +218,17 @@ provided, the default value ‘biocypher-out’ will be used.</p></li>
 <td><p>Write edges to database.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_import_call</span></code>()</p></td>
-<td><p>Write a shell script to import the database depending on the chosen DBMS.</p></td>
+<td><p>Write a shell script to import the database.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_nodes</span></code>(nodes[, batch_size, force])</p></td>
 <td><p>Write nodes to database.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_schema_info</span></code>([as_node])</p></td>
-<td><p>Write an extended schema info YAML file that extends the <cite>schema_config.yaml</cite> with run-time information of the built KG.</p></td>
+<td><p>Write an extended schema info to file or node.</p></td>
 </tr>
 </tbody>
 </table>
+</section>
 </dd></dl>
 
 </section>

@@ -76,7 +76,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Output</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="neo4j.html">Neo4j</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arangodb.html">ArangoDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csv.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csv.html">Tabular output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rdf.html">RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="postgres.html">PostgreSQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sqlite.html">SQLite</a></li>
@@ -121,27 +121,40 @@
 <p>BioCypher development was initially centred around a Neo4j graph database output
 due to the migration of OmniPath to a Neo4j backend. Importantly, we understand
 BioCypher as an abstraction of the build process of a biomedical knowledge graph,
-and thus are open towards any output format for the knowledge representation. We
-are currently working on other output formats, such as RDF, SQL, and ArangoDB,
-and will update the documentation accordingly.</p>
+and thus are open towards any output format for the knowledge representation.</p>
 <p>The used output format is specified via the <code class="docutils literal notranslate"><span class="pre">dbms</span></code> parameter in the
-<code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> (see the <a class="reference internal" href="../installation.html#config"><span class="std std-ref">Configuration</span></a> for an example).  Currently
-supported are <code class="docutils literal notranslate"><span class="pre">neo4j</span></code>, <code class="docutils literal notranslate"><span class="pre">arangodb</span></code>, <code class="docutils literal notranslate"><span class="pre">rdf</span></code>, <code class="docutils literal notranslate"><span class="pre">csv</span></code>, <code class="docutils literal notranslate"><span class="pre">postgres</span></code>,
-<code class="docutils literal notranslate"><span class="pre">sqlite</span></code>, and <code class="docutils literal notranslate"><span class="pre">networkx</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">biocypher_config.yaml</span></code> (see the <a class="reference internal" href="../installation.html#config"><span class="std std-ref">Configuration</span></a> for an example).
+Currently supported are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">neo4j</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arangodb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rdf</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">postgres</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sqlite</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tabular</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">csv</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pandas</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">networkx</span></code></p></li>
+</ul>
 <p>Furthermore, you can specify whether to use the <code class="docutils literal notranslate"><span class="pre">offline</span></code> or <code class="docutils literal notranslate"><span class="pre">online</span></code> mode.</p>
 <ul class="simple">
-<li><p>For the online mode set <code class="docutils literal notranslate"><span class="pre">offline:</span> <span class="pre">false</span></code>. You need a running database
+<li><p>For the online mode set <code class="docutils literal notranslate"><span class="pre">offline:</span> <span class="pre">false</span></code>. The behavior of the online mode
+depends on the specified <code class="docutils literal notranslate"><span class="pre">dbms</span></code>. If the specified <code class="docutils literal notranslate"><span class="pre">dbms</span></code> is an in-memory
+database (e.g. <code class="docutils literal notranslate"><span class="pre">csv</span></code>, <code class="docutils literal notranslate"><span class="pre">networkx</span></code>), the in-memory Knowledge Graph can
+directly be accessed from the BioCypher instance. If the specified <code class="docutils literal notranslate"><span class="pre">dbms</span></code> is
+a database (e.g. <code class="docutils literal notranslate"><span class="pre">neo4j</span></code>), the online mode requires a running database
 instance and BioCypher will connect to this instance and directly writes the
 output to the database.</p></li>
-<li><p>For the offline mode set <code class="docutils literal notranslate"><span class="pre">offline:</span> <span class="pre">true</span></code>. BioCypher will <code class="docutils literal notranslate"><span class="pre">output.write</span></code>
-the knowledge graph to files in a designated output folder (standard being
+<li><p>For the offline mode set <code class="docutils literal notranslate"><span class="pre">offline:</span> <span class="pre">true</span></code>. BioCypher will <code class="docutils literal notranslate"><span class="pre">write</span></code> the
+knowledge graph to files in a designated output folder (standard being
 <code class="docutils literal notranslate"><span class="pre">biocypher-out/</span></code> and the current datetime). Furthermore you can generate a
 bash script to insert the knowledge graph files into the specified <code class="docutils literal notranslate"><span class="pre">dbms</span></code> by
 running <code class="docutils literal notranslate"><span class="pre">bc.write_import_call()</span></code>.</p></li>
 </ul>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">online</span></code> mode is currently only supported for the <code class="docutils literal notranslate"><span class="pre">neo4j</span></code> database.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">online</span></code> mode is currently only supported for <code class="docutils literal notranslate"><span class="pre">neo4j</span></code>, <code class="docutils literal notranslate"><span class="pre">tabular</span></code>,
+<code class="docutils literal notranslate"><span class="pre">csv</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas</span></code>, and <code class="docutils literal notranslate"><span class="pre">networkx</span></code>.</p>
 </div>
 <p>Details about the usage of the <code class="docutils literal notranslate"><span class="pre">online</span></code> and <code class="docutils literal notranslate"><span class="pre">offline</span></code> mode and the different
 supported output formats are described on the following pages:</p>
@@ -155,9 +168,10 @@ supported output formats are described on the following pages:</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="arangodb.html">ArangoDB</a></li>
-<li class="toctree-l1"><a class="reference internal" href="csv.html">CSV</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="csv.html#csv-settings">CSV settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="csv.html">Tabular output</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="csv.html#tabular-output-settings">Tabular output settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="csv.html#offline-mode">Offline mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csv.html#online-mode">Online mode</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="rdf.html">RDF</a><ul>
@@ -178,6 +192,7 @@ supported output formats are described on the following pages:</p>
 <li class="toctree-l1"><a class="reference internal" href="networkx.html">NetworkX</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="networkx.html#networkx-settings">NetworkX settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="networkx.html#offline-mode">Offline mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.html#online-mode">Online mode</a></li>
 </ul>
 </li>
 </ul>
