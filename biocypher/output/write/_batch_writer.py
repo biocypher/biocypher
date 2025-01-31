@@ -20,12 +20,9 @@ class _BatchWriter(_Writer, ABC):
 
     @abstractmethod
     def _quote_string(self, value: str) -> str:
-        """
-        Abstract method to quote a string. Escaping is handled by the database-specific writer.
-        """
-
+        """Abstract method to quote a string. Escaping is handled by the database-specific writer."""
         raise NotImplementedError(
-            "Database writer must override '_quote_string'"
+            "Database writer must override '_quote_string'",
         )
 
     @abstractmethod
