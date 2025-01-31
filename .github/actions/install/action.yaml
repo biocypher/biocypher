@@ -1,9 +1,10 @@
-name: 'Install'
-description: 'Install dependencies'
+name: "Install"
+description: "Install dependencies"
 inputs:
   PYTHON_VERSION:
-    description: 'Python version'
-    default: '3.11'
+    description: "Python version"
+    default: "3.11"
+
 
 runs:
   using: "composite"
