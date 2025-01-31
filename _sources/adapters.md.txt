@@ -85,7 +85,7 @@ meta-graph described below.
 :gutter: 2
 
 :::{grid-item-card} Online meta-graph:
-:link: https://meta.biocypher.org
+:link: https://github.com/biocypher/meta-graph
 :text-align: center
 {octicon}`globe;3em` {octicon}`browser;3em` {octicon}`share-android;3em`
 :::
