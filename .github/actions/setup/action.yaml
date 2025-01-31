@@ -6,7 +6,7 @@ inputs:
     default: "3.11"
   POETRY_VERSION:
     description: "Poetry version"
-    default: 1.5.1
+    default: "1.7.1"
 
 runs:
   using: "composite"
@@ -26,7 +26,7 @@ runs:
       if: steps.cached-poetry.outputs.cache-hit != 'true'
       uses: snok/install-poetry@v1
       with:
-        version: 1.5.1
+        version: 1.7.1
         virtualenvs-create: true
         virtualenvs-in-project: false
     - name: Check Poetry installation

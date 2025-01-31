@@ -19,6 +19,16 @@ class _BatchWriter(_Writer, ABC):
     """Abstract batch writer class"""
 
     @abstractmethod
+    def _quote_string(self, value: str) -> str:
+        """
+        Abstract method to quote a string. Escaping is handled by the database-specific writer.
+        """
+
+        raise NotImplementedError(
+            "Database writer must override '_quote_string'"
+        )
+
+    @abstractmethod
     def _get_default_import_call_bin_prefix(self):
         """Abstract method to provide the default string for the import call bin prefix.
 
