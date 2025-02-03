@@ -1,6 +1,5 @@
 import logging
 import os
-import copy
 
 import pytest
 
@@ -1042,13 +1041,14 @@ def make_labels(bw, order):
     bw.labels_order = order
     nodes = [
         BioCypherNode(
-            node_id=f"agpl:0001",
+            node_id="agpl:0001",
             node_label="altered gene product level",
             properties={},
         ),
     ]
 
     passed = bw.write_nodes(nodes)
+    assert passed
     tmp_path = bw.outdir
 
     files = ["AlteredGeneProductLevel-part000.csv"]
@@ -1062,12 +1062,13 @@ def make_labels(bw, order):
     labels = []
     for line in lines:
         lbl = line.strip().split(";")[-1].strip("'")
-        lbls = [l.strip("'") for l in lbl.split("|")]
+        lbls = [i.strip("'") for i in lbl.split("|")]
         if lbls:
             labels.append(lbls)
 
-    assert(len(labels) > 0)
+    assert len(labels) > 0
     return labels
+
 
 def test_labels_order_alpha(bw):
     alpha = make_labels(bw, "Alphabetical")
@@ -1075,19 +1076,35 @@ def test_labels_order_alpha(bw):
         ordered = sorted(labels)
         assert labels == ordered
 
+
 def test_labels_order_leaves(bw):
     asc = make_labels(bw, "Leaves")
     for labels in asc:
         assert len(labels) == 1
         # No other choice than to test actual values,
         # or else it would mean re-implementing get_ancestors.
-        assert labels[0] == 'AlteredGeneProductLevel'
+        assert labels[0] == "AlteredGeneProductLevel"
+
 
 def test_labels_order_asc(bw):
     asc = make_labels(bw, "Ascending")
-    assert asc[0] == ['AlteredGeneProductLevel', 'FunctionalEffectVariant', 'SequenceVariant', 'BiologicalEntity', 'NamedThing', 'Entity']
+    assert asc[0] == [
+        "AlteredGeneProductLevel",
+        "FunctionalEffectVariant",
+        "SequenceVariant",
+        "BiologicalEntity",
+        "NamedThing",
+        "Entity",
+    ]
+
 
 def test_labels_order_dsc(bw):
     dsc = make_labels(bw, "Descending")
-    assert dsc[0] == ['Entity', 'NamedThing', 'BiologicalEntity', 'SequenceVariant', 'FunctionalEffectVariant', 'AlteredGeneProductLevel']
-
+    assert dsc[0] == [
+        "Entity",
+        "NamedThing",
+        "BiologicalEntity",
+        "SequenceVariant",
+        "FunctionalEffectVariant",
+        "AlteredGeneProductLevel",
+    ]

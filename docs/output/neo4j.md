@@ -213,4 +213,3 @@ To get even simpler label, you can set `labels_order: Leaves`, which
 will write down only the more specific type label (the "leaf" of the types
 tree). Be warn that the resulting export will completely lose the ontological
 information, hence making it impossible to query the graph on high-level types.
-

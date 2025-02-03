@@ -124,7 +124,7 @@ class _BatchWriter(_Writer, ABC):
         db_port: str = None,
         rdf_format: str = None,
         rdf_namespaces: dict = {},
-        labels_order: str = "Alphabetical"
+        labels_order: str = "Alphabetical",
     ):
         """Abtract parent class for writing node and edge representations to disk
         using the format specified by each database type. The database-specific
@@ -254,7 +254,10 @@ class _BatchWriter(_Writer, ABC):
 
         self._labels_orders = ["Alphabetical", "Ascending", "Descending", "Leaves"]
         if labels_order not in self._labels_orders:
-            raise ValueError(f"neo4j's 'labels_order' parameter cannot be '{labels_order}', must be one of: {' ,'.join(self._labels_orders)}")
+            raise ValueError(
+                f"neo4j's 'labels_order' parameter cannot be '{labels_order}',"
+                "must be one of: {' ,'.join(self._labels_orders)}"
+            )
         self.labels_order = labels_order
 
         # TODO not memory efficient, but should be fine for most cases; is
@@ -479,10 +482,10 @@ class _BatchWriter(_Writer, ABC):
                         # remove duplicates
                         all_labels = list(OrderedDict.fromkeys(all_labels))
                         match self.labels_order:
-                            case "Alphabetical": # Default in config.
+                            case "Alphabetical":  # Default in config.
                                 all_labels.sort()
                             case "Ascending":
-                                pass # Default from get_ancestors.
+                                pass  # Default from get_ancestors.
                             case "Descending":
                                 all_labels.reverse()
                             case "Leaves":
@@ -490,7 +493,7 @@ class _BatchWriter(_Writer, ABC):
                                 all_labels = [all_labels[0]]
                             case _:
                                 # In case someone touched _label_orders after constructor.
-                                assert(self.labels_order in self._labels_orders)
+                                assert self.labels_order in self._labels_orders
                         # concatenate with array delimiter
                         all_labels = self._write_array_string(all_labels)
                     else:
