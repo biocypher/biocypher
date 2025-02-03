@@ -54,6 +54,14 @@ neo4j:  ### Neo4j configuration ###
   array_delimiter: '|'
   quote_character: "'"
 
+  # How to write the labels in the export files.
+  labels_order: "Alphabetical" # The default.
+  # Or:
+  # labels_order: "Ascending" # From more specific to more generic.
+  # labels_order: "Descending" # From more generic to more specific.
+  # labels_order: "Leaves" # Only the more specific label.
+
+
   # MultiDB functionality
   # Set to false for using community edition or older versions of Neo4j
   multi_db: true
@@ -185,3 +193,24 @@ If there exists no BioCypher graph in the currently active database, or
 if the user explicitly specifies so using the ``wipe`` attribute of the
 driver, a new BioCypher database is created using the schema
 configuration specified in the [schema-config.yaml](tut_01_schema).
+
+## Note on labels order
+
+Neo4j do not support managing the hierarchy of types of the vocabulary given by
+the input ontology. What it does is to attach to nodes and edges each type label
+of all the ancestors in the types hierarchy.
+
+By default, the Neo4j driver exports those type labels as an
+alphabetically-sorted list, which may be useful for comparing output files.
+But this may be less easy to understand within a graph browser that would show
+the labels in the same order.
+
+To get a more readable labels list, you can set `labels_order` as either
+`Ascending` or `Descending`; both of which will display labels in the order
+given by the type hierarchy of the ontology's vocabulary.
+
+To get even simpler label, you can set `labels_order: Leaves`, which
+will write down only the more specific type label (the "leaf" of the types
+tree). Be warn that the resulting export will completely lose the ontological
+information, hence making it impossible to query the graph on high-level types.
+

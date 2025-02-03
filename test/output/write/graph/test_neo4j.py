@@ -1,5 +1,6 @@
 import logging
 import os
+import copy
 
 import pytest
 
@@ -1035,3 +1036,58 @@ def test_check_label_name():
     # Additional test case: label with dot and non-compliant characters
     assert parse_label("In.valid.Label@1") == "In.valid.Label1"
     # Assert warning log is written
+
+
+def make_labels(bw, order):
+    bw.labels_order = order
+    nodes = [
+        BioCypherNode(
+            node_id=f"agpl:0001",
+            node_label="altered gene product level",
+            properties={},
+        ),
+    ]
+
+    passed = bw.write_nodes(nodes)
+    tmp_path = bw.outdir
+
+    files = ["AlteredGeneProductLevel-part000.csv"]
+
+    lines = []
+    for f in files:
+        f_csv = os.path.join(tmp_path, f)
+        with open(f_csv) as fd:
+            lines += fd.readlines()
+
+    labels = []
+    for line in lines:
+        lbl = line.strip().split(";")[-1].strip("'")
+        lbls = [l.strip("'") for l in lbl.split("|")]
+        if lbls:
+            labels.append(lbls)
+
+    assert(len(labels) > 0)
+    return labels
+
+def test_labels_order_alpha(bw):
+    alpha = make_labels(bw, "Alphabetical")
+    for labels in alpha:
+        ordered = sorted(labels)
+        assert labels == ordered
+
+def test_labels_order_leaves(bw):
+    asc = make_labels(bw, "Leaves")
+    for labels in asc:
+        assert len(labels) == 1
+        # No other choice than to test actual values,
+        # or else it would mean re-implementing get_ancestors.
+        assert labels[0] == 'AlteredGeneProductLevel'
+
+def test_labels_order_asc(bw):
+    asc = make_labels(bw, "Ascending")
+    assert asc[0] == ['AlteredGeneProductLevel', 'FunctionalEffectVariant', 'SequenceVariant', 'BiologicalEntity', 'NamedThing', 'Entity']
+
+def test_labels_order_dsc(bw):
+    dsc = make_labels(bw, "Descending")
+    assert dsc[0] == ['Entity', 'NamedThing', 'BiologicalEntity', 'SequenceVariant', 'FunctionalEffectVariant', 'AlteredGeneProductLevel']
+

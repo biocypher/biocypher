@@ -85,6 +85,13 @@ neo4j:
   array_delimiter: "|"
   quote_character: "'"
 
+  # How to write the labels in the export files.
+  labels_order: "Alphabetical" # The default.
+  # Or:
+  # labels_order: "Ascending" # From more specific to more generic.
+  # labels_order: "Descending" # From more generic to more specific.
+  # labels_order: "Leaves" # Only the more specific label.
+
   ## MultiDB functionality
   ## Set to false for using community edition or older versions of Neo4j
 
