@@ -55,10 +55,10 @@ neo4j:  ### Neo4j configuration ###
   quote_character: "'"
 
   # How to write the labels in the export files.
-  labels_order: "Alphabetical" # The default.
+  labels_order: "Ascending" # Default: From more specific to more generic.
   # Or:
-  # labels_order: "Ascending" # From more specific to more generic.
   # labels_order: "Descending" # From more generic to more specific.
+  # labels_order: "Alphabetical" # Alphabetically. Legacy option.
   # labels_order: "Leaves" # Only the more specific label.
 
 
