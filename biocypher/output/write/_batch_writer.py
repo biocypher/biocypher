@@ -258,10 +258,11 @@ class _BatchWriter(_Writer, ABC):
 
         self._labels_orders = ["Alphabetical", "Ascending", "Descending", "Leaves"]
         if labels_order not in self._labels_orders:
-            raise ValueError(
+            msg = (
                 f"neo4j's 'labels_order' parameter cannot be '{labels_order}',"
                 "must be one of: {' ,'.join(self._labels_orders)}",
             )
+            raise ValueError(msg)
         self.labels_order = labels_order
 
         # TODO not memory efficient, but should be fine for most cases; is
