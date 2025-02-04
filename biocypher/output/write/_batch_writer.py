@@ -487,18 +487,25 @@ class _BatchWriter(_Writer, ABC):
                         # remove duplicates
                         all_labels = list(OrderedDict.fromkeys(all_labels))
                         match self.labels_order:
-                            case "Alphabetical":  # Default in config.
-                                all_labels.sort()
                             case "Ascending":
                                 pass  # Default from get_ancestors.
+                            case "Alphabetical":
+                                all_labels.sort()
                             case "Descending":
                                 all_labels.reverse()
                             case "Leaves":
-                                assert len(all_labels) >= 1
+                                if len(all_labels) < 1:
+                                    msg = "Labels list cannot be empty when using 'Leaves' order."
+                                    raise ValueError(msg)
                                 all_labels = [all_labels[0]]
                             case _:
                                 # In case someone touched _label_orders after constructor.
-                                assert self.labels_order in self._labels_orders
+                                if self.labels_order not in self._labels_orders:
+                                    msg = (
+                                        f"Invalid labels_order: {self.labels_order}. "
+                                        f"Must be one of {self._labels_orders}"
+                                    )
+                                    raise ValueError(msg)
                         # concatenate with array delimiter
                         all_labels = self._write_array_string(all_labels)
                     else:
