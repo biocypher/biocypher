@@ -124,6 +124,7 @@ class _BatchWriter(_Writer, ABC):
         db_port: str = None,
         rdf_format: str = None,
         rdf_namespaces: dict = {},
+        labels_order: str = "Ascending",
     ):
         """Abtract parent class for writing node and edge representations to disk
         using the format specified by each database type. The database-specific
@@ -209,6 +210,10 @@ class _BatchWriter(_Writer, ABC):
             rdf_namespaces:
                 The namespaces for RDF.
 
+            labels_order:
+                The order of labels, to reflect the hierarchy (or not).
+                Default: "Ascending" (from more specific to more generic).
+
         """
         super().__init__(
             translator=translator,
@@ -250,6 +255,15 @@ class _BatchWriter(_Writer, ABC):
         self._import_call_file_prefix = import_call_file_prefix
 
         self.parts = {}  # dict to store the paths of part files for each label
+
+        self._labels_orders = ["Alphabetical", "Ascending", "Descending", "Leaves"]
+        if labels_order not in self._labels_orders:
+            msg = (
+                f"neo4j's 'labels_order' parameter cannot be '{labels_order}',"
+                "must be one of: {' ,'.join(self._labels_orders)}",
+            )
+            raise ValueError(msg)
+        self.labels_order = labels_order
 
         # TODO not memory efficient, but should be fine for most cases; is
         # there a more elegant solution?
@@ -472,8 +486,26 @@ class _BatchWriter(_Writer, ABC):
                         all_labels = [self.translator.name_sentence_to_pascal(label) for label in all_labels]
                         # remove duplicates
                         all_labels = list(OrderedDict.fromkeys(all_labels))
-                        # order alphabetically
-                        all_labels.sort()
+                        match self.labels_order:
+                            case "Ascending":
+                                pass  # Default from get_ancestors.
+                            case "Alphabetical":
+                                all_labels.sort()
+                            case "Descending":
+                                all_labels.reverse()
+                            case "Leaves":
+                                if len(all_labels) < 1:
+                                    msg = "Labels list cannot be empty when using 'Leaves' order."
+                                    raise ValueError(msg)
+                                all_labels = [all_labels[0]]
+                            case _:
+                                # In case someone touched _label_orders after constructor.
+                                if self.labels_order not in self._labels_orders:
+                                    msg = (
+                                        f"Invalid labels_order: {self.labels_order}. "
+                                        f"Must be one of {self._labels_orders}"
+                                    )
+                                    raise ValueError(msg)
                         # concatenate with array delimiter
                         all_labels = self._write_array_string(all_labels)
                     else:

@@ -2,7 +2,6 @@ import os
 
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
-from typing import Optional, Union
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._deduplicate import Deduplicator
@@ -23,26 +22,28 @@ class _Writer(ABC):
     - _get_import_script_name
 
     Args:
+    ----
         translator (Translator): Instance of :py:class:`Translator` to enable translation of
             nodes and manipulation of properties.
         deduplicator (Deduplicator): Instance of :py:class:`Deduplicator` to enable deduplication
             of nodes and edges.
         output_directory (str, optional): Path for exporting CSV files. Defaults to None.
         strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.
-    strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.
 
     Raises:
+    ------
         NotImplementedError: Writer implementation must override '_write_node_data'
         NotImplementedError: Writer implementation must override '_write_edge_data'
         NotImplementedError: Writer implementation must override '_construct_import_call'
         NotImplementedError: Writer implementation must override '_get_import_script_name'
+
     """
 
     def __init__(
         self,
         translator: Translator,
         deduplicator: Deduplicator,
-        output_directory: Optional[str] = None,
+        output_directory: str | None = None,
         strict_mode: bool = False,
         *args,
         **kwargs,
@@ -50,13 +51,14 @@ class _Writer(ABC):
         """Abstract class for writing node and edge representations to disk.
 
         Args:
+        ----
             translator (Translator): Instance of :py:class:`Translator` to enable translation of
                 nodes and manipulation of properties.
             deduplicator (Deduplicator): Instance of :py:class:`Deduplicator` to enable deduplication
                 of nodes and edges.
             output_directory (str, optional): Path for exporting CSV files. Defaults to None.
             strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.
-        strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.
+
         """
         self.translator = translator
         self.deduplicator = deduplicator
@@ -67,7 +69,7 @@ class _Writer(ABC):
             if kwargs.get("write_to_file", True):
                 logger.warning(
                     f"Output directory `{self.output_directory}` already exists. "
-                    "If this is not planned, file consistency may be compromised."
+                    "If this is not planned, file consistency may be compromised.",
                 )
         else:
             logger.info(f"Creating output directory `{self.output_directory}`.")
@@ -76,43 +78,50 @@ class _Writer(ABC):
     @abstractmethod
     def _write_node_data(
         self,
-        nodes: Iterable[Union[BioCypherNode, BioCypherEdge, BioCypherRelAsNode]],
+        nodes: Iterable[BioCypherNode | BioCypherEdge | BioCypherRelAsNode],
     ) -> bool:
         """Implement how to output.write nodes to disk.
 
         Args:
+        ----
             nodes (Iterable): An iterable of BioCypherNode / BioCypherEdge / BioCypherRelAsNode objects.
 
         Returns:
+        -------
             bool: The return value. True for success, False otherwise.
+
         """
         raise NotImplementedError("Writer implementation must override 'write_nodes'")
 
     @abstractmethod
     def _write_edge_data(
         self,
-        edges: Iterable[Union[BioCypherNode, BioCypherEdge, BioCypherRelAsNode]],
+        edges: Iterable[BioCypherNode | BioCypherEdge | BioCypherRelAsNode],
     ) -> bool:
         """Implement how to output.write edges to disk.
 
         Args:
+        ----
             edges (Iterable): An iterable of BioCypherNode / BioCypherEdge / BioCypherRelAsNode objects.
 
         Returns:
+        -------
             bool: The return value. True for success, False otherwise.
+
         """
         raise NotImplementedError("Writer implementation must override 'write_edges'")
 
     @abstractmethod
     def _construct_import_call(self) -> str:
-        """
-        Function to construct the import call detailing folder and
+        """Function to construct the import call detailing folder and
         individual node and edge headers and data files, as well as
         delimiters and database name. Built after all data has been
         processed to ensure that nodes are called before any edges.
 
-        Returns:
+        Returns
+        -------
             str: command for importing the output files into a DBMS.
+
         """
         raise NotImplementedError("Writer implementation must override '_construct_import_call'")
 
@@ -120,8 +129,10 @@ class _Writer(ABC):
     def _get_import_script_name(self) -> str:
         """Returns the name of the import script.
 
-        Returns:
+        Returns
+        -------
             str: The name of the import script (ending in .sh)
+
         """
         raise NotImplementedError("Writer implementation must override '_get_import_script_name'")
 
@@ -129,6 +140,7 @@ class _Writer(ABC):
         """Wrapper for writing nodes.
 
         Args:
+        ----
             nodes (BioCypherNode): a list or generator of nodes in
                 :py:class:`BioCypherNode` format
             batch_size (int): The batch size for writing nodes.
@@ -136,7 +148,9 @@ class _Writer(ABC):
                 not present in the schema.
 
         Returns:
+        -------
             bool: The return value. True for success, False otherwise.
+
         """
         passed = self._write_node_data(nodes)
         if not passed:
@@ -148,6 +162,7 @@ class _Writer(ABC):
         """Wrapper for writing edges.
 
         Args:
+        ----
             nodes (BioCypherNode): a list or generator of nodes in
                 :py:class:`BioCypherNode` format
             batch_size (int): The batch size for writing nodes.
@@ -155,7 +170,9 @@ class _Writer(ABC):
                 not present in the schema.
 
         Returns:
+        -------
             bool: The return value. True for success, False otherwise.
+
         """
         passed = self._write_edge_data(edges)
         if not passed:
@@ -164,13 +181,14 @@ class _Writer(ABC):
         return True
 
     def write_import_call(self):
-        """
-        Function to output.write the import call detailing folder and
+        """Function to output.write the import call detailing folder and
         individual node and edge headers and data files, as well as
         delimiters and database name, to the export folder as txt.
 
-        Returns:
+        Returns
+        -------
             str: The path of the file holding the import call.
+
         """
         file_path = os.path.join(self.output_directory, self._get_import_script_name())
         logger.info(f"Writing {self.__class__.__name__} import call to `{file_path}`.")
