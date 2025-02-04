@@ -167,6 +167,14 @@ The following settings are possible:</p>
 <span class="w">  </span><span class="nt">array_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;|&#39;</span>
 <span class="w">  </span><span class="nt">quote_character</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&#39;&quot;</span>
 
+<span class="w">  </span><span class="c1"># How to write the labels in the export files.</span>
+<span class="w">  </span><span class="nt">labels_order</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Ascending&quot;</span><span class="w"> </span><span class="c1"># Default: From more specific to more generic.</span>
+<span class="w">  </span><span class="c1"># Or:</span>
+<span class="w">  </span><span class="c1"># labels_order: &quot;Descending&quot; # From more generic to more specific.</span>
+<span class="w">  </span><span class="c1"># labels_order: &quot;Alphabetical&quot; # Alphabetically. Legacy option.</span>
+<span class="w">  </span><span class="c1"># labels_order: &quot;Leaves&quot; # Only the more specific label.</span>
+
+
 <span class="w">  </span><span class="c1"># MultiDB functionality</span>
 <span class="w">  </span><span class="c1"># Set to false for using community edition or older versions of Neo4j</span>
 <span class="w">  </span><span class="nt">multi_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -272,6 +280,23 @@ More details can be found in the <a class="reference internal" href="../api.html
 if the user explicitly specifies so using the <code class="docutils literal notranslate"><span class="pre">wipe</span></code> attribute of the
 driver, a new BioCypher database is created using the schema
 configuration specified in the <a class="reference internal" href="../tutorial.html#tut-01-schema"><span class="std std-ref">schema-config.yaml</span></a>.</p>
+</section>
+<section id="note-on-labels-order">
+<h2>Note on labels order<a class="headerlink" href="#note-on-labels-order" title="Permalink to this heading"></a></h2>
+<p>Neo4j do not support managing the hierarchy of types of the vocabulary given by
+the input ontology. What it does is to attach to nodes and edges each type label
+of all the ancestors in the types hierarchy.</p>
+<p>By default, the Neo4j driver exports those type labels as an
+alphabetically-sorted list, which may be useful for comparing output files.
+But this may be less easy to understand within a graph browser that would show
+the labels in the same order.</p>
+<p>To get a more readable labels list, you can set <code class="docutils literal notranslate"><span class="pre">labels_order</span></code> as either
+<code class="docutils literal notranslate"><span class="pre">Ascending</span></code> or <code class="docutils literal notranslate"><span class="pre">Descending</span></code>; both of which will display labels in the order
+given by the type hierarchy of the ontology’s vocabulary.</p>
+<p>To get even simpler label, you can set <code class="docutils literal notranslate"><span class="pre">labels_order:</span> <span class="pre">Leaves</span></code>, which
+will write down only the more specific type label (the “leaf” of the types
+tree). Be warn that the resulting export will completely lose the ontological
+information, hence making it impossible to query the graph on high-level types.</p>
 </section>
 </section>
 

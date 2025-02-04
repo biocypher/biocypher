@@ -123,7 +123,7 @@
 <h1>biocypher.output.write._writer._Writer<a class="headerlink" href="#biocypher-output-write-writer-writer" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher.output.write._writer._Writer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.output.write._writer.</span></span><span class="sig-name descname"><span class="pre">_Writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Deduplicator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write._writer._Writer" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.output.write._writer.</span></span><span class="sig-name descname"><span class="pre">_Writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Deduplicator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write._writer._Writer" title="Permalink to this definition"></a></dt>
 <dd><p>Abstract class for writing node and edge representations to disk.
 Specifics of the different writers (e.g. neo4j, postgresql, csv, etc.)
 are implemented in the child classes. Any concrete writer needs to
@@ -132,46 +132,44 @@ implement at least:
 - _write_edge_data
 - _construct_import_call
 - _get_import_script_name</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>translator</strong> (<a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><em>Translator</em></a>) – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Translator</span></code> to enable translation of
-nodes and manipulation of properties.</p></li>
-<li><p><strong>deduplicator</strong> (<em>Deduplicator</em>) – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code> to enable deduplication
-of nodes and edges.</p></li>
-<li><p><strong>output_directory</strong> (<em>str</em><em>, </em><em>optional</em>) – Path for exporting CSV files. Defaults to None.</p></li>
-<li><p><strong>strict_mode</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to enforce source, version, and license properties. Defaults to False.</p></li>
-</ul>
+<section id="args">
+<h2>Args:<a class="headerlink" href="#args" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><dl class="simple">
+<dt>translator (Translator): Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Translator</span></code> to enable translation of</dt><dd><p>nodes and manipulation of properties.</p>
+</dd>
+<dt>deduplicator (Deduplicator): Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code> to enable deduplication</dt><dd><p>of nodes and edges.</p>
 </dd>
 </dl>
-<p>strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>NotImplementedError</strong> – Writer implementation must override ‘_write_node_data’</p></li>
-<li><p><strong>NotImplementedError</strong> – Writer implementation must override ‘_write_edge_data’</p></li>
-<li><p><strong>NotImplementedError</strong> – Writer implementation must override ‘_construct_import_call’</p></li>
-<li><p><strong>NotImplementedError</strong> – Writer implementation must override ‘_get_import_script_name’</p></li>
-</ul>
-</dd>
-</dl>
+<p>output_directory (str, optional): Path for exporting CSV files. Defaults to None.
+strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.</p>
+</div></blockquote>
+</section>
+<section id="raises">
+<h2>Raises:<a class="headerlink" href="#raises" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>NotImplementedError: Writer implementation must override ‘_write_node_data’
+NotImplementedError: Writer implementation must override ‘_write_edge_data’
+NotImplementedError: Writer implementation must override ‘_construct_import_call’
+NotImplementedError: Writer implementation must override ‘_get_import_script_name’</p>
+</div></blockquote>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.output.write._writer._Writer.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Deduplicator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write._writer._Writer.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Deduplicator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write._writer._Writer.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Abstract class for writing node and edge representations to disk.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>translator</strong> (<a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><em>Translator</em></a>) – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Translator</span></code> to enable translation of
-nodes and manipulation of properties.</p></li>
-<li><p><strong>deduplicator</strong> (<em>Deduplicator</em>) – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code> to enable deduplication
-of nodes and edges.</p></li>
-<li><p><strong>output_directory</strong> (<em>str</em><em>, </em><em>optional</em>) – Path for exporting CSV files. Defaults to None.</p></li>
-<li><p><strong>strict_mode</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to enforce source, version, and license properties. Defaults to False.</p></li>
-</ul>
+<section id="id1">
+<h3>Args:<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>translator (Translator): Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Translator</span></code> to enable translation of</dt><dd><p>nodes and manipulation of properties.</p>
+</dd>
+<dt>deduplicator (Deduplicator): Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code> to enable deduplication</dt><dd><p>of nodes and edges.</p>
 </dd>
 </dl>
-<p>strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.</p>
+<p>output_directory (str, optional): Path for exporting CSV files. Defaults to None.
+strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.</p>
+</div></blockquote>
+</section>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -191,6 +189,7 @@ of nodes and edges.</p></li>
 </tr>
 </tbody>
 </table>
+</section>
 </dd></dl>
 
 </section>

@@ -132,19 +132,19 @@ file and return the Python call to load it.</p>
 <dt class="sig sig-object py" id="biocypher.output.write.graph._networkx._NetworkXWriter.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write.graph._networkx._NetworkXWriter.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Abstract class for writing node and edge representations to disk.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>translator</strong> (<a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><em>Translator</em></a>) – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Translator</span></code> to enable translation of
-nodes and manipulation of properties.</p></li>
-<li><p><strong>deduplicator</strong> (<em>Deduplicator</em>) – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code> to enable deduplication
-of nodes and edges.</p></li>
-<li><p><strong>output_directory</strong> (<em>str</em><em>, </em><em>optional</em>) – Path for exporting CSV files. Defaults to None.</p></li>
-<li><p><strong>strict_mode</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to enforce source, version, and license properties. Defaults to False.</p></li>
-</ul>
+<section id="args">
+<h2>Args:<a class="headerlink" href="#args" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><dl class="simple">
+<dt>translator (Translator): Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Translator</span></code> to enable translation of</dt><dd><p>nodes and manipulation of properties.</p>
+</dd>
+<dt>deduplicator (Deduplicator): Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Deduplicator</span></code> to enable deduplication</dt><dd><p>of nodes and edges.</p>
 </dd>
 </dl>
-<p>strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.</p>
+<p>output_directory (str, optional): Path for exporting CSV files. Defaults to None.
+strict_mode (bool, optional): Whether to enforce source, version, and license properties. Defaults to False.</p>
+</div></blockquote>
+</section>
 </dd></dl>
 
 <p class="rubric">Methods</p>
