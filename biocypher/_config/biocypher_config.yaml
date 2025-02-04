@@ -30,12 +30,13 @@ biocypher:
     # switch_label_and_id: true
 
   ### Optional parameters ###
-
   ## Logging
   # Write log to disk
+
   log_to_disk: true
 
   # Activate more granular logging
+
   debug: true
 
   # Change the log directory
@@ -86,6 +87,7 @@ neo4j:
   quote_character: "'"
 
   # How to write the labels in the export files.
+
   labels_order: "Ascending" # Default: From more specific to more generic.
   # Or:
   # labels_order: "Descending" # From more generic to more specific.
@@ -109,8 +111,8 @@ neo4j:
 
 postgresql:
   ### PostgreSQL configuration ###
-
   # PostgreSQL connection credentials
+
   database_name: postgres # DB name
   user: postgres # user name
   password: postgres # password
@@ -118,6 +120,7 @@ postgresql:
   port: 5432 # port
 
   # PostgreSQL import batch writer settings
+
   quote_character: '"'
   delimiter: '\t'
   # import_call_bin_prefix: '' # path to "psql"
@@ -129,11 +132,12 @@ rdf:
 
 sqlite:
   ### SQLite configuration ###
-
   # SQLite connection credentials
+
   database_name: sqlite.db # DB name
 
   # SQLite import batch writer settings
+
   quote_character: '"'
   delimiter: '\t'
   # import_call_bin_prefix: '' # path to "sqlite3"
