@@ -124,7 +124,7 @@ class _BatchWriter(_Writer, ABC):
         db_port: str = None,
         rdf_format: str = None,
         rdf_namespaces: dict = {},
-        labels_order: str = "Alphabetical",
+        labels_order: str = "Ascending",
     ):
         """Abtract parent class for writing node and edge representations to disk
         using the format specified by each database type. The database-specific
@@ -210,6 +210,10 @@ class _BatchWriter(_Writer, ABC):
             rdf_namespaces:
                 The namespaces for RDF.
 
+            labels_order:
+                The order of labels, to reflect the hierarchy (or not).
+                Default: "Ascending" (from more specific to more generic).
+
         """
         super().__init__(
             translator=translator,
@@ -256,7 +260,7 @@ class _BatchWriter(_Writer, ABC):
         if labels_order not in self._labels_orders:
             raise ValueError(
                 f"neo4j's 'labels_order' parameter cannot be '{labels_order}',"
-                "must be one of: {' ,'.join(self._labels_orders)}"
+                "must be one of: {' ,'.join(self._labels_orders)}",
             )
         self.labels_order = labels_order
 
