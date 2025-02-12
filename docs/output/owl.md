@@ -1,25 +1,26 @@
 # OWL
 
 The Web Ontology Language (OWL) is a (family of) knowledge representation
-language(s) for authoring ontologies. BioCypher can use taxonomies using OWL,
-butit can also output a knowledge graph in an OWL file.
+language(s) for authoring ontologies. BioCypher can use taxonomies written in
+OWL as an input, and it can also output a knowledge graph in an OWL file.
 
-OWL is one of the most used knowledge representation language and it is built
-with the Resource Description Framework (RDF) and have some compatibility with
+OWL is one of the most used knowledge representation languages and is built
+on the Resource Description Framework (RDF) and thus is partly compatible with
 the RDF Schema data model. It can be serialized in several formats (most known
 being XML and Turtle). The [Protégé](https://protege.stanford.edu/) software
 is the *de facto* standard graphical user interface to design OWL ontologies.
 
 In BioCypher, selecting the `owl` output format will call the `_OWLWriter` class
-and generate a sefl-contained OWL file. The file is said to be "self-contained"
+and generate a self-contained OWL file. The file is said to be "self-contained"
 because it holds both the vocabulary (i.e. a part of the hierarchy of classes
 from the input ontology) and the instances (i.e. "nodes", for Biocypher).
 
 
 ## Edge Model
 
-The behavior rely mainly on the `edge_model` parameter,
-which can takes two values: "ObjectProperty" or "Association".
+The behavior of edge creation in the RDF output relies mainly on the
+`edge_model` parameter, which can take two values: "ObjectProperty" or
+"Association".
 
 
 ### ObjectProperty
@@ -47,33 +48,33 @@ configuration.
 
 This edge model (the default) translates BioCypher's
 edges into OWL's class instances. Those edges instances are
-inserted inbetween the instances coming from BioCypher's nodes.
-This allows to keep edges properties, but adds OWL instances
+inserted in between the instances coming from BioCypher's nodes.
+This allows to retain edge properties, but adds OWL instances
 to model relationships, which does not follow the classical
 OWL model.
 
 In this approach, all OWL instances are linked
 with a generic "edge\_source" (linking source instance to
 the association instance) and "edge\_target" (linking the association
-instance to the target instance). Both of which inherits from "edge",
+instance to the target instance). Both of which inherit from "edge",
 and are in the biocypher namespace.
 
-If you use this edge model, you should select a `root_node` as one of
-the subclass of owl:Thing, and not select any part of the object property tree.
+If you use this edge model, you should select one of the subclasses of
+owl:Thing as a `root_node`, and not select any part of the object property tree.
 
 
 ## Taxonomy Management
 
 This class takes care of keeping the vocabulary underneath the
 selected root node and exports it along the instances in the
-resulting OWL file. It discards whatever terms are not in the
+resulting OWL file. It discards all terms that are not in the
 tree below the selected root node.
 
-The configuration paramater `rdf_namespaces`, can be used to specify which
+The configuration parameter `rdf_namespaces` can be used to specify which
 namespaces exist in the input ontology (or the data). If the data contain IDs
 with a given prefix, they will be converted into valid Uniform Resource
-Identifiers (URI) to allow referencing. If no namespace are specified, BioCypher
-will search for them into the input ontology.
+Identifiers (URI) to allow referencing. If no namespace is specified, BioCypher
+will search for them in the input ontology.
 
 
 ## Settings
@@ -156,17 +157,17 @@ the selected edge model (especially "Association").
 
 Note that Protégé may show a couple of impediments:
 
-- It display owl:Entity as if it inherits from owl:Thing, but that is not
+- It displays owl:Entity as if it inherits from owl:Thing, but that is not
   necessarily actually implemented by a predicate. You may have to add it
   manually.
 - It displays all owl:ObjectProperty as if they inherit from
   owl:topObjectProperty, but you may also have to add the predicate manually.
-- It gives no easy way to add a meta-root on top of both classes, and an
+- It provides no easy way to add a meta-root on top of both classes, and a
   manually added one will appear as a *subclass* of both owl:Thing and
   owl:topObjectProperty.
 
-Double-checking the ontology file source code itself should help you checking
-whether it fits Biocypher's constraints.
+Double-checking the ontology file source code itself should help you ensure
+compatibility with BioCypher's constraints.
 
 Also, note that BioCypher requires that classes (and object properties) have an
 RDFS label, and will use it (and not the IRI) to find the necessary types.
