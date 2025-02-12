@@ -1,11 +1,14 @@
-"""BioCypher 'offline' module. Handles the writing of node and edge representations
-suitable for import into a DBMS.
+"""BioCypher 'offline' module.
+
+Handles the writing of node and edge representations suitable for import into a
+DBMS.
 """
 
 from typing import TYPE_CHECKING
 
 from biocypher._config import config as _config
 from biocypher._logger import logger
+from biocypher.output.write._batch_writer import _BatchWriter
 from biocypher.output.write.graph._arangodb import _ArangoDBBatchWriter
 from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
 from biocypher.output.write.graph._networkx import _NetworkXWriter
@@ -56,9 +59,8 @@ def get_writer(
     deduplicator: "Deduplicator",
     output_directory: str,
     strict_mode: bool,
-):
-    """Function to return the writer class based on the selection in the config
-    file.
+) -> _BatchWriter | None:
+    """Return the writer class based on the selection in the config file.
 
     Args:
     ----
@@ -78,7 +80,8 @@ def get_writer(
     writer = DBMS_TO_CLASS[dbms]
 
     if not writer:
-        raise ValueError(f"Unknown dbms: {dbms}")
+        msg = f"Unknown dbms: {dbms}"
+        raise ValueError(msg)
 
     if writer is not None:
         return writer(
@@ -102,3 +105,4 @@ def get_writer(
             rdf_namespaces=dbms_config.get("rdf_namespaces"),  # rdf
             edge_model=dbms_config.get("edge_model"),  # owl
         )
+    return None
