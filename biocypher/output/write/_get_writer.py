@@ -1,19 +1,6 @@
-"""
-BioCypher 'offline' module. Handles the writing of node and edge representations
+"""BioCypher 'offline' module. Handles the writing of node and edge representations
 suitable for import into a DBMS.
 """
-
-from biocypher._logger import logger
-from biocypher.output.write.graph._rdf import _RDFWriter
-from biocypher.output.write.graph._owl import _OWLWriter
-from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
-from biocypher.output.write.graph._arangodb import _ArangoDBBatchWriter
-from biocypher.output.write.graph._networkx import _NetworkXWriter
-from biocypher.output.write.relational._csv import _PandasCSVWriter
-from biocypher.output.write.relational._sqlite import _SQLiteBatchWriter
-from biocypher.output.write.relational._postgresql import _PostgreSQLBatchWriter
-
-logger.debug(f"Loading module {__name__}.")
 
 from typing import TYPE_CHECKING
 
@@ -22,6 +9,7 @@ from biocypher._logger import logger
 from biocypher.output.write.graph._arangodb import _ArangoDBBatchWriter
 from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
 from biocypher.output.write.graph._networkx import _NetworkXWriter
+from biocypher.output.write.graph._owl import _OWLWriter
 from biocypher.output.write.graph._rdf import _RDFWriter
 from biocypher.output.write.relational._csv import _PandasCSVWriter
 from biocypher.output.write.relational._postgresql import _PostgreSQLBatchWriter
@@ -69,11 +57,11 @@ def get_writer(
     output_directory: str,
     strict_mode: bool,
 ):
-    """
-    Function to return the writer class based on the selection in the config
+    """Function to return the writer class based on the selection in the config
     file.
 
     Args:
+    ----
         dbms: the database management system; for options, see DBMS_TO_CLASS.
         translator: the Translator object.
         deduplicator: the Deduplicator object.
@@ -81,9 +69,10 @@ def get_writer(
         strict_mode: whether to use strict mode.
 
     Returns:
+    -------
         instance: an instance of the selected writer class.
-    """
 
+    """
     dbms_config = _config(dbms)
 
     writer = DBMS_TO_CLASS[dbms]
