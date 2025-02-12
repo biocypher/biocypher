@@ -9,14 +9,10 @@
 #
 # Distributed under MIT licence, see the file `LICENSE`.
 #
-"""
-BioCypher 'offline' module. Handles the writing of node and edge representations
-suitable for import into a DBMS.
-"""
+"""Module to provide the OWL writer class."""
 import os
 
 from types import GeneratorType
-from typing import Optional, Union
 from urllib.parse import quote_plus as url_quote
 
 from rdflib import (
@@ -34,8 +30,7 @@ from biocypher.output.write.graph._rdf import _RDFWriter
 
 
 class _OWLWriter(_RDFWriter):
-    """
-    Class to write BioCypher's graph into a self-contained OWL file.
+    """Class to write BioCypher's graph into a self-contained OWL file.
     The resulting OWL file contains both the input vocabulary and
     the output instances.
 
@@ -85,10 +80,10 @@ class _OWLWriter(_RDFWriter):
         delimiter: str,
         array_delimiter: str = ",",
         quote: str = '"',
-        output_directory: Optional[str] = None,
+        output_directory: str | None = None,
         db_name: str = "neo4j",
-        import_call_bin_prefix: Optional[str] = None,
-        import_call_file_prefix: Optional[str] = None,
+        import_call_bin_prefix: str | None = None,
+        import_call_file_prefix: str | None = None,
         wipe: bool = True,
         strict_mode: bool = False,
         skip_bad_relationships: bool = False,
@@ -177,8 +172,8 @@ class _OWLWriter(_RDFWriter):
             file_stem:
                 The stem (name without the path and extension) of the output
                 OWL file. The extension is determined from `rdf_format`.
-        """
 
+        """
         super().__init__(
             translator=translator,
             deduplicator=deduplicator,
@@ -215,7 +210,7 @@ class _OWLWriter(_RDFWriter):
         self.edge_models = ["Association", "ObjectProperty"]
         if edge_model not in self.edge_models:
             raise ValueError(
-                f"`edge_model` cannot be '{edge_model}', but should be either: {' or '.join(self.edge_models)}"
+                f"`edge_model` cannot be '{edge_model}', but should be either: {' or '.join(self.edge_models)}",
             )
         self.edge_model = edge_model
 
@@ -228,8 +223,7 @@ class _OWLWriter(_RDFWriter):
         prop_dict: dict,
         labels: str,
     ):
-        """
-        This function takes a list of BioCypherNodes
+        """This function takes a list of BioCypherNodes
         and save them in self.graph.
         It re-uses RDFWriter's machinery, hence the
         misleading name.
@@ -238,6 +232,7 @@ class _OWLWriter(_RDFWriter):
         also owl:NamedIndividual.
 
         Args:
+        ----
             node_list (list): A list of BioCypherNodes to be written.
 
             label (str): The label (type) of the nodes.
@@ -247,9 +242,10 @@ class _OWLWriter(_RDFWriter):
             labels (str): string of one or several concatenated labels
 
         Returns:
+        -------
             bool: True for success, False otherwise.
-        """
 
+        """
         # FIXME labels and prop_dict are not used.
 
         if not all(isinstance(n, BioCypherNode) for n in node_list):
@@ -269,7 +265,7 @@ class _OWLWriter(_RDFWriter):
 
             # Create types in ancestors that would not exist in the vocabulary.
             # For those that exists, get the URI (and thus the correct namespace).
-            for ancestor, current_class in zip(all_labels, all_labels[1:]):
+            for ancestor, current_class in zip(all_labels, all_labels[1:], strict=False):
                 logger.debug(f"\t\t'{current_class}' is_a '{ancestor}'")
                 ancestor_label = self.translator.name_sentence_to_pascal(ancestor)
                 current_label = self.translator.name_sentence_to_pascal(current_class)
@@ -281,8 +277,8 @@ class _OWLWriter(_RDFWriter):
                             self.to_uri(current_label),
                             RDFS.subClassOf,
                             self.to_uri(ancestor_label),
-                        )
-                    )
+                        ),
+                    ),
                 )
 
                 if not rdf_currents:
@@ -317,7 +313,7 @@ class _OWLWriter(_RDFWriter):
                                     uri_current,
                                     RDF.type,
                                     uri_ancestor,
-                                )
+                                ),
                             )
                             logger.debug(f"\t\t\t[{uri_current}]--(type)->[{uri_ancestor}]")
 
@@ -333,7 +329,7 @@ class _OWLWriter(_RDFWriter):
                     self.to_uri(rdf_subject),
                     RDF.type,
                     uri_current,
-                )
+                ),
             )
             logger.debug(f"\t[{rdf_subject}]--(type)->[{uri_current}]")
 
@@ -343,7 +339,7 @@ class _OWLWriter(_RDFWriter):
                     self.to_uri(rdf_subject),
                     RDF.type,
                     OWL.NamedIndividual,
-                )
+                ),
             )
             logger.debug(f"\t[{rdf_subject}]--(type)->[NamedIndividual]")
 
@@ -353,7 +349,7 @@ class _OWLWriter(_RDFWriter):
                     self.to_uri(rdf_subject),
                     RDFS.label,
                     Literal(n.get_id()),
-                )
+                ),
             )
             logger.debug(f"\t[{rdf_subject}]--(label)->[{n.get_id()}]")
 
@@ -372,13 +368,13 @@ class _OWLWriter(_RDFWriter):
         label: str,
         prop_dict: dict,
     ):
-        """
-        This function takes a list of BioCypherEdges
+        """This function takes a list of BioCypherEdges
         and save them in self.graph.
         It re-uses RDFWriter's machinery, hence the
         misleading name.
 
         Args:
+        ----
             edge_list (list): list of BioCypherEdges to be written
 
             label (str): the label (type) of the edge
@@ -387,9 +383,10 @@ class _OWLWriter(_RDFWriter):
                 function and their types
 
         Returns:
+        -------
             bool: True for success, False otherwise.
-        """
 
+        """
         # FIXME prop_dict is not used.
 
         if not all(isinstance(n, BioCypherEdge) for n in edge_list):
@@ -411,7 +408,7 @@ class _OWLWriter(_RDFWriter):
                         self.to_uri(rdf_subject),
                         edge_uri,
                         self.to_uri(rdf_object),
-                    )
+                    ),
                 )
                 logger.debug(f"Edge ObjectProperty: [{rdf_subject}]--({edge_label})->[{rdf_object}]")
 
@@ -443,7 +440,7 @@ class _OWLWriter(_RDFWriter):
                         self.to_uri(rdf_id),
                         RDF.type,
                         edge_uri,
-                    )
+                    ),
                 )
                 logger.debug(f"\tEdge object instance: [{rdf_id}]--(type)->[{edge_label}]")
 
@@ -456,7 +453,7 @@ class _OWLWriter(_RDFWriter):
                         self.as_uri("edge", "biocypher"),
                         RDF.type,
                         OWL.ObjectProperty,
-                    )
+                    ),
                 )
                 logger.debug("\tBase ObjectProperty type: [edge]--(type)->[ObjectProperty]")
 
@@ -465,7 +462,7 @@ class _OWLWriter(_RDFWriter):
                         self.as_uri("edge_source", "biocypher"),
                         RDFS.subPropertyOf,
                         self.as_uri("edge", "biocypher"),
-                    )
+                    ),
                 )
                 logger.debug("\tLeft ObjectProperty type: [edge_source]--(type)->[edge]")
 
@@ -474,7 +471,7 @@ class _OWLWriter(_RDFWriter):
                         self.as_uri("edge_target", "biocypher"),
                         RDFS.subPropertyOf,
                         self.as_uri("edge", "biocypher"),
-                    )
+                    ),
                 )
                 logger.debug("\tRight ObjectProperty type: [edge_target]--(type)->[edge]")
 
@@ -483,7 +480,7 @@ class _OWLWriter(_RDFWriter):
                         self.to_uri(rdf_subject),
                         self.as_uri("edge_source", "biocypher"),
                         self.as_uri(rdf_id, "biocypher"),
-                    )
+                    ),
                 )
                 logger.debug(f"\tLeft ObjectProperty: [{rdf_subject}]--(edge_source)->[{rdf_id}]")
 
@@ -492,7 +489,7 @@ class _OWLWriter(_RDFWriter):
                         self.as_uri(rdf_id, "biocypher"),
                         self.as_uri("edge_target", "biocypher"),
                         self.to_uri(rdf_object),
-                    )
+                    ),
                 )
                 logger.debug(f"\tRight ObjectProperty: [{rdf_id}]--(edge_target)->[{rdf_object}]")
 
@@ -510,18 +507,20 @@ class _OWLWriter(_RDFWriter):
         return True
 
     def write_nodes(self, nodes, batch_size: int = int(1e6), force: bool = False) -> bool:
-        """
-        Insert nodes in `self.graph`.
+        """Insert nodes in `self.graph`.
 
         It calls _write_node_data, which calls _write_single_node_list_to_file.
 
         Args:
+        ----
             nodes (list or generator): A list or generator of nodes in BioCypherNode format.
             batch_size (int): The number of nodes to write in each batch.
             force (bool): Flag to force the writing even if the output file already exists.
 
         Returns:
+        -------
             bool: True if the writing is successful, False otherwise.
+
         """
         # Calls _write_single_node_list_to_file, which sets self.has_nodes.
         if not super().write_nodes(nodes, batch_size, force):
@@ -533,21 +532,23 @@ class _OWLWriter(_RDFWriter):
 
     def write_edges(
         self,
-        edges: Union[list, GeneratorType],
+        edges: list | GeneratorType,
         batch_size: int = int(1e6),
     ) -> bool:
-        """
-        Insert edges in `self.graph`.
+        """Insert edges in `self.graph`.
 
         It calls _write_edge_data, which calls _write_single_edge_list_to_file.
 
         Args:
+        ----
             edges (BioCypherEdge): a list or generator of edges in
                 :py:class:`BioCypherEdge` format
             batch_size (int): The number of edges to write in each batch.
 
         Returns:
+        -------
             bool: The return value. True for success, False otherwise.
+
         """
         # Calls _write_single_edge_list_to_file, which sets self.has_edges.
         if not super().write_edges(edges, batch_size):
@@ -558,9 +559,7 @@ class _OWLWriter(_RDFWriter):
         return True
 
     def _write_file(self):
-        """
-        Write an OWL file if nodes and edges are ready in self.graph.
-        """
+        """Write an OWL file if nodes and edges are ready in self.graph."""
         if self._has_nodes and self._has_edges:
             file_name = os.path.join(self.outdir, f"{self.file_stem}.{self.extension}")
             logger.info(f"Writing {len(self.graph)} terms to {file_name}")

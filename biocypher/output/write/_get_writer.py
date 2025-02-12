@@ -1,7 +1,7 @@
-"""BioCypher 'offline' module.
+"""Module to provide one of the available writer classes.
 
-Handles the writing of node and edge representations suitable for import into a
-DBMS.
+The writer classes are responsible for writing the node and edge representations
+to disk in a format suitable for import into a DBMS.
 """
 
 from typing import TYPE_CHECKING

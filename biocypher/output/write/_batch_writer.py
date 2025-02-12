@@ -1,3 +1,5 @@
+"""Abstract base class for all batch writers."""
+
 import glob
 import os
 import re

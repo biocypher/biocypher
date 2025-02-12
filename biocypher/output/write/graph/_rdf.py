@@ -1,11 +1,8 @@
-"""BioCypher 'offline' module. Handles the writing of node and edge representations
-suitable for import into a DBMS.
-"""
+"""Module to provide the RDF writer class."""
 
 import os
 
 from types import GeneratorType
-from typing import Optional
 
 from rdflib import (
     DC,
@@ -45,10 +42,10 @@ class _RDFWriter(_BatchWriter):
         delimiter: str,
         array_delimiter: str = ",",
         quote: str = '"',
-        output_directory: Optional[str] = None,
+        output_directory: str | None = None,
         db_name: str = "neo4j",
-        import_call_bin_prefix: Optional[str] = None,
-        import_call_file_prefix: Optional[str] = None,
+        import_call_bin_prefix: str | None = None,
+        import_call_file_prefix: str | None = None,
         wipe: bool = True,
         strict_mode: bool = False,
         skip_bad_relationships: bool = False,
@@ -176,7 +173,6 @@ class _RDFWriter(_BatchWriter):
             bool: The return value. True for success, False otherwise.
 
         """
-
         # FIXME prop_dict is not used.
         if not all(isinstance(n, BioCypherEdge) for n in edge_list):
             logger.error("Edges must be passed as type BioCypherEdge.")
@@ -215,14 +211,14 @@ class _RDFWriter(_BatchWriter):
                     self.as_uri(rdf_predicate, "biocypher"),
                     self.as_uri("subject", "biocypher"),
                     self.to_uri(rdf_subject),
-                )
+                ),
             )
             graph.add(
                 (
                     self.as_uri(rdf_predicate, "biocypher"),
                     self.as_uri("object", "biocypher"),
                     self.to_uri(rdf_object),
-                )
+                ),
             )
 
             # add properties to the transformed edge --> node
@@ -343,7 +339,6 @@ class _RDFWriter(_BatchWriter):
             bool: True if the writing is successful, False otherwise.
 
         """
-
         # FIXME labels and prop_dict are not used.
         if not all(isinstance(n, BioCypherNode) for n in node_list):
             logger.error("Nodes must be passed as type BioCypherNode.")
@@ -376,7 +371,7 @@ class _RDFWriter(_BatchWriter):
                     self.to_uri(rdf_subject),
                     RDF.type,
                     self.as_uri(class_name, "biocypher"),
-                )
+                ),
             )
             for key, value in properties.items():
                 # only write value if it exists.
@@ -461,10 +456,7 @@ class _RDFWriter(_BatchWriter):
         return ""
 
     def _quote_string(self, value: str) -> str:
-        """
-        Quote a string.
-        """
-
+        """Quote a string."""
         return f"{self.quote}{value}{self.quote}"
 
     def _write_array_string(self, string_list):
@@ -509,8 +501,7 @@ class _RDFWriter(_BatchWriter):
         return True
 
     def as_uri(self, name: str, namespace: str = "") -> str:
-        """
-        Returns an RDFlib object with the given namespace
+        """Returns an RDFlib object with the given namespace
         transformed as a URI.
         """
         # There is often a default for empty namespaces,
@@ -526,8 +517,7 @@ class _RDFWriter(_BatchWriter):
             return URIRef(self.namespaces["biocypher"][name])
 
     def to_uri(self, subject: str) -> str:
-        """
-        Extract the namespace from the given subject by
+        """Extract the namespace from the given subject by
         splitting its string on ":".
         Then converts the subject to a proper URI,
         if the namespace is known.
@@ -555,7 +545,7 @@ class _RDFWriter(_BatchWriter):
         uris = list(gen)
         if len(uris) > 1:
             logger.warning(
-                f"Found several terms matching `{regexp}`, I will consider only the first one: `{uris[0][0]}`"
+                f"Found several terms matching `{regexp}`, I will consider only the first one: `{uris[0][0]}`",
             )
             logger.debug("\tothers:")
             for u in uris[1:]:
@@ -640,7 +630,7 @@ class _RDFWriter(_BatchWriter):
                 logger.warning(
                     f"Namespace '{prefix}' was already loaded"
                     f"as '{self.namespaces[prefix]}',"
-                    f"I will overwrite it with '{ns}'."
+                    f"I will overwrite it with '{ns}'.",
                 )
             logger.debug(f"\t'{prefix}'\t=>\t'{ns}'")
             self.namespaces[prefix] = Namespace(ns)
