@@ -28,8 +28,9 @@ from biocypher.output.write._batch_writer import _BatchWriter
 
 
 class _RDFWriter(_BatchWriter):
-    """Class to write BioCypher's property graph into an RDF format using
-    rdflib and all the extensions it supports (RDF/XML, N3, NTriples,
+    """Write BioCypher's property graph into an RDF format.
+
+    Uses `rdflib` and all the extensions it supports (RDF/XML, N3, NTriples,
     N-Quads, Turtle, TriX, Trig and JSON-LD). By default the conversion
     is done keeping only the minimum information about node and edges,
     skipping all properties.
@@ -89,8 +90,9 @@ class _RDFWriter(_BatchWriter):
         self.namespaces = {}
 
     def _get_import_script_name(self) -> str:
-        """Returns the name of the RDF admin import script.
-        This function applicable for RDF export.
+        """Return the name of the RDF admin import script.
+
+        This function is used for RDF export.
 
         Returns
         -------
@@ -100,7 +102,7 @@ class _RDFWriter(_BatchWriter):
         return "rdf-import-call.sh"
 
     def _get_default_import_call_bin_prefix(self):
-        """Method to provide the default string for the import call bin prefix.
+        """Provide the default string for the import call bin prefix.
 
         Returns
         -------
@@ -110,7 +112,7 @@ class _RDFWriter(_BatchWriter):
         return "bin/"
 
     def _is_rdf_format_supported(self, rdf_format: str) -> bool:
-        """Function to check if the specified RDF format is supported.
+        """Check if the specified RDF format is supported.
 
         Args:
         ----
@@ -156,8 +158,7 @@ class _RDFWriter(_BatchWriter):
         label: str,
         prop_dict: dict,
     ):
-        """This function takes one list of biocypher edges and writes them
-        to an RDF file with the given format.
+        """Write a list of BioCypherEdges to an RDF file.
 
         Args:
         ----
@@ -301,7 +302,7 @@ class _RDFWriter(_BatchWriter):
             )
 
     def transform_string_to_list(self, string_list: str) -> list:
-        """Function to transform a string representation of a list into a list.
+        """Transform a string representation of a list into a list.
 
         Args:
         ----
@@ -321,8 +322,7 @@ class _RDFWriter(_BatchWriter):
         prop_dict: dict,
         labels: str,
     ):
-        """This function takes a list of BioCypherNodes and writes them
-        to an RDF file in the specified format.
+        """Write a list of BioCypherNodes to an RDF file.
 
         Args:
         ----
@@ -387,13 +387,15 @@ class _RDFWriter(_BatchWriter):
         return True
 
     def write_nodes(self, nodes, batch_size: int = int(1e6), force: bool = False) -> bool:
-        """Wrapper for writing nodes in RDF format. It calls the _write_node_data() function, specifying the node data.
+        """Write nodes in RDF format.
 
         Args:
         ----
-            nodes (list or generator): A list or generator of nodes in BioCypherNode format.
+            nodes (list or generator): A list or generator of nodes in
+                BioCypherNode format.
             batch_size (int): The number of nodes to write in each batch.
-            force (bool): Flag to force the writing even if the output file already exists.
+            force (bool): Flag to force the writing even if the output file
+                already exists.
 
         Returns:
         -------
@@ -417,8 +419,7 @@ class _RDFWriter(_BatchWriter):
         edges: list | GeneratorType,
         batch_size: int = int(1e6),
     ) -> bool:
-        """Wrapper for writing edges in RDF format. It calls _write_edge_data()
-        functions specifying it's edge data.
+        """Write edges in RDF format.
 
         Args:
         ----
@@ -445,7 +446,8 @@ class _RDFWriter(_BatchWriter):
         return True
 
     def _construct_import_call(self) -> bool:
-        """Function to write the import call.
+        """Write the import call.
+
         This function is not applicable for RDF.
 
         Returns
@@ -460,8 +462,8 @@ class _RDFWriter(_BatchWriter):
         return f"{self.quote}{value}{self.quote}"
 
     def _write_array_string(self, string_list):
-        """Abstract method to write the string representation of an array into a .csv file
-        as required by the RDF admin-import.
+        """Write the string representation of an array into a .csv file.
+
         This function is not applicable for RDF.
 
         Args:
@@ -476,8 +478,8 @@ class _RDFWriter(_BatchWriter):
         return True
 
     def _write_node_headers(self):
-        """Abstract method that takes care of importing properties of a graph entity that is represented
-        as a node as per the definition in the `schema_config.yaml`
+        """Import properties of a graph entity.
+
         This function is not applicable for RDF.
 
         Returns
@@ -488,9 +490,8 @@ class _RDFWriter(_BatchWriter):
         return True
 
     def _write_edge_headers(self):
-        """Abstract method to write a database import-file for a graph entity that is represented
-        as an edge as per the definition in the `schema_config.yaml`,
-        containing only the header for this type of edge.
+        """Write a database import-file for a graph entity.
+
         This function is not applicable for RDF.
 
         Returns
@@ -501,12 +502,22 @@ class _RDFWriter(_BatchWriter):
         return True
 
     def as_uri(self, name: str, namespace: str = "") -> str:
-        """Returns an RDFlib object with the given namespace
-        transformed as a URI.
+        """Return an RDFlib object with the given namespace as a URI.
+
+        There is often a default for empty namespaces, which would have been
+        loaded with the ontology, and put in `self.namespace` by
+        `self._init_namespaces`.
+
+        Args:
+        ----
+            name (str): The name to be transformed.
+            namespace (str): The namespace to be used.
+
+        Returns:
+        -------
+            str: The URI for the given name and namespace.
+
         """
-        # There is often a default for empty namespaces,
-        # which would have been loaded with the ontology,
-        # and put in self.namespace by self._init_namespaces.
         if namespace in self.namespaces:
             return URIRef(self.namespaces[namespace][name])
         else:
@@ -517,11 +528,11 @@ class _RDFWriter(_BatchWriter):
             return URIRef(self.namespaces["biocypher"][name])
 
     def to_uri(self, subject: str) -> str:
-        """Extract the namespace from the given subject by
-        splitting its string on ":".
-        Then converts the subject to a proper URI,
-        if the namespace is known.
-        If namespace is unknown, defaults to the default prefix of the ontology.
+        """Extract the namespace from the given subject.
+
+        Split the subject's string on ":". Then convert the subject to a
+        proper URI, if the namespace is known. If namespace is unknown,
+        defaults to the default prefix of the ontology.
 
         Args:
         ----
@@ -558,10 +569,11 @@ class _RDFWriter(_BatchWriter):
             return None
 
     def property_to_uri(self, property_name: str) -> dict[str, str]:
-        """Converts a property name to its corresponding URI.
+        """Convert a property name to its corresponding URI.
 
-        This function takes a property name and searches for its corresponding URI in various namespaces.
-        It first checks the core namespaces for rdflib, including owl, rdf, rdfs, xsd, and xml.
+        This function takes a property name and searches for its corresponding
+        URI in various namespaces. It first checks the core namespaces for
+        rdflib, including owl, rdf, rdfs, xsd, and xml.
 
         Args:
         ----
@@ -604,9 +616,11 @@ class _RDFWriter(_BatchWriter):
     def _init_namespaces(self, graph: Graph):
         """Initialise the namespaces for the RDF graph.
 
-        This function adds the biocypher standard namespace to the `namespaces` attribute of the class.
-        If `namespaces` is empty, it sets it to the biocypher standard namespace. Otherwise, it merges
-        the biocypher standard namespace with the namespaces defined in the biocypher_config.yaml.
+        This function adds the biocypher standard namespace to the `namespaces`
+        attribute of the class. If `namespaces` is empty, it sets it to the
+        biocypher standard namespace. Otherwise, it merges the biocypher
+        standard namespace with the namespaces defined in the
+        biocypher_config.yaml.
 
         Args:
         ----
