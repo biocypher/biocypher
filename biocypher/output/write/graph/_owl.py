@@ -30,12 +30,13 @@ from biocypher.output.write.graph._rdf import _RDFWriter
 
 
 class _OWLWriter(_RDFWriter):
-    """Class to write BioCypher's graph into a self-contained OWL file.
+    """Write BioCypher's graph into a self-contained OWL file.
+
     The resulting OWL file contains both the input vocabulary and
     the output instances.
 
-    The behavior rely mainly on the `edge_model` parameter,
-    which can takes two values:
+    The behavior relies mainly on the `edge_model` parameter,
+    which can take two values:
 
     - "ObjectProperty", which translates BioCypher's edges into
       OWL's object properties (if they are available under the
@@ -43,7 +44,7 @@ class _OWLWriter(_RDFWriter):
       to model edges in OWL, but they do not support annotation,
       thus being incompatible with having BioCypher's properties
       on edges.
-      As most of OWL files do not model a common term on top of both
+      As most OWL files do not model a common term on top of both
       owl:topObjectProperty and owl:Thing, you may need to ensure
       that the input OWL contains a common ancestor honoring both:
 
@@ -51,15 +52,16 @@ class _OWLWriter(_RDFWriter):
       - owl:topObjectProperty rdfs:subPropertyOf <root_node>
 
       and that you select it in your BioCypher configuration.
+
     - "Association" (the default), which translates BioCypher's
       edges into OWL's class instances. Those edges instances are
-      inserted inbetween the instances coming from BioCypher's nodes.
-      This allows to keep edges properties, but adds OWL instances
+      inserted in between the instances coming from BioCypher's nodes.
+      This allows to keep edge properties, but adds OWL instances
       to model relationships, which does not follow the classical
       OWL model. In this approach, all OWL instances are linked
       with a generic "edge_source" (linking source instance to
       the association instance) and "edge_target" (linking the association
-      instance to the target instance). Both of which inherits from "edge",
+      instance to the target instance). Both of which inherit from "edge",
       and are in the biocypher namespace.
 
     This class takes care of keeping the vocabulary underneath the
@@ -70,7 +72,7 @@ class _OWLWriter(_RDFWriter):
     To output a valid self-contained OWL file, it is required that
     you call *both* `write_nodes` *and* `write_edges`.
 
-    This class heavily rely on the _RDFWriter class interface and code.
+    This class heavily relies on the _RDFWriter class interface and code.
     """
 
     def __init__(
@@ -99,7 +101,7 @@ class _OWLWriter(_RDFWriter):
         file_stem: str = "biocypher",
         **kwargs,
     ):
-        """Constructor.
+        """Initialize the OWL writer.
 
         Args:
         ----
@@ -135,7 +137,8 @@ class _OWLWriter(_RDFWriter):
                 call.
 
             wipe:
-                Whether to force import (removing existing DB content). (Specific to Neo4j.)
+                Whether to force import (removing existing DB content).
+                    (Specific to Neo4j.)
 
             strict_mode:
                 Whether to enforce source, version, and license properties.
@@ -166,8 +169,9 @@ class _OWLWriter(_RDFWriter):
                 The namespaces for RDF.
 
             edge_model:
-                Whether to model an edge as OWL's "ObjectProperty" (discards edges properties)
-                or "Association" (adds an intermediate node that holds the edge properties).
+                Whether to model an edge as OWL's "ObjectProperty" (discards
+                edges properties) or "Association" (adds an intermediate node
+                that holds the edge properties).
 
             file_stem:
                 The stem (name without the path and extension) of the output
@@ -209,9 +213,9 @@ class _OWLWriter(_RDFWriter):
 
         self.edge_models = ["Association", "ObjectProperty"]
         if edge_model not in self.edge_models:
-            raise ValueError(
-                f"`edge_model` cannot be '{edge_model}', but should be either: {' or '.join(self.edge_models)}",
-            )
+            msg = f"`edge_model` cannot be '{edge_model}', but should be either: {' or '.join(self.edge_models)}"
+            logger.error(msg)
+            raise ValueError(msg)
         self.edge_model = edge_model
 
         self.file_stem = file_stem
@@ -222,14 +226,15 @@ class _OWLWriter(_RDFWriter):
         label: str,
         prop_dict: dict,
         labels: str,
-    ):
-        """This function takes a list of BioCypherNodes
-        and save them in self.graph.
-        It re-uses RDFWriter's machinery, hence the
-        misleading name.
+    ) -> bool:
+        """Save a list of BioCypherNodes in the graph.
 
-        Nodes are modelled as class instances, being
-        also owl:NamedIndividual.
+        This function takes a list of BioCypherNodes and saves them in
+        `self.graph`. It re-uses RDFWriter's machinery, hence the misleading
+        name.
+
+        Nodes are modelled as class instances, being also
+        owl:NamedIndividual.
 
         Args:
         ----
@@ -237,7 +242,8 @@ class _OWLWriter(_RDFWriter):
 
             label (str): The label (type) of the nodes.
 
-            prop_dict (dict): A dictionary of properties and their types for the node class.
+            prop_dict (dict): A dictionary of properties and their types for the
+                node class.
 
             labels (str): string of one or several concatenated labels
 
@@ -368,10 +374,11 @@ class _OWLWriter(_RDFWriter):
         label: str,
         prop_dict: dict,
     ):
-        """This function takes a list of BioCypherEdges
-        and save them in self.graph.
-        It re-uses RDFWriter's machinery, hence the
-        misleading name.
+        """Save a list of BioCypherEdges in the graph.
+
+        This function takes a list of BioCypherEdges and saves them in
+        `self.graph`. It re-uses RDFWriter's machinery, hence the misleading
+        name.
 
         Args:
         ----
@@ -513,9 +520,11 @@ class _OWLWriter(_RDFWriter):
 
         Args:
         ----
-            nodes (list or generator): A list or generator of nodes in BioCypherNode format.
+            nodes (list or generator): A list or generator of nodes in
+                BioCypherNode format.
             batch_size (int): The number of nodes to write in each batch.
-            force (bool): Flag to force the writing even if the output file already exists.
+            force (bool): Flag to force the writing even if the output file
+                already exists.
 
         Returns:
         -------
