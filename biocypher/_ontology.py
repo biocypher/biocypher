@@ -131,7 +131,6 @@ class OntologyAdapter:
             g.triples((None, rdflib.RDF.type, rdflib.RDFS.Class)),  # Root classes
             g.triples((None, rdflib.RDFS.subPropertyOf, None)),  # OWL "edges" classes
             g.triples((None, rdflib.RDF.type, rdflib.OWL.ObjectProperty)),  # OWL "edges" root classes
-            # HERE
         ):
             if self.has_label(s, g):
                 one_to_one_inheritance_graph.add((s, p, o))
@@ -161,8 +160,6 @@ class OntologyAdapter:
             for s_, _, _ in chain(
                 g.triples((None, rdflib.RDFS.subClassOf, node)),
                 g.triples((None, rdflib.RDFS.subPropertyOf, node)),
-                # FIXME check RDF.type as well to avoid missing the root class(es)
-                # HERE
             ):
                 child_name = s_
 
@@ -189,7 +186,6 @@ class OntologyAdapter:
             bool: True if the node has a label, False otherwise
 
         """
-        # FIXME check IRI and RDF.label
         return (node, rdflib.RDFS.label, None) in g
 
     def _retrieve_rdf_linked_list(self, subject: rdflib.URIRef) -> list:
@@ -275,8 +271,6 @@ class OntologyAdapter:
             - switching the id and label if requested
             - adapting the labels (replace _ with space and convert to lower
                 sentence case)
-            FIXME why is a BioCypher format even needed?
-
         Args:
         ----
             nx_graph (nx.DiGraph): The networkx graph

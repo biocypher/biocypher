@@ -174,7 +174,9 @@ class _RDFWriter(_BatchWriter):
             bool: The return value. True for success, False otherwise.
 
         """
-        # FIXME prop_dict is not used.
+
+        # NOTE: prop_dict is not used.
+
         if not all(isinstance(n, BioCypherEdge) for n in edge_list):
             logger.error("Edges must be passed as type BioCypherEdge.")
             return False
@@ -339,7 +341,9 @@ class _RDFWriter(_BatchWriter):
             bool: True if the writing is successful, False otherwise.
 
         """
-        # FIXME labels and prop_dict are not used.
+
+        # NOTE: labels and prop_dict are not used.
+
         if not all(isinstance(n, BioCypherNode) for n in node_list):
             logger.error("Nodes must be passed as type BioCypherNode.")
             return False

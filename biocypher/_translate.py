@@ -228,7 +228,7 @@ class Translator:
                     raise ValueError(msg)
 
             # match the input label (_type) to
-            # a Biolink label from schema_config # FIXME this may be any ontology, remove comment?
+            # an ontology label from schema_config
             bl_type = self._get_ontology_mapping(_type)
 
             if bl_type:

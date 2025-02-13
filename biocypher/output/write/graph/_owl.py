@@ -250,9 +250,11 @@ class _OWLWriter(_RDFWriter):
         Returns:
         -------
             bool: True for success, False otherwise.
-
         """
-        # FIXME labels and prop_dict are not used.
+
+        # NOTE: despite its name, this function does not write to file,
+        #       but to self.graph.
+        # NOTE: labels and prop_dict are not used.
 
         if not all(isinstance(n, BioCypherNode) for n in node_list):
             logger.error("Nodes must be passed as type BioCypherNode.")
@@ -394,7 +396,10 @@ class _OWLWriter(_RDFWriter):
             bool: True for success, False otherwise.
 
         """
-        # FIXME prop_dict is not used.
+
+        # NOTE: despite its name, this function does not write to file,
+        #       but to self.graph.
+        # NOTE: prop_dict is not used.
 
         if not all(isinstance(n, BioCypherEdge) for n in edge_list):
             logger.error("Edges must be passed as type BioCypherEdge.")
