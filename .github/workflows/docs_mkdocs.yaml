@@ -1,4 +1,4 @@
-name: Docs BioCypher [Material for MkDocs]
+name: CI Docs BioCypher
 on:
   push:
     branches:
