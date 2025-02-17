@@ -12,7 +12,7 @@ BioCypher as an abstraction of the build process of a biomedical knowledge graph
 and thus are open towards any output format for the knowledge representation.
 
 The used output format is specified via the `dbms` parameter in the
-`biocypher_config.yaml` (see the [Configuration](./installation.md#config) for an example).
+`biocypher_config.yaml` (see the [Configuration](../../../reference/biocypher-config-guide.md) for an example).
 Currently supported are:
 
 * `neo4j`

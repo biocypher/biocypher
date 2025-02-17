@@ -5,7 +5,7 @@
 	You can also get an overview of pipelines and the adapters they use in our [meta
 	graph](https://meta.biocypher.org).
 
-![BioCypher pipeline interface](figure_pipeline.png)
+![BioCypher pipeline interface](../../assets/img/pipeline-biocypher.png)
 
 !!! note "Note"
 	To facilitate the creation of a BioCypher pipeline, we have created a template

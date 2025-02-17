@@ -60,7 +60,7 @@ formatter, written in Rust
 
 
 Pre-commit hooks are used to automatically run these tools before each commit.
-They are defined in [.pre-commit-config.yaml](./.pre-commit-config.yaml). To
+They are defined in `.pre-commit-config.yaml`. To
 install the hooks run `poetry run pre-commit install`. The hooks are then
 executed before each commit. For running the hook for all project files (not
 only the changed ones) run `poetry run pre-commit run --all-files`.

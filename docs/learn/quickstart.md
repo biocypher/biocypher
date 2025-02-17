@@ -39,7 +39,7 @@ consecutive steps:
 
 1. Clearly define the scope of your project, including the data sources you
 want to use, the entities and relationships you want to represent, and the
-[ontologies](./learn/tutorials/tutorial002_handling_ontologies.md) that should inform
+[ontologies](./tutorials/tutorial002_handling_ontologies.md) that should inform
 these entities.
 
 1. Using these definitions, find existing adapters of data sources or, if
@@ -253,8 +253,7 @@ df = bc.to_df()
 ```
 
 For more information on the usage of these functions, please refer to the
-[Tutorial](tutorial_basic) section and the [full API
-documentation](./reference/index.md).
+[Tutorial](../learn/tutorials/tutorial001_basics.md) section and the [full API documentation](../reference/api-reference.md).
 
 ---
 
@@ -262,7 +261,7 @@ documentation](./reference/index.md).
 
 Most of the configuration options for BioCypher can and should be specified in
 the configuration YAML file, `biocypher_config.yaml`. While BioCypher comes with
-default settings (the ones you can see in the [Configuration](./reference/installation.md#config) section),
+default settings (the ones you can see in the [Configuration](../reference/biocypher-config-guide.md) section),
 we can override them by specifying the desired settings in the local
 configuration in the root or the `config` directory of the project. The
 primary BioCypher settings are found in the top-level entry `biocypher`. For
@@ -297,7 +296,7 @@ DBMS (database management system) in the configuration file under the
 `postgresql`, `arangodb`, `rdf`, or `neo4j` entry. For instance, you can specify
 the database name, the host, the port, and the credentials for your database.
 You can also set delimiters for the entities and arrays in your import files.
-For a list of all settings, please refer to the [Configuration](./installation.md#config)
+For a list of all settings, please refer to the [Configuration](../reference/biocypher-config-guide.md)
 section.
 
 ```yaml title="biocypher_config.yaml"

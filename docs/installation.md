@@ -38,11 +38,11 @@ The easiest way to start using BioCypher is with a pre-configured project that i
 === "GitHub repo from template (recommended)"
     **Step  1:** Go to Biocypher [project template repository](https://github.com/biocypher/project-template), click on "Use this template", then click on "Create a new repository".
 
-    ![project-from-template-1](../assets/img/gh-from-biocypher-template-1.png)
+    ![project-from-template-1](./assets/img/gh-from-biocypher-template-1.png)
 
     **Step 2:** Complete the information such as owner, name, description and visibility of your repository.
 
-    ![project-from-template-2](../assets/img/gh-from-biocypher-template-2.png){ loading=lazy }
+    ![project-from-template-2](./assets/img/gh-from-biocypher-template-2.png){ loading=lazy }
 
     **Step 3:**  Now, you can clone the repository and navigate into it. For our example, the repository is called "my-knowledge-graph-project". The user hhrobertkoch is a fictional user in honor to Robert Koch, replace this user with your own.
 
