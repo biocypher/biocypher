@@ -1,4 +1,0 @@
-protein:
-    represented_as: node
-    preferred_id: [uniprot, entrez]
-    input_label: [uniprot_protein, entrez_protein]
