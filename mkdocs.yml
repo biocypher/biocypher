@@ -1,0 +1,172 @@
+#==========================================================================================
+#=======                   CONFIGURATION FILE FOR MKDOCS MATERIAL                   =======
+#==========================================================================================
+
+
+site_name: BioCypher Documentation
+site_url : https://sitename.example    # URL where the webpage will be hosted, by default it it localhost
+
+#=======    Theme Settings   =====
+theme:
+  name: material
+  font:
+    text: Arial
+    code: Arial Mono
+  logo: assets/img/logo-biocypher.png
+  favicon: assets/img/favicon_biocypher_32px.png
+  features:
+    - content.code.copy   # Render a button to copy the code to the clipboard
+    - navigation.indexes
+    - navigation.path
+    - navigation.footer
+
+  icon:
+    nav:
+      BioCypher Framework: material/briefcase
+
+  #palette:
+    # Palette toggle for dark mode
+  #  - scheme: slate
+  #    toggle:
+  #      icon: material/lightbulb-on
+  #      name: Dark mode
+  #    primary: green
+  #    accent: deep purple
+
+    # Palette toggle for light mode
+    #- scheme: default
+    # toggle:
+    #    icon: material/lightbulb-off
+    #    name: Light
+    #  primary: green
+    #  accent: deep orange
+
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/lightbulb-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off
+        name: Switch to system preference
+
+#=======    Website Navigation settings   =====
+nav:
+  - BioCypher Framework:
+    - " ": index.md
+    - Project: biocypher-project/project
+    - Design philosophy: biocypher-project/design-philosophy
+    - Publications: biocypher-project/publications
+    - Use Cases: biocypher-project/use-cases
+    - BioCypher + LLMs: biocypher-project/biochatter-integration
+    - Sponsors: biocypher-project/sponsors
+
+  - Installation: installation
+
+  - Quickstart: learn/quickstart
+
+  - Learn:
+    #- learn/index
+    - Tutorials:
+      - learn/tutorials/index.md
+      - BioCypher and Pandas: learn/tutorials/pandas_tutorial.ipynb
+      - Basics: learn/tutorials/tutorial001_basics
+      - Handling Ontologies: learn/tutorials/tutorial002_handling_ontologies
+      - Adapters: learn/tutorials/tutorial003_adapters
+    - Guides:
+      - learn/guides/index.md
+      - Adapters: learn/guides/adapters
+      - Ontologies: learn/guides/ontologies
+      - Outputs:
+        - learn/guides/outputs/index.md
+        - ArangoDB: learn/guides/outputs/arangodb-output
+        - Neo4j: learn/guides/outputs/neo4j-output
+        - NetworkX: learn/guides/outputs/networkx-output
+        - PostgreSQL: learn/guides/outputs/postgresql-output
+        - RDF: learn/guides/outputs/rdf-output
+        - SQLite: learn/guides/outputs/sqlite-output
+        - Tabular Format: learn/guides/outputs/tabular-output
+
+    - Explanation:
+      - learn/explanation/index.md
+
+  - Reference:
+    - reference/index
+    - API Documentation:
+      - reference/source/index.md
+    - BioCypher Configuration Reference: reference/biocypher-config-guide
+    - Schema Configuration Reference: reference/schema-config-guide
+  - Community:
+    - Contribute to BioCypher: community/contribute
+    - Contribute to the Documentation: community/contribute-docs
+    - Contribute to Code Base: community/contribute-codebase
+    - Biocypher Maintenance: community/maintenance
+  - Release Notes: community/release-notes
+
+#=======    Extension settings (sorted alphabetically)  =====
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - neoteroi.timeline
+  #----- Python Markdown Extensions
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight: # Note: list of Pygments: https://pygments.org/docs/lexers/
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+
+  #---------------    Configure the title to the Table of Contents
+  - toc:
+      title: On this page
+
+#=======    Plugings    =====
+plugins:
+  - search
+  - mkdocstrings
+  - mkdocs-jupyter
+
+extra:
+  social:
+    - icon: simple/zulip
+      link: https://biocypher.zulipchat.com/
+    - icon: material/contacts
+      link: https://saezlab.org/
+  status:
+    new: Recently added
+    old: from Legacy webpage
+    under-dev: page under development
+    done: page that does not need modifications for now
+  version:
+    provider: mike
+
+
+extra_css:
+  #- stylesheets/extra.css
+  - assets/css/css-v1.1.0.css
+
+
+copyright: © Copyright 2021-2025, BioCypher developers.
