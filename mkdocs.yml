@@ -102,7 +102,7 @@ nav:
       - learn/explanation/index.md
 
   - Reference:
-    - reference/index
+    - Reference Index: reference/index.md
     - API Documentation:
       - reference/source/index.md
     - BioCypher Configuration Reference: reference/biocypher-config-guide
