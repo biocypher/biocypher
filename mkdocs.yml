@@ -3,7 +3,7 @@
 #==========================================================================================
 
 
-site_name: BioCypher Documentation
+site_name: BioCypher
 site_url : https://biocypher.org    # URL where the webpage will be hosted, by default it it localhost
 
 #=======    Theme Settings   =====
@@ -16,8 +16,8 @@ theme:
   favicon: assets/img/favicon_biocypher_32px.png
   features:
     - content.code.copy   # Render a button to copy the code to the clipboard
-    - navigation.indexes
-    - navigation.path
+    - navigation.tabs
+    - navigation.instant
     - navigation.footer
 
   icon:
@@ -46,8 +46,9 @@ theme:
 
 #=======    Website Navigation settings   =====
 nav:
-  - BioCypher Framework:
-    - " ": index.md
+  - Home: index.md
+
+  - About:
     - Project: biocypher-project/project.md
     - Design philosophy: biocypher-project/design-philosophy.md
     - Publications: biocypher-project/publications.md
@@ -157,7 +158,6 @@ extra:
 
 
 extra_css:
-  #- stylesheets/extra.css
   - assets/css/css-v1.1.0.css
 
 
