@@ -4,14 +4,14 @@
 
 
 site_name: BioCypher Documentation
-site_url : https://sitename.example    # URL where the webpage will be hosted, by default it it localhost
+site_url : https://biocypher.org    # URL where the webpage will be hosted, by default it it localhost
 
 #=======    Theme Settings   =====
 theme:
   name: material
   font:
-    text: Arial
-    code: Arial Mono
+    text: Lato
+    code: Roboto Mono
   logo: assets/img/logo-biocypher.png
   favicon: assets/img/favicon_biocypher_32px.png
   features:
@@ -23,23 +23,6 @@ theme:
   icon:
     nav:
       BioCypher Framework: material/briefcase
-
-  #palette:
-    # Palette toggle for dark mode
-  #  - scheme: slate
-  #    toggle:
-  #      icon: material/lightbulb-on
-  #      name: Dark mode
-  #    primary: green
-  #    accent: deep purple
-
-    # Palette toggle for light mode
-    #- scheme: default
-    # toggle:
-    #    icon: material/lightbulb-off
-    #    name: Light
-    #  primary: green
-    #  accent: deep orange
 
   palette:
     - media: "(prefers-color-scheme)"
@@ -143,11 +126,20 @@ markdown_extensions:
   - toc:
       title: On this page
 
-#=======    Plugings    =====
+#=======    Plugins    =====
 plugins:
   - search
-  - mkdocstrings
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            heading_level: 3
   - mkdocs-jupyter
+
+repo_url: https://github.com/biocypher/biocypher
+repo_name: biocypher/biocypher
+edit_uri: edit/main/docs/
 
 extra:
   social:
