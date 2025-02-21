@@ -8,7 +8,7 @@ status: old
 
     BioCypher is the simplest way to create an AI-enabled knowledge graph for biomedical (or other) tasks. See [BioCypher + LLMs](./biocypher-project/biochatter-integration) for more information.
 
-    We have also recently published a perspective on connecting knowledge and machine learning to enable causal reasoning in biomedicine, with a particular focus on the currently emerging "foundation models". You can read it [here on arXiv](https://arxiv.org/abs/2401.09558).
+    We have also recently published a perspective on connecting knowledge and machine learning to enable causal reasoning in biomedicine, with a particular focus on the currently emerging "foundation models". You can read it [here](https://www.embopress.org/doi/full/10.1038/s44320-024-00041-w).
 
 ## Democratising Knowledge Graphs
 
