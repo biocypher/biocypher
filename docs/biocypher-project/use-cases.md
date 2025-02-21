@@ -1,6 +1,5 @@
 ![graphical-abstract-biocypher.png](../assets/img/biocypher-open-graph.png)
 
-
 # How Researchers Are Leveraging BioCypher
 
 BioCypher has been instrumental in advancing research around Knowledge Graphs. Teams have primarily used BioCypher for:
@@ -59,9 +58,9 @@ We are excited to showcase some real-world use cases where BioCypher has made a 
 
 ---
 
-## :dna: Builing a Knowledge Graph for Contextualised Metabolic-Enzymatic Interactions
+## :dna: Building a Knowledge Graph for Contextualised Metabolic-Enzymatic Interactions
 <div class="grid cards" markdown>
--   __metalinks__
+-   __Metalinks__
 
     ---
 
