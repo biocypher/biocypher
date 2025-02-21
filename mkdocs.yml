@@ -61,35 +61,33 @@ nav:
   - Quickstart: learn/quickstart.md
 
   - Learn:
-    #- learn/index
-    - Tutorials:
-      - learn/tutorials/index.md
-      - BioCypher and Pandas: learn/tutorials/pandas_tutorial.ipynb
-      - Basics: learn/tutorials/tutorial001_basics.md
-      - Handling Ontologies: learn/tutorials/tutorial002_handling_ontologies.md
-      - Adapters: learn/tutorials/tutorial003_adapters.md
+    - Basics: learn/tutorials/tutorial001_basics.md
+    - Handling Ontologies: learn/tutorials/tutorial002_handling_ontologies.md
+    - Adapters: learn/tutorials/tutorial003_adapters.md
+    - BioCypher and Pandas: learn/tutorials/pandas_tutorial.ipynb
+
     - Guides:
       - learn/guides/index.md
-      - Adapters: learn/guides/adapters.md
-      - Ontologies: learn/guides/ontologies.md
-      - Outputs:
-        - learn/guides/outputs/index.md
-        - ArangoDB: learn/guides/outputs/arangodb-output.md
-        - Neo4j: learn/guides/outputs/neo4j-output.md
-        - NetworkX: learn/guides/outputs/networkx-output.md
-        - PostgreSQL: learn/guides/outputs/postgresql-output.md
-        - RDF: learn/guides/outputs/rdf-output.md
-        - SQLite: learn/guides/outputs/sqlite-output.md
-        - Tabular Format: learn/guides/outputs/tabular-output.md
 
     - Explanation:
       - learn/explanation/index.md
+      - Adapters: learn/guides/adapters.md
+      - Ontologies: learn/guides/ontologies.md
 
   - Reference:
     - Reference Index: reference/index.md
     - API Documentation:
       - reference/source/index.md
     - BioCypher Configuration Reference: reference/biocypher-config-guide.md
+    - Outputs:
+      - reference/outputs/index.md
+      - ArangoDB: reference/outputs/arangodb-output.md
+      - Neo4j: reference/outputs/neo4j-output.md
+      - NetworkX: reference/outputs/networkx-output.md
+      - PostgreSQL: reference/outputs/postgresql-output.md
+      - RDF: reference/outputs/rdf-output.md
+      - SQLite: reference/outputs/sqlite-output.md
+      - Tabular Format: reference/outputs/tabular-output.md
     - Schema Configuration Reference: reference/schema-config-guide.md
   - Community:
     - Contribute to BioCypher: community/contribute.md
