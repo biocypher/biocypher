@@ -53,9 +53,9 @@ nav:
     - BioCypher + LLMs: biocypher-project/biochatter-integration.md
     - Sponsors: biocypher-project/sponsors.md
 
-  - Installation: installation.md
-
-  - Quickstart: learn/quickstart.md
+  - Get Started:
+    - Installation: installation.md
+    - Quickstart: learn/quickstart.md
 
   - Learn:
     - Basics: learn/tutorials/tutorial001_basics.md
