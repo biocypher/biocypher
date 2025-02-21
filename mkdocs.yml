@@ -90,7 +90,6 @@ nav:
     - Contribute to the Documentation: community/contribute-docs.md
     - Contribute to Code Base: community/contribute-codebase.md
     - Biocypher Maintenance: community/maintenance.md
-  - Release Notes: community/release-notes.md
 
 #=======    Extension settings (sorted alphabetically)  =====
 markdown_extensions:
