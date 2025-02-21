@@ -4,144 +4,26 @@
  *  https://github.com/Neoteroi/mkdocs-plugins
 **/
 :root {
-  --nt-color-0: #CD853F;
-  --nt-color-1: #B22222;
-  --nt-color-2: #000080;
-  --nt-color-3: #4B0082;
-  --nt-color-4: #3CB371;
-  --nt-color-5: #D2B48C;
-  --nt-color-6: #FF00FF;
-  --nt-color-7: #98FB98;
-  --nt-color-8: #FFEBCD;
-  --nt-color-9: #2E8B57;
-  --nt-color-10: #6A5ACD;
-  --nt-color-11: #48D1CC;
-  --nt-color-12: #FFA500;
-  --nt-color-13: #F4A460;
-  --nt-color-14: #A52A2A;
-  --nt-color-15: #FFE4C4;
-  --nt-color-16: #FF4500;
-  --nt-color-17: #AFEEEE;
-  --nt-color-18: #FA8072;
-  --nt-color-19: #2F4F4F;
-  --nt-color-20: #FFDAB9;
-  --nt-color-21: #BC8F8F;
-  --nt-color-22: #FFC0CB;
-  --nt-color-23: #00FA9A;
-  --nt-color-24: #F0FFF0;
-  --nt-color-25: #FFFACD;
-  --nt-color-26: #F5F5F5;
-  --nt-color-27: #FF6347;
-  --nt-color-28: #FFFFF0;
-  --nt-color-29: #7FFFD4;
-  --nt-color-30: #E9967A;
-  --nt-color-31: #7B68EE;
-  --nt-color-32: #FFF8DC;
-  --nt-color-33: #0000CD;
-  --nt-color-34: #D2691E;
-  --nt-color-35: #708090;
-  --nt-color-36: #5F9EA0;
-  --nt-color-37: #008080;
-  --nt-color-38: #008000;
-  --nt-color-39: #FFE4E1;
-  --nt-color-40: #FFFF00;
-  --nt-color-41: #FFFAF0;
-  --nt-color-42: #DCDCDC;
-  --nt-color-43: #ADFF2F;
-  --nt-color-44: #ADD8E6;
-  --nt-color-45: #8B008B;
-  --nt-color-46: #7FFF00;
-  --nt-color-47: #800000;
-  --nt-color-48: #20B2AA;
-  --nt-color-49: #556B2F;
-  --nt-color-50: #778899;
-  --nt-color-51: #E6E6FA;
-  --nt-color-52: #FFFAFA;
-  --nt-color-53: #FF7F50;
-  --nt-color-54: #FF0000;
-  --nt-color-55: #F5DEB3;
-  --nt-color-56: #008B8B;
-  --nt-color-57: #66CDAA;
-  --nt-color-58: #808000;
-  --nt-color-59: #FAF0E6;
-  --nt-color-60: #00BFFF;
-  --nt-color-61: #C71585;
-  --nt-color-62: #00FFFF;
-  --nt-color-63: #8B4513;
-  --nt-color-64: #F0F8FF;
-  --nt-color-65: #FAEBD7;
-  --nt-color-66: #8B0000;
-  --nt-color-67: #4682B4;
-  --nt-color-68: #F0E68C;
-  --nt-color-69: #BDB76B;
-  --nt-color-70: #A0522D;
-  --nt-color-71: #FAFAD2;
-  --nt-color-72: #FFD700;
-  --nt-color-73: #DEB887;
-  --nt-color-74: #E0FFFF;
-  --nt-color-75: #8A2BE2;
-  --nt-color-76: #32CD32;
-  --nt-color-77: #87CEFA;
-  --nt-color-78: #00CED1;
-  --nt-color-79: #696969;
-  --nt-color-80: #DDA0DD;
-  --nt-color-81: #EE82EE;
-  --nt-color-82: #FFB6C1;
-  --nt-color-83: #8FBC8F;
-  --nt-color-84: #D8BFD8;
-  --nt-color-85: #9400D3;
-  --nt-color-86: #A9A9A9;
-  --nt-color-87: #FFFFE0;
-  --nt-color-88: #FFF5EE;
-  --nt-color-89: #FFF0F5;
-  --nt-color-90: #FFDEAD;
-  --nt-color-91: #800080;
-  --nt-color-92: #B0E0E6;
-  --nt-color-93: #9932CC;
-  --nt-color-94: #DAA520;
-  --nt-color-95: #F0FFFF;
-  --nt-color-96: #40E0D0;
-  --nt-color-97: #00FF7F;
-  --nt-color-98: #006400;
-  --nt-color-99: #808080;
-  --nt-color-100: #87CEEB;
-  --nt-color-101: #0000FF;
-  --nt-color-102: #6495ED;
-  --nt-color-103: #FDF5E6;
-  --nt-color-104: #B8860B;
-  --nt-color-105: #BA55D3;
-  --nt-color-106: #C0C0C0;
-  --nt-color-107: #000000;
-  --nt-color-108: #F08080;
-  --nt-color-109: #B0C4DE;
-  --nt-color-110: #00008B;
-  --nt-color-111: #6B8E23;
-  --nt-color-112: #FFE4B5;
-  --nt-color-113: #FFA07A;
-  --nt-color-114: #9ACD32;
-  --nt-color-115: #FFFFFF;
-  --nt-color-116: #F5F5DC;
-  --nt-color-117: #90EE90;
-  --nt-color-118: #1E90FF;
-  --nt-color-119: #7CFC00;
-  --nt-color-120: #FF69B4;
-  --nt-color-121: #F8F8FF;
-  --nt-color-122: #F5FFFA;
-  --nt-color-123: #00FF00;
-  --nt-color-124: #D3D3D3;
-  --nt-color-125: #DB7093;
-  --nt-color-126: #DA70D6;
-  --nt-color-127: #FF1493;
-  --nt-color-128: #228B22;
-  --nt-color-129: #FFEFD5;
-  --nt-color-130: #4169E1;
-  --nt-color-131: #191970;
-  --nt-color-132: #9370DB;
-  --nt-color-133: #483D8B;
-  --nt-color-134: #FF8C00;
-  --nt-color-135: #EEE8AA;
-  --nt-color-136: #CD5C5C;
-  --nt-color-137: #DC143C;
+  --nt-color-0: #CD853F;  /* Peru */
+  --nt-color-1: #B22222;  /* FireBrick */
+  --nt-color-2: #000080;  /* Navy */
+  --nt-color-3: #4B0082;  /* Indigo */
+  --nt-color-4: #2E8B57;  /* SeaGreen */
+  --nt-color-5: #6A5ACD;  /* SlateBlue */
+  --nt-color-6: #A52A2A;  /* Brown */
+  --nt-color-7: #2F4F4F;  /* DarkSlateGray */
+  --nt-color-8: #D2691E;  /* Chocolate */
+  --nt-color-9: #708090;  /* SlateGray */
+  --nt-color-10: #5F9EA0; /* CadetBlue */
+  --nt-color-11: #008080; /* Teal */
+  --nt-color-12: #008000; /* Green */
+  --nt-color-13: #8B008B; /* DarkMagenta */
+  --nt-color-14: #800000; /* Maroon */
+  --nt-color-15: #556B2F; /* DarkOliveGreen */
+  --nt-color-16: #778899; /* LightSlateGray */
+  --nt-color-17: #8B4513; /* SaddleBrown */
+  --nt-color-18: #8B0000; /* DarkRed */
+  --nt-color-19: #4682B4; /* SteelBlue */
 }
 
 :root {
