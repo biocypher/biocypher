@@ -4,10 +4,9 @@ status: under-dev
 
 # Biocypher Maintenance
 
-
-This guide is for biocypher' maintainers. It may also be interesting to contributors
-looking to understand the biocypher development process and what steps are necessary
-to become a maintainer.
+This guide is for BioCypher's maintainers. It may also be interesting to
+contributors looking to understand the BioCypher development process and what
+steps are necessary to become a maintainer.
 
 ## Roles
 
@@ -35,42 +34,37 @@ reading.
 ## Issue triage
 ------------
 
-Triage is an important first step in addressing issues reported by the community, and even
-partial contributions are a great way to help maintain biocypher. Only remove the "Needs Triage"
-tag once all of the steps below have been completed.
+Triage is an important first step in addressing issues reported by the
+community, and even partial contributions are a great way to help maintain
+biocypher. Only remove the "Needs Triage" tag once all of the steps below have
+been completed.
 
 Here's a typical workflow for triaging a newly opened issue.
 
 1. **Thank the reporter for opening an issue**
-
    The issue tracker is many people's first interaction with the biocypher project itself,
    beyond just using the library. As such, we want it to be a welcoming, pleasant
    experience.
 
-2. **Is the necessary information provided?**
-
+1. **Is the necessary information provided?**
    Ideally reporters would fill out the issue template, but many don't.
    If crucial information (like the version of biocypher they used), is missing
    feel free to ask for that and label the issue with "Needs info". The
    report should follow the guidelines in :ref:`contributing.bug_reports`.
    You may want to link to that if they didn't follow the template.
-
    Make sure that the title accurately reflects the issue. Edit it yourself
    if it's not clear.
 
-3. **Is this a duplicate issue?**
-
+1. **Is this a duplicate issue?**
    We have many open issues. If a new issue is clearly a duplicate, label the
    new issue as "Duplicate" and close the issue with a link to the original issue.
    Make sure to still thank the reporter, and encourage them to chime in on the
    original issue, and perhaps try to fix it.
-
    If the new issue provides relevant information, such as a better or slightly
    different example, add it to the original issue as a comment or an edit to
    the original post.
 
-4. **Is the issue minimal and reproducible**?
-
+1. **Is the issue minimal and reproducible?**
    For bug reports, we ask that the reporter provide a minimal reproducible
    example. See https://matthewrocklin.com/blog/work/2018/02/28/minimal-bug-reports
    for a good explanation. If the example is not reproducible, or if it's
@@ -78,44 +72,34 @@ Here's a typical workflow for triaging a newly opened issue.
    and example or simplify the provided one. Do acknowledge that writing
    minimal reproducible examples is hard work. If the reporter is struggling,
    you can try to write one yourself and we'll edit the original post to include it.
-
    If a reproducible example can't be provided, add the "Needs info" label.
-
    If a reproducible example is provided, but you see a simplification,
    edit the original post with your simpler reproducible example.
-
    Ensure the issue exists on the main branch and that it has the "Needs Triage" tag
    until all steps have been completed. Add a comment to the issue once you have
    verified it exists on the main branch, so others know it has been confirmed.
 
-5. **Is this a clearly defined feature request?**
-
-   Generally, biocypher prefers to discuss and design new features in issues, before
-   a pull request is made. Encourage the submitter to include a proposed API
-   for the new feature. Having them write a full docstring is a good way to
+1. **Is this a clearly defined feature request?**
+   Generally, biocypher prefers to discuss and design new features in issues,
+   before a pull request is made. Encourage the submitter to include a proposed
+   API for the new feature. Having them write a full docstring is a good way to
    pin down specifics.
-
    Tag new feature requests with "Needs Discussion", as we'll need a discussion
    from several biocypher maintainers before deciding whether the proposal is in
    scope for biocypher.
 
-6. **Is this a usage question?**
-
+1. **Is this a usage question?**
    We prefer that usage questions are asked on StackOverflow with the biocypher
    tag. https://stackoverflow.com/questions/tagged/biocypher
-
    If it's easy to answer, feel free to link to the relevant documentation section,
    let them know that in the future this kind of question should be on
    StackOverflow, and close the issue.
 
-7. **What labels and milestones should I add?**
-
+1. **What labels and milestones should I add?**
    Apply the relevant labels. This is a bit of an art, and comes with experience.
    Look at similar issues to get a feel for how things are labeled.
-
    If the issue is clearly defined and the fix seems relatively straightforward,
    label the issue as "Good first issue".
-
    Once you have completed the above, make sure to remove the "needs triage" label.
 
 ## Closing issues
