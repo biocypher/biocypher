@@ -2,9 +2,6 @@
 status: old
 ---
 
-<!--BioCypher Banner-->
-![BioCypher Banner](./assets/img/banner-biocypher.png)
-
 # Overview
 
 !!! tip "Hot Topics"
