@@ -20,10 +20,6 @@ theme:
     - navigation.instant
     - navigation.footer
 
-  icon:
-    nav:
-      BioCypher Framework: material/briefcase
-
   palette:
     - media: "(prefers-color-scheme)"
       toggle:
