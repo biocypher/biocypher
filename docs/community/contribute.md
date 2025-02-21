@@ -2,41 +2,78 @@
 
 ## Bug reports and enhancement requests
 
-Bug reports and enhancement requests are an important part of making BioCypher more stable and are curated though Github issues. When reporting and issue or request, please select the appropriate category and fill out the issue form fully to ensure others and the core development team can fully understand the scope of the issue.
+Bug reports and enhancement requests are an important part of making BioCypher
+more stable and are curated though Github issues. When opening an issue or
+request, please select the appropriate category and fill out the issue form
+fully to ensure others and the core development team can fully understand the
+scope of the issue. If your category is not listed, you can create a blank
+issue.
 
-The issue will then show up to the BioCypher community and be open to comments/ideas from others.
+The issue will then show up to the BioCypher community and be open to
+comments/ideas from others.
 
+### Categories
 
-Categories
-
-- Bug Report: Report incorrect behavior in the BioCypher library
+- [Bug Report](https://github.com/biocypher/biocypher/issues/new?template=BUG-REPORT.yml): Report incorrect behavior in the BioCypher library
+- [Register New Component](https://github.com/biocypher/biocypher/issues/new?template=ADD-COMPONENT.yml): Register a new component in the BioCypher ecosystem, either one you have created, or one that you would like to see added
 - Documentation Improvement: Report wrong or missing documentation
-- Feature Request: Suggest and idea for BioCypher
-- Installation Issue: Report issues installing the BioCypher on the system
+- Feature Request: Suggest an idea for BioCypher
 
-## Finding and issue to contribute to
+## Finding an issue to contribute to
 
-If you are brand new to BioCypher or open-source development, we recommend searching the GitHub "issues" tab to find issues that interest you. Unassigned issues labeled `Docs` and `good first issue` are typically good for newer contributors.
+If you are brand new to BioCypher or open-source development, we recommend
+searching the GitHub "Issues" tab to find issues that interest you. Unassigned
+issues labeled `Docs` and [good first
+issue](https://github.com/biocypher/biocypher/labels/good%20first%20issue) are
+typically good for newer contributors.
 
-Once you’ve found an interesting issue, it’s a good idea to assign the issue to yourself, so nobody else duplicates the work on it. On the Github issue, a comment with the exact text take to automatically assign you the issue (this will take seconds and may require refreshing the page to see it).
+Once you've found an interesting issue, it's a good idea to assign the issue to
+yourself, so nobody else duplicates the work on it.
 
-If for whatever reason you are not able to continue working with the issue, please unassign it, so other people know it’s available again. You can check the list of assigned issues, since people may not be working in them anymore. If you want to work on one that is assigned, feel free to kindly ask the current assignee if you can take it (please allow at least a week of inactivity before considering work in the issue discontinued).
+If for whatever reason you are not able to continue working with the issue,
+please unassign it, so other people know it's available again. If you want to
+work on an issue that is currently assigned but you're unsure whether work is
+actually being done, feel free to kindly ask the current assignee if you can
+take over (please allow at least a week of inactivity before getting in touch).
 
 
-### Submitting a Pull Request
-#### Version control, Git, and GitHub
-BioCypher is hosted on GitHub, and to contribute, you will need to sign up for a [free GitHub account](https://github.com/signup/free). We use [Git](https://git-scm.com/) for version control to allow many people to work together on the project.
+## Submitting a Pull Request
 
-If you are new to Git, you can reference some of these resources for learning Git. Feel free to reach out to the contributor community for help if needed:
+### Tips for a successful pull request
+
+To improve the chances of your pull request being reviewed, you should:
+
+- **Reference an open issue** for non-trivial changes to clarify the PR's purpose.
+- **Ensure you have appropriate tests**. Tests should be the focus of any PR (apart from documentation changes).
+- **Keep your pull requests as simple as possible**. Larger PRs take longer to review.
+- **Ensure that CI is in a green state**. Reviewers may tell you to fix the CI before looking at anything else.
+
+### Version control, Git, and GitHub
+
+BioCypher is hosted on GitHub, and to contribute, you will need to sign up for a
+[free GitHub account](https://github.com/signup/free). We use
+[Git](https://git-scm.com/) for version control to allow many people to work
+together on the project.
+
+If you are new to Git, you can reference some of these resources for learning
+Git. Feel free to reach out to the contributor community for help if needed:
 
 - [Git documentation](https://git-scm.com/doc).
 
 
-Also, the project follows a forking workflow further described on this page whereby contributors fork the repository, make changes and then create a Pull Request. So please be sure to read and follow all the instructions in this guide.
+The project follows a forking workflow further described on this page whereby
+contributors fork the repository, make changes and then create a Pull Request.
+So please be sure to read and follow all the instructions in this guide.
 
-If you are new to contributing to projects through forking on GitHub, take a look at the [GitHub documentation for contributing to projects](https://docs.github.com/en/get-started/quickstart/contributing-to-projects). GitHub provides a quick tutorial using a test repository that may help you become more familiar with forking a repository, cloning a fork, creating a feature branch, pushing changes and making Pull Requests.
+If you are new to contributing to projects through forking on GitHub, take a
+look at the [GitHub documentation for contributing to
+projects](https://docs.github.com/en/get-started/quickstart/contributing-to-projects).
+GitHub provides a quick tutorial using a test repository that may help you
+become more familiar with forking a repository, cloning a fork, creating a
+feature branch, pushing changes and making Pull Requests.
 
-Below are some useful resources for learning more about forking and Pull Requests on GitHub:
+Below are some useful resources for learning more about forking and Pull
+Requests on GitHub:
 
 - the [GitHub documentation for forking a repo](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
 
@@ -44,132 +81,118 @@ Below are some useful resources for learning more about forking and Pull Request
 
 - the [GitHub documentation for working with forks](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks).
 
-#### Getting started with Git
-[GitHub has instructions](https://docs.github.com/en/get-started/quickstart/set-up-git) for installing git, setting up your SSH key, and configuring git. All these steps need to be completed before you can work seamlessly between your local repository and GitHub.
+There are also many unwritten rules and conventions that are helpful in
+interacting with other open-source contributors. These
+[lessons](https://www.pyopensci.org/lessons/) from PyOpenSci are a good resource
+for learning more about how to interact with other open-source contributors in
+scientific computing.
 
-#### Create a fork of BioCypher
-You will need your own copy of BioCypher (aka fork) to work on the code. Go to the BioCypher project page and hit the Fork button. Please uncheck the box to copy only the main branch before selecting Create Fork. You will want to clone your fork to your machine
+### Getting started with Git
+
+[GitHub has
+instructions](https://docs.github.com/en/get-started/quickstart/set-up-git) for
+installing git, setting up your SSH key, and configuring git. All these steps
+need to be completed before you can work seamlessly between your local
+repository and GitHub.
+
+### Create a fork of BioCypher
+
+You will need your own fork of BioCypher in order to eventually open a Pull
+Request. Go to the BioCypher project page and hit the Fork button. Please
+uncheck the box to copy only the main branch before selecting Create Fork. You
+will then want to clone your fork to your machine.
 
 ```bash
-git clone https://github.com/your-user-name/biocypher.git biocypher-yourname
-cd biocypher-yourname
+git clone https://github.com/your-user-name/biocypher.git
+cd biocypher
 git remote add upstream https://github.com/biocypher/biocypher.git
 git fetch upstream
 ```
-This creates the directory `biocypher-yourname` and connects your repository to the upstream (main project) *biocypher* repository.
 
-#### Creating a feature branch
-Your local `main` branch should always reflect the current state of BioCypher repository. First ensure it’s up-to-date with the main BioCypher repository.
+This creates the directory `biocypher` and connects your repository to the
+upstream (main project) *biocypher* repository. They have the same name, but
+your local repository and fork are separate from the upstream repository.
+
+### Creating a feature branch
+
+Your local `main` branch should always reflect the current state of BioCypher
+repository. First ensure it's up-to-date with the main BioCypher repository.
 
 ```bash
 git checkout main
 git pull upstream main --ff-only
 ```
 
-Then, create a feature branch for making your changes. For example, we are going to create a branch called `my-new-feature-for-biocypher`
+Then, create a feature branch for making your changes. For example, we are going
+to create a branch called `my-new-feature-for-biocypher`
 
 ```bash
 git checkout -b my-new-feature-for-biocypher
 ```
 
-This changes your working branch from `main` to the `my-new-feature-for-biocypher` branch. Keep any changes in this branch specific to one bug or feature so it is clear what the branch brings to *Biocypher*. You can have many feature branches and switch in between them using the `git checkout` command.
+This changes your working branch from `main` to the
+`my-new-feature-for-biocypher` branch. Keep any changes in this branch specific
+to one bug or feature so it is clear what the branch brings to *BioCypher*. You
+can have many feature branches and switch between them using the `git
+checkout` command.
 
-When you want to update the feature branch with changes in main after you created the branch, check the section on updating a PR.
+### Making code changes
 
-#### Making code changes
-Before modifying any code, ensure you follow the contributing environment guidelines to set up an appropriate development environment.
+Before modifying any code, ensure you follow the contributing environment
+guidelines to set up an appropriate development environment.
 
-Then once you have made code changes, you can see all the changes you¿ve currently made by running.
+When making changes, follow these BioCypher-specific guidelines:
 
-```bash
-git status
-```
+1. Keep changes of that branch/PR focused on a single feature or bug fix.
 
-For files you intended to modify or add, run
+2. Follow roughly the [conventional commit message conventions](https://www.conventionalcommits.org/en/v1.0.0/).
 
-```bash
-git add path/to/file-to-be-added-or-changed
-```
+Once you've made your changes, you can proceed to submitting a Pull Request.
 
-Running `git status` again should display
+### Pushing your changes
 
-```bash
-On branch my-new-feature-for-BioCypher
+When you want your changes to appear publicly on your GitHub page, push your
+forked feature branch's commits to your forked repository on GitHub.
 
-    modified:   /relative/path/to/file-to-be-added-or-changed
-```
+Now your code is on GitHub, but it is not yet a part of the BioCypher project.
+For that to happen, a Pull Request (PR) needs to be submitted.
 
-Finally, commit your changes to your local repository with an explanatory commit message
-```bash
-git commit -m "your commit message goes here"
-```
-!!! tip "How to write good commit messages?"
-    You can consult the following references to understand how to write better commit messages.
-    - [Conventional Commits: A specification for adding human and machine readable meaning to commit messages](https://www.conventionalcommits.org/en/v1.0.0/)
-    - [Git Commit Good Practice by OpenStack](https://wiki.openstack.org/wiki/GitCommitMessages)
+### Opening a Pull Request (PR)
 
-#### Pushing your changes
-When you want your changes to appear publicly on your GitHub page, push your forked feature branch’s commits
+If everything looks good according to the general guidelines, you are ready to
+make a Pull Request. A Pull Request is how code from your fork becomes available
+to the project maintainers to review and merge into the project to appear in the
+next release. To submit a Pull Request:
 
-```bash
-git push origin my-new-feature-for-biocypher
-```
+1. Navigate to your repository on GitHub.
 
-Here `origin` is the default name given to your remote repository on GitHub. You can see the remote repositories
-```bash
-git remote -v
-```
-If you added the upstream repository as described above you will see something like
-```bash
-origin  git@github.com:yourname/biocypher.git (fetch)
-origin  git@github.com:yourname/biocypher.git (push)
-upstream        git://github.com/biocypher/biocypher.git (fetch)
-upstream        git://github.com/biocypher/biocypher.git (push)
-```
+1. Click on the Compare & Pull Request button.
 
-Now your code is on GitHub, but it is not yet a part of the BioCypher project. For that to happen, a Pull Request (PR) needs to be submitted on GitHub.
+1. You can then click on Commits and Files Changed to make sure everything looks okay one last time.
 
-#### Making a Pull Request (PR)
-One you have finished your code changes, your code change will need to follow the BioCypher contribution guidelines to be successfully accepted.
+1. Write a descriptive title that includes prefixes. BioCypher uses a convention for title prefixes, most commonly, `feat:` for features, `fix:` for bug fixes, and `refactor:` for refactoring.
 
-If everything looks good, you are ready to make a Pull Request. A Pull Request is how code from your local repository becomes available to the GitHub community to review and merged into project to appear the in the next release. To submit a Pull Request:
+1. Write a description of your changes in the `Preview Discussion` tab. This description will inform the reviewers about the changes you made, so please include all relevant information, including the motivation, implementation details, and references to any issues that you are addressing.
 
-1. Navigate to your repository on GitHub
+1. Make sure to `Allow edits from maintainers`; this allows the maintainers to make changes to your PR directly, which is useful if you are not sure how to fix the PR.
 
-2. Click on the Compare & Pull Request button
+1. Click `Send Pull Request`.
 
-3. You can then click on Commits and Files Changed to make sure everything looks okay one last time
+1. Optionally, you can assign reviewers to your PR, if you know who should review it.
 
-4. Write a descriptive title that includes prefixes. BioCypher uses a convention for title prefixes. Here are some common ones along with general guidelines for when to use them:
+This request then goes to the repository maintainers, and they will review the code.
 
-```markdown
-- ENH: Enhancement, new functionality
-
-- BUG: Bug fix
-
-- DOCS: Additions/updates to documentation
-
-- TEST: Additions/updates to tests
-
-- BUILD: Updates to the build process/scripts
-
-- PERF: Performance improvement
-
-```
-
-5. Write a description of your changes in the `Preview Discussion` tab
-6. Click `Send Pull Request`
-
-This request then goes to the repositorz maintainers, and they will review the code.
-
-#### Updating your Pull Request
+### Updating your Pull Request
 
 Based on the review you get on your pull request, you will probably need to make
-some changes to the code. You can follow the :ref:`code committing steps <contributing.commit-code>`
-again to address any feedback and update your pull request.
+some changes to the code. You can follow the steps above again to address any
+feedback and update your pull request.
 
-It is also important that updates in the biocypher ``main`` branch are reflected in your pull request.
-To update your feature branch with changes in the biocypher ``main`` branch, run:
+### Parallel changes in the upstream `main` branch
+
+In case of simultaneous changes to the upstream code, it is important that
+these changes are reflected in your pull request. To update your feature
+branch with changes in the biocypher `main` branch, run:
 
 ```shell
 
@@ -181,8 +204,8 @@ To update your feature branch with changes in the biocypher ``main`` branch, run
 If there are no conflicts (or they could be fixed automatically), a file with a
 default commit message will open, and you can simply save and quit this file.
 
-If there are merge conflicts, you need to solve those conflicts. See for
-example at https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/
+If there are merge conflicts, you need to resolve those conflicts. See
+[here](https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/)
 for an explanation on how to do this.
 
 Once the conflicts are resolved, run:
@@ -190,33 +213,12 @@ Once the conflicts are resolved, run:
 1. `git add -u` to stage any files you've updated;
 2. `git commit` to finish the merge.
 
-!!! note "Note"
-    If you have uncommitted changes at the moment you want to update the branch with
-    `main`, you will need to `stash` them prior to updating (see the
-    `stash docs <https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning>`__).
-    This will effectively store your changes and they can be reapplied after updating.
-
-After the feature branch has been update locally, you can now update your pull
+After the feature branch has been updated locally, you can now update your pull
 request by pushing to the branch on GitHub:
 
 ```shell
-    git push origin shiny-new-feature
+    git push origin my-new-feature-for-biocypher
 ```
 
 Any `git push` will automatically update your pull request with your branch's changes
-and restart the :ref:`Continuous Integration <contributing.ci>` checks.
-
-
-
-#### Tips for a successful pull request
-
-If you have made it to the `Making a pull request`_ phase, one of the core contributors may
-take a look. Please note however that a handful of people are responsible for reviewing
-all of the contributions, which can often lead to bottlenecks.
-
-To improve the chances of your pull request being reviewed, you should:
-
-- **Reference an open issue** for non-trivial changes to clarify the PR's purpose
-- **Ensure you have appropriate tests**. These should be the first part of any PR
-- **Keep your pull requests as simple as possible**. Larger PRs take longer to review
-- **Ensure that CI is in a green state**. Reviewers may not even look otherwise
+and restart the `Continuous Integration` checks.
