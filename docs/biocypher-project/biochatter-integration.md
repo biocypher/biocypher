@@ -2,19 +2,18 @@
 
 ## Connect your Knowledge Graph to Large Language Models
 
-To facilitate the use of knowledge graphs in downstream tasks, we have developed a framework to connect knowledge graphs to large language models, this framework is called [BioChatter](https://biochatter.org/)
-
-biochatter is a Python package implementing a generic backend library for the connection of biomedical applications to conversational AI. We describe the framework in this [preprint](https://arxiv.org/abs/2305.06488). BioChatter is part of the BioCypher ecosystem, connecting natively to BioCypher knowledge graphs.
+BioChatter is a Python package implementing a generic backend library for the connection of biomedical applications to conversational AI. We describe the framework in this [paper](https://www.nature.com/articles/s41587-024-02534-3). BioChatter is part of the BioCypher ecosystem, connecting natively to BioCypher knowledge graphs. Find the docs [here](https://biochatter.org/).
 
 
-### BioCypher Ecosystem (BioCypher + BioChatter)
+### Abstract
+
 ![Alt text](../assets/img/biochatter-overview-biocypher.png)
 
 <div class="grid cards" markdown>
 
--   :material-robot-excited:{ .lg .middle } __BioChatter Light Web App__
+-   :material-robot-excited:{ .lg .middle } __BioChatter Preview Web Apps__
 
-    [:octicons-arrow-right-24: To BioChatter Light](https://chat.biocypher.org/)
+    [:octicons-arrow-right-24: To BioChatter Web](https://chat.biocypher.org/)
 
 -   :octicons-mark-github-24:{ .lg .middle } __BioChatter Repository__
 
