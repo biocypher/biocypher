@@ -15,7 +15,8 @@ theme:
   logo: assets/img/logo-biocypher.png
   favicon: assets/img/favicon_biocypher_32px.png
   features:
-    - content.code.copy   # Render a button to copy the code to the clipboard
+    - content.code.copy
+    - content.action.edit
     - navigation.tabs
     - navigation.instant
     - navigation.footer
