@@ -6,7 +6,7 @@
 
     The *BioCypher's API reference* provides a comprehensive overview of the API, detailing its methods, available parameters, and their functionality. This guide is designed for users who have a foundational understanding of key BioCypher concepts.
 
-    [:octicons-arrow-right-24: To the reference guide](#)
+    [:octicons-arrow-right-24: To the reference guide](source/index.md)
 
 </div>
 

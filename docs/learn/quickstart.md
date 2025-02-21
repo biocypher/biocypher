@@ -1,7 +1,3 @@
----
-status: old
----
-
 # Quickstart
 
 <div class="grid cards" markdown>
@@ -50,6 +46,12 @@ and relationships in the graph.
 1. Run BioCypher using the adapters and schema config to create the knowledge
 graph. If necessary, iterate over KG construction and configuration until you
 are satisfied with the result.
+
+!!! tip "Graphical Interface Support"
+
+    We are currently working on a graphical user interface to support the
+    complex process of defining and building a knowledge graph. Get in touch if
+    you'd like to test or contribute to the development of this tool.
 
 ## The input adapter
 
@@ -185,6 +187,12 @@ If there exists no identifier system that is suitable for coverage of the data
 can be omitted. This will lead to the creation of a generic `id` property on
 this node or edge type.
 
+!!! tip "Rename incoming"
+
+    To denote the namespace of identifiers less ambiguously, we will rename the
+    `preferred_id` field to `namespace`. The legacy field will still be
+    supported and deprecated in a future release.
+
 ---
 
 ## BioCypher API documentation
@@ -253,7 +261,7 @@ df = bc.to_df()
 ```
 
 For more information on the usage of these functions, please refer to the
-[Tutorial](../learn/tutorials/tutorial001_basics.md) section and the [full API documentation](../reference/api-reference.md).
+[Tutorial](../learn/tutorials/tutorial001_basics.md) section and the [full API documentation](../reference/source/index.md).
 
 ---
 
@@ -311,6 +319,6 @@ neo4j:
 
 ## Additional Resources
 
-- [BioCypher API Reference](./reference/source/index)
-- [BioCypher Configuration Reference](./reference/biocypher-config-guide)
-- [BioCypher Schema Reference](./reference/schema-config-guide)
+- [BioCypher API Reference](../reference/source/index.md)
+- [BioCypher Configuration Reference](../reference/biocypher-config-guide.md)
+- [BioCypher Schema Reference](../reference/schema-config-guide.md)
