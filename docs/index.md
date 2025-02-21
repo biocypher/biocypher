@@ -31,5 +31,5 @@ BioCypher simplifies biomedical data integration with reusable adapters, minimiz
 
 ### Additional Resources
 
+- :simple-zulip: [Questions? Join our Zulip channel](https://biocypher.zulipchat.com/)
 - :octicons-mark-github-24: [Find us on GitHub](https://github.com/biocypher/biocypher)
-- :simple-zulip: [Join our Zulip channel](https://biocypher.zulipchat.com/)
