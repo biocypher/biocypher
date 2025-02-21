@@ -1,7 +1,3 @@
----
-status: old
----
-
 # Overview
 
 !!! tip "Hot Topics"
@@ -14,7 +10,7 @@ status: old
 
 **Building a biomedical knowledge graph often takes months or even years. But what if you could do it in just weeks or days?**
 
-We created **BioCypher** to revolutionize the process—making it easier than ever while maintaining **flexibility** and **transparency**.
+We created **BioCypher** to revolutionise the process—making it easier than ever while maintaining **flexibility** and **transparency**.
 
 At its core, BioCypher is designed around the principle of **threefold modularity**:
 
@@ -22,13 +18,13 @@ At its core, BioCypher is designed around the principle of **threefold modularit
 2. Modular ontology structures – Define flexible, structured knowledge representations.
 3. Modular output formats – Adapt results to various applications and tools.
 
-This modular approach maximizes flexibility and reusability, empowering the biomedical community to accelerate research while streamlining efforts.
+This modular approach maximises flexibility and reusability, empowering the biomedical community to accelerate research while streamlining efforts.
 
 ## New to Knowledge Graphs?
 
 If you’re new to knowledge graphs and want to familiarise with the concepts that drive BioCypher, we recommend to check out the graphical abstract below and read [our paper](https://www.nature.com/articles/s41587-023-01848-y) (self-archived version [here on Zenodo](https://zenodo.org/records/10320714), online version [at this https link](https://biocypher.github.io/biocypher-paper/))!
 
-### General Abstract
+### Abstract
 
 ![graphical-abstract-biocypher.png](./assets/img/graphical-abstract-biocypher.png)
 BioCypher simplifies biomedical data integration with reusable adapters, minimizing redundancy and ensuring consistency through ontologies. Its intuitive low-code setup enables effortless creation and sharing of reproducible knowledge graphs.
