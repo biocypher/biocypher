@@ -1,14 +1,11 @@
-# Overview
+# Democratising Knowledge Graphs
 
-!!! tip "Hot Topics"
-
-    BioCypher is the simplest way to create an AI-enabled knowledge graph for biomedical (or other) tasks. See [BioCypher + LLMs](./biocypher-project/biochatter-integration) for more information.
-
-    We have also recently published a perspective on connecting knowledge and machine learning to enable causal reasoning in biomedicine, with a particular focus on the currently emerging "foundation models". You can read it [here](https://www.embopress.org/doi/full/10.1038/s44320-024-00041-w).
-
-## Democratising Knowledge Graphs
-
-**Building a biomedical knowledge graph often takes months or even years. But what if you could do it in just weeks or days?**
+<div style="text-align: center; margin: 2em 0;">
+    <blockquote style="font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 300; font-size: 1.2em; max-width: 800px; margin: 0 auto;">
+        Building a biomedical knowledge graph often takes months or even years.<br>
+        What if you could do it in just weeks or days?
+    </blockquote>
+</div>
 
 We created **BioCypher** to revolutionise the process—making it easier than ever while maintaining **flexibility** and **transparency**.
 
@@ -19,6 +16,12 @@ At its core, BioCypher is designed around the principle of **threefold modularit
 3. Modular output formats – Adapt results to various applications and tools.
 
 This modular approach maximises flexibility and reusability, empowering the biomedical community to accelerate research while streamlining efforts.
+
+!!! tip "Hot Topics"
+
+    BioCypher is the simplest way to create an AI-enabled knowledge graph for biomedical (or other) tasks. See [BioCypher + LLMs](./biocypher-project/biochatter-integration) for more information.
+
+    We have also recently published a perspective on connecting knowledge and machine learning to enable causal reasoning in biomedicine, with a particular focus on the currently emerging "foundation models". You can read it [here](https://www.embopress.org/doi/full/10.1038/s44320-024-00041-w).
 
 ## New to Knowledge Graphs?
 
