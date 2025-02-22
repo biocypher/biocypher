@@ -82,8 +82,8 @@ nav:
     - Schema Configuration Reference: reference/schema-config-guide.md
 
   - Community:
-    - Home: community/index.md
-    - Contribute to BioCypher: community/contribute.md
+    - Join Us: community/index.md
+    - Where to Start: community/contribute.md
     - Contribute to the Documentation: community/contribute-docs.md
     - Contribute to the Code Base: community/contribute-codebase.md
 

@@ -1,7 +1,20 @@
 Welcome to the BioCypher community! We follow open-source principles and
 encourage any sort of contribution. We communicate on GitHub, where we also
-organise our project. For more informal discussions and updates, we have a
-[Zulip channel](https://biocypher.zulipchat.com).
+organise our projects. For more informal discussions and updates, we have a
+[Zulip channel](https://biocypher.zulipchat.com). Everybody is welcome!
+
+<div class="grid cards" markdown>
+
+-   :octicons-book-24:{ .lg .middle } __Where to Start__
+
+    ---
+
+    If you'd like to learn how to contribute to our projects, please follow
+    the steps outlined in the contribution guide.
+
+    [:octicons-arrow-right-24: To the contribution guide](contribute.md)
+
+</div>
 
 ## Our Community Zulip Channel
 

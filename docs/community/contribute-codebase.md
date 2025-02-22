@@ -273,12 +273,12 @@ When making changes, follow these BioCypher-specific guidelines:
 
 2. Follow roughly the [conventional commit message conventions](https://www.conventionalcommits.org/en/v1.0.0/).
 
-Once you've made your changes, you can proceed to submitting a Pull Request.
-
 ### Pushing your changes
 
-When you want your changes to appear publicly on your GitHub page, push your
-forked feature branch's commits to your forked repository on GitHub.
+When you want your [committed](https://git-scm.com/docs/git-commit) changes to
+appear publicly on your GitHub page, you can
+[push](https://git-scm.com/docs/git-push) your forked feature branch's commits
+to your forked repository on GitHub.
 
 Now your code is on GitHub, but it is not yet a part of the BioCypher project.
 For that to happen, a Pull Request (PR) needs to be submitted.
