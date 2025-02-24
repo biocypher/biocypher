@@ -1,0 +1,57 @@
+/* Overrides for maximum content width */
+/*.md-main__inner {
+    max-width: 100%; /* Remove max-width constraint */
+}
+*/
+
+/* Increase the base font size for the main content */
+.md-typeset {
+    font-size: 16px; /* Adjust to preferred size */
+}
+
+/* Customize font size for headers */
+
+/*---- H1, default: 32px  ----*/
+.md-typeset h1 {
+    font-size: 32px;
+}
+
+/*---- H2, default: 24px  ----*/
+.md-typeset h2 {
+    font-size: 24px;
+}
+
+/*---- H3, default: 18.72px  ----*/
+.md-typeset h3 {
+    font-size: 18.72px;
+}
+
+/*---- H4, default: 16px  ----*/
+.md-typeset h4 {
+    font-size: 16px;
+}
+
+
+/* Adjust font size for code blocks */
+.md-typeset code {
+    font-size: 15px;
+}
+
+/* Customize font size for the sidebar navigation */
+.md-nav__title, .md-nav__link {
+    font-size: 14px;
+}
+
+/* Adjust footer font size */
+.md-footer {
+    font-size: 10px;
+}
+
+:root {
+    --md-primary-fg-color:        #21521A;
+    --md-primary-fg-color--light: #21521A;;
+    --md-primary-fg-color--dark:  #21521A;;
+
+    --md-accent-fg-color--dark:     #FFFFFF;
+
+  }
