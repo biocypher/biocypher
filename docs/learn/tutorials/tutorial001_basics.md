@@ -1,7 +1,3 @@
----
-status: old
----
-
 # Tutorial - Basics
 
 The main purpose of BioCypher is to facilitate the pre-processing of biomedical
@@ -256,7 +252,8 @@ instance.
 ### Importing data into Neo4j
 
 If you want to build an actual Neo4j graph from the tutorial output files,
-please follow the [Neo4j import tutorial](neo4j_tut).
+please follow the [Neo4j import
+tutorial](../../reference/outputs/neo4j-output.md).
 
 ### Quality control and convenience functions
 
