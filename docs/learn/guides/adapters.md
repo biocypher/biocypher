@@ -30,7 +30,7 @@ different views) or the [meta-graph instance](metagraph).
 
     For more information on developing your own adapters, please refer to this tutorial
 
-    [:octicons-arrow-right-24: To the Adpaters Tutorial](../tutorials/tutorial003_adapters.md)
+    [:octicons-arrow-right-24: To the Adapter Tutorial](../tutorials/tutorial003_adapters.md)
 
 </div>
 

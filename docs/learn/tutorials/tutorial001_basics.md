@@ -11,10 +11,15 @@ knowledge graphs in a user-friendly and biology-centric fashion.
 
 We are going to use a toy example to familiarise the user with the basic
 functionality of BioCypher. One central task of BioCypher is the harmonisation
-of dissimilar datasets describing the same entities. Thus, in this example,
-the input data - which in the real-world use case could come from any type of
-interface - are represented by simulated data containing some examples of
-differently formatted biomedical entities such as proteins and their interactions.
+of dissimilar datasets describing the same entities. Thus, in this example, the
+input data—which in the real-world use case could come from any type of
+interface—are represented by simulated data containing some examples of
+differently formatted biomedical entities such as proteins and their
+interactions.
+
+!!! tip "Jupyter Notebook"
+	If you prefer to run the tutorial in a Jupyter Notebook or as a Google Colab
+	in your browser, go [here](pandas_tutorial.ipynb).
 
 There are two versions of this tutorial, which only differ in the output
 format. The first uses a CSV output format to write files suitable for Neo4j
@@ -56,13 +61,13 @@ automatically when you run the tutorial code.
 ## Configuration
 
 BioCypher is configured using a YAML file; it comes with a default (which you
-can see in the [Configuration](config) section). You can use it, for instance,
-to select an output format, the output directory, separators, logging level,
-and other options. For this tutorial, we will use a dedicated configuration
-file for each of the steps. The configuration files are located in the `tutorial`
-directory, and are called using the `biocypher_config_path` argument at
-instantiation of the BioCypher interface. For more information, see also the
-[Quickstart Configuration](qs_config) section.
+can see in the [Configuration](../../reference/biocypher-config.md) section).
+You can use it, for instance, to select an [output
+format](../../reference/outputs/index.md), the output directory, separators,
+logging level, and other options. For this tutorial, we will use a dedicated
+configuration file for each of the steps. The configuration files are located in
+the `tutorial` directory, and are called using the `biocypher_config_path`
+argument at instantiation of the BioCypher interface.
 
 ## Section 1: Adding data
 
@@ -85,8 +90,8 @@ proteins = [Protein() for _ in range(10)]
 ```
 
 Each protein in our simulated data has a UniProt ID, a label
-("uniprot_protein"), and a dictionary of properties describing it. This is
-purely by coincidence - very close to the input BioCypher expects (for nodes):
+("uniprot_protein"), and a dictionary of properties describing it. This
+is—purely by coincidence—very close to the input BioCypher expects (for nodes):
 
 - a unique identifier
 - an input label (to allow mapping to the ontology, see the second step below)
@@ -112,7 +117,8 @@ The concept of an adapter can become arbitrarily complex and involve
 programmatic access to databases, API requests, asynchronous queries, context
 managers, and other complicating factors. However, it always boils down to
 providing the BioCypher driver with a collection of tuples, one for each entity
-in the input data. For more info, see the section on [Adapters](adapter_functions).
+in the input data. For more info, see the section on
+[Adapters](../guides/adapters.md) and the [Adapter Tutorial](../tutorials/tutorial003_adapters.md).
 
 As descibed above, _nodes_ possess:
 
@@ -143,7 +149,7 @@ ontological hierarchy. In this tutorial, we refer to the Biolink model as the
 general backbone of our ontological hierarchy. The basic premise of the schema
 configuration YAML file is that each component of the desired knowledge graph
 output should be configured here; if (and only if) an entity is represented in
-the schema configuration _and_ is present in the input data stream, will it be
+the schema configuration _and_ is present in the input data stream, it will be
 part of our knowledge graph.
 
 In our case, since we only import proteins, we only require few lines of
@@ -156,19 +162,20 @@ protein: # mapping
   input_label: uniprot_protein # connection to input stream
 ```
 
-The first line (`protein`) identifies our entity and connects to the
-ontological backbone; here we define the first class to be represented in the
-graph. In the configuration YAML, we represent entities — similar to the
-internal representation of Biolink — in lower sentence case (e.g., "small
-molecule"). Conversely, for class names, in file names, and property graph
-labels, we use PascalCase instead (e.g., "SmallMolecule") to avoid issues with
-handling spaces. The transformation is done by BioCypher internally. BioCypher
-does not strictly enforce the entities allowed in this class definition; in
-fact, we provide [several methods of extending the existing ontological
-backbone _ad hoc_ by providing custom inheritance or hybridising ontologies](tut_hybridising).
-However, every entity should at some point be connected to the underlying
-ontology, otherwise the multiple hierarchical labels will not be populated.
-Following this first line are three indented values of the protein class.
+The first line (`protein`) identifies our entity and connects to the ontological
+backbone; here we define the first class to be represented in the graph. In the
+configuration YAML, we represent entities — similar to the internal
+representation of Biolink — in lower sentence case (e.g., "small molecule").
+Conversely, for class names, in file names, and property graph labels, we use
+PascalCase instead (e.g., "SmallMolecule") to avoid issues with handling spaces.
+The transformation is done by BioCypher internally. BioCypher does not strictly
+enforce the entities allowed in this class definition; in fact, we provide
+[several methods](tutorial002_handling_ontologies.md#model-extensions) for
+extending the existing ontological backbone _ad hoc_ by providing custom
+inheritance or hybridising ontologies. However, every entity should at some
+point be connected to the underlying ontology, otherwise the multiple
+hierarchical labels will not be populated. Following this first line are three
+indented values of the protein class.
 
 The second line (`represented_as`) tells BioCypher in which way each entity
 should be represented in the graph; the only options are `node` and `edge`.
@@ -204,13 +211,13 @@ configuration.
 
 ### Creating the graph (using the BioCypher interface)
 
-All that remains to be done now is to instantiate the BioCypher interface (as the
-main means of communicating with BioCypher) and call the function to create the
-graph. While this can be done "online", i.e., by connecting to a running DBMS
-instance, we will in this example use the offline mode of BioCypher, which does
-not require setting up a graph database instance. The following code will use
-the data stream and configuration set up above to write the files for knowledge
-graph creation:
+All that remains to be done now is to instantiate the BioCypher interface (as
+the main means of communicating with BioCypher) and call the function to create
+the graph. While this can be done "online", i.e., by connecting to a running
+DBMS instance, we will in this example use the offline mode of BioCypher, which
+does not require setting up a graph database instance. The following code will
+use the data stream and configuration set up above to write the files for
+knowledge graph creation:
 
 ```python
 import os
@@ -243,7 +250,8 @@ instance.
 
     By default, BioCypher will look for a file named `biocypher_config.yaml` in the
     current working directory and in its subfolder `config`, as well as in various
-    user directories. For more information, see the section on [configuration](config).
+    user directories. For more information, see the section on
+	[configuration](../../reference/biocypher-config.md	).
 
 ### Importing data into Neo4j
 
