@@ -1,6 +1,4 @@
-# BioChatter (LLM on Knowledge Graphs)
-
-## Connect your Knowledge Graph to Large Language Models
+# Connect your Knowledge Graph to Large Language Models
 
 BioChatter is a Python package implementing a generic backend library for the connection of biomedical applications to conversational AI. We describe the framework in this [paper](https://www.nature.com/articles/s41587-024-02534-3). BioChatter is part of the BioCypher ecosystem, connecting natively to BioCypher knowledge graphs. Find the docs [here](https://biochatter.org/).
 

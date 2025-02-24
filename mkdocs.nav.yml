@@ -8,6 +8,7 @@ nav:
           - Design philosophy: biocypher-project/design-philosophy.md
           - Use Cases: biocypher-project/use-cases.md
           - BioCypher + LLMs: biocypher-project/biochatter-integration.md
+          - R and Bioconductor: biocypher-project/r-bioc.md
 
     - Get Started:
           - Installation: installation.md
