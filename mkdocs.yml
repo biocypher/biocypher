@@ -23,14 +23,14 @@ theme:
 
   palette:
     - scheme: default
-      primary: indigo
-      accent: indigo
+      primary: custom # indigo
+      accent:  custom # indigo
       toggle:
         icon: material/toggle-switch
         name: Switch to dark mode
     - scheme: slate
-      primary: black
-      accent: indigo
+      primary: custom # black
+      accent:  custom # indigo
       toggle:
         icon: material/toggle-switch-off
         name: Switch to light mode
@@ -148,6 +148,7 @@ extra:
 
 extra_css:
   - assets/css/css-v1.1.0.css
+  - stylesheets/extra.css
 
 
 copyright: © Copyright 2021-2025, BioCypher developers.
