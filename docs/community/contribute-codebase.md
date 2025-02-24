@@ -1,5 +1,5 @@
 !!! warning
-    
+
     This page is redundant with the unified docs in `biocypher/documentation`.
     Community docs will be maintained there.
 
