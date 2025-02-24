@@ -1,7 +1,3 @@
----
-status: old
----
-
 # Neo4j
 
 In the following section, we give an overview of interacting with Neo4j from
@@ -33,8 +29,10 @@ also documented differently.
 
 ## Neo4j settings
 
-To overwrite the standard settings of Neo4j, add a `neo4j` section to the `biocypher_config.yaml` file.
-The following settings are possible:
+To overwrite the standard settings of Neo4j, add a `neo4j` section to the
+`biocypher_config.yaml` file.  The following settings are possible:
+
+<!-- TODO link to main config docs -->
 
 ```yaml title="biocypher_config.yaml"
 neo4j:  ### Neo4j configuration ###
@@ -155,7 +153,7 @@ files on disk, so no data need to be copied around.
     `database` scope. BioCypher takes care of this.
     The generated import script `neo4j-admin-import-call.sh`
     first checks the Neo4j database version and uses the correct
-    import statement for the detected version. Therefore make sure to run
+    import statement for the detected version. Therefore, make sure to run
     the script from the targeted DBMS root location.
 
 
@@ -193,29 +191,27 @@ with Neo4j as well as other storage systems.
 
 BioCypher provides a Python driver for interacting with Neo4j, which is
 accessed through the `BioCypher` class when setting `offline` to `False`.
-More details can be found in the [API docs](api_connect).
+More details can be found in the [API docs](../source/index.md).
+
+<!-- TODO link driver API docs once exists -->
 
 If there exists no BioCypher graph in the currently active database, or
 if the user explicitly specifies so using the `wipe` attribute of the
 driver, a new BioCypher database is created using the schema
-configuration specified in the [schema-config.yaml](../../tutorials/tutorial001_basics.md#schema-configuration).
+configuration specified in the [schema-config.yaml](../schema-config.md).
 
 ## Note on labels order
 
-Neo4j do not support managing the hierarchy of types of the vocabulary given by
-the input ontology. What it does is to attach to nodes and edges each type label
-of all the ancestors in the types hierarchy.
+Neo4j does not support managing the hierarchy of types of the vocabulary given
+by the input ontology. What it does is to attach to nodes and edges each type
+label of all the ancestors in the types hierarchy.
 
-By default, the Neo4j driver exports those type labels as an
-alphabetically-sorted list, which may be useful for comparing output files.
-But this may be less easy to understand within a graph browser that would show
-the labels in the same order.
+By default, the Neo4j driver exports those type labels as a sorted list
+(`Ascending`), which means the labels are ordered from most specific to most
+general in the ontology. You can set `labels_order` to either `Ascending`,
+`Descending`, or `Alphabetical`.
 
-To get a more readable labels list, you can set `labels_order` as either
-`Ascending` or `Descending`; both of which will display labels in the order
-given by the type hierarchy of the ontology's vocabulary.
-
-To get even simpler label, you can set `labels_order: Leaves`, which
-will write down only the more specific type label (the "leaf" of the types
-tree). Be warn that the resulting export will completely lose the ontological
+To get even simpler labels, you can set `labels_order: Leaves`, which
+will remove all but the most specific type label (the "leaf" of the types
+tree). Be warned that the resulting export will completely lose the ontological
 information, hence making it impossible to query the graph on high-level types.
