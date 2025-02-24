@@ -23,14 +23,14 @@ theme:
 
   palette:
     - scheme: default
-      primary: custom # indigo
-      accent:  custom # indigo
+      primary: blue grey
+      accent: light blue
       toggle:
         icon: material/toggle-switch
         name: Switch to dark mode
     - scheme: slate
-      primary: custom # black
-      accent:  custom # indigo
+      primary: blue grey
+      accent: light blue
       toggle:
         icon: material/toggle-switch-off
         name: Switch to light mode
