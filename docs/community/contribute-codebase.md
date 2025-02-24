@@ -1,3 +1,8 @@
+!!! warning
+    
+    This page is redundant with the unified docs in `biocypher/documentation`.
+    Community docs will be maintained there.
+
 # Developer Guide
 
 Thank you for considering to contribute to the project! This guide will help you

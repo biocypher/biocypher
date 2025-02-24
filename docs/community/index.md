@@ -1,3 +1,8 @@
+!!! warning
+    
+    This page is redundant with the unified docs in `biocypher/documentation`.
+    Community docs will be maintained there.
+
 Welcome to the BioCypher community! We follow open-source principles and
 encourage any sort of contribution. We communicate on GitHub, where we also
 organise our projects. For more informal discussions and updates, we have a

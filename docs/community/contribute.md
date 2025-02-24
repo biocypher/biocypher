@@ -1,3 +1,8 @@
+!!! warning
+    
+    This page is redundant with the unified docs in `biocypher/documentation`.
+    Community docs will be maintained there.
+
 # How to Start Contributing
 
 There are many valuable ways to contribute besides writing code. Thank you for

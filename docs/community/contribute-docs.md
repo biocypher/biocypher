@@ -1,3 +1,8 @@
+!!! warning
+    
+    This page is redundant with the unified docs in `biocypher/documentation`.
+    Community docs will be maintained there.
+
 # Contributing to the documentation
 
 Contributing to the documentation benefits everyone who uses BioCypher. We
