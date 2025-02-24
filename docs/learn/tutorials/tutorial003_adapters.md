@@ -1,13 +1,14 @@
 # Tutorial - Adapters
 
-!!! note "Note"
-	For a list of existing and planned adapters, please see [here](adapters_info).
-	You can also get an overview of pipelines and the adapters they use in our [meta
-	graph](https://meta.biocypher.org).
+!!! note "Existing and planned adapters—overview"
+	For a list of existing and planned adapters, please see
+	[here](https://github.com/orgs/biocypher/projects/3). You can also get an
+	overview of pipelines and the adapters they use in our [meta
+	graph](https://github.com/biocypher/meta-graph).
 
 ![BioCypher pipeline interface](../../assets/img/pipeline-biocypher.png)
 
-!!! note "Note"
+!!! tip "Project Template"
 	To facilitate the creation of a BioCypher pipeline, we have created a template
 	repository that can be used as a starting point for your own adapter. It
 	contains a basic structure for an adapter, as well as a script that can be used
@@ -40,6 +41,8 @@ the BioCypher interface is contained in the adapter class, which makes for a
 more complex architecture, but allows for more involved workflows. In
 pseudo-code, the two approaches look like this:
 
+<!-- TODO doctest -->
+
 ```python title="Simple adapter"
 from biocypher import BioCypher
 from adapter import Adapter
@@ -57,6 +60,8 @@ KG](https://github.com/biocypher/open-targets) and the [CROssBAR
 v2](https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration).
 
 On the other hand, the more involved approach looks like this:
+
+<!-- TODO doctest -->
 
 ```python title="Adapter base class" linenums="1"
 from biocypher import BioCypher
@@ -114,11 +119,13 @@ Graph migration](https://github.com/biocypher/clinical-knowledge-graph).
 
 In general, a single adapter fulfils the following tasks:
 
-1. Loading the data from the primary resource, for instance by using pypath
-download / caching functions (as in the [UniProt example
-adapter](https://github.com/HUBioDataLab/CROssBAR-BioCypher-Migration)), by
-using columnar distributed data formats such as Parquet (as in the [Open Targets
-example adapter](https://github.com/biocypher/open-targets)), by using a running
+<!-- TODO link resource download cache API docs -->
+
+1. Loading the data from the primary resource, for instance by using the
+BioCypher `Resource` download / caching functions (as used in the [CollecTRI
+example](https://github.com/biocypher/collectri)), by using columnar distributed
+data formats such as Parquet (as in the [Open Targets example
+adapter](https://github.com/biocypher/open-targets)), by using a running
 database instance (as in the [CKG example
 adapter](https://github.com/biocypher/clinical-knowledge-graph)), or by simply
 reading a file from disk (as in the [Dependency Map example
@@ -126,9 +133,11 @@ adapter](https://github.com/biocypher/dependency-map)). Generally, any method
 that allows the efficient transfer of the data from adapter to BioCypher core is
 acceptable.
 
+<!-- TODO update with "in-memory" option -->
+
 2. Passing the data to BioCypher as a stream or list to be written to the used
 DBMS (or application) via a Python driver ("online") or via batch import (e.g.
-from CSV files).  The latter has the advantage of high throughput and a low
+from CSV files). The latter has the advantage of high throughput and a low
 memory footprint, while the former allows for a more interactive workflow but is
 often much slower, thus making it better suited for small incremental updates.
 
@@ -138,13 +147,13 @@ pypath.mapping as in the UniProt example adapter), or identifier and prefix
 standardisation and validation (e.g. via Bioregistry as in the UniProt example
 adapter and others).
 
-!!! note "Note"
-	**For developers:** We follow a design philosophy of "separation of concerns" in
-	BioCypher. This means that the core should not be concerned with the details of
-	how data is loaded, but only with the data itself. This is why the core does not
-	contain any code for loading data from a resource, but only for writing it to
-	the database. The adapter is responsible for loading the data and passing it to
-	the core, which allows for a more modular design and makes it easier to
+!!! tip "For developers"
+	We follow a design philosophy of "separation of concerns" in BioCypher. This
+	means that the core should not be concerned with the details of how data is
+	loaded, but only with the data itself. This is why the core does not contain any
+	code for loading data from a resource, but only for writing it to the database.
+	The adapter is responsible for loading the data and passing it to the core,
+	which allows for a more modular design and makes it easier to
 	maintain, extend, and reuse the code.
 
 	For introduction of new features, we recommend to first implement them in the
@@ -156,7 +165,7 @@ adapter and others).
 
 Depending on the data source, it is up to the developer of the adapter to find
 and define a suitable representation to be piped into BioCypher; for instance,
-in out ``pypath`` adapter, we load the entire ``pypath`` object into memory to
+in our ``pypath`` adapter, we load the entire ``pypath`` object into memory to
 be passed to BioCypher using a generator that evaluates each ``pypath`` object
 and transforms it to the tuple representation described below. This is made
 possible by the "pre-harmonised" form in which the data is represented within
@@ -187,15 +196,16 @@ While edges are represented as 5-tuples, containing:
   an ontological class via the `input_label` field in the schema configuration)
 - a dictionary of relationship attributes
 
-!!! note "Note"
+!!! note "Standardised node and edge representation"
 	This representation will probably be subject to change soon and yield to a more
 	standardised interface for nodes and edges, derived from a BioCypher core class.
 	We refer to this development in an
 	[issue](https://github.com/orgs/biocypher/projects/1?pane=issue&itemId=23739517).
 
 ## Strict mode
+
 We can activate BioCypher strict mode with the `strict_mode` option in the
-configuration. In strict mode, the driver will raise an error if it encounters a
+configuration. In strict mode, BioCypher will raise an error if it encounters a
 node or edge without data source, version, and licence. These currently need to
 be provided as part of the node and edge attribute dictionaries, with the
 reserved keywords `source`, `version`, and `licence` (or `license`). This may
