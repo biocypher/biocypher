@@ -12,7 +12,7 @@
 
 <div class="grid cards" markdown>
 
--   :octicons-tools-24::simple-yaml:{ .lg .middle } __BioCypher Configuration Reference__
+-   :octicons-tools-24::simple-yaml:{ .lg .middle } __BioCypher Configuration__
 
     ---
 
@@ -23,7 +23,7 @@
 
 <div class="grid cards" markdown>
 
--   :octicons-tools-24::simple-yaml:{ .lg .middle } __Output Configuration Reference__
+-   :octicons-tools-24::simple-yaml:{ .lg .middle } __Output Configuration__
 
     ---
 
@@ -34,7 +34,7 @@
 
 <div class="grid cards" markdown>
 
--   :octicons-tools-24::simple-yaml:{ .lg .middle } __Schema Configuration Reference__
+-   :octicons-tools-24::simple-yaml:{ .lg .middle } __Schema Configuration__
 
     ---
 

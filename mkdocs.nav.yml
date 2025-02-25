@@ -33,8 +33,8 @@ nav:
           - Reference Index: reference/index.md
           - API Documentation:
                 - reference/source/index.md
-          - BioCypher Configuration Reference: reference/biocypher-config-guide.md
-          - Outputs:
+          - BioCypher Configuration: reference/biocypher-config-guide.md
+          - Output Configuration:
                 - reference/outputs/index.md
                 - ArangoDB: reference/outputs/arangodb-output.md
                 - Neo4j: reference/outputs/neo4j-output.md
@@ -43,7 +43,7 @@ nav:
                 - RDF: reference/outputs/rdf-output.md
                 - SQLite: reference/outputs/sqlite-output.md
                 - Tabular Format: reference/outputs/tabular-output.md
-          - Schema Configuration Reference: reference/schema-config-guide.md
+          - Schema Configuration: reference/schema-config-guide.md
 
     - Community:
           - Join Us: community/index.md
