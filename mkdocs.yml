@@ -50,10 +50,11 @@ nav:
       - Quickstart: learn/quickstart.md
 
   - Learn:
-      - Basics: learn/tutorials/tutorial001_basics.md
-      - Handling Ontologies: learn/tutorials/tutorial002_handling_ontologies.md
-      - Adapters: learn/tutorials/tutorial003_adapters.md
-      - BioCypher and Pandas: learn/tutorials/pandas_tutorial.ipynb
+      - Tutorials:
+          - Basics: learn/tutorials/tutorial001_basics.md
+          - Handling Ontologies: learn/tutorials/tutorial002_handling_ontologies.md
+          - Adapters: learn/tutorials/tutorial003_adapters.md
+          - BioCypher and Pandas: learn/tutorials/pandas_tutorial.ipynb
 
       - HowTo / FAQ:
           - learn/guides/index.md
