@@ -45,12 +45,12 @@ neo4j-utils = "0.0.7"
 pandas = "^2.0.1"
 pooch = "^1.7.0"
 tqdm = "^4.65.0"
+
+[tool.poetry.group.dev.dependencies]
 mkdocs-material = "^9.5"
 mkdocstrings-python="^1.12"
 mkdocs-jupyter = "^0.25"
 neoteroi-mkdocs = "^1.1.0"
-
-[tool.poetry.group.dev.dependencies]
 sphinx = ">=5.0.0"
 sphinx-design = "^0.3.0"
 sphinx-rtd-theme = ">=1.0.0"
