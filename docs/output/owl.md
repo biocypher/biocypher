@@ -26,11 +26,40 @@ The behavior of edge creation in the RDF output relies mainly on the
 ### ObjectProperty
 
 This edge model translates BioCypher's edges into
-OWL's object properties (if they are available under the
+OWL's "object properties" (if they are available under the
 selected root term). Object properties are the natural way
 to model edges in OWL, but they do not support annotation,
-thus being incompatible with having BioCypher's properties
+thus being incompatible with having BioCypher's "properties"
 on edges.
+
+For instance, the following BioCypher triples (two nodes and one edge):
+```{code-block} python
+# Nodes:
+# ID           label           properties
+("My_source", "thisNodeType", {"my_prop":"this"}),
+("My_target", "thatNodeType", {}),
+
+# Edge:
+# ID         source ID    target ID    properties               label
+("My_edge", "My_source", "My_target", {"my_edge_prop":"that"}, "toward")
+```
+would be translated into the following OWL statements (here shown in the Turtle
+format, not showing the taxonomy ancestors):
+```{code-block} turtle
+# Declaration of types:
+:toward a owl:ObjectProperty ;
+    rdfs:range :thisNodeType ;
+    rdfs:domain :thatNodetype ;
+    rdfs:subPropertyOf owl:topObjectProperty ;
+
+# Actual data:
+:My_source a :thisNodeType, owl:NamedIndividual ;
+    biocypher:my_prop "this" ;
+    :toward :My_target
+
+:My_target a :thatNodeType, owl:NamedIndividual ;
+```
+Note how the properties of the edge are losts.
 
 As most of OWL files do not model a common term on top of both
 owl:topObjectProperty and owl:Thing, you may need to ensure
@@ -58,6 +87,45 @@ with a generic "edge\_source" (linking source instance to
 the association instance) and "edge\_target" (linking the association
 instance to the target instance). Both of which inherit from "edge",
 and are in the biocypher namespace.
+
+For instance, the following BioCypher triples (two nodes and one edge):
+```{code-block} python
+# Nodes:
+# ID           label           properties
+("My_source", "thisNodeType", {"my_prop":"this"}),
+("My_target", "thatNodeType", {}),
+
+# Edges:
+# ID         source ID    target ID    properties               label
+("My_edge", "My_source", "My_target", {"my_edge_prop":"that"}, "toward")
+```
+would be translated into the following OWL statements (here shown in the Turtle
+format, not showing the taxonomy ancestors):
+```{code-block} turtle
+# Declaration of Biocypher's generic edge types:
+biocypher:edge a owl:ObjectProperty ;
+    rdfs:subPropertyOf owl:topObjectProperty ;
+
+biocypher:edge_source a biocypher:edge ;
+
+biocypher:edge_target a biocypher:edge ;
+
+# The edge type becomes an OWL class:
+:toward a owl:Class ;
+
+# Actual data:
+:My_source a :thisNodeType, owl:NamedIndividual ;
+    biocypher:my_prop "this" ;
+
+:My_target a :thatNodeType, owl:NamedIndividual ;
+
+# An edge is an OWL individual, with properties:
+:My_edge a :toward, owl:NamedIndividual ;
+    biocypher:edge_source :My_source ;
+    biocypher:edge_target :My_target ;
+    biocypher:my_edge_prop "that" ;
+```
+Note how the properties of the edge are kept.
 
 If you use this edge model, you should select one of the subclasses of
 owl:Thing as a `root_node`, and not select any part of the object property tree.
@@ -91,7 +159,7 @@ Important parameters are:
   the output file extension will be ".ttl", but you cannot indicate "ttl" as an
   rdf_format.
 
-### For the OpjectProperty edge model
+### For the ObjectProperty edge model
 
 ```{code-block} yaml
 :caption: biocypher_config.yaml
