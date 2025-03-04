@@ -5,7 +5,7 @@ language(s) for authoring ontologies. BioCypher can use taxonomies written in
 OWL as an input, and it can also output a knowledge graph in an OWL file.
 
 OWL is one of the most used knowledge representation languages and is built
-on the Resource Description Framework (RDF) and thus is partly compatible with
+on the Resource Description Framework (RDF) and is partly compatible with
 the RDF Schema data model. It can be serialized in several formats (most known
 being XML and Turtle). The [Protégé](https://protege.stanford.edu/) software
 is the *de facto* standard graphical user interface to design OWL ontologies.
@@ -23,6 +23,49 @@ The behavior of edge creation in the RDF output relies mainly on the
 "Association".
 
 
+### Note on vocabulary
+
+To understand the following rationale, note that OWL do not use the same
+vocabulary than Biocypher, here are the correspondencies:
+
+| BioCypher | OWL                        |
+| --------- | -------------------------- |
+| node      | individual                 |
+| edge      | object property            |
+| label     | class                      |
+| property  | annotation / data property |
+| ID        | label / IRI                |
+
+
+### In a nutshell
+
+When using `edge_model: ObjectProperty`, the resulting ontology will follow
+more closely the spirit of the OWL modelling approach; but the ID and the
+properties attached to the edges are lost.
+
+Example:
+```
+ ╭─────────╮            ╭─────────╮
+ │My_source├──┤toward├──┤My_target│
+ ╰┬────────╯     ┊      ╰─────┬───╯
+  ┊              ┊            ┊
+  ╰my_prop:this  ╳            ╽
+```
+
+When using `edge_model: Association`, the edges are created as OWL individuals,
+with attached annotations, and an IRI; however, this introduces two object
+properties around a new individual, between pairs of indivudals.
+
+Example:
+```
+ ╭─────────╮                 ╭───────╮                 ╭─────────╮
+ │My_source├──┤edge_source├──┤My_edge├──┤edge_target├──┤My_target│
+ ╰┬────────╯                 ╰┬──────╯                 ╰────┬────╯
+  ┊                           ┊                             ┊
+  ╰my_prop:this               ╰my_edge_prop:that            ╽
+```
+
+
 ### ObjectProperty
 
 This edge model translates BioCypher's edges into
@@ -32,7 +75,10 @@ to model edges in OWL, but they do not support annotation,
 thus being incompatible with having BioCypher's "properties"
 on edges.
 
-For instance, the following BioCypher triples (two nodes and one edge):
+
+#### Example
+
+For instance, the following BioCypher tuples (two nodes and one edge):
 ```{code-block} python
 # Nodes:
 # ID           label           properties
@@ -61,6 +107,9 @@ format, not showing the taxonomy ancestors):
 ```
 Note how the properties of the edge are losts.
 
+
+#### Root node and ObjectProperty
+
 As most of OWL files do not model a common term on top of both
 owl:topObjectProperty and owl:Thing, you may need to ensure
 that the input OWL contains a "meta-root", that is a
@@ -71,6 +120,31 @@ common ancestor honoring both:
 
 It is this meta-root that you should select as a `root_node` in your BioCypher
 configuration.
+
+For example, a classical OWL taxonomy is often structured like:
+```
+ - owl:Thing
+   ├ Entity
+   ├ My_class
+   └ etc.
+ - owl:topObjectProperty
+   ├ My_link_type
+   └ etc.
+```
+
+To allow BioCypher to "see" both the owl:Thing and owl:topObjectProperty
+subtrees, you need to add your own root node:
+```
+- my_meta_root
+  ├ owl:Thing
+  │ ├ Entity
+  │ ├ My_class
+  │ └ etc.
+  └ owl:topObjectProperty
+    ├ My_link_type
+    └ etc.
+```
+and then set `root_node: my_meta_root` in BioCypher's configuration.
 
 
 ### Association
@@ -88,7 +162,10 @@ the association instance) and "edge\_target" (linking the association
 instance to the target instance). Both of which inherit from "edge",
 and are in the biocypher namespace.
 
-For instance, the following BioCypher triples (two nodes and one edge):
+
+#### Example
+
+For instance, the following BioCypher tuples (two nodes and one edge):
 ```{code-block} python
 # Nodes:
 # ID           label           properties
@@ -127,8 +204,25 @@ biocypher:edge_target a biocypher:edge ;
 ```
 Note how the properties of the edge are kept.
 
-If you use this edge model, you should select one of the subclasses of
+
+#### Root node and Association
+
+If you use this edge model, you may select one of the subclasses of
 owl:Thing as a `root_node`, and not select any part of the object property tree.
+
+For instance, if you have a taxonomy with a common root node, the "Association"
+edge model only requires that you select a subclass of owl:Thing, and you do not
+need to select the meta root:
+```
+- my_meta_root
+  ├ owl:Thing   <= it is only necessary to use `root_node: Thing`
+  │ ├ Entity
+  │ ├ My_class
+  │ └ etc.
+  └ owl:topObjectProperty  <= This subtree will not be used.
+    ├ My_link_type
+    └ etc.
+```
 
 
 ## Taxonomy Management
@@ -140,9 +234,9 @@ tree below the selected root node.
 
 The configuration parameter `rdf_namespaces` can be used to specify which
 namespaces exist in the input ontology (or the data). If the data contain IDs
-with a given prefix, they will be converted into valid Uniform Resource
-Identifiers (URI) to allow referencing. If no namespace is specified, BioCypher
-will search for them in the input ontology.
+with a given prefix, they will be converted into valid Internationalized
+Resource Identifiers (IRI) to allow referencing. If no namespace is specified,
+BioCypher will search for them in the input ontology.
 
 
 ## Settings
