@@ -47,7 +47,7 @@ def test_owl_write_data(bw_owl, length, _get_nodes, _get_edges):
     assert len(owl_file) == 1
 
     graph = Graph()
-    with open(owl_file[0]) as f:
+    with open(owl_file[0], encoding="utf-8") as f:
         temp_graph = Graph().parse(data=f.read(), format="turtle")
         graph += temp_graph
 
@@ -78,7 +78,7 @@ def test_owl_write_data(bw_owl, length, _get_nodes, _get_edges):
         assert (
             biocypher_namespace[f"p{i + 1}"],
             biocypher_namespace["score"],
-            Literal(float("{:.6e}".format(4 / (i + 1)).replace(".000000", ""))),
+            Literal(float(f"{4 / (i + 1):.6e}".replace(".000000", ""))),
         ) in graph
         assert (
             biocypher_namespace[f"p{i + 1}"],
