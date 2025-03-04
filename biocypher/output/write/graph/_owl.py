@@ -94,7 +94,7 @@ class _OWLWriter(_RDFWriter):
         db_password: str = None,
         db_host: str = None,
         db_port: str = None,
-        rdf_format: str = None,
+        file_format: str = None,
         rdf_namespaces: dict = {},
         labels_order: str = "Ascending",
         edge_model: str = "Association",
@@ -162,7 +162,7 @@ class _OWLWriter(_RDFWriter):
             db_port:
                 The database port.
 
-            rdf_format:
+            file_format:
                 The format of RDF.
 
             rdf_namespaces:
@@ -175,7 +175,7 @@ class _OWLWriter(_RDFWriter):
 
             file_stem:
                 The stem (name without the path and extension) of the output
-                OWL file. The extension is determined from `rdf_format`.
+                OWL file. The extension is determined from `file_format`.
 
         """
         super().__init__(
@@ -196,9 +196,10 @@ class _OWLWriter(_RDFWriter):
             db_password=db_password,
             db_host=db_host,
             db_port=db_port,
-            rdf_format=rdf_format,
+            file_format=file_format,
             rdf_namespaces=rdf_namespaces,
             labels_order=labels_order,
+            **kwargs,
         )
 
         # Starts with the loaded ontologies RDF graph,
@@ -577,4 +578,4 @@ class _OWLWriter(_RDFWriter):
         if self._has_nodes and self._has_edges:
             file_name = os.path.join(self.outdir, f"{self.file_stem}.{self.extension}")
             logger.info(f"Writing {len(self.graph)} terms to {file_name}")
-            self.graph.serialize(destination=file_name, format=self.rdf_format)
+            self.graph.serialize(destination=file_name, format=self.file_format)

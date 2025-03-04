@@ -148,7 +148,7 @@ class _BatchWriter(_Writer, ABC):
         db_password: str = None,
         db_host: str = None,
         db_port: str = None,
-        rdf_format: str = None,
+        file_format: str = None,
         rdf_namespaces: dict = {},
         labels_order: str = "Ascending",
         **kwargs,
@@ -234,7 +234,7 @@ class _BatchWriter(_Writer, ABC):
             db_port:
                 The database port.
 
-            rdf_format:
+            file_format:
                 The format of RDF.
 
             rdf_namespaces:
@@ -256,7 +256,7 @@ class _BatchWriter(_Writer, ABC):
         self.db_password = db_password
         self.db_host = db_host or "localhost"
         self.db_port = db_port
-        self.rdf_format = rdf_format
+        self.file_format = file_format
         self.rdf_namespaces = rdf_namespaces
 
         self.delim, self.escaped_delim = self._process_delimiter(delimiter)

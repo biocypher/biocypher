@@ -55,7 +55,7 @@ class _RDFWriter(_BatchWriter):
         db_password: str = None,
         db_host: str = None,
         db_port: str = None,
-        rdf_format: str = None,
+        file_format: str = None,
         rdf_namespaces: dict = {},
         labels_order: str = "Ascending",
         **kwargs,
@@ -78,14 +78,29 @@ class _RDFWriter(_BatchWriter):
             db_password=db_password,
             db_host=db_host,
             db_port=db_port,
-            rdf_format=rdf_format,
+            file_format=file_format,
             rdf_namespaces=rdf_namespaces,
             labels_order=labels_order,
+            **kwargs,
         )
         if not self.rdf_namespaces:
             # For some reason, the config can pass
             # the None object.
             self.rdf_namespaces = {}
+
+        if "rdf_format" in kwargs:
+            logger.warning("The 'rdf_format' config option is deprecated, use 'file_format' instead.")
+            if not file_format:
+                format = kwargs["rdf_format"]
+                logger.warning(f"I will set 'file_format: {format}' for you.")
+                self.file_format = format
+                kwargs.pop("rdf_format")
+            logger.warning("NOTE: this warning will become an error in next versions.")
+
+        if not file_format:
+            msg = "You need to indicate a 'file_format'."
+            logger.error(msg)
+            raise RuntimeError(msg)
 
         self.namespaces = {}
 
@@ -111,12 +126,12 @@ class _RDFWriter(_BatchWriter):
         """
         return "bin/"
 
-    def _is_rdf_format_supported(self, rdf_format: str) -> bool:
+    def _is_rdf_format_supported(self, file_format: str) -> bool:
         """Check if the specified RDF format is supported.
 
         Args:
         ----
-            rdf_format (str): The RDF format to check.
+            file_format (str): The RDF format to check.
 
         Returns:
         -------
@@ -134,22 +149,22 @@ class _RDFWriter(_BatchWriter):
             "nquads",
             "json-ld",
         ]
-        if rdf_format not in supported_formats:
+        if file_format not in supported_formats:
             logger.error(
-                f"{rdf_format}; Incorrect or unsupported RDF format, use one of the following: "
-                f'"xml", "n3", "turtle", "nt", "pretty-xml", "trix", "trig", "nquads", "json-ld" ',
+                f"Incorrect or unsupported RDF format: '{file_format}',"
+                f"use one of the following: {', '.join(supported_formats)}."
             )
             return False
         else:
             # RDF graph does not support 'ttl' format, only 'turtle' format.
             # however, the preferred file extension is always '.ttl'
-            if self.rdf_format == "turtle":
+            if self.file_format == "turtle":
                 self.extension = "ttl"
-            elif self.rdf_format == "ttl":
-                self.rdf_format = "turtle"
+            elif self.file_format == "ttl":
+                self.file_format = "turtle"
                 self.extension = "ttl"
             else:
-                self.extension = self.rdf_format
+                self.extension = self.file_format
             return True
 
     def _write_single_edge_list_to_file(
@@ -230,10 +245,10 @@ class _RDFWriter(_BatchWriter):
                 if value:
                     self.add_property_to_graph(graph, rdf_predicate, value, key)
 
-        graph.serialize(destination=file_name, format=self.rdf_format)
+        graph.serialize(destination=file_name, format=self.file_format)
 
         logger.info(
-            f"Writing {len(edge_list)} entries to {label_pascal}.{self.rdf_format}",
+            f"Writing {len(edge_list)} entries to {label_pascal}.{self.file_format}",
         )
 
         return True
@@ -382,10 +397,10 @@ class _RDFWriter(_BatchWriter):
                 if value:
                     self.add_property_to_graph(graph, rdf_subject, value, key)
 
-        graph.serialize(destination=file_name, format=self.rdf_format)
+        graph.serialize(destination=file_name, format=self.file_format)
 
         logger.info(
-            f"Writing {len(node_list)} entries to {label_pascal}.{self.rdf_format}",
+            f"Writing {len(node_list)} entries to {label_pascal}.{self.file_format}",
         )
 
         return True
@@ -407,7 +422,7 @@ class _RDFWriter(_BatchWriter):
 
         """
         # check if specified output format is correct
-        passed = self._is_rdf_format_supported(self.rdf_format)
+        passed = self._is_rdf_format_supported(self.file_format)
         if not passed:
             logger.error("Error while writing node data, wrong RDF format")
             return False
@@ -437,7 +452,7 @@ class _RDFWriter(_BatchWriter):
 
         """
         # check if specified output format is correct
-        passed = self._is_rdf_format_supported(self.rdf_format)
+        passed = self._is_rdf_format_supported(self.file_format)
         if not passed:
             logger.error("Error while writing edge data, wrong RDF format")
             return False

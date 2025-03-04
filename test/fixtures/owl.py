@@ -12,7 +12,7 @@ def bw_owl(translator, deduplicator, tmp_path_session):
         deduplicator=deduplicator,
         output_directory=tmp_path_session,
         delimiter=",",
-        rdf_format="turtle",
+        file_format="turtle",
         file_stem="biocypher",
     )
 

@@ -79,6 +79,15 @@ def get_writer(
 
     writer = DBMS_TO_CLASS[dbms]
 
+    if "rdf_format" in dbms_config:
+        logger.warning("The 'rdf_format' config option is deprecated, use 'file_format' instead.")
+        if "file_format" not in dbms_config:
+            format = dbms_config["rdf_format"]
+            logger.warning(f"I will set 'file_format: {format}' for you.")
+            dbms_config["file_format"] = format
+            dbms_config.pop("rdf_format")
+        logger.warning("NOTE: this warning will become an error in next versions.")
+
     if not writer:
         msg = f"Unknown dbms: {dbms}"
         raise ValueError(msg)
@@ -101,8 +110,8 @@ def get_writer(
             db_user=dbms_config.get("user"),  # psql
             db_password=dbms_config.get("password"),  # psql
             db_port=dbms_config.get("port"),  # psql
-            rdf_format=dbms_config.get("rdf_format"),  # rdf
-            rdf_namespaces=dbms_config.get("rdf_namespaces"),  # rdf
+            file_format=dbms_config.get("file_format"),  # rdf, owl
+            rdf_namespaces=dbms_config.get("rdf_namespaces"),  # rdf, owl
             edge_model=dbms_config.get("edge_model"),  # owl
         )
     return None

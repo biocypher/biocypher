@@ -249,9 +249,9 @@ Important parameters are:
   structure, and thus the queries that can be made on it (see above).
 - `file_stem` is the name of the output file (without the extension or the path)
   which will be written in the output directory.
-- `rdf_format` is the output serialization format. Note that if set to "turtle",
+- `file_format` is the output serialization format. Note that if set to "turtle",
   the output file extension will be ".ttl", but you cannot indicate "ttl" as an
-  rdf_format.
+  file_format.
 
 ### For the ObjectProperty edge model
 
@@ -268,7 +268,7 @@ biocypher:
         root_node: BioCypherRoot # <- The "meta-root" class.
 
 owl:
-    rdf_format: turtle # <- Note that this is not "ttl".
+    file_format: turtle # <- Note that this is not "ttl".
     # Can be either: xml, n3, turtle, nt, pretty-xml, trix, trig, nquads, json-ld
 
     edge_model: ObjectProperty
@@ -297,7 +297,7 @@ biocypher:
         root_node: Entity # <- NOT the meta-root!
 
 owl:
-    rdf_format: turtle
+    file_format: turtle
     # Can be either: xml, n3, turtle, nt, pretty-xml, trix, trig, nquads, json-ld
 
     edge_model: Association
