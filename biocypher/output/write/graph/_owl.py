@@ -1,14 +1,3 @@
-#!/usr/bin/env python
-#
-# Copyright 2021, Heidelberg University Clinic
-# Copyright 2025, Institut Pasteur
-#
-# File author(s):  Loes van den Biggelaar
-#                  Sebastian Lobentanzer
-#                  Johann Dreo
-#
-# Distributed under MIT licence, see the file `LICENSE`.
-#
 """Module to provide the OWL writer class."""
 import os
 
@@ -251,8 +240,8 @@ class _OWLWriter(_RDFWriter):
         Returns:
         -------
             bool: True for success, False otherwise.
-        """
 
+        """
         # NOTE: despite its name, this function does not write to file,
         #       but to self.graph.
         # NOTE: labels and prop_dict are not used.
@@ -397,7 +386,6 @@ class _OWLWriter(_RDFWriter):
             bool: True for success, False otherwise.
 
         """
-
         # NOTE: despite its name, this function does not write to file,
         #       but to self.graph.
         # NOTE: prop_dict is not used.
