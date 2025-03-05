@@ -250,8 +250,7 @@ Important parameters are:
 - `file_stem` is the name of the output file (without the extension or the path)
   which will be written in the output directory.
 - `file_format` is the output serialization format. Note that if set to "turtle",
-  the output file extension will be ".ttl", but you cannot indicate "ttl" as an
-  file_format.
+  the output file extension will be ".ttl".
 
 ### For the ObjectProperty edge model
 
