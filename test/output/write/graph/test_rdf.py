@@ -204,7 +204,5 @@ def test_rdf_ttl_format(bw_rdf, length, _get_nodes, _get_edges):
     # Verify that the graph contains data
     assert len(graph) > 0
 
-    biocypher_namespace = Namespace("https://biocypher.org/biocypher#")
-
     # Basic verification that the graph contains expected data
     assert len(set(graph.subjects(RDF.type))) > 0
