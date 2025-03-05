@@ -1,10 +1,4 @@
----
-status: old
----
-
-# PostgreSQL
-
-When setting the `dbms` parameter in the `biocypher_config.yaml` to `postgres`,
+When setting the `dbms` parameter in the `biocypher_config.yaml` to `postgresql`,
 the BioCypher Knowledge Graph is written to a PostgreSQL database.
 [PostgreSQL](https://www.postgresql.org/) is a relational database management system.
 

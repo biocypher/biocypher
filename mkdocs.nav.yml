@@ -35,15 +35,15 @@ nav:
                 - reference/source/index.md
           - BioCypher Configuration: reference/biocypher-config-guide.md
           - Output Configuration:
-                - reference/outputs/index.md
-                - ArangoDB: reference/outputs/arangodb-output.md
+                - Overview: reference/outputs/index.md
                 - Neo4j: reference/outputs/neo4j-output.md
-                - NetworkX: reference/outputs/networkx-output.md
+                - SQLite: reference/outputs/sqlite-output.md
                 - PostgreSQL: reference/outputs/postgresql-output.md
+                - NetworkX: reference/outputs/networkx-output.md
+                - Tabular Format: reference/outputs/tabular-output.md
                 - RDF: reference/outputs/rdf-output.md
                 - OWL: reference/outputs/owl-output.md
-                - SQLite: reference/outputs/sqlite-output.md
-                - Tabular Format: reference/outputs/tabular-output.md
+                - ArangoDB: reference/outputs/arangodb-output.md
           - Schema Configuration: reference/schema-config-guide.md
 
     - Community:

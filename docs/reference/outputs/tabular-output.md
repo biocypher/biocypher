@@ -1,9 +1,3 @@
----
-status: old
----
-
-# Tabular output
-
 When setting the `dbms` parameter in the `biocypher_config.yaml` to `tabular`,
 `csv`, or `pandas`, the BioCypher Knowledge Graph is created in one of several
 possible tabular formats.

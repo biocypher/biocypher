@@ -1,5 +1,3 @@
-# Neo4j
-
 In the following section, we give an overview of interacting with Neo4j from
 the perspective of BioCypher, but we refer the reader to the Neo4j
 documentation for more details.

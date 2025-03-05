@@ -1,19 +1,13 @@
----
-status: old
----
-
-# NetworkX
-
 When setting the `dbms` parameter in the `biocypher_config.yaml` to `networkx`,
 the BioCypher Knowledge Graph is transformed into a [NetworkX
 DiGraph](https://networkx.org/documentation/stable/reference/classes/digraph.html).
 
 ## NetworkX settings
 
-To overwrite the standard settings of NetworkX, add a `networkx` section to the
-`biocypher_config.yaml` file.  At the moment there are no configuration options
-supported/implemented.  Feel free to reach out and create issues or pull
-requests if you need specific configuration options.
+At the moment, we don't implement any specific configuration options for
+NetworkX. Feel free to reach out and create issues or pull requests if you need
+specific configuration options. They would be added to the configuration
+similarly as for other outputs:
 
 ```yaml title="biocypher_config.yaml"
 

@@ -1,17 +1,11 @@
----
-status: old
----
-
-## Introduction
-
 BioCypher development was initially centred around a Neo4j graph database output
 due to the migration of OmniPath to a Neo4j backend. Importantly, we understand
 BioCypher as an abstraction of the build process of a biomedical knowledge graph,
 and thus are open towards any output format for the knowledge representation.
 
 The used output format is specified via the `dbms` parameter in the
-`biocypher_config.yaml` (see the [Configuration](../biocypher-config-guide.md) for an example).
-Currently supported are:
+`biocypher_config.yaml` (see the [Configuration](../biocypher-config.md) for an
+example).  Currently supported are:
 
 * `neo4j`
 * `arangodb`
@@ -36,7 +30,7 @@ Furthermore, you can specify whether to use the `offline` or `online` mode.
 
 - For the offline mode set `offline: true`. BioCypher will `write` the
   knowledge graph to files in a designated output folder (standard being
-  `biocypher-out/` and the current datetime). Furthermore you can generate a
+  `biocypher-out/` and the current datetime). Furthermore, you can generate a
   bash script to insert the knowledge graph files into the specified `dbms` by
   running `bc.write_import_call()`.
 
@@ -45,7 +39,8 @@ Furthermore, you can specify whether to use the `offline` or `online` mode.
 	`csv`, `pandas`, and `networkx`.
 
 Details about the usage of the `online` and `offline` mode and the different
-supported output formats are described on the following pages:
+supported output formats are described on individual pages for each output
+format.
 
 ## Available Output formats
 

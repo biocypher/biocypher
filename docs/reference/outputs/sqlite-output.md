@@ -1,9 +1,3 @@
----
-status: old
----
-
-# SQLite
-
 When setting the `dbms` parameter in the `biocypher_config.yaml` to `sqlite`,
 the BioCypher Knowledge Graph is written to a SQLite database.
 [SQLite](https://www.sqlite.org/) is a lightweight relational database
