@@ -1,7 +1,3 @@
----
-status: old
----
-
 # Resource Description Framework (RDF)
 
 In this section, we will learn how to use and implement the output to RDF using
@@ -10,7 +6,7 @@ the `_RDFWriter` module.
 ## RDF settings
 
 To write your output to RDF, you have to specify some RDF settings in the
-`biocypher_config.yaml`. Using `rdf_format`, you can choose to export to `XML`,
+`biocypher_config.yaml`. Using `file_format`, you can choose to export to `XML`,
 `Turtle` or any other format `rdflib` supports. The second configuration is the
 `rdf_namespaces`, where you can specify which namespaces exist in your data. If,
 for instance, your data contain SO (Sequence ontology) terms such as
@@ -29,8 +25,8 @@ biocypher:
 
 ### RDF configuration ###
 rdf:
-  rdf_format: turtle
-  # options: xml, n3, turtle, nt, pretty-xml, trix, trig, nquads, json-ld
+  file_format: turtle
+  # options: xml, n3, turtle or ttl, nt, pretty-xml, trix, trig, nquads, json-ld
   rdf_namespaces:
     so: http://purl.obolibrary.org/obo/SO_
     efo: http://www.ebi.ac.uk/efo/EFO_

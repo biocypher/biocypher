@@ -41,6 +41,7 @@ nav:
                 - NetworkX: reference/outputs/networkx-output.md
                 - PostgreSQL: reference/outputs/postgresql-output.md
                 - RDF: reference/outputs/rdf-output.md
+                - OWL: reference/outputs/owl-output.md
                 - SQLite: reference/outputs/sqlite-output.md
                 - Tabular Format: reference/outputs/tabular-output.md
           - Schema Configuration: reference/schema-config-guide.md

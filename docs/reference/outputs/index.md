@@ -16,6 +16,7 @@ Currently supported are:
 * `neo4j`
 * `arangodb`
 * `rdf`
+* `owl`
 * `postgres`
 * `sqlite`
 * `tabular`
@@ -52,7 +53,7 @@ supported output formats are described on the following pages:
 | :------------ | :-----------------|---------------------------|
 | `Neo4j`		| :material-check:  | :material-close:  		|
 | `ArangoDB`    | :material-check:	| :material-close: (pending)|
-| `RDF`    		| :material-check:	| :material-close: (pending)|
+| `RDF` / `OWL`  | :material-check:	| :material-close: (pending)|
 | `PostgreSQL`  | :material-check:	| :material-close: (pending)|
 | `SQLite`    	| :material-check:	| :material-close: (pending)|
 | `Tabular`    	| :material-check:	| :material-close:			|
