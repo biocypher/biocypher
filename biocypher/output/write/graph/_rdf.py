@@ -31,7 +31,7 @@ class _RDFWriter(_BatchWriter):
     """Write BioCypher's property graph into an RDF format.
 
     Uses `rdflib` and all the extensions it supports (RDF/XML, N3, NTriples,
-    N-Quads, Turtle, TriX, Trig and JSON-LD). By default the conversion
+    N-Quads, Turtle, TriX, Trig and JSON-LD). By default, the conversion
     is done keeping only the minimum information about node and edges,
     skipping all properties.
     """
@@ -142,6 +142,7 @@ class _RDFWriter(_BatchWriter):
             "xml",
             "n3",
             "turtle",
+            "ttl",
             "nt",
             "pretty-xml",
             "trix",
@@ -152,16 +153,12 @@ class _RDFWriter(_BatchWriter):
         if file_format not in supported_formats:
             logger.error(
                 f"Incorrect or unsupported RDF format: '{file_format}',"
-                f"use one of the following: {', '.join(supported_formats)}."
+                f"use one of the following: {', '.join(supported_formats)}.",
             )
             return False
         else:
-            # RDF graph does not support 'ttl' format, only 'turtle' format.
-            # however, the preferred file extension is always '.ttl'
+            # Set the file extension to match the format
             if self.file_format == "turtle":
-                self.extension = "ttl"
-            elif self.file_format == "ttl":
-                self.file_format = "turtle"
                 self.extension = "ttl"
             else:
                 self.extension = self.file_format
@@ -189,8 +186,7 @@ class _RDFWriter(_BatchWriter):
             bool: The return value. True for success, False otherwise.
 
         """
-
-        # NOTE: prop_dict is not used.
+        # NOTE: prop_dict is not used. Remove in next refactor.
 
         if not all(isinstance(n, BioCypherEdge) for n in edge_list):
             logger.error("Edges must be passed as type BioCypherEdge.")
@@ -356,7 +352,6 @@ class _RDFWriter(_BatchWriter):
             bool: True if the writing is successful, False otherwise.
 
         """
-
         # NOTE: labels and prop_dict are not used.
 
         if not all(isinstance(n, BioCypherNode) for n in node_list):

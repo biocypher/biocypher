@@ -128,11 +128,11 @@ postgresql:
 
 rdf:
   ### RDF configuration ###
-  file_format: turtle # turtle, xml, json-ld, ntriples, n3, trig, trix or nquads
+  file_format: turtle # turtle or ttl, xml, json-ld, ntriples, n3, trig, trix or nquads
 
 owl:
   ### OWL configuration ###
-  file_format: turtle # turtle, xml, json-ld, ntriples, n3, trig, trix or nquads
+  file_format: turtle # turtle or ttl, xml, json-ld, ntriples, n3, trig, trix or nquads
   edge_model: Association # or: ObjectProperty
   file_stem: biocypher # without the extension
 

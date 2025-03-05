@@ -170,3 +170,41 @@ def test_rdf_write_data(bw_rdf, length, _get_nodes, _get_edges):
             RDF.type,
             biocypher_namespace["Is_Mutated_In"],
         ) in graph
+
+
+@pytest.mark.parametrize("length", [4], scope="function")
+def test_rdf_ttl_format(bw_rdf, length, _get_nodes, _get_edges):
+    """Test that ttl format is supported directly without conversion."""
+    # Change the file format to ttl
+    bw_rdf.file_format = "ttl"
+
+    nodes = _get_nodes
+    edges = _get_edges
+
+    nodes = bw_rdf.write_nodes(nodes)
+    edges = bw_rdf.write_edges(edges)
+
+    # check if the writing of the nodes went okay.
+    assert all([nodes, edges])
+
+    tmp_path = bw_rdf.outdir
+
+    # Files should have .ttl extension
+    rdf_files_path = os.path.join(tmp_path, "*.ttl")
+    rdf_files = glob.glob(rdf_files_path)
+    assert len(rdf_files) > 0
+
+    graph = Graph()
+    for file in rdf_files:
+        with open(file) as f:
+            # Parse with ttl format directly
+            temp_graph = Graph().parse(data=f.read(), format="ttl")
+            graph += temp_graph
+
+    # Verify that the graph contains data
+    assert len(graph) > 0
+
+    biocypher_namespace = Namespace("https://biocypher.org/biocypher#")
+
+    # Basic verification that the graph contains expected data
+    assert len(set(graph.subjects(RDF.type))) > 0

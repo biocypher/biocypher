@@ -268,8 +268,8 @@ biocypher:
         root_node: BioCypherRoot # <- The "meta-root" class.
 
 owl:
-    file_format: turtle # <- Note that this is not "ttl".
-    # Can be either: xml, n3, turtle, nt, pretty-xml, trix, trig, nquads, json-ld
+    file_format: turtle
+    # Can be either: xml, n3, turtle or ttl, nt, pretty-xml, trix, trig, nquads, json-ld
 
     edge_model: ObjectProperty
     # Can also be: Association (the default)
@@ -298,7 +298,7 @@ biocypher:
 
 owl:
     file_format: turtle
-    # Can be either: xml, n3, turtle, nt, pretty-xml, trix, trig, nquads, json-ld
+    # Can be either: xml, n3, turtle or ttl, nt, pretty-xml, trix, trig, nquads, json-ld
 
     edge_model: Association
 

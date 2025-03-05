@@ -194,3 +194,42 @@ def test_owl_write_data(bw_owl, length, _get_nodes, _get_edges):
             RDF.type,
             biocypher_namespace["Is_Mutated_In"],
         ) in graph
+
+
+@pytest.mark.parametrize("length", [4], scope="function")
+def test_owl_ttl_format(bw_owl, length, _get_nodes, _get_edges):
+    """Test that ttl format is supported directly without conversion."""
+    # Change the file format to ttl
+    bw_owl.file_format = "ttl"
+
+    bw_owl.edge_model = "Association"
+
+    nodes = _get_nodes
+    edges = _get_edges
+
+    fix_ontology(bw_owl)
+
+    nodes = bw_owl.write_nodes(nodes)
+    edges = bw_owl.write_edges(edges)
+
+    # check if the writing of the nodes went okay.
+    assert all([nodes, edges])
+
+    tmp_path = bw_owl.outdir
+
+    # Files should have .ttl extension
+    owl_file_path = os.path.join(tmp_path, "*.ttl")
+    owl_file = glob.glob(owl_file_path)
+    assert len(owl_file) == 1
+
+    graph = Graph()
+    with open(owl_file[0], encoding="utf-8") as f:
+        # Parse with ttl format directly
+        temp_graph = Graph().parse(data=f.read(), format="ttl")
+        graph += temp_graph
+
+    # Verify that the graph contains data
+    assert len(graph) > 0
+
+    # Basic verification that the graph contains expected data
+    assert len(set(graph.subjects(RDF.type))) > 0

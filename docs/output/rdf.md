@@ -28,7 +28,7 @@ biocypher:
 ### RDF configuration ###
 rdf:
   file_format: turtle
-  # options: xml, n3, turtle, nt, pretty-xml, trix, trig, nquads, json-ld
+  # options: xml, n3, turtle or ttl, nt, pretty-xml, trix, trig, nquads, json-ld
   rdf_namespaces:
     so: http://purl.obolibrary.org/obo/SO_
     efo: http://www.ebi.ac.uk/efo/EFO_
