@@ -21,6 +21,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -38,7 +39,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="PostgreSQL" href="postgres.html" />
+    <link rel="next" title="OWL" href="owl.html" />
     <link rel="prev" title="Tabular output" href="csv.html" /> 
 </head>
 
@@ -78,6 +79,7 @@
 <li class="toctree-l2"><a class="reference internal" href="arangodb.html">ArangoDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="csv.html">Tabular output</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="postgres.html">PostgreSQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sqlite.html">SQLite</a></li>
 <li class="toctree-l2"><a class="reference internal" href="networkx.html">NetworkX</a></li>
@@ -124,7 +126,7 @@ the <code class="docutils literal notranslate"><span class="pre">_RDFWriter</spa
 <section id="rdf-settings">
 <h2>RDF settings<a class="headerlink" href="#rdf-settings" title="Permalink to this heading"></a></h2>
 <p>To write your output to RDF, you have to specify some RDF settings in the
-biocypher_config.yaml. Using <code class="docutils literal notranslate"><span class="pre">rdf_format</span></code>, you can choose to export to xml,
+biocypher_config.yaml. Using <code class="docutils literal notranslate"><span class="pre">file_format</span></code>, you can choose to export to xml,
 turtle or any other format <code class="docutils literal notranslate"><span class="pre">rdflib</span></code> supports. The second configuration is the
 <code class="docutils literal notranslate"><span class="pre">rdf_namespaces</span></code>, where you can specify which namespaces exist in your data. If,
 for instance, your data contain SO (Sequence ontology) terms such as
@@ -143,8 +145,8 @@ specified.</p>
 
 <span class="c1">### RDF configuration ###</span>
 <span class="nt">rdf</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">rdf_format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">turtle</span>
-<span class="w">  </span><span class="c1"># options: xml, n3, turtle, nt, pretty-xml, trix, trig, nquads, json-ld</span>
+<span class="w">  </span><span class="nt">file_format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">turtle</span>
+<span class="w">  </span><span class="c1"># options: xml, n3, turtle or ttl, nt, pretty-xml, trix, trig, nquads, json-ld</span>
 <span class="w">  </span><span class="nt">rdf_namespaces</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">so</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/SO_</span>
 <span class="w">    </span><span class="nt">efo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://www.ebi.ac.uk/efo/EFO_</span>
@@ -159,7 +161,7 @@ specified.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="csv.html" class="btn btn-neutral float-left" title="Tabular output" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="postgres.html" class="btn btn-neutral float-right" title="PostgreSQL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="owl.html" class="btn btn-neutral float-right" title="OWL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

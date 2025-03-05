@@ -19,6 +19,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -123,26 +124,24 @@
 <h1>biocypher.output.write._get_writer.get_writer<a class="headerlink" href="#biocypher-output-write-get-writer-get-writer" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="biocypher.output.write._get_writer.get_writer">
-<span class="sig-prename descclassname"><span class="pre">biocypher.output.write._get_writer.</span></span><span class="sig-name descname"><span class="pre">get_writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Deduplicator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write._get_writer.get_writer" title="Permalink to this definition"></a></dt>
-<dd><p>Function to return the writer class based on the selection in the config
-file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dbms</strong> – the database management system; for options, see DBMS_TO_CLASS.</p></li>
-<li><p><strong>translator</strong> – the Translator object.</p></li>
-<li><p><strong>deduplicator</strong> – the Deduplicator object.</p></li>
-<li><p><strong>output_directory</strong> – the directory to output.write the output files to.</p></li>
-<li><p><strong>strict_mode</strong> – whether to use strict mode.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>an instance of the selected writer class.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>instance</p>
-</dd>
-</dl>
+<span class="sig-prename descclassname"><span class="pre">biocypher.output.write._get_writer.</span></span><span class="sig-name descname"><span class="pre">get_writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><span class="pre">Translator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Deduplicator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="biocypher.output.write._batch_writer._BatchWriter.html#biocypher.output.write._batch_writer._BatchWriter" title="biocypher.output.write._batch_writer._BatchWriter"><span class="pre">biocypher.output.write._batch_writer._BatchWriter</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#biocypher.output.write._get_writer.get_writer" title="Permalink to this definition"></a></dt>
+<dd><p>Return the writer class based on the selection in the config file.</p>
+<section id="args">
+<h2>Args:<a class="headerlink" href="#args" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>dbms: the database management system; for options, see DBMS_TO_CLASS.
+translator: the Translator object.
+deduplicator: the Deduplicator object.
+output_directory: the directory to output.write the output files to.
+strict_mode: whether to use strict mode.</p>
+</div></blockquote>
+</section>
+<section id="returns">
+<h2>Returns:<a class="headerlink" href="#returns" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><p>instance: an instance of the selected writer class.</p>
+</div></blockquote>
+</section>
 </dd></dl>
 
 </section>

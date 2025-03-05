@@ -19,6 +19,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -124,9 +125,9 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher.output.write.graph._arangodb._ArangoDBBatchWriter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher.output.write.graph._arangodb.</span></span><span class="sig-name descname"><span class="pre">_ArangoDBBatchWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write.graph._arangodb._ArangoDBBatchWriter" title="Permalink to this definition"></a></dt>
-<dd><p>Class for writing node and edge representations to disk using the format
-specified by ArangoDB for the use of “arangoimport”. Output files are
-similar to Neo4j, but with a different header format.</p>
+<dd><p>Class for writing node and edge representations to disk.</p>
+<p>Uses the format specified by ArangoDB for the use of “arangoimport”.
+Output files are similar to Neo4j, but with a different header format.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.output.write.graph._arangodb._ArangoDBBatchWriter.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write.graph._arangodb._ArangoDBBatchWriter.__init__" title="Permalink to this definition"></a></dt>
@@ -149,16 +150,16 @@ similar to Neo4j, but with a different header format.</p>
 <td><p>Constructor.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_import_call</span></code>()</p></td>
-<td><p>Function to return the import call detailing folder and individual node and edge headers and data files, as well as delimiters and database name.</p></td>
+<td><p>Eeturn the import call.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_edges</span></code>(edges[, batch_size])</p></td>
-<td><p>Wrapper for writing edges and their headers.</p></td>
+<td><p>Write edges and their headers.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_import_call</span></code>()</p></td>
-<td><p>Function to write the import call detailing folder and individual node and edge headers and data files, as well as delimiters and database name, to the export folder as txt.</p></td>
+<td><p>Write the import call.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_nodes</span></code>(nodes[, batch_size, force])</p></td>
-<td><p>Wrapper for writing nodes and their headers.</p></td>
+<td><p>Write nodes and their headers.</p></td>
 </tr>
 </tbody>
 </table>

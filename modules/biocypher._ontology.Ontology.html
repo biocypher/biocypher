@@ -19,6 +19,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -124,10 +125,10 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="biocypher._ontology.Ontology">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">biocypher._ontology.</span></span><span class="sig-name descname"><span class="pre">Ontology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">head_ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="biocypher._mapping.OntologyMapping.html#biocypher._mapping.OntologyMapping" title="biocypher._mapping.OntologyMapping"><span class="pre">OntologyMapping</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail_ontologies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher._ontology.Ontology" title="Permalink to this definition"></a></dt>
-<dd><p>A class that represents the ontological “backbone” of a BioCypher knowledge
-graph. The ontology can be built from a single resource, or hybridised from
-a combination of resources, with one resource being the “head” ontology,
-while an arbitrary number of other resources can become “tail” ontologies at
+<dd><p>A class that represents the ontological “backbone” of a KG.</p>
+<p>The ontology can be built from a single resource, or hybridised from a
+combination of resources, with one resource being the “head” ontology, while
+an arbitrary number of other resources can become “tail” ontologies at
 arbitrary fusion points inside the “head” ontology.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher._ontology.Ontology.__init__">
@@ -155,9 +156,12 @@ arbitrary fusion points inside the “head” ontology.</p>
 <td><p>Get the ancestors of a node in the ontology.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dict</span></code>()</p></td>
-<td><p>Returns a dictionary compatible with a BioCypher node for compatibility with the Neo4j driver.</p></td>
+<td><p>Return a dictionary representation of the ontology.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_ontology_structure</span></code>([to_disk, full])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rdf_graph</span></code>()</p></td>
+<td><p>Return the merged RDF graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_ontology_structure</span></code>([to_disk, full])</p></td>
 <td><p>Show the ontology structure using treelib or write to GRAPHML file.</p></td>
 </tr>
 </tbody>

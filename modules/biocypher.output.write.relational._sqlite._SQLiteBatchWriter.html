@@ -19,6 +19,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -135,7 +136,8 @@ and is therefore implemented in this class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="biocypher.output.write.relational._sqlite._SQLiteBatchWriter.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#biocypher.output.write.relational._sqlite._SQLiteBatchWriter.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>Abtract parent class for writing node and edge representations to disk
+<dd><p>Write node and edge representations to disk.</p>
+<p>Abstract parent class for writing node and edge representations to disk
 using the format specified by each database type. The database-specific
 functions are implemented by the respective child-classes. This abstract
 class contains all methods expected by a bach writer instance, some of
@@ -181,7 +183,10 @@ commands.</p>
 <dt>import_call_file_prefix:</dt><dd><p>Path prefix for the data files (headers and parts) in the import
 call.</p>
 </dd>
-<dt>wipe:</dt><dd><p>Whether to force import (removing existing DB content). (Specific to Neo4j.)</p>
+<dt>wipe:</dt><dd><dl class="simple">
+<dt>Whether to force import (removing existing DB content).</dt><dd><p>(Specific to Neo4j.)</p>
+</dd>
+</dl>
 </dd>
 <dt>strict_mode:</dt><dd><p>Whether to enforce source, version, and license properties.</p>
 </dd>
@@ -198,7 +203,7 @@ start and end node. (Specific to Neo4j.)</p>
 </dd>
 <dt>db_port:</dt><dd><p>The database port.</p>
 </dd>
-<dt>rdf_format:</dt><dd><p>The format of RDF.</p>
+<dt>file_format:</dt><dd><p>The format of RDF.</p>
 </dd>
 <dt>rdf_namespaces:</dt><dd><p>The namespaces for RDF.</p>
 </dd>
@@ -214,19 +219,19 @@ Default: “Ascending” (from more specific to more generic).</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#biocypher.output.write.relational._sqlite._SQLiteBatchWriter.__init__" title="biocypher.output.write.relational._sqlite._SQLiteBatchWriter.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
-<td><p>Abtract parent class for writing node and edge representations to disk using the format specified by each database type.</p></td>
+<td><p>Write node and edge representations to disk.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_import_call</span></code>()</p></td>
-<td><p>Function to return the import call detailing folder and individual node and edge headers and data files, as well as delimiters and database name.</p></td>
+<td><p>Eeturn the import call.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_edges</span></code>(edges[, batch_size])</p></td>
-<td><p>Wrapper for writing edges and their headers.</p></td>
+<td><p>Write edges and their headers.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_import_call</span></code>()</p></td>
-<td><p>Function to write the import call detailing folder and individual node and edge headers and data files, as well as delimiters and database name, to the export folder as txt.</p></td>
+<td><p>Write the import call.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_nodes</span></code>(nodes[, batch_size, force])</p></td>
-<td><p>Wrapper for writing nodes and their headers.</p></td>
+<td><p>Write nodes and their headers.</p></td>
 </tr>
 </tbody>
 </table>

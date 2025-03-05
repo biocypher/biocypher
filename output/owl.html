@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<meta property="og:title" content="OWL" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://biocypher.org/output/owl.html" />
+<meta property="og:site_name" content="BioCypher" />
+<meta property="og:description" content="The Web Ontology Language (OWL) is a (family of) knowledge representation language(s) for authoring ontologies. BioCypher can use taxonomies written in OWL as an input, and it can also output a kno..." />
+<meta property="og:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+<meta property="og:image:alt" content="BioCypher" />
+<meta name="description" content="The Web Ontology Language (OWL) is a (family of) knowledge representation language(s) for authoring ontologies. BioCypher can use taxonomies written in OWL as an input, and it can also output a kno..." />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="https://biocypher.org" />
+<meta property="twitter:title" content="Democratising Knowledge Graphs - BioCypher" />
+<meta property="twitter:description" content="BioCypher is a framework to simplify the creation of robust biomedical knowledge graphs." />
+<meta property="twitter:image" content="https://biocypher.org/_images/biocypher-open-graph.png" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OWL &mdash; BioCypher</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/design-tabs.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="PostgreSQL" href="postgres.html" />
+    <link rel="prev" title="RDF" href="rdf.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html" class="icon icon-home">
+            BioCypher
+          </a>
+              <div class="version">
+                0.8.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Democratising Knowledge Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-experiences.html">User Experiences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-involved.html">Get Involved!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#configuration">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters.html">Adapters</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Output</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="neo4j.html">Neo4j</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arangodb.html">ArangoDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csv.html">Tabular output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html">RDF</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">OWL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postgres.html">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlite.html">SQLite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networkx.html">NetworkX</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/pandas_tutorial.html">Example Notebook: BioCypher and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial - Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-ontology.html">Tutorial - Handling Ontologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-adapter.html">Tutorial - Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../standalone-docker-image.html">Standalone Docker Image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../r-bioc.html">R and Bioconductor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">BioCypher</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Output</a></li>
+      <li class="breadcrumb-item active">OWL</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/output/owl.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="owl">
+<h1>OWL<a class="headerlink" href="#owl" title="Permalink to this heading"></a></h1>
+<p>The Web Ontology Language (OWL) is a (family of) knowledge representation
+language(s) for authoring ontologies. BioCypher can use taxonomies written in
+OWL as an input, and it can also output a knowledge graph in an OWL file.</p>
+<p>OWL is one of the most used knowledge representation languages and is built
+on the Resource Description Framework (RDF) and is partly compatible with
+the RDF Schema data model. It can be serialized in several formats (most known
+being XML and Turtle). The <a class="reference external" href="https://protege.stanford.edu/">Protégé</a> software
+is the <em>de facto</em> standard graphical user interface to design OWL ontologies.</p>
+<p>In BioCypher, selecting the <code class="docutils literal notranslate"><span class="pre">owl</span></code> output format will call the <code class="docutils literal notranslate"><span class="pre">_OWLWriter</span></code> class
+and generate a self-contained OWL file. The file is said to be “self-contained”
+because it holds both the vocabulary (i.e. a part of the hierarchy of classes
+from the input ontology) and the instances (i.e. “nodes”, for Biocypher).</p>
+<section id="edge-model">
+<h2>Edge Model<a class="headerlink" href="#edge-model" title="Permalink to this heading"></a></h2>
+<p>The behavior of edge creation in the RDF output relies mainly on the
+<code class="docutils literal notranslate"><span class="pre">edge_model</span></code> parameter, which can take two values: “ObjectProperty” or
+“Association”.</p>
+<section id="note-on-vocabulary">
+<h3>Note on vocabulary<a class="headerlink" href="#note-on-vocabulary" title="Permalink to this heading"></a></h3>
+<p>To understand the following rationale, note that OWL do not use the same
+vocabulary than Biocypher, here are the correspondencies:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>BioCypher</p></th>
+<th class="head"><p>OWL</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>node</p></td>
+<td><p>individual</p></td>
+</tr>
+<tr class="row-odd"><td><p>edge</p></td>
+<td><p>object property</p></td>
+</tr>
+<tr class="row-even"><td><p>label</p></td>
+<td><p>class</p></td>
+</tr>
+<tr class="row-odd"><td><p>property</p></td>
+<td><p>annotation / data property</p></td>
+</tr>
+<tr class="row-even"><td><p>ID</p></td>
+<td><p>label / IRI</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="in-a-nutshell">
+<h3>In a nutshell<a class="headerlink" href="#in-a-nutshell" title="Permalink to this heading"></a></h3>
+<p>When using <code class="docutils literal notranslate"><span class="pre">edge_model:</span> <span class="pre">ObjectProperty</span></code>, the resulting ontology will follow
+more closely the spirit of the OWL modelling approach; but the ID and the
+properties attached to the edges are lost.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> ╭─────────╮            ╭─────────╮
+ │My_source├──┤toward├──┤My_target│
+ ╰┬────────╯     ┊      ╰─────┬───╯
+  ┊              ┊            ┊
+  ╰my_prop:this  ╳            ╽
+</pre></div>
+</div>
+<p>When using <code class="docutils literal notranslate"><span class="pre">edge_model:</span> <span class="pre">Association</span></code>, the edges are created as OWL individuals,
+with attached annotations, and an IRI; however, this introduces two object
+properties around a new individual, between pairs of indivudals.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> ╭─────────╮                 ╭───────╮                 ╭─────────╮
+ │My_source├──┤edge_source├──┤My_edge├──┤edge_target├──┤My_target│
+ ╰┬────────╯                 ╰┬──────╯                 ╰────┬────╯
+  ┊                           ┊                             ┊
+  ╰my_prop:this               ╰my_edge_prop:that            ╽
+</pre></div>
+</div>
+</section>
+<section id="objectproperty">
+<h3>ObjectProperty<a class="headerlink" href="#objectproperty" title="Permalink to this heading"></a></h3>
+<p>This edge model translates BioCypher’s edges into
+OWL’s “object properties” (if they are available under the
+selected root term). Object properties are the natural way
+to model edges in OWL, but they do not support annotation,
+thus being incompatible with having BioCypher’s “properties”
+on edges.</p>
+<section id="example">
+<h4>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h4>
+<p>For instance, the following BioCypher tuples (two nodes and one edge):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Nodes:</span>
+<span class="c1"># ID           label           properties</span>
+<span class="p">(</span><span class="s2">&quot;My_source&quot;</span><span class="p">,</span> <span class="s2">&quot;thisNodeType&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;my_prop&quot;</span><span class="p">:</span><span class="s2">&quot;this&quot;</span><span class="p">}),</span>
+<span class="p">(</span><span class="s2">&quot;My_target&quot;</span><span class="p">,</span> <span class="s2">&quot;thatNodeType&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+
+<span class="c1"># Edge:</span>
+<span class="c1"># ID         source ID    target ID    properties               label</span>
+<span class="p">(</span><span class="s2">&quot;My_edge&quot;</span><span class="p">,</span> <span class="s2">&quot;My_source&quot;</span><span class="p">,</span> <span class="s2">&quot;My_target&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;my_edge_prop&quot;</span><span class="p">:</span><span class="s2">&quot;that&quot;</span><span class="p">},</span> <span class="s2">&quot;toward&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>would be translated into the following OWL statements (here shown in the Turtle
+format, not showing the taxonomy ancestors):</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="c"># Declaration of types:</span>
+<span class="p">:</span><span class="nt">toward</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">ObjectProperty</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">range</span> <span class="p">:</span><span class="nt">thisNodeType</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">domain</span> <span class="p">:</span><span class="nt">thatNodetype</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">subPropertyOf</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">topObjectProperty</span> <span class="p">;</span>
+
+<span class="c"># Actual data:</span>
+<span class="p">:</span><span class="nt">My_source</span> <span class="kt">a</span> <span class="p">:</span><span class="nt">thisNodeType</span><span class="p">,</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">NamedIndividual</span> <span class="p">;</span>
+    <span class="nn">biocypher</span><span class="p">:</span><span class="nt">my_prop</span> <span class="s">&quot;this&quot;</span> <span class="p">;</span>
+    <span class="p">:</span><span class="nt">toward</span> <span class="p">:</span><span class="nt">My_target</span>
+
+<span class="p">:</span><span class="nt">My_target</span> <span class="kt">a</span> <span class="p">:</span><span class="nt">thatNodeType</span><span class="p">,</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">NamedIndividual</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>Note how the properties of the edge are losts.</p>
+</section>
+<section id="root-node-and-objectproperty">
+<h4>Root node and ObjectProperty<a class="headerlink" href="#root-node-and-objectproperty" title="Permalink to this heading"></a></h4>
+<p>As most of OWL files do not model a common term on top of both
+owl:topObjectProperty and owl:Thing, you may need to ensure
+that the input OWL contains a “meta-root”, that is a
+common ancestor honoring both:</p>
+<ul class="simple">
+<li><p>owl:Thing rdfs:subClassOf &lt;root_node&gt;</p></li>
+<li><p>owl:topObjectProperty rdfs:subPropertyOf &lt;root_node&gt;</p></li>
+</ul>
+<p>It is this meta-root that you should select as a <code class="docutils literal notranslate"><span class="pre">root_node</span></code> in your BioCypher
+configuration.</p>
+<p>For example, a classical OWL taxonomy is often structured like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> - owl:Thing
+   ├ Entity
+   ├ My_class
+   └ etc.
+ - owl:topObjectProperty
+   ├ My_link_type
+   └ etc.
+</pre></div>
+</div>
+<p>To allow BioCypher to “see” both the owl:Thing and owl:topObjectProperty
+subtrees, you need to add your own root node:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>- my_meta_root
+  ├ owl:Thing
+  │ ├ Entity
+  │ ├ My_class
+  │ └ etc.
+  └ owl:topObjectProperty
+    ├ My_link_type
+    └ etc.
+</pre></div>
+</div>
+<p>and then set <code class="docutils literal notranslate"><span class="pre">root_node:</span> <span class="pre">my_meta_root</span></code> in BioCypher’s configuration.</p>
+</section>
+</section>
+<section id="association">
+<h3>Association<a class="headerlink" href="#association" title="Permalink to this heading"></a></h3>
+<p>This edge model (the default) translates BioCypher’s
+edges into OWL’s class instances. Those edges instances are
+inserted in between the instances coming from BioCypher’s nodes.
+This allows to retain edge properties, but adds OWL instances
+to model relationships, which does not follow the classical
+OWL model.</p>
+<p>In this approach, all OWL instances are linked
+with a generic “edge_source” (linking source instance to
+the association instance) and “edge_target” (linking the association
+instance to the target instance). Both of which inherit from “edge”,
+and are in the biocypher namespace.</p>
+<section id="id1">
+<h4>Example<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h4>
+<p>For instance, the following BioCypher tuples (two nodes and one edge):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Nodes:</span>
+<span class="c1"># ID           label           properties</span>
+<span class="p">(</span><span class="s2">&quot;My_source&quot;</span><span class="p">,</span> <span class="s2">&quot;thisNodeType&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;my_prop&quot;</span><span class="p">:</span><span class="s2">&quot;this&quot;</span><span class="p">}),</span>
+<span class="p">(</span><span class="s2">&quot;My_target&quot;</span><span class="p">,</span> <span class="s2">&quot;thatNodeType&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+
+<span class="c1"># Edges:</span>
+<span class="c1"># ID         source ID    target ID    properties               label</span>
+<span class="p">(</span><span class="s2">&quot;My_edge&quot;</span><span class="p">,</span> <span class="s2">&quot;My_source&quot;</span><span class="p">,</span> <span class="s2">&quot;My_target&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;my_edge_prop&quot;</span><span class="p">:</span><span class="s2">&quot;that&quot;</span><span class="p">},</span> <span class="s2">&quot;toward&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>would be translated into the following OWL statements (here shown in the Turtle
+format, not showing the taxonomy ancestors):</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="c"># Declaration of Biocypher&#39;s generic edge types:</span>
+<span class="nn">biocypher</span><span class="p">:</span><span class="nt">edge</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">ObjectProperty</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">subPropertyOf</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">topObjectProperty</span> <span class="p">;</span>
+
+<span class="nn">biocypher</span><span class="p">:</span><span class="nt">edge_source</span> <span class="kt">a</span> <span class="nn">biocypher</span><span class="p">:</span><span class="nt">edge</span> <span class="p">;</span>
+
+<span class="nn">biocypher</span><span class="p">:</span><span class="nt">edge_target</span> <span class="kt">a</span> <span class="nn">biocypher</span><span class="p">:</span><span class="nt">edge</span> <span class="p">;</span>
+
+<span class="c"># The edge type becomes an OWL class:</span>
+<span class="p">:</span><span class="nt">toward</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span> <span class="p">;</span>
+
+<span class="c"># Actual data:</span>
+<span class="p">:</span><span class="nt">My_source</span> <span class="kt">a</span> <span class="p">:</span><span class="nt">thisNodeType</span><span class="p">,</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">NamedIndividual</span> <span class="p">;</span>
+    <span class="nn">biocypher</span><span class="p">:</span><span class="nt">my_prop</span> <span class="s">&quot;this&quot;</span> <span class="p">;</span>
+
+<span class="p">:</span><span class="nt">My_target</span> <span class="kt">a</span> <span class="p">:</span><span class="nt">thatNodeType</span><span class="p">,</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">NamedIndividual</span> <span class="p">;</span>
+
+<span class="c"># An edge is an OWL individual, with properties:</span>
+<span class="p">:</span><span class="nt">My_edge</span> <span class="kt">a</span> <span class="p">:</span><span class="nt">toward</span><span class="p">,</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">NamedIndividual</span> <span class="p">;</span>
+    <span class="nn">biocypher</span><span class="p">:</span><span class="nt">edge_source</span> <span class="p">:</span><span class="nt">My_source</span> <span class="p">;</span>
+    <span class="nn">biocypher</span><span class="p">:</span><span class="nt">edge_target</span> <span class="p">:</span><span class="nt">My_target</span> <span class="p">;</span>
+    <span class="nn">biocypher</span><span class="p">:</span><span class="nt">my_edge_prop</span> <span class="s">&quot;that&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>Note how the properties of the edge are kept.</p>
+</section>
+<section id="root-node-and-association">
+<h4>Root node and Association<a class="headerlink" href="#root-node-and-association" title="Permalink to this heading"></a></h4>
+<p>If you use this edge model, you may select one of the subclasses of
+owl:Thing as a <code class="docutils literal notranslate"><span class="pre">root_node</span></code>, and not select any part of the object property tree.</p>
+<p>For instance, if you have a taxonomy with a common root node, the “Association”
+edge model only requires that you select a subclass of owl:Thing, and you do not
+need to select the meta root:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>- my_meta_root
+  ├ owl:Thing   &lt;= it is only necessary to use `root_node: Thing`
+  │ ├ Entity
+  │ ├ My_class
+  │ └ etc.
+  └ owl:topObjectProperty  &lt;= This subtree will not be used.
+    ├ My_link_type
+    └ etc.
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="taxonomy-management">
+<h2>Taxonomy Management<a class="headerlink" href="#taxonomy-management" title="Permalink to this heading"></a></h2>
+<p>This class takes care of keeping the vocabulary underneath the
+selected root node and exports it along the instances in the
+resulting OWL file. It discards all terms that are not in the
+tree below the selected root node.</p>
+<p>The configuration parameter <code class="docutils literal notranslate"><span class="pre">rdf_namespaces</span></code> can be used to specify which
+namespaces exist in the input ontology (or the data). If the data contain IDs
+with a given prefix, they will be converted into valid Internationalized
+Resource Identifiers (IRI) to allow referencing. If no namespace is specified,
+BioCypher will search for them in the input ontology.</p>
+</section>
+<section id="settings">
+<h2>Settings<a class="headerlink" href="#settings" title="Permalink to this heading"></a></h2>
+<p>Important parameters are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">root_node</span></code>, which must be a meta-root on top of both owl:Thing and
+owl:topObjectProperty.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edge_model</span></code> heavily impacts the output ontology, most notably the graph
+structure, and thus the queries that can be made on it (see above).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">file_stem</span></code> is the name of the output file (without the extension or the path)
+which will be written in the output directory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">file_format</span></code> is the output serialization format. Note that if set to “turtle”,
+the output file extension will be “.ttl”, but you cannot indicate “ttl” as an
+file_format.</p></li>
+</ul>
+<section id="for-the-objectproperty-edge-model">
+<h3>For the ObjectProperty edge model<a class="headerlink" href="#for-the-objectproperty-edge-model" title="Permalink to this heading"></a></h3>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">biocypher</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">strict_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">schema_config_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/schema_config.yaml</span>
+<span class="w">    </span><span class="nt">dbms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">owl</span><span class="w"> </span><span class="c1"># &lt;- Use the OWL output writer.</span>
+
+<span class="w">    </span><span class="nt">head_ontology</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">file:///home/superb/owl_file.ttl</span>
+<span class="w">        </span><span class="nt">root_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BioCypherRoot</span><span class="w"> </span><span class="c1"># &lt;- The &quot;meta-root&quot; class.</span>
+
+<span class="nt">owl</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">file_format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">turtle</span>
+<span class="w">    </span><span class="c1"># Can be either: xml, n3, turtle or ttl, nt, pretty-xml, trix, trig, nquads, json-ld</span>
+
+<span class="w">    </span><span class="nt">edge_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ObjectProperty</span>
+<span class="w">    </span><span class="c1"># Can also be: Association (the default)</span>
+
+<span class="w">    </span><span class="nt">file_stem</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_ontology</span><span class="w"> </span><span class="c1"># &quot;biocypher&quot; by default, do not put an extension</span>
+
+<span class="w">    </span><span class="c1"># Optional:</span>
+<span class="w">    </span><span class="nt">rdf_namespaces</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">so</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/SO_</span>
+<span class="w">        </span><span class="nt">efo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://www.ebi.ac.uk/efo/EFO_</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="for-the-association-edge-model">
+<h3>For the Association edge model<a class="headerlink" href="#for-the-association-edge-model" title="Permalink to this heading"></a></h3>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">biocypher_config.yaml</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">biocypher</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">strict_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">schema_config_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/schema_config.yaml</span>
+<span class="w">    </span><span class="nt">dbms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">owl</span><span class="w"> </span><span class="c1"># &lt;- Use the OWL output writer.</span>
+
+<span class="w">    </span><span class="nt">head_ontology</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">file:///home/superb/owl_file.ttl</span>
+<span class="w">        </span><span class="nt">root_node</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Entity</span><span class="w"> </span><span class="c1"># &lt;- NOT the meta-root!</span>
+
+<span class="nt">owl</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">file_format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">turtle</span>
+<span class="w">    </span><span class="c1"># Can be either: xml, n3, turtle or ttl, nt, pretty-xml, trix, trig, nquads, json-ld</span>
+
+<span class="w">    </span><span class="nt">edge_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Association</span>
+
+<span class="w">    </span><span class="nt">file_stem</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_ontology</span><span class="w"> </span><span class="c1"># &quot;biocypher&quot; by default, do not put an extension</span>
+
+<span class="w">    </span><span class="c1"># Optional:</span>
+<span class="w">    </span><span class="nt">rdf_namespaces</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">so</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/SO_</span>
+<span class="w">        </span><span class="nt">efo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://www.ebi.ac.uk/efo/EFO_</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="possible-issues">
+<h2>Possible Issues<a class="headerlink" href="#possible-issues" title="Permalink to this heading"></a></h2>
+<p>Biocypher is not able to read all OWL ontologies, and not all of the terms
+hosted in an OWL ontology. Most notably, it only reads (a part of) the taxonomy
+to build up its input. Some logical predicates may also be incompatible with
+the selected edge model (especially “Association”).</p>
+<p>Note that Protégé may show a couple of impediments:</p>
+<ul class="simple">
+<li><p>It displays owl:Entity as if it inherits from owl:Thing, but that is not
+necessarily actually implemented by a predicate. You may have to add it
+manually.</p></li>
+<li><p>It displays all owl:ObjectProperty as if they inherit from
+owl:topObjectProperty, but you may also have to add the predicate manually.</p></li>
+<li><p>It provides no easy way to add a meta-root on top of both classes, and a
+manually added one will appear as a <em>subclass</em> of both owl:Thing and
+owl:topObjectProperty.</p></li>
+</ul>
+<p>Double-checking the ontology file source code itself should help you ensure
+compatibility with BioCypher’s constraints.</p>
+<p>Also, note that BioCypher requires that classes (and object properties) have an
+RDFS label, and will use it (and not the IRI) to find the necessary types.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rdf.html" class="btn btn-neutral float-left" title="RDF" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="postgres.html" class="btn btn-neutral float-right" title="PostgreSQL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2025, BioCypher developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

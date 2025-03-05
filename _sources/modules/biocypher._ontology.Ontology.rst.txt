@@ -16,6 +16,7 @@
       ~Ontology.__init__
       ~Ontology.get_ancestors
       ~Ontology.get_dict
+      ~Ontology.get_rdf_graph
       ~Ontology.show_ontology_structure
    
    

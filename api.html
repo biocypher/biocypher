@@ -21,6 +21,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -163,22 +164,22 @@ methods can be found below.</p>
 <span class="target" id="module-biocypher.output.write"></span><table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.write._get_writer.get_writer.html#biocypher.output.write._get_writer.get_writer" title="biocypher.output.write._get_writer.get_writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_writer.get_writer</span></code></a>(dbms, translator, ...)</p></td>
-<td><p>Function to return the writer class based on the selection in the config file.</p></td>
+<td><p>Return the writer class based on the selection in the config file.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.output.write._writer._Writer.html#biocypher.output.write._writer._Writer" title="biocypher.output.write._writer._Writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_writer._Writer</span></code></a>(translator, deduplicator[, ...])</p></td>
 <td><p>Abstract class for writing node and edge representations to disk.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.write._batch_writer._BatchWriter.html#biocypher.output.write._batch_writer._BatchWriter" title="biocypher.output.write._batch_writer._BatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_batch_writer._BatchWriter</span></code></a>(translator, ...)</p></td>
-<td><p>Abstract batch writer class</p></td>
+<td><p>Abstract batch writer class.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.output.write.graph._neo4j._Neo4jBatchWriter.html#biocypher.output.write.graph._neo4j._Neo4jBatchWriter" title="biocypher.output.write.graph._neo4j._Neo4jBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph._neo4j._Neo4jBatchWriter</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Class for writing node and edge representations to disk using the format specified by Neo4j for the use of admin import.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.write.graph._arangodb._ArangoDBBatchWriter.html#biocypher.output.write.graph._arangodb._ArangoDBBatchWriter" title="biocypher.output.write.graph._arangodb._ArangoDBBatchWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph._arangodb._ArangoDBBatchWriter</span></code></a>(*args, ...)</p></td>
-<td><p>Class for writing node and edge representations to disk using the format specified by ArangoDB for the use of &quot;arangoimport&quot;.</p></td>
+<td><p>Class for writing node and edge representations to disk.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher.output.write.graph._rdf._RDFWriter.html#biocypher.output.write.graph._rdf._RDFWriter" title="biocypher.output.write.graph._rdf._RDFWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph._rdf._RDFWriter</span></code></a>(translator, ...[, ...])</p></td>
-<td><p>Class to write BioCypher's property graph into an RDF format using rdflib and all the extensions it supports (RDF/XML, N3, NTriples, N-Quads, Turtle, TriX, Trig and JSON-LD).</p></td>
+<td><p>Write BioCypher's property graph into an RDF format.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher.output.write.graph._networkx._NetworkXWriter.html#biocypher.output.write.graph._networkx._NetworkXWriter" title="biocypher.output.write.graph._networkx._NetworkXWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph._networkx._NetworkXWriter</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Class for writing the in-memory networkx DiGraph to file.</p></td>
@@ -331,7 +332,7 @@ classes can be found below.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._ontology.Ontology.html#biocypher._ontology.Ontology" title="biocypher._ontology.Ontology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ontology</span></code></a>(head_ontology[, ontology_mapping, ...])</p></td>
-<td><p>A class that represents the ontological &quot;backbone&quot; of a BioCypher knowledge graph.</p></td>
+<td><p>A class that represents the ontological &quot;backbone&quot; of a KG.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/biocypher._ontology.OntologyAdapter.html#biocypher._ontology.OntologyAdapter" title="biocypher._ontology.OntologyAdapter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OntologyAdapter</span></code></a>(ontology_file, root_label[, ...])</p></td>
 <td><p>Class that represents an ontology to be used in the Biocypher framework.</p></td>
@@ -370,7 +371,7 @@ classes can be found below.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/biocypher._translate.Translator.html#biocypher._translate.Translator" title="biocypher._translate.Translator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Translator</span></code></a>(ontology[, strict_mode])</p></td>
-<td><p>Class responsible for exacting the translation process that is configured in the schema_config.yaml file.</p></td>
+<td><p>Class responsible for exacting the translation process.</p></td>
 </tr>
 </tbody>
 </table>
