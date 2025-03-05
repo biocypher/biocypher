@@ -2,20 +2,21 @@ import os
 
 import pytest
 
-from biocypher.output.write.graph._rdf import _RDFWriter
+from biocypher.output.write.graph._owl import _OWLWriter
 
 
 @pytest.fixture(scope="function")
-def bw_rdf(translator, deduplicator, tmp_path_session):
-    bw_rdf = _RDFWriter(
+def bw_owl(translator, deduplicator, tmp_path_session):
+    bw_owl = _OWLWriter(
         translator=translator,
         deduplicator=deduplicator,
         output_directory=tmp_path_session,
-        file_format="xml",
-        rdf_namespaces={},
         delimiter=",",
+        file_format="turtle",
+        file_stem="biocypher",
     )
-    yield bw_rdf
+
+    yield bw_owl
 
     # teardown
     for f in os.listdir(tmp_path_session):
@@ -23,17 +24,17 @@ def bw_rdf(translator, deduplicator, tmp_path_session):
 
 
 @pytest.fixture(scope="function")
-def bw_rdf_ttl(translator, deduplicator, tmp_path_session):
-    """Fixture for RDF writer with ttl format."""
-    bw_rdf_ttl = _RDFWriter(
+def bw_owl_ttl(translator, deduplicator, tmp_path_session):
+    """Fixture for OWL writer with ttl format."""
+    bw_owl_ttl = _OWLWriter(
         translator=translator,
         deduplicator=deduplicator,
         output_directory=tmp_path_session,
-        file_format="ttl",  # Using ttl format directly
-        rdf_namespaces={},
         delimiter=",",
+        file_format="ttl",  # Using ttl format directly instead of turtle
+        file_stem="biocypher",
     )
-    yield bw_rdf_ttl
+    yield bw_owl_ttl
 
     # teardown
     for f in os.listdir(tmp_path_session):
