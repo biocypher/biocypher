@@ -9,13 +9,13 @@ default BioCypher user directory (as found using
 `appdirs.user_config_dir('biocypher')`). For instance, on Mac OS, this would
 be `~/Library/Caches/biocypher/biocypher_config.yaml`. Finally, you can also
 point an instance of the BioCypher class to any YAML file using the
-biocypher_config_path parameter.
+`biocypher_config_path` parameter.
 
 !!! note "Note"
 	It is important to follow the rules of indentation in the YAML file.
 	BioCypher module configuration is found under the top-level keyword
-	biocypher, while the settings for DBMS systems (e.g., Neo4j) are found
-	under their respective keywords (e.g., neo4j).
+	`biocypher`, while the settings for DBMS systems (e.g., Neo4j) are found
+	under their respective keywords (e.g., `neo4j`).
 
 !!! warning "Quote characters"
     If possible, avoid using quote characters in your YAML files. If you
@@ -25,41 +25,28 @@ biocypher_config_path parameter.
 	to quote a single quote character (`"'"`).
 
 Configuration files are read in the order `default -> user level -> project level`,
-with the later ones overriding the preceding. The following parameters are available:
+with the later ones overriding the preceding.
 
+## Configuration Structure
 
-## Purpose
-The configuration in BioCypher customizes its behavior by overriding default
-settings through a `biocypher_config.yaml` file. It ensures flexibility for
-different use cases by allowing you to define data sources, database
-connections, and output formats.
+The configuration file is structured into several sections:
 
+1. **BioCypher Core Settings** (`biocypher:`) - Core settings for BioCypher functionality
+    - choose `dbms` to select one of either the available DBMSs (2.) or data models (3.)
+2. **Database Management Systems** - Settings specific to each supported DBMS:
+    - Neo4j (`neo4j:`)
+    - PostgreSQL (`postgresql:`)
+    - SQLite (`sqlite:`)
+3. **Data Models** - Settings for different data models:
+    - RDF (`rdf:`)
+    - NetworkX (`networkx:`)
+    - CSV (`csv:`)
 
-## Convention for naming
-It is important to follow the rules of indentation in the YAML file. BioCypher
-module configuration is found under the top-level keyword `biocypher`, while
-the settings for DBMS systems (e.g., Neo4j) are found under their respective
-keywords (e.g., `neo4j`).
+## Default Configuration
 
-If possible, avoid using quote characters in your YAML files. If you need to
-quote, for instance a tab delimiter (`\t`), use single quotes (`'`), since
-double quotes (`"`) allow parsing of escape characters in YAML, which can
-cause issues downstream. It is safe to use double quotes to quote a single
-quote character (`"'"`).
+Below is the default configuration that comes with BioCypher. This represents all available options with their default values. Some options (like tail ontologies) are commented out in the default configuration as they are optional and specific to certain use cases.
 
-!!! warning "Quote characters"
-    If possible, avoid using quote characters in your YAML files. If you need
-	to quote, for instance a tab delimiter (`\t`), use single quotes (`'`),
-	since double quotes (`"`) allow parsing of escape characters in YAML, which
-	can cause issues downstream. It is safe to use double quotes to quote a
-	single quote character (`"'"`).
-
-Configuration files are read in the order `default -> user level -> project level`,
-with the later ones overriding the preceding. The following parameters are available:
-
-## YAML file Skeleton
-
-```yaml title="biocypher_config.yaml"
+```yaml title="Default biocypher_config.yaml"
 biocypher:
   #---- REQUIRED PARAMETERS
 
@@ -163,267 +150,84 @@ networkx:
 csv:
   ### CSV/Pandas configuration ###
   delimiter: ","
-
 ```
 
-## Fields reference:
-### Biocypher section parameters
-#### Required parameters
-##### `dbms`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `head_ontology`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `offline`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `root_node`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `schema_config_path`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `strict_mode`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `switch_label_and_id`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `url`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+## Configuration Parameters Reference
 
-#### Optional parameters
-##### `cache_directory`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `debug`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `log_directory`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `log_to_disk`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `output_directory`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `switch_label_and_id`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `tail_join_node`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `tail_ontologies`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `url`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+### BioCypher Core Parameters
 
- ---
-### Output configuration parameters
-#### NEO4j DBMS
-##### `array_delimiter`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `database_name`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `delimiter`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `import_call_bin_prefix`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `import_call_file_prefix`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `multi_db`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `password`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `quote_character`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `skip_duplicate_nodes`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `skip_bad_relationships`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `uri`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `user`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `wipe`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+| Parameter | Description | Type | Default |
+|-----------|-------------|------|---------|
+| `dbms` | Specifies which database management system to use | string | `"neo4j"` |
+| `schema_config_path` | Path to the schema configuration file | string | `"config/schema_config.yaml"` |
+| `offline` | Whether to run in offline mode (no running DBMS or in-memory object) | boolean | `true` |
+| `strict_mode` | Whether to enforce strict schema validation | boolean | `false` |
+| `head_ontology.url` | URL or file path to the main ontology file | string | Biolink model URL |
+| `head_ontology.root_node` | The root node of the ontology to use | string | `"entity"` |
+| `head_ontology.switch_label_and_id` | Whether to switch label and ID in the ontology | boolean | `true` |
+| `log_to_disk` | Whether to save logs to disk | boolean | `true` |
+| `debug` | Whether to enable debug logging | boolean | `true` |
+| `log_directory` | Directory for log files | string | `"biocypher-log"` |
+| `output_directory` | Directory for output files | string | `"biocypher-out"` |
+| `cache_directory` | Directory for cache files | string | `".cache"` |
+| `tail_ontologies` | Additional ontologies to use (optional) | object | - |
 
-#### PostgreSQL DBMS
-##### `database_name`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `delimiter`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `host`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `import_call_bin_prefix`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `import_call_file_prefix`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `password`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `port`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `quote_character`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `user`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+### Neo4j Configuration
 
-#### SQLite DBMS
-##### `database_name`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `delimiter`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `import_call_bin_prefix`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `import_call_file_prefix`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
-##### `quote_character`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+| Parameter | Description | Type | Default |
+|-----------|-------------|------|---------|
+| `database_name` | Name of the Neo4j database | string | `"neo4j"` |
+| `wipe` | Whether to wipe the database before import | boolean | `true` |
+| `uri` | Connection URI for Neo4j | string | `"neo4j://localhost:7687"` |
+| `user` | Username for Neo4j authentication | string | `"neo4j"` |
+| `password` | Password for Neo4j authentication | string | `"neo4j"` |
+| `delimiter` | Field delimiter for CSV import files | string | `";"` |
+| `array_delimiter` | Delimiter for array values | string | `"\|"` |
+| `quote_character` | Character used for quoting string values | string | `"'"` |
+| `multi_db` | Whether to use multi-database support | boolean | `true` |
+| `skip_duplicate_nodes` | Whether to skip duplicate nodes during import | boolean | `false` |
+| `skip_bad_relationships` | Whether to skip relationships with missing endpoints | boolean | `false` |
+| `import_call_bin_prefix` | Prefix for the import command binary (optional) | string | - |
+| `import_call_file_prefix` | Prefix for import files (optional) | string | - |
 
-#### RDF data model
-##### `rdf_format`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+### PostgreSQL Configuration
 
-#### NetworkX graph data model
-##### `some_config`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+| Parameter | Description | Type | Default |
+|-----------|-------------|------|---------|
+| `database_name` | Name of the PostgreSQL database | string | `"postgres"` |
+| `host` | Host address for PostgreSQL server | string | `"localhost"` |
+| `port` | Port for PostgreSQL server | integer | `5432` |
+| `user` | Username for PostgreSQL authentication | string | `"postgres"` |
+| `password` | Password for PostgreSQL authentication | string | `"postgres"` |
+| `quote_character` | Character used for quoting identifiers | string | `"\""` |
+| `delimiter` | Field delimiter for import files | string | `"\t"` |
+| `import_call_bin_prefix` | Path to psql (optional) | string | - |
+| `import_call_file_prefix` | Prefix for import files (optional) | string | - |
 
-#### NetworkX graph data model
-##### `some_config`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+### SQLite Configuration
 
-#### CSV file format
-##### `delimiter`
-- **Description:** describe briefly the purpose of this property.
-- **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+| Parameter | Description | Type | Default |
+|-----------|-------------|------|---------|
+| `database_name` | Name of the SQLite database file | string | `"sqlite.db"` |
+| `quote_character` | Character used for quoting identifiers | string | `"\""` |
+| `delimiter` | Field delimiter for import files | string | `"\t"` |
+| `import_call_bin_prefix` | Path to sqlite3 (optional) | string | - |
+| `import_call_file_prefix` | Prefix for import files (optional) | string | - |
+
+### RDF Configuration
+
+| Parameter | Description | Type | Default |
+|-----------|-------------|------|---------|
+| `rdf_format` | Format for RDF output | string | `"turtle"` |
+
+### NetworkX Configuration
+
+| Parameter | Description | Type | Default |
+|-----------|-------------|------|---------|
+| `some_config` | Placeholder configuration | string | `"some_value"` |
+
+### CSV Configuration
+
+| Parameter | Description | Type | Default |
+|-----------|-------------|------|---------|
+| `delimiter` | Field delimiter for CSV files | string | `","` |
