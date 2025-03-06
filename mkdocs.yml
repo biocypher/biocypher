@@ -137,6 +137,7 @@ plugins:
           options:
             heading_level: 3
   - mkdocs-jupyter
+  - mike
 
 repo_url: https://github.com/biocypher/biocypher
 repo_name: biocypher/biocypher
