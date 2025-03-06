@@ -1,11 +1,19 @@
-"""
-BioCypher 'in_memory' module. Handles the in-memory Knowledge Graph instance.
+"""BioCypher 'in_memory' module.
+
+Handles the in-memory Knowledge Graph instance.
 """
 
-from biocypher._deduplicate import Deduplicator
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from biocypher._logger import logger
 from biocypher.output.in_memory._networkx import NetworkxKG
 from biocypher.output.in_memory._pandas import PandasKG
+
+if TYPE_CHECKING:
+    from biocypher._deduplicate import Deduplicator
+    from biocypher.output.in_memory._in_memory_kg import _InMemoryKG
 
 logger.debug(f"Loading module {__name__}.")
 
@@ -17,18 +25,20 @@ IN_MEMORY_DBMS = ["csv", "pandas", "tabular", "networkx"]
 def get_in_memory_kg(
     dbms: str,
     deduplicator: Deduplicator,
-):
-    """
-    Function to return the in-memory KG class.
+) -> _InMemoryKG:
+    """Return the in-memory KG class.
 
-    Returns:
-        class: the in-memory KG class
+    Returns
+    -------
+        _InMemoryKG: the in-memory KG class
+
     """
     if dbms in ["csv", "pandas", "tabular"]:
         return PandasKG(deduplicator)
-    elif dbms == "networkx":
+
+    if dbms == "networkx":
         return NetworkxKG(deduplicator)
-    else:
-        raise NotImplementedError(
-            f"Getting the in memory BioCypher KG is not supported for the DBMS {dbms}. Supported: {IN_MEMORY_DBMS}."
-        )
+
+    msg = f"Getting the in memory BioCypher KG is not supported for the DBMS {dbms}. Supported: {IN_MEMORY_DBMS}."
+    logger.error(msg)
+    raise NotImplementedError(msg)

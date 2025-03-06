@@ -6,7 +6,8 @@ from biocypher.output.write._batch_writer import _BatchWriter
 
 
 class _PostgreSQLBatchWriter(_BatchWriter):
-    """
+    """Write node and edge representations for PostgreSQL.
+
     Class for writing node and edge representations to disk using the
     format specified by PostgreSQL for the use of "COPY FROM...". Each batch
     writer instance has a fixed representation that needs to be passed
@@ -39,12 +40,13 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         self._copy_from_csv_commands = set()
         super().__init__(*args, **kwargs)
 
-    def _get_default_import_call_bin_prefix(self):
-        """
-        Method to provide the default string for the import call bin prefix.
+    def _get_default_import_call_bin_prefix(self) -> str:
+        """Provide the default string for the import call bin prefix.
 
-        Returns:
+        Returns
+        -------
             str: The default location for the psql command
+
         """
         return ""
 
@@ -56,33 +58,36 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             return "VARCHAR"
 
     def _quote_string(self, value: str) -> str:
-        """
-        Quote a string.
-        """
-
+        """Quote a string."""
         return f"{self.quote}{value}{self.quote}"
 
     def _write_array_string(self, string_list) -> str:
-        """
-        Abstract method to output.write the string representation of an array into a .csv file
-        as required by the postgresql COPY command, with '{','}' brackets and ',' separation.
+        """Write the string representation of an array into a .csv file.
+
+        Abstract method to output.write the string representation of an array
+        into a .csv file as required by the postgresql COPY command, with
+        '{','}' brackets and ',' separation.
 
         Args:
+        ----
             string_list (list): list of ontology strings
 
         Returns:
+        -------
             str: The string representation of an array for postgres COPY
+
         """
         string = ",".join(string_list)
         string = f'"{{{string}}}"'
         return string
 
     def _get_import_script_name(self) -> str:
-        """
-        Returns the name of the psql import script
+        """Return the name of the psql import script.
 
-        Returns:
+        Returns
+        -------
             str: The name of the import script (ending in .sh)
+
         """
         return f"{self.db_name}-import-call.sh"
 
@@ -91,14 +96,17 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         string = string.lower()
         return string
 
-    def _write_node_headers(self):
-        """
+    def _write_node_headers(self) -> bool:
+        """Write node header files for PostgreSQL.
+
         Writes single CSV file for a graph entity that is represented
         as a node as per the definition in the `schema_config.yaml`,
         containing only the header for this type of node.
 
-        Returns:
+        Returns
+        -------
             bool: The return value. True for success, False otherwise.
+
         """
         # load headers from data parse
         if not self.node_property_dict:
@@ -158,7 +166,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                         )
 
                     self._copy_from_csv_commands.add(
-                        f"\\copy {pascal_label} FROM '{parts_path}' DELIMITER E'{self.delim}' CSV;"
+                        f"\\copy {pascal_label} FROM '{parts_path}' DELIMITER E'{self.delim}' CSV;",
                     )
 
             # add file path to import statement
@@ -175,13 +183,14 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         return True
 
     def _write_edge_headers(self):
-        """
-        Writes single CSV file for a graph entity that is represented
+        """Writes single CSV file for a graph entity that is represented
         as an edge as per the definition in the `schema_config.yaml`,
         containing only the header for this type of edge.
 
-        Returns:
+        Returns
+        -------
             bool: The return value. True for success, False otherwise.
+
         """
         # load headers from data parse
         if not self.edge_property_dict:
@@ -221,7 +230,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                     raise ValueError(
                         "Column name '_ID' is reserved for internal use, "
                         "denoting the relationship ID. Please choose a "
-                        "different name for your column."
+                        "different name for your column.",
                     )
 
                 columns.append(f"{col_name} {col_type}")
@@ -255,7 +264,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
                         )
 
                     self._copy_from_csv_commands.add(
-                        f"\\copy {pascal_label} FROM '{parts_path}' DELIMITER E'{self.delim}' CSV;"
+                        f"\\copy {pascal_label} FROM '{parts_path}' DELIMITER E'{self.delim}' CSV;",
                     )
 
             # add file path to import statement
@@ -272,14 +281,15 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         return True
 
     def _construct_import_call(self) -> str:
-        """
-        Function to construct the import call detailing folder and
+        """Function to construct the import call detailing folder and
         individual node and edge headers and data files, as well as
         delimiters and database name. Built after all data has been
         processed to ensure that nodes are called before any edges.
 
-        Returns:
+        Returns
+        -------
             str: a bash command for postgresql import
+
         """
         import_call = ""
 
