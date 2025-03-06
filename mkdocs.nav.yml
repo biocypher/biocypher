@@ -23,6 +23,7 @@ nav:
 
           - HowTo / FAQ:
                 - learn/guides/index.md
+                - Standalone Docker Image: learn/guides/htg001_standalone_docker_biocypher.md
 
           - Explanations:
                 - learn/explanation/index.md
