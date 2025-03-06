@@ -1,11 +1,12 @@
 name: CI Docs BioCypher
 on:
+  # No branch triggers - only build docs on tags or manual trigger
   push:
-    branches:
-      - master
-      - main
-permissions:
-  contents: write
+    tags:
+      - 'v*'  # Run on version tags
+  workflow_dispatch:  # Allow manual triggering
+  permissions:
+    contents: write
 jobs:
   deploy:
     runs-on: ubuntu-latest
