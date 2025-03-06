@@ -126,4 +126,3 @@ BioCypher has abstract graph handling for internal use, details
 
 BioCypher translates between input data types and the ontology-mapped internal
 representation of the graph, details [here](translation.md).
-
