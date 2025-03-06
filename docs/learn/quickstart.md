@@ -270,7 +270,7 @@ For more information on the usage of these functions, please refer to the
 
 Most of the configuration options for BioCypher can and should be specified in
 the configuration YAML file, `biocypher_config.yaml`. While BioCypher comes with
-default settings (the ones you can see in the [Configuration](../reference/biocypher-config-guide.md) section),
+default settings (the ones you can see in the [Configuration](../reference/biocypher-config.md) section),
 we can override them by specifying the desired settings in the local
 configuration in the root or the `config` directory of the project. The
 primary BioCypher settings are found in the top-level entry `biocypher`. For
@@ -305,7 +305,7 @@ DBMS (database management system) in the configuration file under the
 `postgresql`, `arangodb`, `rdf`, or `neo4j` entry. For instance, you can specify
 the database name, the host, the port, and the credentials for your database.
 You can also set delimiters for the entities and arrays in your import files.
-For a list of all settings, please refer to the [Configuration](../reference/biocypher-config-guide.md)
+For a list of all settings, please refer to the [Configuration](../reference/biocypher-config.md)
 section.
 
 ```yaml title="biocypher_config.yaml"
@@ -321,5 +321,5 @@ neo4j:
 ## Additional Resources
 
 - [BioCypher API Reference](../reference/source/index.md)
-- [BioCypher Configuration Reference](../reference/biocypher-config-guide.md)
+- [BioCypher Configuration Reference](../reference/biocypher-config.md)
 - [BioCypher Schema Reference](../reference/schema-config-guide.md)

@@ -18,7 +18,7 @@
 
     The *BioCypher configuration reference* offers an in-depth guide to the settings, fields, and parameters that control BioCypher’s behavior and execution. It serves as a resource for customizing BioCypher to fit specific use cases and workflows.
 
-    [:octicons-arrow-right-24: To the configuration reference](biocypher-config-guide.md)
+    [:octicons-arrow-right-24: To the configuration reference](biocypher-config.md)
 </div>
 
 <div class="grid cards" markdown>

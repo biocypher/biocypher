@@ -44,7 +44,7 @@ nav:
                 - Mapping and Translation: reference/source/translation.md
                 - Logging: reference/source/logging.md
                 - Miscellaneous Utility Functions: reference/source/utils.md
-          - BioCypher Configuration: reference/biocypher-config-guide.md
+          - BioCypher Configuration: reference/biocypher-config.md
           - Output Configuration:
                 - Overview: reference/outputs/index.md
                 - Neo4j: reference/outputs/neo4j-output.md
