@@ -183,20 +183,28 @@ a set of two edges and a node in place of the relationship. This is useful when
 we want to connect the relationship to other entities in the graph, for example
 literature references.
 
-The third line (`preferred_id`) informs the uniqueness of represented entities
-by selecting an ontological namespace around which the definition of uniqueness
-should revolve. In our example, if a protein has its own uniprot ID, it is
-understood to be a unique entity. When there are multiple protein isoforms
-carrying the same uniprot ID, they are understood to be aggregated to result in
-only one unique entity in the graph. Decisions around uniqueness of graph
-constituents sometimes require some consideration in task-specific
-applications. Selection of a namespace also has effects in identifier mapping;
-in our case, for protein nodes that do not carry a uniprot ID, identifier
-mapping will attempt to find a uniprot ID given the other identifiers of that
-node. To account for the broadest possible range of identifier systems while
-also dealing with parsing of namespace prefixes and validation, we refer to the
-[Bioregistry](https://bioregistry.io) project namespaces, which should be
-preferred values for this field.
+The third line (`preferred_id`) relates to how entity uniqueness is determined
+in the knowledge graph. This field (which will be renamed to `namespace` in a
+future release to better reflect its purpose) specifies the ontological
+namespace that should be used to identify unique entities. In our example,
+specifying `uniprot` means:
+
+1. Proteins with the same UniProt ID will be considered the same entity and merged in the graph
+2. For identifier mapping purposes, the pipeline will attempt to find or convert to UniProt IDs when possible (this must be implemented in the adapter)
+3. The namespace serves as a prefix for disambiguation (similar to how `hgnc:TP53` is more specific than just `TP53`)
+
+The selection of a namespace requires consideration in task-specific
+applications. For the broadest possible range of identifier systems, we use
+[Bioregistry](https://bioregistry.io) project namespaces as preferred values for
+this field.
+
+While `preferred_id` is optional, it becomes particularly useful when merging
+data from different sources (for instance, when [merging similar information
+from multiple
+resources](tutorial002_handling_ontologies.md#implicit-inheritance)) or when
+working with identifiers that aren't inherently unique across all contexts. For
+entities with well-established global identifiers (like UniProt for proteins),
+this helps maintain consistency throughout your knowledge graph.
 
 Finally, the fourth line (`input_label`) connects the input data stream to the
 configuration; here we indicate which label to expect in the input tuple for

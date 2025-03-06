@@ -283,6 +283,7 @@ enzymatic interaction:
 	list) must be a real Biolink model class.
 
 ### Implicit inheritance
+
 The base model (in the standard case, Biolink) can also be extended without
 specifying an explicit `is_a` field. This "implicit" inheritance happens when a
 class has multiple input labels that each refer to a distinct preferred

@@ -185,7 +185,8 @@ protein:
 If there exists no identifier system that is suitable for coverage of the data
 (which is fairly common when it comes to relationships), `preferred_id` field
 can be omitted. This will lead to the creation of a generic `id` property on
-this node or edge type.
+this node or edge type. For more explanation, see the [Basic
+Tutorial](tutorials/tutorial001_basics.md#schema-configuration).
 
 !!! tip "Rename incoming"
 
