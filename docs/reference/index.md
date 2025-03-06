@@ -40,6 +40,6 @@
 
     The *schema configuration reference* explains the parameters used in the YAML file that defines the structure of the data model. It provides guidance on mapping entities and relationships to ensure seamless data integration.
 
-    [:octicons-arrow-right-24: To the schema configuration reference](schema-config-guide.md)
+    [:octicons-arrow-right-24: To the schema configuration reference](schema-config.md)
 
 </div>

@@ -55,7 +55,7 @@ nav:
                 - RDF: reference/outputs/rdf-output.md
                 - OWL: reference/outputs/owl-output.md
                 - ArangoDB: reference/outputs/arangodb-output.md
-          - Schema Configuration: reference/schema-config-guide.md
+          - Schema Configuration: reference/schema-config.md
 
     - Community:
           - Join Us: community/index.md

@@ -322,4 +322,4 @@ neo4j:
 
 - [BioCypher API Reference](../reference/source/index.md)
 - [BioCypher Configuration Reference](../reference/biocypher-config.md)
-- [BioCypher Schema Reference](../reference/schema-config-guide.md)
+- [BioCypher Schema Reference](../reference/schema-config.md)
