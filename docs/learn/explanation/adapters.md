@@ -1,7 +1,3 @@
----
-status: old
----
-
 # Adapters
 
 ## Introduction
@@ -14,7 +10,7 @@ whether your favourite resource is already supported or currently in
 development, or if you would like to contribute to the development of a new
 adapter, please refer to [this GitHub projects
 view](https://github.com/orgs/biocypher/projects/3/views/2) (check the tabs for
-different views) or the [meta-graph instance](metagraph).
+different views) or the [meta-graph instance](#biocypher-meta-graph).
 
 !!! note "Note"
     We are currently working on adapter documentation, so the collection in the
@@ -28,7 +24,7 @@ different views) or the [meta-graph instance](metagraph).
 
     ---
 
-    For more information on developing your own adapters, please refer to this tutorial
+    For more information on developing your own adapters, please refer to this tutorial:
 
     [:octicons-arrow-right-24: To the Adapter Tutorial](../tutorials/tutorial003_adapters.md)
 
@@ -93,7 +89,7 @@ propagate this information from the adapters to the pipelines.
 
     ---
 
-    For more information on developing your own adapters, please refer to this tutorial
+    The meta-graph is built from the GitHub API using a BioCypher pipeline.
 
     [:octicons-arrow-right-24: To the BioCypher Meta-graph](https://github.com/biocypher/meta-graph)
 

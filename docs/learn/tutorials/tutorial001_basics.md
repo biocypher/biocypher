@@ -114,7 +114,7 @@ programmatic access to databases, API requests, asynchronous queries, context
 managers, and other complicating factors. However, it always boils down to
 providing the BioCypher driver with a collection of tuples, one for each entity
 in the input data. For more info, see the section on
-[Adapters](../guides/adapters.md) and the [Adapter Tutorial](../tutorials/tutorial003_adapters.md).
+[Adapters](../explanation/adapters.md) and the [Adapter Tutorial](../tutorials/tutorial003_adapters.md).
 
 As descibed above, _nodes_ possess:
 

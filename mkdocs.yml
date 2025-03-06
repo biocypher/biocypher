@@ -61,8 +61,8 @@ nav:
 
       - Explanations:
           - learn/explanation/index.md
-          - Adapters: learn/guides/adapters.md
-          - Ontologies: learn/guides/ontologies.md
+          - About Adapters: learn/explanation/adapters.md
+          - About Ontologies: learn/explanation/ontologies.md
 
   - Reference:
       - Reference Index: reference/index.md

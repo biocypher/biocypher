@@ -1,4 +1,6 @@
-# Explanation:
+!!! warning "Under Construction"
+
+    This section is currently under construction.
 
 ## Purpose
 The purpose of this documentation is to provide a comprehensive guide to understanding and working with knowledge graphs within the context of BioCypher.  It aims to explain the fundamental concepts of knowledge graphs and how they are represented in BioCypher.
@@ -6,11 +8,12 @@ The purpose of this documentation is to provide a comprehensive guide to underst
 
 ## Catalog
 
-### [Basics of Knowledge Graphs](exp001_basics_knowledge_graphs.md).
-- Here goes a simple explanation about edges, nodes, and graphs. TODO: Create a page for this, including images.
+- [About Adapters](adapters.md)
+- [About Ontologies](ontologies.md)
 
-### [How a graph is represented in BioCypher?](exp002_knowledge_graph_biocypher.md)
-- Here goes a simple explanation about how the graphs are represented in BioCypher.
-
-### [About this documentation](about-documentation.md)
-TO DO: delete once the webpage is live in production.
+<!-- TODO there are "basics-knowledge-graphs.md" and
+"knowledge-graph-biocypher.md" to still consider, fill in, etc. I am not
+particularly convinced we need to (or are able to, in fact) explain very basic
+things without knowing the user's background. Some knowledge should be assumed,
+and we can also link to external resources (even very general ones, like
+wikipedia) for further reading. -->
