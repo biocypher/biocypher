@@ -9,9 +9,7 @@ from biocypher import BioCypher
 bc = BioCypher()
 ```
 
-Most of the settings should be configured by [YAML files](../../reference/biocypher-config.md). See below for more information on the BioCypher class.
-
-::: biocypher.BioCypher
+Most of the settings should be configured by [YAML files](../../reference/biocypher-config.md). See [BioCypher](biocypher.md) for details of the BioCypher class.
 
 ## Database creation by file
 
@@ -24,20 +22,9 @@ bc.write_edges(edge_list)
 ```
 
 !!! note
-    To facilitate the interaction with the various database management systems (DBMSs), BioCypher provides utility functions, such as writing a Neo4j admin import statement to be used for creating a Neo4j database (`write_import_call`). The most commonly used utility functions are also available in the wrapper function `summary`. See the [BioCypher class](#the-main-biocypher-interface) for more information.
+    To facilitate the interaction with the various database management systems (DBMSs), BioCypher provides utility functions, such as writing a Neo4j admin import statement to be used for creating a Neo4j database (`write_import_call`). The most commonly used utility functions are also available in the wrapper function `summary`. See the [BioCypher class](biocypher.md) for more information.
 
-Details about the output writing modules responsible for these methods can be found below:
-
-::: biocypher.output.write._get_writer.get_writer
-::: biocypher.output.write._writer._Writer
-::: biocypher.output.write._batch_writer._BatchWriter
-::: biocypher.output.write.graph._neo4j._Neo4jBatchWriter
-::: biocypher.output.write.graph._arangodb._ArangoDBBatchWriter
-::: biocypher.output.write.graph._rdf._RDFWriter
-::: biocypher.output.write.graph._networkx._NetworkXWriter
-::: biocypher.output.write.relational._postgresql._PostgreSQLBatchWriter
-::: biocypher.output.write.relational._sqlite._SQLiteBatchWriter
-::: biocypher.output.write.relational._csv._PandasCSVWriter
+Details about the output writing modules responsible for these methods can be found [here](output-write.md).
 
 ## In-memory Pandas knowledge graph
 
@@ -53,9 +40,7 @@ bc.add(edge_list)
 dfs = bc.to_df()
 ```
 
-Details about the in-memory module responsible for these methods can be found below:
-
-::: biocypher.output.in_memory._pandas.PandasKG
+Details about the in-memory module responsible for these methods can be found [here](output-in-memory.md).
 
 ## Database creation and manipulation by Driver
 
@@ -71,10 +56,7 @@ bc.merge_nodes(node_set_2)
 bc.merge_edges(edge_set_2)
 ```
 
-Details about the connector module responsible for these methods can be found below:
-
-::: biocypher.output.connect._get_connector.get_connector
-::: biocypher.output.connect._neo4j_driver._Neo4jDriver
+Details about the connector module responsible for these methods can be found [here](output-driver.md).
 
 ## Download and cache functionality
 
@@ -120,43 +102,28 @@ resource_list = [resource1, resource2, resource3, resource4, resource5]
 paths = bc.download(resource_list)
 ```
 
-The files and API requests will be stored in the cache directory, in subfolders according to the names of the resources, and additionally determined by Pooch (e.g., extraction of zip files can result in multiple new files). All paths of downloaded files are returned by the `download` method. The `Downloader` class can also be used directly, without the BioCypher instance. You can set the cache directory in the configuration file; if not set, it will use the `TemporaryDirectory.name()` method from the `tempfile` module. More details about the `Resource`, `FileDownload`, `APIRequest` and `Downloader` classes can be found below:
-
-::: biocypher._get.Resource
-::: biocypher._get.APIRequest
-::: biocypher._get.FileDownload
-::: biocypher._get.Downloader
+The files and API requests will be stored in the cache directory, in subfolders
+according to the names of the resources, and additionally determined by Pooch
+(e.g., extraction of zip files can result in multiple new files). All paths of
+downloaded files are returned by the `download` method. The `Downloader` class
+can also be used directly, without the BioCypher instance. You can set the cache
+directory in the configuration file; if not set, it will use the
+`TemporaryDirectory.name()` method from the `tempfile` module. More details
+about the `Resource`, `FileDownload`, `APIRequest` and `Downloader` classes can
+be found [here](download-cache.md).
 
 ## Ontology ingestion, parsing, and manipulation
 
-::: biocypher._ontology.Ontology
-::: biocypher._ontology.OntologyAdapter
-
-## Mapping of data inputs to KG ontology
-
-::: biocypher._mapping.OntologyMapping
+BioCypher has dedicated modules for processing ontologies, details
+[here](ontology.md).
 
 ## Base classes for node and edge representations in BioCypher
 
-::: biocypher._create.BioCypherNode
-::: biocypher._create.BioCypherEdge
-::: biocypher._create.BioCypherRelAsNode
+BioCypher has abstract graph handling for internal use, details
+[here](graph-handling.md).
 
 ## Translation functionality for implemented types of representation
 
-::: biocypher._translate.Translator
+BioCypher translates between input data types and the ontology-mapped internal
+representation of the graph, details [here](translation.md).
 
-## Logging
-
-::: biocypher._logger.get_logger
-
-## Miscellaneous utility functions
-
-::: biocypher._misc.to_list
-::: biocypher._misc.ensure_iterable
-::: biocypher._misc.create_tree_visualisation
-::: biocypher._misc.from_pascal
-::: biocypher._misc.pascalcase_to_sentencecase
-::: biocypher._misc.snakecase_to_sentencecase
-::: biocypher._misc.sentencecase_to_snakecase
-::: biocypher._misc.sentencecase_to_pascalcase

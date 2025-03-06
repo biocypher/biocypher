@@ -33,6 +33,16 @@ nav:
           - Reference Index: reference/index.md
           - API Documentation:
                 - reference/source/index.md
+                - BioCypher: reference/source/biocypher.md
+                - Output Writing: reference/source/output-write.md
+                - Output In-Memory: reference/source/output-in-memory.md
+                - Output Driver: reference/source/output-driver.md
+                - Download and Cache: reference/source/download-cache.md
+                - Ontology Handling: reference/source/ontology.md
+                - Graph Handling: reference/source/graph-handling.md
+                - Mapping and Translation: reference/source/translation.md
+                - Logging: reference/source/logging.md
+                - Miscellaneous Utility Functions: reference/source/utils.md
           - BioCypher Configuration: reference/biocypher-config-guide.md
           - Output Configuration:
                 - Overview: reference/outputs/index.md
