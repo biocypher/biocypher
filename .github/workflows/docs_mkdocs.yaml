@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for proper versioning
       - name: Configure Git Credentials
         run: |
           git config user.name github-actions[bot]
@@ -32,7 +34,7 @@ jobs:
           PYTHON_VERSION: ${{ matrix.python-version }}
 
       #----------------------------------------------
-      #       Deploy documentation
+      #       Deploy documentation with mike
       #----------------------------------------------
       - uses: actions/setup-python@v5
         with:
@@ -45,4 +47,11 @@ jobs:
           restore-keys: |
             mkdocs-material-
 
-      - run: poetry run mkdocs gh-deploy --force
+      - name: Deploy documentation with mike
+        run: |
+          # Extract version from pyproject.toml or use a default version
+          VERSION=$(poetry version -s || echo "latest")
+          # Deploy the docs with mike
+          poetry run mike deploy --push --update-aliases $VERSION latest
+          # Set the latest version as default
+          poetry run mike set-default --push latest
