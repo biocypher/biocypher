@@ -253,7 +253,7 @@ class BioCypher:
             self._get_translator()
 
         # These attributes might not exist when using in-memory KG directly
-        if hasattr(self, '_nodes') and hasattr(self, '_edges'):
+        if hasattr(self, "_nodes") and hasattr(self, "_edges"):
             tnodes = self._translator.translate_entities(self._nodes)
             tedges = self._translator.translate_entities(self._edges)
             self._in_memory_kg.add_nodes(tnodes)
