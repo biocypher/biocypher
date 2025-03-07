@@ -75,7 +75,7 @@ def get_writer(
         instance: an instance of the selected writer class.
 
     """
-    dbms_config = _config(dbms)
+    dbms_config = _config(dbms) or {}
 
     writer = DBMS_TO_CLASS[dbms]
 
