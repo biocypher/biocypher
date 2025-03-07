@@ -118,6 +118,15 @@ class BioCypher:
         else:
             self._offline = offline
 
+        # Check if pandas/tabular is being used in offline mode
+        if self._offline and self._dbms.lower() in ["pandas", "tabular"]:
+            msg = (
+                f"The '{self._dbms}' DBMS is only available in online mode. "
+                f"If you want to write CSV files, use 'csv' as the DBMS. "
+                f"If you want to use pandas, set 'offline: false' in your configuration."
+            )
+            raise ValueError(msg)
+
         if strict_mode is None:
             self._strict_mode = self.base_config["strict_mode"]
         else:
@@ -225,19 +234,31 @@ class BioCypher:
         The knowledge graph is returned based on the `dbms` parameter in
         the biocypher configuration file.
 
+        TODO: These conditionals are a hack, we need to refactor the in-memory
+        KG to be generic, and simplify access and conversion to output formats.
+
         Returns
         -------
              Any: knowledge graph.
 
         """
+        # If we're using an in-memory KG and it already exists, return it directly
+        if self._in_memory_kg and self._is_online_and_in_memory():
+            return self._in_memory_kg.get_kg()
+
+        # Otherwise, initialize and populate the in-memory KG
         if not self._in_memory_kg:
             self._initialize_in_memory_kg()
         if not self._translator:
             self._get_translator()
-        tnodes = self._translator.translate_entities(self._nodes)
-        tedges = self._translator.translate_entities(self._edges)
-        self._in_memory_kg.add_nodes(tnodes)
-        self._in_memory_kg.add_edges(tedges)
+
+        # These attributes might not exist when using in-memory KG directly
+        if hasattr(self, '_nodes') and hasattr(self, '_edges'):
+            tnodes = self._translator.translate_entities(self._nodes)
+            tedges = self._translator.translate_entities(self._edges)
+            self._in_memory_kg.add_nodes(tnodes)
+            self._in_memory_kg.add_edges(tedges)
+
         return self._in_memory_kg.get_kg()
 
     def _get_deduplicator(self) -> Deduplicator:
