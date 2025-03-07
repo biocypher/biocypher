@@ -1,10 +1,17 @@
-name: Docs
+name: Docs (TEMPORARILY DISABLED)
 
+# DISABLED: This workflow is temporarily disabled during transition to a new docs build system
+# Original trigger configuration:
+# on:
+#   pull_request:
+#   push:
+#     branches:
+#       - main
+
+# Temporarily disable all triggers
 on:
-  pull_request:
-  push:
-    branches:
-      - main
+  # Empty workflow_dispatch allows manual triggering if needed, but prevents automatic runs
+  workflow_dispatch:
 
 jobs:
   build_docs:
