@@ -1,0 +1,64 @@
+site_name: BioCypher
+
+nav:
+    - Home: index.md
+
+    - About:
+          - Project: biocypher-project/project.md
+          - Design philosophy: biocypher-project/design-philosophy.md
+          - Use Cases: biocypher-project/use-cases.md
+          - BioCypher + LLMs: biocypher-project/biochatter-integration.md
+          - R and Bioconductor: biocypher-project/r-bioc.md
+
+    - Get Started:
+          - Installation: installation.md
+          - Quickstart: learn/quickstart.md
+
+    - Learn:
+          - Tutorials:
+                - Basics: learn/tutorials/tutorial001_basics.md
+                - Handling Ontologies: learn/tutorials/tutorial002_handling_ontologies.md
+                - Adapters: learn/tutorials/tutorial003_adapters.md
+                - BioCypher and Pandas: learn/tutorials/pandas_tutorial.ipynb
+
+          - HowTo / FAQ:
+                - learn/guides/index.md
+                - Standalone Docker Image: learn/guides/htg001_standalone_docker_biocypher.md
+
+          - Explanations:
+                - learn/explanation/index.md
+                - About Adapters: learn/explanation/adapters.md
+                - About Ontologies: learn/explanation/ontologies.md
+
+    - Reference:
+          - Reference Index: reference/index.md
+          - API Documentation:
+                - reference/source/index.md
+                - BioCypher: reference/source/biocypher.md
+                - Output Writing: reference/source/output-write.md
+                - Output In-Memory: reference/source/output-in-memory.md
+                - Output Driver: reference/source/output-driver.md
+                - Download and Cache: reference/source/download-cache.md
+                - Ontology Handling: reference/source/ontology.md
+                - Graph Handling: reference/source/graph-handling.md
+                - Mapping and Translation: reference/source/translation.md
+                - Logging: reference/source/logging.md
+                - Miscellaneous Utility Functions: reference/source/utils.md
+          - BioCypher Configuration: reference/biocypher-config.md
+          - Output Configuration:
+                - Overview: reference/outputs/index.md
+                - Neo4j: reference/outputs/neo4j-output.md
+                - SQLite: reference/outputs/sqlite-output.md
+                - PostgreSQL: reference/outputs/postgresql-output.md
+                - NetworkX: reference/outputs/networkx-output.md
+                - Tabular Format: reference/outputs/tabular-output.md
+                - RDF: reference/outputs/rdf-output.md
+                - OWL: reference/outputs/owl-output.md
+                - ArangoDB: reference/outputs/arangodb-output.md
+          - Schema Configuration: reference/schema-config.md
+
+    - Community:
+          - Join Us: community/index.md
+          - Where to Start: community/contribute.md
+          - Contribute to the Documentation: community/contribute-docs.md
+          - Contribute to the Code Base: community/contribute-codebase.md
