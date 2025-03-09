@@ -81,6 +81,7 @@ class OntologyAdapter:
         """
         logger.info(f"Instantiating OntologyAdapter class for {ontology_file}.")
 
+        self.renaming = {} # How ontology insances are renamed in taxonomy (NetworkX) self.graph nodes IDs.
         self._ontology_file = ontology_file
         self._root_label = root_label
         self._format = ontology_file_format
@@ -282,10 +283,10 @@ class OntologyAdapter:
             nx.DiGraph: The networkx ontology graph in BioCypher format
 
         """
-        mapping = {
+        self.renaming = {
             node: self._get_nx_id_and_label(node, switch_label_and_id, rename_nodes)[0] for node in nx_graph.nodes
         }
-        renamed = nx.relabel_nodes(nx_graph, mapping, copy=False)
+        renamed = nx.relabel_nodes(nx_graph, self.renaming, copy=False)
         return renamed
 
     def _get_all_ancestors(
@@ -893,3 +894,14 @@ class Ontology:
                 # RDFlib uses the + operator for merging.
                 graph += onto.get_rdf_graph()
         return graph
+
+    def get_renaming(self):
+        all_renaming = self._head_ontology.renaming
+        if self._tail_ontologies:
+            for key, onto in self._tail_ontologies.items():
+                assert type(onto) == OntologyAdapter
+                all_renaming.update(onto.renaming)
+        for extended in self._extended_nodes:
+            all_renaming[extended] = f"biocypher:{extended}"
+        return all_renaming
+
