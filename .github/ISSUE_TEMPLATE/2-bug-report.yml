@@ -1,0 +1,131 @@
+name: 🪳 Bug Report
+description: Create a report to help us reproduce and fix the bug
+
+title: "[BUG]: "
+labels: 
+  - "bug"
+  - "triage"
+
+body:
+  - type: markdown
+    attributes:
+      value: >
+        **Before submitting a bug, please make sure the issue hasn't been already addressed by [searching through](https://github.com/biocypher/biocypher/issues).** 
+        **Note:** Please write your bug report in English to ensure it can be understood and addressed by the development team.**
+
+  #----------------   Installed From --------------
+  - type: dropdown
+    id: source
+    attributes:
+      label: Source
+      description: BioCypher has been installed from
+      options:
+        - conda
+        - pip
+        - poetry      
+        - other (specify in text)
+    validations:
+      required: True
+
+  - type: input
+    id: source-other
+    attributes:
+      label: other source
+      placeholder: e.g., uv
+
+#--------------   Python version   --------------
+  - type: input
+    id: Python
+    attributes:
+      label: Python version
+      placeholder: e.g., 3.10
+    validations:
+      required: true
+
+#--------------   BioCypher version   --------------
+  - type: input
+    id: biocypher-version
+    attributes:
+      label: BioCypher version
+      placeholder: e.g., biocypher v0.9.1
+    validations:
+      required: true
+
+#--------------   OS Platform and distribution   --------------
+  - type: input
+    id: OS
+    attributes:
+      label: OS platform and distribution
+      placeholder: e.g., Linux Ubuntu 16.04
+
+#--------------   Describe the Bug   --------------
+  - type: textarea
+    attributes:
+      label:  Describe the bug
+      description: |
+        Please provide a clear and concise description of the bug.
+
+        If applicable, include a minimal example that allows us to reproduce the error by running the code.
+        It's crucial that the snippet is as short and focused as possible, so please remove any unnecessary code
+        to help us debug efficiently. We will copy and paste your code, and we expect to see the same result as you did.
+        Avoid using external data and make sure to include all relevant imports, etc. For example:
+
+        ```python
+        # All necessary imports at the beginning
+        from biocypher import BioCypher
+
+        # A succinct reproducing example trimmed down to the essential parts:
+        bc = Biocypher()      
+        
+        bc.write_nodes(nodes_generator())  # Note: the bug is here!
+        ```
+
+        If the code is too lengthy (though we hope it's not), feel free to place it in a public gist and share the link in the issue: https://gist.github.com.
+
+        Instead of providing the expected results, please paste or describe the actual results you observe. If you encounter an error, include the error message along with the full traceback. It's helpful to wrap error messages in ```` ```triple quotes blocks``` ````.
+      placeholder: |
+        A clear and concise description of what the bug is.
+
+        ```python
+        # Sample code to reproduce the problem
+        ```
+
+        ```
+        The error message you got, with the full traceback.
+        ```
+    validations:
+      required: true
+
+#--------------   Relevant LOG Output   --------------
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant LOG output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+
+#--------------   Further contact details   --------------
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+
+#--------------   Code of Conduct   --------------
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/biocypher/biocypher/blob/main/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+
+
+  - type: markdown
+    attributes:
+      value: >
+        Thank you for your contribution! 🎉 – The BioCypher Team
