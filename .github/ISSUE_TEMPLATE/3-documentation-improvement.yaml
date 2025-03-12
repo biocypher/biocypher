@@ -2,7 +2,7 @@ name: 📔 Documentation Improvement
 description: Report wrong or missing documentation
 
 title: "[DOC]: "
-labels: 
+labels:
   - "docs"
   - "triage"
 projects: ["biocypher/1"]
@@ -14,7 +14,7 @@ body:
     attributes:
       label: Location of the documentation
       description: >
-        Please provide the location of the documentation, e.g. "biocypher.Biocypher.add_nodes()" or the
+        Please provide the location of the documentation, e.g. "biocypher.BioCypher.add_nodes()" or the
         URL of the documentation, e.g.
         "https://biocypher.org/latest/reference/source/biocypher/#biocypher.BioCypher.add_nodes"
       placeholder: https://biocypher.org/latest/reference/source/
@@ -40,16 +40,6 @@ body:
         Please explain the suggested fix and **why** it's better than the existing documentation
     validations:
       required: true
-
-#--------------   Further contact details   --------------
-  - type: input
-    id: contact
-    attributes:
-      label: Contact Details
-      description: How can we get in touch with you if we need more info?
-      placeholder: ex. email@example.com
-    validations:
-      required: false
 
 #--------------   Code of Conduct   --------------
   - type: checkboxes

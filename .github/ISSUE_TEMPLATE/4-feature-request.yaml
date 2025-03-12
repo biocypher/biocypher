@@ -1,8 +1,8 @@
 name: ✨ Feature Request
-description: Submit a proposal/request for a new PyTorch feature
+description: Submit a proposal/request for a new BioCypher feature
 
 title: "[FEAT]: "
-labels: 
+labels:
   - "feature"
 projects: ["biocypher/1"]
 
@@ -17,7 +17,7 @@ body:
     id: checks
     attributes:
       label: Feature Type
-      description: 
+      description:
         Please check what type of feature request you would like to propose (just one).
       options:
         - label: >
@@ -46,7 +46,7 @@ body:
           This would enhance my research on Ovarian Cancer treatments by allowing me to merge and analyze structured knowledge
           from multiple sources. OWL’s semantic capabilities would facilitate better data interoperability, reasoning, and inference,
           ultimately improving the accuracy and depth of my study.
-    
+
     validations:
       required: true
 
@@ -56,16 +56,6 @@ body:
       label: Additional context
       description: >
         Add any other context or screenshots about the feature request.
-
-#--------------   Further contact details   --------------
-  - type: input
-    id: contact
-    attributes:
-      label: Contact Details
-      description: How can we get in touch with you if we need more info?
-      placeholder: ex. email@example.com
-    validations:
-      required: false
 
 #--------------   Code of Conduct   --------------
   - type: checkboxes
