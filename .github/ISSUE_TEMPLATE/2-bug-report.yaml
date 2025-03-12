@@ -33,7 +33,7 @@ body:
       label: other source
       placeholder: e.g., uv
 
-#--------------   Python version   --------------
+  #--------------   Python version   --------------
   - type: input
     id: Python
     attributes:
@@ -42,7 +42,7 @@ body:
     validations:
       required: true
 
-#--------------   BioCypher version   --------------
+  #--------------   BioCypher version   --------------
   - type: input
     id: biocypher-version
     attributes:
@@ -51,17 +51,17 @@ body:
     validations:
       required: true
 
-#--------------   OS Platform and distribution   --------------
+  #--------------   OS Platform and distribution   --------------
   - type: input
     id: OS
     attributes:
       label: OS platform and distribution
       placeholder: e.g., Linux Ubuntu 16.04
 
-#--------------   Describe the Bug   --------------
+  #--------------   Describe the Bug   --------------
   - type: textarea
     attributes:
-      label:  Describe the bug
+      label: Describe the bug
       description: |
         Please provide a clear and concise description of the bug.
 
@@ -75,7 +75,7 @@ body:
         from biocypher import BioCypher
 
         # A succinct reproducing example trimmed down to the essential parts:
-        bc = Biocypher()
+        bc = BioCypher()
 
         bc.write_nodes(nodes_generator())  # Note: the bug is here!
         ```
@@ -96,7 +96,7 @@ body:
     validations:
       required: true
 
-#--------------   Relevant LOG Output   --------------
+  #--------------   Relevant LOG Output   --------------
   - type: textarea
     id: logs
     attributes:
@@ -104,7 +104,7 @@ body:
       description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
       render: shell
 
-#--------------   Code of Conduct   --------------
+  #--------------   Code of Conduct   --------------
   - type: checkboxes
     id: terms
     attributes:
@@ -113,7 +113,6 @@ body:
       options:
         - label: I agree to follow this project's Code of Conduct
           required: true
-
 
   - type: markdown
     attributes:
