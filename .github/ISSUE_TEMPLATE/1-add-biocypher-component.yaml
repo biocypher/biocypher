@@ -1,20 +1,16 @@
-name: Add New Component
+name: 🏗️ Add New Component
 description: Add a new BioCypher component (input, output, ontology, pipeline) to the overview board.
+
 title: "[Component Name]"
 projects: ["biocypher/3"]
+
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for taking the time to add a new component to our board!
-  - type: input
-    id: contact
-    attributes:
-      label: Contact Details
-      description: How can we get in touch with you if we need more info?
-      placeholder: ex. email@example.com
-    validations:
-      required: false
+
+#----------------   Component type for BioCypher --------------
   - type: dropdown
     id: type
     attributes:
@@ -28,6 +24,8 @@ body:
         - Pipeline
     validations:
       required: true
+
+#----------------   Adapter Granularity   --------------
   - type: dropdown
     id: granularity
     attributes:
@@ -40,6 +38,8 @@ body:
         - NA (e.g., Pipeline)
     validations:
       required: true
+
+#----------------   Adapter Format   --------------
   - type: dropdown
     id: format
     attributes:
@@ -47,19 +47,21 @@ body:
       description: Which format does the adapter ingest or output?
       multiple: false
       options:
-        - Flat file(s) such as CSV
-        - Python (objects)
-        - Some API
-        - Parquet
-        - OWL
-        - Neo4j
-        - SQL
         - ArangoDB
+        - Flat file(s) such as CSV
+        - Neo4j
+        - OWL
+        - Parquet
+        - Python (objects)
         - RDF
+        - SQL
+        - Some API
         - NA
         - Other (state below)
     validations:
       required: true
+
+#----------------   Adapter Resource Origin   --------------
   - type: textarea
     id: resource-url
     attributes:
@@ -68,6 +70,8 @@ body:
       render: shell
     validations:
       required: true
+
+#----------------   Adapter Repository Description   --------------
   - type: textarea
     id: adapter-url
     attributes:
@@ -76,6 +80,8 @@ body:
       render: shell
     validations:
       required: true
+
+#----------------   Adapter Repository Description   --------------
   - type: dropdown
     id: adapter-type
     attributes:
@@ -87,6 +93,8 @@ body:
         - NA (e.g., Pipeline)
     validations:
       required: true
+
+#----------------   Adapter Data Description   --------------
   - type: textarea
     id: data-type
     attributes:
@@ -95,6 +103,8 @@ body:
       render: shell
     validations:
       required: true
+
+#--------------   Code of Conduct   --------------
   - type: checkboxes
     id: terms
     attributes:
@@ -103,3 +113,9 @@ body:
       options:
         - label: I agree to follow this project's Code of Conduct
           required: true
+
+
+  - type: markdown
+    attributes:
+      value: >
+        Thank you for your contribution! 🎉 – The BioCypher Team
