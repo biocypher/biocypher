@@ -2,7 +2,13 @@
 
 ## Purpose:
 
+The schema file defines the structure of a BioCypher knowledge graph, specifying which entities and relationships are included and how they are represented. It ensures alignment with biomedical ontologies like the [Biolink model](https://biolink.github.io/biolink-model/), serving as a blueprint for constructing a domain-specific knowledge graph.
+
 ## Convention for naming:
+
+- Entities in the `schema_config.yaml` file should be represented in **lower sentence case** (e.g., `small molecule`), similar to the internal representation in Biolink.
+- Class names, in file names, and property graph labels they are represented in **PascalCase** (e.g., `SmallMolecule`).
+
 
 ## Skeleton:
 
@@ -72,70 +78,66 @@ protein protein interaction:
 ## Fields reference:
 
 ### `exclude_properties`
-- **Description:** describe briefly the purpose of this property.
+- **Description:** Specifies properties that should be excluded from the current entity or relation, preventing them from being inherited or used.
 - **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+  - A list of property names to be excluded, such as `[category, references]`.
 
 ### `inherit_properties`
-- **Description:** describe briefly the purpose of this property.
+- **Description:**  Defines whether and which properties should be inherited from a parent entity. This applies when using `is_a`.
 - **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+  - `true`
+  - `false`
 
 ### `input_label`
-- **Description:** describe briefly the purpose of this property.
+- **Description:** A human-readable label used when referring to this entity in a UI or input form.
 - **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+  - A string, such as `Gene Symbol`, `TF Category`, or `Regulation Type`.
 
 ### `is_a`
-- **Description:** describe briefly the purpose of this property.
+- **Description:** Defines a hierarchical relationship by specifying the parent class from which the current entity inherits.
 - **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+  - A reference to another entity, such as `gene` or `pairwise gene to gene interaction`.
 
 ### `label_as_edge`
-- **Description:** describe briefly the purpose of this property.
+- **Description:** Indicates whether the entity should be represented as an edge in a graph-based representation.
 - **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+  - `true`
+  - `false`
 
 ### `preferred_id`
-- **Description:** describe briefly the purpose of this property.
+- **Description:** Specifies the primary identifier used for this entity, typically referencing a standardized database ID.
 - **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+  - A string referring to a standardized identifier, such as `hgnc.symbol`.
 
 ### `properties`
-- **Description:** describe briefly the purpose of this property.
+- **Description:** Defines attributes associated with an entity or relationship.
 - **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+  - String: `str` (or `string`)
+  - Integer: `int` (or `integer`, `long`).
+  - String: `float` (or `double`, `dbl`).
+  - Boolean: `bool` (or `boolean`).
+  - Arrays of any of these types (indicated by square brackets, e.g. `string[]`).
 
 ### `represented_as`
-- **Description:** describe briefly the purpose of this property.
+- **Description:** Specifies whether the entity should be represented as a node or an edge in a graph-based structure. An entity can be represented as an edge only if source and target IDs are provided in the input data stream. Conversely, relationships can be represented as either a node or an edge, depending on the desired output.
 - **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+  - `node`
+  - `edge`
 
 ### `source`
-- **Description:** describe briefly the purpose of this property.
+- **Description:** [optional] For relationships (edges), defines the starting entity in the relationship.
 - **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+  - A reference to an entity, such as `transcription factor`.
 
 ### `synonym_for`
-- **Description:** describe briefly the purpose of this property.
+- **Description:** Indicates that this entity or property serves as a synonym for another term or entity.
 - **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+  - A string or list of strings representing alternative names, such as `[TF, transcription regulator]`.
 
 ### `target`
-- **Description:** describe briefly the purpose of this property.
+- **Description:** [optional] For relationships (edges), defines the destination entity in the relationship.
 - **Possible values:**
-  - possible value 1 [*datatype*]
-  - possible value 2 [*datatype*]
+  - A reference to an entity, such as `gene`.
 
 ## Add custom fields
 !!! tip "Tip"
