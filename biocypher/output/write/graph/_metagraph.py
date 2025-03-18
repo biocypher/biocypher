@@ -95,6 +95,7 @@ class _MetaGraphWriter(_Writer):
             logger.debug(f"({source})--[{self.keys['ISA']}]->({target})")
 
             self.metagraph.add_node(source, **copy.copy(self.metaprops))
+            logger.debug(f"{source}: {self.metagraph.nodes[source]}")
 
             self.metagraph.add_node(target, **copy.copy(self.metaprops))
 
@@ -184,6 +185,18 @@ class _MetaGraphWriter(_Writer):
         self._has_edges = True
         return True
 
+    def _seen_node(self, id):
+        if self.metagraph.nodes[id][self.keys["NBINS"]] > 0:
+            return True
+        else:
+            return False
+
+    def _seen_edge(self, id):
+        if self.metagraph.edges[id][self.keys["NBINS"]] > 0:
+            return True
+        else:
+            return False
+
     def _construct_import_call(self) -> str:
         """Function to construct the import call detailing folder and
         individual node and edge headers and data files, as well as
@@ -196,8 +209,13 @@ class _MetaGraphWriter(_Writer):
 
         """
         if self._has_nodes and self._has_edges:
-            nx.write_graphml(self.metagraph, "metagraph.gml")
-            logger.debug(nx.to_dict_of_dicts(self.metagraph))
+            seen_graph = nx.subgraph_view(self.metagraph,
+                filter_node = self._seen_node,
+                filter_edge = self._seen_edge,
+            )
+            nx.write_graphml(seen_graph, "metagraph_seen.graphml")
+            nx.write_graphml(self.metagraph, "metagraph_all.graphml")
+            # logger.debug(nx.to_dict_of_dicts(seen_graph)) # FIXME NetworkX bug
 
     def _get_import_script_name(self) -> str:
         """Returns the name of the import script.
