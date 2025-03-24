@@ -16,14 +16,18 @@ __all__ = ["get_connector"]
 def get_connector(
     dbms: str,
     translator: Translator,
-):
-    """
-    Function to return the connector class.
+) -> _Neo4jDriver:
+    """Return the connector class.
 
-    Returns:
+    Returns
+    -------
         class: the connector class
-    """
 
+    Raises
+    ------
+        NotImplementedError: if the DBMS is not supported
+
+    """
     dbms_config = _config(dbms)
 
     if dbms == "neo4j":
@@ -36,5 +40,7 @@ def get_connector(
             multi_db=dbms_config["multi_db"],
             translator=translator,
         )
-    else:
-        raise NotImplementedError(f"Online mode is not supported for the DBMS {dbms}.")
+
+    msg = f"Online mode is not supported for the DBMS {dbms}."
+    logger.error(msg)
+    raise NotImplementedError(msg)

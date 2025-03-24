@@ -1,3 +1,0 @@
-# ArangoDB
-
-Coming soon
