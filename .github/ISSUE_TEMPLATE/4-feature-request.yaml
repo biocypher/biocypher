@@ -12,23 +12,21 @@ body:
       value: >
         **Note:** Please write your bug report in English to ensure it can be understood and addressed by the development team.
 
-#--------------   Feature type    --------------
-  - type: checkboxes
-    id: checks
+  #--------------   Feature type    --------------
+  - type: dropdown
+    id: feature-type
     attributes:
       label: Feature Type
-      description:
-        Please check what type of feature request you would like to propose (just one).
+      description: Please select what type of feature request you would like to propose.
       options:
-        - label: >
-            Adding new functionality to BioCypher
-        - label: >
-            Changing existing functionality in BioCypher
-        - label: >
-            Removing existing functionality in BioCypher
+        - Add new functionality to BioCypher
+        - Change existing functionality in BioCypher
+        - Remove existing functionality in BioCypher
+      multiple: false
+    validations:
+      required: true
 
-
-#--------------   Feature description and motivation    --------------
+  #--------------   Feature description and motivation    --------------
   - type: textarea
     attributes:
       label: 🚀 The feature and motivation
@@ -44,20 +42,20 @@ body:
         **Motivation**
           Exporting graphs in OWL (Web Ontology Language) would enable seamless integration with other ontology-based datasets.
           This would enhance my research on Ovarian Cancer treatments by allowing me to merge and analyze structured knowledge
-          from multiple sources. OWL’s semantic capabilities would facilitate better data interoperability, reasoning, and inference,
+          from multiple sources. OWL's semantic capabilities would facilitate better data interoperability, reasoning, and inference,
           ultimately improving the accuracy and depth of my study.
 
     validations:
       required: true
 
-#--------------   Additional context    --------------
+  #--------------   Additional context    --------------
   - type: textarea
     attributes:
       label: Additional context
       description: >
         Add any other context or screenshots about the feature request.
 
-#--------------   Code of Conduct   --------------
+  #--------------   Code of Conduct   --------------
   - type: checkboxes
     id: terms
     attributes:
