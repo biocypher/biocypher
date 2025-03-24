@@ -10,7 +10,7 @@ import pathlib
 
 import toml
 
-_VERSION = "0.9.1"
+_VERSION = "0.9.2"
 
 
 def get_metadata():
