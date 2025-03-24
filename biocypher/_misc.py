@@ -126,10 +126,7 @@ def _find_root_node(inheritance_tree: dict) -> tuple[set, str]:
         if "entity" in root:
             root = "entity"  # TODO: default: good standard?
         else:
-            msg = ( 
-                "Inheritance tree cannot have more than one root node. "
-                f"Found {len(root)}: {root}."
-            )
+            msg = f"Inheritance tree cannot have more than one root node. Found {len(root)}: {root}."
             logger.error(msg)
             raise ValueError(msg)
     else:
