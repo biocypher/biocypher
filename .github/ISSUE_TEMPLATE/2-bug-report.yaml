@@ -11,7 +11,7 @@ body:
     attributes:
       value: >
         **Before submitting a bug, please make sure the issue hasn't been already addressed by [searching through](https://github.com/biocypher/biocypher/issues).**
-        **Note:** Please write your bug report in English to ensure it can be understood and addressed by the development team.**
+        Please write your bug report in English to ensure it can be understood and addressed by the development team.
 
   #----------------   Installed From --------------
   - type: dropdown
