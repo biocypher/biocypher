@@ -62,7 +62,7 @@ class _MetaGraphWriter(_Writer):
         logger.setLevel("DEBUG")
 
         # The ontology's hierarchy of types, as a NetworkX graph.
-        self.taxonomy = self.translator.ontology.get_rdf_graph()
+        # self.taxonomy = self.translator.ontology.get_rdf_graph()
 
         # Do we want to use IRIs instead of RDFS:label?
         self._use_IRI = use_IRI
@@ -72,7 +72,7 @@ class _MetaGraphWriter(_Writer):
         self.BC_to_IRI = {}
         # Node label mapping: from origin IRI to BioCypher label.
         self.IRI_to_BC = {}
-        # Pouplate mappings with the translator's data.
+        logger.debug("TAG Populate mappings with the translator's data.")
         for IRI,BC in self.translator.ontology.get_renaming().items():
             logger.debug(f"{BC} == {IRI}")
             # Always serialize IRIs, which are rdflib.URIref objects.
@@ -122,68 +122,36 @@ class _MetaGraphWriter(_Writer):
 
 
     def _init_metagraph(self):
-        logging.debug("Add the taxonomy in the metagraph...")
-        for s,p,o in self.taxonomy.triples((None, RDFS.subClassOf, None)):
-            logger.debug(f"Found in taxonomy: ({s})--[{p}]->({o})")
+        # The ontologies' RDF graph would not have user extensions,
+        # so we need the NX graph, which has them.
+        self.metagraph = copy.copy(self.translator.ontology._head_ontology.get_nx_graph())
+        if self.translator.ontology._tail_ontologies:
+            for onto in self.translator.ontology._tail_ontologies:
+                tail_graph = copy.copy(onto.get_nx_graph())
+                self.metagraph = nx.union(self.metagraph, tail_graph)
 
-            if str(s) not in self.IRI_to_BC:
-                logger.warning(f" │ Source type `{s}` never seen in loaded ontologies or extensions, skipped.") # FIXME This should not happen.
-                continue
-            if str(o) not in self.IRI_to_BC:
-                logger.warning(f" │ Target type `{o}` never seen in loaded ontologies or extensions, skipped.") # FIXME This should not happen.
-                continue
+        # Add the expected properties to every nodes.
+        for node in self.metagraph.nodes:
+            # Remove Biocypher's attributes on the NX elements,
+            # since we want to have our owns.
+            bc_keys = [k for k in self.metagraph.nodes[node]]
+            for k in bc_keys:
+                del self.metagraph.nodes[node][k]
 
-            if self._use_IRI:
-                source = str(s)
-                target = str(o)
-            else:
-                source = self.IRI_to_BC[str(s)]
-                target = self.IRI_to_BC[str(o)]
+            # Now put our own attributes.
+            props = copy.copy(self.metaprops)
+            props[self.keys["IRI"]] = str(self.BC_to_IRI[node])
+            for k,v in props.items():
+                self.metagraph.nodes[node][k] = v
 
-            logger.debug(f"Add to taxonomy: ({source})--[{self.keys['ISA']}]->({target})")
+        # Edges in BioCypher's NX graphs don't have attributes,
+        # so we don't need to delete them.
 
-            source_props = copy.copy(self.metaprops)
-            source_props[self.keys["IRI"]] = str(s)
-            self.metagraph.add_node(source, **source_props)
-            logger.debug(f" │ Source props: {source}: {self.metagraph.nodes[source]}")
-
-            target_props = copy.copy(self.metaprops)
-            target_props[self.keys["IRI"]] = str(o)
-            self.metagraph.add_node(target, **target_props)
-            logger.debug(f" │ Target props: {target}: {self.metagraph.nodes[target]}")
-
-            edge_props = copy.copy(self.metaprops)
-            if self._use_IRI:
-                edge_props[self.keys["ISA"]] = str(p) # Generally, will be "subClassOf".
-            else:
-                edge_props[self.keys["IRI"]] = str(p) # Generally, will be "subClassOf".
-
-            self.metagraph.add_edge(source, target, **edge_props)
-            logger.debug(f" │ Edge props: {edge_props}")
-
-
-    def _register_type(self, label):
-        # If the element is unknown, then add it manually as a subclass of the root. FIXME this should not happen, the user's schema should be known!
-        self.BC_to_IRI[label] = f"adhoc:{label}"
-        self.IRI_to_BC[f"adhoc:{label}"] = label
-
-        if self._use_IRI:
-            s = str(self.BC_to_IRI[label])
-            t = str(self.BC_to_IRI[self.translator.ontology._head_ontology._root_label])
-        else:
-            s = label
-            t = self.translator.ontology._head_ontology._root_label
-
-        # Log an ERROR because this should never happen.
-        logger.warning(f"'Type `{label}` not found in any seen ontology or user extension, I'll register it as `{s}` attached to the root of head ontology: `{t}`") # FIXME this should not happen
-
-        # Add the element anyway.
-        self.metagraph.add_node(s, **copy.copy(self.metaprops))
-
-        # "subclass of" link is a (meta)edge in the metagraph.
-        edge_props = copy.copy(self.metaprops)
-        edge_props[self.keys["ISA"]] = t
-        self.metagraph.add_edge(s, t, **edge_props)
+        # Add the expected properties to every edges and edges.
+        # FIXME Do we have some?
+        # for s,t in self.metagraph.edges:
+            # props = copy.copy(self.metaprops)
+            # props[self.keys["IRI"]] = FIXME hardcoded rdfs:subClassOf ?
 
 
     def _add_node(self, element):
@@ -191,33 +159,32 @@ class _MetaGraphWriter(_Writer):
         label = element.get_label()
         properties = element.get_properties()
 
-        # If the element is unknown, then add it manually as a subclass of the root. FIXME this should not happen, the user's schema should be known!
-        if label not in self.BC_to_IRI:
-            self._register_type(label)
+        assert label in self.BC_to_IRI
 
-        # From here, we know label is a type.
+        # From here, we know we have a type.
         if self._use_IRI:
-            type = str(self.BC_to_IRI[label])
-            logger.debug(f"{label} == {type}")
+            node_type = str(self.BC_to_IRI[label])
+            logger.debug(f"{label} == {node_type}")
         else:
-            type = label
+            node_type = label
 
-        logger.debug(f"Add type: `{type}`")
-        self.type_of[id] = type
+        logger.debug(f"Add node of type: `{node_type}`")
+        self.type_of[id] = node_type
 
         # Count this node type as seen.
-        self.metagraph.nodes[type][self.keys["NBINS"]] += 1
+        self.metagraph.nodes[node_type][self.keys["NBINS"]] += 1
 
         # Add the ancestors list.
-        ancestor_labels = list(nx.dfs_preorder_nodes(self.metagraph, type))
-        self.metagraph.nodes[type][self.keys["ANCESTORS"]] = self.join_separator.join(ancestor_labels)
+        ancestor_labels = list(nx.dfs_preorder_nodes(self.metagraph, node_type))
+        self.metagraph.nodes[node_type][self.keys["ANCESTORS"]] = self.join_separator.join(ancestor_labels)
 
         # Stats about properties
         for pname,pvalue in properties.items():
-            if pname not in self.metagraph.nodes[type]:
-                self.metagraph.nodes[type][pname] = set()
+            if pname not in self.metagraph.nodes[node_type]:
+                self.metagraph.nodes[node_type][pname] = set()
+            assert type(self.metagraph.nodes[node_type][pname]) == set
             for value in str(pvalue).split(self.split_separator):
-                self.metagraph.nodes[type][pname].add(value.strip())
+                self.metagraph.nodes[node_type][pname].add(value.strip())
 
 
     def _add_edge(self, element):
@@ -227,27 +194,20 @@ class _MetaGraphWriter(_Writer):
         label = element.get_label()
         properties = element.get_properties()
 
-        # If the element is unknown, then add it manually as a subclass of the root. FIXME this should not happen, the user's schema should be known!
-        if label not in self.BC_to_IRI:
-            self._register_type(label)
+        assert label in self.BC_to_IRI
 
-        # From here, we know label is a type.
+        # From here, we know label is a edge type.
         if self._use_IRI:
-            type = str(self.BC_to_IRI[label])
-            logger.debug(f"{label} == {type}")
+            edge_type = str(self.BC_to_IRI[label])
+            logger.debug(f"{label} == {edge_type}")
         else:
-            type = label
+            edge_type = label
 
-        logger.debug(f"Add type: `{type}`")
-        # self.type_of[id] = type
+        logger.debug(f"Add edge of edge type: `{edge_type}`")
 
         # "subclass of" link is a (meta)edge in the metagraph.
-        if source_id not in self.type_of:
-            logger.warning(f"Source instance `{source_id}` never seen among node instances, so I don't know its type, skipped.") # FIXME this should not happen
-            return
-        if target_id not in self.type_of:
-            logger.warning(f"Target instance `{target_id}` never seen among node instances, so I don't know its type, skipped..") # FIXME this should not happen
-            return
+        assert source_id in self.type_of
+        assert target_id in self.type_of
 
         s = self.type_of[source_id]
         t = self.type_of[target_id]
@@ -259,17 +219,18 @@ class _MetaGraphWriter(_Writer):
             edge_props[self.keys["ISA"]] = label
             self.metagraph.add_edge(s, t, **edge_props)
 
-        # Count this edge type as seen.
+        # Count this edge edge type as seen.
         self.metagraph[s][t][self.keys["NBINS"]] += 1
 
         # Add the ancestors list.
-        ancestor_labels = list(nx.dfs_preorder_nodes(self.metagraph, type))
+        ancestor_labels = list(nx.dfs_preorder_nodes(self.metagraph, edge_type))
         self.metagraph[s][t][self.keys["ANCESTORS"]] = self.join_separator.join(ancestor_labels)
 
         # Stats about properties
         for pname,pvalue in properties.items():
             if pname not in self.metagraph[s][t]:
                 self.metagraph[s][t][pname] = set()
+            assert type(self.metagraph[s][t][pname]) == set
             for value in str(pvalue).split(self.split_separator):
                 self.metagraph[s][t][pname].add(value.strip())
 
@@ -403,7 +364,7 @@ class _MetaGraphWriter(_Writer):
                 filter_edge = self._seen_edge,
             )
 
-            outfname = os.path.join(self.output_directory, "{self.file_stem}.{self.file_format}")
+            outfname = os.path.join(self.output_directory, f"{self.file_stem}.{self.file_format}")
             # NetworkX don't have a consistent export API.
             # So we have to enumerate.
             match self.file_format:
