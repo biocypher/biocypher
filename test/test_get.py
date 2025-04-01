@@ -376,7 +376,7 @@ def test_download_with_long_url(mock_get):
     
     # Check filename length is within limits
     filename = os.path.basename(paths[0])
-    assert len(filename) <= 100
+    assert len(filename) <= 150
 
     # Verify the downloaded file contains our mock data
     with open(paths[0], 'r') as f:

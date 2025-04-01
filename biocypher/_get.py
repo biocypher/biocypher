@@ -402,13 +402,13 @@ class Downloader:
         with open(self.cache_file, "w") as f:
             json.dump(self.cache_dict, f, default=str)
 
-    def _trim_filename(self, url: str, max_length: int = 100) -> str:
+    def _trim_filename(self, url: str, max_length: int = 150) -> str:
         """
         Create a trimmed filename from a URL that won't exceed filesystem limits (e.g. for URLs with multiple query parameters)
         
         Args:
             url (str): The URL to generate a filename from
-            max_length (int): Maximum filename length (default: 250)
+            max_length (int): Maximum filename length (default: 150)
             
         Returns:
             str: A valid filename derived from the URL, trimmed if necessary
