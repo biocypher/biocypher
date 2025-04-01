@@ -404,7 +404,8 @@ class Downloader:
 
     def _trim_filename(self, url: str, max_length: int = 150) -> str:
         """
-        Create a trimmed filename from a URL that won't exceed filesystem limits (e.g. for URLs with multiple query parameters)
+        Create a trimmed filename from a URL that won't exceed filesystem limits.
+        (e.g. for URLs with multiple query parameters)
         
         Args:
             url (str): The URL to generate a filename from
