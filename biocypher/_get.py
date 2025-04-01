@@ -1,5 +1,6 @@
-"""
-BioCypher get module. Used to download and cache data from external sources.
+"""BioCypher get module.
+
+Used to download and cache data from external sources.
 """
 
 from __future__ import annotations
@@ -30,19 +31,22 @@ class Resource(ABC):
         url_s: str | list[str],
         lifetime: int = 0,
     ):
-        """
+        """Initialize a Resource.
+
         A Resource is a file, a list of files, an API request, or a list of API
         requests, any of which can be downloaded from the given URL(s) and
         cached locally. This class implements checks of the minimum requirements
         for a resource, to be implemented by a biocypher adapter.
 
         Args:
+        ----
             name (str): The name of the resource.
 
             url_s (str | list[str]): The URL or URLs of the resource.
 
             lifetime (int): The lifetime of the resource in days. If 0, the
                 resource is considered to be permanent.
+
         """
         self.name = name
         self.url_s = url_s
@@ -57,10 +61,12 @@ class FileDownload(Resource):
         lifetime: int = 0,
         is_dir: bool = False,
     ):
-        """
+        """Initialize a FileDownload object.
+
         Represents basic information for a File Download.
 
         Args:
+        ----
             name(str): The name of the File Download.
 
             url_s(str|list[str]): The URL(s) of the File Download.
@@ -69,18 +75,20 @@ class FileDownload(Resource):
                 File Download is cached indefinitely.
 
             is_dir (bool): Whether the URL points to a directory or not.
-        """
 
+        """
         super().__init__(name, url_s, lifetime)
         self.is_dir = is_dir
 
 
 class APIRequest(Resource):
     def __init__(self, name: str, url_s: str | list[str], lifetime: int = 0):
-        """
+        """Initialize an APIRequest object.
+
         Represents basic information for an API Request.
 
         Args:
+        ----
             name(str): The name of the API Request.
 
             url_s(str|list): The URL of the API endpoint.
@@ -94,29 +102,35 @@ class APIRequest(Resource):
 
 class Downloader:
     def __init__(self, cache_dir: Optional[str] = None) -> None:
-        """
+        """Initialize the Downloader.
+
         The Downloader is a class that manages resources that can be downloaded
         and cached locally. It manages the lifetime of downloaded resources by
         keeping a JSON record of the download date of each resource.
 
         Args:
+        ----
             cache_dir (str): The directory where the resources are cached. If
                 not given, a temporary directory is created.
+
         """
         self.cache_dir = cache_dir or TemporaryDirectory().name
         self.cache_file = os.path.join(self.cache_dir, "cache.json")
         self.cache_dict = self._load_cache_dict()
 
     def download(self, *resources: Resource):
-        """
-        Download one or multiple resources. Load from cache if the resource is
-        already downloaded and the cache is not expired.
+        """Download one or multiple resources.
+
+        Load from cache if the resource is already downloaded and the cache is
+        not expired.
 
         Args:
+        ----
             resources (Resource): The resource(s) to download or load from
                 cache.
 
         Returns:
+        -------
             list[str]: The path or paths to the resource(s) that were downloaded
                 or loaded from cache.
 
@@ -132,12 +146,14 @@ class Downloader:
         return paths
 
     def _download_or_cache(self, resource: Resource, cache: bool = True):
-        """
-        Download a resource if it is not cached or exceeded its lifetime.
+        """Download a resource if it is not cached or exceeded its lifetime.
 
         Args:
+        ----
             resource (Resource): The resource to download.
+
         Returns:
+        -------
             list[str]: The path or paths to the downloaded resource(s).
 
         """
@@ -159,14 +175,16 @@ class Downloader:
         return paths
 
     def _is_cache_expired(self, resource: Resource) -> bool:
-        """
-        Check if resource or API request cache is expired.
+        """Check if resource or API request cache is expired.
 
         Args:
+        ----
             resource (Resource): The resource to download.
 
         Returns:
+        -------
             bool: cache is expired or not.
+
         """
         cache_record = self._get_cache_record(resource)
         if cache_record:
@@ -182,17 +200,21 @@ class Downloader:
         if os.path.exists(cache_resource_path) and os.path.isdir(cache_resource_path):
             shutil.rmtree(cache_resource_path)
 
-    def _download_files(self, cache, file_download: FileDownload):
-        """
-        Download a resource given it is a file or a directory and return the
-        path.
+    def _download_files(self, cache, file_download: FileDownload) -> list[str]:
+        """Download a resource given it is a file or a directory.
+
+        Upon downloading, return the path(s).
 
         Args:
+        ----
             cache (bool): Whether to cache the resource or not.
+
             file_download (FileDownload): The resource to download.
 
         Returns:
+        -------
             list[str]: The path or paths to the downloaded resource(s).
+
         """
         if file_download.is_dir:
             files = self._get_files(file_download)
@@ -202,7 +224,7 @@ class Downloader:
         elif isinstance(file_download.url_s, list):
             paths = []
             for url in file_download.url_s:
-                fname = url[url.rfind("/") + 1 :].split("?")[0]
+                fname = self._trim_filename(url)
                 path = self._retrieve(
                     url=url,
                     fname=fname,
@@ -211,7 +233,7 @@ class Downloader:
                 paths.append(path)
         else:
             paths = []
-            fname = file_download.url_s[file_download.url_s.rfind("/") + 1 :].split("?")[0]
+            fname = self._trim_filename(file_download.url_s)
             results = self._retrieve(
                 url=file_download.url_s,
                 fname=fname,
@@ -227,20 +249,23 @@ class Downloader:
         # adapter
         return paths
 
-    def _download_api_request(self, api_request: APIRequest):
-        """
-        Download an API request and return the path.
+    def _download_api_request(self, api_request: APIRequest) -> list[str]:
+        """Download an API request and return the path.
 
         Args:
-            api_request(APIRequest): The API request result that is being cached.
+        ----
+            api_request(APIRequest): The API request result that is being
+                cached.
+
         Returns:
+        -------
             list[str]: The path to the cached API request.
 
         """
         urls = api_request.url_s if isinstance(api_request.url_s, list) else [api_request.url_s]
         paths = []
         for url in urls:
-            fname = url[url.rfind("/") + 1 :].rsplit(".", 1)[0]
+            fname = self._trim_filename(url)
             logger.info(f"Asking for caching API of {api_request.name} {fname}.")
             response = requests.get(url=url)
 
@@ -260,10 +285,13 @@ class Downloader:
         """Get the cached version of a resource.
 
         Args:
+        ----
             resource(Resource): The resource to get the cached version of.
 
         Returns:
+        -------
             list[str]: The paths to the cached resource(s).
+
         """
         cached_location = os.path.join(self.cache_dir, resource.name)
         logger.info(f"Use cached version from {cached_location}.")
@@ -278,17 +306,25 @@ class Downloader:
         fname: str,
         path: str,
         known_hash: str = None,
-    ):
-        """
-        Retrieve a file from a URL using Pooch. Infer type of file from
-        extension and use appropriate processor.
+    ) -> str:
+        """Retrieve a file from a URL using Pooch.
+
+        Infer type of file from extension and use appropriate processor.
 
         Args:
+        ----
             url (str): The URL to retrieve the file from.
 
             fname (str): The name of the file.
 
             path (str): The path to the file.
+
+            known_hash (str): The known hash of the file.
+
+        Returns:
+        -------
+            str: The path to the file.
+
         """
         if fname.endswith(".zip"):
             return pooch.retrieve(
@@ -329,15 +365,17 @@ class Downloader:
                 progressbar=True,
             )
 
-    def _get_files(self, file_download: FileDownload):
-        """
-        Get the files contained in a directory file.
+    def _get_files(self, file_download: FileDownload) -> list[str]:
+        """Get the files contained in a directory file.
 
         Args:
+        ----
             file_download (FileDownload): The directory file.
 
         Returns:
-            list: The files contained in the directory.
+        -------
+            list[str]: The files contained in the directory.
+
         """
         if file_download.url_s.startswith("ftp://"):
             # remove protocol
@@ -353,14 +391,25 @@ class Downloader:
             files = ftp.nlst()
             ftp.quit()
         else:
-            raise NotImplementedError("Only FTP directories are supported at the moment.")
+            msg = "Only FTP directories are supported at the moment."
+            logger.error(msg)
+            raise NotImplementedError(msg)
 
         return files
 
-    def _load_cache_dict(self):
-        """
-        Load the cache dictionary from the cache file. Create an empty cache
-        file if it does not exist.
+    def _load_cache_dict(self) -> dict:
+        """Load the cache dictionary from the cache file.
+
+        Create an empty cache file if it does not exist.
+
+        Args:
+        ----
+            None.
+
+        Returns:
+        -------
+            dict: The cache dictionary.
+
         """
         if not os.path.exists(self.cache_dir):
             logger.info(f"Creating cache directory {self.cache_dir}.")
@@ -375,24 +424,27 @@ class Downloader:
             logger.info(f"Loading cache file {self.cache_file}.")
             return json.load(f)
 
-    def _get_cache_record(self, resource: Resource):
-        """
-        Get the cache record of a resource.
+    def _get_cache_record(self, resource: Resource) -> dict:
+        """Get the cache record of a resource.
 
         Args:
+        ----
             resource (Resource): The resource to get the cache record of.
 
         Returns:
-            The cache record of the resource.
+        -------
+            dict: The cache record of the resource.
+
         """
         return self.cache_dict.get(resource.name, {})
 
-    def _update_cache_record(self, resource: Resource):
-        """
-        Update the cache record of a resource.
+    def _update_cache_record(self, resource: Resource) -> None:
+        """Update the cache record of a resource.
 
         Args:
+        ----
             resource (Resource): The resource to update the cache record of.
+
         """
         cache_record = {}
         cache_record["url"] = to_list(resource.url_s)
@@ -401,3 +453,34 @@ class Downloader:
         self.cache_dict[resource.name] = cache_record
         with open(self.cache_file, "w") as f:
             json.dump(self.cache_dict, f, default=str)
+
+    def _trim_filename(self, url: str, max_length: int = 150) -> str:
+        """Create a trimmed filename from a URL.
+
+        If the URL exceeds max_length, create a hash of the filename.
+
+        Args:
+        ----
+            url (str): The URL to generate a filename from
+            max_length (int): Maximum filename length (default: 150)
+
+        Returns:
+        -------
+            str: A valid filename derived from the URL, trimmed if necessary
+
+        """
+        # Extract the filename from the URL
+        fname = url[url.rfind("/") + 1 :]
+
+        # Remove query parameters if present
+        if "?" in fname:
+            fname = fname.split("?")[0]
+
+        if len(fname) > max_length:
+            import hashlib
+
+            fname_trimmed = hashlib.md5(fname.encode()).hexdigest()
+        else:
+            fname_trimmed = fname
+
+        return fname_trimmed
