@@ -406,11 +406,11 @@ class Downloader:
         """
         Create a trimmed filename from a URL that won't exceed filesystem limits.
         (e.g. for URLs with multiple query parameters)
-        
+
         Args:
             url (str): The URL to generate a filename from
             max_length (int): Maximum filename length (default: 150)
-            
+
         Returns:
             str: A valid filename derived from the URL, trimmed if necessary
         """
@@ -423,8 +423,9 @@ class Downloader:
 
         if len(fname) > max_length:
             import hashlib
+
             fname_trimmed = hashlib.md5(fname.encode()).hexdigest()
         else:
             fname_trimmed = fname
-            
+
         return fname_trimmed

@@ -350,6 +350,7 @@ def test_download_with_parameter():
     paths2 = downloader.download(resource)
     assert "tmp" in paths2[0]
 
+
 @patch("requests.get")
 def test_download_with_long_url(mock_get):
     mock_response = Mock()
@@ -357,7 +358,7 @@ def test_download_with_long_url(mock_get):
     mock_response.json = lambda: {"data": "test content"}
     mock_response.raise_for_status = Mock()
     mock_get.return_value = mock_response
-    
+
     # Create a long URL that would exceed filename length limits
     # long_url = "https://query-api.iedb.org/epitope_search?or=(linear_sequence.ilike.*IVLPEDKSW*,linear_sequence.ilike.*ALGIGILTV*,linear_sequence.ilike.*LSLRNPILV*,linear_sequence.ilike.*PKYVKQNTLKLAT*,linear_sequence.ilike.*EIYKRWII*,linear_sequence.ilike.*LLDFVRFMGV*,linear_sequence.ilike.*RLRAEAQVK*)&select=structure_id,structure_descriptions,linear_sequence&order=structure_id"
     long_url = "https://example.com/api/data/" + "x" * 500
