@@ -360,7 +360,7 @@ def test_download_with_long_url(mock_get):
     mock_get.return_value = mock_response
 
     # Create a long URL that would exceed filename length limits
-    long_url = "https://example.com/api/data/" + "x" * 500
+    long_url = "https://example.com/api/data/" + "x" * 200 + "?" + "y" * 200
     downloader = Downloader(cache_dir=None)
     resource = APIRequest(
         name="test_long_url",
