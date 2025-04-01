@@ -414,9 +414,9 @@ class Downloader:
             str: A valid filename derived from the URL, trimmed if necessary
         """
         # Extract the filename from the URL
-        fname = url[url.rfind("/") + 1:]
+        fname = url[url.rfind("/") + 1 :]
 
-            # Remove query parameters if present
+        # Remove query parameters if present
         if "?" in fname:
             fname = fname.split("?")[0]
 
