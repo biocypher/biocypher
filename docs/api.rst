@@ -261,12 +261,12 @@ usage:
            "https://api.example.org/api_request1",
            "https://api.example.org/api_request2",
        ],
-       life_time=7,
+       lifetime=7,
    )
    resource5 = APIRequest(
        name="api_request",
        url_s="https://api.example.org/api_request1",
-       life_time=7,
+       lifetime=7,
    )
    resource_list = [resource1, resource2, resource3, resource4, resource5]
    paths = bc.download(resource_list)

@@ -2,6 +2,7 @@ import json
 import os
 
 from datetime import datetime, timedelta
+from unittest.mock import patch, Mock
 
 import pytest
 
@@ -348,3 +349,36 @@ def test_download_with_parameter():
     # load resource from cache
     paths2 = downloader.download(resource)
     assert "tmp" in paths2[0]
+
+@patch('requests.get')
+def test_download_with_long_url(mock_get):
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json = lambda: {"data": "test content"}
+    mock_response.raise_for_status = Mock()
+    mock_get.return_value = mock_response
+    
+    # Create a long URL that would exceed filename length limits
+    # long_url = "https://query-api.iedb.org/epitope_search?or=(linear_sequence.ilike.*IVLPEDKSW*,linear_sequence.ilike.*ALGIGILTV*,linear_sequence.ilike.*LSLRNPILV*,linear_sequence.ilike.*PKYVKQNTLKLAT*,linear_sequence.ilike.*EIYKRWII*,linear_sequence.ilike.*LLDFVRFMGV*,linear_sequence.ilike.*RLRAEAQVK*)&select=structure_id,structure_descriptions,linear_sequence&order=structure_id"
+    long_url = "https://example.com/api/data/" + "x" * 500
+    
+    downloader = Downloader(cache_dir=None)
+    resource = APIRequest(
+        name="test_long_url",
+        url_s=long_url,
+        lifetime=1,
+    )
+    
+    paths = downloader.download(resource)
+    
+    # Verify file path exists
+    assert os.path.exists(paths[0])
+    
+    # Check filename length is within limits
+    filename = os.path.basename(paths[0])
+    assert len(filename) <= 100
+
+    # Verify the downloaded file contains our mock data
+    with open(paths[0], 'r') as f:
+        content = f.read()
+        assert "test content" in content

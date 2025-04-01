@@ -202,7 +202,7 @@ class Downloader:
         elif isinstance(file_download.url_s, list):
             paths = []
             for url in file_download.url_s:
-                fname = url[url.rfind("/") + 1 :].split("?")[0]
+                fname = self._trim_filename(url)
                 path = self._retrieve(
                     url=url,
                     fname=fname,
@@ -211,7 +211,7 @@ class Downloader:
                 paths.append(path)
         else:
             paths = []
-            fname = file_download.url_s[file_download.url_s.rfind("/") + 1 :].split("?")[0]
+            fname = self._trim_filename(file_download.url_s)
             results = self._retrieve(
                 url=file_download.url_s,
                 fname=fname,
@@ -240,7 +240,7 @@ class Downloader:
         urls = api_request.url_s if isinstance(api_request.url_s, list) else [api_request.url_s]
         paths = []
         for url in urls:
-            fname = url[url.rfind("/") + 1 :].rsplit(".", 1)[0]
+            fname = self._trim_filename(url)
             logger.info(f"Asking for caching API of {api_request.name} {fname}.")
             response = requests.get(url=url)
 
@@ -401,3 +401,29 @@ class Downloader:
         self.cache_dict[resource.name] = cache_record
         with open(self.cache_file, "w") as f:
             json.dump(self.cache_dict, f, default=str)
+
+    def _trim_filename(self, url: str, max_length: int = 100) -> str:
+        """
+        Create a trimmed filename from a URL that won't exceed filesystem limits (e.g. for URLs with multiple query parameters)
+        
+        Args:
+            url (str): The URL to generate a filename from
+            max_length (int): Maximum filename length (default: 250)
+            
+        Returns:
+            str: A valid filename derived from the URL, trimmed if necessary
+        """
+        # Extract the filename from the URL
+        fname = url[url.rfind("/") + 1:]
+
+            # Remove query parameters if present
+        if "?" in fname:
+            fname = fname.split("?")[0]
+
+        if len(fname) > max_length:
+            import hashlib
+            fname_trimmed = hashlib.md5(fname.encode()).hexdigest()
+        else:
+            fname_trimmed = fname
+            
+        return fname_trimmed
