@@ -360,8 +360,7 @@ def test_download_with_long_url(mock_get):
     mock_get.return_value = mock_response
 
     # Create a long URL that would exceed filename length limits
-    # long_url = "https://query-api.iedb.org/epitope_search?or=(linear_sequence.ilike.*IVLPEDKSW*,linear_sequence.ilike.*ALGIGILTV*,linear_sequence.ilike.*LSLRNPILV*,linear_sequence.ilike.*PKYVKQNTLKLAT*,linear_sequence.ilike.*EIYKRWII*,linear_sequence.ilike.*LLDFVRFMGV*,linear_sequence.ilike.*RLRAEAQVK*)&select=structure_id,structure_descriptions,linear_sequence&order=structure_id"
-    long_url = "https://example.com/api/data/" + "x" * 500
+    long_url = "https://example.com/api/data/" + "x" * 200 + "?" + "y" * 200
     downloader = Downloader(cache_dir=None)
     resource = APIRequest(
         name="test_long_url",
@@ -379,3 +378,35 @@ def test_download_with_long_url(mock_get):
     with open(paths[0], "r") as f:
         content = f.read()
         assert "test content" in content
+
+
+@patch("requests.get")
+def test_download_file_with_long_url(mock_get):
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.content = b"test file content"
+    mock_response.raise_for_status = Mock()
+    mock_response.headers = {"content-length": "15"}  # Length of "test file content"
+    # Mock iter_content to return an iterator of our test content
+    mock_response.iter_content = lambda chunk_size: iter([b"test file content"])
+    mock_get.return_value = mock_response
+
+    # Create a long URL that would exceed filename length limits
+    long_url = "https://example.com/files/data/" + "x" * 200 + "?" + "y" * 200
+    downloader = Downloader(cache_dir=None)
+    resource = FileDownload(
+        name="test_long_file_url",
+        url_s=long_url,
+        lifetime=1,
+    )
+    paths = downloader.download(resource)
+    # Verify file path exists
+    assert os.path.exists(paths[0])
+    # Check filename length is within limits
+    filename = os.path.basename(paths[0])
+    assert len(filename) <= 150
+
+    # Verify the downloaded file contains our mock data
+    with open(paths[0], "rb") as f:
+        content = f.read()
+        assert b"test file content" in content
