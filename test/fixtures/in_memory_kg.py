@@ -2,7 +2,7 @@ import pytest
 
 from biocypher.output.in_memory._networkx import NetworkxKG
 from biocypher.output.in_memory._pandas import PandasKG
-from biocypher.output.in_memory._anndata import AnnDataKG
+from biocypher.output.in_memory._airr_to_anndata import AIRRtoAnnDataKG
 
 
 @pytest.fixture(scope="function")
@@ -24,7 +24,7 @@ def in_memory_networkx_kg(deduplicator):
 
 @pytest.fixture(scope="function")
 def in_memory_anndata_kg(deduplicator):
-    in_memory_kg = AnnDataKG(
+    in_memory_kg = AIRRtoAnnDataKG(
         deduplicator=deduplicator,
     )
 

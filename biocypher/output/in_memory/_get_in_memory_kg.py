@@ -4,7 +4,7 @@ BioCypher 'in_memory' module. Handles the in-memory Knowledge Graph instance.
 
 from biocypher._deduplicate import Deduplicator
 from biocypher._logger import logger
-from biocypher.output.in_memory._anndata import AnnDataKG
+from biocypher.output.in_memory._airr_to_anndata import AIRRtoAnnDataKG
 from biocypher.output.in_memory._networkx import NetworkxKG
 from biocypher.output.in_memory._pandas import PandasKG
 
@@ -30,7 +30,7 @@ def get_in_memory_kg(
     elif dbms == "networkx":
         return NetworkxKG(deduplicator)
     elif dbms == "anndata":
-        return AnnDataKG(deduplicator)
+        return AIRRtoAnnDataKG(deduplicator)
     else:
         raise NotImplementedError(
             f"Getting the in memory BioCypher KG is not supported for the DBMS {dbms}. Supported: {IN_MEMORY_DBMS}."

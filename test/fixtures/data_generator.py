@@ -140,3 +140,170 @@ def _get_rel_as_nodes(length):
         )
         rels.append(BioCypherRelAsNode(n, e1, e2))
     return rels
+
+# Immunology data: TCR alpha and beta chains + epitopes
+
+# TCR alpha chain test nodes
+@pytest.fixture
+def tra_nodes():
+    """Return a list of TCR alpha chain nodes for testing."""
+    return [
+        BioCypherNode(
+            node_id="tra:CAVRWGGKLSF",
+            node_label="tra sequence",
+            preferred_id="tra:CAVRWGGKLSF",
+            properties={
+                "chain_1_type": "tra",
+                "chain_1_organism": "HomoSapiens",
+                "chain_1_v_gene": "TRAV3*01",
+                "chain_1_j_gene": "TRAJ20*01"
+            }
+        ),
+        BioCypherNode(
+            node_id="tra:CAGLLPGGGADGLTF",
+            node_label="tra sequence",
+            preferred_id="tra:CAGLLPGGGADGLTF",
+            properties={
+                "chain_1_type": "tra", 
+                "chain_1_organism": "HomoSapiens",
+                "chain_1_v_gene": "TRAV25*01",
+                "chain_1_j_gene": "TRAJ45*01"
+            }
+        ),
+        BioCypherNode(
+            node_id="tra:CAVDNNNDMRF",
+            node_label="tra sequence",
+            preferred_id="tra:CAVDNNNDMRF",
+            properties={
+                "chain_1_type": "tra",
+                "chain_1_v_gene": "TRAV12-2",
+                "chain_1_j_gene": "TRAJ24"
+            }
+        )
+    ]
+
+# TCR beta chain test nodes
+@pytest.fixture
+def trb_nodes():
+    """Return a list of TCR beta chain nodes for testing."""
+    return [
+        BioCypherNode(
+            node_id="trb:CASSEGGVETQYF",
+            node_label="trb sequence",
+            preferred_id="trb:CASSEGGVETQYF",
+            properties={
+                "chain_1_type": "trb",
+                "chain_1_organism": "HomoSapiens",
+                "chain_1_v_gene": "TRBV13*01",
+                "chain_1_j_gene": "TRBJ2-5*01"
+            }
+        ),
+        BioCypherNode(
+            node_id="trb:CASSSRGGQETQYF",
+            node_label="trb sequence",
+            preferred_id="trb:CASSSRGGQETQYF",
+            properties={
+                "chain_1_type": "trb",
+                "chain_1_organism": "HomoSapiens",
+                "chain_1_v_gene": "TRBV7-3*01",
+                "chain_1_j_gene": "TRBJ2-5*01"
+            }
+        ),
+        BioCypherNode(
+            node_id="trb:CASSPRGDSGNTIYF",
+            node_label="trb sequence",
+            preferred_id="trb:CASSPRGDSGNTIYF",
+            properties={
+                "chain_1_type": "trb",
+                "chain_1_v_gene": "TRBV7-9",
+                "chain_1_j_gene": "TRBJ2-2"
+            }
+        )
+    ]
+
+# Epitope test nodes
+@pytest.fixture
+def epitope_nodes():
+    """Return a list of epitope nodes for testing."""
+    return [
+        BioCypherNode(
+            node_id="epitope:NLVPMVATV",
+            node_label="epitope",
+            preferred_id="epitope:NLVPMVATV",
+            properties={
+                "antigen_name": "pp65",
+                "antigen_organism": "CMV",
+                "MHC_class": "MHCI"
+            }
+        ),
+        BioCypherNode(
+            node_id="epitope:KLGGALQAK", 
+            node_label="epitope",
+            preferred_id="epitope:KLGGALQAK",
+            properties={
+                "antigen_name": "IE1",
+                "antigen_organism": "CMV",
+                "MHC_class": "MHCI"
+            }
+        ),
+        BioCypherNode(
+            node_id="epitope:GILGFVFTL",
+            node_label="epitope",
+            preferred_id="epitope:GILGFVFTL",
+            properties={
+                "antigen_name": "M",
+                "antigen_organism": "InfluenzaA",
+                "MHC_class": "MHCI"
+            }
+        )
+    ]
+
+# TCR pairing edges
+@pytest.fixture
+def tcr_pair_edges():
+    """Return a list of TCR alpha-beta pairing edges for testing."""
+    return [
+        BioCypherEdge(
+            source_id="tra:CAVRWGGKLSF",
+            target_id="trb:CASSEGGVETQYF",
+            relationship_id="pair1",
+            relationship_label="alpha sequence to beta sequence association"
+        ),
+        BioCypherEdge(
+            source_id="tra:CAGLLPGGGADGLTF",
+            target_id="trb:CASSSRGGQETQYF",
+            relationship_id="pair2",
+            relationship_label="alpha sequence to beta sequence association"
+        ),
+        BioCypherEdge(
+            source_id="tra:CAVDNNNDMRF",
+            target_id="trb:CASSPRGDSGNTIYF",
+            relationship_id="pair3", 
+            relationship_label="alpha sequence to beta sequence association"
+        )
+    ]
+
+# TCR-epitope association edges
+@pytest.fixture
+def tcr_epitope_edges():
+    """Return a list of TCR-to-epitope binding edges for testing."""
+    return [
+        BioCypherEdge(
+            source_id="tra:CAVRWGGKLSF",
+            target_id="epitope:NLVPMVATV",
+            relationship_id="bind1",
+            relationship_label="t cell receptor sequence to epitope association"
+        ),
+        BioCypherEdge(
+            source_id="trb:CASSEGGVETQYF", 
+            target_id="epitope:KLGGALQAK",
+            relationship_id="bind2",
+            relationship_label="t cell receptor sequence to epitope association"
+        ),
+        BioCypherEdge(
+            source_id="trb:CASSPRGDSGNTIYF",
+            target_id="epitope:GILGFVFTL",
+            relationship_id="bind3", 
+            relationship_label="t cell receptor sequence to epitope association"
+        )
+    ]
