@@ -1,7 +1,5 @@
-
 from datetime import datetime
 
-import scanpy as sc
 import scirpy.pp as scp
 from biocypher._deduplicate import Deduplicator
 from biocypher.output.in_memory._in_memory_kg import _InMemoryKG
@@ -41,6 +39,7 @@ class AIRRtoAnnDataKG(_InMemoryKG):
             self.entities_by_type[_type].extend(_entities)
 
     def to_airr_cells(self, verbose=False):
+        """Convert BioCypher entities to the AIRR cells."""
         tra_nodes = self.entities_by_type.get("tra sequence", [])
         trb_nodes = self.entities_by_type.get("trb sequence", [])
         epitope_nodes = self.entities_by_type.get("epitope", [])
@@ -102,9 +101,6 @@ class AIRRtoAnnDataKG(_InMemoryKG):
         return airr_cells
 
     def airr_cells_to_anndata(self, airr_cells, verbose=True):
-        if not airr_cells:
-            return sc.AnnData()
-
         adata = from_airr_cells(airr_cells)
         scp.index_chains(adata)
 

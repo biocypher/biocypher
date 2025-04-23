@@ -1,4 +1,3 @@
-import scanpy as sc
 from unittest.mock import patch
 
 
@@ -18,7 +17,6 @@ def test_add_tcr_nodes(in_memory_anndata_kg, tra_nodes, trb_nodes):
 
 def test_add_tcr_epitope_edge(in_memory_anndata_kg, tra_nodes, epitope_nodes, tcr_epitope_edges):
     in_memory_anndata_kg.add_nodes([tra_nodes[0], epitope_nodes[0]])
-    
     in_memory_anndata_kg.add_edges([tcr_epitope_edges[0]])
     
     assert "t cell receptor sequence to epitope association" in in_memory_anndata_kg.entities_by_type
@@ -29,7 +27,6 @@ def test_add_tcr_epitope_edge(in_memory_anndata_kg, tra_nodes, epitope_nodes, tc
 
 def test_complete_tcr_graph(in_memory_anndata_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges):
     in_memory_anndata_kg.add_nodes([tra_nodes[0], trb_nodes[0], epitope_nodes[0]])
-    
     in_memory_anndata_kg.add_edges([tcr_pair_edges[0], tcr_epitope_edges[0]])
     
     assert len(in_memory_anndata_kg.entities_by_type["tra sequence"]) == 1
@@ -42,9 +39,7 @@ def test_complete_tcr_graph(in_memory_anndata_kg, tra_nodes, trb_nodes, epitope_
 @patch('builtins.print')
 def test_to_airr_cells_basic(mock_print, in_memory_anndata_kg, tra_nodes, trb_nodes, tcr_pair_edges):
     in_memory_anndata_kg.add_nodes([tra_nodes[2], trb_nodes[2]])
-    
     in_memory_anndata_kg.add_edges([tcr_pair_edges[2]])
-    
     airr_cells = in_memory_anndata_kg.to_airr_cells()
     
     assert isinstance(airr_cells, list)
@@ -62,14 +57,11 @@ def test_to_airr_cells_basic(mock_print, in_memory_anndata_kg, tra_nodes, trb_no
 @patch('builtins.print')
 def test_to_airr_cells_with_epitope(mock_print, in_memory_anndata_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges):
     in_memory_anndata_kg.add_nodes([tra_nodes[2], trb_nodes[2], epitope_nodes[2]])
-    
     in_memory_anndata_kg.add_edges([tcr_pair_edges[2], tcr_epitope_edges[2]])
-    
     airr_cells = in_memory_anndata_kg.to_airr_cells()
     
     assert len(airr_cells) == 1
     cell = airr_cells[0]
-    
     assert cell["antigen_name"] == "M"
     assert cell["antigen_organism"] == "InfluenzaA"
     assert cell["MHC_class"] == "MHCI"
@@ -78,13 +70,10 @@ def test_to_airr_cells_with_epitope(mock_print, in_memory_anndata_kg, tra_nodes,
 @patch('builtins.print')
 def test_multiple_tcr_pairs(mock_print, in_memory_anndata_kg, tra_nodes, trb_nodes, tcr_pair_edges):
     in_memory_anndata_kg.add_nodes(tra_nodes[:2] + trb_nodes[:2])
-    
     in_memory_anndata_kg.add_edges(tcr_pair_edges[:2])
-
     airr_cells = in_memory_anndata_kg.to_airr_cells()
-    
+
     assert len(airr_cells) == 2
-    
     cell_ids = [cell.cell_id for cell in airr_cells]
     assert "pair1" in cell_ids
     assert "pair2" in cell_ids
