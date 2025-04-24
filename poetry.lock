@@ -4,10 +4,10 @@
 name = "adjusttext"
 version = "1.3.0"
 description = "Iteratively adjust text position in matplotlib plots to minimize overlaps"
-optional = false
+optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "adjustText-1.3.0-py3-none-any.whl", hash = "sha256:da23d7b24b6db5ffa039bb136bfa556207365e32f48ac74b07ad26dd485bc691"},
     {file = "adjusttext-1.3.0.tar.gz", hash = "sha256:4ab75cd4453af4828876ac3e964f2c49be642ea834f0c1f7449558d5f12cbca1"},
@@ -22,10 +22,10 @@ scipy = "*"
 name = "airr"
 version = "1.5.1"
 description = "AIRR Community Data Representation Standard reference library for antibody and TCR sequencing data."
-optional = false
+optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "airr-1.5.1.tar.gz", hash = "sha256:71f89eaf0c2fb4fe038a6e8aad9c58e1712cb06b92021e73d97d08c59b7b7149"},
 ]
@@ -53,10 +53,10 @@ files = [
 name = "anndata"
 version = "0.11.4"
 description = "Annotated data."
-optional = false
+optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "anndata-0.11.4-py3-none-any.whl", hash = "sha256:fefebb1480316dfa5a23924aa9f74781d447484421bb0c788b0b2ca5e3b339d2"},
     {file = "anndata-0.11.4.tar.gz", hash = "sha256:4ce08d09d2ccb5f37d32790363bbcc7fc1b79863842296ae4badfaf48c736e24"},
@@ -112,10 +112,10 @@ files = [
 name = "array-api-compat"
 version = "1.11.2"
 description = "A wrapper around NumPy and other array libraries to make them compatible with the Array API standard"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "array_api_compat-1.11.2-py3-none-any.whl", hash = "sha256:b1d0059714a4153b3ae37c989e47b07418f727be5b22908dd3cf9d19bdc2c547"},
     {file = "array_api_compat-1.11.2.tar.gz", hash = "sha256:a3b7f7b6af18f4c42e79423b1b2479798998b6a74355069d77a01a5282755b5d"},
@@ -171,10 +171,10 @@ tests-mypy = ["mypy (>=1.11.1)", "pytest-mypy-plugins"]
 name = "awkward"
 version = "2.8.1"
 description = "Manipulate JSON-like data with NumPy-like idioms."
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "awkward-2.8.1-py3-none-any.whl", hash = "sha256:6f0bd4b12eb00f9fc3ce23ff6a0fff46bc006bbd18a7a8c00ea6ec08ad8bf34b"},
     {file = "awkward-2.8.1.tar.gz", hash = "sha256:265249fb98d6b616eb50bba547612ccd746617cfed4101ae7be5d41082caac3b"},
@@ -192,10 +192,10 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.11\""}
 name = "awkward-cpp"
 version = "45"
 description = "CPU kernels and compiled extensions for Awkward Array"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "awkward_cpp-45-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:ad35e3293274e1d4026c0b170fa3fa3339664c73b27b38891558577cee81228e"},
     {file = "awkward_cpp-45-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:7e6c84055b834321647b35cb5cb9573f556869f8eb5423ccaf70e4661b557890"},
@@ -601,7 +601,6 @@ description = "Python library for calculating contours of 2D quadrilateral grids
 optional = false
 python-versions = ">=3.10"
 groups = ["main", "dev"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
     {file = "contourpy-1.3.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:a045f341a77b77e1c5de31e74e966537bba9f3c4099b35bf4c2e3939dd54cdab"},
     {file = "contourpy-1.3.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:500360b77259914f7805af7462e41f9cb7ca92ad38e9f94d6c8641b089338124"},
@@ -658,6 +657,7 @@ files = [
     {file = "contourpy-1.3.1-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:44a29502ca9c7b5ba389e620d44f2fbe792b1fb5734e8b931ad307071ec58c53"},
     {file = "contourpy-1.3.1.tar.gz", hash = "sha256:dfd97abd83335045a913e3bcc4a09c0ceadbe66580cf573fe961f4a825efa699"},
 ]
+markers = {main = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\"", dev = "python_version <= \"3.11\" or python_version >= \"3.12\""}
 
 [package.dependencies]
 numpy = ">=1.23"
@@ -773,11 +773,11 @@ description = "Composable style cycles"
 optional = false
 python-versions = ">=3.8"
 groups = ["main", "dev"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
     {file = "cycler-0.12.1-py3-none-any.whl", hash = "sha256:85cef7cff222d8644161529808465972e51340599459b8ac3ccbac5a854e0d30"},
     {file = "cycler-0.12.1.tar.gz", hash = "sha256:88bb128f02ba341da8ef447245a9e138fae777f6a23943da4540077d3601eb1c"},
 ]
+markers = {main = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\"", dev = "python_version <= \"3.11\" or python_version >= \"3.12\""}
 
 [package.extras]
 docs = ["ipython", "matplotlib", "numpydoc", "sphinx"]
@@ -879,11 +879,11 @@ description = "Backport of PEP 654 (exception groups)"
 optional = false
 python-versions = ">=3.7"
 groups = ["main", "dev"]
-markers = "python_version < \"3.11\""
 files = [
     {file = "exceptiongroup-1.2.2-py3-none-any.whl", hash = "sha256:3111b9d131c238bec2f8f516e123e14ba243563fb135d3fe885990585aa7795b"},
     {file = "exceptiongroup-1.2.2.tar.gz", hash = "sha256:47c2edf7c6738fafb49fd34290706d1a1a2f4d1c6df275526b62cbb4aa5393cc"},
 ]
+markers = {main = "python_version < \"3.11\" and extra == \"scirpy\"", dev = "python_version < \"3.11\""}
 
 [package.extras]
 test = ["pytest (>=6)"]
@@ -945,7 +945,6 @@ description = "Tools to manipulate font files"
 optional = false
 python-versions = ">=3.8"
 groups = ["main", "dev"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
     {file = "fonttools-4.56.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:331954d002dbf5e704c7f3756028e21db07097c19722569983ba4d74df014000"},
     {file = "fonttools-4.56.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:8d1613abd5af2f93c05867b3a3759a56e8bf97eb79b1da76b2bc10892f96ff16"},
@@ -998,6 +997,7 @@ files = [
     {file = "fonttools-4.56.0-py3-none-any.whl", hash = "sha256:1088182f68c303b50ca4dc0c82d42083d176cba37af1937e1a976a31149d4d14"},
     {file = "fonttools-4.56.0.tar.gz", hash = "sha256:a114d1567e1a1586b7e9e7fc2ff686ca542a82769a296cef131e4c4af51e58f4"},
 ]
+markers = {main = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\"", dev = "python_version <= \"3.11\" or python_version >= \"3.12\""}
 
 [package.extras]
 all = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "fs (>=2.2.0,<3)", "lxml (>=4.0)", "lz4 (>=1.7.4.2)", "matplotlib", "munkres", "pycairo", "scipy", "skia-pathops (>=0.5.0)", "sympy", "uharfbuzz (>=0.23.0)", "unicodedata2 (>=15.1.0)", "xattr", "zopfli (>=0.1.4)"]
@@ -1017,10 +1017,10 @@ woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
 name = "fsspec"
 version = "2025.3.2"
 description = "File-system specification"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "fsspec-2025.3.2-py3-none-any.whl", hash = "sha256:2daf8dc3d1dfa65b6aa37748d112773a7a08416f6c70d96b264c96476ecaf711"},
     {file = "fsspec-2025.3.2.tar.gz", hash = "sha256:e52c77ef398680bbd6a98c0e628fbc469491282981209907bbc8aea76a04fdc6"},
@@ -1058,10 +1058,10 @@ tqdm = ["tqdm"]
 name = "h5py"
 version = "3.13.0"
 description = "Read and write HDF5 files from Python"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "h5py-3.13.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:5540daee2b236d9569c950b417f13fd112d51d78b4c43012de05774908dff3f5"},
     {file = "h5py-3.13.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:10894c55d46df502d82a7a4ed38f9c3fdbcb93efb42e25d275193e093071fade"},
@@ -1166,10 +1166,10 @@ all = ["flake8 (>=7.1.1)", "mypy (>=1.11.2)", "pytest (>=8.3.2)", "ruff (>=0.6.2
 name = "igraph"
 version = "0.11.8"
 description = "High performance graph data structures and algorithms"
-optional = false
+optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "igraph-0.11.8-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:9a7aa8e65e7b9ddfe66f9473ce93863f40fccac26b24dc3f56e63159641c9946"},
     {file = "igraph-0.11.8-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:9e953e1c5e9c5712a48df5cea93963be84aa26618cdae341b4a6b07761f56a45"},
@@ -1241,10 +1241,10 @@ files = [
 name = "importlib-metadata"
 version = "8.6.1"
 description = "Read metadata from Python packages"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\""
 files = [
     {file = "importlib_metadata-8.6.1-py3-none-any.whl", hash = "sha256:02a89390c1e15fdfdc0d7c6b25cb3e62650d0494005c97d6f148bf5b9787525e"},
     {file = "importlib_metadata-8.6.1.tar.gz", hash = "sha256:310b41d755445d74569f993ccfc22838295d9fe005425094fad953d7f15c8580"},
@@ -1410,10 +1410,10 @@ i18n = ["Babel (>=2.7)"]
 name = "joblib"
 version = "1.4.2"
 description = "Lightweight pipelining with Python functions"
-optional = false
+optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "joblib-1.4.2-py3-none-any.whl", hash = "sha256:06d478d5674cbc267e7496a410ee875abd68e4340feff4490bcb7afb88060ae6"},
     {file = "joblib-1.4.2.tar.gz", hash = "sha256:2382c5816b2636fbd20a09e0f4e9dad4736765fdfb7dca582943b9c1366b3f0e"},
@@ -1524,7 +1524,6 @@ description = "A fast implementation of the Cassowary constraint solver"
 optional = false
 python-versions = ">=3.10"
 groups = ["main", "dev"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
     {file = "kiwisolver-1.4.8-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:88c6f252f6816a73b1f8c904f7bbe02fd67c09a69f7cb8a0eecdbf5ce78e63db"},
     {file = "kiwisolver-1.4.8-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:c72941acb7b67138f35b879bbe85be0f6c6a70cab78fe3ef6db9c024d9223e5b"},
@@ -1607,15 +1606,16 @@ files = [
     {file = "kiwisolver-1.4.8-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:65ea09a5a3faadd59c2ce96dc7bf0f364986a315949dc6374f04396b0d60e09b"},
     {file = "kiwisolver-1.4.8.tar.gz", hash = "sha256:23d5f023bdc8c7e54eb65f03ca5d5bb25b601eac4d7f1a042888a1f45237987e"},
 ]
+markers = {main = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\"", dev = "python_version <= \"3.11\" or python_version >= \"3.12\""}
 
 [[package]]
 name = "legacy-api-wrap"
 version = "1.4.1"
 description = ""
-optional = false
+optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "legacy_api_wrap-1.4.1-py3-none-any.whl", hash = "sha256:8ba214242e836cebfd3b64c1a1653fce955abb0f9e4c7dffb51f2ad014def0eb"},
     {file = "legacy_api_wrap-1.4.1.tar.gz", hash = "sha256:9c40d67aa8312fec8763e87cbf28fea4b67710c79ca7a18137b573d150f3b2b4"},
@@ -1628,10 +1628,10 @@ test = ["anyconfig[toml] (>=0.14)", "coverage", "coverage-rich", "pytest"]
 name = "levenshtein"
 version = "0.27.1"
 description = "Python extension for computing string edit distances and similarities."
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "levenshtein-0.27.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:13d6f617cb6fe63714c4794861cfaacd398db58a292f930edb7f12aad931dace"},
     {file = "levenshtein-0.27.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:ca9d54d41075e130c390e61360bec80f116b62d6ae973aec502e77e921e95334"},
@@ -1736,10 +1736,10 @@ rapidfuzz = ">=3.9.0,<4.0.0"
 name = "llvmlite"
 version = "0.44.0"
 description = "lightweight wrapper around basic LLVM functionality"
-optional = false
+optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "llvmlite-0.44.0-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:9fbadbfba8422123bab5535b293da1cf72f9f478a65645ecd73e781f962ca614"},
     {file = "llvmlite-0.44.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:cccf8eb28f24840f2689fb1a45f9c0f7e582dd24e088dcf96e424834af11f791"},
@@ -1768,10 +1768,10 @@ files = [
 name = "logomaker"
 version = "0.8.7"
 description = "Package for making Sequence Logos"
-optional = false
+optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "logomaker-0.8.7-py3-none-any.whl", hash = "sha256:8a65a5e5136a08823d199fbb5a9443674062a1c223236301accde19b0e401762"},
     {file = "logomaker-0.8.7.tar.gz", hash = "sha256:63783ce6e24449d6f1f01ce29c4ae1b91f6e54bc198e5da40ad18fcd0efc3302"},
@@ -1887,7 +1887,6 @@ description = "Python plotting package"
 optional = false
 python-versions = ">=3.10"
 groups = ["main", "dev"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
     {file = "matplotlib-3.10.1-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:ff2ae14910be903f4a24afdbb6d7d3a6c44da210fc7d42790b87aeac92238a16"},
     {file = "matplotlib-3.10.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:0721a3fd3d5756ed593220a8b86808a36c5031fce489adb5b31ee6dbb47dd5b2"},
@@ -1924,6 +1923,7 @@ files = [
     {file = "matplotlib-3.10.1-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d3809916157ba871bcdd33d3493acd7fe3037db5daa917ca6e77975a94cef779"},
     {file = "matplotlib-3.10.1.tar.gz", hash = "sha256:e8d2d0e3881b129268585bf4765ad3ee73a4591d77b9a18c214ac7e3a79fb2ba"},
 ]
+markers = {main = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\"", dev = "python_version <= \"3.11\" or python_version >= \"3.12\""}
 
 [package.dependencies]
 contourpy = ">=1.0.1"
@@ -2022,10 +2022,10 @@ files = [
 name = "mudata"
 version = "0.3.1"
 description = "Multimodal data"
-optional = false
+optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "mudata-0.3.1-py3-none-any.whl", hash = "sha256:d3a5ce96c3fcb64077be936758cc71657475905a4bbeeeba17c9ff48173f6c9d"},
     {file = "mudata-0.3.1.tar.gz", hash = "sha256:452f166861539c118e99c432725fc6ced6064d96d333413a306cb5b04992b963"},
@@ -2071,10 +2071,10 @@ testing = ["beautifulsoup4", "coverage[toml]", "pytest (>=6,<7)", "pytest-cov", 
 name = "natsort"
 version = "8.4.0"
 description = "Simple yet flexible natural sorting in Python."
-optional = false
+optional = true
 python-versions = ">=3.7"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "natsort-8.4.0-py3-none-any.whl", hash = "sha256:4732914fb471f56b5cce04d7bae6f164a592c7712e1c85f9ef585e197299521c"},
     {file = "natsort-8.4.0.tar.gz", hash = "sha256:45312c4a0e5507593da193dedd04abb1469253b601ecaf63445ad80f0a1ea581"},
@@ -2275,10 +2275,10 @@ files = [
 name = "numba"
 version = "0.61.2"
 description = "compiling Python code using LLVM"
-optional = false
+optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "numba-0.61.2-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:cf9f9fc00d6eca0c23fc840817ce9f439b9f03c8f03d6246c0e7f0cb15b7162a"},
     {file = "numba-0.61.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:ea0247617edcb5dd61f6106a56255baab031acc4257bddaeddb3a1003b4ca3fd"},
@@ -2508,10 +2508,10 @@ testing = ["docopt", "pytest"]
 name = "patsy"
 version = "1.0.1"
 description = "A Python package for describing statistical models and for building design matrices."
-optional = false
+optional = true
 python-versions = ">=3.6"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "patsy-1.0.1-py2.py3-none-any.whl", hash = "sha256:751fb38f9e97e62312e921a1954b81e1bb2bcda4f5eeabaf94db251ee791509c"},
     {file = "patsy-1.0.1.tar.gz", hash = "sha256:e786a9391eec818c054e359b737bbce692f051aee4c661f4141cc88fb459c0c4"},
@@ -2546,7 +2546,6 @@ description = "Python Imaging Library (Fork)"
 optional = false
 python-versions = ">=3.9"
 groups = ["main", "dev"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
     {file = "pillow-11.1.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:e1abe69aca89514737465752b4bcaf8016de61b3be1397a8fc260ba33321b3a8"},
     {file = "pillow-11.1.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:c640e5a06869c75994624551f45e5506e4256562ead981cce820d5ab39ae2192"},
@@ -2620,6 +2619,7 @@ files = [
     {file = "pillow-11.1.0-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:4637b88343166249fe8aa94e7c4a62a180c4b3898283bb5d3d2fd5fe10d8e4e0"},
     {file = "pillow-11.1.0.tar.gz", hash = "sha256:368da70808b36d73b4b390a8ffac11069f8a5c85f29eff1f1b01bcf3ef5b2a20"},
 ]
+markers = {main = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\"", dev = "python_version <= \"3.11\" or python_version >= \"3.12\""}
 
 [package.extras]
 docs = ["furo", "olefile", "sphinx (>=8.1)", "sphinx-copybutton", "sphinx-inline-tabs", "sphinxext-opengraph"]
@@ -2781,10 +2781,10 @@ tests = ["pytest"]
 name = "pycairo"
 version = "1.28.0"
 description = "Python interface for cairo"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\" and sys_platform == \"win32\" or python_version >= \"3.12\" and sys_platform == \"win32\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" and sys_platform == \"win32\" or python_version >= \"3.12\" and extra == \"scirpy\" and sys_platform == \"win32\""
 files = [
     {file = "pycairo-1.28.0-cp310-cp310-win32.whl", hash = "sha256:53e6dbc98456f789965dad49ef89ce2c62f9a10fc96c8d084e14da0ffb73d8a6"},
     {file = "pycairo-1.28.0-cp310-cp310-win_amd64.whl", hash = "sha256:c8ab91a75025f984bc327ada335c787efb61c929ea0512063793cb36cee503d4"},
@@ -2832,10 +2832,10 @@ windows-terminal = ["colorama (>=0.4.6)"]
 name = "pynndescent"
 version = "0.5.13"
 description = "Nearest Neighbor Descent"
-optional = false
+optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "pynndescent-0.5.13-py3-none-any.whl", hash = "sha256:69aabb8f394bc631b6ac475a1c7f3994c54adf3f51cd63b2730fefba5771b949"},
     {file = "pynndescent-0.5.13.tar.gz", hash = "sha256:d74254c0ee0a1eeec84597d5fe89fedcf778593eeabe32c2f97412934a9800fb"},
@@ -2928,10 +2928,10 @@ six = ">=1.5"
 name = "python-levenshtein"
 version = "0.27.1"
 description = "Python extension for computing string edit distances and similarities."
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "python_levenshtein-0.27.1-py3-none-any.whl", hash = "sha256:e1a4bc2a70284b2ebc4c505646142fecd0f831e49aa04ed972995895aec57396"},
     {file = "python_levenshtein-0.27.1.tar.gz", hash = "sha256:3a5314a011016d373d309a68e875fd029caaa692ad3f32e78319299648045f11"},
@@ -3155,10 +3155,10 @@ cffi = {version = "*", markers = "implementation_name == \"pypy\""}
 name = "rapidfuzz"
 version = "3.13.0"
 description = "rapid fuzzy string matching"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "rapidfuzz-3.13.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:aafc42a1dc5e1beeba52cd83baa41372228d6d8266f6d803c16dbabbcc156255"},
     {file = "rapidfuzz-3.13.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:85c9a131a44a95f9cac2eb6e65531db014e09d89c4f18c7b1fa54979cb9ff1f3"},
@@ -3469,10 +3469,10 @@ files = [
 name = "scanpy"
 version = "1.11.1"
 description = "Single-Cell Analysis in Python."
-optional = false
+optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "scanpy-1.11.1-py3-none-any.whl", hash = "sha256:7eeed12b1221699dc5cc6fd9a52022d26e031118ed88d93cceccbd980c1d59b0"},
     {file = "scanpy-1.11.1.tar.gz", hash = "sha256:4a88692f631d80f1b6a91d660a443d9534876173a0de236f25397ee396c2cace"},
@@ -3524,10 +3524,10 @@ test-min = ["profimp", "pytest (>=8.2)", "pytest-cov", "pytest-mock", "pytest-ra
 name = "scikit-learn"
 version = "1.5.2"
 description = "A set of python modules for machine learning and data mining"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "scikit_learn-1.5.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:299406827fb9a4f862626d0fe6c122f5f87f8910b86fe5daa4c32dcd742139b6"},
     {file = "scikit_learn-1.5.2-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:2d4cad1119c77930b235579ad0dc25e65c917e756fe80cab96aa3b9428bd3fb0"},
@@ -3576,10 +3576,10 @@ tests = ["black (>=24.3.0)", "matplotlib (>=3.3.4)", "mypy (>=1.9)", "numpydoc (
 name = "scipy"
 version = "1.15.2"
 description = "Fundamental algorithms for scientific computing in Python"
-optional = false
+optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "scipy-1.15.2-cp310-cp310-macosx_10_13_x86_64.whl", hash = "sha256:a2ec871edaa863e8213ea5df811cd600734f6400b4af272e1c011e69401218e9"},
     {file = "scipy-1.15.2-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:6f223753c6ea76983af380787611ae1291e3ceb23917393079dcc746ba60cfb5"},
@@ -3641,10 +3641,10 @@ test = ["Cython", "array-api-strict (>=2.0,<2.1.1)", "asv", "gmpy2", "hypothesis
 name = "scirpy"
 version = "0.22.0"
 description = "Python library for single-cell adaptive immune receptor repertoire (AIRR) analysis"
-optional = false
+optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "scirpy-0.22.0-py3-none-any.whl", hash = "sha256:7247fdb7f27e9ad469c3c74f03c370621befc3c306bb7260ccc9d4053240be6b"},
     {file = "scirpy-0.22.0.tar.gz", hash = "sha256:0f0c448bc2eb883a8317520674b952b151b467814eda8f334b2df1872b93a34b"},
@@ -3686,10 +3686,10 @@ test = ["black", "coverage", "parasail (!=1.2.1)", "pytest", "rectangle-packer",
 name = "seaborn"
 version = "0.13.2"
 description = "Statistical data visualization"
-optional = false
+optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "seaborn-0.13.2-py3-none-any.whl", hash = "sha256:636f8336facf092165e27924f223d3c62ca560b1f2bb5dff7ab7fad265361987"},
     {file = "seaborn-0.13.2.tar.gz", hash = "sha256:93e60a40988f4d65e9f4885df477e2fdaff6b73a9ded434c1ab356dd57eefff7"},
@@ -3709,10 +3709,10 @@ stats = ["scipy (>=1.7)", "statsmodels (>=0.12)"]
 name = "session-info2"
 version = "0.1.2"
 description = "Print versions of imported packages."
-optional = false
+optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "session_info2-0.1.2-py3-none-any.whl", hash = "sha256:8f5c010b621930556eee640f6a71d76f0c746ed1194b27ad227e6fe6e61883d4"},
     {file = "session_info2-0.1.2.tar.gz", hash = "sha256:bdb75885128333611e0cf4357f31a0b5869bcb7889b93251ed8571aa4e4ad0b6"},
@@ -3731,11 +3731,11 @@ description = "Easily download, build, install, upgrade, and uninstall Python pa
 optional = false
 python-versions = ">=3.9"
 groups = ["main", "dev"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
     {file = "setuptools-78.0.1-py3-none-any.whl", hash = "sha256:1cc9b32ee94f93224d6c80193cbb768004667aa2f2732a473d6949b0236c1d4e"},
     {file = "setuptools-78.0.1.tar.gz", hash = "sha256:4321d2dc2157b976dee03e1037c9f2bc5fea503c0c47d3c9458e0e8e49e659ce"},
 ]
+markers = {main = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\"", dev = "python_version <= \"3.11\" or python_version >= \"3.12\""}
 
 [package.extras]
 check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1)", "ruff (>=0.8.0)"]
@@ -4060,10 +4060,10 @@ sphinx = ">=4.0"
 name = "squarify"
 version = "0.4.4"
 description = "Pure Python implementation of the squarify treemap layout algorithm"
-optional = false
+optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "squarify-0.4.4-py3-none-any.whl", hash = "sha256:d7597724e29d48aa14fd2f551060d6b09e1f0a67e4cd3ea329fe03b4c9a56f11"},
     {file = "squarify-0.4.4.tar.gz", hash = "sha256:b8a110c8dc5f1cd1402ca12d79764a081e90bfc445346cfa166df929753ecb46"},
@@ -4094,10 +4094,10 @@ tests = ["cython", "littleutils", "pygments", "pytest", "typeguard"]
 name = "statsmodels"
 version = "0.14.4"
 description = "Statistical computations and models for Python"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "statsmodels-0.14.4-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:7a62f1fc9086e4b7ee789a6f66b3c0fc82dd8de1edda1522d30901a0aa45e42b"},
     {file = "statsmodels-0.14.4-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:46ac7ddefac0c9b7b607eed1d47d11e26fe92a1bc1f4d9af48aeed4e21e87981"},
@@ -4147,10 +4147,10 @@ docs = ["ipykernel", "jupyter-client", "matplotlib", "nbconvert", "nbformat", "n
 name = "texttable"
 version = "1.7.0"
 description = "module to create simple ASCII tables"
-optional = false
+optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "texttable-1.7.0-py2.py3-none-any.whl", hash = "sha256:72227d592c82b3d7f672731ae73e4d1f88cd8e2ef5b075a7a7f01a23a3743917"},
     {file = "texttable-1.7.0.tar.gz", hash = "sha256:2d2068fb55115807d3ac77a4ca68fa48803e84ebb0ee2340f858107a36522638"},
@@ -4160,10 +4160,10 @@ files = [
 name = "threadpoolctl"
 version = "3.6.0"
 description = "threadpoolctl"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "threadpoolctl-3.6.0-py3-none-any.whl", hash = "sha256:43a0b8fd5a2928500110039e43a5eed8480b918967083ea48dc3ab9f13c4a7fb"},
     {file = "threadpoolctl-3.6.0.tar.gz", hash = "sha256:8ab8b4aa3491d812b623328249fab5302a68d2d71745c8a4c719a2fcaba9f44e"},
@@ -4334,7 +4334,7 @@ files = [
     {file = "typing_extensions-4.12.2-py3-none-any.whl", hash = "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d"},
     {file = "typing_extensions-4.12.2.tar.gz", hash = "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"},
 ]
-markers = {main = "python_version <= \"3.11\" or python_version >= \"3.12\" and python_version < \"3.13\"", dev = "python_version <= \"3.11\" or python_version >= \"3.12\""}
+markers = {main = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\" and python_version < \"3.13\"", dev = "python_version <= \"3.11\" or python_version >= \"3.12\""}
 
 [[package]]
 name = "tzdata"
@@ -4353,10 +4353,10 @@ files = [
 name = "umap-learn"
 version = "0.5.7"
 description = "Uniform Manifold Approximation and Projection"
-optional = false
+optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "umap-learn-0.5.7.tar.gz", hash = "sha256:b2a97973e4c6ffcebf241100a8de589a4c84126a832ab40f296c6d9fcc5eb19e"},
     {file = "umap_learn-0.5.7-py3-none-any.whl", hash = "sha256:6a7e0be2facfa365a5ed6588447102bdbef32a0ef449535c25c97ea7e680073c"},
@@ -4446,10 +4446,10 @@ files = [
 name = "yamlordereddictloader"
 version = "0.4.2"
 description = "YAML loader and dumper for PyYAML allowing to keep keys order."
-optional = false
+optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\" or python_version >= \"3.12\" and extra == \"scirpy\""
 files = [
     {file = "yamlordereddictloader-0.4.2-py3-none-any.whl", hash = "sha256:dc048adb67026786cd24119bd71241f35bc8b0fd37d24b415c37bbc8049f9cd7"},
     {file = "yamlordereddictloader-0.4.2.tar.gz", hash = "sha256:36af2f6210fcff5da4fc4c12e1d815f973dceb41044e795e1f06115d634bca13"},
@@ -4462,10 +4462,10 @@ pyyaml = "*"
 name = "zipp"
 version = "3.21.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version <= \"3.11\""
+markers = "python_version <= \"3.11\" and extra == \"scirpy\""
 files = [
     {file = "zipp-3.21.0-py3-none-any.whl", hash = "sha256:ac1bbe05fd2991f160ebce24ffbac5f6d11d83dc90891255885223d42b3cd931"},
     {file = "zipp-3.21.0.tar.gz", hash = "sha256:2c9958f6430a2040341a52eb608ed6dd93ef4392e02ffe219417c1b28b5dd1f4"},
@@ -4479,7 +4479,10 @@ enabler = ["pytest-enabler (>=2.2)"]
 test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-itertools", "pytest (>=6,!=8.1.*)", "pytest-ignore-flaky"]
 type = ["pytest-mypy"]
 
+[extras]
+scirpy = ["scirpy"]
+
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "80bac2e268570c0fc9725a62dd4ff19f21e61a9b91f140cd926803ae33513001"
+content-hash = "fb64c018a4e0473f0a232c003c7ce30502ffc72eb19920442b678add10086de9"

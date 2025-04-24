@@ -1,11 +1,15 @@
+import re
 from datetime import datetime
 
-import scirpy.pp as scp
 from biocypher._deduplicate import Deduplicator
 from biocypher.output.in_memory._in_memory_kg import _InMemoryKG
-from scirpy.io import AirrCell, from_airr_cells
-import re
 
+try:
+    import scirpy.pp as scp
+    from scirpy.io import AirrCell, from_airr_cells
+    HAS_SCIRPY = True
+except ImportError:
+    HAS_SCIRPY = False
 
 class AIRRtoAnnDataKG(_InMemoryKG):
     def __init__(self, deduplicator=None):
@@ -14,8 +18,17 @@ class AIRRtoAnnDataKG(_InMemoryKG):
         # Store entities by type directly
         self.entities_by_type = {}
 
+    def _check_dependencies(self):
+        """Verify that scirpy is available."""
+        if not HAS_SCIRPY:
+            raise ImportError(
+                "scirpy package is required for AIRR to AnnData conversion. "
+                "Install it with 'poetry add biocypher[scirpy]' or 'poetry add scirpy'."
+            )
+
     def get_kg(self, verbose = True):
         """Convert directly to AnnData instead of going through DataFrames"""
+        self._check_dependencies()
         airr_cells = self.to_airr_cells(verbose=verbose)
         return self.airr_cells_to_anndata(airr_cells, verbose=verbose)
     
