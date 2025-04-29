@@ -13,6 +13,7 @@ import shutil
 from abc import ABC
 from datetime import datetime, timedelta
 from tempfile import TemporaryDirectory
+from typing import Optional
 
 import pooch
 import requests
