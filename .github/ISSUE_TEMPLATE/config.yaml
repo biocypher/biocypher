@@ -1,0 +1,9 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 👥 BioCypher GitHub Discussions
+    url: https://github.com/biocypher/biocypher/discussions
+    about: Please ask questions and participate in our long-term discussions here.
+
+  - name: 🌐 "BioCypher Zulip Channel"
+    url: https://biocypher.zulipchat.com/
+    about: Please ask for support here.

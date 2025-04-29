@@ -1,0 +1,71 @@
+name: ✨ Feature Request
+description: Submit a proposal/request for a new BioCypher feature
+
+title: "[FEAT]: "
+labels:
+  - "feature"
+projects: ["biocypher/1"]
+
+body:
+  - type: markdown
+    attributes:
+      value: >
+        **Note:** Please write your bug report in English to ensure it can be understood and addressed by the development team.
+
+  #--------------   Feature type    --------------
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: Feature Type
+      description: Please select what type of feature request you would like to propose.
+      options:
+        - Add new functionality to BioCypher
+        - Change existing functionality in BioCypher
+        - Remove existing functionality in BioCypher
+      multiple: false
+    validations:
+      required: true
+
+  #--------------   Feature description and motivation    --------------
+  - type: textarea
+    attributes:
+      label: 🚀 The feature and motivation
+      description: >
+        Provide a clear and concise summary of the proposed feature, including the motivation behind it.
+        If your request addresses a specific problem, describe it (e.g., "I'm working on X and need Y to be achievable").
+        If this is connected to an existing GitHub issue, please include a link.
+      placeholder: |
+        **Feature description**
+          As a user, I would like the ability to export a graph in OWL (Web Ontology Language) format,
+          similar to how pandas provides the `bc.to_pandas()`` function.
+
+        **Motivation**
+          Exporting graphs in OWL (Web Ontology Language) would enable seamless integration with other ontology-based datasets.
+          This would enhance my research on Ovarian Cancer treatments by allowing me to merge and analyze structured knowledge
+          from multiple sources. OWL's semantic capabilities would facilitate better data interoperability, reasoning, and inference,
+          ultimately improving the accuracy and depth of my study.
+
+    validations:
+      required: true
+
+  #--------------   Additional context    --------------
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: >
+        Add any other context or screenshots about the feature request.
+
+  #--------------   Code of Conduct   --------------
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/biocypher/biocypher/blob/main/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+
+  - type: markdown
+    attributes:
+      value: >
+        Thank you for your contribution! 🎉 – The BioCypher Team
