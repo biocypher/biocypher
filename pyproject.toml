@@ -59,10 +59,7 @@ hypothesis = "^6.50.1"
 ipython = "^8.7.0"
 ipykernel = "^6.23.1"
 coverage-badge = "^1.1.0"
-<<<<<<< HEAD
-=======
 nbsphinx = "^0.9.3"
->>>>>>> main
 ruff = "^0.2.0"
 mike = "^2.1.3"
 
