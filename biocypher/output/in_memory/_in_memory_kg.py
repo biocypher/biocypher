@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
+
 
 class _InMemoryKG(ABC):
     """Abstract class for handling the in-memory Knowledge Graph instance.

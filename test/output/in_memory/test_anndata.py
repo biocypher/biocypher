@@ -21,11 +21,19 @@ def test_add_tcr_epitope_edge(in_memory_anndata_kg, tra_nodes, epitope_nodes, tc
 
     assert "t cell receptor sequence to epitope association" in in_memory_anndata_kg.entities_by_type
     assert len(in_memory_anndata_kg.entities_by_type["t cell receptor sequence to epitope association"]) == 1
-    assert in_memory_anndata_kg.entities_by_type["t cell receptor sequence to epitope association"][0].get_source_id() == "tra:CAVRWGGKLSF"
-    assert in_memory_anndata_kg.entities_by_type["t cell receptor sequence to epitope association"][0].get_target_id() == "epitope:NLVPMVATV"
+    assert (
+        in_memory_anndata_kg.entities_by_type["t cell receptor sequence to epitope association"][0].get_source_id()
+        == "tra:CAVRWGGKLSF"
+    )
+    assert (
+        in_memory_anndata_kg.entities_by_type["t cell receptor sequence to epitope association"][0].get_target_id()
+        == "epitope:NLVPMVATV"
+    )
 
 
-def test_complete_tcr_graph(in_memory_anndata_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges):
+def test_complete_tcr_graph(
+    in_memory_anndata_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges
+):
     in_memory_anndata_kg.add_nodes([tra_nodes[0], trb_nodes[0], epitope_nodes[0]])
     in_memory_anndata_kg.add_edges([tcr_pair_edges[0], tcr_epitope_edges[0]])
 
@@ -56,9 +64,14 @@ def test_to_airr_cells_basic(mock_print, in_memory_anndata_kg, tra_nodes, trb_no
 
 @patch("builtins.print")
 def test_to_airr_cells_with_epitope(
-    mock_print, in_memory_anndata_kg, tra_nodes, trb_nodes,
-    epitope_nodes, tcr_pair_edges, tcr_epitope_edges,
-    ):
+    mock_print,
+    in_memory_anndata_kg,
+    tra_nodes,
+    trb_nodes,
+    epitope_nodes,
+    tcr_pair_edges,
+    tcr_epitope_edges,
+):
     in_memory_anndata_kg.add_nodes([tra_nodes[2], trb_nodes[2], epitope_nodes[2]])
     in_memory_anndata_kg.add_edges([tcr_pair_edges[2], tcr_epitope_edges[2]])
     airr_cells = in_memory_anndata_kg.to_airr_cells()

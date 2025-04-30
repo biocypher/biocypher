@@ -7,10 +7,13 @@ from biocypher.output.in_memory._in_memory_kg import _InMemoryKG
 
 try:
     import scirpy.pp as scp
+
     from scirpy.io import AirrCell, from_airr_cells
+
     HAS_SCIRPY = True
 except ImportError:
     HAS_SCIRPY = False
+
 
 class AIRRtoAnnDataKG(_InMemoryKG):
     def __init__(self, deduplicator=None):
@@ -30,7 +33,7 @@ class AIRRtoAnnDataKG(_InMemoryKG):
                 msg,
             )
 
-    def get_kg(self, verbose = True):
+    def get_kg(self, verbose=True):
         """Convert directly to AnnData instead of going through DataFrames."""
         self._check_dependencies()
         airr_cells = self.to_airr_cells(verbose=verbose)
@@ -106,7 +109,7 @@ class AIRRtoAnnDataKG(_InMemoryKG):
                 trb_dict,
                 epitope_dict,
                 paired=True,
-                )
+            )
             airr_cells.append(cell)
 
         for receptor_id, epitope_ids in receptor_to_epitopes.items():
@@ -123,7 +126,7 @@ class AIRRtoAnnDataKG(_InMemoryKG):
                 trb_dict,
                 epitope_dict,
                 paired=False,
-                )
+            )
             airr_cells.append(cell)
 
         if verbose:
@@ -155,34 +158,39 @@ class AIRRtoAnnDataKG(_InMemoryKG):
             # Find v_call and j_call columns using regex
             v_call_key = next((k for k in tra_data if re.search(r"v[_]?gene|v[_]?call", k, re.IGNORECASE)), "")
             j_call_key = next((k for k in tra_data if re.search(r"j[_]?gene|j[_]?call", k, re.IGNORECASE)), "")
-            alpha_chain.update({
-                "locus": "TRA",
-                "junction_aa": extract_sequence_from_id(tra_id),
-                "v_call": tra_data.get(v_call_key, ""),
-                "j_call": tra_data.get(j_call_key, ""),
-                "consensus_count": 0,
-                "productive": True,
-            })
+            alpha_chain.update(
+                {
+                    "locus": "TRA",
+                    "junction_aa": extract_sequence_from_id(tra_id),
+                    "v_call": tra_data.get(v_call_key, ""),
+                    "j_call": tra_data.get(j_call_key, ""),
+                    "consensus_count": 0,
+                    "productive": True,
+                }
+            )
             cell.add_chain(alpha_chain)
         if trb_id and trb_id in trb_dict:
             trb_data = trb_dict[trb_id]
             beta_chain = AirrCell.empty_chain_dict()
             v_call_key = next((k for k in trb_data if re.search(r"v[_]?gene|v[_]?call", k, re.IGNORECASE)), "")
             j_call_key = next((k for k in trb_data if re.search(r"j[_]?gene|j[_]?call", k, re.IGNORECASE)), "")
-            beta_chain.update({
-                "locus": "TRB",
-                "junction_aa": extract_sequence_from_id(trb_id),
-                "v_call": trb_data.get(v_call_key, ""),
-                "j_call": trb_data.get(j_call_key, ""),
-                "consensus_count": 0,
-                "productive": True,
-            })
+            beta_chain.update(
+                {
+                    "locus": "TRB",
+                    "junction_aa": extract_sequence_from_id(trb_id),
+                    "v_call": trb_data.get(v_call_key, ""),
+                    "j_call": trb_data.get(j_call_key, ""),
+                    "consensus_count": 0,
+                    "productive": True,
+                }
+            )
             cell.add_chain(beta_chain)
         if epitope_ids:
             add_epitope_metadata(epitope_dict, cell, epitope_ids)
         cell["data_source"] = "BioCypher"
         cell["is_paired"] = paired
         return cell
+
 
 def extract_sequence_from_id(receptor_id):
     """Extract CDR3 sequence from receptor ID like 'tra:CIRSGSARQLTF'."""

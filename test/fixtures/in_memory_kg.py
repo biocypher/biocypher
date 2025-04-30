@@ -22,6 +22,7 @@ def in_memory_networkx_kg(deduplicator):
 
     yield in_memory_kg
 
+
 @pytest.fixture(scope="function")
 def in_memory_anndata_kg(deduplicator):
     in_memory_kg = AIRRtoAnnDataKG(

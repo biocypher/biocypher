@@ -31,4 +31,3 @@ class _AnnDataWriter(_Writer):
     def _get_import_script_name(self) -> str:
         """Return a placeholder script name."""
         return "placeholder_import.py"
-    

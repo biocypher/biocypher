@@ -141,7 +141,9 @@ def _get_rel_as_nodes(length):
         rels.append(BioCypherRelAsNode(n, e1, e2))
     return rels
 
+
 # Immunology data: TCR alpha and beta chains + epitopes
+
 
 # TCR alpha chain test nodes
 @pytest.fixture()
@@ -182,6 +184,7 @@ def tra_nodes():
         ),
     ]
 
+
 # TCR beta chain test nodes
 @pytest.fixture()
 def trb_nodes():
@@ -221,6 +224,7 @@ def trb_nodes():
         ),
     ]
 
+
 # Epitope test nodes
 @pytest.fixture()
 def epitope_nodes():
@@ -258,6 +262,7 @@ def epitope_nodes():
         ),
     ]
 
+
 # TCR pairing edges
 @pytest.fixture()
 def tcr_pair_edges():
@@ -282,6 +287,7 @@ def tcr_pair_edges():
             relationship_label="alpha sequence to beta sequence association",
         ),
     ]
+
 
 # TCR-epitope association edges
 @pytest.fixture()
