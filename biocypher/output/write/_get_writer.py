@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING
 from biocypher._config import config as _config
 from biocypher._logger import logger
 from biocypher.output.write._batch_writer import _BatchWriter
-from biocypher.output.write.graph._arangodb import _ArangoDBBatchWriter
 from biocypher.output.write.graph._anndata import _AnnDataWriter
+from biocypher.output.write.graph._arangodb import _ArangoDBBatchWriter
 from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
 from biocypher.output.write.graph._networkx import _NetworkXWriter
 from biocypher.output.write.graph._owl import _OWLWriter
