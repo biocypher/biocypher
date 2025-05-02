@@ -23,8 +23,8 @@ runs:
     #----------------------------------------------
     - name: Install Dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: poetry install --no-interaction --no-root --all-extras
       shell: bash
     - name: Install library
-      run: poetry install --no-interaction
+      run: poetry install --no-interaction --all-extras
       shell: bash
