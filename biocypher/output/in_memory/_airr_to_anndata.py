@@ -26,8 +26,8 @@ class AIRRtoAnnDataKG(_InMemoryKG):
         """Verify that scirpy is available."""
         if not HAS_SCIRPY:
             msg = (
-                "scirpy package is required for AIRR to AnnData conversion. "
-                "Install it with 'poetry add biocypher[scirpy]' or 'poetry add scirpy'."
+                "The 'scirpy' package is required for AIRR to AnnData conversion. "
+                "Please either install biocypher with the 'scirpy' extra or install 'scirpy' separately."
             )
             raise ImportError(
                 msg,
