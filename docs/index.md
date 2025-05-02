@@ -27,7 +27,7 @@ This modular approach maximises flexibility and reusability, empowering the biom
 
 ## New to Knowledge Graphs?
 
-If you’re new to knowledge graphs and want to familiarise with the concepts that drive BioCypher, we recommend to check out the graphical abstract below and read [our paper](https://www.nature.com/articles/s41587-023-01848-y) (self-archived version [here on Zenodo](https://zenodo.org/records/10320714), online version [at this https link](https://biocypher.github.io/biocypher-paper/))!
+If you’re new to knowledge graphs and want to familiarise with the concepts that drive BioCypher, we recommend to read [our paper](https://www.nature.com/articles/s41587-023-01848-y) (self-archived version [here on Zenodo](https://zenodo.org/records/10320714), online version [at this https link](https://biocypher.github.io/biocypher-paper/))!
 
 ### Additional Resources
 
