@@ -13,18 +13,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history for proper versioning
       - name: Configure Git Credentials
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
       #----------------------------------------------
-      # Check-out repo and set-up python and poetry
+      #       Set-up python and poetry
       #----------------------------------------------
-      - name: Checkout Repository
-        uses: actions/checkout@v4
       - name: Setup Python and Poetry
         uses: ./.github/actions/setup
 
@@ -33,11 +33,9 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         uses: ./.github/actions/install
-        with:
-          PYTHON_VERSION: ${{ matrix.python-version }}
 
       #----------------------------------------------
-      #       Deploy documentation with mike
+      #       Build and deploy documentation
       #----------------------------------------------
       - uses: actions/setup-python@v5
         with:
@@ -49,6 +47,9 @@ jobs:
           path: .cache
           restore-keys: |
             mkdocs-material-
+
+      - name: Build documentation
+        run: poetry run mkdocs build
 
       - name: Deploy documentation with mike
         run: |
