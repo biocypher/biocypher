@@ -46,12 +46,10 @@ pooch = "^1.7.0"
 tqdm = "^4.65.0"
 
 [tool.poetry.group.dev.dependencies]
-sphinx = ">=5.0.0"
-sphinx-design = "^0.3.0"
-sphinx-rtd-theme = ">=1.0.0"
-sphinx-last-updated-by-git = ">=0.3"
-sphinx-autodoc-typehints = ">=1.18.0"
-myst-parser = "^0.18.0"
+mkdocs-material = "^9.5"
+mkdocstrings-python="^1.12"
+mkdocs-jupyter = "^0.25"
+neoteroi-mkdocs = "^1.1.0"
 pytest = ">=6.0"
 pre-commit = ">=2.17.0"
 bump2version = "*"
@@ -60,10 +58,10 @@ pytest-cov = "^3.0.0"
 hypothesis = "^6.50.1"
 ipython = "^8.7.0"
 ipykernel = "^6.23.1"
-sphinxext-opengraph = "^0.8.2"
 coverage-badge = "^1.1.0"
 nbsphinx = "^0.9.4"
 ruff = "^0.2.0"
+mike = "^2.1.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
