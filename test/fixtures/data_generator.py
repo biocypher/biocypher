@@ -3,7 +3,7 @@ import pytest
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def _get_nodes(length: int) -> list:
     nodes = []
     for i in range(length):
@@ -33,7 +33,7 @@ def _get_nodes(length: int) -> list:
     return nodes
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def _get_nodes_non_compliant_names(length: int) -> list:
     nodes = []
     for i in range(length):
@@ -55,7 +55,7 @@ def _get_nodes_non_compliant_names(length: int) -> list:
     return nodes
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def _get_edges(length):
     edges = []
     for i in range(length):
@@ -88,7 +88,7 @@ def _get_edges(length):
     return edges
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def _get_edges_non_compliant_names(length):
     edges = []
     for i in range(length):
@@ -116,7 +116,7 @@ def _get_edges_non_compliant_names(length):
     return edges
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def _get_rel_as_nodes(length):
     rels = []
     for i in range(length):
