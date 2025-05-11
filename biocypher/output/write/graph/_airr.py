@@ -4,9 +4,8 @@ from biocypher._logger import logger
 from biocypher.output.write._writer import _Writer
 
 
-class _AnnDataWriter(_Writer):
-    """
-    A minimal placeholder writer class that implements the required methods
+class _AirrWriter(_Writer):
+    """A minimal placeholder writer class that implements the required methods
     but performs no actual writing operations, since there is an existing anndata native writer functionality
     """
 

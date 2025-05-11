@@ -25,7 +25,6 @@ readme = "README.md"
 
 [project]
 requires-python = ">=3.10"
-name = "biocypher"
 
 [project.urls]
 Homepage = "https://biocypher.org"
