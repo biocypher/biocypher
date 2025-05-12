@@ -44,4 +44,3 @@ def get_in_memory_kg(
         msg = f"Getting the in memory BioCypher KG is not supported for the DBMS {dbms}. Supported: {IN_MEMORY_DBMS}."
         logger.error(msg)
         raise NotImplementedError(msg)
-    
