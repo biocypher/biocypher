@@ -20,8 +20,7 @@ class PandasKG(_InMemoryKG):
         self.add_tables(edges)
 
     def add_tables(self, entities):
-        """Add Pandas dataframes for each node and edge type in the input.
-        """
+        """Add Pandas dataframes for each node and edge type in the input."""
         lists = self._separate_entity_types(entities)
 
         for _type, _entities in lists.items():

@@ -42,7 +42,9 @@ class AirrKG(_InMemoryKG):
         # Default mappings if none provided
         self.sequence_entity_types = sequence_entity_types or {"tra sequence": "TRA", "trb sequence": "TRB"}
         self.chain_relationship_types = chain_relationship_types or ["alpha sequence to beta sequence association"]
-        self.chain_to_epitope_relationship_types = chain_to_epitope_relationship_types or ["t cell receptor sequence to epitope association"]
+        self.chain_to_epitope_relationship_types = chain_to_epitope_relationship_types or [
+            "t cell receptor sequence to epitope association"
+        ]
         self.metadata_entity_types = metadata_entity_types or ["epitope"]
 
         # Initialize storage for processed cells
@@ -148,7 +150,7 @@ class AirrKG(_InMemoryKG):
                 for edge in edges:
                     metadata = self._get_chain_metadata(edge, receptor_epitope_mapping)
                     metadata_nodes_list = self._get_metadata_nodes(metadata, metadata_nodes)
-                    
+
                     cell = self._generate_airr_cell(
                         cell_id=edge.get_id(),
                         source_node=sequence_nodes.get(edge.get_source_id()),
@@ -174,9 +176,8 @@ class AirrKG(_InMemoryKG):
         -------
             set: Combined metadata from both chains
         """
-        return (
-            receptor_epitope_mapping.get(edge.get_source_id(), set()) |
-            receptor_epitope_mapping.get(edge.get_target_id(), set())
+        return receptor_epitope_mapping.get(edge.get_source_id(), set()) | receptor_epitope_mapping.get(
+            edge.get_target_id(), set()
         )
 
     def _get_metadata_nodes(self, metadata: set, metadata_nodes: dict) -> list:
@@ -191,10 +192,7 @@ class AirrKG(_InMemoryKG):
         -------
             list: List of metadata nodes
         """
-        return [
-            metadata_nodes[ep_id] for ep_id in metadata
-            if ep_id in metadata_nodes
-        ]
+        return [metadata_nodes[ep_id] for ep_id in metadata if ep_id in metadata_nodes]
 
     def _process_unpaired_chains(
         self,
@@ -217,13 +215,10 @@ class AirrKG(_InMemoryKG):
             list: List of generated cells
         """
         airr_cells = []
-        
+
         for chain_id in receptor_epitope_mapping:
             if chain_id not in processed_chains:
-                metadata_nodes_list = self._get_metadata_nodes(
-                    receptor_epitope_mapping[chain_id],
-                    metadata_nodes
-                )
+                metadata_nodes_list = self._get_metadata_nodes(receptor_epitope_mapping[chain_id], metadata_nodes)
                 cell = self._generate_airr_cell(
                     cell_id=f"unpaired_{chain_id}",
                     source_node=sequence_nodes.get(chain_id),
@@ -257,19 +252,13 @@ class AirrKG(_InMemoryKG):
         # Process paired chains
         print("\nProcessing paired chains")
         airr_cells, processed_chains = self._process_paired_chains(
-            entities,
-            sequence_nodes,
-            metadata_nodes,
-            receptor_epitope_mapping
+            entities, sequence_nodes, metadata_nodes, receptor_epitope_mapping
         )
 
         # Process unpaired chains
         print("\nProcessing unpaired chains")
         unpaired_cells = self._process_unpaired_chains(
-            receptor_epitope_mapping,
-            sequence_nodes,
-            metadata_nodes,
-            processed_chains
+            receptor_epitope_mapping, sequence_nodes, metadata_nodes, processed_chains
         )
         airr_cells.extend(unpaired_cells)
 
@@ -299,19 +288,22 @@ class AirrKG(_InMemoryKG):
             j_call_key = next((k for k in props if re.search(r"j[_]?gene|j[_]?call", k, re.IGNORECASE)), "")
             locus = self.sequence_entity_types.get(node.get_label(), node.get_label())
 
-            chain.update({
-                "locus": locus,
-                "junction_aa": extract_sequence_from_id(node.get_id()),
-                "v_call": props.get(v_call_key, ""),
-                "j_call": props.get(j_call_key, ""),
-                "consensus_count": 0,
-                "productive": True,
-            })
+            chain.update(
+                {
+                    "locus": locus,
+                    "junction_aa": extract_sequence_from_id(node.get_id()),
+                    "v_call": props.get(v_call_key, ""),
+                    "j_call": props.get(j_call_key, ""),
+                    "consensus_count": 0,
+                    "productive": True,
+                }
+            )
             cell.add_chain(chain)
 
         # Add metadata
         cells = add_metadata(metadata_nodes, cell, paired)
         return cells
+
 
 def extract_sequence_from_id(receptor_id: str) -> str:
     """Extract amino acid sequence from receptor ID.

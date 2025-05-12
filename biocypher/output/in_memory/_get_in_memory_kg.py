@@ -36,13 +36,12 @@ def get_in_memory_kg(
     """
     if dbms in ["csv", "pandas", "tabular"]:
         return PandasKG(deduplicator)
-
     if dbms == "networkx":
         return NetworkxKG(deduplicator)
     elif dbms == "airr":
         return AirrKG(deduplicator)
     else:
-      msg = f"Getting the in memory BioCypher KG is not supported for the DBMS {dbms}. Supported: {IN_MEMORY_DBMS}."
-      logger.error(msg)
-      raise NotImplementedError(msg)
+        msg = f"Getting the in memory BioCypher KG is not supported for the DBMS {dbms}. Supported: {IN_MEMORY_DBMS}."
+        logger.error(msg)
+        raise NotImplementedError(msg)
     
