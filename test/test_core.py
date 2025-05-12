@@ -138,5 +138,5 @@ def test_get_writer_in_online_mode(core):
         core._dbms = dbms
         core._offline = False
         with pytest.raises(NotImplementedError) as e:
-            core._get_writer()
+            core._initialize_writer()
         assert str(e.value) == "Cannot get writer in online mode."
