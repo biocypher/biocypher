@@ -420,7 +420,7 @@ class Downloader:
             with open(self.cache_file, "w") as f:
                 json.dump({}, f)
 
-        with open(self.cache_file, "r") as f:
+        with open(self.cache_file) as f:
             logger.info(f"Loading cache file {self.cache_file}.")
             return json.load(f)
 

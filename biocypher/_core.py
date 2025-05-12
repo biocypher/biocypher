@@ -301,7 +301,7 @@ class BioCypher:
 
         return self._translator
 
-    def _get_writer(self):
+    def _initialize_writer(self) -> None:
         """Create writer if not online.
 
         Set as instance variable `self._writer`.
@@ -327,8 +327,6 @@ class BioCypher:
         else:
             msg = "Cannot get writer in online mode."
             raise NotImplementedError(msg)
-
-        return self._writer
 
     def _get_driver(self):
         """Create driver if not exists.
@@ -385,7 +383,9 @@ class BioCypher:
         translated_nodes = self._translator.translate_entities(nodes)
 
         if self._offline:
-            passed = self._get_writer().write_nodes(
+            if not self._writer:
+                self._initialize_writer()
+            passed = self._writer.write_nodes(
                 translated_nodes,
                 batch_size=batch_size,
                 force=force,

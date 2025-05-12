@@ -1,0 +1,61 @@
+name: CI Docs BioCypher
+on:
+  # No branch triggers - only build docs on tags or manual trigger
+  push:
+    tags:
+      - 'v*'  # Run on version tags
+  workflow_dispatch:  # Allow manual triggering
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for proper versioning
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      #----------------------------------------------
+      #       Set-up python and poetry
+      #----------------------------------------------
+      - name: Setup Python and Poetry
+        uses: ./.github/actions/setup
+
+      #----------------------------------------------
+      #       Install dependencies
+      #----------------------------------------------
+      - name: Install dependencies
+        uses: ./.github/actions/install
+
+      #----------------------------------------------
+      #       Build and deploy documentation
+      #----------------------------------------------
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        with:
+          key: mkdocs-material-${{ env.cache_id }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-
+
+      - name: Build documentation
+        run: poetry run mkdocs build
+
+      - name: Deploy documentation with mike
+        run: |
+          # Extract version from pyproject.toml or use a default version
+          VERSION=$(poetry version -s || echo "latest")
+          # Deploy the docs with mike
+          poetry run mike deploy --push --update-aliases $VERSION latest
+          # Set the latest version as default
+          poetry run mike set-default --push latest
