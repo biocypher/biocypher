@@ -38,7 +38,7 @@ def test_complete_tcr_graph(
         epitope_nodes,
         tcr_pair_edges,
         tcr_epitope_edges,
-        ):
+    ):
     in_memory_airr_kg.add_nodes([tra_nodes[0], trb_nodes[0], epitope_nodes[0]])
     in_memory_airr_kg.add_edges([tcr_pair_edges[0], tcr_epitope_edges[0]])
 
