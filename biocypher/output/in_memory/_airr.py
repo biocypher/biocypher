@@ -81,60 +81,74 @@ class AirrKG(_InMemoryKG):
                 self.adjacency_list[_type] = []
             self.adjacency_list[_type].extend(_entities)
 
-    def to_airr_cells(self, entities: dict[str, list[Any]]):
-        """Convert BioCypher entities to AIRR cells using configurable mappings.
+    def _process_entities(self, entities: dict[str, list[Any]]) -> tuple[dict, dict, dict]:
+        """Process entities and organize them into sequence nodes, metadata nodes, and receptor-epitope mappings.
 
         Args:
         ----
             entities: Dictionary mapping entity types to lists of BioCypherNode/BioCypherEdge objects
 
+        Returns:
+        -------
+            tuple: (sequence_nodes, metadata_nodes, receptor_epitope_mapping)
         """
-        if not entities:
-            raise ValueError("No entities provided for conversion.")
-
-        print("\nStarting conversion to AIRR cells")
-
         sequence_nodes = {}
         metadata_nodes = {}
         receptor_epitope_mapping = {}
 
-        # Process entities
         for entity_type, entities_list in entities.items():
             if entity_type in self.sequence_entity_types:
-                # Add all sequence nodes to one dictionary
                 sequence_nodes.update({node.get_id(): node for node in entities_list})
-
             elif entity_type in self.metadata_entity_types:
-                # Add all metadata nodes to one dictionary
                 metadata_nodes.update({node.get_id(): node for node in entities_list})
-
             elif entity_type in self.chain_to_epitope_relationship_types:
-                # Create receptor-epitope mappings
-                for edge in entities_list:
-                    source_id = edge.get_source_id()
-                    if source_id not in receptor_epitope_mapping:
-                        receptor_epitope_mapping[source_id] = set()
-                    receptor_epitope_mapping[source_id].add(edge.get_target_id())
+                self._update_receptor_epitope_mapping(entities_list, receptor_epitope_mapping)
 
-        # Generate AIRR cells
+        return sequence_nodes, metadata_nodes, receptor_epitope_mapping
+
+    def _update_receptor_epitope_mapping(self, edges: list[Any], mapping: dict):
+        """Update receptor-epitope mapping with new edges.
+
+        Args:
+        ----
+            edges: List of edges to process
+            mapping: Dictionary to update with receptor-epitope mappings
+        """
+        for edge in edges:
+            source_id = edge.get_source_id()
+            if source_id not in mapping:
+                mapping[source_id] = set()
+            mapping[source_id].add(edge.get_target_id())
+
+    def _process_paired_chains(
+        self,
+        entities: dict[str, list[Any]],
+        sequence_nodes: dict,
+        metadata_nodes: dict,
+        receptor_epitope_mapping: dict,
+    ) -> tuple[list[AirrCell], set]:
+        """Process paired chains and generate AIRR cells.
+
+        Args:
+        ----
+            entities: Dictionary of all entities
+            sequence_nodes: Dictionary of sequence nodes
+            metadata_nodes: Dictionary of metadata nodes
+            receptor_epitope_mapping: Dictionary of receptor-epitope mappings
+
+        Returns:
+        -------
+            tuple: (list of generated cells, set of processed chain IDs)
+        """
         airr_cells = []
         processed_chains = set()
 
-        # Process paired chains
-        print("\nProcessing paired chains")
         for entity_type, edges in entities.items():
             if entity_type in self.chain_relationship_types:
                 for edge in edges:
-                    # Get the epitopes for both chains
-                    metadata = (
-                        receptor_epitope_mapping.get(edge.get_source_id(), set()) |
-                        receptor_epitope_mapping.get(edge.get_target_id(), set())
-                    )
-                    # Get metadata nodes, filtering out any that don't exist
-                    metadata_nodes_list = [
-                        metadata_nodes[ep_id] for ep_id in metadata
-                        if ep_id in metadata_nodes
-                    ]
+                    metadata = self._get_chain_metadata(edge, receptor_epitope_mapping)
+                    metadata_nodes_list = self._get_metadata_nodes(metadata, metadata_nodes)
+                    
                     cell = self._generate_airr_cell(
                         cell_id=edge.get_id(),
                         source_node=sequence_nodes.get(edge.get_source_id()),
@@ -146,22 +160,118 @@ class AirrKG(_InMemoryKG):
                     airr_cells.extend(cell)
                     processed_chains.update([edge.get_source_id(), edge.get_target_id()])
 
-        # Process unpaired chains
-        print("\nProcessing unpaired chains")
+        return airr_cells, processed_chains
+
+    def _get_chain_metadata(self, edge: Any, receptor_epitope_mapping: dict) -> set:
+        """Get metadata for both chains in an edge.
+
+        Args:
+        ----
+            edge: Edge connecting two chains
+            receptor_epitope_mapping: Dictionary of receptor-epitope mappings
+
+        Returns:
+        -------
+            set: Combined metadata from both chains
+        """
+        return (
+            receptor_epitope_mapping.get(edge.get_source_id(), set()) |
+            receptor_epitope_mapping.get(edge.get_target_id(), set())
+        )
+
+    def _get_metadata_nodes(self, metadata: set, metadata_nodes: dict) -> list:
+        """Get metadata nodes for a set of metadata IDs.
+
+        Args:
+        ----
+            metadata: Set of metadata IDs
+            metadata_nodes: Dictionary of metadata nodes
+
+        Returns:
+        -------
+            list: List of metadata nodes
+        """
+        return [
+            metadata_nodes[ep_id] for ep_id in metadata
+            if ep_id in metadata_nodes
+        ]
+
+    def _process_unpaired_chains(
+        self,
+        receptor_epitope_mapping: dict,
+        sequence_nodes: dict,
+        metadata_nodes: dict,
+        processed_chains: set,
+    ) -> list[AirrCell]:
+        """Process unpaired chains and generate AIRR cells.
+
+        Args:
+        ----
+            receptor_epitope_mapping: Dictionary of receptor-epitope mappings
+            sequence_nodes: Dictionary of sequence nodes
+            metadata_nodes: Dictionary of metadata nodes
+            processed_chains: Set of already processed chain IDs
+
+        Returns:
+        -------
+            list: List of generated cells
+        """
+        airr_cells = []
+        
         for chain_id in receptor_epitope_mapping:
             if chain_id not in processed_chains:
-                metadata_nodes_list = [
-                    metadata_nodes[ep_id] for ep_id in receptor_epitope_mapping[chain_id]
-                    if ep_id in metadata_nodes
-                ]
+                metadata_nodes_list = self._get_metadata_nodes(
+                    receptor_epitope_mapping[chain_id],
+                    metadata_nodes
+                )
                 cell = self._generate_airr_cell(
                     cell_id=f"unpaired_{chain_id}",
                     source_node=sequence_nodes.get(chain_id),
                     target_node=None,
-                    metadata_nodes=receptor_epitope_mapping.get(chain_id, set()),
+                    metadata_nodes=metadata_nodes_list,
                     paired=False,
                 )
                 airr_cells.append(cell)
+
+        return airr_cells
+
+    def to_airr_cells(self, entities: dict[str, list[Any]]):
+        """Convert BioCypher entities to AIRR cells using configurable mappings.
+
+        Args:
+        ----
+            entities: Dictionary mapping entity types to lists of BioCypherNode/BioCypherEdge objects
+
+        Returns:
+        -------
+            list: List of generated AIRR cells
+        """
+        if not entities:
+            raise ValueError("No entities provided for conversion.")
+
+        print("\nStarting conversion to AIRR cells")
+
+        # Process all entities
+        sequence_nodes, metadata_nodes, receptor_epitope_mapping = self._process_entities(entities)
+
+        # Process paired chains
+        print("\nProcessing paired chains")
+        airr_cells, processed_chains = self._process_paired_chains(
+            entities,
+            sequence_nodes,
+            metadata_nodes,
+            receptor_epitope_mapping
+        )
+
+        # Process unpaired chains
+        print("\nProcessing unpaired chains")
+        unpaired_cells = self._process_unpaired_chains(
+            receptor_epitope_mapping,
+            sequence_nodes,
+            metadata_nodes,
+            processed_chains
+        )
+        airr_cells.extend(unpaired_cells)
 
         print(f"\nGenerated total of {len(airr_cells)} AIRR cells")
         return airr_cells
