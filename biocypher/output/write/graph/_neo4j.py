@@ -279,7 +279,9 @@ class _Neo4jBatchWriter(_BatchWriter):
         import_call_neo4j_v4 = self._get_import_call("import", "--database=", "--force=")
         import_call_neo4j_v5 = self._get_import_call("database import full", "", "--overwrite-destination=")
         neo4j_version_check = (
-            f"version=$({self._get_default_import_call_bin_prefix()}neo4j-admin --version | cut -d '.' -f 1)"
+            # f"version=$({self._get_default_import_call_bin_prefix()}neo4j-admin --version | cut -d '.' -f 1)"
+            # Remove line above
+            f"version=$({self.import_call_bin_prefix}neo4j-admin --version | cut -d '.' -f 1)"
         )
 
         import_script = (
