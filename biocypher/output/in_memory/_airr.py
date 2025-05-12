@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 try:
     from scirpy.io import AirrCell
+
     HAS_SCIRPY = True
 except ImportError:
     HAS_SCIRPY = False
