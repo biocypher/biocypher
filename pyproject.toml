@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biocypher"
-version = "0.9.5"
+version = "0.9.6"
 description = "A unifying framework for biomedical research knowledge graphs"
 authors = [
     "Sebastian Lobentanzer <sebastian.lobentanzer@gmail.com>",
@@ -64,7 +64,7 @@ hypothesis = "^6.50.1"
 ipython = "^8.7.0"
 ipykernel = "^6.23.1"
 coverage-badge = "^1.1.0"
-nbsphinx = "^0.9.5"
+nbsphinx = "^0.9.6"
 ruff = "^0.2.0"
 mike = "^2.1.3"
 
