@@ -185,8 +185,8 @@ class AirrKG(_InMemoryKG):
         for entity_type, edges in entities.items():
             if entity_type in self.chain_relationship_types:
                 for edge in edges:
-                    metadata = self._get_chain_metadata(edge, receptor_epitope_mapping)
-                    metadata_nodes_list = self._get_metadata_nodes(metadata, metadata_nodes)
+                    # Get all metadata nodes
+                    metadata_nodes_list = list(metadata_nodes.values())
 
                     cell = self._generate_airr_cell(
                         cell_id=edge.get_id(),
@@ -200,36 +200,6 @@ class AirrKG(_InMemoryKG):
                     processed_chains.update([edge.get_source_id(), edge.get_target_id()])
 
         return airr_cells, processed_chains
-
-    def _get_chain_metadata(self, edge: Any, receptor_epitope_mapping: dict) -> set:
-        """Get metadata for both chains in an edge.
-
-        Args:
-        ----
-            edge: Edge connecting two chains
-            receptor_epitope_mapping: Dictionary of receptor-epitope mappings
-
-        Returns:
-        -------
-            set: Combined metadata from both chains
-        """
-        return receptor_epitope_mapping.get(edge.get_source_id(), set()) | receptor_epitope_mapping.get(
-            edge.get_target_id(), set()
-        )
-
-    def _get_metadata_nodes(self, metadata: set, metadata_nodes: dict) -> list:
-        """Get metadata nodes for a set of metadata IDs.
-
-        Args:
-        ----
-            metadata: Set of metadata IDs
-            metadata_nodes: Dictionary of metadata nodes
-
-        Returns:
-        -------
-            list: List of metadata nodes
-        """
-        return [metadata_nodes[ep_id] for ep_id in metadata if ep_id in metadata_nodes]
 
     def _process_unpaired_chains(
         self,
@@ -255,7 +225,9 @@ class AirrKG(_InMemoryKG):
 
         for chain_id in receptor_epitope_mapping:
             if chain_id not in processed_chains:
-                metadata_nodes_list = self._get_metadata_nodes(receptor_epitope_mapping[chain_id], metadata_nodes)
+                # Get all metadata nodes
+                metadata_nodes_list = list(metadata_nodes.values())
+
                 cell = self._generate_airr_cell(
                     cell_id=f"unpaired_{chain_id}",
                     source_node=sequence_nodes.get(chain_id),

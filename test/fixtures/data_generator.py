@@ -155,6 +155,7 @@ def tra_nodes():
             node_label="tra sequence",
             preferred_id="tra:CAVRWGGKLSF",
             properties={
+                "junction_aa": "CAVRWGGKLSF",
                 "chain_1_type": "tra",
                 "chain_1_organism": "HomoSapiens",
                 "chain_1_v_gene": "TRAV3*01",
@@ -166,6 +167,7 @@ def tra_nodes():
             node_label="tra sequence",
             preferred_id="tra:CAGLLPGGGADGLTF",
             properties={
+                "junction_aa": "CAGLLPGGGADGLTF",
                 "chain_1_type": "tra",
                 "chain_1_organism": "HomoSapiens",
                 "chain_1_v_gene": "TRAV25*01",
@@ -177,6 +179,7 @@ def tra_nodes():
             node_label="tra sequence",
             preferred_id="tra:CAVDNNNDMRF",
             properties={
+                "junction_aa": "CAVDNNNDMRF",
                 "chain_1_type": "tra",
                 "chain_1_v_gene": "TRAV12-2",
                 "chain_1_j_gene": "TRAJ24",
@@ -195,6 +198,7 @@ def trb_nodes():
             node_label="trb sequence",
             preferred_id="trb:CASSEGGVETQYF",
             properties={
+                "junction_aa": "CASSEGGVETQYF",
                 "chain_1_type": "trb",
                 "chain_1_organism": "HomoSapiens",
                 "chain_1_v_gene": "TRBV13*01",
@@ -206,6 +210,7 @@ def trb_nodes():
             node_label="trb sequence",
             preferred_id="trb:CASSSRGGQETQYF",
             properties={
+                "junction_aa": "CASSSRGGQETQYF",
                 "chain_1_type": "trb",
                 "chain_1_organism": "HomoSapiens",
                 "chain_1_v_gene": "TRBV7-3*01",
@@ -217,6 +222,7 @@ def trb_nodes():
             node_label="trb sequence",
             preferred_id="trb:CASSPRGDSGNTIYF",
             properties={
+                "junction_aa": "CASSPRGDSGNTIYF",
                 "chain_1_type": "trb",
                 "chain_1_v_gene": "TRBV7-9",
                 "chain_1_j_gene": "TRBJ2-2",

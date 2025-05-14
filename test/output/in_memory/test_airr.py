@@ -1,6 +1,3 @@
-from unittest.mock import patch
-
-
 def test_airr(in_memory_airr_kg):
     assert in_memory_airr_kg.adjacency_list == {}
 
@@ -66,9 +63,7 @@ def test_to_airr_cells_basic(in_memory_airr_kg, tra_nodes, trb_nodes, tcr_pair_e
     assert cell["is_paired"] is True
 
 
-@patch("builtins.print")
 def test_to_airr_cells_with_epitope(
-    mock_print,
     in_memory_airr_kg,
     tra_nodes,
     trb_nodes,
@@ -87,8 +82,7 @@ def test_to_airr_cells_with_epitope(
     assert cell["MHC_class"] == "MHCI"
 
 
-@patch("builtins.print")
-def test_multiple_tcr_pairs(mock_print, in_memory_airr_kg, tra_nodes, trb_nodes, tcr_pair_edges):
+def test_multiple_tcr_pairs(in_memory_airr_kg, tra_nodes, trb_nodes, tcr_pair_edges):
     in_memory_airr_kg.add_nodes(tra_nodes[:2] + trb_nodes[:2])
     in_memory_airr_kg.add_edges(tcr_pair_edges[:2])
     airr_cells = in_memory_airr_kg.to_airr_cells(in_memory_airr_kg.adjacency_list)
