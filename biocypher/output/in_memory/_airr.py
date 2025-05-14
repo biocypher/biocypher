@@ -1,14 +1,9 @@
-from __future__ import annotations
+from typing import Any
 
-import re
-
-from typing import TYPE_CHECKING, Any
-
+from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._deduplicate import Deduplicator
+from biocypher._logger import logger
 from biocypher.output.in_memory._in_memory_kg import _InMemoryKG
-
-if TYPE_CHECKING:
-    from biocypher._create import BioCypherNode
 
 try:
     from scirpy.io import AirrCell
@@ -19,38 +14,51 @@ except ImportError:
 
 
 class AirrKG(_InMemoryKG):
+    """Knowledge graph for AIRR (Adaptive Immune Receptor Repertoire) data.
+
+    This class implements the AIRR data model for representing immune receptor sequences
+    (antibodies and T cell receptors) and their annotations. To ensure proper conversion
+    to AIRR format, your schema file should define immune receptor entities with property
+    names that match the AIRR standards.
+
+    Key property names in your schema for immune receptor entities:
+    - locus: The gene locus (e.g., "TRA", "TRB", "IGH", "IGK", "IGL")
+    - junction_aa: The amino acid sequence of the junction region (CDR3)
+    - v_call: The V gene assignment
+    - j_call: The J gene assignment
+    - productive: Whether the sequence is productive
+
+    For a complete list of available fields and their descriptions, see:
+    https://docs.airr-community.org/en/stable/datarep/rearrangements.html#fields
+
+    All properties from your schema will be preserved in the AIRR format.
+    """
+
     def __init__(
         self,
         deduplicator=None,
-        sequence_entity_types: dict[str, str] | None = None,
-        chain_relationship_types: list[str] | None = None,
-        chain_to_epitope_relationship_types: list[str] | None = None,
-        metadata_entity_types: list[str] | None = None,
+        metadata_entity_type: str = "epitope",
     ):
-        """Initialize AirrKG with configurable node and edges types definitions.
+        """Initialize AirrKG with configurable metadata node type.
 
         Args:
         ----
             deduplicator: Deduplicator instance
-            sequence_entity_types: Dict mapping entity types to chain types (e.g. {"tra sequence": "TRA"})
-            chain_relationship_types: List of relationship types that connect chains
-            chain_to_epitope_relationship_types: List of relationship types that connect chains to epitopes
-            metadata_entity_types: List of entity types that contain metadata
+            metadata_entity_type: String specifying the metadata node type (default: "epitope")
 
         """
         super().__init__()
         self.deduplicator = deduplicator or Deduplicator()
-        # Default mappings if none provided
-        self.sequence_entity_types = sequence_entity_types or {"tra sequence": "TRA", "trb sequence": "TRB"}
-        self.chain_relationship_types = chain_relationship_types or ["alpha sequence to beta sequence association"]
-        self.chain_to_epitope_relationship_types = chain_to_epitope_relationship_types or [
-            "t cell receptor sequence to epitope association"
-        ]
-        self.metadata_entity_types = metadata_entity_types or ["epitope"]
+        self.metadata_entity_type = metadata_entity_type
 
         # Initialize storage for processed cells
         self.adjacency_list = {}
         self.airr_cells = []
+
+        # These will be populated when nodes and edges are added
+        self.sequence_entity_types = {}
+        self.chain_relationship_types = []
+        self.chain_to_epitope_relationship_types = []
 
     def _check_dependencies(self):
         """Verify that scirpy is available."""
@@ -99,13 +107,41 @@ class AirrKG(_InMemoryKG):
         metadata_nodes = {}
         receptor_epitope_mapping = {}
 
+        # Determine entity types while processing
+        all_node_types = set()
+        all_edge_types = set()
+
         for entity_type, entities_list in entities.items():
-            if entity_type in self.sequence_entity_types:
-                sequence_nodes.update({node.get_id(): node for node in entities_list})
-            elif entity_type in self.metadata_entity_types:
-                metadata_nodes.update({node.get_id(): node for node in entities_list})
-            elif entity_type in self.chain_to_epitope_relationship_types:
-                self._update_receptor_epitope_mapping(entities_list, receptor_epitope_mapping)
+            if not entities_list:  # Skip empty lists
+                continue
+
+            # Determine if this is a node or edge type
+            if isinstance(entities_list[0], BioCypherNode):
+                all_node_types.add(entity_type)
+                if entity_type == self.metadata_entity_type:
+                    metadata_nodes.update({node.get_id(): node for node in entities_list})
+                else:
+                    sequence_nodes.update({node.get_id(): node for node in entities_list})
+            elif isinstance(entities_list[0], BioCypherEdge):
+                all_edge_types.add(entity_type)
+                if entity_type in self.chain_to_epitope_relationship_types:
+                    self._update_receptor_epitope_mapping(entities_list, receptor_epitope_mapping)
+
+        # Update sequence entity types
+        self.sequence_entity_types = {
+            node_type: node_type.replace(" sequence", "").upper()
+            for node_type in all_node_types
+            if node_type != self.metadata_entity_type
+        }
+
+        # Update relationship types
+        self.chain_relationship_types = [
+            edge_type for edge_type in all_edge_types if self.metadata_entity_type not in edge_type.lower()
+        ]
+
+        self.chain_to_epitope_relationship_types = [
+            edge_type for edge_type in all_edge_types if self.metadata_entity_type in edge_type.lower()
+        ]
 
         return sequence_nodes, metadata_nodes, receptor_epitope_mapping
 
@@ -227,7 +263,7 @@ class AirrKG(_InMemoryKG):
                     metadata_nodes=metadata_nodes_list,
                     paired=False,
                 )
-                airr_cells.append(cell)
+                airr_cells.extend(cell)
 
         return airr_cells
 
@@ -245,25 +281,23 @@ class AirrKG(_InMemoryKG):
         if not entities:
             raise ValueError("No entities provided for conversion.")
 
-        print("\nStarting conversion to AIRR cells")
+        logger.info("Starting conversion to AIRR cells")
 
         # Process all entities
         sequence_nodes, metadata_nodes, receptor_epitope_mapping = self._process_entities(entities)
 
         # Process paired chains
-        print("\nProcessing paired chains")
         airr_cells, processed_chains = self._process_paired_chains(
             entities, sequence_nodes, metadata_nodes, receptor_epitope_mapping
         )
 
         # Process unpaired chains
-        print("\nProcessing unpaired chains")
         unpaired_cells = self._process_unpaired_chains(
             receptor_epitope_mapping, sequence_nodes, metadata_nodes, processed_chains
         )
         airr_cells.extend(unpaired_cells)
 
-        print(f"\nGenerated total of {len(airr_cells)} AIRR cells")
+        logger.info(f"Generated total of {len(airr_cells)} AIRR cells")
         return airr_cells
 
     def _generate_airr_cell(
@@ -284,61 +318,19 @@ class AirrKG(_InMemoryKG):
             props = node.get_properties()
             chain = AirrCell.empty_chain_dict()
 
-            # Find v_call and j_call columns using regex
-            v_call_key = next((k for k in props if re.search(r"v[_]?gene|v[_]?call", k, re.IGNORECASE)), "")
-            j_call_key = next((k for k in props if re.search(r"j[_]?gene|j[_]?call", k, re.IGNORECASE)), "")
-            locus = self.sequence_entity_types.get(node.get_label(), node.get_label())
+            # Add all properties except internal ones
+            for key, value in props.items():
+                if key not in ["node_id", "node_label", "id", "preferred_id"]:
+                    chain[key] = value
 
-            chain.update(
-                {
-                    "locus": locus,
-                    "junction_aa": extract_sequence_from_id(node.get_id()),
-                    "v_call": props.get(v_call_key, ""),
-                    "j_call": props.get(j_call_key, ""),
-                    "consensus_count": 0,
-                    "productive": True,
-                }
-            )
+            # Add locus based on node type
+            chain["locus"] = self.sequence_entity_types.get(node.get_label(), node.get_label())
+
             cell.add_chain(chain)
 
         # Add metadata
         cells = add_metadata(metadata_nodes, cell, paired)
         return cells
-
-
-def extract_sequence_from_id(receptor_id: str) -> str:
-    """Extract amino acid sequence from receptor ID.
-    Handles various ID formats:
-    - 'tra:SEQUENCE' -> 'SEQUENCE'
-    - 'SEQUENCE' -> 'SEQUENCE'
-    - 'receptor_123_SEQUENCE' -> 'SEQUENCE'
-    - 'SEQUENCE_123' -> 'SEQUENCE'
-
-    Args:
-    ----
-        receptor_id: String containing the receptor ID and/or sequence
-
-    Returns:
-    -------
-        str: The extracted amino acid sequence
-
-    """
-    # If it's a simple sequence without any prefix/suffix, return as is
-    if all(c in "ACDEFGHIKLMNPQRSTVWY" for c in receptor_id):
-        return receptor_id
-
-    # Try to extract sequence after common delimiters
-    delimiters = [":", "_", "-", "."]
-    for delimiter in delimiters:
-        if delimiter in receptor_id:
-            parts = receptor_id.split(delimiter)
-            # Look for the part that looks like an amino acid sequence
-            for part in parts:
-                if all(c in "ACDEFGHIKLMNPQRSTVWY" for c in part):
-                    return part
-
-    # If no sequence found, return the original ID
-    return receptor_id
 
 
 def add_metadata(metadata_nodes: list[BioCypherNode], cell: AirrCell, paired: bool) -> list[AirrCell]:
