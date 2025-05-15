@@ -122,22 +122,21 @@ class AirrKG(_InMemoryKG):
                     metadata_nodes.update({node.get_id(): node for node in entities_list})
                 else:
                     sequence_nodes.update({node.get_id(): node for node in entities_list})
+                    self.sequence_entity_types[entity_type] = entity_type.replace(" sequence", "").upper()
             elif isinstance(entities_list[0], BioCypherEdge):
                 all_edge_types.add(entity_type)
-                if entity_type in self.chain_to_epitope_relationship_types:
-                    self._update_receptor_epitope_mapping(entities_list, receptor_epitope_mapping)
-
-        # Update sequence entity types
-        self.sequence_entity_types = {
-            node_type: node_type.replace(" sequence", "").upper()
-            for node_type in all_node_types
-            if node_type != self.metadata_entity_type
-        }
 
         # Update relationship types
         self.chain_relationship_types = [
             edge_type for edge_type in all_edge_types if self.metadata_entity_type not in edge_type.lower()
         ]
+
+        self.chain_to_epitope_relationship_types = [
+            edge_type for edge_type in all_edge_types if self.metadata_entity_type in edge_type.lower()
+        ]
+
+        for entity_type in self.chain_to_epitope_relationship_types:
+            self._update_receptor_epitope_mapping(entities[entity_type], receptor_epitope_mapping)
 
         self.chain_to_epitope_relationship_types = [
             edge_type for edge_type in all_edge_types if self.metadata_entity_type in edge_type.lower()
@@ -185,18 +184,18 @@ class AirrKG(_InMemoryKG):
         for entity_type, edges in entities.items():
             if entity_type in self.chain_relationship_types:
                 for edge in edges:
-                    # Get all metadata nodes
-                    metadata_nodes_list = list(metadata_nodes.values())
+                    metadata_ids = self._get_chain_metadata(edge, receptor_epitope_mapping)
 
-                    cell = self._generate_airr_cell(
+                    metadata_nodes_cell = self._get_metadata_nodes(metadata_ids, metadata_nodes)
+                    cell_s = self._generate_airr_cell(
                         cell_id=edge.get_id(),
                         source_node=sequence_nodes.get(edge.get_source_id()),
                         target_node=sequence_nodes.get(edge.get_target_id()),
-                        metadata_nodes=metadata_nodes_list,
+                        metadata_nodes=metadata_nodes_cell,
                         paired=True,
                     )
 
-                    airr_cells.extend(cell)
+                    airr_cells.extend(cell_s)
                     processed_chains.update([edge.get_source_id(), edge.get_target_id()])
 
         return airr_cells, processed_chains
@@ -226,16 +225,16 @@ class AirrKG(_InMemoryKG):
         for chain_id in receptor_epitope_mapping:
             if chain_id not in processed_chains:
                 # Get all metadata nodes
-                metadata_nodes_list = list(metadata_nodes.values())
+                metadata_nodes_cell = self._get_metadata_nodes(receptor_epitope_mapping[chain_id], metadata_nodes)
 
-                cell = self._generate_airr_cell(
+                cell_s = self._generate_airr_cell(
                     cell_id=f"unpaired_{chain_id}",
                     source_node=sequence_nodes.get(chain_id),
                     target_node=None,
-                    metadata_nodes=metadata_nodes_list,
+                    metadata_nodes=metadata_nodes_cell,
                     paired=False,
                 )
-                airr_cells.extend(cell)
+                airr_cells.extend(cell_s)
 
         return airr_cells
 
@@ -272,6 +271,36 @@ class AirrKG(_InMemoryKG):
         logger.info(f"Generated total of {len(airr_cells)} AIRR cells")
         return airr_cells
 
+    def _get_chain_metadata(self, edge: Any, receptor_epitope_mapping: dict) -> set:
+        """Get metadata for both chains in an edge.
+
+        Args:
+        ----
+            edge: Edge connecting two chains
+            receptor_epitope_mapping: Dictionary of receptor-epitope mappings
+
+        Returns:
+        -------
+            set: Combined metadata (default: epitopes) from both chains
+        """
+        return receptor_epitope_mapping.get(edge.get_source_id(), set()) | receptor_epitope_mapping.get(
+            edge.get_target_id(), set()
+        )
+
+    def _get_metadata_nodes(self, metadata_ids: set, metadata_nodes: dict) -> list:
+        """Get metadata nodes for a set of metadata IDs.
+
+        Args:
+        ----
+            metadata: Set of metadata IDs
+            metadata_nodes: Dictionary of metadata nodes
+
+        Returns:
+        -------
+            list: List of metadata nodes
+        """
+        return [metadata_nodes[ep_id] for ep_id in metadata_ids if ep_id in metadata_nodes]
+
     def _generate_airr_cell(
         self,
         cell_id: str,
@@ -297,11 +326,14 @@ class AirrKG(_InMemoryKG):
 
             # Add locus based on node type
             chain["locus"] = self.sequence_entity_types.get(node.get_label(), node.get_label())
+            chain["consensus_count"] = 0  # TODO: Check whether it should stay hardcoded
+            chain["productive"] = True
 
             cell.add_chain(chain)
 
         # Add metadata
         cells = add_metadata(metadata_nodes, cell, paired)
+
         return cells
 
 
@@ -334,11 +366,11 @@ def add_metadata(metadata_nodes: list[BioCypherNode], cell: AirrCell, paired: bo
                     meta_cell.add_chain(chain)
             else:
                 meta_cell = cell
-            # Add metadata from this node
             props = node.get_properties()
             for key, value in props.items():
                 if key not in ["node_id", "node_label", "id", "preferred_id"]:
                     meta_cell[key] = value
+
             meta_cell["data_source"] = "BioCypher"
             meta_cell["is_paired"] = paired
             cells.append(meta_cell)
