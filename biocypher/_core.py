@@ -11,6 +11,8 @@ from datetime import datetime
 
 import yaml
 
+from biocypher.output.in_memory._graph import Graph
+
 from ._config import (
     config as _config,
     update_from_file as _file_update,
@@ -378,9 +380,13 @@ class BioCypher:
             `IN_MEMORY_DBMS`
 
         """
+        # Create a list inside of Graph
+        g = Graph()
+        g.add_nodes(nodes)
+
         if not self._translator:
             self._get_translator()
-        translated_nodes = self._translator.translate_entities(nodes)
+        translated_nodes = self._translator.translate_entities(g.nodes)
 
         if self._offline:
             if not self._writer:
