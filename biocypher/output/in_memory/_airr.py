@@ -164,7 +164,7 @@ class AirrKG(_InMemoryKG):
         sequence_nodes: dict,
         metadata_nodes: dict,
         receptor_epitope_mapping: dict,
-    ) -> tuple[list[AirrCell], set]:
+    ) -> tuple[list[AirrCell], set, int]:
         """Process paired chains and generate AIRR cells.
 
         Args:
@@ -176,10 +176,11 @@ class AirrKG(_InMemoryKG):
 
         Returns:
         -------
-            tuple: (list of generated cells, set of processed chain IDs)
+            tuple: (list of generated cells, set of processed chain IDs, count of cells with multiple epitopes)
         """
         airr_cells = []
         processed_chains = set()
+        multi_epitope_cells = 0
 
         for entity_type, edges in entities.items():
             if entity_type in self.chain_relationship_types:
@@ -196,9 +197,12 @@ class AirrKG(_InMemoryKG):
                     )
 
                     airr_cells.extend(cell_s)
+                    # Check if multiple cells were generated (indicating multiple epitopes)
+                    if len(cell_s) > 1:
+                        multi_epitope_cells += 1
                     processed_chains.update([edge.get_source_id(), edge.get_target_id()])
 
-        return airr_cells, processed_chains
+        return airr_cells, processed_chains, multi_epitope_cells
 
     def _process_unpaired_chains(
         self,
@@ -206,7 +210,7 @@ class AirrKG(_InMemoryKG):
         sequence_nodes: dict,
         metadata_nodes: dict,
         processed_chains: set,
-    ) -> list[AirrCell]:
+    ) -> tuple[list[AirrCell], int]:
         """Process unpaired chains and generate AIRR cells.
 
         Args:
@@ -218,9 +222,10 @@ class AirrKG(_InMemoryKG):
 
         Returns:
         -------
-            list: List of generated cells
+            tuple: (List of generated cells, count of cells with multiple epitopes)
         """
         airr_cells = []
+        total_metacells = 0
 
         for chain_id in receptor_epitope_mapping:
             if chain_id not in processed_chains:
@@ -235,8 +240,11 @@ class AirrKG(_InMemoryKG):
                     paired=False,
                 )
                 airr_cells.extend(cell_s)
+                # Check if multiple cells were generated (indicating multiple epitopes)
+                if len(cell_s) > 1:
+                    total_metacells += 1
 
-        return airr_cells
+        return airr_cells, total_metacells
 
     def to_airr_cells(self, entities: dict[str, list[Any]]):
         """Convert BioCypher entities to AIRR cells using configurable mappings.
@@ -258,17 +266,24 @@ class AirrKG(_InMemoryKG):
         sequence_nodes, metadata_nodes, receptor_epitope_mapping = self._process_entities(entities)
 
         # Process paired chains
-        airr_cells, processed_chains = self._process_paired_chains(
+        airr_cells, processed_chains, paired_metacells = self._process_paired_chains(
             entities, sequence_nodes, metadata_nodes, receptor_epitope_mapping
         )
 
         # Process unpaired chains
-        unpaired_cells = self._process_unpaired_chains(
+        unpaired_cells, unpaired_metacells = self._process_unpaired_chains(
             receptor_epitope_mapping, sequence_nodes, metadata_nodes, processed_chains
         )
         airr_cells.extend(unpaired_cells)
 
+        # Calculate total cells with multiple epitopes
+        total_metacells = paired_metacells + unpaired_metacells
+
+        # Log information about cells
         logger.info(f"Generated total of {len(airr_cells)} AIRR cells")
+        if total_metacells > 0:
+            logger.info(f"{total_metacells} cells with more than 1 epitope were detected")
+
         return airr_cells
 
     def _get_chain_metadata(self, edge: Any, receptor_epitope_mapping: dict) -> set:

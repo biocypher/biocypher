@@ -95,3 +95,5 @@ def test_multiple_tcr_pairs(in_memory_airr_kg, tra_nodes, trb_nodes, tcr_pair_ed
     alpha_junctions = [cell.chains[0]["junction_aa"] for cell in airr_cells]
     assert "CAVRWGGKLSF" in alpha_junctions
     assert "CAGLLPGGGADGLTF" in alpha_junctions
+
+    # TODO: Add test for multiple epitopes per TCR pair
