@@ -37,12 +37,6 @@ class Translator:
 
         Args:
         ----
-            leaves:
-                Dictionary detailing the leaves of the hierarchy
-                tree representing the structure of the graph; the leaves are
-                the entities that will be direct components of the graph,
-                while the intermediary nodes are additional labels for
-                filtering purposes.
             strict_mode:
                 If True, the translator will raise an error if input data do not
                 carry source, licence, and version information.
