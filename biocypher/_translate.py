@@ -37,15 +37,12 @@ class Translator:
 
         Args:
         ----
-            leaves:
-                Dictionary detailing the leaves of the hierarchy
-                tree representing the structure of the graph; the leaves are
-                the entities that will be direct components of the graph,
-                while the intermediary nodes are additional labels for
-                filtering purposes.
+            ontology (Ontology): An Ontology object providing schema and mapping details.
             strict_mode:
-                If True, the translator will raise an error if input data do not
-                carry source, licence, and version information.
+                strict_mode (bool, optional): If True, enforces that every node and edge carries
+                the required 'source', 'licence', and 'version' properties. Raises ValueError
+                if these are missing. Defaults to False.
+
 
         """
         self.ontology = ontology
