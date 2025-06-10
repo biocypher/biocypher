@@ -50,6 +50,9 @@ DBMS_TO_CLASS = {
     "Tabular": _PandasCSVWriter,
     "networkx": _NetworkXWriter,
     "NetworkX": _NetworkXWriter,
+    # TODO: create the own writer for adj_list
+    "adj_list": _NetworkXWriter,
+
 }
 
 

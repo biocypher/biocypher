@@ -172,10 +172,6 @@ class BioCypher:
         self._driver = None
         self._in_memory_kg = None
 
-        self._in_memory_kg = None
-        self._nodes = None
-        self._edges = None
-
     def _initialize_in_memory_kg(self) -> None:
         """Create in-memory KG instance.
 
@@ -224,10 +220,6 @@ class BioCypher:
 
         TODO: to_df implies data frame, should be specifically that use case
         """
-        return self._to_KG()
-
-    def to_networkx(self):
-        """Create networkx using internal representation."""
         return self._to_KG()
 
     def _to_KG(self):
@@ -384,9 +376,10 @@ class BioCypher:
         g = Graph()
         g.add_nodes(nodes)
 
-        if not self._translator:
-            self._get_translator()
-        translated_nodes = self._translator.translate_entities(g.nodes)
+        # if not self._translator:
+        #     self._get_translator()
+        # translated_nodes = self._translator.translate_entities(g.nodes)
+        translated_nodes = g.nodes
 
         if self._offline:
             if not self._writer:
@@ -553,7 +546,7 @@ class BioCypher:
         if not self._in_memory_kg:
             msg = "No in-memory KG instance found. Please call `add()` first."
             raise ValueError(msg)
-
+            
         if not self._in_memory_kg:
             self._initialize_in_memory_kg()
         return self._in_memory_kg.get_kg()
