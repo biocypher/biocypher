@@ -1,31 +1,25 @@
 cff-version: 1.2.0
-title: Democratizing knowledge representation with BioCypher
 message: >-
   If you use this software, please cite it using the
-  metadata from this file.
+  preferred-citation below.
 type: software
-authors:
-  - given-names: Sebastian
-    family-names: Lobentanzer
-    email: sebastian.lobentanzer@uni-heidelberg.de
-    affiliation: >-
-      Heidelberg University Hospital: Institute for
-      Computational Biomedicine
-    orcid: 'https://orcid.org/0000-0003-3399-6695'
-  - name: BioCypher Consortium
-    type: consortium
-  - given-names: Julio
-    family-names: Saez-Rodriguez
-    email: saez@uni-heidelberg.de
-    affiliation: >-
-      Heidelberg University Hospital: Institute for
-      Computational Biomedicine
-    orcid: 'https://orcid.org/0000-0002-8552-8976'
-identifiers:
-  - type: doi
-    value: 10.1038/s41587-023-01848-y
-repository-code: 'https://github.com/biocypher/biocypher'
-url: 'https://biocypher.org/'
+preferred-citation:
+  type: article
+  title: Democratizing knowledge representation with BioCypher
+  authors:
+    - given-names: Sebastian
+      family-names: Lobentanzer
+      orcid: 'https://orcid.org/0000-0003-3399-6695'
+    - name: BioCypher Consortium
+      type: consortium
+    - given-names: Julio
+      family-names: Saez-Rodriguez
+      orcid: 'https://orcid.org/0000-0002-8552-8976'
+  doi: 10.1038/s41587-023-01848-y
+  journal: Nature Biotechnology
+  year: 2023
 repository: 'https://github.com/biocypher'
+repository-code: 'https://github.com/biocypher/biocypher'
 repository-artifact: 'https://pypi.org/project/biocypher/'
+url: 'https://biocypher.org/'
 license: MIT
