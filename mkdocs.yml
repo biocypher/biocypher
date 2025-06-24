@@ -92,11 +92,14 @@ nav:
           - ArangoDB: reference/outputs/arangodb-output.md
       - Schema Configuration: reference/schema-config.md
 
+
   - Community:
       - Join Us: community/index.md
       - Where to Start: community/contribute.md
       - Contribute to the Documentation: community/contribute-docs.md
       - Contribute to the Code Base: community/contribute-codebase.md
+      - Templates:
+          - community/templates/biocypher-templates.md
 
 #=======    Extension settings (sorted alphabetically)  =====
 markdown_extensions:
