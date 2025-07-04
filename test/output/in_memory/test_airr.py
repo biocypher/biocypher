@@ -49,18 +49,10 @@ def test_complete_tcr_graph(
 def test_to_airr_cells_basic(in_memory_airr_kg, tra_nodes, trb_nodes, tcr_pair_edges):
     in_memory_airr_kg.add_nodes([tra_nodes[2], trb_nodes[2]])
     in_memory_airr_kg.add_edges([tcr_pair_edges[2]])
-    airr_cells = in_memory_airr_kg.to_airr_cells(in_memory_airr_kg.adjacency_list)
-
+    airr_cells = in_memory_airr_kg.get_kg()
     assert isinstance(airr_cells, list)
-    assert len(airr_cells) == 1
-
-    cell = airr_cells[0]
-    assert cell.cell_id == "pair3"
-    assert "TRA" in cell.chains[0]["locus"]
-    assert "TRB" in cell.chains[1]["locus"]
-    assert cell.chains[0]["junction_aa"] == "CAVDNNNDMRF"
-    assert cell.chains[1]["junction_aa"] == "CASSPRGDSGNTIYF"
-    assert cell["is_paired"] is True
+    # No cells should be generated, since no metadata with epitopes was provided
+    assert len(airr_cells) == 0
 
 
 def test_to_airr_cells_with_epitope(
@@ -72,8 +64,8 @@ def test_to_airr_cells_with_epitope(
     tcr_epitope_edges,
 ):
     in_memory_airr_kg.add_nodes([tra_nodes[2], trb_nodes[2], epitope_nodes[2]])
-    in_memory_airr_kg.add_edges([tcr_pair_edges[2], tcr_epitope_edges[2]])
-    airr_cells = in_memory_airr_kg.to_airr_cells(in_memory_airr_kg.adjacency_list)
+    in_memory_airr_kg.add_edges(tcr_pair_edges + tcr_epitope_edges)
+    airr_cells = in_memory_airr_kg._to_airr_cells(in_memory_airr_kg.adjacency_list)
 
     assert len(airr_cells) == 1
     cell = airr_cells[0]
@@ -82,18 +74,27 @@ def test_to_airr_cells_with_epitope(
     assert cell["MHC_class"] == "MHCI"
 
 
-def test_multiple_tcr_pairs(in_memory_airr_kg, tra_nodes, trb_nodes, tcr_pair_edges):
-    in_memory_airr_kg.add_nodes(tra_nodes[:2] + trb_nodes[:2])
-    in_memory_airr_kg.add_edges(tcr_pair_edges[:2])
-    airr_cells = in_memory_airr_kg.to_airr_cells(in_memory_airr_kg.adjacency_list)
-
-    assert len(airr_cells) == 2
-    cell_ids = [cell.cell_id for cell in airr_cells]
-    assert "pair1" in cell_ids
-    assert "pair2" in cell_ids
-
+def test_multiple_epitopes_per_tcr(
+    in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_epitope_edges, tcr_pair_edges
+):
+    in_memory_airr_kg.add_nodes(tra_nodes + trb_nodes + epitope_nodes)
+    in_memory_airr_kg.add_edges(tcr_pair_edges + tcr_epitope_edges)
+    airr_cells = in_memory_airr_kg._to_airr_cells(in_memory_airr_kg.adjacency_list)
+    print(airr_cells)
+    assert len(airr_cells) == 4
     alpha_junctions = [cell.chains[0]["junction_aa"] for cell in airr_cells]
     assert "CAVRWGGKLSF" in alpha_junctions
-    assert "CAGLLPGGGADGLTF" in alpha_junctions
+    assert "CAVDNNNDMRF" in alpha_junctions
 
-    # TODO: Add test for multiple epitopes per TCR pair
+
+def test_no_indirect_pairings(
+    in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_epitope_edges, tcr_pair_edges
+):
+    in_memory_airr_kg.add_nodes(tra_nodes + trb_nodes + epitope_nodes)
+    in_memory_airr_kg.add_edges(tcr_pair_edges + tcr_epitope_edges)
+    airr_cells = in_memory_airr_kg._to_airr_cells(in_memory_airr_kg.adjacency_list, indirect_pairings=False)
+    print(airr_cells)
+    assert len(airr_cells) == 4
+    alpha_junctions = [cell.chains[0]["junction_aa"] for cell in airr_cells]
+    assert "CAVRWGGKLSF" in alpha_junctions
+    assert "CAVDNNNDMRF" in alpha_junctions

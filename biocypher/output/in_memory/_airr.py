@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._deduplicate import Deduplicator
@@ -28,15 +28,22 @@ class AirrKG(_InMemoryKG):
     - j_call: The J gene assignment
     - productive: Whether the sequence is productive
 
+    Pairing Strategies specified in get_kg method:
+    - Indirect pairings allowed: If an epitope is only matched with ONE of the paired receptors - the "paired" AIRR cell will be created
+    - Indirect pairings not allowed: If an epitope is only matched with ONE of the paired receptors - no "paired" AIRR cell will be created
+
     For a complete list of available fields and their descriptions, see:
     https://docs.airr-community.org/en/stable/datarep/rearrangements.html#fields
 
-    All properties from your schema will be preserved in the AIRR format.
+    All properties from the biocypher schema defined by user will be preserved in the AIRR format.
     """
+
+    # Constants for internal property filtering
+    _INTERNAL_PROPERTIES = frozenset(["node_id", "node_label", "id", "preferred_id"])
 
     def __init__(
         self,
-        deduplicator=None,
+        deduplicator: Optional["Deduplicator"] = None,
         metadata_entity_type: str = "epitope",
     ):
         """Initialize AirrKG with configurable metadata node type.
@@ -69,22 +76,33 @@ class AirrKG(_InMemoryKG):
             )
             raise ImportError(msg)
 
-    def get_kg(self):
-        """Convert directly to AIRR format using AirCell from scirpy."""
+    def get_kg(self, indirect_pairings: bool = True) -> list[AirrCell]:
+        """Convert directly to AIRR format using AirCell from scirpy.
+
+        Args:
+        ----
+            indirect_pairings: Boolean controlling pairing strategy (default: True)
+                - True: If an epitope is only matched with ONE of the paired receptors - the "paired" AIRR cell will be created
+                - False: If an epitope is only matched with ONE of the paired receptors - no "paired" AIRR cell will be created
+
+        Returns:
+        -------
+            list: List of generated AIRR cells
+        """
         self._check_dependencies()
         if not self.airr_cells:
-            self.airr_cells = self.to_airr_cells(self.adjacency_list)
+            self.airr_cells = self._to_airr_cells(self.adjacency_list, indirect_pairings)
         return self.airr_cells
 
-    def add_nodes(self, nodes):
+    def add_nodes(self, nodes: list[BioCypherNode]):
         """Add BioCypher nodes, organizing them by type."""
         self._add_to_entities_by_type(nodes)
 
-    def add_edges(self, edges):
+    def add_edges(self, edges: list[BioCypherEdge]):
         """Add BioCypher edges, organizing them by type."""
         self._add_to_entities_by_type(edges)
 
-    def _add_to_entities_by_type(self, entities):
+    def _add_to_entities_by_type(self, entities: dict[str, list[Any]]):
         """Add all entities (both nodes and edges) to a common adj. list."""
         lists = self._separate_entity_types(entities)
         for _type, _entities in lists.items():
@@ -135,16 +153,13 @@ class AirrKG(_InMemoryKG):
             edge_type for edge_type in all_edge_types if self.metadata_entity_type in edge_type.lower()
         ]
 
+        # Process chain-to-epitope relationships
         for entity_type in self.chain_to_epitope_relationship_types:
             self._update_receptor_epitope_mapping(entities[entity_type], receptor_epitope_mapping)
 
-        self.chain_to_epitope_relationship_types = [
-            edge_type for edge_type in all_edge_types if self.metadata_entity_type in edge_type.lower()
-        ]
-
         return sequence_nodes, metadata_nodes, receptor_epitope_mapping
 
-    def _update_receptor_epitope_mapping(self, edges: list[Any], mapping: dict):
+    def _update_receptor_epitope_mapping(self, edges: list[BioCypherEdge], mapping: dict[str, set]):
         """Update receptor-epitope mapping with new edges.
 
         Args:
@@ -161,10 +176,11 @@ class AirrKG(_InMemoryKG):
     def _process_paired_chains(
         self,
         entities: dict[str, list[Any]],
-        sequence_nodes: dict,
-        metadata_nodes: dict,
-        receptor_epitope_mapping: dict,
-    ) -> tuple[list[AirrCell], set, int]:
+        sequence_nodes: dict[str, BioCypherNode],
+        metadata_nodes: dict[str, BioCypherNode],
+        receptor_epitope_mapping: dict[str, set],
+        indirect_pairings: bool = True,
+    ) -> tuple[list[AirrCell], set[str], int]:
         """Process paired chains and generate AIRR cells.
 
         Args:
@@ -173,6 +189,7 @@ class AirrKG(_InMemoryKG):
             sequence_nodes: Dictionary of sequence nodes
             metadata_nodes: Dictionary of metadata nodes
             receptor_epitope_mapping: Dictionary of receptor-epitope mappings
+            indirect_pairings: Boolean controlling pairing strategy
 
         Returns:
         -------
@@ -180,36 +197,99 @@ class AirrKG(_InMemoryKG):
         """
         airr_cells = []
         processed_chains = set()
-        multi_epitope_cells = 0
+        n_metacells = 0
 
         for entity_type, edges in entities.items():
             if entity_type in self.chain_relationship_types:
                 for edge in edges:
-                    metadata_ids = self._get_chain_metadata(edge, receptor_epitope_mapping)
+                    source_id, target_id = edge.get_source_id(), edge.get_target_id()
+                    processed_chains.update([source_id, target_id])
 
-                    metadata_nodes_cell = self._get_metadata_nodes(metadata_ids, metadata_nodes)
-                    cell_s = self._generate_airr_cell(
-                        cell_id=edge.get_id(),
-                        source_node=sequence_nodes.get(edge.get_source_id()),
-                        target_node=sequence_nodes.get(edge.get_target_id()),
-                        metadata_nodes=metadata_nodes_cell,
-                        paired=True,
-                    )
+                    # Use conditional logic for pairing strategy
+                    source_metadata = receptor_epitope_mapping.get(source_id, set())
+                    target_metadata = receptor_epitope_mapping.get(target_id, set())
 
-                    airr_cells.extend(cell_s)
-                    # Check if multiple cells were generated (indicating multiple epitopes)
-                    if len(cell_s) > 1:
-                        multi_epitope_cells += 1
-                    processed_chains.update([edge.get_source_id(), edge.get_target_id()])
+                    if indirect_pairings:
+                        # Union: create paired cell if either chain binds epitopes
+                        metadata_ids = source_metadata | target_metadata
 
-        return airr_cells, processed_chains, multi_epitope_cells
+                        metadata_nodes_cell = self._get_metadata_nodes(metadata_ids, metadata_nodes)
+                        if metadata_nodes_cell:
+                            cell_s = self._generate_airr_cell(
+                                cell_id=edge.get_id(),
+                                source_node=sequence_nodes.get(source_id),
+                                target_node=sequence_nodes.get(target_id),
+                                metadata_nodes=metadata_nodes_cell,
+                                paired=True,
+                                receptor_epitope_mapping=receptor_epitope_mapping,
+                            )
+                            airr_cells.extend(cell_s)
+                            if len(cell_s) > 1:
+                                n_metacells += 1
+                    else:
+                        # Intersection: create paired cell only if both chains bind same epitopes
+                        shared_metadata_ids = source_metadata & target_metadata
+
+                        # Create paired cell if there are shared epitopes
+                        if shared_metadata_ids:
+                            shared_metadata_nodes = self._get_metadata_nodes(shared_metadata_ids, metadata_nodes)
+                            if shared_metadata_nodes:
+                                cell_s = self._generate_airr_cell(
+                                    cell_id=edge.get_id(),
+                                    source_node=sequence_nodes.get(source_id),
+                                    target_node=sequence_nodes.get(target_id),
+                                    metadata_nodes=shared_metadata_nodes,
+                                    paired=True,
+                                    receptor_epitope_mapping=receptor_epitope_mapping,
+                                )
+                                airr_cells.extend(cell_s)
+                                if len(cell_s) > 1:
+                                    n_metacells += 1
+
+                        # Create unpaired cells for chains with non-overlapping epitopes
+                        source_only_metadata = source_metadata - target_metadata
+                        target_only_metadata = target_metadata - source_metadata
+
+                        # Create unpaired cell for source chain if it has unique epitopes
+                        if source_only_metadata:
+                            source_only_nodes = self._get_metadata_nodes(source_only_metadata, metadata_nodes)
+                            if source_only_nodes:
+                                source_cells = self._generate_airr_cell(
+                                    cell_id=f"unpaired_{source_id}",
+                                    source_node=sequence_nodes.get(source_id),
+                                    target_node=None,
+                                    metadata_nodes=source_only_nodes,
+                                    paired=False,
+                                    receptor_epitope_mapping=receptor_epitope_mapping,
+                                )
+                                airr_cells.extend(source_cells)
+                                if len(source_cells) > 1:
+                                    n_metacells += 1
+
+                        # Create unpaired cell for target chain if it has unique epitopes
+                        if target_only_metadata:
+                            target_only_nodes = self._get_metadata_nodes(target_only_metadata, metadata_nodes)
+                            if target_only_nodes:
+                                target_cells = self._generate_airr_cell(
+                                    cell_id=f"unpaired_{target_id}",
+                                    source_node=sequence_nodes.get(target_id),
+                                    target_node=None,
+                                    metadata_nodes=target_only_nodes,
+                                    paired=False,
+                                    receptor_epitope_mapping=receptor_epitope_mapping,
+                                )
+                                airr_cells.extend(target_cells)
+                                if len(target_cells) > 1:
+                                    n_metacells += 1
+
+        return airr_cells, processed_chains, n_metacells
 
     def _process_unpaired_chains(
         self,
-        receptor_epitope_mapping: dict,
-        sequence_nodes: dict,
-        metadata_nodes: dict,
-        processed_chains: set,
+        receptor_epitope_mapping: dict[str, set],
+        sequence_nodes: dict[str, BioCypherNode],
+        metadata_nodes: dict[str, BioCypherNode],
+        processed_chains: set[str],
     ) -> tuple[list[AirrCell], int]:
         """Process unpaired chains and generate AIRR cells.
 
@@ -225,33 +305,38 @@ class AirrKG(_InMemoryKG):
             tuple: (List of generated cells, count of cells with multiple epitopes)
         """
         airr_cells = []
-        total_metacells = 0
+        n_metacells = 0
 
         for chain_id in receptor_epitope_mapping:
             if chain_id not in processed_chains:
-                # Get all metadata nodes
+                # Get all metadata nodes for this unpaired chain
                 metadata_nodes_cell = self._get_metadata_nodes(receptor_epitope_mapping[chain_id], metadata_nodes)
 
-                cell_s = self._generate_airr_cell(
-                    cell_id=f"unpaired_{chain_id}",
-                    source_node=sequence_nodes.get(chain_id),
-                    target_node=None,
-                    metadata_nodes=metadata_nodes_cell,
-                    paired=False,
-                )
-                airr_cells.extend(cell_s)
-                # Check if multiple cells were generated (indicating multiple epitopes)
-                if len(cell_s) > 1:
-                    total_metacells += 1
+                if metadata_nodes_cell:
+                    cell_s = self._generate_airr_cell(
+                        cell_id=f"unpaired_{chain_id}",
+                        source_node=sequence_nodes.get(chain_id),
+                        target_node=None,
+                        metadata_nodes=metadata_nodes_cell,
+                        paired=False,
+                        receptor_epitope_mapping=receptor_epitope_mapping,
+                    )
+                    airr_cells.extend(cell_s)
+                    # Check if multiple cells were generated (indicating multiple epitopes)
+                    if len(cell_s) > 1:
+                        n_metacells += 1
 
-        return airr_cells, total_metacells
+        return airr_cells, n_metacells
 
-    def to_airr_cells(self, entities: dict[str, list[Any]]):
+    def _to_airr_cells(self, entities: dict[str, list[Any]], indirect_pairings: bool = True) -> list[AirrCell]:
         """Convert BioCypher entities to AIRR cells using configurable mappings.
 
         Args:
         ----
             entities: Dictionary mapping entity types to lists of BioCypherNode/BioCypherEdge objects
+            indirect_pairings: Boolean controlling pairing strategy (default: True)
+                - True: If an epitope is only matched with ONE of the paired receptors - the "paired" AIRR cell will be created
+                - False: If an epitope is only matched with ONE of the paired receptors - no "paired" AIRR cell will be created
 
         Returns:
         -------
@@ -267,7 +352,7 @@ class AirrKG(_InMemoryKG):
 
         # Process paired chains
         airr_cells, processed_chains, paired_metacells = self._process_paired_chains(
-            entities, sequence_nodes, metadata_nodes, receptor_epitope_mapping
+            entities, sequence_nodes, metadata_nodes, receptor_epitope_mapping, indirect_pairings
         )
 
         # Process unpaired chains
@@ -286,28 +371,14 @@ class AirrKG(_InMemoryKG):
 
         return airr_cells
 
-    def _get_chain_metadata(self, edge: Any, receptor_epitope_mapping: dict) -> set:
-        """Get metadata for both chains in an edge.
-
-        Args:
-        ----
-            edge: Edge connecting two chains
-            receptor_epitope_mapping: Dictionary of receptor-epitope mappings
-
-        Returns:
-        -------
-            set: Combined metadata (default: epitopes) from both chains
-        """
-        return receptor_epitope_mapping.get(edge.get_source_id(), set()) | receptor_epitope_mapping.get(
-            edge.get_target_id(), set()
-        )
-
-    def _get_metadata_nodes(self, metadata_ids: set, metadata_nodes: dict) -> list:
+    def _get_metadata_nodes(
+        self, metadata_ids: set[str], metadata_nodes: dict[str, BioCypherNode]
+    ) -> list[BioCypherNode]:
         """Get metadata nodes for a set of metadata IDs.
 
         Args:
         ----
-            metadata: Set of metadata IDs
+            metadata_ids: Set of metadata IDs
             metadata_nodes: Dictionary of metadata nodes
 
         Returns:
@@ -319,11 +390,12 @@ class AirrKG(_InMemoryKG):
     def _generate_airr_cell(
         self,
         cell_id: str,
-        source_node: BioCypherNode,
-        target_node: BioCypherNode,
+        source_node: Optional[BioCypherNode],
+        target_node: Optional[BioCypherNode],
         metadata_nodes: list[BioCypherNode],
         paired: bool,
-    ) -> AirrCell:
+        receptor_epitope_mapping: Optional[dict[str, set]] = None,
+    ) -> list[AirrCell]:
         cell = AirrCell(cell_id=cell_id)
 
         # Process both chains
@@ -336,57 +408,63 @@ class AirrKG(_InMemoryKG):
 
             # Add all properties except internal ones
             for key, value in props.items():
-                if key not in ["node_id", "node_label", "id", "preferred_id"]:
+                if key not in self._INTERNAL_PROPERTIES:
                     chain[key] = value
 
             # Add locus based on node type
             chain["locus"] = self.sequence_entity_types.get(node.get_label(), node.get_label())
-            chain["consensus_count"] = 0  # TODO: Check whether it should stay hardcoded
+            chain["consensus_count"] = 0
             chain["productive"] = True
+
+            # Add binds_epitope field based on receptor_epitope_mapping
+            if receptor_epitope_mapping and node.get_id() in receptor_epitope_mapping:
+                chain["validated_epitope"] = bool(receptor_epitope_mapping[node.get_id()])
+            else:
+                chain["validated_epitope"] = False
 
             cell.add_chain(chain)
 
         # Add metadata
-        cells = add_metadata(metadata_nodes, cell, paired)
+        cells = self.add_metadata(metadata_nodes, cell, paired)
 
         return cells
 
+    def add_metadata(self, metadata_nodes: list[BioCypherNode], cell: AirrCell, paired: bool) -> list[AirrCell]:
+        """Add metadata from nodes to cell(s) and return a list of cells.
 
-def add_metadata(metadata_nodes: list[BioCypherNode], cell: AirrCell, paired: bool) -> list[AirrCell]:
-    """Add metadata from nodes to cell(s) and return a list of cells.
+        Args:
+        ----
+            metadata_nodes: List of metadata nodes to add
+            cell: Base cell to add metadata to
+            paired: Whether the cell is paired
 
-    Args:
-    ----
-        metadata_nodes: List of metadata nodes to add
-        cell: Base cell to add metadata to
-        paired: Whether the cell is paired
+        Returns:
+        -------
+            List of cells with metadata added
 
-    Returns:
-    -------
-        List of cells with metadata added
+        """
+        cells = []
+        if not metadata_nodes:
+            cell["data_source"] = "BioCypher"
+            cell["is_paired"] = paired
+            cells.append(cell)
+        else:
+            for i, node in enumerate(metadata_nodes):
+                # Create a new AirrCell for each metadata node
+                if i > 0:
+                    cell_id_new = f"{cell.cell_id}_meta{i+1}"
+                    meta_cell = AirrCell(cell_id=cell_id_new)
+                    for chain in cell.chains:
+                        meta_cell.add_chain(chain)
+                else:
+                    meta_cell = cell
+                props = node.get_properties()
+                for key, value in props.items():
+                    if key not in self._INTERNAL_PROPERTIES:
+                        meta_cell[key] = value
 
-    """
-    cells = []
-    if not metadata_nodes:
-        cell["data_source"] = "BioCypher"
-        cell["is_paired"] = paired
-        cells.append(cell)
-    else:
-        for i, node in enumerate(metadata_nodes):
-            # Create a new AirrCell for each metadata node
-            if i > 0:
-                cell_id_new = f"{cell.cell_id}_meta{i+1}"
-                meta_cell = AirrCell(cell_id=cell_id_new)
-                for chain in cell.chains:
-                    meta_cell.add_chain(chain)
-            else:
-                meta_cell = cell
-            props = node.get_properties()
-            for key, value in props.items():
-                if key not in ["node_id", "node_label", "id", "preferred_id"]:
-                    meta_cell[key] = value
+                meta_cell["data_source"] = "BioCypher"
+                meta_cell["is_paired"] = paired
 
-            meta_cell["data_source"] = "BioCypher"
-            meta_cell["is_paired"] = paired
-            cells.append(meta_cell)
-    return cells
+                cells.append(meta_cell)
+        return cells

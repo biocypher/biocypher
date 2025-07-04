@@ -277,19 +277,19 @@ def tcr_pair_edges():
         BioCypherEdge(
             source_id="tra:CAVRWGGKLSF",
             target_id="trb:CASSEGGVETQYF",
-            relationship_id="pair1",
+            relationship_id="tra:CAVRWGGKLSF-trb:CASSEGGVETQYF",
             relationship_label="alpha sequence to beta sequence association",
         ),
         BioCypherEdge(
             source_id="tra:CAGLLPGGGADGLTF",
             target_id="trb:CASSSRGGQETQYF",
-            relationship_id="pair2",
+            relationship_id="tra:CAGLLPGGGADGLTF-trb:CASSSRGGQETQYF",
             relationship_label="alpha sequence to beta sequence association",
         ),
         BioCypherEdge(
             source_id="tra:CAVDNNNDMRF",
             target_id="trb:CASSPRGDSGNTIYF",
-            relationship_id="pair3",
+            relationship_id="tra:CAVDNNNDMRF-trb:CASSPRGDSGNTIYF",
             relationship_label="alpha sequence to beta sequence association",
         ),
     ]
@@ -307,15 +307,27 @@ def tcr_epitope_edges():
             relationship_label="t cell receptor sequence to epitope association",
         ),
         BioCypherEdge(
-            source_id="trb:CASSEGGVETQYF",
+            source_id="tra:CAVRWGGKLSF",
             target_id="epitope:KLGGALQAK",
             relationship_id="bind2",
             relationship_label="t cell receptor sequence to epitope association",
         ),
         BioCypherEdge(
             source_id="trb:CASSPRGDSGNTIYF",
-            target_id="epitope:GILGFVFTL",
+            target_id="epitope:NLVPMVATV",
             relationship_id="bind3",
+            relationship_label="t cell receptor sequence to epitope association",
+        ),
+        BioCypherEdge(
+            source_id="tra:CAVDNNNDMRF",
+            target_id="epitope:GILGFVFTL",
+            relationship_id="bind4",
+            relationship_label="t cell receptor sequence to epitope association",
+        ),
+        BioCypherEdge(
+            source_id="tra:CAVDNNNDMRF",
+            target_id="epitope:NLVPMVATV",
+            relationship_id="bind5",
             relationship_label="t cell receptor sequence to epitope association",
         ),
     ]
