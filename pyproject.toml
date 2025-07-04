@@ -44,6 +44,10 @@ neo4j-utils = "0.0.7"
 pandas = "^2.0.1"
 pooch = "^1.7.0"
 tqdm = "^4.65.0"
+scirpy = { version = "^0.22.0", optional = true }
+
+[tool.poetry.extras]
+scirpy = ["scirpy"]
 
 [tool.poetry.group.dev.dependencies]
 mkdocs-material = "^9.5"
