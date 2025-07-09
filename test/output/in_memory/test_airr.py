@@ -1,5 +1,6 @@
 import pytest
 
+
 def test_airr(in_memory_airr_kg):
     assert in_memory_airr_kg.adjacency_list == {}
 
@@ -101,18 +102,22 @@ def test_no_indirect_pairings(
     assert "CAVRWGGKLSF" in alpha_junctions
     assert "CAVDNNNDMRF" in alpha_junctions
 
+
 # 1. Error Handling Tests
-def test_missing_scirpy_raises_error(in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges):
+def test_missing_scirpy_raises_error(
+    in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges
+):
     """Test that missing scirpy dependency raises appropriate error."""
     # Add data to trigger AIRR cell generation
     in_memory_airr_kg.add_nodes([tra_nodes[0], trb_nodes[0], epitope_nodes[0]])
     in_memory_airr_kg.add_edges([tcr_pair_edges[0], tcr_epitope_edges[0]])
-    
+
     # Mock HAS_SCIRPY = False by temporarily modifying the module
     import biocypher.output.in_memory._airr as airr_module
+
     original_has_scirpy = airr_module.HAS_SCIRPY
     airr_module.HAS_SCIRPY = False
-    
+
     try:
         with pytest.raises(ImportError) as exc_info:
             in_memory_airr_kg.get_kg()
@@ -135,13 +140,9 @@ def test_empty_entities_raises_error(in_memory_airr_kg):
     # Test with empty list - should not raise error, just return empty result
     airr_cells = in_memory_airr_kg._to_airr_cells({"empty_type": []})
     assert airr_cells == []
-    
+
     # Test with multiple empty lists
-    airr_cells = in_memory_airr_kg._to_airr_cells({
-        "empty_type1": [],
-        "empty_type2": [],
-        "empty_type3": []
-    })
+    airr_cells = in_memory_airr_kg._to_airr_cells({"empty_type1": [], "empty_type2": [], "empty_type3": []})
     assert airr_cells == []
 
 
@@ -151,10 +152,10 @@ def test_deduplication_in_airr_kg(in_memory_airr_kg, tra_nodes, trb_nodes):
     # Add the same node twice
     duplicate_node = tra_nodes[0]
     in_memory_airr_kg.add_nodes([duplicate_node, duplicate_node])
-    
+
     # Check that only one instance is stored
     assert len(in_memory_airr_kg.adjacency_list["tra sequence"]) == 1
-    
+
     # Verify deduplicator tracked the duplicate
     assert duplicate_node.get_id() in in_memory_airr_kg.deduplicator.duplicate_entity_ids
 
@@ -165,7 +166,7 @@ def test_deduplication_with_edges(in_memory_airr_kg, tra_nodes, trb_nodes, tcr_p
     duplicate_edge = tcr_pair_edges[0]
     in_memory_airr_kg.add_nodes([tra_nodes[0], trb_nodes[0]])
     in_memory_airr_kg.add_edges([duplicate_edge, duplicate_edge])
-    
+
     # Check that only one edge is stored
     assert len(in_memory_airr_kg.adjacency_list["alpha sequence to beta sequence association"]) == 1
 
@@ -175,23 +176,22 @@ def test_custom_metadata_entity_type(tra_nodes, trb_nodes, epitope_nodes, tcr_ep
     """Test with different metadata entity types."""
     # Create AIRR KG with custom metadata type
     from biocypher.output.in_memory._airr import AirrKG
-    from biocypher._deduplicate import Deduplicator
-    
+
     custom_kg = AirrKG(metadata_entity_type="antigen")
-    
+
     # Add nodes with different metadata type
     custom_kg.add_nodes([tra_nodes[0], epitope_nodes[0]])
     custom_kg.add_edges([tcr_epitope_edges[0]])
-    
+
     # Verify the nodes are stored with their actual node_label, not the custom metadata type
     assert "epitope" in custom_kg.adjacency_list  # Uses node_label, not metadata_entity_type
     assert "tra sequence" in custom_kg.adjacency_list
     assert len(custom_kg.adjacency_list["epitope"]) == 1
     assert len(custom_kg.adjacency_list["tra sequence"]) == 1
-    
+
     # Verify the custom metadata entity type is configured
     assert custom_kg.metadata_entity_type == "antigen"
-    
+
     # Test that the custom metadata type affects processing
     # The metadata_entity_type is used during AIRR cell generation, not storage
     airr_cells = custom_kg.get_kg()
@@ -202,12 +202,11 @@ def test_custom_metadata_entity_type(tra_nodes, trb_nodes, epitope_nodes, tcr_ep
 def test_metadata_entity_type_configuration():
     """Test that metadata entity type is properly configured."""
     from biocypher.output.in_memory._airr import AirrKG
-    from biocypher._deduplicate import Deduplicator
-    
+
     # Test default configuration
     default_kg = AirrKG()
     assert default_kg.metadata_entity_type == "epitope"
-    
+
     # Test custom configuration
     custom_kg = AirrKG(metadata_entity_type="peptide")
     assert custom_kg.metadata_entity_type == "peptide"
@@ -219,13 +218,13 @@ def test_unpaired_chain_processing(in_memory_airr_kg, tra_nodes, epitope_nodes, 
     # Add unpaired alpha chain with epitope binding
     in_memory_airr_kg.add_nodes([tra_nodes[0], epitope_nodes[0]])
     in_memory_airr_kg.add_edges([tcr_epitope_edges[0]])
-    
+
     airr_cells = in_memory_airr_kg.get_kg()
-    
+
     # Should create one AIRR cell for the unpaired chain
     assert len(airr_cells) == 1
     cell = airr_cells[0]
-    
+
     # Should have one chain (alpha only)
     assert len(cell.chains) == 1
     assert cell.chains[0]["locus"] == "TRA"
@@ -238,24 +237,26 @@ def test_paired_chains_without_epitopes(in_memory_airr_kg, tra_nodes, trb_nodes,
     # Add paired chains without epitope relationships
     in_memory_airr_kg.add_nodes([tra_nodes[0], trb_nodes[0]])
     in_memory_airr_kg.add_edges([tcr_pair_edges[0]])
-    
+
     airr_cells = in_memory_airr_kg.get_kg()
-    
+
     # Should not create any AIRR cells since no epitopes are bound
     assert len(airr_cells) == 0
 
 
-def test_complex_epitope_mapping(in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges):
+def test_complex_epitope_mapping(
+    in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges
+):
     """Test complex epitope mapping scenarios."""
     # Add all nodes and edges to create complex scenario
     in_memory_airr_kg.add_nodes(tra_nodes + trb_nodes + epitope_nodes)
     in_memory_airr_kg.add_edges(tcr_pair_edges + tcr_epitope_edges)
-    
+
     airr_cells = in_memory_airr_kg.get_kg()
-    
+
     # Should create multiple AIRR cells
     assert len(airr_cells) > 0
-    
+
     # Check that cells have proper epitope metadata
     for cell in airr_cells:
         assert "data_source" in cell
@@ -264,118 +265,126 @@ def test_complex_epitope_mapping(in_memory_airr_kg, tra_nodes, trb_nodes, epitop
         assert any(key in cell for key in ["antigen_name", "antigen_organism", "MHC_class"])
 
 
-def test_indirect_vs_direct_pairings(in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges):
+def test_indirect_vs_direct_pairings(
+    in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges
+):
     """Test the difference between indirect and direct pairing strategies."""
     # Add paired chains where only one chain binds an epitope
     in_memory_airr_kg.add_nodes([tra_nodes[0], trb_nodes[0], epitope_nodes[0]])
     in_memory_airr_kg.add_edges([tcr_pair_edges[0], tcr_epitope_edges[0]])  # Only alpha binds epitope
-    
+
     # Test indirect pairings (default)
     indirect_cells = in_memory_airr_kg._to_airr_cells(in_memory_airr_kg.adjacency_list, indirect_pairings=True)
-    
+
     # Test direct pairings
     direct_cells = in_memory_airr_kg._to_airr_cells(in_memory_airr_kg.adjacency_list, indirect_pairings=False)
-    
+
     # Indirect should create paired cell, direct should create unpaired cell
     assert len(indirect_cells) == 1
     assert indirect_cells[0]["is_paired"] == True
-    
+
     # Direct should create unpaired cell for the chain that binds epitope
     assert len(direct_cells) == 1
     assert direct_cells[0]["is_paired"] == False
 
 
 # 5. Property Preservation Tests
-def test_all_properties_preserved(in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges):
+def test_all_properties_preserved(
+    in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges
+):
     """Test that all user properties are preserved in AIRR cells."""
     # Add nodes with rich properties
     in_memory_airr_kg.add_nodes([tra_nodes[0], trb_nodes[0], epitope_nodes[0]])
     in_memory_airr_kg.add_edges([tcr_pair_edges[0], tcr_epitope_edges[0]])
-    
+
     airr_cells = in_memory_airr_kg.get_kg()
-    
+
     assert len(airr_cells) == 1
     cell = airr_cells[0]
-    
+
     # Check that all chain properties are preserved
     alpha_chain = cell.chains[0]
     beta_chain = cell.chains[1]
-    
+
     # Alpha chain properties
     assert alpha_chain["junction_aa"] == "CAVRWGGKLSF"
     assert alpha_chain["chain_1_type"] == "tra"
     assert alpha_chain["chain_1_organism"] == "HomoSapiens"
     assert alpha_chain["chain_1_v_gene"] == "TRAV3*01"
     assert alpha_chain["chain_1_j_gene"] == "TRAJ20*01"
-    
+
     # Beta chain properties
     assert beta_chain["junction_aa"] == "CASSEGGVETQYF"
     assert beta_chain["chain_1_type"] == "trb"
     assert beta_chain["chain_1_organism"] == "HomoSapiens"
     assert beta_chain["chain_1_v_gene"] == "TRBV13*01"
     assert beta_chain["chain_1_j_gene"] == "TRBJ2-5*01"
-    
+
     # Epitope properties
     assert cell["antigen_name"] == "pp65"
     assert cell["antigen_organism"] == "CMV"
     assert cell["MHC_class"] == "MHCI"
 
 
-def test_internal_properties_filtered(in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges):
+def test_internal_properties_filtered(
+    in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges
+):
     """Test that internal BioCypher properties are filtered out."""
     # Add nodes and edges
     in_memory_airr_kg.add_nodes([tra_nodes[0], trb_nodes[0], epitope_nodes[0]])
     in_memory_airr_kg.add_edges([tcr_pair_edges[0], tcr_epitope_edges[0]])
-    
+
     airr_cells = in_memory_airr_kg.get_kg()
-    
+
     assert len(airr_cells) == 1
     cell = airr_cells[0]
-    
+
     # Check that internal properties are not present in chains
     alpha_chain = cell.chains[0]
     internal_properties = ["node_id", "node_label", "id", "preferred_id"]
-    
+
     for prop in internal_properties:
         assert prop not in alpha_chain
-    
+
     # Check that internal properties are not present in cell metadata
     for prop in internal_properties:
         assert prop not in cell
 
 
-def test_airr_specific_properties_added(in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges):
+def test_airr_specific_properties_added(
+    in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges
+):
     """Test that AIRR-specific properties are properly added."""
     # Add nodes and edges
     in_memory_airr_kg.add_nodes([tra_nodes[0], trb_nodes[0], epitope_nodes[0]])
     in_memory_airr_kg.add_edges([tcr_pair_edges[0], tcr_epitope_edges[0]])
-    
+
     airr_cells = in_memory_airr_kg.get_kg()
-    
+
     assert len(airr_cells) == 1
     cell = airr_cells[0]
-    
+
     # Check AIRR-specific properties are added
     assert "locus" in cell.chains[0]
     assert "locus" in cell.chains[1]
     assert cell.chains[0]["locus"] == "TRA"
     assert cell.chains[1]["locus"] == "TRB"
-    
+
     assert "consensus_count" in cell.chains[0]
     assert "consensus_count" in cell.chains[1]
     assert cell.chains[0]["consensus_count"] == 0
     assert cell.chains[1]["consensus_count"] == 0
-    
+
     assert "productive" in cell.chains[0]
     assert "productive" in cell.chains[1]
     assert cell.chains[0]["productive"] == True
     assert cell.chains[1]["productive"] == True
-    
+
     assert "validated_epitope" in cell.chains[0]
     assert "validated_epitope" in cell.chains[1]
     assert cell.chains[0]["validated_epitope"] == True  # Alpha binds epitope
     assert cell.chains[1]["validated_epitope"] == False  # Beta doesn't bind epitope
-    
+
     # Check cell-level properties
     assert "data_source" in cell
     assert cell["data_source"] == "BioCypher"
