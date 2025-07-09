@@ -194,8 +194,7 @@ def test_custom_metadata_entity_type(tra_nodes, trb_nodes, epitope_nodes, tcr_ep
 
     # Test that the custom metadata type affects processing
     # The metadata_entity_type is used during AIRR cell generation, not storage
-    airr_cells = custom_kg.get_kg()
-    # Should still work because the node_label "epitope" is recognized as metadata
+    custom_kg.get_kg()  # Should still work because the node_label "epitope" is recognized as metadata
     # even though metadata_entity_type is set to "antigen"
 
 
@@ -229,7 +228,7 @@ def test_unpaired_chain_processing(in_memory_airr_kg, tra_nodes, epitope_nodes, 
     assert len(cell.chains) == 1
     assert cell.chains[0]["locus"] == "TRA"
     assert cell.chains[0]["junction_aa"] == "CAVRWGGKLSF"
-    assert cell["is_paired"] == False
+    assert not cell["is_paired"]
 
 
 def test_paired_chains_without_epitopes(in_memory_airr_kg, tra_nodes, trb_nodes, tcr_pair_edges):
@@ -281,11 +280,11 @@ def test_indirect_vs_direct_pairings(
 
     # Indirect should create paired cell, direct should create unpaired cell
     assert len(indirect_cells) == 1
-    assert indirect_cells[0]["is_paired"] == True
+    assert indirect_cells[0]["is_paired"] is True
 
     # Direct should create unpaired cell for the chain that binds epitope
     assert len(direct_cells) == 1
-    assert direct_cells[0]["is_paired"] == False
+    assert not direct_cells[0]["is_paired"]
 
 
 # 5. Property Preservation Tests
@@ -377,16 +376,16 @@ def test_airr_specific_properties_added(
 
     assert "productive" in cell.chains[0]
     assert "productive" in cell.chains[1]
-    assert cell.chains[0]["productive"] == True
-    assert cell.chains[1]["productive"] == True
+    assert cell.chains[0]["productive"] is True
+    assert cell.chains[1]["productive"] is True
 
     assert "validated_epitope" in cell.chains[0]
     assert "validated_epitope" in cell.chains[1]
-    assert cell.chains[0]["validated_epitope"] == True  # Alpha binds epitope
-    assert cell.chains[1]["validated_epitope"] == False  # Beta doesn't bind epitope
+    assert cell.chains[0]["validated_epitope"] is True  # Alpha binds epitope
+    assert not cell.chains[1]["validated_epitope"]  # Beta doesn't bind epitope
 
     # Check cell-level properties
     assert "data_source" in cell
     assert cell["data_source"] == "BioCypher"
     assert "is_paired" in cell
-    assert cell["is_paired"] == True
+    assert cell["is_paired"] is True
