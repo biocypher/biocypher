@@ -99,10 +99,9 @@ protein protein interaction:
   - A reference to another entity, such as `gene` or `pairwise gene to gene interaction`.
 
 ### `label_as_edge`
-- **Description:** Indicates whether the entity should be represented as an edge in a graph-based representation.
+- **Description:** Indicates the label to be used in the output graph if the entity is represented as an edge. Used to override the default name (PascalCase conversion of the class). Typical use case: adhere to labelled property graph naming scheme (uppercase verbs). Only applied to edges.
 - **Possible values:**
-  - `true`
-  - `false`
+  - A string describing the edge label, for instance, `PERTURBED_IN` or `TARGETS`.
 
 ### `preferred_id`
 - **Description:** Specifies the primary identifier used for this entity, typically referencing a standardized database ID.
