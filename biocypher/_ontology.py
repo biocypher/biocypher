@@ -503,6 +503,8 @@ class Ontology:
         self.mapping = ontology_mapping
         self._tail_ontology_meta = tail_ontologies
 
+        self.biocypher_prefix = "https://biocypher.org/biocypher#"
+
         self._tail_ontologies = None
         self._nx_graph = None
 
@@ -656,6 +658,7 @@ class Ontology:
             tail_ontology_subtree = nx.relabel_nodes(tail_ontology_subtree, {tail_join_node: head_join_node})
 
         # combine head ontology and tail subtree
+        # FIXME tail properties overwrites head ones, here, is it what we do want?
         self._nx_graph = nx.compose(self._nx_graph, tail_ontology_subtree)
 
     def _extend_ontology(self) -> None:
@@ -669,20 +672,23 @@ class Ontology:
             logger.debug("No ontology loaded, use the head ontology.")
             self._nx_graph = self._head_ontology.get_nx_graph().copy()
 
+        renaming = self.get_renaming()
+
         for key, value in self.mapping.extended_schema.items():
             # If this class is either a root or a synonym.
             if not value.get("is_a"):
                 # If it is a synonym.
                 if self._nx_graph.has_node(value.get("synonym_for")):
-                    logger.debug(f"Type `{key}` is a synonym.")
+                    logger.debug(f"Type `{key}` is a synonym for {value.get('synonym_for')}.")
+                    # self.extended_renaming[key] = value.get("synonym_for")
                     continue
 
                 # If this class is in the schema, but not in the loaded vocabulary.
                 if not self._nx_graph.has_node(key):
                     msg = (
-                        f"Node {key} not found in ontology, but also has no inheritance definition. Please check your "
+                        f"Type `{key}` not found in ontology, but also has no inheritance definition. Please check your "
                         "schema for spelling errors, first letter not in lower case, use of underscores, a missing "
-                        "`is_a` definition (SubClassOf a root node), or missing labels in class or super-classes."
+                        "`is_a` definition (subClassOf a root node), or missing labels in class or super-classes."
                     )
                     logger.error(msg)
                     raise ValueError(msg)
@@ -703,9 +709,13 @@ class Ontology:
                     logger.debug(f"\tNew parent: {parent}.")
                     self._nx_graph.add_node(parent)
                     self._nx_graph.nodes[parent]["label"] = sentencecase_to_pascalcase(parent)
-                    # self.extended_renaming[parent] = sentencecase_to_pascalcase(parent)
-                    # self.extended_renaming[sentencecase_to_pascalcase(parent)] = parent
-                    self.extended_renaming[parent] = parent
+
+                    if parent not in renaming:
+                        # If the parent does not comes from an ontology.
+                        # Make an IRI in BioCypher namespace.
+                        IRI = f"{self.biocypher_prefix}{sentencecase_to_pascalcase(parent)}"
+                        self.extended_renaming[IRI] = parent
+                    # else: no need to save it again.
 
                     # mark parent as user extension
                     self._nx_graph.nodes[parent]["user_extension"] = True
@@ -715,9 +725,11 @@ class Ontology:
                     logger.debug(f"\tNew child: `{child}` is_a `{parent}`.")
                     self._nx_graph.add_node(child)
                     self._nx_graph.nodes[child]["label"] = sentencecase_to_pascalcase(child)
-                    # self.extended_renaming[child] = sentencecase_to_pascalcase(child)
-                    # self.extended_renaming[sentencecase_to_pascalcase(child)] = child
-                    self.extended_renaming[child] = child
+
+                    # A child necessarily comes from a new type declared with `is_a`.
+                    assert child not in renaming
+                    IRI = f"{self.biocypher_prefix}{sentencecase_to_pascalcase(child)}"
+                    self.extended_renaming[IRI] = child
 
                     # mark child as user extension
                     self._nx_graph.nodes[child]["user_extension"] = True
@@ -727,6 +739,7 @@ class Ontology:
 
                 child = parent
 
+        # FIXME because this was not an error in previous versions, we automatically "fix" it. But we may want to make this a proper error in future versions.
         self._connect_dangling_classes()
 
 
@@ -737,13 +750,14 @@ class Ontology:
             logger.debug(f"Ancestors of `{current}`: `{' > '.join(ancestors[1:])}`")
             ancestor = ancestors[-1]
             if ancestor != self._head_ontology._root_label:
-                logger.warning(f"Label `{current}` is not attached to an ontology tree after `{ancestor}`. I'll connect this last one to the root `{self._head_ontology._root_label}` for you, but this may be an error in your schema. Check that the label declared with `is_a` exists in an ontology or is an user extension.")
+                # FIXME because this was not an error in previous versions, we automatically "fix" it. But we may want to make this a proper error in future versions.
+                logger.error(f"Label `{current}` is not attached to an ontology tree after `{ancestor}`. I'll connect this last one to the root `{self._head_ontology._root_label}` for you, but this is an error in your schema. Check that the label declared with `is_a` exists in an ontology or is an user extension.")
                 self._nx_graph.add_edge(ancestor, self._head_ontology._root_label)
 
 
     def _connect_biolink_classes(self) -> None:
         """Experimental: Adds edges from disjoint classes to the entity node."""
-        # FIXME probably superseeded by _connect_dangling_classes above.
+        # FIXME probably superseeded by _connect_dangling_classes above?
         if not self._nx_graph:
             self._nx_graph = self._head_ontology.get_nx_graph().copy()
 
@@ -940,6 +954,5 @@ class Ontology:
             for key, onto in self._tail_ontologies.items():
                 assert type(onto) == OntologyAdapter
                 all_renaming.update(onto.renaming)
-                all_renaming.update(onto.extended_renaming)
         return all_renaming
 

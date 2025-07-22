@@ -756,16 +756,16 @@ class _BatchWriter(_Writer, ABC):
                         cprops = self.translator.ontology.mapping.extended_schema.get(label).get(
                             "properties",
                         )
-                    else:
-                        # try via "label_as_edge"
-                        for (
-                            k,
-                            v,
-                        ) in self.translator.ontology.mapping.extended_schema.items():
-                            if isinstance(v, dict):
-                                if v.get("label_as_edge") == label:
-                                    cprops = v.get("properties")
-                                    break
+                    # else:
+                    #     # try via "label_as_edge"
+                    #     for (
+                    #         k,
+                    #         v,
+                    #     ) in self.translator.ontology.mapping.extended_schema.items():
+                    #         if isinstance(v, dict):
+                    #             if v.get("label_as_edge") == label:
+                    #                 cprops = v.get("properties")
+                    #                 break
                     if cprops:
                         d = cprops
 
@@ -923,15 +923,15 @@ class _BatchWriter(_Writer, ABC):
 
             if label in ["IS_SOURCE_OF", "IS_TARGET_OF", "IS_PART_OF"]:
                 skip_id = True
-            elif not self.translator.ontology.mapping.extended_schema.get(label):
-                # find label in schema by label_as_edge
-                for (
-                    k,
-                    v,
-                ) in self.translator.ontology.mapping.extended_schema.items():
-                    if v.get("label_as_edge") == label:
-                        schema_label = k
-                        break
+            # elif not self.translator.ontology.mapping.extended_schema.get(label):
+            #     # find label in schema by label_as_edge
+            #     for (
+            #         k,
+            #         v,
+            #     ) in self.translator.ontology.mapping.extended_schema.items():
+            #         if v.get("label_as_edge") == label:
+            #             schema_label = k
+            #             break
             else:
                 schema_label = label
 
