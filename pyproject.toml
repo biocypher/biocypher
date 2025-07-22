@@ -24,6 +24,7 @@ repository = "https://github.com/biocypher/biocypher"
 readme = "README.md"
 
 [project]
+name = "biocypher"
 requires-python = ">=3.10"
 
 [project.urls]

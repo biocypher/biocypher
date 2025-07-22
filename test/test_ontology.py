@@ -354,3 +354,30 @@ def test_duplicated_tail_ontologies(caplog, extended_ontology_mapping):
         tree = ontology.show_ontology_structure()
     assert tree
     assert any("The ontology contains multiple inheritance" in record.message for record in caplog.records)
+
+
+def test_connectivity_of_extended_ontology(caplog, extended_ontology_mapping):
+    ontology = Ontology(
+        head_ontology={
+            "url": "https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl",
+            "root_node": "entity",
+        },
+        ontology_mapping=extended_ontology_mapping,
+        tail_ontologies={
+            "so": {
+                "url": "test/ontologies/so.owl",
+                "head_join_node": "sequence variant",
+                "tail_join_node": "sequence_variant",
+            },
+        }
+    )
+    assert ontology
+    with caplog.at_level(logging.INFO):
+        tree = ontology.show_ontology_structure()
+    assert tree
+
+    # A directed graph is weakly connected if and only if
+    # every vertex in the graph is reachable from every other vertex,
+    # when the direction of the edge between nodes is ignored.
+    assert nx.is_weakly_connected(ontology._nx_graph)
+

@@ -58,12 +58,15 @@ def _get_nodes_non_compliant_names(length: int) -> list:
 @pytest.fixture(scope="function")
 def _get_edges(length):
     edges = []
-    for i in range(length):
+    # Since we link p{i} and p{i+1}, we need to start at p1,
+    # because no p0 is created in _get_nodes*.
+    for i in range(1,length+1):
         e1 = BioCypherEdge(
             relationship_id=f"prel{i}",
             source_id=f"p{i}",
             target_id=f"p{i + 1}",
-            relationship_label="PERTURBED_IN_DISEASE",
+            # relationship_label="PERTURBED_IN_DISEASE",
+            relationship_label="gene to disease association",
             properties={
                 "residue": "T253",
                 "level": 4,
@@ -76,7 +79,8 @@ def _get_edges(length):
             relationship_id=f"mrel{i}",
             source_id=f"m{i}",
             target_id=f"p{i + 1}",
-            relationship_label="Is_Mutated_In",
+            # relationship_label="Is_Mutated_In",
+            relationship_label="mutation to tissue association",
             properties={
                 "site": "3-UTR",
                 "confidence": 1,

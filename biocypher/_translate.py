@@ -282,10 +282,11 @@ class Translator:
                     yield BioCypherRelAsNode(n, e_s, e_t)
 
                 else:
-                    edge_label = self.ontology.mapping.extended_schema[bl_type].get("label_as_edge")
-
-                    if edge_label is None:
-                        edge_label = bl_type
+                    # FIXME HERE add the label_as_edge to the extended ontology, as a child of the section name?
+                    # edge_label = self.ontology.mapping.extended_schema[bl_type].get("label_as_edge")
+                    # if edge_label is None:
+                    #     edge_label = bl_type
+                    edge_label = bl_type
 
                     yield BioCypherEdge(
                         relationship_id=_id,
@@ -349,11 +350,12 @@ class Translator:
                 for label in labels:
                     self._ontology_mapping[label] = key
 
-            if value.get("label_as_edge"):
-                self._add_translation_mappings(labels, value["label_as_edge"])
+            # if value.get("label_as_edge"):
+            #     self._add_translation_mappings(labels, value["label_as_edge"])
 
-            else:
-                self._add_translation_mappings(labels, key)
+            # else:
+            #     self._add_translation_mappings(labels, key)
+            self._add_translation_mappings(labels, key)
 
     def _get_ontology_mapping(self, label: str) -> str | None:
         """Find the ontology class for the given input type.

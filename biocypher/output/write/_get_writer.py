@@ -15,6 +15,7 @@ from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
 from biocypher.output.write.graph._networkx import _NetworkXWriter
 from biocypher.output.write.graph._owl import _OWLWriter
 from biocypher.output.write.graph._rdf import _RDFWriter
+from biocypher.output.write.graph._metagraph import _MetaGraphWriter
 from biocypher.output.write.relational._csv import _PandasCSVWriter
 from biocypher.output.write.relational._postgresql import _PostgreSQLBatchWriter
 from biocypher.output.write.relational._sqlite import _SQLiteBatchWriter
@@ -52,6 +53,8 @@ DBMS_TO_CLASS = {
     "networkx": _NetworkXWriter,
     "NetworkX": _NetworkXWriter,
     "airr": _AirrWriter,
+    "metagraph": _MetaGraphWriter,
+    "Metagraph": _MetaGraphWriter,
 }
 
 
@@ -115,5 +118,6 @@ def get_writer(
             file_format=dbms_config.get("file_format"),  # rdf, owl
             rdf_namespaces=dbms_config.get("rdf_namespaces"),  # rdf, owl
             edge_model=dbms_config.get("edge_model"),  # owl
+            use_IRI=dbms_config.get("use_IRI"),  # metagraph
         )
     return None
