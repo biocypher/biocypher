@@ -12,15 +12,6 @@ from rdflib import (
 from rdflib import CSVW, RDF, Graph, Literal
 
 
-# def fix_ontology(bw_owl):
-#     entity = list(bw_owl.graph.triples((None, RDFS.subClassOf, OWL.Thing)))
-#     if not entity:
-#         # Manually add Entity as having an ancestor,
-#         # or else Biocypher will not consider it.
-#         # FIXME is this a bug of BioCypher?
-#         bw_owl.graph.add((URIRef(bw_owl.namespaces["biocypher"]["Entity"]), RDFS.subClassOf, OWL.Thing))
-
-
 @pytest.mark.parametrize("length", [4], scope="function")
 def test_metagraph_write_data(bw_metagraph, length, _get_nodes, _get_edges):
     # See test/fixtures/metagraph.py

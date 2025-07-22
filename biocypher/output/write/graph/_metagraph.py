@@ -5,6 +5,7 @@ import logging
 from rdflib import RDFS
 import networkx as nx
 from biocypher.output.write._writer import _Writer
+from biocypher._misc import sentencecase_to_pascalcase, to_lower_sentence_case
 
 logger = logging.getLogger()
 
@@ -68,16 +69,27 @@ class _MetaGraphWriter(_Writer):
         self._use_IRI = use_IRI
         logger.info(f"Write the metagraph using IRIs instead of BioCypher's labels: {use_IRI}")
 
-        # Node label mapping: from BioCypher label to origina IRI.
+        # Node label mapping: from BioCypher label to original (or adhoc) IRI.
         self.BC_to_IRI = {}
-        # Node label mapping: from origin IRI to BioCypher label.
+        # Node label mapping: from original (or adhoc) IRI to BioCypher label.
         self.IRI_to_BC = {}
         logger.debug("TAG Populate mappings with the translator's data.")
         for IRI,BC in self.translator.ontology.get_renaming().items():
+            # BC is in sentence case.
             logger.debug(f"{BC} == {IRI}")
             # Always serialize IRIs, which are rdflib.URIref objects.
             self.BC_to_IRI[BC] = str(IRI)
             self.IRI_to_BC[str(IRI)] = BC
+
+        for orig,new in self.translator.mappings.items():
+            # orig is in sentence case,
+            # new is in pascalcase
+            logger.debug(f"Translator maps: {orig} to {new}")
+            if orig in self.BC_to_IRI:
+                IRI = self.BC_to_IRI[orig]
+                self.BC_to_IRI[new] = IRI
+            else:
+                logger.warning(f"\tTranslated term: `{orig}` unknown in ontology.")
 
         # Types of seen nodes.
         self.type_of = {}
@@ -126,12 +138,13 @@ class _MetaGraphWriter(_Writer):
         # so we need the NX graph, which has them.
         self.metagraph = copy.copy(self.translator.ontology._head_ontology.get_nx_graph())
         if self.translator.ontology._tail_ontologies:
-            for onto in self.translator.ontology._tail_ontologies:
+            for onto in self.translator.ontology._tail_ontologies.values():
                 tail_graph = copy.copy(onto.get_nx_graph())
-                self.metagraph = nx.union(self.metagraph, tail_graph)
+                self.metagraph = nx.compose(tail_graph, self.metagraph)
 
         # Add the expected properties to every nodes.
         for node in self.metagraph.nodes:
+            logger.debug(f"Loaded: {node} {self.metagraph.nodes[node]}")
             # Remove Biocypher's attributes on the NX elements,
             # since we want to have our owns.
             bc_keys = [k for k in self.metagraph.nodes[node]]
@@ -140,9 +153,12 @@ class _MetaGraphWriter(_Writer):
 
             # Now put our own attributes.
             props = copy.copy(self.metaprops)
-            props[self.keys["IRI"]] = str(self.BC_to_IRI[node])
+            if self._use_IRI:
+                props[self.keys["IRI"]] = str(self.BC_to_IRI[node])
+
             for k,v in props.items():
                 self.metagraph.nodes[node][k] = v
+
 
         # Edges in BioCypher's NX graphs don't have attributes,
         # so we don't need to delete them.
@@ -152,6 +168,7 @@ class _MetaGraphWriter(_Writer):
         # for s,t in self.metagraph.edges:
             # props = copy.copy(self.metaprops)
             # props[self.keys["IRI"]] = FIXME hardcoded rdfs:subClassOf ?
+
 
 
     def _add_node(self, element):
@@ -164,7 +181,7 @@ class _MetaGraphWriter(_Writer):
         # From here, we know we have a type.
         if self._use_IRI:
             node_type = str(self.BC_to_IRI[label])
-            logger.debug(f"{label} == {node_type}")
+            # logger.debug(f"{label} == {node_type}")
         else:
             node_type = label
 
@@ -199,7 +216,7 @@ class _MetaGraphWriter(_Writer):
         # From here, we know label is a edge type.
         if self._use_IRI:
             edge_type = str(self.BC_to_IRI[label])
-            logger.debug(f"{label} == {edge_type}")
+            logger.debug(f"Found `{label}` as IRI {edge_type}")
         else:
             edge_type = label
 
@@ -212,7 +229,7 @@ class _MetaGraphWriter(_Writer):
         s = self.type_of[source_id]
         t = self.type_of[target_id]
         if not self.metagraph.has_edge(s,t):
-            logging.debug(f"Add edge between: {s} and {t}")
+            logging.debug(f"Add edge between: `{s}` and `{t}`")
             edge_props = copy.copy(self.metaprops)
             # Some export engines do not allow typed edges,
             # so we add it as a metadata.
@@ -223,6 +240,7 @@ class _MetaGraphWriter(_Writer):
         self.metagraph[s][t][self.keys["NBINS"]] += 1
 
         # Add the ancestors list.
+        # FIXME HERE edge_type not found here, while seems to have been found in _ontology.py ?!?
         ancestor_labels = list(nx.dfs_preorder_nodes(self.metagraph, edge_type))
         self.metagraph[s][t][self.keys["ANCESTORS"]] = self.join_separator.join(ancestor_labels)
 
@@ -292,6 +310,7 @@ class _MetaGraphWriter(_Writer):
 
     def _seen_edge(self, s, t):
         assert(self.keys["NBINS"] in self.metagraph[s][t])
+        # FIXME also keep edge if subClassOf and between two seen nodes
         if self.metagraph[s][t][self.keys["NBINS"]] > 0:
             return True
         else:

@@ -13,7 +13,7 @@ def bw_metagraph(translator, deduplicator, tmp_path_session):
         use_IRI = False,
         output_directory=tmp_path_session,
         delimiter=",",
-        file_format="turtle",
+        file_format="cytoscape.json",
         file_stem="biocypher",
     )
 
