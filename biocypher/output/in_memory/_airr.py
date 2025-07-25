@@ -1,9 +1,14 @@
-from typing import Any, Optional
+from __future__ import annotations
+
+from typing import Any, Optional, TYPE_CHECKING
 
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._deduplicate import Deduplicator
 from biocypher._logger import logger
 from biocypher.output.in_memory._in_memory_kg import _InMemoryKG
+
+if TYPE_CHECKING:
+    from scirpy.io import AirrCell
 
 try:
     from scirpy.io import AirrCell
@@ -354,6 +359,7 @@ class AirrKG(_InMemoryKG):
             list: List of generated AIRR cells
 
         """
+        self._check_dependencies()
         if not entities:
             msg = "No entities provided for conversion."
             raise ValueError(msg)
@@ -419,6 +425,7 @@ class AirrKG(_InMemoryKG):
         paired: bool,
         receptor_epitope_mapping: dict[str, set] | None = None,
     ) -> list[AirrCell]:
+        self._check_dependencies()
         cell = AirrCell(cell_id=cell_id)
 
         # Process both chains
@@ -464,6 +471,7 @@ class AirrKG(_InMemoryKG):
             List of cells with metadata added
 
         """
+        self._check_dependencies()
         cells = []
         if not metadata_nodes:
             cell["data_source"] = "BioCypher"
