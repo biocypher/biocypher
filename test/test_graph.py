@@ -2,7 +2,6 @@
 
 import pytest
 import json
-from typing import Any
 
 from biocypher import Graph, Node, Edge, HyperEdge
 
