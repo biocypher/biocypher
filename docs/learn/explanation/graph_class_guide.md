@@ -686,6 +686,7 @@ The Graph class is designed to be extensible. Future enhancements may include
 The Graph class provides a powerful, flexible foundation for knowledge graph representation. Its unified design supports various graph types while maintaining simplicity and performance. The pure Python implementation makes it ideal for sandbox environments and LLM agent integration, while the comprehensive API enables sophisticated graph operations and analysis.
 
 Key strengths:
+
 - **Unified Design**: Single class for all graph types
 - **Pure Python**: No external dependencies
 - **Type Safety**: Modern type annotations
