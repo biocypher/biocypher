@@ -677,7 +677,7 @@ class TestSerialization:
             ]
         }
         
-        json_str = json.dumps(json_data)
+        json_str = json.dumps(json_data, indent=2)
         self.agent.from_json(json_str)
         
         # Verify data was loaded

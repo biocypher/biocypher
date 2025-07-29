@@ -511,7 +511,7 @@ class TestSerialization:
             "hyperedges": []
         }
         
-        json_str = json.dumps(json_data)
+        json_str = json.dumps(json_data, indent=2)
         graph = Graph.from_json_string(json_str)
         assert graph.name == "test_graph"
         assert graph.has_node("node1")
@@ -536,7 +536,7 @@ class TestSerialization:
             "hyperedges": []
         }
         
-        json_str = json.dumps(json_data)
+        json_str = json.dumps(json_data, indent=2)
         self.graph.from_json(json_str)
         
         # Should have new data
