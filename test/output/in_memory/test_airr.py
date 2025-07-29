@@ -1,4 +1,5 @@
 import pytest
+from biocypher.output.in_memory._airr import HAS_SCIRPY
 
 
 def test_airr(in_memory_airr_kg):
@@ -49,6 +50,7 @@ def test_complete_tcr_graph(
     assert len(in_memory_airr_kg.adjacency_list["t cell receptor sequence to epitope association"]) == 1
 
 
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_to_airr_cells_basic(in_memory_airr_kg, tra_nodes, trb_nodes, tcr_pair_edges):
     in_memory_airr_kg.add_nodes([tra_nodes[2], trb_nodes[2]])
     in_memory_airr_kg.add_edges([tcr_pair_edges[2]])
@@ -58,6 +60,7 @@ def test_to_airr_cells_basic(in_memory_airr_kg, tra_nodes, trb_nodes, tcr_pair_e
     assert len(airr_cells) == 0
 
 
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_to_airr_cells_with_epitope(
     in_memory_airr_kg,
     tra_nodes,
@@ -77,6 +80,7 @@ def test_to_airr_cells_with_epitope(
     assert cell["MHC_class"] == "MHCI"
 
 
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_multiple_epitopes_per_tcr(
     in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_epitope_edges, tcr_pair_edges
 ):
@@ -90,6 +94,7 @@ def test_multiple_epitopes_per_tcr(
     assert "CAVDNNNDMRF" in alpha_junctions
 
 
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_no_indirect_pairings(
     in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_epitope_edges, tcr_pair_edges
 ):
@@ -128,6 +133,7 @@ def test_missing_scirpy_raises_error(
         airr_module.HAS_SCIRPY = original_has_scirpy
 
 
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_empty_adjacency_list(in_memory_airr_kg):
     """Test behavior with empty entity dictionary."""
     with pytest.raises(ValueError) as exc_info:
@@ -135,6 +141,7 @@ def test_empty_adjacency_list(in_memory_airr_kg):
     assert "No entities provided for conversion" in str(exc_info.value)
 
 
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_empty_entities_raises_error(in_memory_airr_kg):
     """Test that empty entities are handled gracefully."""
     # Test with empty list - should not raise error, just return empty result
@@ -172,6 +179,7 @@ def test_deduplication_with_edges(in_memory_airr_kg, tra_nodes, trb_nodes, tcr_p
 
 
 # 3. Configuration Tests
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_custom_metadata_entity_type(tra_nodes, trb_nodes, epitope_nodes, tcr_epitope_edges):
     """Test with different metadata entity types."""
     # Create AIRR KG with custom metadata type
@@ -212,6 +220,7 @@ def test_metadata_entity_type_configuration():
 
 
 # 4. AIRR Logic Tests
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_unpaired_chain_processing(in_memory_airr_kg, tra_nodes, epitope_nodes, tcr_epitope_edges):
     """Test processing of unpaired chains."""
     # Add unpaired alpha chain with epitope binding
@@ -231,6 +240,7 @@ def test_unpaired_chain_processing(in_memory_airr_kg, tra_nodes, epitope_nodes, 
     assert not cell["is_paired"]
 
 
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_paired_chains_without_epitopes(in_memory_airr_kg, tra_nodes, trb_nodes, tcr_pair_edges):
     """Test paired chains that don't bind any epitopes."""
     # Add paired chains without epitope relationships
@@ -243,6 +253,7 @@ def test_paired_chains_without_epitopes(in_memory_airr_kg, tra_nodes, trb_nodes,
     assert len(airr_cells) == 0
 
 
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_complex_epitope_mapping(
     in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges
 ):
@@ -264,6 +275,7 @@ def test_complex_epitope_mapping(
         assert any(key in cell for key in ["antigen_name", "antigen_organism", "MHC_class"])
 
 
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_indirect_vs_direct_pairings(
     in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges
 ):
@@ -288,6 +300,7 @@ def test_indirect_vs_direct_pairings(
 
 
 # 5. Property Preservation Tests
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_all_properties_preserved(
     in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges
 ):
@@ -325,6 +338,7 @@ def test_all_properties_preserved(
     assert cell["MHC_class"] == "MHCI"
 
 
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_internal_properties_filtered(
     in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges
 ):
@@ -350,6 +364,7 @@ def test_internal_properties_filtered(
         assert prop not in cell
 
 
+@pytest.mark.skipif(not HAS_SCIRPY, reason="scirpy dependency not available")
 def test_airr_specific_properties_added(
     in_memory_airr_kg, tra_nodes, trb_nodes, epitope_nodes, tcr_pair_edges, tcr_epitope_edges
 ):
