@@ -8,6 +8,7 @@ extensibility for knowledge representation.
 TODO: examine overlap with legacy BioCypher modules, synergise where possible.
 TODO: evaluate generalised graph class as consensus internal representation as
     technical intermediate for other output adapters.
+TODO: validation of new entities against schema. Rollback of inconsistent operations.
 """
 
 from typing import Any, Iterator
