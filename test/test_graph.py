@@ -654,19 +654,33 @@ class TestIntegration:
         agent = create_knowledge_graph("test_agent")
         
         # Add data through agent
-        agent.add_node("protein1", "protein", name="TP53")
-        agent.add_node("protein2", "protein", name="BRAF")
-        agent.add_edge("interaction1", "interaction", "protein1", "protein2", confidence=0.8)
+        result1 = agent.add_node("protein1", "protein", name="TP53")
+        result2 = agent.add_node("protein2", "protein", name="BRAF")
+        result3 = agent.add_edge("interaction1", "interaction", "protein1", "protein2", confidence=0.8)
+        
+        # Verify all operations succeeded
+        assert result1 is True, "Failed to add first node"
+        assert result2 is True, "Failed to add second node"
+        assert result3 is True, "Failed to add edge"
         
         # Get underlying graph
         graph = agent.get_graph()
         
-        # Test graph operations
-        assert len(graph) == 2
-        assert graph.has_node("protein1")
-        assert graph.has_edge("interaction1")
+        # Test graph operations with more detailed assertions
+        graph_len = len(graph)
+        assert graph_len == 2, f"Expected 2 nodes, got {graph_len}"
         
-        # Test statistics
+        has_protein1 = graph.has_node("protein1")
+        assert has_protein1, "Expected node 'protein1' to exist"
+        
+        has_interaction1 = graph.has_edge("interaction1")
+        assert has_interaction1, "Expected edge 'interaction1' to exist"
+        
+        # Test statistics with more detailed debugging
         stats = graph.get_statistics()
-        assert stats["basic"]["nodes"] == 2
-        assert stats["basic"]["edges"] == 1 
+        basic_stats = stats.get("basic", {})
+        nodes_count = basic_stats.get("nodes", 0)
+        edges_count = basic_stats.get("edges", 0)
+        
+        assert nodes_count == 2, f"Expected 2 nodes in stats, got {nodes_count}"
+        assert edges_count == 1, f"Expected 1 edge in stats, got {edges_count}" 

@@ -623,6 +623,19 @@ class Graph:
         Returns:
             Dictionary with graph statistics
         """
+        # Ensure we have the latest counts by recalculating from actual data
+        actual_nodes = len(self._nodes)
+        actual_edges = len(self._edges)
+        actual_hyperedges = len(self._hyperedges)
+        
+        # Update internal stats to match actual counts
+        self._stats["nodes"] = actual_nodes
+        self._stats["edges"] = actual_edges
+        self._stats["hyperedges"] = actual_hyperedges
+        self._stats["node_types"] = len(self._node_types)
+        self._stats["edge_types"] = len(self._edge_types)
+        self._stats["hyperedge_types"] = len(self._hyperedge_types)
+        
         # Node type distribution
         node_type_dist = {node_type: len(nodes) for node_type, nodes in self._node_types.items()}
         
@@ -646,7 +659,7 @@ class Graph:
             "hyperedge_types": hyperedge_type_dist,
             "connectivity": {
                 "isolated_nodes": isolated_nodes,
-                "connected_nodes": self._stats["nodes"] - isolated_nodes
+                "connected_nodes": actual_nodes - isolated_nodes
             }
         }
     
