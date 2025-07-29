@@ -124,8 +124,8 @@ class HyperEdge:
 
 **Example:**
 ```python
-hyperedge = HyperEdge("complex_1", "protein_complex", 
-                     {"TP53", "MDM2", "CDKN1A"}, 
+hyperedge = HyperEdge("complex_1", "protein_complex",
+                     {"TP53", "MDM2", "CDKN1A"},
                      properties={
                          "function": "cell_cycle_control",
                          "complex_type": "regulatory"
@@ -143,16 +143,16 @@ class Graph:
         self._nodes: dict[str, Node] = {}
         self._edges: dict[str, Edge] = {}
         self._hyperedges: dict[str, HyperEdge] = {}
-        
+
         # Type indexes for efficient querying
         self._node_types: dict[str, set[str]] = defaultdict(set)
         self._edge_types: dict[str, set[str]] = defaultdict(set)
         self._hyperedge_types: dict[str, set[str]] = defaultdict(set)
-        
+
         # Adjacency indexes for efficient traversal
         self._outgoing: dict[str, set[str]] = defaultdict(set)
         self._incoming: dict[str, set[str]] = defaultdict(set)
-        
+
         # Statistics
         self._stats = {
             "nodes": 0,
@@ -181,12 +181,12 @@ The Graph class uses multiple indexes for efficient operations:
 ```python
 def add_node(self, node_id: str, node_type: str, properties: dict[str, Any] | None = None) -> bool:
     """Add a node to the graph.
-    
+
     Args:
         node_id: Unique identifier for the node
         node_type: Type/category of the node
         properties: Optional properties dictionary
-        
+
     Returns:
         bool: True if node was added, False if it already exists
     """
@@ -228,17 +228,17 @@ graph.remove_node("TP53")
 
 #### Adding Edges
 ```python
-def add_edge(self, edge_id: str, edge_type: str, source: str, target: str, 
+def add_edge(self, edge_id: str, edge_type: str, source: str, target: str,
              properties: dict[str, Any] | None = None) -> bool:
     """Add an edge to the graph.
-    
+
     Args:
         edge_id: Unique identifier for the edge
         edge_type: Type/category of the edge
         source: Source node ID
         target: Target node ID
         properties: Optional properties dictionary
-        
+
     Returns:
         bool: True if edge was added, False if it already exists
     """
@@ -279,16 +279,16 @@ graph.remove_edge("TP53_BRAF")
 
 #### Adding Hyperedges
 ```python
-def add_hyperedge(self, hyperedge_id: str, hyperedge_type: str, nodes: set[str], 
+def add_hyperedge(self, hyperedge_id: str, hyperedge_type: str, nodes: set[str],
                   properties: dict[str, Any] | None = None) -> bool:
     """Add a hyperedge to the graph.
-    
+
     Args:
         hyperedge_id: Unique identifier for the hyperedge
         hyperedge_type: Type/category of the hyperedge
         nodes: Set of connected node IDs
         properties: Optional properties dictionary
-        
+
     Returns:
         bool: True if hyperedge was added, False if it already exists
     """
@@ -296,8 +296,8 @@ def add_hyperedge(self, hyperedge_id: str, hyperedge_type: str, nodes: set[str],
 
 **Example:**
 ```python
-graph.add_hyperedge("apoptosis_complex", "protein_complex", 
-                   {"BCL2", "BAX", "CASP9", "CASP3"}, 
+graph.add_hyperedge("apoptosis_complex", "protein_complex",
+                   {"BCL2", "BAX", "CASP9", "CASP3"},
                    function="programmed_cell_death")
 ```
 
@@ -319,11 +319,11 @@ complexes = graph.get_hyperedges("protein_complex")
 ```python
 def get_neighbors(self, node_id: str, direction: str = "both") -> set[str]:
     """Get neighboring nodes.
-    
+
     Args:
         node_id: Node identifier
         direction: "in", "out", or "both"
-        
+
     Returns:
         set[str]: Set of neighboring node IDs
     """
@@ -345,12 +345,12 @@ incoming = graph.get_neighbors("TP53", direction="in")
 ```python
 def find_paths(self, source: str, target: str, max_length: int = 3) -> list[list[Edge]]:
     """Find all paths between two nodes.
-    
+
     Args:
         source: Source node ID
         target: Target node ID
         max_length: Maximum path length
-        
+
     Returns:
         list[list[Edge]]: List of paths, each path is a list of edges
     """
@@ -371,11 +371,11 @@ for i, path in enumerate(paths):
 ```python
 def get_connected_edges(self, node_id: str, direction: str = "both") -> list[Edge]:
     """Get edges connected to a node.
-    
+
     Args:
         node_id: Node identifier
         direction: "in", "out", or "both"
-        
+
     Returns:
         list[Edge]: List of connected edges
     """
@@ -387,7 +387,7 @@ def get_connected_edges(self, node_id: str, direction: str = "both") -> list[Edg
 ```python
 def get_statistics(self) -> dict[str, Any]:
     """Get comprehensive graph statistics.
-    
+
     Returns:
         dict[str, Any]: Statistics including basic counts, type breakdowns, and connectivity
     """
@@ -438,11 +438,11 @@ print(f"Connectivity: {stats['connectivity']}")
 ```python
 def get_subgraph(self, node_ids: set[str], include_edges: bool = True) -> 'Graph':
     """Extract a subgraph containing specified nodes.
-    
+
     Args:
         node_ids: Set of node IDs to include
         include_edges: Whether to include edges between included nodes
-        
+
     Returns:
         Graph: New graph containing the subgraph
     """
@@ -461,10 +461,10 @@ subgraph = graph.get_subgraph({"TP53"} | tp53_neighbors)
 ```python
 def to_json(self) -> str:
     """Convert graph to JSON string."""
-    
+
 def from_json(self, json_str: str) -> None:
     """Load graph from JSON string."""
-    
+
 @classmethod
 def from_json(cls, json_str: str) -> 'Graph':
     """Create graph from JSON string."""
@@ -488,7 +488,7 @@ graph.from_json(json_data)
 ```python
 def to_dict(self) -> dict[str, Any]:
     """Convert graph to dictionary representation."""
-    
+
 @classmethod
 def from_dict(cls, data: dict[str, Any]) -> 'Graph':
     """Create graph from dictionary representation."""
@@ -529,19 +529,19 @@ def from_dict(cls, data: dict[str, Any]) -> 'Graph':
 ### Custom Node/Edge Types
 ```python
 # Define custom types
-graph.add_node("pathway_1", "biological_pathway", 
-               name="Apoptosis", 
+graph.add_node("pathway_1", "biological_pathway",
+               name="Apoptosis",
                pathway_type="cell_death")
 
-graph.add_edge("regulates_1", "regulates", 
-              "TP53", "apoptosis_pathway", 
+graph.add_edge("regulates_1", "regulates",
+              "TP53", "apoptosis_pathway",
               regulation_type="activation")
 ```
 
 ### Complex Properties
 ```python
 # Rich metadata
-graph.add_node("TP53", "protein", 
+graph.add_node("TP53", "protein",
                name="TP53",
                function="tumor_suppressor",
                uniprot_id="P04637",
@@ -597,8 +597,8 @@ graph.add_edge("interaction_1", "interaction", ...)
 ### 3. Use Properties for Metadata
 ```python
 # Include relevant properties
-graph.add_node("TP53", "protein", 
-               name="TP53", 
+graph.add_node("TP53", "protein",
+               name="TP53",
                function="tumor_suppressor",
                confidence=0.95,
                sources=["UniProt", "PubMed"])
@@ -693,4 +693,4 @@ Key strengths:
 - **Extensibility**: Easy to add new features
 - **Serialization**: Built-in persistence
 
-The Graph class serves as the core data structure for the BioCypher Agent API, providing the foundation for LLM agent knowledge graph construction and reasoning. 
+The Graph class serves as the core data structure for the BioCypher Agent API, providing the foundation for LLM agent knowledge graph construction and reasoning.

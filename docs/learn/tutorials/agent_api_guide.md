@@ -167,7 +167,7 @@ paths = kg.find_paths("TP53", "melanoma")
 reasoning = create_knowledge_graph("reasoning_process")
 
 # Log observation
-reasoning.add_node("obs_1", "observation", 
+reasoning.add_node("obs_1", "observation",
                   description="TP53 is frequently mutated in cancer",
                   source="literature")
 
@@ -405,8 +405,8 @@ kg.add_edge("interaction_1", "interaction", ...)
 ### 3. Use Properties for Metadata
 ```python
 # Include relevant properties
-kg.add_node("TP53", "protein", 
-           name="TP53", 
+kg.add_node("TP53", "protein",
+           name="TP53",
            function="tumor_suppressor",
            uniprot_id="P04637",
            confidence=0.95)
@@ -451,4 +451,4 @@ The API is particularly well-suited for:
 - **Prototyping**: Rapid iteration and experimentation
 - **Reasoning Process Logging**: Tracking agent decision-making
 
-For large-scale production systems or complex ontology requirements, the original BioCypher framework remains the appropriate choice. However, for most agentic applications, the new API provides the right balance of simplicity and power. 
+For large-scale production systems or complex ontology requirements, the original BioCypher framework remains the appropriate choice. However, for most agentic applications, the new API provides the right balance of simplicity and power.

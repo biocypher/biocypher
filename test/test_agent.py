@@ -4,51 +4,47 @@ import pytest
 import json
 import tempfile
 import os
-from typing import Any
 
 from biocypher import create_knowledge_graph
 
 
 class TestAgentInitialization:
     """Test agent initialization and basic properties."""
-    
+
     def test_agent_creation_basic(self):
         """Test basic agent creation."""
         agent = create_knowledge_graph("test_agent")
         assert agent.name == "test_agent"
         assert len(agent) == 0
-        
+
     def test_agent_creation_with_parameters(self):
         """Test agent creation with all parameters."""
         agent = create_knowledge_graph(
             name="test_agent",
             directed=False,
             schema={"protein": {"represented_as": "node"}},
-            head_ontology_url="https://example.com/ontology"
+            head_ontology_url="https://example.com/ontology",
         )
         assert agent.name == "test_agent"
         assert agent.graph.directed is False
         assert agent.schema is not None
         assert agent.head_ontology_url == "https://example.com/ontology"
-        
+
     def test_agent_creation_with_schema_dict(self):
         """Test agent creation with schema dictionary."""
         schema = {
-            "protein": {
-                "represented_as": "node",
-                "properties": {"name": "str", "function": "str"}
-            },
+            "protein": {"represented_as": "node", "properties": {"name": "str", "function": "str"}},
             "interaction": {
                 "represented_as": "edge",
                 "source": "protein",
                 "target": "protein",
-                "properties": {"confidence": "float"}
-            }
+                "properties": {"confidence": "float"},
+            },
         }
-        
+
         agent = create_knowledge_graph("test_agent", schema=schema)
         assert agent.schema == schema
-        
+
     def test_agent_creation_with_schema_file(self):
         """Test agent creation with schema file."""
         # Create temporary schema file
@@ -65,10 +61,10 @@ interaction:
   properties:
     confidence: float
 """
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write(schema_content)
             schema_file = f.name
-            
+
         try:
             agent = create_knowledge_graph("test_agent", schema_file=schema_file)
             assert agent.schema is not None
@@ -76,7 +72,7 @@ interaction:
             assert "interaction" in agent.schema
         finally:
             os.unlink(schema_file)
-            
+
     def test_agent_repr(self):
         """Test agent string representation."""
         agent = create_knowledge_graph("test_agent")
@@ -86,42 +82,37 @@ interaction:
 
 class TestNodeOperations:
     """Test node addition, querying, and management."""
-    
+
     def setup_method(self):
         """Set up test agent."""
         self.agent = create_knowledge_graph("test_agent")
-        
+
     def test_add_node_basic(self):
         """Test basic node addition."""
         result = self.agent.add_node("node1", "protein", name="TP53")
         assert result is True
         assert self.agent.has_node("node1")
         assert len(self.agent) == 1
-        
+
     def test_add_node_with_properties(self):
         """Test node addition with properties."""
-        result = self.agent.add_node(
-            "node1", "protein", 
-            name="TP53", 
-            function="tumor_suppressor",
-            uniprot_id="P04637"
-        )
+        result = self.agent.add_node("node1", "protein", name="TP53", function="tumor_suppressor", uniprot_id="P04637")
         assert result is True
-        
+
         node = self.agent.get_node("node1")
         assert node.id == "node1"
         assert node.type == "protein"
         assert node.properties["name"] == "TP53"
         assert node.properties["function"] == "tumor_suppressor"
         assert node.properties["uniprot_id"] == "P04637"
-        
+
     def test_add_duplicate_node(self):
         """Test adding duplicate node returns False."""
         self.agent.add_node("node1", "protein")
         result = self.agent.add_node("node1", "protein")
         assert result is False
         assert len(self.agent) == 1
-        
+
     def test_get_node(self):
         """Test getting node by ID."""
         self.agent.add_node("node1", "protein", name="TP53")
@@ -129,44 +120,44 @@ class TestNodeOperations:
         assert node is not None
         assert node.id == "node1"
         assert node.type == "protein"
-        
+
     def test_get_nonexistent_node(self):
         """Test getting nonexistent node returns None."""
         node = self.agent.get_node("nonexistent")
         assert node is None
-        
+
     def test_get_nodes_by_type(self):
         """Test getting nodes filtered by type."""
         self.agent.add_node("node1", "protein", name="TP53")
         self.agent.add_node("node2", "protein", name="BRAF")
         self.agent.add_node("node3", "disease", name="Cancer")
-        
+
         proteins = self.agent.get_nodes("protein")
         assert len(proteins) == 2
         assert all(node.type == "protein" for node in proteins)
-        
+
         diseases = self.agent.get_nodes("disease")
         assert len(diseases) == 1
         assert diseases[0].type == "disease"
-        
+
     def test_get_all_nodes(self):
         """Test getting all nodes."""
         self.agent.add_node("node1", "protein")
         self.agent.add_node("node2", "disease")
-        
+
         all_nodes = self.agent.get_nodes()
         assert len(all_nodes) == 2
-        
+
     def test_remove_node(self):
         """Test node removal."""
         self.agent.add_node("node1", "protein")
         assert self.agent.has_node("node1")
-        
+
         result = self.agent.remove_node("node1")
         assert result is True
         assert not self.agent.has_node("node1")
         assert len(self.agent) == 0
-        
+
     def test_remove_nonexistent_node(self):
         """Test removing nonexistent node returns False."""
         result = self.agent.remove_node("nonexistent")
@@ -175,30 +166,33 @@ class TestNodeOperations:
 
 class TestEdgeOperations:
     """Test edge addition, querying, and management."""
-    
+
     def setup_method(self):
         """Set up test agent with nodes."""
         self.agent = create_knowledge_graph("test_agent")
         self.agent.add_node("node1", "protein")
         self.agent.add_node("node2", "protein")
         self.agent.add_node("node3", "disease")
-        
+
     def test_add_edge_basic(self):
         """Test basic edge addition."""
         result = self.agent.add_edge("edge1", "interaction", "node1", "node2")
         assert result is True
         assert self.agent.has_edge("edge1")
-        
+
     def test_add_edge_with_properties(self):
         """Test edge addition with properties."""
         result = self.agent.add_edge(
-            "edge1", "interaction", "node1", "node2",
+            "edge1",
+            "interaction",
+            "node1",
+            "node2",
             confidence=0.8,
             evidence="literature",
-            method="co-immunoprecipitation"
+            method="co-immunoprecipitation",
         )
         assert result is True
-        
+
         edge = self.agent.get_edge("edge1")
         assert edge.id == "edge1"
         assert edge.type == "interaction"
@@ -207,70 +201,70 @@ class TestEdgeOperations:
         assert edge.properties["confidence"] == 0.8
         assert edge.properties["evidence"] == "literature"
         assert edge.properties["method"] == "co-immunoprecipitation"
-        
+
     def test_add_edge_nonexistent_nodes(self):
         """Test adding edge with nonexistent nodes raises ValueError."""
         with pytest.raises(ValueError, match="Source node 'nonexistent' does not exist"):
             self.agent.add_edge("edge1", "interaction", "nonexistent", "node2")
-            
+
         with pytest.raises(ValueError, match="Target node 'nonexistent' does not exist"):
             self.agent.add_edge("edge1", "interaction", "node1", "nonexistent")
-            
+
     def test_add_duplicate_edge(self):
         """Test adding duplicate edge returns False."""
         self.agent.add_edge("edge1", "interaction", "node1", "node2")
         result = self.agent.add_edge("edge1", "interaction", "node1", "node2")
         assert result is False
-        
+
     def test_get_edge(self):
         """Test getting edge by ID."""
         self.agent.add_edge("edge1", "interaction", "node1", "node2")
         edge = self.agent.get_edge("edge1")
         assert edge is not None
         assert edge.id == "edge1"
-        
+
     def test_get_nonexistent_edge(self):
         """Test getting nonexistent edge returns None."""
         edge = self.agent.get_edge("nonexistent")
         assert edge is None
-        
+
     def test_get_edges_by_type(self):
         """Test getting edges filtered by type."""
         self.agent.add_edge("edge1", "interaction", "node1", "node2")
         self.agent.add_edge("edge2", "interaction", "node2", "node3")
         self.agent.add_edge("edge3", "causes", "node1", "node3")
-        
+
         interactions = self.agent.get_edges("interaction")
         assert len(interactions) == 2
         assert all(edge.type == "interaction" for edge in interactions)
-        
+
     def test_get_edges_between(self):
         """Test getting edges between specific nodes."""
         self.agent.add_edge("edge1", "interaction", "node1", "node2")
         self.agent.add_edge("edge2", "interaction", "node2", "node1")
         self.agent.add_edge("edge3", "causes", "node1", "node3")
-        
+
         edges = self.agent.get_edges_between("node1", "node2")
         assert len(edges) == 1  # Only outgoing edge from node1 to node2
-        
+
         edges = self.agent.get_edges_between("node2", "node1")
         assert len(edges) == 1  # Only outgoing edge from node2 to node1
-        
+
         edges = self.agent.get_edges_between("node1", "node2", edge_type="interaction")
         assert len(edges) == 1
-        
+
         edges = self.agent.get_edges_between("node1", "node2", edge_type="causes")
         assert len(edges) == 0
-        
+
     def test_remove_edge(self):
         """Test edge removal."""
         self.agent.add_edge("edge1", "interaction", "node1", "node2")
         assert self.agent.has_edge("edge1")
-        
+
         result = self.agent.remove_edge("edge1")
         assert result is True
         assert not self.agent.has_edge("edge1")
-        
+
     def test_remove_nonexistent_edge(self):
         """Test removing nonexistent edge returns False."""
         result = self.agent.remove_edge("nonexistent")
@@ -279,7 +273,7 @@ class TestEdgeOperations:
 
 class TestHyperEdgeOperations:
     """Test hyperedge addition, querying, and management."""
-    
+
     def setup_method(self):
         """Set up test agent with nodes."""
         self.agent = create_knowledge_graph("test_agent")
@@ -287,58 +281,56 @@ class TestHyperEdgeOperations:
         self.agent.add_node("node2", "protein")
         self.agent.add_node("node3", "protein")
         self.agent.add_node("node4", "protein")
-        
+
     def test_add_hyperedge_basic(self):
         """Test basic hyperedge addition."""
         result = self.agent.add_hyperedge("hyper1", "complex", {"node1", "node2", "node3"})
         assert result is True
         assert self.agent.has_hyperedge("hyper1")
-        
+
     def test_add_hyperedge_with_properties(self):
         """Test hyperedge addition with properties."""
         result = self.agent.add_hyperedge(
-            "hyper1", "complex", {"node1", "node2", "node3"},
-            function="cell_cycle_control",
-            complex_type="regulatory"
+            "hyper1", "complex", {"node1", "node2", "node3"}, function="cell_cycle_control", complex_type="regulatory"
         )
         assert result is True
-        
+
         hyperedge = self.agent.get_hyperedge("hyper1")
         assert hyperedge.id == "hyper1"
         assert hyperedge.type == "complex"
         assert hyperedge.nodes == {"node1", "node2", "node3"}
         assert hyperedge.properties["function"] == "cell_cycle_control"
         assert hyperedge.properties["complex_type"] == "regulatory"
-        
+
     def test_add_hyperedge_nonexistent_nodes(self):
         """Test adding hyperedge with nonexistent nodes raises ValueError."""
         with pytest.raises(ValueError, match="Node 'nonexistent' does not exist"):
             self.agent.add_hyperedge("hyper1", "complex", {"node1", "nonexistent"})
-            
+
     def test_add_duplicate_hyperedge(self):
         """Test adding duplicate hyperedge returns False."""
         self.agent.add_hyperedge("hyper1", "complex", {"node1", "node2"})
         result = self.agent.add_hyperedge("hyper1", "complex", {"node1", "node2"})
         assert result is False
-        
+
     def test_get_hyperedge(self):
         """Test getting hyperedge by ID."""
         self.agent.add_hyperedge("hyper1", "complex", {"node1", "node2"})
         hyperedge = self.agent.get_hyperedge("hyper1")
         assert hyperedge is not None
         assert hyperedge.id == "hyper1"
-        
+
     def test_get_nonexistent_hyperedge(self):
         """Test getting nonexistent hyperedge returns None."""
         hyperedge = self.agent.get_hyperedge("nonexistent")
         assert hyperedge is None
-        
+
     def test_get_hyperedges_by_type(self):
         """Test getting hyperedges filtered by type."""
         self.agent.add_hyperedge("hyper1", "complex", {"node1", "node2"})
         self.agent.add_hyperedge("hyper2", "complex", {"node2", "node3"})
         self.agent.add_hyperedge("hyper3", "pathway", {"node1", "node2", "node3"})
-        
+
         complexes = self.agent.get_hyperedges("complex")
         assert len(complexes) == 2
         assert all(hyperedge.type == "complex" for hyperedge in complexes)
@@ -346,7 +338,7 @@ class TestHyperEdgeOperations:
 
 class TestGraphTraversal:
     """Test graph traversal operations."""
-    
+
     def setup_method(self):
         """Set up test agent with nodes and edges."""
         self.agent = create_knowledge_graph("test_agent")
@@ -356,50 +348,50 @@ class TestGraphTraversal:
         self.agent.add_node("C", "protein")
         self.agent.add_node("D", "disease")
         self.agent.add_node("E", "disease")
-        
+
         # Add edges
         self.agent.add_edge("A_B", "interaction", "A", "B")
         self.agent.add_edge("B_C", "interaction", "B", "C")
         self.agent.add_edge("C_D", "causes", "C", "D")
         self.agent.add_edge("A_E", "causes", "A", "E")
-        
+
     def test_get_neighbors_both(self):
         """Test getting neighbors in both directions."""
         neighbors = self.agent.get_neighbors("B")
         assert neighbors == {"A", "C"}
-        
+
     def test_get_neighbors_outgoing(self):
         """Test getting outgoing neighbors."""
         neighbors = self.agent.get_neighbors("B", direction="out")
         assert neighbors == {"C"}
-        
+
     def test_get_neighbors_incoming(self):
         """Test getting incoming neighbors."""
         neighbors = self.agent.get_neighbors("B", direction="in")
         assert neighbors == {"A"}
-        
+
     def test_get_connected_edges(self):
         """Test getting connected edges."""
         edges = self.agent.get_connected_edges("B")
         assert len(edges) == 2
         edge_types = {edge.type for edge in edges}
         assert edge_types == {"interaction"}
-        
+
     def test_find_paths(self):
         """Test path finding between nodes."""
         paths = self.agent.find_paths("A", "D")
         assert len(paths) == 1
         path = paths[0]
         assert len(path) == 3  # A -> B -> C -> D
-        
+
     def test_find_paths_max_length(self):
         """Test path finding with max length constraint."""
         paths = self.agent.find_paths("A", "D", max_length=2)
         assert len(paths) == 0  # No path of length 2 or less
-        
+
         paths = self.agent.find_paths("A", "D", max_length=4)
         assert len(paths) == 1  # Path exists with length 3
-        
+
     def test_find_paths_no_path(self):
         """Test path finding when no path exists."""
         self.agent.add_node("F", "protein")
@@ -409,118 +401,118 @@ class TestGraphTraversal:
 
 class TestQueryInterface:
     """Test query interface methods."""
-    
+
     def setup_method(self):
         """Set up test agent with data."""
         self.agent = create_knowledge_graph("test_agent")
-        
+
         # Add nodes
         self.agent.add_node("node1", "protein", name="TP53", function="tumor_suppressor")
         self.agent.add_node("node2", "protein", name="BRAF", function="kinase")
         self.agent.add_node("node3", "disease", name="Cancer", description="Uncontrolled growth")
-        
+
         # Add edges
         self.agent.add_edge("edge1", "interaction", "node1", "node2", confidence=0.8)
         self.agent.add_edge("edge2", "causes", "node1", "node3", evidence="strong")
-        
+
         # Add hyperedge
         self.agent.add_hyperedge("hyper1", "complex", {"node1", "node2"}, function="control")
-        
+
     def test_query_nodes_all(self):
         """Test querying all nodes."""
         nodes = self.agent.query_nodes()
         assert len(nodes) == 3
         node_ids = {node["id"] for node in nodes}
         assert node_ids == {"node1", "node2", "node3"}
-        
+
     def test_query_nodes_by_type(self):
         """Test querying nodes by type."""
         proteins = self.agent.query_nodes("protein")
         assert len(proteins) == 2
         assert all(node["type"] == "protein" for node in proteins)
-        
+
         diseases = self.agent.query_nodes("disease")
         assert len(diseases) == 1
         assert diseases[0]["type"] == "disease"
-        
+
     def test_query_edges_all(self):
         """Test querying all edges."""
         edges = self.agent.query_edges()
         assert len(edges) == 2
         edge_ids = {edge["id"] for edge in edges}
         assert edge_ids == {"edge1", "edge2"}
-        
+
     def test_query_edges_by_type(self):
         """Test querying edges by type."""
         interactions = self.agent.query_edges("interaction")
         assert len(interactions) == 1
         assert interactions[0]["type"] == "interaction"
-        
+
         causes = self.agent.query_edges("causes")
         assert len(causes) == 1
         assert causes[0]["type"] == "causes"
-        
+
     def test_query_hyperedges_all(self):
         """Test querying all hyperedges."""
         hyperedges = self.agent.query_hyperedges()
         assert len(hyperedges) == 1
         assert hyperedges[0]["id"] == "hyper1"
-        
+
     def test_query_hyperedges_by_type(self):
         """Test querying hyperedges by type."""
         complexes = self.agent.query_hyperedges("complex")
         assert len(complexes) == 1
         assert complexes[0]["type"] == "complex"
-        
+
         pathways = self.agent.query_hyperedges("pathway")
         assert len(pathways) == 0
 
 
 class TestGraphAnalysis:
     """Test graph analysis and statistics."""
-    
+
     def setup_method(self):
         """Set up test agent."""
         self.agent = create_knowledge_graph("test_agent")
-        
+
     def test_get_statistics_empty(self):
         """Test statistics for empty agent."""
         stats = self.agent.get_statistics()
         assert stats["basic"]["nodes"] == 0
         assert stats["basic"]["edges"] == 0
         assert stats["basic"]["hyperedges"] == 0
-        
+
     def test_get_statistics_with_data(self):
         """Test statistics for agent with data."""
         # Add nodes
         self.agent.add_node("node1", "protein")
         self.agent.add_node("node2", "protein")
         self.agent.add_node("node3", "disease")
-        
+
         # Add edges
         self.agent.add_edge("edge1", "interaction", "node1", "node2")
         self.agent.add_edge("edge2", "causes", "node1", "node3")
-        
+
         # Add hyperedge
         self.agent.add_hyperedge("hyper1", "complex", {"node1", "node2"})
-        
+
         stats = self.agent.get_statistics()
         assert stats["basic"]["nodes"] == 3
         assert stats["basic"]["edges"] == 2
         assert stats["basic"]["hyperedges"] == 1
-        
+
     def test_get_summary(self):
         """Test getting human-readable summary."""
         self.agent.add_node("node1", "protein", name="TP53")
         self.agent.add_node("node2", "protein", name="BRAF")
         self.agent.add_edge("edge1", "interaction", "node1", "node2", confidence=0.8)
-        
+
         summary = self.agent.get_summary()
         assert "name" in summary
         assert "top_node_types" in summary
         assert "top_edge_types" in summary
         assert "connectivity" in summary
-        
+
     def test_find_connected_components(self):
         """Test finding connected components."""
         # Create connected component
@@ -529,10 +521,10 @@ class TestGraphAnalysis:
         self.agent.add_node("C", "protein")
         self.agent.add_edge("A_B", "interaction", "A", "B")
         self.agent.add_edge("B_C", "interaction", "B", "C")
-        
+
         # Add isolated node
         self.agent.add_node("D", "disease")
-        
+
         components = self.agent.find_connected_components("A", max_depth=2)
         assert len(components["nodes"]) == 3
         assert len(components["edges"]) == 2
@@ -545,74 +537,71 @@ class TestGraphAnalysis:
 
 class TestSchemaSupport:
     """Test schema validation and support."""
-    
+
     def setup_method(self):
         """Set up test agent with schema."""
         self.schema = {
             "protein": {
                 "represented_as": "node",
-                "properties": {
-                    "name": "str",
-                    "function": "str",
-                    "uniprot_id": "str"
-                }
+                "properties": {"name": "str", "function": "str", "uniprot_id": "str"},
             },
             "interaction": {
                 "represented_as": "edge",
                 "source": "protein",
                 "target": "protein",
-                "properties": {
-                    "confidence": "float",
-                    "evidence": "str"
-                }
-            }
+                "properties": {"confidence": "float", "evidence": "str"},
+            },
         }
         self.agent = create_knowledge_graph("test_agent", schema=self.schema)
-        
+
     def test_get_schema(self):
         """Test getting schema."""
         schema = self.agent.get_schema()
         assert schema == self.schema
-        
+
     def test_validate_against_schema_valid(self):
         """Test schema validation with valid data."""
         # Valid protein properties
-        result = self.agent.validate_against_schema("protein", {
-            "name": "TP53",
-            "function": "tumor_suppressor",
-            "uniprot_id": "P04637"
-        })
+        result = self.agent.validate_against_schema(
+            "protein", {"name": "TP53", "function": "tumor_suppressor", "uniprot_id": "P04637"}
+        )
         assert result is True
-        
+
     def test_validate_against_schema_invalid(self):
         """Test schema validation with invalid data."""
         # Invalid property type
-        result = self.agent.validate_against_schema("protein", {
-            "name": 123,  # Should be string
-            "function": "tumor_suppressor"
-        })
+        result = self.agent.validate_against_schema(
+            "protein",
+            {
+                "name": 123,  # Should be string
+                "function": "tumor_suppressor",
+            },
+        )
         assert result is False
-        
+
     def test_validate_against_schema_missing_property(self):
         """Test schema validation with missing required property."""
         # Missing required property
-        result = self.agent.validate_against_schema("protein", {
-            "name": "TP53"
-            # Missing function
-        })
+        result = self.agent.validate_against_schema(
+            "protein",
+            {
+                "name": "TP53"
+                # Missing function
+            },
+        )
         assert result is False
-        
+
     def test_export_schema(self):
         """Test schema export."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             schema_file = f.name
-            
+
         try:
             self.agent.export_schema(schema_file)
             assert os.path.exists(schema_file)
-            
+
             # Verify file content
-            with open(schema_file, 'r') as f:
+            with open(schema_file, "r") as f:
                 content = f.read()
                 assert "protein" in content
                 assert "interaction" in content
@@ -623,11 +612,11 @@ class TestSchemaSupport:
 
 class TestSerialization:
     """Test agent serialization and deserialization."""
-    
+
     def setup_method(self):
         """Set up test agent."""
         self.agent = create_knowledge_graph("test_agent")
-        
+
     def test_to_json(self):
         """Test agent to JSON conversion."""
         # Add data
@@ -635,79 +624,68 @@ class TestSerialization:
         self.agent.add_node("node2", "protein", name="BRAF")
         self.agent.add_edge("edge1", "interaction", "node1", "node2", confidence=0.8)
         self.agent.add_hyperedge("hyper1", "complex", {"node1", "node2"}, function="control")
-        
+
         json_str = self.agent.to_json()
-        
+
         # Verify it's valid JSON
         data = json.loads(json_str)
         assert data["name"] == "test_agent"
         assert len(data["nodes"]) == 2
         assert len(data["edges"]) == 1
         assert len(data["hyperedges"]) == 1
-        
+
     def test_from_json(self):
         """Test agent creation from JSON."""
         # Create JSON data
         json_data = {
             "name": "test_agent",
             "directed": True,
-            "nodes": [
-                {
-                    "id": "node1",
-                    "type": "protein",
-                    "properties": {"name": "TP53"}
-                }
-            ],
+            "nodes": [{"id": "node1", "type": "protein", "properties": {"name": "TP53"}}],
             "edges": [
                 {
                     "id": "edge1",
                     "type": "interaction",
                     "source": "node1",
                     "target": "node2",
-                    "properties": {"confidence": 0.8}
+                    "properties": {"confidence": 0.8},
                 }
             ],
             "hyperedges": [
-                {
-                    "id": "hyper1",
-                    "type": "complex",
-                    "nodes": ["node1", "node2"],
-                    "properties": {"function": "control"}
-                }
-            ]
+                {"id": "hyper1", "type": "complex", "nodes": ["node1", "node2"], "properties": {"function": "control"}}
+            ],
         }
-        
+
         json_str = json.dumps(json_data, indent=2)
         self.agent.from_json(json_str)
-        
+
         # Verify data was loaded
         assert self.agent.has_node("node1")
         assert self.agent.has_edge("edge1")
         assert self.agent.has_hyperedge("hyper1")
-        
+
     def test_save_and_load(self):
         """Test saving and loading agent to/from file."""
         # Add data
         self.agent.add_node("node1", "protein", name="TP53")
         self.agent.add_node("node2", "protein", name="BRAF")
         self.agent.add_edge("edge1", "interaction", "node1", "node2", confidence=0.8)
-        
+
         # Save to file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             save_file = f.name
-            
+
         try:
             self.agent.save(save_file)
             assert os.path.exists(save_file)
-            
+
             # Create new agent and load
             new_agent = create_knowledge_graph("new_agent")
             new_agent.load(save_file)
-            
+
             # Verify data was loaded
             assert new_agent.has_node("node1")
             assert new_agent.has_edge("edge1")
-            
+
         finally:
             if os.path.exists(save_file):
                 os.unlink(save_file)
@@ -715,54 +693,54 @@ class TestSerialization:
 
 class TestUtilityOperations:
     """Test utility operations."""
-    
+
     def setup_method(self):
         """Set up test agent."""
         self.agent = create_knowledge_graph("test_agent")
-        
+
     def test_len(self):
         """Test agent length (number of nodes)."""
         assert len(self.agent) == 0
         self.agent.add_node("node1", "protein")
         assert len(self.agent) == 1
-        
+
     def test_contains(self):
         """Test node containment."""
         self.agent.add_node("node1", "protein")
         assert "node1" in self.agent
         assert "nonexistent" not in self.agent
-        
+
     def test_clear(self):
         """Test clearing the agent."""
         self.agent.add_node("node1", "protein")
         self.agent.add_node("node2", "protein")
         self.agent.add_edge("edge1", "interaction", "node1", "node2")
-        
+
         self.agent.clear()
         assert len(self.agent) == 0
         assert not self.agent.has_edge("edge1")
-        
+
     def test_copy(self):
         """Test copying the agent."""
         self.agent.add_node("node1", "protein", name="TP53")
         self.agent.add_node("node2", "protein", name="BRAF")
         self.agent.add_edge("edge1", "interaction", "node1", "node2", confidence=0.8)
-        
+
         copy_agent = self.agent.copy()
         assert copy_agent.name == self.agent.name
         assert len(copy_agent) == len(self.agent)
         assert copy_agent.has_node("node1")
         assert copy_agent.has_edge("edge1")
-        
+
         # Verify it's a deep copy
         copy_agent.add_node("node3", "protein")
         assert len(copy_agent) != len(self.agent)
-        
+
     def test_get_graph(self):
         """Test getting underlying graph."""
         self.agent.add_node("node1", "protein")
         graph = self.agent.get_graph()
-        
+
         assert isinstance(graph, type(self.agent.graph))
         assert len(graph) == 1
         assert graph.has_node("node1")
@@ -770,89 +748,84 @@ class TestUtilityOperations:
 
 class TestEdgeCases:
     """Test edge cases and error conditions."""
-    
+
     def setup_method(self):
         """Set up test agent."""
         self.agent = create_knowledge_graph("test_agent")
-        
+
     def test_large_agent_performance(self):
         """Test performance with larger agent."""
         # Add many nodes
         for i in range(1000):
             self.agent.add_node(f"node{i}", "protein")
-            
+
         # Add many edges
         for i in range(999):
             self.agent.add_edge(f"edge{i}", "interaction", f"node{i}", f"node{i+1}")
-            
+
         # Test operations still work
         assert len(self.agent) == 1000
         assert self.agent.has_node("node500")
         assert self.agent.has_edge("edge500")
-        
+
         # Test statistics
         stats = self.agent.get_statistics()
         assert stats["basic"]["nodes"] == 1000
         assert stats["basic"]["edges"] == 999
-        
+
     def test_schema_validation_without_schema(self):
         """Test schema validation when no schema is set."""
         agent = create_knowledge_graph("test_agent")  # No schema
-        
+
         # Should return True when no schema (no validation)
         result = agent.validate_against_schema("protein", {"name": "TP53"})
         assert result is True
-        
+
     def test_get_schema_without_schema(self):
         """Test getting schema when no schema is set."""
         agent = create_knowledge_graph("test_agent")  # No schema
-        
+
         schema = agent.get_schema()
         assert schema is None
 
 
 class TestIntegration:
     """Test integration with other components."""
-    
+
     def test_with_graph_class(self):
         """Test integration with Graph class."""
         agent = create_knowledge_graph("test_agent")
-        
+
         # Add data through agent
         agent.add_node("protein1", "protein", name="TP53")
         agent.add_node("protein2", "protein", name="BRAF")
         agent.add_edge("interaction1", "interaction", "protein1", "protein2", confidence=0.8)
-        
+
         # Get underlying graph
         graph = agent.get_graph()
-        
+
         # Test graph operations
         assert len(graph) == 2
         assert graph.has_node("protein1")
         assert graph.has_edge("interaction1")
-        
+
         # Test statistics
         stats = graph.get_statistics()
         assert stats["basic"]["nodes"] == 2
         assert stats["basic"]["edges"] == 1
-        
+
     def test_with_schema_validation(self):
         """Test integration with schema validation."""
-        schema = {
-            "protein": {
-                "represented_as": "node",
-                "properties": {"name": "str", "function": "str"}
-            }
-        }
-        
+        schema = {"protein": {"represented_as": "node", "properties": {"name": "str", "function": "str"}}}
+
         agent = create_knowledge_graph("test_agent", schema=schema)
-        
+
         # Valid node
         result = agent.add_node("protein1", "protein", name="TP53", function="tumor_suppressor")
         assert result is True
-        
+
         # Invalid node (missing required property)
         # Note: Current implementation doesn't validate during add_node
         # This test documents the current behavior
         result = agent.add_node("protein2", "protein", name="BRAF")
-        assert result is True  # Currently no validation during addition 
+        assert result is True  # Currently no validation during addition
