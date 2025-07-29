@@ -3,6 +3,8 @@
 This module provides a streamlined interface for LLM agents to create and
 manage knowledge graphs using the unified Graph representation, with optional
 schema and ontology support.
+
+TODO: examine overlap with legacy BioCypher modules, synergise where possible.
 """
 
 from typing import Any

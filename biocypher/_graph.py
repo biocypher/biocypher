@@ -4,6 +4,10 @@ This module provides a comprehensive Graph class that can represent various
 graph types including simple graphs, directed graphs, weighted graphs,
 multigraphs, and hypergraphs. The design focuses on simplicity and
 extensibility for knowledge representation.
+
+TODO: examine overlap with legacy BioCypher modules, synergise where possible.
+TODO: evaluate generalised graph class as consensus internal representation as
+    technical intermediate for other output adapters.
 """
 
 from typing import Any, Iterator
