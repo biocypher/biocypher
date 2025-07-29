@@ -11,13 +11,21 @@ __all__ = [
     "log",
     "Driver",
     "BioCypher",
+    "BioCypherAgent",
+    "Graph",
+    "Node",
+    "Edge",
+    "HyperEdge",
+    "create_knowledge_graph",
     "FileDownload",
     "APIRequest",
 ]
 
+from ._agent import BioCypherAgent, create_knowledge_graph
 from ._config import config, module_data
 from ._core import BioCypher
 from ._get import APIRequest, FileDownload
+from ._graph import Edge, Graph, HyperEdge, Node
 from ._logger import log, logfile, logger
 from ._metadata import __author__, __version__
 
