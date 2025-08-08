@@ -18,23 +18,20 @@ jobs:
           - os: "macos-latest"
             neo4j-version: "4.4-enterprise"
     runs-on: ${{ matrix.os }}
-    env:
-      POETRY_VERSION: 1.5.1
     defaults:
       run:
         shell: bash
 
     steps:
     #----------------------------------------------
-    #  checkout repo and set-up python and poetry
+    #  checkout repo and set-up python and uv
     #----------------------------------------------
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Setup Python and Poetry
+    - name: Setup Python and uv
       uses: ./.github/actions/setup
       with:
         PYTHON_VERSION: ${{ matrix.python-version }}
-        POETRY_VERSION: ${{ env.POETRY_VERSION }}
     #----------------------------------------------
     #       install dependencies
     #----------------------------------------------

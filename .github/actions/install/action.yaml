@@ -13,18 +13,18 @@ runs:
     #       load cached venv if cache exists
     #----------------------------------------------
     - name: Load cached venv
-      id: cached-poetry-dependencies
+      id: cached-uv-dependencies
       uses: actions/cache@v3
       with:
         path: .venv
-        key: venv-${{ runner.os }}-${{ inputs.PYTHON_VERSION }}-${{ hashFiles('**/poetry.lock') }}
+        key: venv-${{ runner.os }}-${{ inputs.PYTHON_VERSION }}-${{ hashFiles('**/uv.lock') }}
     #----------------------------------------------
     # install dependencies if cache does not exist
     #----------------------------------------------
     - name: Install Dependencies
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root --all-extras
+      if: steps.cached-uv-dependencies.outputs.cache-hit != 'true'
+      run: uv sync --all-extras
       shell: bash
     - name: Install library
-      run: poetry install --no-interaction --all-extras
+      run: uv sync --all-extras
       shell: bash

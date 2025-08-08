@@ -1,12 +1,9 @@
 name: "Setup"
-description: "Setup Python and Poetry"
+description: "Setup Python and uv"
 inputs:
   PYTHON_VERSION:
     description: "Python version"
     default: "3.11"
-  POETRY_VERSION:
-    description: "Poetry version"
-    default: "1.7.1"
 
 runs:
   using: "composite"
@@ -15,20 +12,10 @@ runs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{inputs.PYTHON_VERSION}}
-    - name: Load cached Poetry installation
-      if: runner.os == 'Linux' # TODO: add support for other OS
-      id: cached-poetry
-      uses: actions/cache@v3
+    - name: Install uv
+      uses: astral-sh/setup-uv@v2
       with:
-        path: ~/.local
-        key: poetry-cache-${{ runner.os }}-${{ inputs.PYTHON_VERSION }}-${{ inputs.POETRY_VERSION }}
-    - name: Install and configure Poetry
-      if: steps.cached-poetry.outputs.cache-hit != 'true'
-      uses: snok/install-poetry@v1
-      with:
-        version: 1.7.1
-        virtualenvs-create: true
-        virtualenvs-in-project: false
-    - name: Check Poetry installation
-      run: poetry --version
+        version: "latest"
+    - name: Check uv installation
+      run: uv --version
       shell: bash
