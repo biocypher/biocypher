@@ -7,6 +7,11 @@
     </blockquote>
 </div>
 
+!!! note
+
+    This functionality is currently experimental and does not cover all BioCypher
+    functionality yet. Use with caution.
+
 This section provides specialized documentation for AI coding assistants (Copilot, Cursor, Claude, etc.) to help them understand BioCypher's architecture and create high-quality code that follows our conventions.
 
 ## Why LLM-Specific Documentation?
