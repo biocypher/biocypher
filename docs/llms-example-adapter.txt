@@ -21,15 +21,15 @@ from biocypher._get import FileDownload
 class GEOAdapter:
     """
     BioCypher adapter for NCBI GEO data.
-    
+
     Transforms GEO series and sample metadata into BioCypher nodes and edges
     following the schema configuration contract.
     """
-    
+
     def __init__(self, gse_id: str, schema_config: Dict[str, Any] = None):
         """
         Initialize the GEO adapter.
-        
+
         Args:
             gse_id: GEO Series ID (e.g., "GSE12345")
             schema_config: Schema configuration for validation
@@ -38,7 +38,7 @@ class GEOAdapter:
         self.schema_config = schema_config
         self.series = None
         self._load_data()
-    
+
     def _load_data(self):
         """Load GEO data using GEOparse."""
         try:
@@ -46,34 +46,34 @@ class GEOAdapter:
             print(f"Loaded GEO series: {self.series.name}")
         except Exception as e:
             raise RuntimeError(f"Failed to load GEO series {self.gse_id}: {e}")
-    
+
     def _validate_schema_compliance(self):
         """Validate that adapter outputs match schema requirements."""
         if not self.schema_config:
             return
-            
+
         schema_nodes = {node['input_label'] for node in self.schema_config.get('nodes', [])}
         schema_edges = {edge['input_label'] for edge in self.schema_config.get('edges', [])}
-        
+
         # Validate node labels
         for node_id, node_label, _ in self.get_nodes():
             if node_label not in schema_nodes:
                 raise ValueError(f"Node label '{node_label}' not in schema")
-        
+
         # Validate edge labels
         for _, _, _, edge_label, _ in self.get_edges():
             if edge_label not in schema_edges:
                 raise ValueError(f"Edge label '{edge_label}' not in schema")
-    
+
     def _safe_extract(self, metadata: Dict[str, Any], key: str, default: Any = None) -> Any:
         """
         Safely extract metadata with fallback.
-        
+
         Args:
             metadata: Metadata dictionary
             key: Key to extract
             default: Default value if key not found
-            
+
         Returns:
             Extracted value or default
         """
@@ -81,11 +81,11 @@ class GEOAdapter:
             return metadata.get(key, default)
         except (AttributeError, KeyError):
             return default
-    
+
     def get_nodes(self) -> Iterator[Tuple[str, str, Dict[str, Any]]]:
         """
         Generate nodes from GEO data.
-        
+
         Yields:
             Tuple of (node_id, node_label, attributes_dict)
         """
@@ -102,7 +102,7 @@ class GEOAdapter:
                 "version": self._safe_extract(self.series.metadata, "submission_date"),
             },
         )
-        
+
         # Sample nodes
         for sample_name, sample in self.series.gsms.items():
             yield (
@@ -118,7 +118,7 @@ class GEOAdapter:
                     "version": self._safe_extract(self.series.metadata, "submission_date"),
                 },
             )
-        
+
         # Platform nodes (if available)
         for platform_name, platform in self.series.gpls.items():
             yield (
@@ -131,11 +131,11 @@ class GEOAdapter:
                     "version": self._safe_extract(self.series.metadata, "submission_date"),
                 },
             )
-    
+
     def get_edges(self) -> Iterator[Tuple[str, str, str, str, Dict[str, Any]]]:
         """
         Generate edges from GEO data.
-        
+
         Yields:
             Tuple of (edge_id, source_id, target_id, edge_label, attributes_dict)
         """
@@ -151,7 +151,7 @@ class GEOAdapter:
                     "version": self._safe_extract(self.series.metadata, "submission_date"),
                 },
             )
-        
+
         # Sample to Platform relationships
         for sample_name, sample in self.series.gsms.items():
             platform_name = self._safe_extract(sample.metadata, "platform_id")
@@ -166,11 +166,11 @@ class GEOAdapter:
                         "version": self._safe_extract(self.series.metadata, "submission_date"),
                     },
                 )
-    
+
     def validate(self) -> bool:
         """
         Validate the adapter output against schema.
-        
+
         Returns:
             True if validation passes, raises exception otherwise
         """
@@ -181,7 +181,7 @@ class GEOAdapter:
 # Usage Example
 def main():
     """Example usage of the GEO adapter."""
-    
+
     # Example schema configuration
     schema_config = {
         "nodes": [
@@ -190,7 +190,7 @@ def main():
                 "properties": ["title", "summary", "source", "version"]
             },
             {
-                "input_label": "geo_sample", 
+                "input_label": "geo_sample",
                 "properties": ["disease", "organism", "source", "version"]
             },
             {
@@ -207,30 +207,30 @@ def main():
             },
             {
                 "input_label": "USES_PLATFORM",
-                "source": "geo_sample", 
+                "source": "geo_sample",
                 "target": "geo_platform",
                 "properties": ["source", "version"]
             }
         ]
     }
-    
+
     # Create adapter
     adapter = GEOAdapter("GSE12345", schema_config)
-    
+
     # Validate
     adapter.validate()
-    
+
     # Generate nodes and edges
     nodes = list(adapter.get_nodes())
     edges = list(adapter.get_edges())
-    
+
     print(f"Generated {len(nodes)} nodes and {len(edges)} edges")
-    
+
     # Example node output
     print("\nExample node:")
     print(nodes[0])
-    
-    # Example edge output  
+
+    # Example edge output
     print("\nExample edge:")
     print(edges[0])
 

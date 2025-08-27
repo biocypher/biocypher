@@ -43,7 +43,7 @@ When working with an AI assistant on BioCypher code:
 ## Example Prompt
 
 ```
-I'm creating a BioCypher adapter for NCBI GEO data. Please follow the adapter creation guide at llms-adapters.txt. 
+I'm creating a BioCypher adapter for NCBI GEO data. Please follow the adapter creation guide at llms-adapters.txt.
 
 My schema configuration defines these node types:
 - geo_sample (input_label: "geo_sample")
