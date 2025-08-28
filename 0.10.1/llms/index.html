@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://biocypher.org/0.10.1/community/">
+        <link rel="canonical" href="https://biocypher.org/0.10.1/llms/">
       
       
-        <link rel="prev" href="../reference/schema-config/">
+        <link rel="prev" href="../learn/quickstart/">
       
       
-        <link rel="next" href="contribute/">
+        <link rel="next" href="../learn/tutorials/tutorial001_basics/">
       
       
       <link rel="icon" href="../assets/img/favicon_biocypher_32px.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Join Us - BioCypher</title>
+        <title>LLM Integration - BioCypher</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#our-community-zulip-channel" class="md-skip">
+        <a href="#llm-integration-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Join Us
+              LLM Integration
             
           </span>
         </div>
@@ -265,10 +265,12 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../installation/" class="md-tabs__link">
           
   
@@ -335,13 +337,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../community/" class="md-tabs__link">
           
   
   
@@ -586,24 +586,29 @@
       
   
   
+    
   
   
+  
     
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -616,7 +621,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Get Started
@@ -673,10 +678,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../llms/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    LLM Integration
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -687,6 +714,82 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-llm-specific-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why LLM-Specific Documentation?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-guides" class="md-nav__link">
+    <span class="md-ellipsis">
+      Available Guides
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-these-guides" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Use These Guides
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-prompt" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Prompt
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Resources
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1780,29 +1883,24 @@
       
   
   
-    
   
   
-  
     
     
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -1815,7 +1913,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Community
@@ -1826,30 +1924,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Join Us
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../community/" class="md-nav__link">
         
   
   
@@ -1860,44 +1938,6 @@
   
 
       </a>
-      
-        
-
-  
-
-<nav class="md-nav md-nav--secondary" aria-label="On this page">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#our-community-zulip-channel" class="md-nav__link">
-    <span class="md-ellipsis">
-      Our Community Zulip Channel
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing-guidelines-github-links" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing Guidelines GitHub Links
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1910,7 +1950,7 @@
   
   
     <li class="md-nav__item">
-      <a href="contribute/" class="md-nav__link">
+      <a href="../community/contribute/" class="md-nav__link">
         
   
   
@@ -1933,7 +1973,7 @@
   
   
     <li class="md-nav__item">
-      <a href="contribute-docs/" class="md-nav__link">
+      <a href="../community/contribute-docs/" class="md-nav__link">
         
   
   
@@ -1956,7 +1996,7 @@
   
   
     <li class="md-nav__item">
-      <a href="contribute-codebase/" class="md-nav__link">
+      <a href="../community/contribute-codebase/" class="md-nav__link">
         
   
   
@@ -1998,6 +2038,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2006,18 +2048,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#our-community-zulip-channel" class="md-nav__link">
+  <a href="#why-llm-specific-documentation" class="md-nav__link">
     <span class="md-ellipsis">
-      Our Community Zulip Channel
+      Why LLM-Specific Documentation?
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#contributing-guidelines-github-links" class="md-nav__link">
+  <a href="#available-guides" class="md-nav__link">
     <span class="md-ellipsis">
-      Contributing Guidelines GitHub Links
+      Available Guides
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-these-guides" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Use These Guides
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-prompt" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Prompt
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Resources
     </span>
   </a>
   
@@ -2039,7 +2117,7 @@
 
 
   
-    <a href="https://github.com/biocypher/biocypher/edit/main/docs/community/index.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/biocypher/biocypher/edit/main/docs/llms.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -2047,54 +2125,68 @@
   
 
 
-  <h1>Join Us</h1>
+<h1 id="llm-integration-guide">LLM Integration Guide</h1>
+<div style="text-align: center; margin: 2em 0;">
+    <blockquote style="font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 300; font-size: 1.2em; max-width: 800px; margin: 0 auto;">
+        AI coding assistants can accelerate BioCypher development.<br>
+        These guides help LLMs understand BioCypher's patterns and conventions.
+    </blockquote>
+</div>
 
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This page is redundant with the unified docs in <code>biocypher/documentation</code>.
-Community docs will be maintained there.</p>
+<p>The easiest way to integrate specific BioCypher instructions into your AI-assisted workflow is to connect your software to our dedicated MCP server at <a href="https://mcp.biocypher.org">https://mcp.biocypher.org</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This functionality is currently experimental and does not cover all BioCypher
+functionality yet. Use with caution.</p>
 </div>
-<p>Welcome to the BioCypher community! We follow open-source principles and
-encourage any sort of contribution. We communicate on GitHub, where we also
-organise our projects. For more informal discussions and updates, we have a
-<a href="https://biocypher.zulipchat.com">Zulip channel</a>. Everybody is welcome!</p>
-<div class="grid cards">
+<p>This section provides specialized documentation for AI coding assistants (Copilot, Cursor, Claude, etc.) to help them understand BioCypher's architecture and create high-quality code that follows our conventions.</p>
+<h2 id="why-llm-specific-documentation">Why LLM-Specific Documentation?</h2>
+<p>BioCypher follows specific patterns and conventions that may not be immediately obvious to AI assistants. These guides provide:</p>
 <ul>
-<li>
-<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 3.75A.75.75 0 0 1 .75 3h7.497c1.566 0 2.945.8 3.751 2.014A4.5 4.5 0 0 1 15.75 3h7.5a.75.75 0 0 1 .75.75v15.063a.75.75 0 0 1-.755.75l-7.682-.052a3 3 0 0 0-2.142.878l-.89.891a.75.75 0 0 1-1.061 0l-.902-.901a3 3 0 0 0-2.121-.879H.75a.75.75 0 0 1-.75-.75Zm12.75 15.232a4.5 4.5 0 0 1 2.823-.971l6.927.047V4.5h-6.75a3 3 0 0 0-3 3ZM11.247 7.497a3 3 0 0 0-3-2.997H1.5V18h6.947c1.018 0 2.006.346 2.803.98Z"/></svg></span> <strong>Where to Start</strong></p>
-<hr />
-<p>If you'd like to learn how to contribute to our projects, please follow
-the steps outlined in the contribution guide.</p>
-<p><a href="contribute/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> To the contribution guide</a></p>
-</li>
+<li><strong>Clear architectural patterns</strong> for common tasks</li>
+<li><strong>Concrete examples</strong> with expected input/output formats</li>
+<li><strong>Validation rules</strong> to ensure code quality</li>
+<li><strong>Best practices</strong> specific to BioCypher's domain</li>
 </ul>
-</div>
-<h2 id="our-community-zulip-channel">Our Community Zulip Channel</h2>
-<p>Some channels are public, others can be seen after joining the Zulip community
-(free of charge).</p>
+<h2 id="available-guides">Available Guides</h2>
+<p>For AI assistants, the following <code>.txt</code> files are available in the root of this documentation:</p>
 <ul>
-<li><code>#announcements</code>: Stay informed about seminars, workshops, and other events.</li>
-<li><code>#help</code>: Ask questions and get help related to BioCypher ecosystem projects.</li>
-<li><code>#general</code>: You can introduce yourselves, discuss ideas and share your work.</li>
-<li><code>#development</code>: Exchange ideas about development of BioCypher ecosystem projects.</li>
+<li><strong><a href="../llms.txt">llms.txt</a></strong> - Comprehensive functionality index and quick reference</li>
+<li><strong><a href="../llms-adapters.txt">llms-adapters.txt</a></strong> - Adapter creation guide with patterns and examples</li>
+<li><strong><a href="../llms-example-adapter.txt">llms-example-adapter.txt</a></strong> - Complete working GEO adapter example</li>
 </ul>
-<p>Why Zulip? We chose Zulip because it is a modern, open-source alternative to
-Slack. It is organised by topics, which helps in keeping the discussions
-focused. It also is free of charge for open-source and academic projects, which
-means that they sponsor the cloud hosting for our channel (as for many other
-open-source projects) - thanks!</p>
-<p>Sign up <a href="https://biocypher.zulipchat.com/">here</a>.</p>
-<h2 id="contributing-guidelines-github-links">Contributing Guidelines GitHub Links</h2>
+<h2 id="how-to-use-these-guides">How to Use These Guides</h2>
+<p>When working with an AI assistant on BioCypher code:</p>
+<ol>
+<li><strong>Reference the specific guide</strong> for your task (e.g., adapter creation)</li>
+<li><strong>Provide the guide content</strong> in your prompt for context</li>
+<li><strong>Specify the schema configuration</strong> you're working with</li>
+<li><strong>Request validation</strong> against the patterns described</li>
+</ol>
+<h2 id="example-prompt">Example Prompt</h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>I&#39;m creating a BioCypher adapter for NCBI GEO data. Please follow the adapter creation guide at llms-adapters.txt.
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>My schema configuration defines these node types:
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>- geo_sample (input_label: &quot;geo_sample&quot;)
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>- geo_series (input_label: &quot;geo_series&quot;)
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>And these edge types:
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>- HAS_SAMPLE (input_label: &quot;HAS_SAMPLE&quot;)
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>Please create an adapter that follows the 3-tuple (node_id, node_label, attributes_dict) and 5-tuple (edge_id, source_id, target_id, edge_label, attributes_dict) patterns described in the guide.
+</span></code></pre></div>
+<h2 id="contributing">Contributing</h2>
+<p>If you find patterns or conventions that would benefit from LLM documentation, please contribute by:</p>
+<ol>
+<li>Creating a new guide file following the naming convention <code>llms-*.txt</code></li>
+<li>Updating the main <code>llms.txt</code> index</li>
+<li>Adding the guide to this overview page</li>
+</ol>
+<h2 id="related-resources">Related Resources</h2>
 <ul>
-<li>
-<p><a href="https://github.com/biocypher/biocypher/blob/main/CONTRIBUTING.md">Contribution guidelines</a></p>
-</li>
-<li>
-<p><a href="https://github.com/biocypher/biocypher/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></p>
-</li>
-<li>
-<p><a href="https://github.com/biocypher/biocypher/blob/main/DEVELOPER.md">Developer Guide</a></p>
-</li>
+<li><a href="../biocypher-project/biochatter-integration/">BioCypher + LLMs</a> - Integration with BioChatter</li>
+<li><a href="../learn/tutorials/tutorial003_adapters/">Adapter Tutorial</a> - Human-focused adapter tutorial</li>
+<li><a href="../reference/schema-config/">Schema Configuration</a> - Schema configuration reference</li>
 </ul>
 
 
@@ -2125,7 +2217,7 @@ open-source projects) - thanks!</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../reference/schema-config/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Schema Configuration">
+          <a href="../learn/quickstart/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Quickstart">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2135,20 +2227,20 @@ open-source projects) - thanks!</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Schema Configuration
+                Quickstart
               </div>
             </div>
           </a>
         
         
           
-          <a href="contribute/" class="md-footer__link md-footer__link--next" aria-label="Next: Where to Start">
+          <a href="../learn/tutorials/tutorial001_basics/" class="md-footer__link md-footer__link--next" aria-label="Next: Basics">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Where to Start
+                Basics
               </div>
             </div>
             <div class="md-footer__button md-icon">
