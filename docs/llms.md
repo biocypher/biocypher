@@ -7,6 +7,8 @@
     </blockquote>
 </div>
 
+The easiest way to integrate specific BioCypher instructions into your AI-assisted workflow is to connect your software to our dedicated MCP server at [https://mcp.biocypher.org](https://mcp.biocypher.org).
+
 !!! note
 
     This functionality is currently experimental and does not cover all BioCypher
