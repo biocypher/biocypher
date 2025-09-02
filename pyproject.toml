@@ -2,10 +2,6 @@
 name = "biocypher"
 version = "0.10.1"
 description = "A unifying framework for biomedical research knowledge graphs"
-authors = [
-    "Sebastian Lobentanzer <sebastian.lobentanzer@gmail.com>",
-    "Denes Turei <turei.denes@gmail.com>"
-]
 license = "MIT"
 packages = [
     { include = "biocypher" }

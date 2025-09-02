@@ -7,7 +7,7 @@
     </blockquote>
 </div>
 
-The easiest way to integrate specific BioCypher instructions into your AI-assisted workflow is to connect your software to our dedicated MCP server at [https://mcp.biocypher.org](https://mcp.biocypher.org).
+The easiest way to integrate specific BioCypher instructions into your AI-assisted workflow is to connect your software to our dedicated MCP server at [https://mcp.biocypher.org](https://mcp.biocypher.org). You can use our [MCP-ready template](https://github.com/biocypher/mcp-template) to get started. Set up your own repository using the template, load it in your favourite co-programmer, and connect to the MCP to get started on your pipeline.
 
 !!! note
 
