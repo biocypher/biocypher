@@ -738,9 +738,9 @@ class BioCypher:
         for k, v in schema.items():
             if not isinstance(v, dict):
                 continue
-            if "label_as_edge" in v:
-                if v["label_as_edge"] in deduplicator.seen_relationships:
-                    changed_labels[v["label_as_edge"]] = k
+            # if "label_as_edge" in v:
+            #     if v["label_as_edge"] in deduplicator.seen_relationships:
+            #         changed_labels[v["label_as_edge"]] = k
 
         for edge in deduplicator.seen_relationships:
             if edge in changed_labels:

@@ -156,3 +156,56 @@ csv:
 networkx:
   ### NetworkX configuration ###
   some_config: some_value # placeholder for technical reasons TODO
+
+metagraph:
+    file_format: cytoscape.json
+    file_stem: metagraph
+
+    # Use IRI instead of BioCypher labels as IDs.
+    use_IRI: False
+
+    ### Information about encountered property values ###
+    # Add annotations showing all the unique
+    # values in the encountered properties.
+    # WARNING: this may be a lot of values.
+    property_values: True
+    # If True, adds an annotation to each node and edge,
+    # which value is the number of unique values encountered
+    # while processing the instantiated graph.
+    nb_property_values: True
+    # To avoid colliding with the annotation showing
+    # the actual unique values, a string is added before
+    # the annotation name.
+    nb_property_values_prefix: "#"
+    # Translate some encountered property names
+    # into another.
+    # For instance, some output format engines
+    # (e.g. cytoscape) are using the "id"
+    # property for their own purposes.
+    # This option allows to translate it to
+    # "biocypher_id" to avoid collision.
+    change_property_name:
+        "id": "biocypher_id"
+
+    ### Property values lists management ###
+    # Some properties of the processed instantiated graph
+    # may alfready be aggregation of values.
+    # If set, this is used to split the property values
+    # before counting them.
+    split_separator: ","
+    # When storing the encountered property values,
+    # join them as a string with this string.
+    join_separator: ","
+
+    ### Mandatory annotations ###
+    # Names of the annotations that are always attached
+    # to the elements of the metagraph.
+    # If unset, an error will be raised.,
+    # but you can still change their name,
+    # e.g. to avoid collisions with encountered
+    # properties.
+    keys:
+        NBINS: "nb_instances"
+        ISA: "is_a"
+        ANCESTORS: "ancestors"
+        IRI: "IRI"

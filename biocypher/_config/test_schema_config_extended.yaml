@@ -101,6 +101,25 @@ dsDNA sequence:
   preferred_id: [intact, uniparc]
   input_label: [intact_dsdna, uniprot_archive_dsdna]
 
+# Double extension test.
+ugly disease:
+  is_a: disease
+  represented_as: node
+  input_label: UglyDisease
+
+nasty disease:
+  is_a: ugly disease
+  represented_as: node
+  input_label: NastyDisease
+
+# Missing extension test
+# FIXME because this was not an error in previous versions, we automatically "fix" it. But we may want to make this a proper error in future versions.
+extension:
+  is_a: unknown
+  represented_as: node
+  input_label: Unknown
+
+
 # ---
 # Associations
 # ---

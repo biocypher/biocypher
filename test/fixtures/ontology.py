@@ -32,7 +32,8 @@ def disconnected_mapping():
 def hybrid_ontology(extended_ontology_mapping):
     return Ontology(
         head_ontology={
-            "url": "https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl",
+            # "url": "https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl",
+            "url": "test/ontologies/biolink-model.owl.ttl",
             "root_node": "entity",
         },
         ontology_mapping=extended_ontology_mapping,
