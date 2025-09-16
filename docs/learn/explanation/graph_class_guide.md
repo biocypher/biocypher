@@ -64,6 +64,7 @@ class Node:
 ```
 
 **Features:**
+
 - Immutable ID and type
 - Flexible property dictionary
 - Validation in `__post_init__`
@@ -91,6 +92,7 @@ class Edge:
 ```
 
 **Features:**
+
 - Directed relationship representation
 - Source and target validation
 - Flexible property dictionary

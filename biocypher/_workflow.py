@@ -5,7 +5,47 @@ knowledge graphs using the unified Graph representation, with optional
 schema and ontology support. Designed for both agentic and deterministic
 workflows.
 
-TODO: examine overlap with legacy BioCypher modules, synergise where possible.
+## Design Philosophy
+
+This API is designed with the following principles:
+1. **Agentic-First**: Optimized for LLM agent workflows with computable functions
+2. **Zero Dependencies**: Pure Python implementation for maximum compatibility
+3. **Future-Proof**: Native BioCypher objects enable advanced agentic features
+4. **Migration-Ready**: Wrapper methods provide compatibility with existing tools
+5. **Progressive Validation**: Optional validation and deduplication with flexible modes
+
+## Validation and Deduplication
+
+Unlike the legacy BioCypher which enforces strict validation and deduplication,
+this API provides **progressive validation** with three modes:
+
+- **"none"** (default): No validation or deduplication - maximum flexibility for agents
+- **"warn"**: Log warnings for schema violations and duplicates but continue processing
+- **"strict"**: Enforce schema validation and deduplication - fail fast on violations
+
+This approach allows:
+- **Agents** to work with maximum flexibility (no validation overhead)
+- **Deterministic workflows** to use validation when needed
+- **Gradual migration** from legacy BioCypher (start with "none", add validation later)
+
+## Future Migration Path
+
+This module represents the future direction of BioCypher's in-memory graph
+functionality. The plan is to:
+
+1. **Phase 1** (Current): Keep separate from legacy code, provide compatibility wrappers
+2. **Phase 2**: Replace legacy in-memory implementations (PandasKG, NetworkxKG)
+3. **Phase 3**: Add advanced agentic features (computable functions, decision logging)
+4. **Phase 4**: Integrate with main BioCypher class as unified interface
+
+## Agentic Features (Future)
+
+- Computable functions attached to nodes/edges
+- Decision logging and reasoning traces
+- Counterfactual inference capabilities
+- MCP (Model Context Protocol) interface integration
+- Local graph computation for agent workflows
+
 """
 
 import json
@@ -33,6 +73,8 @@ class BioCypherWorkflow:
         schema: dict[str, Any] | None = None,
         schema_file: str | None = None,
         head_ontology_url: str | None = None,
+        validation_mode: str = "none",
+        deduplication: bool = False,
     ):
         """Initialize the workflow with a unified graph.
 
@@ -42,12 +84,20 @@ class BioCypherWorkflow:
             schema: Dictionary defining the knowledge graph schema
             schema_file: Path to YAML schema file
             head_ontology_url: URL to ontology file (defaults to Biolink model)
+            validation_mode: Validation level ("none", "warn", "strict")
+            deduplication: Whether to enable deduplication (default: False)
         """
         self.graph = Graph(name=name, directed=directed)
         self.name = name
         self.schema = schema
         self.schema_file = schema_file
         self.head_ontology_url = head_ontology_url
+        self.validation_mode = validation_mode
+        self.deduplication = deduplication
+        
+        # Track seen entities for deduplication
+        self._seen_nodes = set()
+        self._seen_edges = set()
 
         # Initialize schema if provided
         if schema_file:
@@ -85,7 +135,33 @@ class BioCypherWorkflow:
         Example:
             workflow.add_node("protein_1", "protein", name="TP53", function="tumor_suppressor")
         """
-        return self.graph.add_node(node_id, node_type, properties)
+        # Check for duplicates if deduplication is enabled
+        if self.deduplication:
+            if node_id in self._seen_nodes:
+                if self.validation_mode == "warn":
+                    logger.warning(f"Duplicate node ID '{node_id}' detected")
+                elif self.validation_mode == "strict":
+                    raise ValueError(f"Duplicate node ID '{node_id}' not allowed in strict mode")
+                return False
+            self._seen_nodes.add(node_id)
+        
+        # Validate against schema if validation is enabled
+        if self.validation_mode in ["warn", "strict"]:
+            is_valid = self.validate_against_schema(node_type, properties)
+            if not is_valid:
+                if self.validation_mode == "strict":
+                    raise ValueError(f"Node '{node_id}' of type '{node_type}' failed schema validation")
+                elif self.validation_mode == "warn":
+                    logger.warning(f"Node '{node_id}' of type '{node_type}' failed schema validation")
+        
+        # Try to add node to graph (Graph class handles its own deduplication)
+        result = self.graph.add_node(node_id, node_type, properties)
+        
+        # If deduplication is enabled and we're tracking, update our tracking
+        if self.deduplication and result:
+            self._seen_nodes.add(node_id)
+        
+        return result
 
     def get_node(self, node_id: str) -> Node | None:
         """Get a node by ID.
@@ -150,7 +226,35 @@ class BioCypherWorkflow:
             workflow.add_edge("interaction_1", "interaction", "protein_1", "protein_2",
                           confidence=0.8, method="yeast_two_hybrid")
         """
-        return self.graph.add_edge(edge_id, edge_type, source, target, properties)
+        # Check for duplicates if deduplication is enabled
+        if self.deduplication:
+            edge_key = (edge_id, edge_type)
+            if edge_key in self._seen_edges:
+                if self.validation_mode == "warn":
+                    logger.warning(f"Duplicate edge ID '{edge_id}' of type '{edge_type}' detected")
+                elif self.validation_mode == "strict":
+                    raise ValueError(f"Duplicate edge ID '{edge_id}' not allowed in strict mode")
+                return False
+            self._seen_edges.add(edge_key)
+        
+        # Validate against schema if validation is enabled
+        if self.validation_mode in ["warn", "strict"]:
+            is_valid = self.validate_against_schema(edge_type, properties)
+            if not is_valid:
+                if self.validation_mode == "strict":
+                    raise ValueError(f"Edge '{edge_id}' of type '{edge_type}' failed schema validation")
+                elif self.validation_mode == "warn":
+                    logger.warning(f"Edge '{edge_id}' of type '{edge_type}' failed schema validation")
+        
+        # Try to add edge to graph (Graph class handles its own deduplication)
+        result = self.graph.add_edge(edge_id, edge_type, source, target, properties)
+        
+        # If deduplication is enabled and we're tracking, update our tracking
+        if self.deduplication and result:
+            edge_key = (edge_id, edge_type)
+            self._seen_edges.add(edge_key)
+        
+        return result
 
     def get_edge(self, edge_id: str) -> Edge | None:
         """Get an edge by ID.
@@ -455,13 +559,44 @@ class BioCypherWorkflow:
 
         required_properties = schema_entry["properties"]
 
-        # Check if all required properties are present
+        # Check if all required properties are present and have correct types
         for prop_name, prop_type in required_properties.items():
             if prop_name not in properties:
                 logger.warning(f"Missing required property '{prop_name}' for node type '{node_type}'")
                 return False
+            
+            # Check property type
+            actual_value = properties[prop_name]
+            if not self._validate_property_type(actual_value, prop_type):
+                logger.warning(f"Property '{prop_name}' has wrong type. Expected {prop_type}, got {type(actual_value).__name__}")
+                return False
 
         return True
+
+    def _validate_property_type(self, value: Any, expected_type: str) -> bool:
+        """Validate that a property value matches the expected type.
+        
+        Args:
+            value: The actual value
+            expected_type: The expected type as string (e.g., 'str', 'int', 'float')
+            
+        Returns:
+            bool: True if type matches, False otherwise
+        """
+        type_mapping = {
+            'str': str,
+            'int': int,
+            'float': float,
+            'bool': bool,
+            'list': list,
+            'dict': dict,
+        }
+        
+        if expected_type not in type_mapping:
+            return True  # Unknown type, assume valid
+        
+        expected_python_type = type_mapping[expected_type]
+        return isinstance(value, expected_python_type)
 
     # ==================== SERIALIZATION ====================
 
@@ -551,6 +686,85 @@ class BioCypherWorkflow:
     def __repr__(self) -> str:
         return self.__str__()
 
+    # ==================== COMPATIBILITY WRAPPER METHODS ====================
+
+    def to_networkx(self):
+        """Convert to NetworkX graph for compatibility with existing tools.
+        
+        Returns:
+            networkx.DiGraph: NetworkX representation of the graph
+            
+        Note:
+            This method provides compatibility with existing NetworkX-based
+            tools while maintaining the native BioCypher object structure.
+            Future versions may use this as the primary backend.
+        """
+        try:
+            import networkx as nx
+        except ImportError:
+            raise ImportError("NetworkX is required for to_networkx() conversion. Install with: pip install networkx")
+        
+        g = nx.DiGraph() if self.graph.directed else nx.Graph()
+        
+        # Add nodes with properties
+        for node in self.graph._nodes.values():
+            attrs = node.properties.copy()
+            attrs['node_type'] = node.type
+            g.add_node(node.id, **attrs)
+        
+        # Add edges with properties
+        for edge in self.graph._edges.values():
+            attrs = edge.properties.copy()
+            attrs['edge_type'] = edge.type
+            g.add_edge(edge.source, edge.target, **attrs)
+        
+        return g
+
+    def to_pandas(self):
+        """Convert to Pandas DataFrames for compatibility with existing tools.
+        
+        Returns:
+            dict[str, pd.DataFrame]: Dictionary of DataFrames, one per node/edge type
+            
+        Note:
+            This method provides compatibility with existing Pandas-based
+            tools while maintaining the native BioCypher object structure.
+            Future versions may use this as the primary backend.
+        """
+        try:
+            import pandas as pd
+        except ImportError:
+            raise ImportError("Pandas is required for to_pandas() conversion. Install with: pip install pandas")
+        
+        dfs = {}
+        
+        # Create node DataFrames by type
+        for node_type, node_ids in self.graph._node_types.items():
+            nodes = [self.graph._nodes[node_id] for node_id in node_ids]
+            data = []
+            for node in nodes:
+                row = {'node_id': node.id, 'node_type': node.type}
+                row.update(node.properties)
+                data.append(row)
+            dfs[node_type] = pd.DataFrame(data)
+        
+        # Create edge DataFrames by type
+        for edge_type, edge_ids in self.graph._edge_types.items():
+            edges = [self.graph._edges[edge_id] for edge_id in edge_ids]
+            data = []
+            for edge in edges:
+                row = {
+                    'edge_id': edge.id,
+                    'edge_type': edge.type,
+                    'source_id': edge.source,
+                    'target_id': edge.target
+                }
+                row.update(edge.properties)
+                data.append(row)
+            dfs[edge_type] = pd.DataFrame(data)
+        
+        return dfs
+
 
 # Convenience function for quick workflow creation
 def create_workflow(
@@ -559,6 +773,8 @@ def create_workflow(
     schema: dict[str, Any] | None = None,
     schema_file: str | None = None,
     head_ontology_url: str | None = None,
+    validation_mode: str = "none",
+    deduplication: bool = False,
 ) -> BioCypherWorkflow:
     """Create a new knowledge graph workflow.
 
@@ -568,10 +784,13 @@ def create_workflow(
         schema: Dictionary defining the knowledge graph schema
         schema_file: Path to YAML schema file
         head_ontology_url: URL to ontology file
+        validation_mode: Validation level ("none", "warn", "strict")
+        deduplication: Whether to enable deduplication
 
     Returns:
         BioCypherWorkflow instance
     """
     return BioCypherWorkflow(
-        name=name, directed=directed, schema=schema, schema_file=schema_file, head_ontology_url=head_ontology_url
+        name=name, directed=directed, schema=schema, schema_file=schema_file, 
+        head_ontology_url=head_ontology_url, validation_mode=validation_mode, deduplication=deduplication
     )

@@ -22,6 +22,20 @@ The BioCypher Agent API provides a streamlined interface for LLM agents to creat
 - **Built-in Serialization**: JSON export/import for persistence
 - **Optional Schema**: Schema validation when needed, not required
 
+### Key Limitations (vs. Legacy BioCypher)
+
+⚠️ **Important for Legacy Users**: The Agent API prioritizes simplicity over comprehensive ETL capabilities:
+
+- **Limited Output Formats**: Only JSON, NetworkX, Pandas (vs. 15+ formats)
+- **No Database Integration**: No Neo4j, PostgreSQL, or other database connectivity
+- **Basic Ontology Support**: Simple URL references only (no complex mapping)
+- **Memory-Bound**: In-memory only, not suitable for large datasets (>100K nodes)
+- **Simplified Validation**: Basic property checking (no complex inheritance)
+- **No Batch Processing**: No streaming or batch processing capabilities
+- **No Data Source Integration**: No built-in adapters for external data sources
+
+**Use Legacy BioCypher for**: Large-scale ETL pipelines, database integration, complex ontologies, production systems, or batch processing of large datasets.
+
 ## API Reference
 
 ### Core Classes
@@ -134,6 +148,87 @@ new_kg.from_json(json_data)
 new_kg.load("knowledge_graph.json")
 ```
 
+#### Compatibility Wrappers
+
+```python
+# Convert to NetworkX for analysis
+nx_graph = kg.to_networkx()
+
+# Use NetworkX algorithms
+import networkx as nx
+centrality = nx.degree_centrality(nx_graph)
+print(f"Most central node: {max(centrality, key=centrality.get)}")
+
+# Convert to Pandas DataFrames
+nodes_df, edges_df = kg.to_pandas()
+
+# Analyze with Pandas
+print("Node types distribution:")
+print(nodes_df['type'].value_counts())
+
+print("Edge types distribution:")
+print(edges_df['type'].value_counts())
+```
+
+## Getting Started
+
+### Basic Workflow Creation
+
+```python
+from biocypher import create_workflow
+
+# Create a simple workflow
+workflow = create_workflow("my_graph")
+
+# Add nodes
+workflow.add_node("protein_1", "protein", name="TP53", function="tumor_suppressor")
+workflow.add_node("protein_2", "protein", name="BRAF", function="kinase")
+
+# Add edges
+workflow.add_edge("interaction_1", "interaction", "protein_1", "protein_2", confidence=0.8)
+
+# Check the graph
+print(f"Graph has {len(workflow)} nodes")
+```
+
+### Validation Modes
+
+The new API provides three validation modes for different use cases:
+
+#### 1. "none" Mode (Default)
+Maximum flexibility for agents and prototyping:
+
+```python
+# No validation overhead
+workflow = create_workflow("agent_graph", validation_mode="none")
+
+# Agents can add any nodes/edges dynamically
+workflow.add_node("entity_1", "unknown_type", any_property="value")
+workflow.add_node("entity_2", "custom_type", dynamic_data=123)
+```
+
+#### 2. "warn" Mode
+Logs warnings but continues processing:
+
+```python
+workflow = create_workflow("debug_graph", validation_mode="warn", deduplication=True)
+
+# This will warn about duplicates but continue
+workflow.add_node("protein_1", "protein", name="TP53")
+workflow.add_node("protein_1", "protein", name="TP53")  # Warning logged
+```
+
+#### 3. "strict" Mode
+Enforces validation and fails fast:
+
+```python
+workflow = create_workflow("production_graph", validation_mode="strict", deduplication=True)
+
+# This will raise an error for duplicates
+workflow.add_node("protein_1", "protein", name="TP53")
+# workflow.add_node("protein_1", "protein", name="TP53")  # Would raise ValueError
+```
+
 ## Usage Examples
 
 ### Example 1: Basic Knowledge Graph
@@ -183,7 +278,42 @@ reasoning.add_edge("obs_to_inf", "supports", "obs_1", "inf_1", strength=0.8)
 reasoning.save("reasoning_process.json")
 ```
 
-### Example 3: Complex Relationships with Hypergraphs
+### Example 3: Schema Validation
+
+```python
+# Define schema
+schema = {
+    "protein": {
+        "represented_as": "node",
+        "properties": {
+            "name": "str",
+            "function": "str",
+            "uniprot_id": "str"
+        }
+    },
+    "interaction": {
+        "represented_as": "edge",
+        "source": "protein",
+        "target": "protein",
+        "properties": {
+            "confidence": "float",
+            "evidence": "str"
+        }
+    }
+}
+
+# Create workflow with schema validation
+workflow = create_workflow("validated_graph", schema=schema, validation_mode="strict")
+
+# Valid node (passes validation)
+workflow.add_node("TP53", "protein", name="TP53", function="tumor_suppressor", uniprot_id="P04637")
+
+# Invalid node (fails validation in strict mode)
+# workflow.add_node("BRAF", "protein", name=123)  # Wrong type for name
+# workflow.add_node("MDM2", "protein", name="MDM2")  # Missing required function
+```
+
+### Example 4: Complex Relationships with Hypergraphs
 
 ```python
 # Create protein complex knowledge graph
@@ -203,6 +333,38 @@ complexes.add_hyperedge("TP53_CDKN1A_complex", "protein_complex",
 
 # Query complexes
 protein_complexes = complexes.query_hyperedges("protein_complex")
+```
+
+### Example 5: Agentic Workflow Integration
+
+```python
+# Create workflow optimized for agents
+workflow = create_workflow("agent_graph", validation_mode="none")
+
+# Agent discovers entities dynamically
+discovered_entities = [
+    {"id": "entity_1", "type": "protein", "name": "TP53", "function": "tumor_suppressor"},
+    {"id": "entity_2", "type": "protein", "name": "BRAF", "function": "kinase"},
+    {"id": "entity_3", "type": "disease", "name": "Cancer", "description": "Uncontrolled growth"}
+]
+
+# Add entities dynamically
+for entity in discovered_entities:
+    workflow.add_node(entity["id"], entity["type"], **{k: v for k, v in entity.items() if k not in ["id", "type"]})
+
+# Agent discovers relationships
+discovered_relationships = [
+    {"id": "rel_1", "type": "interaction", "source": "entity_1", "target": "entity_2", "confidence": 0.8},
+    {"id": "rel_2", "type": "causes", "source": "entity_2", "target": "entity_3", "evidence": "strong"}
+]
+
+# Add relationships dynamically
+for rel in discovered_relationships:
+    workflow.add_edge(rel["id"], rel["type"], rel["source"], rel["target"], 
+                     **{k: v for k, v in rel.items() if k not in ["id", "type", "source", "target"]})
+
+# Convert to analysis format when needed
+nx_graph = workflow.to_networkx()
 ```
 
 ## Comparison with Original BioCypher
@@ -429,6 +591,40 @@ kg.add_hyperedge("apoptosis_pathway", "pathway",
                 function="programmed_cell_death")
 ```
 
+## Limitations and Trade-offs
+
+While the Agent API provides significant advantages for LLM agent workflows, it comes with important limitations compared to the legacy BioCypher ETL pipeline:
+
+### Current Limitations
+
+- **Limited Output Formats**: Only JSON, NetworkX, and Pandas (vs. 15+ formats in legacy)
+- **No Database Integration**: No direct Neo4j, PostgreSQL, or other database connectivity
+- **Basic Ontology Support**: Simple URL references only (no complex ontology mapping)
+- **Memory-Bound**: In-memory processing only, not suitable for large datasets (>100K nodes)
+- **Simplified Validation**: Basic property type checking (no complex inheritance validation)
+- **No Batch Processing**: No streaming or batch processing capabilities
+- **Limited Metadata**: No automatic provenance tracking or metadata injection
+- **No Data Source Integration**: No built-in adapters for external data sources
+
+### When to Use Legacy BioCypher Instead
+
+Use the original BioCypher framework for:
+- **Large-scale ETL pipelines** (>100K nodes)
+- **Database integration** (Neo4j, PostgreSQL, etc.)
+- **Complex ontology requirements**
+- **Production systems** requiring robust validation
+- **Batch processing** of large datasets
+- **Multiple output formats**
+- **Provenance tracking** and metadata management
+
+### Migration Path
+
+The limitations above will be addressed in future phases:
+
+- **Phase 2**: Enhanced ontology support, batch processing, more output formats
+- **Phase 3**: Advanced validation, metadata handling, data source integration
+- **Phase 4**: Unified interface with full legacy compatibility
+
 ## Future Enhancements
 
 The Agent API is designed to be extensible. Future enhancements may include:
@@ -450,5 +646,7 @@ The API is particularly well-suited for:
 - **Educational Use**: Teaching knowledge graph concepts
 - **Prototyping**: Rapid iteration and experimentation
 - **Reasoning Process Logging**: Tracking agent decision-making
+- **Small to Medium Datasets**: Interactive exploration and analysis
+- **Research and Development**: Flexible experimentation with graph structures
 
-For large-scale production systems or complex ontology requirements, the original BioCypher framework remains the appropriate choice. However, for most agentic applications, the new API provides the right balance of simplicity and power.
+However, it's important to understand the trade-offs. For large-scale production systems, complex ontology requirements, database integration, or batch processing of large datasets, the original BioCypher framework remains the appropriate choice. The Agent API is designed for agentic workflows and interactive use cases where simplicity and flexibility are prioritized over comprehensive ETL capabilities.
