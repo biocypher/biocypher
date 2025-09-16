@@ -158,8 +158,8 @@ def example_2_biomedical_knowledge_graph():
         },
     }
 
-    # Initialize agent
-    agent = create_knowledge_graph("biomedical_knowledge", schema=biomedical_schema)
+    # Initialize workflow
+    workflow = create_workflow("biomedical_knowledge", schema=biomedical_schema)
 
     # Add proteins
     workflow.add_node(
@@ -185,7 +185,9 @@ def example_2_biomedical_knowledge_graph():
         description="Disease characterized by uncontrolled cell growth",
         symptoms="Tumor formation, metastasis",
     )
-    workflow.add_node("DOID:0111253", "disease", name="Melanoma", description="Skin cancer", symptoms="Dark skin lesions")
+    workflow.add_node(
+        "DOID:0111253", "disease", name="Melanoma", description="Skin cancer", symptoms="Dark skin lesions"
+    )
 
     # Add drugs
     workflow.add_node("DB08896", "drug", name="Vemurafenib", mechanism="BRAF inhibitor", status="Approved")
@@ -199,7 +201,7 @@ def example_2_biomedical_knowledge_graph():
 
     # Use advanced querying
     print("Finding paths between BRAF and Cancer:")
-    paths = agent.find_paths("P15056", "DOID:162", max_length=3)
+    paths = workflow.find_paths("P15056", "DOID:162", max_length=3)
     for i, path in enumerate(paths):
         print(f"  Path {i+1}:")
         for edge in path:
@@ -220,7 +222,7 @@ def example_3_reasoning_process_logging():
     print("\n=== Example 3: Reasoning Process Logging ===")
 
     # Create agent for reasoning process
-    agent = create_knowledge_graph("reasoning_process")
+    workflow = create_workflow("reasoning_process")
 
     # Simulate an LLM agent's reasoning process
     reasoning_steps = [
@@ -282,16 +284,16 @@ def example_3_reasoning_process_logging():
     workflow.add_edge("men4", "mentions", "step4", "condition_a", relevance=0.95)
 
     # Export reasoning process
-    agent.to_json()  # Export for demonstration
+    workflow.to_json()  # Export for demonstration
     print("Reasoning process exported to JSON format")
     print(
-        f"Process contains {agent.get_statistics()['basic']['nodes']} steps and "
-        f"{agent.get_statistics()['basic']['edges']} connections",
+        f"Process contains {workflow.get_statistics()['basic']['nodes']} steps and "
+        f"{workflow.get_statistics()['basic']['edges']} connections",
     )
 
     # Demonstrate querying the reasoning process
     print("\nReasoning process analysis:")
-    summary = agent.get_summary()
+    summary = workflow.get_summary()
     print(f"  - Total steps: {summary['total_nodes']}")
     print(f"  - Logical connections: {summary['total_edges']}")
     print(f"  - Top step types: {summary['top_node_types']}")
@@ -304,7 +306,7 @@ def example_4_graph_analysis():
     print("\n=== Example 4: Advanced Graph Analysis ===")
 
     # Create a more complex graph for analysis
-    agent = create_knowledge_graph("analysis_graph")
+    workflow = create_workflow("analysis_graph")
 
     # Add a network of concepts and relationships
     concepts = [
@@ -357,7 +359,7 @@ def example_4_graph_analysis():
 
     # Path analysis
     print("\nShortest path from AI to BERT:")
-    paths = agent.find_paths("AI", "BERT", max_length=4)
+    paths = workflow.find_paths("AI", "BERT", max_length=4)
     if paths:
         for i, path in enumerate(paths):
             print(f"  Path {i+1}: AI", end="")
@@ -367,9 +369,9 @@ def example_4_graph_analysis():
 
     # Neighbor analysis
     print("\nNeighbors of AI:")
-    ai_neighbors = agent.get_neighbors("AI")
+    ai_neighbors = workflow.get_neighbors("AI")
     for neighbor_id in ai_neighbors:
-        neighbor = agent.get_node(neighbor_id)
+        neighbor = workflow.get_node(neighbor_id)
         print(f"  - {neighbor.properties['name']}: {neighbor.properties['description']}")
 
     return workflow

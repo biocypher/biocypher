@@ -21,13 +21,13 @@ __all__ = [
     "APIRequest",
 ]
 
-from ._workflow import BioCypherWorkflow, create_workflow
 from ._config import config, module_data
 from ._core import BioCypher
 from ._get import APIRequest, FileDownload
 from ._graph import Edge, Graph, HyperEdge, Node
 from ._logger import log, logfile, logger
 from ._metadata import __author__, __version__
+from ._workflow import BioCypherWorkflow, create_workflow
 
 
 class Driver(BioCypher):

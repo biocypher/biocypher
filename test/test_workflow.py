@@ -96,7 +96,9 @@ class TestNodeOperations:
 
     def test_add_node_with_properties(self):
         """Test node addition with properties."""
-        result = self.workflow.add_node("node1", "protein", name="TP53", function="tumor_suppressor", uniprot_id="P04637")
+        result = self.workflow.add_node(
+            "node1", "protein", name="TP53", function="tumor_suppressor", uniprot_id="P04637"
+        )
         assert result is True
 
         node = self.workflow.get_node("node1")
