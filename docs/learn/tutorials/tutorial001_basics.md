@@ -43,7 +43,7 @@ uv sync --all-extras
 
 !!! note "uv environment"
 	In order to run the tutorial code, you will need to use the uv
-	environment. You can run the code by prepending `uv run` to the command. 
+	environment. You can run the code by prepending `uv run` to the command.
 	For example, to run the tutorial code, you can run `uv run python tutorial/01__basic_import.py`.
 
 In the `biocypher` root directory, you will find a `tutorial` directory with

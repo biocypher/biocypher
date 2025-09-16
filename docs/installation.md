@@ -137,7 +137,7 @@ below to get started.
 
     # Install the BioCypher package with all the dependencies automatically
     uv add biocypher
-    
+
     # Or install with optional dependencies (e.g., for AIRR functionality)
     uv add "biocypher[scirpy]"
     ```
