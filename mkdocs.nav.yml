@@ -13,6 +13,8 @@ nav:
     - Get Started:
           - Installation: installation.md
           - Quickstart: learn/quickstart.md
+          - LLM Integration: llms.md
+
 
     - Learn:
           - Tutorials:

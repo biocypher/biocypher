@@ -21,6 +21,8 @@ This modular approach maximises flexibility and reusability, empowering the biom
 
 !!! tip "Hot Topics"
 
+    Model Context Protocol has opened new avenues for accessibility. We have created a registry for biomedical MCP servers (see [https://biocontext.ai](https://biocontext.ai)) as well as a dedicated MCP server to help with implementing BioCypher solutions (see [here](llms.md)).
+
     BioCypher is the simplest way to create an AI-enabled knowledge graph for biomedical (or other) tasks. Check our [BioChatter](https://biochatter.org) documentation for more information.
 
     We have also recently published a perspective on connecting knowledge and machine learning to enable causal reasoning in biomedicine, with a particular focus on the currently emerging "foundation models." You can read it [here](https://www.embopress.org/doi/full/10.1038/s44320-024-00041-w).
