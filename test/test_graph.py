@@ -624,11 +624,11 @@ class TestIntegration:
     """Test integration with other components."""
 
     def test_with_bio_cypher_agent(self):
-        """Test Graph integration with BioCypherAgent."""
-        from biocypher import create_knowledge_graph
+        """Test Graph integration with BioCypherWorkflow."""
+        from biocypher import create_workflow
 
         # Create agent
-        agent = create_knowledge_graph("test_agent")
+        agent = create_workflow("test_agent")
 
         # Add data through agent
         result1 = agent.add_node("protein1", "protein", name="TP53")

@@ -85,7 +85,7 @@ class TestNodeOperations:
 
     def setup_method(self):
         """Set up test workflow."""
-        self.workflow = create_knowledge_graph("test_workflow")
+        self.workflow = create_workflow("test_workflow")
 
     def test_add_node_basic(self):
         """Test basic node addition."""
@@ -169,7 +169,7 @@ class TestEdgeOperations:
 
     def setup_method(self):
         """Set up test workflow with nodes."""
-        self.workflow = create_knowledge_graph("test_workflow")
+        self.workflow = create_workflow("test_workflow")
         self.workflow.add_node("node1", "protein")
         self.workflow.add_node("node2", "protein")
         self.workflow.add_node("node3", "disease")
@@ -276,7 +276,7 @@ class TestHyperEdgeOperations:
 
     def setup_method(self):
         """Set up test workflow with nodes."""
-        self.workflow = create_knowledge_graph("test_workflow")
+        self.workflow = create_workflow("test_workflow")
         self.workflow.add_node("node1", "protein")
         self.workflow.add_node("node2", "protein")
         self.workflow.add_node("node3", "protein")
@@ -341,7 +341,7 @@ class TestGraphTraversal:
 
     def setup_method(self):
         """Set up test workflow with nodes and edges."""
-        self.workflow = create_knowledge_graph("test_workflow")
+        self.workflow = create_workflow("test_workflow")
         # Add nodes
         self.workflow.add_node("A", "protein")
         self.workflow.add_node("B", "protein")
@@ -404,7 +404,7 @@ class TestQueryInterface:
 
     def setup_method(self):
         """Set up test workflow with data."""
-        self.workflow = create_knowledge_graph("test_workflow")
+        self.workflow = create_workflow("test_workflow")
 
         # Add nodes
         self.workflow.add_node("node1", "protein", name="TP53", function="tumor_suppressor")
@@ -473,7 +473,7 @@ class TestGraphAnalysis:
 
     def setup_method(self):
         """Set up test workflow."""
-        self.workflow = create_knowledge_graph("test_workflow")
+        self.workflow = create_workflow("test_workflow")
 
     def test_get_statistics_empty(self):
         """Test statistics for empty workflow."""
@@ -552,7 +552,7 @@ class TestSchemaSupport:
                 "properties": {"confidence": "float", "evidence": "str"},
             },
         }
-        self.workflow = create_knowledge_graph("test_workflow", schema=self.schema)
+        self.workflow = create_workflow("test_workflow", schema=self.schema)
 
     def test_get_schema(self):
         """Test getting schema."""
@@ -615,7 +615,7 @@ class TestSerialization:
 
     def setup_method(self):
         """Set up test workflow."""
-        self.workflow = create_knowledge_graph("test_workflow")
+        self.workflow = create_workflow("test_workflow")
 
     def test_to_json(self):
         """Test workflow to JSON conversion."""
@@ -679,7 +679,7 @@ class TestSerialization:
             assert os.path.exists(save_file)
 
             # Create new workflow and load
-            new_workflow = create_knowledge_graph("new_workflow")
+            new_workflow = create_workflow("new_workflow")
             new_workflow.load(save_file)
 
             # Verify data was loaded
@@ -696,7 +696,7 @@ class TestUtilityOperations:
 
     def setup_method(self):
         """Set up test workflow."""
-        self.workflow = create_knowledge_graph("test_workflow")
+        self.workflow = create_workflow("test_workflow")
 
     def test_len(self):
         """Test workflow length (number of nodes)."""
@@ -751,7 +751,7 @@ class TestEdgeCases:
 
     def setup_method(self):
         """Set up test workflow."""
-        self.workflow = create_knowledge_graph("test_workflow")
+        self.workflow = create_workflow("test_workflow")
 
     def test_large_workflow_performance(self):
         """Test performance with larger workflow."""

@@ -1,8 +1,9 @@
-"""Unified BioCypher Agent API for LLM agent integration.
+"""Unified BioCypher Workflow API for knowledge graph workflows.
 
-This module provides a streamlined interface for LLM agents to create and
-manage knowledge graphs using the unified Graph representation, with optional
-schema and ontology support.
+This module provides a streamlined interface for creating and managing
+knowledge graphs using the unified Graph representation, with optional
+schema and ontology support. Designed for both agentic and deterministic
+workflows.
 
 TODO: examine overlap with legacy BioCypher modules, synergise where possible.
 """
@@ -17,22 +18,23 @@ from ._graph import Edge, Graph, HyperEdge, Node
 from ._logger import logger
 
 
-class BioCypherAgent:
-    """Unified BioCypher interface for LLM agent integration.
+class BioCypherWorkflow:
+    """Unified BioCypher interface for knowledge graph workflows.
 
-    This class provides a clean, simple API for LLM agents to create and
-    manage knowledge graphs with optional schema and ontology support.
+    This class provides a clean, simple API for creating and managing
+    knowledge graphs with optional schema and ontology support. Designed
+    for both agentic and deterministic workflows.
     """
 
     def __init__(
         self,
-        name: str = "knowledge_graph",
+        name: str = "workflow_graph",
         directed: bool = True,
         schema: dict[str, Any] | None = None,
         schema_file: str | None = None,
         head_ontology_url: str | None = None,
     ):
-        """Initialize the agent with a unified graph.
+        """Initialize the workflow with a unified graph.
 
         Args:
             name: Name of the knowledge graph
@@ -81,7 +83,7 @@ class BioCypherAgent:
             bool: True if node was added, False if it already exists
 
         Example:
-            agent.add_node("protein_1", "protein", name="TP53", function="tumor_suppressor")
+            workflow.add_node("protein_1", "protein", name="TP53", function="tumor_suppressor")
         """
         return self.graph.add_node(node_id, node_type, properties)
 
@@ -145,7 +147,7 @@ class BioCypherAgent:
             bool: True if edge was added, False if it already exists
 
         Example:
-            agent.add_edge("interaction_1", "interaction", "protein_1", "protein_2",
+            workflow.add_edge("interaction_1", "interaction", "protein_1", "protein_2",
                           confidence=0.8, method="yeast_two_hybrid")
         """
         return self.graph.add_edge(edge_id, edge_type, source, target, properties)
@@ -222,7 +224,7 @@ class BioCypherAgent:
             bool: True if hyperedge was added, False if it already exists
 
         Example:
-            agent.add_hyperedge("complex_1", "protein_complex", {"protein_1", "protein_2", "protein_3"},
+            workflow.add_hyperedge("complex_1", "protein_complex", {"protein_1", "protein_2", "protein_3"},
                                name="transcription_factor_complex")
         """
         return self.graph.add_hyperedge(hyperedge_id, hyperedge_type, nodes, properties)
@@ -509,17 +511,17 @@ class BioCypherAgent:
         self.graph = Graph(name=self.name, directed=self.graph.directed)
         logger.info("Graph cleared")
 
-    def copy(self) -> "BioCypherAgent":
-        """Create a copy of the agent and its graph.
+    def copy(self) -> "BioCypherWorkflow":
+        """Create a copy of the workflow and its graph.
 
         Returns:
-            New BioCypherAgent instance
+            New BioCypherWorkflow instance
         """
-        new_agent = BioCypherAgent(
+        new_workflow = BioCypherWorkflow(
             name=self.name, directed=self.graph.directed, schema=self.schema, head_ontology_url=self.head_ontology_url
         )
-        new_agent.from_json(self.to_json())
-        return new_agent
+        new_workflow.from_json(self.to_json())
+        return new_workflow
 
     def get_graph(self) -> Graph:
         """Get the underlying Graph object.
@@ -538,10 +540,10 @@ class BioCypherAgent:
         return node_id in self.graph
 
     def __str__(self) -> str:
-        """String representation of the agent."""
+        """String representation of the workflow."""
         stats = self.get_statistics()
         return (
-            f"BioCypherAgent(name='{self.name}', "
+            f"BioCypherWorkflow(name='{self.name}', "
             f"nodes={stats['basic']['nodes']}, edges={stats['basic']['edges']}, "
             f"hyperedges={stats['basic']['hyperedges']})"
         )
@@ -550,15 +552,15 @@ class BioCypherAgent:
         return self.__str__()
 
 
-# Convenience function for quick graph creation
-def create_knowledge_graph(
+# Convenience function for quick workflow creation
+def create_workflow(
     name: str = "knowledge_graph",
     directed: bool = True,
     schema: dict[str, Any] | None = None,
     schema_file: str | None = None,
     head_ontology_url: str | None = None,
-) -> BioCypherAgent:
-    """Create a new knowledge graph agent.
+) -> BioCypherWorkflow:
+    """Create a new knowledge graph workflow.
 
     Args:
         name: Name of the knowledge graph
@@ -568,8 +570,8 @@ def create_knowledge_graph(
         head_ontology_url: URL to ontology file
 
     Returns:
-        BioCypherAgent instance
+        BioCypherWorkflow instance
     """
-    return BioCypherAgent(
+    return BioCypherWorkflow(
         name=name, directed=directed, schema=schema, schema_file=schema_file, head_ontology_url=head_ontology_url
     )

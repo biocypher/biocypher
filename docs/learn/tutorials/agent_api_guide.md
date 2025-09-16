@@ -17,7 +17,7 @@ The BioCypher Agent API provides a streamlined interface for LLM agents to creat
 ### Key Innovations
 
 - **Custom Graph Class**: Built-in unified graph representation supporting simple, directed, weighted, and hypergraphs
-- **Zero Configuration**: `create_knowledge_graph()` for immediate use
+- **Zero Configuration**: `create_workflow()` for immediate use
 - **Direct Properties**: `add_node("id", "type", name="value", confidence=0.8)`
 - **Built-in Serialization**: JSON export/import for persistence
 - **Optional Schema**: Schema validation when needed, not required
@@ -26,21 +26,21 @@ The BioCypher Agent API provides a streamlined interface for LLM agents to creat
 
 ### Core Classes
 
-#### `BioCypherAgent`
+#### `BioCypherWorkflow`
 
 The main interface for LLM agents to interact with knowledge graphs.
 
 ```python
-from biocypher import create_knowledge_graph
+from biocypher import create_workflow
 
 # Simple initialization
-kg = create_knowledge_graph("my_knowledge")
+kg = create_workflow("my_knowledge")
 
 # With schema
-kg = create_knowledge_graph("my_knowledge", schema_file="schema.yaml")
+kg = create_workflow("my_knowledge", schema_file="schema.yaml")
 
 # With ontology
-kg = create_knowledge_graph("my_knowledge", head_ontology_url="https://biolink.github.io/biolink-model/")
+kg = create_workflow("my_knowledge", head_ontology_url="https://biolink.github.io/biolink-model/")
 ```
 
 #### `Graph`
@@ -129,7 +129,7 @@ json_data = kg.to_json()
 kg.save("knowledge_graph.json")
 
 # Import from JSON
-new_kg = create_knowledge_graph("restored")
+new_kg = create_workflow("restored")
 new_kg.from_json(json_data)
 new_kg.load("knowledge_graph.json")
 ```
@@ -139,10 +139,10 @@ new_kg.load("knowledge_graph.json")
 ### Example 1: Basic Knowledge Graph
 
 ```python
-from biocypher import create_knowledge_graph
+from biocypher import create_workflow
 
 # Create knowledge graph
-kg = create_knowledge_graph("biomedical_knowledge")
+kg = create_workflow("biomedical_knowledge")
 
 # Add proteins
 kg.add_node("TP53", "protein", name="TP53", function="tumor_suppressor")
@@ -164,7 +164,7 @@ paths = kg.find_paths("TP53", "melanoma")
 
 ```python
 # Create reasoning graph
-reasoning = create_knowledge_graph("reasoning_process")
+reasoning = create_workflow("reasoning_process")
 
 # Log observation
 reasoning.add_node("obs_1", "observation",
@@ -187,7 +187,7 @@ reasoning.save("reasoning_process.json")
 
 ```python
 # Create protein complex knowledge graph
-complexes = create_knowledge_graph("protein_complexes")
+complexes = create_workflow("protein_complexes")
 
 # Add proteins
 complexes.add_node("TP53", "protein", name="TP53")
@@ -275,13 +275,13 @@ The new API simplifies this dramatically:
 
 #### Simple Initialization
 ```python
-from biocypher import create_knowledge_graph
+from biocypher import create_workflow
 
 # Zero configuration
-kg = create_knowledge_graph("my_knowledge")
+kg = create_workflow("my_knowledge")
 
 # Optional schema
-kg = create_knowledge_graph("my_knowledge", schema_file="schema.yaml")
+kg = create_workflow("my_knowledge", schema_file="schema.yaml")
 ```
 
 #### Direct Property Assignment
@@ -303,7 +303,7 @@ print(f"Statistics: {graph.get_statistics()}")
 ```python
 # JSON export/import
 kg.save("knowledge.json")
-new_kg = create_knowledge_graph("restored")
+new_kg = create_workflow("restored")
 new_kg.load("knowledge.json")
 ```
 
@@ -311,7 +311,7 @@ new_kg.load("knowledge.json")
 
 | Aspect | Original BioCypher | New Agent API |
 |--------|-------------------|---------------|
-| **Initialization** | Complex with many parameters | `create_knowledge_graph()` |
+| **Initialization** | Complex with many parameters | `create_workflow()` |
 | **Data Addition** | Tuple-based with dictionaries | Direct `**kwargs` |
 | **Backends** | Multiple (NetworkX, Pandas, Neo4j, CSV) | Single unified Graph |
 | **Schema** | Required YAML configuration | Optional |
@@ -351,8 +351,8 @@ bc = BioCypher(dbms="networkx", offline=True)
 bc.add_nodes([("node_1", "protein", {"name": "TP53"})])
 
 # New way
-from biocypher import create_knowledge_graph
-kg = create_knowledge_graph("my_graph")
+from biocypher import create_workflow
+kg = create_workflow("my_graph")
 kg.add_node("node_1", "protein", name="TP53")
 ```
 
@@ -365,8 +365,8 @@ G = nx.DiGraph()
 G.add_node("node_1", type="protein", name="TP53")
 
 # New way
-from biocypher import create_knowledge_graph
-kg = create_knowledge_graph("my_graph")
+from biocypher import create_workflow
+kg = create_workflow("my_graph")
 kg.add_node("node_1", "protein", name="TP53")
 ```
 

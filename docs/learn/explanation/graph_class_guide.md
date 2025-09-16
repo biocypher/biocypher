@@ -623,13 +623,13 @@ graph.add_hyperedge("complex_1", "protein_complex",
 
 ## Integration with BioCypher Agent
 
-The Graph class is the underlying data structure for the `BioCypherAgent`:
+The Graph class is the underlying data structure for the `BioCypherWorkflow`:
 
 ```python
-from biocypher import create_knowledge_graph
+from biocypher import create_workflow
 
 # Create agent (uses Graph internally)
-agent = create_knowledge_graph("my_knowledge")
+agent = create_workflow("my_knowledge")
 
 # Access underlying graph
 graph = agent.get_graph()

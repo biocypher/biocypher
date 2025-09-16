@@ -9,7 +9,7 @@ reason with knowledge graphs for various use cases including:
 - Pattern matching and analysis
 """
 
-from biocypher import create_knowledge_graph
+from biocypher import create_workflow
 
 
 def example_1_basic_kg_creation():
@@ -48,28 +48,28 @@ def example_1_basic_kg_creation():
         },
     }
 
-    # Initialize agent with reasoning schema
-    agent = create_knowledge_graph("reasoning_process", schema=reasoning_schema)
+    # Initialize workflow with reasoning schema
+    workflow = create_workflow("reasoning_process", schema=reasoning_schema)
 
     # Add reasoning process nodes
-    agent.add_node(
+    workflow.add_node(
         "cancer",
         "concept",
         name="Cancer",
         description="Disease characterized by uncontrolled cell growth",
         confidence=0.95,
     )
-    agent.add_node("tp53", "concept", name="TP53", description="Tumor suppressor protein", confidence=0.98)
-    agent.add_node("mutation", "concept", name="Mutation", description="Genetic alteration", confidence=0.92)
+    workflow.add_node("tp53", "concept", name="TP53", description="Tumor suppressor protein", confidence=0.98)
+    workflow.add_node("mutation", "concept", name="Mutation", description="Genetic alteration", confidence=0.92)
 
-    agent.add_node(
+    workflow.add_node(
         "step1",
         "reasoning_step",
         step_type="observation",
         description="TP53 is frequently mutated in cancer",
         timestamp="2024-01-01T10:00:00",
     )
-    agent.add_node(
+    workflow.add_node(
         "step2",
         "reasoning_step",
         step_type="inference",
@@ -78,26 +78,26 @@ def example_1_basic_kg_creation():
     )
 
     # Add relationships
-    agent.add_edge("support1", "supports", "step1", "tp53", strength=0.9, evidence="Literature review")
-    agent.add_edge("support2", "supports", "step1", "cancer", strength=0.8, evidence="Clinical data")
-    agent.add_edge("support3", "supports", "step2", "mutation", strength=0.85, evidence="Mechanistic studies")
+    workflow.add_edge("support1", "supports", "step1", "tp53", strength=0.9, evidence="Literature review")
+    workflow.add_edge("support2", "supports", "step1", "cancer", strength=0.8, evidence="Clinical data")
+    workflow.add_edge("support3", "supports", "step2", "mutation", strength=0.85, evidence="Mechanistic studies")
 
     # Query the reasoning process
     print("Concepts in reasoning process:")
-    concepts = agent.query_nodes("concept")
+    concepts = workflow.query_nodes("concept")
     for concept in concepts:
         print(f"  - {concept['properties']['name']}: {concept['properties']['description']}")
 
     print("\nReasoning steps:")
-    steps = agent.query_nodes("reasoning_step")
+    steps = workflow.query_nodes("reasoning_step")
     for step in steps:
         print(f"  - {step['properties']['step_type']}: {step['properties']['description']}")
 
     # Get graph statistics
-    stats = agent.get_statistics()
+    stats = workflow.get_statistics()
     print(f"\nGraph Statistics: {stats['basic']['nodes']} nodes, {stats['basic']['edges']} edges")
 
-    return agent
+    return workflow
 
 
 def example_2_biomedical_knowledge_graph():
@@ -162,14 +162,14 @@ def example_2_biomedical_knowledge_graph():
     agent = create_knowledge_graph("biomedical_knowledge", schema=biomedical_schema)
 
     # Add proteins
-    agent.add_node(
+    workflow.add_node(
         "P04637",
         "protein",
         name="TP53",
         sequence="MEEPQSDPSVEPPLSQETFSDLWKLLPENNVLSPLPSQAMDDLMLSPDDIEQWFTEDPGPDEAPRMPEAAPRVAPAPAAPTPAAPAPAPSWPLSSSVPSQKTYQGSYGFRLGFLHSGTAKSVTCTYSPALNKMFCQLAKTCPVQLWVDSTPPPGTRVRAMAIYKQSQHMTEVVRRCPHHERCSDSDGLAPPQHLIRVEGNLYPEYLEDRQTFRHSVVVPYEPPEVGSDCTTIHYNYMCNSSCMGGMNRRPILTIITLEDSSGNLLGRNSFEVRVCACPGRDRRTEEENLRKKGEPHHELPPGSTKRALPNNTSSSPQPKKKPLDGEYFTLQIRGRERFEMFRELNEALELKDAQAGKEPGGSRAHSSHLKSKKGQSTSRHKKLMFKTEGPDSD",
         function="Tumor suppressor",
     )
-    agent.add_node(
+    workflow.add_node(
         "P15056",
         "protein",
         name="BRAF",
@@ -178,24 +178,24 @@ def example_2_biomedical_knowledge_graph():
     )
 
     # Add diseases
-    agent.add_node(
+    workflow.add_node(
         "DOID:162",
         "disease",
         name="Cancer",
         description="Disease characterized by uncontrolled cell growth",
         symptoms="Tumor formation, metastasis",
     )
-    agent.add_node("DOID:0111253", "disease", name="Melanoma", description="Skin cancer", symptoms="Dark skin lesions")
+    workflow.add_node("DOID:0111253", "disease", name="Melanoma", description="Skin cancer", symptoms="Dark skin lesions")
 
     # Add drugs
-    agent.add_node("DB08896", "drug", name="Vemurafenib", mechanism="BRAF inhibitor", status="Approved")
-    agent.add_node("DB01254", "drug", name="Cisplatin", mechanism="DNA crosslinker", status="Approved")
+    workflow.add_node("DB08896", "drug", name="Vemurafenib", mechanism="BRAF inhibitor", status="Approved")
+    workflow.add_node("DB01254", "drug", name="Cisplatin", mechanism="DNA crosslinker", status="Approved")
 
     # Add relationships
-    agent.add_edge("int1", "interaction", "P04637", "P15056", type="regulates", confidence=0.8)
-    agent.add_edge("cause1", "causes", "P15056", "DOID:0111253", evidence="Mutation studies", strength=0.9)
-    agent.add_edge("target1", "targets", "DB08896", "P15056", affinity=0.95, mechanism="Competitive inhibition")
-    agent.add_edge("treat1", "treats", "DB08896", "DOID:0111253", efficacy=0.7, clinical_trial="NCT00949702")
+    workflow.add_edge("int1", "interaction", "P04637", "P15056", type="regulates", confidence=0.8)
+    workflow.add_edge("cause1", "causes", "P15056", "DOID:0111253", evidence="Mutation studies", strength=0.9)
+    workflow.add_edge("target1", "targets", "DB08896", "P15056", affinity=0.95, mechanism="Competitive inhibition")
+    workflow.add_edge("treat1", "treats", "DB08896", "DOID:0111253", efficacy=0.7, clinical_trial="NCT00949702")
 
     # Use advanced querying
     print("Finding paths between BRAF and Cancer:")
@@ -206,13 +206,13 @@ def example_2_biomedical_knowledge_graph():
             print(f"    {edge.source} --[{edge.type}]--> {edge.target}")
 
     print("\nGraph statistics:")
-    stats = agent.get_statistics()
+    stats = workflow.get_statistics()
     print(f"  - Nodes: {stats['basic']['nodes']}")
     print(f"  - Edges: {stats['basic']['edges']}")
     print(f"  - Node types: {stats['node_types']}")
     print(f"  - Edge types: {stats['edge_types']}")
 
-    return agent
+    return workflow
 
 
 def example_3_reasoning_process_logging():
@@ -256,7 +256,7 @@ def example_3_reasoning_process_logging():
 
     # Add reasoning steps
     for step in reasoning_steps:
-        agent.add_node(
+        workflow.add_node(
             step["step_id"],
             "reasoning_step",
             step_type=step["type"],
@@ -266,20 +266,20 @@ def example_3_reasoning_process_logging():
         )
 
     # Add logical connections between steps
-    agent.add_edge("sup1", "supports", "step2", "step1", strength=0.8)
-    agent.add_edge("sup2", "supports", "step3", "step2", strength=0.9)
-    agent.add_edge("sup3", "supports", "step4", "step3", strength=0.95)
+    workflow.add_edge("sup1", "supports", "step2", "step1", strength=0.8)
+    workflow.add_edge("sup2", "supports", "step3", "step2", strength=0.9)
+    workflow.add_edge("sup3", "supports", "step4", "step3", strength=0.95)
 
     # Add some concepts
-    agent.add_node("symptoms", "concept", name="Symptoms X, Y, Z", description="Patient symptoms")
-    agent.add_node("condition_a", "concept", name="Condition A", description="Diagnosed condition")
-    agent.add_node("lab_results", "concept", name="Lab Results", description="Laboratory findings")
+    workflow.add_node("symptoms", "concept", name="Symptoms X, Y, Z", description="Patient symptoms")
+    workflow.add_node("condition_a", "concept", name="Condition A", description="Diagnosed condition")
+    workflow.add_node("lab_results", "concept", name="Lab Results", description="Laboratory findings")
 
     # Connect concepts to reasoning steps
-    agent.add_edge("men1", "mentions", "step1", "symptoms", relevance=0.9)
-    agent.add_edge("men2", "mentions", "step2", "condition_a", relevance=0.8)
-    agent.add_edge("men3", "mentions", "step3", "lab_results", relevance=0.9)
-    agent.add_edge("men4", "mentions", "step4", "condition_a", relevance=0.95)
+    workflow.add_edge("men1", "mentions", "step1", "symptoms", relevance=0.9)
+    workflow.add_edge("men2", "mentions", "step2", "condition_a", relevance=0.8)
+    workflow.add_edge("men3", "mentions", "step3", "lab_results", relevance=0.9)
+    workflow.add_edge("men4", "mentions", "step4", "condition_a", relevance=0.95)
 
     # Export reasoning process
     agent.to_json()  # Export for demonstration
@@ -296,7 +296,7 @@ def example_3_reasoning_process_logging():
     print(f"  - Logical connections: {summary['total_edges']}")
     print(f"  - Top step types: {summary['top_node_types']}")
 
-    return agent
+    return workflow
 
 
 def example_4_graph_analysis():
@@ -322,7 +322,7 @@ def example_4_graph_analysis():
 
     # Add concepts
     for concept_id, name, description in concepts:
-        agent.add_node(concept_id, "concept", name=name, description=description, category="technology")
+        workflow.add_node(concept_id, "concept", name=name, description=description, category="technology")
 
     # Add hierarchical relationships
     relationships = [
@@ -342,13 +342,13 @@ def example_4_graph_analysis():
 
     # Add relationships
     for i, (source, target, rel_type) in enumerate(relationships):
-        agent.add_edge(f"rel_{i}", "relationship", source, target, type=rel_type, strength=0.8)
+        workflow.add_edge(f"rel_{i}", "relationship", source, target, type=rel_type, strength=0.8)
 
     # Perform graph analysis
     print("Graph Analysis Results:")
 
     # Basic statistics
-    stats = agent.get_statistics()
+    stats = workflow.get_statistics()
     print("\nGraph Statistics:")
     print(f"  - Nodes: {stats['basic']['nodes']}")
     print(f"  - Edges: {stats['basic']['edges']}")
@@ -372,7 +372,7 @@ def example_4_graph_analysis():
         neighbor = agent.get_node(neighbor_id)
         print(f"  - {neighbor.properties['name']}: {neighbor.properties['description']}")
 
-    return agent
+    return workflow
 
 
 def main():

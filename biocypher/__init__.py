@@ -11,17 +11,17 @@ __all__ = [
     "log",
     "Driver",
     "BioCypher",
-    "BioCypherAgent",
+    "BioCypherWorkflow",
     "Graph",
     "Node",
     "Edge",
     "HyperEdge",
-    "create_knowledge_graph",
+    "create_workflow",
     "FileDownload",
     "APIRequest",
 ]
 
-from ._agent import BioCypherAgent, create_knowledge_graph
+from ._workflow import BioCypherWorkflow, create_workflow
 from ._config import config, module_data
 from ._core import BioCypher
 from ._get import APIRequest, FileDownload

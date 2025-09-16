@@ -72,10 +72,10 @@ below to get started.
     poetry install --no-root
     ```
 
-    **Step 6:** Run the script `create_knowledge_graph.py`
+    **Step 6:** Run the script `create_workflow.py`
 
     ```bash
-    poetry run python create_knowledge_graph.py
+    poetry run python create_workflow.py
     ```
 
 === "Cloning the project template directly"
@@ -109,10 +109,10 @@ below to get started.
     poetry install --no-root
     ```
 
-    **Step 5:** Run the script `create_knowledge_graph.py`
+    **Step 5:** Run the script `create_workflow.py`
 
     ```bash
-    poetry run python create_knowledge_graph.py
+    poetry run python create_workflow.py
     ```
 
 

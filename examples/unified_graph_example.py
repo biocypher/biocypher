@@ -6,7 +6,7 @@ representation for LLM agents, eliminating the complexity of multiple
 in-memory formats.
 """
 
-from biocypher import create_knowledge_graph
+from biocypher import create_workflow
 
 
 def example_1_basic_usage():
@@ -14,7 +14,7 @@ def example_1_basic_usage():
     print("=== Example 1: Basic Usage ===")
 
     # Create a knowledge graph - no complex configuration needed!
-    kg = create_knowledge_graph("biomedical_knowledge")
+    kg = create_workflow("biomedical_knowledge")
 
     # Add nodes with properties using keyword arguments
     kg.add_node(
@@ -81,7 +81,7 @@ def example_2_reasoning_process_logging():
     print("\n=== Example 2: Reasoning Process Logging ===")
 
     # Create a reasoning graph
-    reasoning = create_knowledge_graph("reasoning_process")
+    reasoning = create_workflow("reasoning_process")
 
     # Add reasoning steps
     reasoning.add_node(
@@ -172,7 +172,7 @@ def example_3_hypergraph_representation():
     print("\n=== Example 3: Hypergraph Representation ===")
 
     # Create a knowledge graph for protein complexes
-    complexes = create_knowledge_graph("protein_complexes")
+    complexes = create_workflow("protein_complexes")
 
     # Add proteins
     proteins = ["TP53", "MDM2", "CDKN1A", "BAX", "BCL2", "CASP3", "CASP9"]
@@ -238,7 +238,7 @@ def example_4_graph_analysis():
     print("\n=== Example 4: Graph Analysis ===")
 
     # Create a complex knowledge graph
-    analysis = create_knowledge_graph("analysis_graph")
+    analysis = create_workflow("analysis_graph")
 
     # Add a network of concepts and relationships
     concepts = [
@@ -322,7 +322,7 @@ def example_5_serialization_and_persistence():
     print("\n=== Example 5: Serialization and Persistence ===")
 
     # Create a knowledge graph
-    kg = create_knowledge_graph("serialization_test")
+    kg = create_workflow("serialization_test")
 
     # Add some data
     kg.add_node("node1", "concept", name="Concept 1", description="First concept")
@@ -335,7 +335,7 @@ def example_5_serialization_and_persistence():
     print(f"JSON size: {len(json_data)} characters")
 
     # Create a new graph from JSON
-    new_kg = create_knowledge_graph("restored_graph")
+    new_kg = create_workflow("restored_graph")
     new_kg.from_json(json_data)
 
     print("Graph restored from JSON")
@@ -353,7 +353,7 @@ def example_5_serialization_and_persistence():
     print("Graph saved to 'examples/example_graph.json'")
 
     # Load from file
-    loaded_kg = create_knowledge_graph("loaded_graph")
+    loaded_kg = create_workflow("loaded_graph")
     loaded_kg.load("examples/example_graph.json")
     print("Graph loaded from file")
     print(f"Loaded graph: {loaded_kg}")
@@ -373,7 +373,7 @@ def example_6_comparison_with_original_approach():
     print("  5. Separate query interfaces for different formats")
 
     print("\nUnified Graph approach provides:")
-    print("  1. Simple initialization: create_knowledge_graph()")
+    print("  1. Simple initialization: create_workflow()")
     print("  2. Single unified representation")
     print("  3. Direct property assignment with **kwargs")
     print("  4. Built-in serialization (JSON)")
@@ -387,7 +387,7 @@ def example_6_comparison_with_original_approach():
     print(
         """
 # Create graph
-kg = create_knowledge_graph("my_knowledge")
+kg = create_workflow("my_knowledge")
 
 # Add nodes with properties
 kg.add_node("protein_1", "protein", name="TP53", function="tumor_suppressor")
