@@ -127,7 +127,7 @@ def test_missing_scirpy_raises_error(
         with pytest.raises(ImportError) as exc_info:
             in_memory_airr_kg.get_kg()
         assert "AirrCell module from scirpy not detected" in str(exc_info.value)
-        assert "Install it with 'poetry add biocypher[scirpy]'" in str(exc_info.value)
+        assert "Install it with 'uv add biocypher[scirpy]'" in str(exc_info.value)
     finally:
         # Restore original value
         airr_module.HAS_SCIRPY = original_has_scirpy

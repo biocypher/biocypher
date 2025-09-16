@@ -31,7 +31,7 @@ def get_metadata():
         if os.path.exists(toml_path):
             pyproject = toml.load(toml_path)
 
-            # Try modern PEP 621 format first, fallback to Poetry format
+            # Use modern PEP 621 format (uv/hatchling)
             if "project" in pyproject:
                 project = pyproject["project"]
                 meta = {
@@ -42,7 +42,7 @@ def get_metadata():
                     "full_metadata": pyproject,
                 }
             elif "tool" in pyproject and "poetry" in pyproject["tool"]:
-                # Fallback to Poetry format for backward compatibility
+                # Legacy Poetry format fallback (for backward compatibility)
                 poetry = pyproject["tool"]["poetry"]
                 meta = {
                     "name": poetry.get("name"),

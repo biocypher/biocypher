@@ -6,33 +6,31 @@ please feel free to ask them in the issue tracker.
 
 ## Dependency management
 
-We use [Poetry](https://python-poetry.org) for dependency management. Please
-make sure that you have installed Poetry and set up the environment correctly
+We use [uv](https://docs.astral.sh/uv/) for dependency management. Please
+make sure that you have installed uv and set up the environment correctly
 before starting development.
 
 ### Setup the environment
 
-- Install dependencies from the lock file: `poetry install`
+- Install dependencies from the lock file: `uv sync --all-extras`
 
-- Use the environment: You can either run commands directly with `poetry run
-<command>` or open a shell with `poetry shell` and then run commands directly.
+- Use the environment: Run commands directly with `uv run <command>`.
 
 ### Updating the environment
 
-If you want to fix dependency issues, please do so in the Poetry
-framework. If Poetry does not work for you for some reason, please let us know.
+If you want to fix dependency issues, please do so in the uv
+framework. If uv does not work for you for some reason, please let us know.
 
-The Poetry dependencies are organized in groups. There are groups with
-dependencies needed for running BioCypher (`[tool.poetry.dependencies` with the
-group name `main`) and a group with dependencies needed for development
-(`[tool.poetry.group.dev.dependencies` with the group name `dev`).
+The uv dependencies are organized in three sections:
+- **Main dependencies** (`[project.dependencies]`): Core dependencies needed for running BioCypher
+- **Optional dependencies** (`[project.optional-dependencies]`): Optional features like `scirpy` for AIRR functionality
+- **Development dependencies** (`[dependency-groups.dev]`): Dependencies needed for development, testing, and documentation
 
 For adding new dependencies:
 
-- Add new dependencies: `poetry add <dependency> -- group <group>`
+- Add new dependencies: `uv add <dependency> --group <group>`
 
-- Update lock file (after adding new dependencies in pyproject.toml): `poetry
-lock`
+- Update lock file (after adding new dependencies in pyproject.toml): `uv lock`
 
 ## Code quality and formal requirements
 
@@ -53,9 +51,9 @@ general naming rules
 
 Pre-commit hooks are used to automatically run these tools before each commit.
 They are defined in [.pre-commit-config.yaml](./.pre-commit-config.yaml). To
-install the hooks run `poetry run pre-commit install`. The hooks are then
+install the hooks run `uv run pre-commit install`. The hooks are then
 executed before each commit. For running the hook for all project files (not
-only the changed ones) run `poetry run pre-commit run --all-files`.
+only the changed ones) run `uv run pre-commit run --all-files`.
 
 The project uses a [Sphinx](https://www.sphinx-doc.org/en/master/) autodoc
 GitHub Actions workflow to generate the documentation. If you add new code,
