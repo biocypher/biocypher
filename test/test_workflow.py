@@ -854,16 +854,16 @@ class TestValidationModes:
     def test_validation_mode_none(self):
         """Test validation mode 'none' - no validation or deduplication."""
         workflow = create_workflow("test", validation_mode="none", deduplication=False)
-        
+
         # First addition should succeed
         result1 = workflow.add_node("node1", "protein", name="TP53")
         assert result1 is True
-        
+
         # Second addition should fail due to Graph's built-in deduplication
         # (Graph class always prevents duplicates, regardless of workflow settings)
         result2 = workflow.add_node("node1", "protein", name="TP53")  # Duplicate
         assert result2 is False  # Graph prevents duplicates
-        
+
         # Should allow any node/edge types (no schema validation)
         result3 = workflow.add_node("node2", "unknown_type", invalid_prop=123)
         assert result3 is True
@@ -871,15 +871,15 @@ class TestValidationModes:
     def test_validation_mode_warn(self):
         """Test validation mode 'warn' - warnings but no failures."""
         workflow = create_workflow("test", validation_mode="warn", deduplication=True, schema=self.schema)
-        
+
         # Test duplicate detection with warning
         result1 = workflow.add_node("node1", "protein", name="TP53", function="tumor_suppressor")
         assert result1 is True
-        
+
         # Second duplicate should warn but return False
         result2 = workflow.add_node("node1", "protein", name="TP53", function="tumor_suppressor")
         assert result2 is False  # Deduplication prevents addition
-        
+
         # Test schema validation with warning
         result3 = workflow.add_node("node2", "protein", name=123)  # Invalid type
         assert result3 is True  # Warning but continues
@@ -887,15 +887,15 @@ class TestValidationModes:
     def test_validation_mode_strict(self):
         """Test validation mode 'strict' - fail fast on violations."""
         workflow = create_workflow("test", validation_mode="strict", deduplication=True, schema=self.schema)
-        
+
         # Test duplicate detection with strict mode
         result1 = workflow.add_node("node1", "protein", name="TP53", function="tumor_suppressor")
         assert result1 is True
-        
+
         # Second duplicate should raise ValueError
         with pytest.raises(ValueError, match="Duplicate node ID 'node1' not allowed in strict mode"):
             workflow.add_node("node1", "protein", name="TP53", function="tumor_suppressor")
-        
+
         # Test schema validation with strict mode
         with pytest.raises(ValueError, match="Node 'node2' of type 'protein' failed schema validation"):
             workflow.add_node("node2", "protein", name=123)  # Invalid type
@@ -903,17 +903,17 @@ class TestValidationModes:
     def test_deduplication_nodes(self):
         """Test node deduplication functionality."""
         workflow = create_workflow("test", deduplication=True)
-        
+
         # First addition should succeed
         result1 = workflow.add_node("node1", "protein", name="TP53")
         assert result1 is True
         assert len(workflow) == 1
-        
+
         # Duplicate addition should fail
         result2 = workflow.add_node("node1", "protein", name="TP53")
         assert result2 is False
         assert len(workflow) == 1  # Still only one node
-        
+
         # Different node should succeed
         result3 = workflow.add_node("node2", "protein", name="BRAF")
         assert result3 is True
@@ -924,15 +924,15 @@ class TestValidationModes:
         workflow = create_workflow("test", deduplication=True)
         workflow.add_node("node1", "protein")
         workflow.add_node("node2", "protein")
-        
+
         # First addition should succeed
         result1 = workflow.add_edge("edge1", "interaction", "node1", "node2")
         assert result1 is True
-        
+
         # Duplicate addition should fail
         result2 = workflow.add_edge("edge1", "interaction", "node1", "node2")
         assert result2 is False
-        
+
         # Different edge should succeed
         result3 = workflow.add_edge("edge2", "interaction", "node1", "node2")
         assert result3 is True
@@ -940,11 +940,11 @@ class TestValidationModes:
     def test_schema_validation_valid_data(self):
         """Test schema validation with valid data."""
         workflow = create_workflow("test", validation_mode="strict", schema=self.schema)
-        
+
         # Valid protein node
         result = workflow.add_node("node1", "protein", name="TP53", function="tumor_suppressor")
         assert result is True
-        
+
         # Valid interaction edge
         workflow.add_node("node2", "protein", name="BRAF", function="kinase")
         result = workflow.add_edge("edge1", "interaction", "node1", "node2", confidence=0.8)
@@ -953,7 +953,7 @@ class TestValidationModes:
     def test_schema_validation_invalid_property_type(self):
         """Test schema validation with invalid property types."""
         workflow = create_workflow("test", validation_mode="strict", schema=self.schema)
-        
+
         # Invalid property type (name should be string, not int)
         with pytest.raises(ValueError, match="Node 'node1' of type 'protein' failed schema validation"):
             workflow.add_node("node1", "protein", name=123, function="tumor_suppressor")
@@ -961,7 +961,7 @@ class TestValidationModes:
     def test_schema_validation_missing_required_property(self):
         """Test schema validation with missing required properties."""
         workflow = create_workflow("test", validation_mode="strict", schema=self.schema)
-        
+
         # Missing required property (function)
         with pytest.raises(ValueError, match="Node 'node1' of type 'protein' failed schema validation"):
             workflow.add_node("node1", "protein", name="TP53")
@@ -969,7 +969,7 @@ class TestValidationModes:
     def test_schema_validation_unknown_type(self):
         """Test schema validation with unknown node/edge types."""
         workflow = create_workflow("test", validation_mode="strict", schema=self.schema)
-        
+
         # Unknown node type should pass (no schema entry)
         result = workflow.add_node("node1", "unknown_type", any_prop="value")
         assert result is True
@@ -985,15 +985,15 @@ class TestValidationModes:
             ("strict", False),
             ("strict", True),
         ]
-        
+
         for validation_mode, deduplication in combinations:
             workflow = create_workflow(
                 f"test_{validation_mode}_{deduplication}",
                 validation_mode=validation_mode,
                 deduplication=deduplication,
-                schema=self.schema
+                schema=self.schema,
             )
-            
+
             # Basic functionality should work
             result = workflow.add_node("node1", "protein", name="TP53", function="tumor_suppressor")
             assert result is True
@@ -1001,11 +1001,11 @@ class TestValidationModes:
     def test_validation_mode_edge_cases(self):
         """Test edge cases in validation modes."""
         workflow = create_workflow("test", validation_mode="warn", deduplication=True)
-        
+
         # Test with empty properties
         result = workflow.add_node("node1", "protein")
         assert result is True
-        
+
         # Test with None values
         result = workflow.add_node("node2", "protein", name=None, function="tumor_suppressor")
         assert result is True
@@ -1014,39 +1014,35 @@ class TestValidationModes:
         """Test validation with schema loaded from file."""
         import tempfile
         import yaml
-        
+
         # Create temporary schema file
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             yaml.dump(self.schema, f)
             schema_file = f.name
-        
+
         try:
-            workflow = create_workflow(
-                "test",
-                validation_mode="strict",
-                deduplication=True,
-                schema_file=schema_file
-            )
-            
+            workflow = create_workflow("test", validation_mode="strict", deduplication=True, schema_file=schema_file)
+
             # Should work with valid data
             result = workflow.add_node("node1", "protein", name="TP53", function="tumor_suppressor")
             assert result is True
-            
+
             # Should fail with invalid data
             with pytest.raises(ValueError):
                 workflow.add_node("node2", "protein", name=123)
-                
+
         finally:
             import os
+
             os.unlink(schema_file)
 
     def test_validation_mode_inheritance(self):
         """Test that validation mode is properly inherited by workflow instances."""
         workflow = create_workflow("test", validation_mode="strict", deduplication=True)
-        
+
         assert workflow.validation_mode == "strict"
         assert workflow.deduplication is True
-        
+
         # Test that the mode affects behavior
         workflow.add_node("node1", "protein")
         with pytest.raises(ValueError):
@@ -1055,11 +1051,11 @@ class TestValidationModes:
     def test_validation_mode_change_after_creation(self):
         """Test that validation mode can be changed after workflow creation."""
         workflow = create_workflow("test", validation_mode="none", deduplication=False)
-        
+
         # Change to strict mode
         workflow.validation_mode = "strict"
         workflow.deduplication = True
-        
+
         # Should now enforce validation
         workflow.add_node("node1", "protein")
         with pytest.raises(ValueError):

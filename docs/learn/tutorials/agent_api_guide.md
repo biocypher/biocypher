@@ -360,7 +360,7 @@ discovered_relationships = [
 
 # Add relationships dynamically
 for rel in discovered_relationships:
-    workflow.add_edge(rel["id"], rel["type"], rel["source"], rel["target"], 
+    workflow.add_edge(rel["id"], rel["type"], rel["source"], rel["target"],
                      **{k: v for k, v in rel.items() if k not in ["id", "type", "source", "target"]})
 
 # Convert to analysis format when needed

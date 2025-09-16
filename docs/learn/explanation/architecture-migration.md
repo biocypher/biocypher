@@ -17,7 +17,7 @@ graph TD
     C --> D[Deduplicator]
     D --> E[In-Memory KG]
     E --> F[Output Writers]
-    
+
     G[Schema Config] --> B
     H[Ontology] --> B
     I[BioCypher Config] --> A
@@ -39,11 +39,11 @@ graph TD
     B --> C[Native Graph]
     C --> D[Wrapper Methods]
     D --> E[NetworkX/Pandas]
-    
+
     F[Schema Config] --> B
     G[Ontology] --> B
     H[Validation Modes] --> B
-    
+
     I[Agent Workflows] --> B
     J[Deterministic Workflows] --> B
 ```
@@ -156,7 +156,7 @@ class Node:
     type: str
     properties: dict[str, Any] = field(default_factory=dict)
 
-@dataclass  
+@dataclass
 class Edge:
     id: str
     type: str
@@ -277,7 +277,7 @@ workflow.add_node("protein_1", "protein", name="TP53")
 
 # Add validation as needed
 workflow = create_workflow(
-    "my_graph", 
+    "my_graph",
     validation_mode="warn",
     deduplication=True
 )

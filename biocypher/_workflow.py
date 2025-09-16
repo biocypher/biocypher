@@ -94,7 +94,7 @@ class BioCypherWorkflow:
         self.head_ontology_url = head_ontology_url
         self.validation_mode = validation_mode
         self.deduplication = deduplication
-        
+
         # Track seen entities for deduplication
         self._seen_nodes = set()
         self._seen_edges = set()
@@ -144,7 +144,7 @@ class BioCypherWorkflow:
                     raise ValueError(f"Duplicate node ID '{node_id}' not allowed in strict mode")
                 return False
             self._seen_nodes.add(node_id)
-        
+
         # Validate against schema if validation is enabled
         if self.validation_mode in ["warn", "strict"]:
             is_valid = self.validate_against_schema(node_type, properties)
@@ -153,14 +153,14 @@ class BioCypherWorkflow:
                     raise ValueError(f"Node '{node_id}' of type '{node_type}' failed schema validation")
                 elif self.validation_mode == "warn":
                     logger.warning(f"Node '{node_id}' of type '{node_type}' failed schema validation")
-        
+
         # Try to add node to graph (Graph class handles its own deduplication)
         result = self.graph.add_node(node_id, node_type, properties)
-        
+
         # If deduplication is enabled and we're tracking, update our tracking
         if self.deduplication and result:
             self._seen_nodes.add(node_id)
-        
+
         return result
 
     def get_node(self, node_id: str) -> Node | None:
@@ -236,7 +236,7 @@ class BioCypherWorkflow:
                     raise ValueError(f"Duplicate edge ID '{edge_id}' not allowed in strict mode")
                 return False
             self._seen_edges.add(edge_key)
-        
+
         # Validate against schema if validation is enabled
         if self.validation_mode in ["warn", "strict"]:
             is_valid = self.validate_against_schema(edge_type, properties)
@@ -245,15 +245,15 @@ class BioCypherWorkflow:
                     raise ValueError(f"Edge '{edge_id}' of type '{edge_type}' failed schema validation")
                 elif self.validation_mode == "warn":
                     logger.warning(f"Edge '{edge_id}' of type '{edge_type}' failed schema validation")
-        
+
         # Try to add edge to graph (Graph class handles its own deduplication)
         result = self.graph.add_edge(edge_id, edge_type, source, target, properties)
-        
+
         # If deduplication is enabled and we're tracking, update our tracking
         if self.deduplication and result:
             edge_key = (edge_id, edge_type)
             self._seen_edges.add(edge_key)
-        
+
         return result
 
     def get_edge(self, edge_id: str) -> Edge | None:
@@ -564,37 +564,39 @@ class BioCypherWorkflow:
             if prop_name not in properties:
                 logger.warning(f"Missing required property '{prop_name}' for node type '{node_type}'")
                 return False
-            
+
             # Check property type
             actual_value = properties[prop_name]
             if not self._validate_property_type(actual_value, prop_type):
-                logger.warning(f"Property '{prop_name}' has wrong type. Expected {prop_type}, got {type(actual_value).__name__}")
+                logger.warning(
+                    f"Property '{prop_name}' has wrong type. Expected {prop_type}, got {type(actual_value).__name__}"
+                )
                 return False
 
         return True
 
     def _validate_property_type(self, value: Any, expected_type: str) -> bool:
         """Validate that a property value matches the expected type.
-        
+
         Args:
             value: The actual value
             expected_type: The expected type as string (e.g., 'str', 'int', 'float')
-            
+
         Returns:
             bool: True if type matches, False otherwise
         """
         type_mapping = {
-            'str': str,
-            'int': int,
-            'float': float,
-            'bool': bool,
-            'list': list,
-            'dict': dict,
+            "str": str,
+            "int": int,
+            "float": float,
+            "bool": bool,
+            "list": list,
+            "dict": dict,
         }
-        
+
         if expected_type not in type_mapping:
             return True  # Unknown type, assume valid
-        
+
         expected_python_type = type_mapping[expected_type]
         return isinstance(value, expected_python_type)
 
@@ -690,10 +692,10 @@ class BioCypherWorkflow:
 
     def to_networkx(self):
         """Convert to NetworkX graph for compatibility with existing tools.
-        
+
         Returns:
             networkx.DiGraph: NetworkX representation of the graph
-            
+
         Note:
             This method provides compatibility with existing NetworkX-based
             tools while maintaining the native BioCypher object structure.
@@ -703,29 +705,29 @@ class BioCypherWorkflow:
             import networkx as nx
         except ImportError:
             raise ImportError("NetworkX is required for to_networkx() conversion. Install with: pip install networkx")
-        
+
         g = nx.DiGraph() if self.graph.directed else nx.Graph()
-        
+
         # Add nodes with properties
         for node in self.graph._nodes.values():
             attrs = node.properties.copy()
-            attrs['node_type'] = node.type
+            attrs["node_type"] = node.type
             g.add_node(node.id, **attrs)
-        
+
         # Add edges with properties
         for edge in self.graph._edges.values():
             attrs = edge.properties.copy()
-            attrs['edge_type'] = edge.type
+            attrs["edge_type"] = edge.type
             g.add_edge(edge.source, edge.target, **attrs)
-        
+
         return g
 
     def to_pandas(self):
         """Convert to Pandas DataFrames for compatibility with existing tools.
-        
+
         Returns:
             dict[str, pd.DataFrame]: Dictionary of DataFrames, one per node/edge type
-            
+
         Note:
             This method provides compatibility with existing Pandas-based
             tools while maintaining the native BioCypher object structure.
@@ -735,34 +737,29 @@ class BioCypherWorkflow:
             import pandas as pd
         except ImportError:
             raise ImportError("Pandas is required for to_pandas() conversion. Install with: pip install pandas")
-        
+
         dfs = {}
-        
+
         # Create node DataFrames by type
         for node_type, node_ids in self.graph._node_types.items():
             nodes = [self.graph._nodes[node_id] for node_id in node_ids]
             data = []
             for node in nodes:
-                row = {'node_id': node.id, 'node_type': node.type}
+                row = {"node_id": node.id, "node_type": node.type}
                 row.update(node.properties)
                 data.append(row)
             dfs[node_type] = pd.DataFrame(data)
-        
+
         # Create edge DataFrames by type
         for edge_type, edge_ids in self.graph._edge_types.items():
             edges = [self.graph._edges[edge_id] for edge_id in edge_ids]
             data = []
             for edge in edges:
-                row = {
-                    'edge_id': edge.id,
-                    'edge_type': edge.type,
-                    'source_id': edge.source,
-                    'target_id': edge.target
-                }
+                row = {"edge_id": edge.id, "edge_type": edge.type, "source_id": edge.source, "target_id": edge.target}
                 row.update(edge.properties)
                 data.append(row)
             dfs[edge_type] = pd.DataFrame(data)
-        
+
         return dfs
 
 
@@ -791,6 +788,11 @@ def create_workflow(
         BioCypherWorkflow instance
     """
     return BioCypherWorkflow(
-        name=name, directed=directed, schema=schema, schema_file=schema_file, 
-        head_ontology_url=head_ontology_url, validation_mode=validation_mode, deduplication=deduplication
+        name=name,
+        directed=directed,
+        schema=schema,
+        schema_file=schema_file,
+        head_ontology_url=head_ontology_url,
+        validation_mode=validation_mode,
+        deduplication=deduplication,
     )

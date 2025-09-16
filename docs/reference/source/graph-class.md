@@ -29,7 +29,7 @@ def __init__(self, name: str = "graph", directed: bool = True) -> None
 The Graph class uses the following core data structures:
 
 - `_nodes`: Dictionary mapping node IDs to Node objects
-- `_edges`: Dictionary mapping edge IDs to Edge objects  
+- `_edges`: Dictionary mapping edge IDs to Edge objects
 - `_hyperedges`: Dictionary mapping hyperedge IDs to HyperEdge objects
 - `_node_types`: Index of nodes by type
 - `_edge_types`: Index of edges by type
@@ -136,11 +136,11 @@ Get all node IDs, optionally filtered by type.
 
 ```python
 def add_edge(
-    self, 
-    edge_id: str, 
-    edge_type: str, 
-    source: str, 
-    target: str, 
+    self,
+    edge_id: str,
+    edge_type: str,
+    source: str,
+    target: str,
     properties: dict[str, Any] | None = None
 ) -> bool
 ```
@@ -243,10 +243,10 @@ Get edges between two specific nodes.
 
 ```python
 def add_hyperedge(
-    self, 
-    hyperedge_id: str, 
-    hyperedge_type: str, 
-    nodes: set[str], 
+    self,
+    hyperedge_id: str,
+    hyperedge_type: str,
+    nodes: set[str],
     properties: dict[str, Any] | None = None
 ) -> bool
 ```
@@ -560,9 +560,9 @@ print(f"TP53 has {len(neighbors)} neighbors")
 ```python
 # Add hyperedge (complex)
 graph.add_hyperedge(
-    "complex_1", 
-    "complex", 
-    {"TP53", "BRAF", "MDM2"}, 
+    "complex_1",
+    "complex",
+    {"TP53", "BRAF", "MDM2"},
     {"function": "cell_cycle_control"}
 )
 
