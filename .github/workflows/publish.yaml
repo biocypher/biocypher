@@ -27,11 +27,11 @@ jobs:
       contents: write
     steps:
     #----------------------------------------------
-    # check-out repo and set-up python and poetry
+    # check-out repo and set-up python and uv
     #----------------------------------------------
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Setup Python and Poetry
+    - name: Setup Python and uv
       uses: ./.github/actions/setup
     #----------------------------------------------
     #            install dependencies
@@ -42,7 +42,7 @@ jobs:
     #             build artifact
     #----------------------------------------------
     - name: Build artifact
-      run: poetry build
+      run: uv build
     #----------------------------------------------
     #             upload to PyPi
     #----------------------------------------------

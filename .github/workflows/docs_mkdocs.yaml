@@ -23,9 +23,9 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
       #----------------------------------------------
-      #       Set-up python and poetry
+      #       Set-up python and uv
       #----------------------------------------------
-      - name: Setup Python and Poetry
+      - name: Setup Python and uv
         uses: ./.github/actions/setup
 
       #----------------------------------------------
@@ -37,9 +37,6 @@ jobs:
       #----------------------------------------------
       #       Build and deploy documentation
       #----------------------------------------------
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.x
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
       - uses: actions/cache@v4
         with:
@@ -49,13 +46,13 @@ jobs:
             mkdocs-material-
 
       - name: Build documentation
-        run: poetry run mkdocs build
+        run: uv run mkdocs build
 
       - name: Deploy documentation with mike
         run: |
           # Extract version from pyproject.toml or use a default version
-          VERSION=$(poetry version -s || echo "latest")
+          VERSION=$(uv run python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version']" || echo "latest")
           # Deploy the docs with mike
-          poetry run mike deploy --push --update-aliases $VERSION latest
+          uv run mike deploy --push --update-aliases $VERSION latest
           # Set the latest version as default
-          poetry run mike set-default --push latest
+          uv run mike set-default --push latest

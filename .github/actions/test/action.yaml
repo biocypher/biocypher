@@ -27,14 +27,14 @@ runs:
     #----------------------------------------------
     - name: Run Tests (Windows)
       run: |
-        poetry run pytest --version
-        poetry run pytest --password=your_password_here
+        uv run pytest --version
+        uv run pytest --password=your_password_here
       shell: bash
       if: runner.os == 'Windows'
     - name: Run tests (Linux and MacOS)
       run: |
-        poetry run pytest --version
-        poetry run pytest --password=your_password_here
+        uv run pytest --version
+        uv run pytest --password=your_password_here
       shell: bash
       if: runner.os != 'Windows'
     - name: Check code quality
@@ -42,6 +42,6 @@ runs:
     # TODO: enable ruff once it does not throw thousands of errors
     # - name: Run Ruff
     #   run: |
-    #     poetry run ruff check .
-    #     poetry run ruff format --check .
+    #     uv run ruff check .
+    #     uv run ruff format --check .
     #   shell: bash

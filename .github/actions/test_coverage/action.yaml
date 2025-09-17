@@ -10,10 +10,10 @@ runs:
   using: "composite"
   steps:
     - name: Generate coverage report
-      run: poetry run coverage run -m pytest --password=your_password_here
+      run: uv run coverage run -m pytest --password=your_password_here
       shell: bash
     - name: Generate coverage badge
-      run: poetry run coverage-badge -f -o docs/coverage/coverage.svg
+      run: uv run coverage-badge -f -o docs/coverage/coverage.svg
       shell: bash
     - name: Commit changes
       uses: s0/git-publish-subdir-action@develop

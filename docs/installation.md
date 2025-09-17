@@ -4,8 +4,8 @@ Before diving into developing wonderful use cases with BioCypher, we strongly re
 
 1. *Python 3* (version >= 3.10)
       - [Install Python 3](https://docs.python.org/3/using/index.html)
-2. *Poetry* (Python packaging and dependency manager)
-      - [Install Poetry](https://python-poetry.org/docs/#installation)
+2. *uv* (Python packaging and dependency manager)
+      - [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
 3. *git* (version control manager)
       - [Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 4. *Docker* (containerization technology) [optional]
@@ -23,9 +23,9 @@ You can verify access to these components in your terminal:
    ```bash
    python --version
    ```
-2. `poetry`
+2. `uv`
    ```bash
-   poetry --version
+   uv --version
    ```
 3. `git`
    ```bash
@@ -66,16 +66,16 @@ below to get started.
     - `name`: replace the default project's name (`biocypher-project-template`) with the name you want to use for your project. This name does not need to be equal to the repository name (but often it is).
     - `description`: change the default description to a meaningful one based on your use case.
 
-    **Step 5:** Install the dependencies using *Poetry*.
+    **Step 5:** Install the dependencies using *uv*.
 
     ```bash
-    poetry install --no-root
+    uv sync --all-extras
     ```
 
-    **Step 6:** Run the script `create_knowledge_graph.py`
+    **Step 6:** Run the script `create_workflow.py`
 
     ```bash
-    poetry run python create_knowledge_graph.py
+    uv run python create_workflow.py
     ```
 
 === "Cloning the project template directly"
@@ -103,40 +103,43 @@ below to get started.
     - `name`: replace the default project's name (`biocypher-project-template`) with the name you want to use for your project. This name does not need to be equal to the repository name (but often it is).
     - `description`: change the default description to a meaningful one based on your use case.
 
-    **Step 4:** Install the dependencies using *Poetry*.
+    **Step 4:** Install the dependencies using *uv*.
 
     ```bash
-    poetry install --no-root
+    uv sync --all-extras
     ```
 
-    **Step 5:** Run the script `create_knowledge_graph.py`
+    **Step 5:** Run the script `create_workflow.py`
 
     ```bash
-    poetry run python create_knowledge_graph.py
+    uv run python create_workflow.py
     ```
 
 
 ## **Option 2**. Install from a Package Manager
 
-=== "poetry (recommended)"
-    !!! note "Note: about Poetry"
+=== "uv (recommended)"
+    !!! note "Note: about uv"
 
-        Poetry is a tool for **dependency management** and **packaging** in
-        Python. It allows you to declare the libraries your project depends on
-        and will manage (install/update) them for you. Poetry offers a lock
+        uv is a fast Python package installer and resolver, written in Rust.
+        It allows you to declare the libraries your project depends on
+        and will manage (install/update) them for you. uv offers a lock
         file to ensure reproducible environments and allows you to easily build
         your project for distribution. For information about the installation
-        process, see [here](https://python-poetry.org/docs/#installation).
+        process, see [here](https://docs.astral.sh/uv/getting-started/installation/).
 
     ```bash
-    # Create a new Poetry project, i.e. my-awesome-kg-project.
-    poetry new <name-of-the-project>
+    # Create a new uv project, i.e. my-awesome-kg-project.
+    uv init <name-of-the-project>
 
     # Navigate into the recently created folder's project
     cd <name-of-the-project>
 
     # Install the BioCypher package with all the dependencies automatically
-    poetry add biocypher
+    uv add biocypher
+
+    # Or install with optional dependencies (e.g., for AIRR functionality)
+    uv add "biocypher[scirpy]"
     ```
 
 === "pip"
@@ -206,14 +209,14 @@ This three-stage setup strictly is not necessary for the mounting of a read-writ
 
 ## For Developers
 
-If you want to directly install BioCypher, here are the steps (requires [Poetry](https://python-poetry.org/docs/#installation)):
+If you want to directly install BioCypher, here are the steps (requires [uv](https://docs.astral.sh/uv/getting-started/installation/)):
 
 ```bash title="Execute in bash"
 git clone https://github.com/biocypher/biocypher
 cd BioCypher
-poetry install
+uv sync --all-extras
 ```
-Poetry creates a virtual environment for you (starting with `biocypher-`; alternatively you can name it yourself) and installs all dependencies.
+uv creates a virtual environment for you and installs all dependencies.
 
 If you want to run the tests that use a local Neo4j or PostgreSQL DBMS (database management system) instance:
 
@@ -221,6 +224,6 @@ If you want to run the tests that use a local Neo4j or PostgreSQL DBMS (database
 
 - A PostgreSQL instance with the psql command line tool should be installed locally and running on standard port `5432`
 
-- Activate the virtual environment by running `poetry shell` and then run the tests by running `pytest` in the root directory of the repository with the command line argument `--password=<your DBMS password>`.
+- Run the tests using `uv run pytest` in the root directory of the repository with the command line argument `--password=<your DBMS password>`.
 
 Once this is set up, you can go through the [tutorial](./learn/tutorials/tutorial001_basics.md) or use it in your project as a local dependency.

@@ -79,7 +79,7 @@ class AirrKG(_InMemoryKG):
         if not HAS_SCIRPY:
             msg = (
                 "AirrCell module from scirpy not detected. "
-                "Install it with 'poetry add biocypher[scirpy]' or 'poetry add scirpy'."
+                "Install it with 'uv add biocypher[scirpy]' or 'uv add scirpy'."
             )
             raise ImportError(msg)
 

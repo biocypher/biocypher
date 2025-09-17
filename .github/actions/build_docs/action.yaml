@@ -5,8 +5,8 @@ runs:
   using: "composite"
   steps:
     - name: Test code snippets in documentation
-      run: poetry run make doctest --directory docs/
+      run: uv run make doctest --directory docs/
       shell: bash
     - name: Build documentation
-      run: poetry run make html --directory docs/
+      run: uv run make html --directory docs/
       shell: bash

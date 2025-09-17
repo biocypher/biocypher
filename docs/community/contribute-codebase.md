@@ -26,36 +26,35 @@ us in any way you like.
 
 ## Dependency management
 
-We use [Poetry](https://python-poetry.org) for dependency management. Please
-make sure that you have installed Poetry and set up the environment correctly
+We use [uv](https://docs.astral.sh/uv/) for dependency management. Please
+make sure that you have installed uv and set up the environment correctly
 before starting development.
 
 ### Setting up the environment
 
-- Install dependencies from the lock file: `poetry install`
+- Install dependencies from the lock file: `uv sync --all-extras`
 
-- Use the environment: You can either run commands directly with `poetry run
-<command>` or open a shell with `poetry shell` and then run commands directly.
+- Use the environment: Run commands directly with `uv run <command>`.
 
 ### Updating the environment
 
-If you want to fix dependency issues, please do so in the Poetry
-framework. If Poetry does not work for you for some reason, please let us know.
+If you want to fix dependency issues, please do so in the uv
+framework. If uv does not work for you for some reason, please let us know.
 
-The Poetry dependencies are organized in groups. There are groups with
-dependencies needed for running BioCypher (`[tool.poetry.dependencies]` with the
-group name `main`) and a group with dependencies needed for development
-(`[tool.poetry.group.dev.dependencies]` with the group name `dev`).
+The uv dependencies are organized in three sections:
+- **Main dependencies** (`[project.dependencies]`): Core dependencies needed for running BioCypher
+- **Optional dependencies** (`[project.optional-dependencies]`): Optional features like `scirpy` for AIRR functionality
+- **Development dependencies** (`[dependency-groups.dev]`): Dependencies needed for development, testing, and documentation
 
 For adding new dependencies:
 
-- Add new dependencies via `poetry add`:
-`poetry add <dependency> --group <group>`. This will update the `pyproject.toml`
+- Add new dependencies via `uv add`:
+`uv add <dependency> --group <group>`. This will update the `pyproject.toml`
 and lock file automatically.
 
 - Add new dependencies via `pyproject.toml`: Add the dependency to the
 `pyproject.toml` file in the correct group, including version. Then update the
-lock file: `poetry lock` and install the dependencies: `poetry install`.
+lock file: `uv lock` and install the dependencies: `uv sync --all-extras`.
 
 ## Code quality and formal requirements
 
@@ -97,9 +96,9 @@ to your `.vscode/settings.json`:
 
 Alternatively, pre-commit hooks can be used to automatically or manually run
 these tools before each commit. They are defined in `.pre-commit-config.yaml`.
-To install the hooks run `poetry run pre-commit install`. The hooks are then
+To install the hooks run `uv run pre-commit install`. The hooks are then
 executed before each commit. For running the hook for all project files (not
-only the changed ones) run `poetry run pre-commit run --all-files`. Our CI runs
+only the changed ones) run `uv run pre-commit run --all-files`. Our CI runs
 the pre-commit hooks, so running them locally is a good way to check if your
 code conforms to the formatting rules.
 

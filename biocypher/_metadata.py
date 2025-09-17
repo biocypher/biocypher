@@ -31,13 +31,26 @@ def get_metadata():
         if os.path.exists(toml_path):
             pyproject = toml.load(toml_path)
 
-            meta = {
-                "name": pyproject["tool"]["poetry"]["name"],
-                "version": pyproject["tool"]["poetry"]["version"],
-                "author": pyproject["tool"]["poetry"]["authors"],
-                "license": pyproject["tool"]["poetry"]["license"],
-                "full_metadata": pyproject,
-            }
+            # Use modern PEP 621 format (uv/hatchling)
+            if "project" in pyproject:
+                project = pyproject["project"]
+                meta = {
+                    "name": project.get("name"),
+                    "version": project.get("version"),
+                    "author": project.get("authors", []),
+                    "license": project.get("license", {}).get("text"),
+                    "full_metadata": pyproject,
+                }
+            elif "tool" in pyproject and "poetry" in pyproject["tool"]:
+                # Legacy Poetry format fallback (for backward compatibility)
+                poetry = pyproject["tool"]["poetry"]
+                meta = {
+                    "name": poetry.get("name"),
+                    "version": poetry.get("version"),
+                    "author": poetry.get("authors", []),
+                    "license": poetry.get("license"),
+                    "full_metadata": pyproject,
+                }
 
             break
 

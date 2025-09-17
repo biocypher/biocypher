@@ -12,11 +12,11 @@ jobs:
 
     steps:
     #----------------------------------------------
-    #  checkout repo and set-up python and poetry
+    #  checkout repo and set-up python and uv
     #----------------------------------------------
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Setup Python and Poetry
+    - name: Setup Python and uv
       uses: ./.github/actions/setup
     #----------------------------------------------
     #            install dependencies

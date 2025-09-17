@@ -33,20 +33,18 @@ repository; the Pandas version of each tutorial step is suffixed with `_pandas`.
 ## Setup
 
 To run this tutorial, you will need to have cloned and installed the BioCypher
-repository on your machine. We recommend using [Poetry](https://python-poetry.org/):
+repository on your machine. We recommend using [uv](https://docs.astral.sh/uv/):
 
 ```bash
 git clone https://github.com/biocypher/biocypher.git
 cd biocypher
-poetry install
+uv sync --all-extras
 ```
 
-!!! note "Poetry environment"
-	In order to run the tutorial code, you will need to activate the Poetry
-	environment. This can be done by running `poetry shell` in the `biocypher`
-	directory. Alternatively, you can run the code from within the Poetry
-	environment by prepending `poetry run` to the command. For example, to run the
-	tutorial code, you can run `poetry run python tutorial/01__basic_import.py`.
+!!! note "uv environment"
+	In order to run the tutorial code, you will need to use the uv
+	environment. You can run the code by prepending `uv run` to the command.
+	For example, to run the tutorial code, you can run `uv run python tutorial/01__basic_import.py`.
 
 In the `biocypher` root directory, you will find a `tutorial` directory with
 the files for this tutorial. The `data_generator.py` file contains the
@@ -67,7 +65,7 @@ argument at instantiation of the BioCypher interface.
 
 ## Section 1: Adding data
 
-!!! note "Note: Poetry environment"
+!!! note "Note: uv environment"
 	The code for this tutorial can be found at `tutorial/01__basic_import.py`. The
 	schema is at `tutorial/01_schema_config.yaml`, configuration in
 	`tutorial/01_biocypher_config.yaml`. Data generation happens in
