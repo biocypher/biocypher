@@ -1,0 +1,3091 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://biocypher.org/0.11.0/learn/tutorials/tutorial001_basics/">
+      
+      
+        <link rel="prev" href="../../../llms/">
+      
+      
+        <link rel="next" href="../tutorial002_handling_ontologies/">
+      
+      
+      <link rel="icon" href="../../../assets/img/favicon_biocypher_32px.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+    
+    
+      
+        <title>Basics - BioCypher</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Lato";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../assets/css/css-v1.1.0.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tutorial-basics" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="BioCypher" class="md-header__button md-logo" aria-label="BioCypher" data-md-component="logo">
+      
+  <img src="../../../assets/img/logo-biocypher.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BioCypher
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Basics
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/biocypher/biocypher" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    biocypher/biocypher
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../biocypher-project/project/" class="md-tabs__link">
+          
+  
+  
+  About
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../installation/" class="md-tabs__link">
+          
+  
+  
+  Get Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Learn
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../community/" class="md-tabs__link">
+          
+  
+  
+  Community
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="BioCypher" class="md-nav__button md-logo" aria-label="BioCypher" data-md-component="logo">
+      
+  <img src="../../../assets/img/logo-biocypher.png" alt="logo">
+
+    </a>
+    BioCypher
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/biocypher/biocypher" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    biocypher/biocypher
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    About
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            About
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Project
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/design-philosophy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Design philosophy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/use-cases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Use Cases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/biochatter-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypher + LLMs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/r-bioc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    R and Bioconductor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Get Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Get Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quickstart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../llms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LLM Integration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Learn
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Learn
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Basics
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basics
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setup
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#section-1-adding-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Section 1: Adding data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Section 1: Adding data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#input-data-stream-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input data stream ("adapter")
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-the-graph-using-the-biocypher-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating the graph (using the BioCypher interface)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing-data-into-neo4j" class="md-nav__link">
+    <span class="md-ellipsis">
+      Importing data into Neo4j
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-control-and-convenience-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quality control and convenience functions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#section-2-merging-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Section 2: Merging data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Section 2: Merging data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plain-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plain merge
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ad-hoc-subclassing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ad hoc subclassing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#section-3-handling-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Section 3: Handling properties
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Section 3: Handling properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#designated-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Designated properties
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inheriting-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inheriting properties
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#section-4-handling-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      Section 4: Handling relationships
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Section 4: Handling relationships">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#relationship-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Relationship identifiers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorial002_handling_ontologies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Handling Ontologies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorial003_adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Adapters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pandas_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Example Notebook: BioCypher and Pandas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agent_api_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Agent API Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    HowTo / FAQ
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            HowTo / FAQ
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/htg001_standalone_docker_biocypher/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Standalone Docker Image
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Explanations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Explanations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About Adapters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/ontologies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About Ontologies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/graph_class_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Graph Class Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/architecture-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Architecture Migration Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Reference Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Documentation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            API Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/biocypher/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypher
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/biocypher-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypherWorkflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/graph-class/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Graph Class
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/output-write/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output Writing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/output-in-memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output In-Memory
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/output-driver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output Driver
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/download-cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Download and Cache
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/ontology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ontology Handling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/graph-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Graph Handling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/translation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mapping and Translation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Logging
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Miscellaneous Utility Functions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/biocypher-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypher Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Output Configuration
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Output Configuration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/neo4j-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Neo4j
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/sqlite-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SQLite
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/postgresql-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PostgreSQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/networkx-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    NetworkX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/tabular-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tabular Format
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/rdf-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RDF
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/owl-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    OWL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/arangodb-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ArangoDB
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/schema-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Schema Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Community
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Community
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Join Us
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Where to Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute-docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contribute to the Documentation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute-codebase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contribute to the Code Base
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setup
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#section-1-adding-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Section 1: Adding data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Section 1: Adding data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#input-data-stream-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input data stream ("adapter")
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-the-graph-using-the-biocypher-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating the graph (using the BioCypher interface)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing-data-into-neo4j" class="md-nav__link">
+    <span class="md-ellipsis">
+      Importing data into Neo4j
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-control-and-convenience-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quality control and convenience functions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#section-2-merging-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Section 2: Merging data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Section 2: Merging data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plain-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plain merge
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ad-hoc-subclassing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ad hoc subclassing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#section-3-handling-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Section 3: Handling properties
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Section 3: Handling properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#designated-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Designated properties
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inheriting-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inheriting properties
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#section-4-handling-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      Section 4: Handling relationships
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Section 4: Handling relationships">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#relationship-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Relationship identifiers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/biocypher/biocypher/edit/main/docs/learn/tutorials/tutorial001_basics.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="tutorial-basics">Tutorial - Basics</h1>
+<p>The main purpose of BioCypher is to facilitate the pre-processing of biomedical
+data to save development time in the maintenance of curated knowledge graphs
+and to allow the simple and efficient creation of task-specific lightweight
+knowledge graphs in a user-friendly and biology-centric fashion.</p>
+<p>We are going to use a toy example to familiarise the user with the basic
+functionality of BioCypher. One central task of BioCypher is the harmonisation
+of dissimilar datasets describing the same entities. Thus, in this example, the
+input data—which in the real-world use case could come from any type of
+interface—are represented by simulated data containing some examples of
+differently formatted biomedical entities such as proteins and their
+interactions.</p>
+<div class="admonition tip">
+<p class="admonition-title">Jupyter Notebook</p>
+<p>If you prefer to run the tutorial in a Jupyter Notebook or as a Google Colab
+in your browser, go <a href="../pandas_tutorial/">here</a>.</p>
+</div>
+<p>There are two versions of this tutorial, which only differ in the output
+format. The first uses a CSV output format to write files suitable for Neo4j
+admin import, and the second creates an in-memory collection of Pandas
+dataframes. You can find both in the <code>tutorial</code> directory of the BioCypher
+repository; the Pandas version of each tutorial step is suffixed with <code>_pandas</code>.</p>
+<div class="admonition info">
+<p class="admonition-title">Neo4j</p>
+<p>While you can use the files generated to create an actual Neo4j database, it
+is not required for this tutorial. For checking the output, you can simply open
+the CSV files in a text editor or your IDE; by default, they will be written to
+the <code>biocypher-out</code> directory. If you simply want to run the tutorial to see
+how it works, you can also run the Pandas version.</p>
+</div>
+<h2 id="setup">Setup</h2>
+<p>To run this tutorial, you will need to have cloned and installed the BioCypher
+repository on your machine. We recommend using <a href="https://docs.astral.sh/uv/">uv</a>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/biocypher/biocypher.git
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>biocypher
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>uv<span class="w"> </span>sync<span class="w"> </span>--all-extras
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">uv environment</p>
+<p>In order to run the tutorial code, you will need to use the uv
+environment. You can run the code by prepending <code>uv run</code> to the command.
+For example, to run the tutorial code, you can run <code>uv run python tutorial/01__basic_import.py</code>.</p>
+</div>
+<p>In the <code>biocypher</code> root directory, you will find a <code>tutorial</code> directory with
+the files for this tutorial. The <code>data_generator.py</code> file contains the
+simulated data generation code, and the other files are named according to the
+tutorial step they are used in. The <code>biocypher-out</code> directory will be created
+automatically when you run the tutorial code.</p>
+<h2 id="configuration">Configuration</h2>
+<p>BioCypher is configured using a YAML file; it comes with a default (which you
+can see in the <a href="../../../reference/biocypher-config/">Configuration</a> section).
+You can use it, for instance, to select an <a href="../../../reference/outputs/">output
+format</a>, the output directory, separators,
+logging level, and other options. For this tutorial, we will use a dedicated
+configuration file for each of the steps. The configuration files are located in
+the <code>tutorial</code> directory, and are called using the <code>biocypher_config_path</code>
+argument at instantiation of the BioCypher interface.</p>
+<h2 id="section-1-adding-data">Section 1: Adding data</h2>
+<div class="admonition note">
+<p class="admonition-title">Note: uv environment</p>
+<p>The code for this tutorial can be found at <code>tutorial/01__basic_import.py</code>. The
+schema is at <code>tutorial/01_schema_config.yaml</code>, configuration in
+<code>tutorial/01_biocypher_config.yaml</code>. Data generation happens in
+<code>tutorial/data_generator.py</code>.</p>
+</div>
+<h3 id="input-data-stream-adapter">Input data stream ("adapter")</h3>
+<p>The basic operation of adding data to the knowledge graph requires two
+components: an input stream of data (which we call adapter) and a configuration
+for the resulting desired output (the schema configuration). The former will be
+simulated by calling the <code>Protein</code> class of our data generator 10 times.</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<span class="normal"><a href="#__codelineno-1-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">tutorial.data_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protein</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="n">proteins</span> <span class="o">=</span> <span class="p">[</span><span class="n">Protein</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+</span></code></pre></div></td></tr></table></div>
+<p>Each protein in our simulated data has a UniProt ID, a label
+("uniprot_protein"), and a dictionary of properties describing it. This
+is—purely by coincidence—very close to the input BioCypher expects (for nodes):</p>
+<ul>
+<li>a unique identifier</li>
+<li>an input label (to allow mapping to the ontology, see the second step below)</li>
+<li>a dictionary of further properties (which can be empty)</li>
+</ul>
+<p>These should be presented to BioCypher in the form of a tuple. To achieve this
+representation, we can use a generator function that iterates through our
+simulated input data and, for each entity, forms the corresponding tuple. The
+use of a generator allows for efficient streaming of larger datasets where
+required.</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span>
+<span class="normal"><a href="#__codelineno-2-5">5</a></span>
+<span class="normal"><a href="#__codelineno-2-6">6</a></span>
+<span class="normal"><a href="#__codelineno-2-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">node_generator</span><span class="p">():</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>    <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a>        <span class="k">yield</span> <span class="p">(</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a>            <span class="n">protein</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a>            <span class="n">protein</span><span class="o">.</span><span class="n">get_label</span><span class="p">(),</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a>            <span class="n">protein</span><span class="o">.</span><span class="n">get_properties</span><span class="p">()</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a>        <span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+<p>The concept of an adapter can become arbitrarily complex and involve
+programmatic access to databases, API requests, asynchronous queries, context
+managers, and other complicating factors. However, it always boils down to
+providing the BioCypher driver with a collection of tuples, one for each entity
+in the input data. For more info, see the section on
+<a href="../../explanation/adapters/">Adapters</a> and the <a href="../tutorial003_adapters/">Adapter Tutorial</a>.</p>
+<p>As descibed above, <em>nodes</em> possess:</p>
+<ul>
+<li>a mandatory ID,</li>
+<li>a mandatory label, and</li>
+<li>a property dictionary,</li>
+</ul>
+<p>while <em>edges</em> possess:</p>
+<ul>
+<li>an (optional) ID,</li>
+<li>two mandatory IDs for source and target,</li>
+<li>a mandatory label, and</li>
+<li>a property dictionary.</li>
+</ul>
+<p>How these entities are mapped to the ontological hierarchy underlying a
+BioCypher graph is determined by their mandatory labels, which connect the
+input data stream to the schema configuration. This we will see in the
+following section.</p>
+<!-- Figure for ID, label, prop of nodes and edges? -->
+
+<h3 id="schema-configuration">Schema configuration</h3>
+<p>How each BioCypher graph is structured is determined by the schema
+configuration YAML file that is given to the BioCypher interface. This also
+serves to ground the entities of the graph in the biomedical realm by using an
+ontological hierarchy. In this tutorial, we refer to the Biolink model as the
+general backbone of our ontological hierarchy. The basic premise of the schema
+configuration YAML file is that each component of the desired knowledge graph
+output should be configured here; if (and only if) an entity is represented in
+the schema configuration <em>and</em> is present in the input data stream, it will be
+part of our knowledge graph.</p>
+<p>In our case, since we only import proteins, we only require few lines of
+configuration:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">protein</span><span class="p">:</span><span class="w"> </span><span class="c1"># mapping</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span><span class="w"> </span><span class="c1"># schema configuration</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span><span class="w"> </span><span class="c1"># uniqueness</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot_protein</span><span class="w"> </span><span class="c1"># connection to input stream</span>
+</span></code></pre></div>
+<p>The first line (<code>protein</code>) identifies our entity and connects to the ontological
+backbone; here we define the first class to be represented in the graph. In the
+configuration YAML, we represent entities — similar to the internal
+representation of Biolink — in lower sentence case (e.g., "small molecule").
+Conversely, for class names, in file names, and property graph labels, we use
+PascalCase instead (e.g., "SmallMolecule") to avoid issues with handling spaces.
+The transformation is done by BioCypher internally. BioCypher does not strictly
+enforce the entities allowed in this class definition; in fact, we provide
+<a href="../tutorial002_handling_ontologies/#model-extensions">several methods</a> for
+extending the existing ontological backbone <em>ad hoc</em> by providing custom
+inheritance or hybridising ontologies. However, every entity should at some
+point be connected to the underlying ontology, otherwise the multiple
+hierarchical labels will not be populated. Following this first line are three
+indented values of the protein class.</p>
+<p>The second line (<code>represented_as</code>) tells BioCypher in which way each entity
+should be represented in the graph; the only options are <code>node</code> and <code>edge</code>.
+Representation as an edge is only possible when source and target IDs are
+provided in the input data stream. Conversely, relationships can be represented
+as both <code>node</code> or <code>edge</code>, depending on the desired output. When a relationship
+should be represented as a node, i.e., "reified", BioCypher takes care to create
+a set of two edges and a node in place of the relationship. This is useful when
+we want to connect the relationship to other entities in the graph, for example
+literature references.</p>
+<p>The third line (<code>preferred_id</code>) relates to how entity uniqueness is determined
+in the knowledge graph. This field (which will be renamed to <code>namespace</code> in a
+future release to better reflect its purpose) specifies the ontological
+namespace that should be used to identify unique entities. In our example,
+specifying <code>uniprot</code> means:</p>
+<ol>
+<li>Proteins with the same UniProt ID will be considered the same entity and merged in the graph</li>
+<li>For identifier mapping purposes, the pipeline will attempt to find or convert to UniProt IDs when possible (this must be implemented in the adapter)</li>
+<li>The namespace serves as a prefix for disambiguation (similar to how <code>hgnc:TP53</code> is more specific than just <code>TP53</code>)</li>
+</ol>
+<p>The selection of a namespace requires consideration in task-specific
+applications. For the broadest possible range of identifier systems, we use
+<a href="https://bioregistry.io">Bioregistry</a> project namespaces as preferred values for
+this field.</p>
+<p>While <code>preferred_id</code> is optional, it becomes particularly useful when merging
+data from different sources (for instance, when <a href="../tutorial002_handling_ontologies/#implicit-inheritance">merging similar information
+from multiple
+resources</a>) or when
+working with identifiers that aren't inherently unique across all contexts. For
+entities with well-established global identifiers (like UniProt for proteins),
+this helps maintain consistency throughout your knowledge graph.</p>
+<p>Finally, the fourth line (<code>input_label</code>) connects the input data stream to the
+configuration; here we indicate which label to expect in the input tuple for
+each class in the graph. In our case, we expect "uniprot_protein" as the label
+for each protein in the input data stream; all other input entities that do not
+carry this label are ignored as long as they are not in the schema
+configuration.</p>
+<h3 id="creating-the-graph-using-the-biocypher-interface">Creating the graph (using the BioCypher interface)</h3>
+<p>All that remains to be done now is to instantiate the BioCypher interface (as
+the main means of communicating with BioCypher) and call the function to create
+the graph. While this can be done "online", i.e., by connecting to a running
+DBMS instance, we will in this example use the offline mode of BioCypher, which
+does not require setting up a graph database instance. The following code will
+use the data stream and configuration set up above to write the files for
+knowledge graph creation:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">BioCypher</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">biocypher_config_path</span><span class="o">=</span><span class="s2">&quot;tutorial/01_biocypher_config.yaml&quot;</span><span class="p">,</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">schema_config_path</span><span class="o">=</span><span class="s2">&quot;tutorial/01_schema_config.yaml&quot;</span><span class="p">,</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="p">)</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">bc</span><span class="o">.</span><span class="n">write_nodes</span><span class="p">(</span><span class="n">node_generator</span><span class="p">())</span>
+</span></code></pre></div>
+<p>We pass our configuration files at instantiation of the interface, and we pass
+the data stream to the <code>write_nodes</code> function. BioCypher will then create the
+graph and write it to the output directory, which is set to <code>biocypher-out/</code> by
+default, creating a subfolder with the current datetime for each driver
+instance.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>biocypher_config_path</code> parameter at instantiation of the <code>BioCypher</code> class
+should in most cases not be needed; we are using it here to increase convenience
+of the tutorial and to showcase its use. We are overriding the default value of
+only two settings: the offline mode (<code>offline</code> in <code>biocypher</code>) and the database
+name (<code>database_name</code> in <code>neo4j</code>).</p>
+<p>By default, BioCypher will look for a file named <code>biocypher_config.yaml</code> in the
+current working directory and in its subfolder <code>config</code>, as well as in various
+user directories. For more information, see the section on
+<a href="../../../reference/biocypher-config/">configuration</a>.</p>
+</div>
+<h3 id="importing-data-into-neo4j">Importing data into Neo4j</h3>
+<p>If you want to build an actual Neo4j graph from the tutorial output files,
+please follow the <a href="../../../reference/outputs/neo4j-output/">Neo4j import
+tutorial</a>.</p>
+<h3 id="quality-control-and-convenience-functions">Quality control and convenience functions</h3>
+<p>BioCypher provides a number of convenience functions for quality control and
+data exploration. In addition to writing the import call for Neo4j, we can print
+a log of ontological classes that were present in the input data but are not
+accounted for in the schema configuration, as well as a log of duplicates in the
+input data (for the level of granularity that was used for the import). We can
+also print the ontological hierarchy derived from the underlying model(s)
+according to the classes that were given in the schema configuration:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">bc</span><span class="o">.</span><span class="n">log_missing_input_labels</span><span class="p">()</span>   <span class="c1"># show input unaccounted for in the schema</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">bc</span><span class="o">.</span><span class="n">log_duplicates</span><span class="p">()</span>             <span class="c1"># show duplicates in the input data</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">bc</span><span class="o">.</span><span class="n">show_ontology_structure</span><span class="p">()</span>    <span class="c1"># show ontological hierarchy</span>
+</span></code></pre></div>
+<h2 id="section-2-merging-data">Section 2: Merging data</h2>
+<h3 id="plain-merge">Plain merge</h3>
+<div class="admonition note">
+<p class="admonition-title">Tutorial files</p>
+<p>The code for this tutorial can be found at <code>tutorial/02__merge.py</code>. Schema
+files are at <code>tutorial/02_schema_config.yaml</code>, configuration in
+<code>tutorial/02_biocypher_config.yaml</code>. Data generation happens in
+<code>tutorial/data_generator.py</code>.</p>
+</div>
+<p>Using the workflow described above with minor changes, we can merge data from
+different input streams. If we do not want to introduce additional ontological
+subcategories, we can simply add the new input stream to the existing one and
+add the new label to the schema configuration (the new label being
+<code>entrez_protein</code>). In this case, we would add the following to the schema
+configuration:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">protein</span><span class="p">:</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span>
+</span></code></pre></div>
+<p>This again creates a single output file, now for both protein types, including
+both input streams, and the graph can be created as before using the command
+line call created by BioCypher. However, we are generating our <code>entrez</code>
+proteins as having entrez IDs, which could result in problems in querying.
+Additionally, a strict import mode including regex pattern matching of
+identifiers will fail at this point due to the difference in pattern of UniProt
+vs. Entrez IDs. This issue could be resolved by mapping the Entrez IDs to
+UniProt IDs, but we will instead use the opportunity to demonstrate how to
+merge data from different sources into the same ontological class using <em>ad
+hoc</em> subclasses.</p>
+<h3 id="ad-hoc-subclassing"><em>Ad hoc</em> subclassing</h3>
+<div class="admonition note">
+<p class="admonition-title">Tutorial files</p>
+<p>The code for this tutorial can be found at <code>tutorial/03__implicit_subclass.py</code>.
+Schema files are at <code>tutorial/03_schema_config.yaml</code>, configuration in <code>tutorial/03_biocypher_config.yaml</code>.
+Data generation happens in <code>tutorial/data_generator.py</code>.</p>
+</div>
+<p>In the previous section, we saw how to merge data from different sources into
+the same ontological class. However, we did not resolve the issue of the
+<code>entrez</code> proteins living in a different namespace than the <code>uniprot</code> proteins,
+which could result in problems in querying. In proteins, it would probably be
+more appropriate to solve this problem using identifier mapping, but in other
+categories, e.g., pathways, this may not be possible because of a lack of
+one-to-one mapping between different data sources. Thus, if we so desire, we
+can merge datasets into the same ontological class by creating <em>ad hoc</em>
+subclasses implicitly through BioCypher, by providing multiple preferred
+identifiers. In our case, we update our schema configuration as follows:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">protein</span><span class="p">:</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span>
+</span></code></pre></div>
+<p>This will "implicitly" create two subclasses of the <code>protein</code> class, which will
+inherit the entire hierarchy of the <code>protein</code> class. The two subclasses will be
+named using a combination of their preferred namespace and the name of the
+parent class, separated by a dot, i.e., <code>uniprot.protein</code> and <code>entrez.protein</code>.
+In this manner, they can be identified as proteins regardless of their sources
+by any queries for the generic <code>protein</code> class, while still carrying
+information about their namespace and avoiding identifier conflicts.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The only change affected upon the code from the previous section is the
+referral to the updated schema configuration file.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>In the output, we now generate two separate files for the <code>protein</code> class, one
+for each subclass (with names in PascalCase).</p>
+</div>
+<h2 id="section-3-handling-properties">Section 3: Handling properties</h2>
+<p>While ID and label are mandatory components of our knowledge graph, properties
+are optional and can include different types of information on the entities. In
+source data, properties are represented in arbitrary ways, and designations
+rarely overlap even for the most trivial of cases (spelling differences,
+formatting, etc). Additionally, some data sources contain a large wealth of
+information about entities, most of which may not be needed for the given task.
+Thus, it is often desirable to filter out properties that are not needed to
+save time, disk space, and memory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Maintaining consistent properties per entity type is particularly important
+when using the admin import feature of Neo4j, which requires consistency
+between the header and data files. Properties that are introduced into only
+some of the rows will lead to column misalignment and import failure. In
+"online mode", this is not an issue.</p>
+</div>
+<p>We will take a look at how to handle property selection in BioCypher in a
+way that is flexible and easy to maintain.</p>
+<h3 id="designated-properties">Designated properties</h3>
+<div class="admonition note">
+<p class="admonition-title">Tutorial files</p>
+<p>The code for this tutorial can be found at <code>tutorial/04__properties.py</code>. Schema
+files are at <code>tutorial/04_schema_config.yaml</code>, configuration in
+<code>tutorial/04_biocypher_config.yaml</code>. Data generation happens in
+<code>tutorial/data_generator.py</code>.</p>
+</div>
+<p>The simplest and most straightforward way to ensure that properties are
+consistent for each entity type is to designate them explicitly in the schema
+configuration. This is done by adding a <code>properties</code> key to the entity type
+configuration. The value of this key is another dictionary, where in the
+standard case the keys are the names of the properties that the entity type
+should possess, and the values give the type of the property. Possible values are:</p>
+<ul>
+<li>
+<p><code>str</code> (or <code>string</code>),</p>
+</li>
+<li>
+<p><code>int</code> (or <code>integer</code>, <code>long</code>),</p>
+</li>
+<li>
+<p><code>float</code> (or <code>double</code>, <code>dbl</code>),</p>
+</li>
+<li>
+<p><code>bool</code> (or <code>boolean</code>),</p>
+</li>
+<li>
+<p>arrays of any of these types (indicated by square brackets, e.g. <code>string[]</code>).</p>
+</li>
+</ul>
+<p>In the case of properties that are not present in (some of) the source data,
+BioCypher will add them to the output with a default value of <code>None</code>. Additional
+properties in the input that are not represented in these designated property
+names will be ignored. Let's imagine that some, but not all, of our protein
+nodes have a <code>mass</code> value. If we want to include the mass value on all
+proteins, we can add the following to our schema configuration:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">protein</span><span class="p">:</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez</span><span class="p p-Indicator">]</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uniprot_protein</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">entrez_protein</span><span class="p p-Indicator">]</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">  </span><span class="nt">properties</span><span class="p">:</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="nt">sequence</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="nt">taxon</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbl</span>
+</span></code></pre></div>
+<p>This will add the <code>mass</code> property to all proteins (in addition to the three we
+had before); if not encountered, the column will be empty. Implicit subclasses
+will automatically inherit the property configuration; in this case, both
+<code>uniprot.protein</code> and <code>entrez.protein</code> will have the <code>mass</code> property, even
+though the <code>entrez</code> proteins do not have a <code>mass</code> value in the input data.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If we wanted to ignore the mass value for all properties, we could simply
+remove the <code>mass</code> key from the <code>properties</code> dictionary.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>BioCypher provides feedback about property conflicts; try running the code
+for this example (<code>04__properties.py</code>) with the schema configuration of the
+previous section (<code>03_schema_config.yaml</code>) and see what happens.</p>
+</div>
+<h3 id="inheriting-properties">Inheriting properties</h3>
+<div class="admonition note">
+<p class="admonition-title">Tutorial files</p>
+<p>The code for this tutorial can be found at <code>tutorial/05__property_inheritance.py</code>.
+Schema files are at <code>tutorial/05_schema_config.yaml</code>, configuration in
+<code>tutorial/05_biocypher_config.yaml</code>. Data generation happens in
+<code>tutorial/data_generator.py</code>.</p>
+</div>
+<p>Sometimes, explicit designation of properties requires a lot of maintenance
+work, particularly for classes with many properties. In these cases, it may be
+more convenient to inherit properties from a parent class. This is done by
+adding a <code>properties</code> key to a suitable parent class configuration, and then
+defining inheritance via the <code>is_a</code> key in the child class configuration and
+setting the <code>inherit_properties</code> key to <code>true</code>.</p>
+<p>Let's say we have an additional <code>protein isoform</code> class, which can reasonably
+inherit from <code>protein</code> and should carry the same properties as the parent. We
+can add the following to our schema configuration:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">protein isoform</span><span class="p">:</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">protein</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span><span class="nt">inherit_properties</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniprot_isoform</span>
+</span></code></pre></div>
+<p>This allows maintenance of property lists for many classes at once. If the child
+class has properties already, they will be kept (if they are not present in the
+parent class) or replaced by the parent class properties (if they are present).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>Again, apart from adding the protein isoforms to the input stream, the code
+for this example is identical to the previous one except for the reference to
+the updated schema configuration.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+</div>
+<p>We now create three separate data files, all of which are children of the
+<code>protein</code> class; two implicit children (<code>uniprot.protein</code> and <code>entrez.protein</code>)
+and one explicit child (<code>protein isoform</code>).</p>
+<h2 id="section-4-handling-relationships">Section 4: Handling relationships</h2>
+<div class="admonition note">
+<p class="admonition-title">Tutorial Files</p>
+</div>
+<p>The code for this tutorial can be found at <code>tutorial/06__relationships.py</code>.
+Schema files are at <code>tutorial/06_schema_config.yaml</code>, configuration in
+<code>tutorial/06_biocypher_config.yaml</code>. Data generation happens in <code>tutorial/data_generator.py</code>.</p>
+<p>Naturally, we do not only want nodes in our knowledge graph, but also edges. In
+BioCypher, the configuration of relationships is very similar to that of nodes,
+with some key differences. First the similarities: the top-level class
+configuration of edges is the same; class names refer to ontological classes or
+are an extension thereof. Similarly, the <code>is_a</code> key is used to define
+inheritance, and the <code>inherit_properties</code> key is used to inherit properties from
+a parent class. Relationships also possess a <code>preferred_id</code> key, an
+<code>input_label</code> key, and a <code>properties</code> key, which work in the same way as for
+nodes.</p>
+<p>Relationships also have a <code>represented_as</code> key, which in this case can be
+either <code>node</code> or <code>edge</code>. The <code>node</code> option is used to "reify" the relationship
+in order to be able to connect it to other nodes in the graph. In addition to
+the configuration of nodes, relationships also have fields for the <code>source</code> and
+<code>target</code> node types, which refer to the ontological classes of the respective
+nodes, and are currently optional.</p>
+<p>To add protein-protein interactions to our graph, we can add the following to
+the schema configuration above:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">protein protein interaction</span><span class="p">:</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pairwise molecular interaction</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="nt">preferred_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">intact</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">  </span><span class="nt">input_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">interacts_with</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">  </span><span class="nt">properties</span><span class="p">:</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+</span></code></pre></div>
+<p>Here, we use explicit subclassing to define the protein-protein interaction,
+which is not represented in the basic Biolink model, as a direct child of the
+Biolink "pairwise molecular interaction" class. We also reify this relationship
+by representing it as a node. This allows us to connect it to other nodes in
+the graph, for example to evidences for each interaction. If we do not want to
+reify the relationship, we can set <code>represented_as</code> to <code>edge</code> instead.</p>
+<h3 id="relationship-identifiers">Relationship identifiers</h3>
+<p>In biomedical data, relationships often do not have curated unique identifiers.
+Nevertheless, we may want to be able to refer to them in the graph. Thus, edges
+possess an ID field similar to nodes, which can be supplied in the input data
+as an optional first element in the edge tuple. Generating this ID from the
+properties of the edge (source and target identifiers, and additionally any
+properties that the edge possesses) can be done, for instance, by using the MD5
+hash of the concatenation of these values. Edge IDs are active by default, but
+can be deactivated by setting the <code>use_id</code> field to <code>false</code> in the
+<code>schema_config.yaml</code> file.</p>
+<div class="language-yaml highlight"><span class="filename">schema_config.yaml</span><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">protein protein interaction</span><span class="p">:</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pairwise molecular interaction</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="nt">represented_as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edge</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span><span class="nt">use_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">  </span><span class="c1"># ...</span>
+</span></code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../../llms/" class="md-footer__link md-footer__link--prev" aria-label="Previous: LLM Integration">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                LLM Integration
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../tutorial002_handling_ontologies/" class="md-footer__link md-footer__link--next" aria-label="Next: Handling Ontologies">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Handling Ontologies
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      © Copyright 2021-2025, BioCypher developers.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://biocypher.zulipchat.com/" target="_blank" rel="noopener" title="biocypher.zulipchat.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22.767 3.589c0 1.209-.543 2.283-1.37 2.934l-8.034 7.174c-.149.128-.343-.078-.235-.25l2.946-5.9c.083-.165-.024-.368-.194-.368H4.452c-1.77 0-3.219-1.615-3.219-3.59C1.233 1.616 2.682 0 4.452 0h15.096c1.77-.001 3.219 1.614 3.219 3.589M4.452 24h15.096c1.77 0 3.219-1.616 3.219-3.59s-1.449-3.59-3.219-3.59H8.12c-.17 0-.277-.202-.194-.367l2.946-5.9c.108-.172-.086-.378-.235-.25l-8.033 7.173c-.828.65-1.37 1.725-1.37 2.934 0 1.974 1.448 3.59 3.218 3.59"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://saezlab.org/" target="_blank" rel="noopener" title="saezlab.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 0H4v2h16zM4 24h16v-2H4zM20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m-8 2.75A2.25 2.25 0 0 1 14.25 9 2.25 2.25 0 0 1 12 11.25 2.25 2.25 0 0 1 9.75 9 2.25 2.25 0 0 1 12 6.75M17 17H7v-1.5c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "content.action.edit", "navigation.tabs", "navigation.instant", "navigation.footer"], "search": "../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.50899def.min.js"></script>
+      
+    
+  </body>
+</html>
