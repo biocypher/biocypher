@@ -51,7 +51,7 @@ jobs:
       - name: Deploy documentation with mike
         run: |
           # Extract version from pyproject.toml or use a default version
-          VERSION=$(uv run python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version']" || echo "latest")
+          VERSION=$(uv run python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])" || echo "latest")
           # Deploy the docs with mike
           uv run mike deploy --push --update-aliases $VERSION latest
           # Set the latest version as default
