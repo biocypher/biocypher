@@ -14,7 +14,24 @@ The easiest way to integrate specific BioCypher instructions into your AI-assist
     This functionality is currently experimental and does not cover all BioCypher
     functionality yet. Use with caution.
 
-This section provides specialized documentation for AI coding assistants (Copilot, Cursor, Claude, etc.) to help them understand BioCypher's architecture and create high-quality code that follows our conventions.
+This section provides specialized documentation for AI coding assistants (Copilot, Cursor, Claude, etc.) to help them understand BioCypher's architecture and create high-quality code that follows our conventions. For instance, for Cursor or VSCode, add it like this:
+
+```json
+{
+  "mcpServers": {
+    "biocypher-mcp": {
+      "url": "https://mcp.biocypher.org/",
+      "transport": "http"
+    }
+  }
+}
+```
+
+You can then ask for guidance in building your knowledge representation. For instance:
+
+```
+Using the CSVs in the `data` directory, how do I build a BioCypher knowledge graph?
+```
 
 ## Why LLM-Specific Documentation?
 
@@ -25,7 +42,7 @@ BioCypher follows specific patterns and conventions that may not be immediately 
 - **Validation rules** to ensure code quality
 - **Best practices** specific to BioCypher's domain
 
-## Available Guides
+## Available Guides (deprecated, use the MCP instead)
 
 For AI assistants, the following `.txt` files are available in the root of this documentation:
 
