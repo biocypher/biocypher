@@ -2,7 +2,7 @@
 
 [project]
 name = "biocypher"
-version = "0.10.1"
+version = "0.11.0"
 description = "A unifying framework for biomedical research knowledge graphs"
 authors = [
     {name = "Sebastian Lobentanzer", email = "sebastian.lobentanzer@gmail.com"},
