@@ -23,6 +23,7 @@ nav:
                 - Adapters: learn/tutorials/tutorial003_adapters.md
                 - BioCypher and Pandas: learn/tutorials/pandas_tutorial.ipynb
                 - Agent API Guide: learn/tutorials/agent_api_guide.md
+                - Hands-on Protein Graphs with BioCypher and Neo4j: learn/tutorials/tutorial_basics_neo4j_offline/tutorial_004_neo4j_offline.md
 
           - HowTo / FAQ:
                 - learn/guides/index.md
