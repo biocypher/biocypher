@@ -1,20 +1,4 @@
-# 🧑‍💻 Hands-On Protein Graphs with BioCypher (offline mode) and Neo4j
-
-
-| Last Update | Developed by                       | Affiliation                                                                                                                                                                  |
-| :---------: | :--------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2025.09.18  | Shuangshuang Li <br> Edwin Carreño | [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) <br> [Saezlab](https://saezlab.org/) - [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) |
-
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Pre-requisites](#pre-requisites)
-- [Setup](#setup)
-- [Section 1. Exploratory Data Analysis](#section-1-exploratory-data-analysis)
-- [Section 2. Graph Modeling](#section-2-graph-modeling)
-- [Section 3. Graph creation with BioCypher](#section-3-graph-creation-with-biocypher)
-- [Section 4. Interacting with your graph using Neo4j](#section-4-interacting-with-your-graph-using-neo4j)
+# 🧑‍💻 Hands-on Building Graphs with BioCypher (offline mode) and Neo4j
 
 ## Overview
 
@@ -32,13 +16,13 @@ By the end of this tutorial, you will be able to:
 
 > **Note:** Ensure you have the following prerequisites before continue with the tutorial.
 
-| Tool               | Version/Requirement | Installation Link                                  | Notes                                  |
-| ------------------ | ------------------- | -------------------------------------------------- | -------------------------------------- |
-| Git                | Any                 | [Git Docs](https://git-scm.com/downloads)          | For version control                    |
-| Neo4j              | >=1.6               | [Neo4j Desktop](https://neo4j.com/download/)       | For querying graphs                    |
-| Poetry (optional)  | 1.8.x               | [Poetry Docs](https://python-poetry.org/docs/1.8/) | For dependency management              |
-| Python             | >= 3.10             | [Python.org](https://www.python.org/downloads/)    | Required for BioCypher                 |
-| Jupyter (optional) | Any                 | [Jupter](https://jupyter.org/)                     | Required for exploring the sample data |
+| Tool               | Version/Requirement | Installation Link                                                  | Notes                                  |
+| ------------------ | ------------------- | ------------------------------------------------------------------ | -------------------------------------- |
+| Git                | Any                 | [Git Docs](https://git-scm.com/downloads)                          | For version control                    |
+| Neo4j              | >=1.6               | [Neo4j Desktop](https://neo4j.com/download/)                       | For querying graphs                    |
+| uv                 | >=0.7.x             | [uv Docs](https://docs.astral.sh/uv/getting-started/installation/) | For dependency management              |
+| Python             | >= 3.11             | [Python.org](https://www.python.org/downloads/)                    | Required for BioCypher                 |
+| Jupyter (optional) | Any                 | [Jupter](https://jupyter.org/)                                     | Required for exploring the sample data |
 
 
 ## Setup
@@ -71,11 +55,16 @@ In this section, you will set up your working environment using the BioCypher Pr
     ```
 
 
-3. Install the dependencies using your preferred package manager (i.e. Poetry or pip):
+3. Install the dependencies using your preferred package manager (e.g. uv, Poetry or pip):
 
-You should always first create a dedicated Python environment for your project, and then install the dependencies into the environment. Environments can be managed by [conda](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html), [poetry](https://python-poetry.org/docs/managing-environments/) or [venv](https://docs.python.org/3/library/venv.html), for example.
+You should always first create a dedicated Python environment for your project, and then install the dependencies into the environment. Environments can be managed by [conda](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html), [uv](https://docs.astral.sh/uv/pip/environments/) ,[poetry](https://python-poetry.org/docs/managing-environments/) or [venv](https://docs.python.org/3/library/venv.html), for example.
 
 After you have created your environment, activate the environment and install the required packages using your preferred package manager.
+
+**Using uv: (recommended)**
+```bash
+uv sync
+```
 
 **Using Poetry:**
 ```bash
@@ -178,16 +167,16 @@ For this tutorial we are going to use a [synthetic dataset](https://zenodo.org/r
 
 > 📝 **Exercise:**
 >
-> a. How many unique proteins do we have in the dataset?
+> a. How many unique proteins do we have in the dataset? Hint: count unique proteins in the source and target columns.
 >
-> b. How many interactions exist in our dataset?
+> b. How many interactions exist in our dataset? Hint: count unique interactions between sources and targets.
 >
 > c. Some columns contain boolean values represented as "1" and "0". Can you detect which ones?
 
 ??? success "Answer:"
     a. Number of unique proteins: 15.
 
-    b. Number of unique interactions: 23.
+    b. Number of unique interactions: there are 22 unique interactions. One interaction is repeated, with a difference in one of its properties.
 
     c. `is_directed`, `is_stimulation`, `is_inhibition`, `consensus_direction`, `consensus_stimulation`,`consensus_inhibition`.
 
@@ -235,7 +224,7 @@ Remaining columns in the table describe properties of these protein-protein inte
 - `consensus inhibition`
 - `type`
 
-It is these protein-protein interactions that form the **edges** in the graph. Here, `is_directed`, `is_stimulation`, and `is_inhibition` describe properties that characterize each `type`, while `consensus direction`, `consensus stimulation`, and `consensus inhibition` describe if the properties are described mutually for source and target.
+It is these protein-protein interactions that form the **edges** in the graph. Here, `is_directed`, `is_stimulation`, and `is_inhibition` describe properties that characterize each interaction `type`, while `consensus direction`, `consensus stimulation`, and `consensus inhibition` indicate the aggregated or consensus value derived from multiple sources in OmniPath for each property.
 
 We are ready to model our second version of our graph. It is like follows:
 
@@ -244,7 +233,7 @@ We are ready to model our second version of our graph. It is like follows:
 <figcaption>Figure 7. Protein interaction graph showing node and edge properties.</figcaption>
 </figure>
 
-Finally, we can create a more detailed graph using our dataset. Rather than representing all interactions in a generic way, we can use the `type` field to show the specific type of interaction occurring between each pair of proteins.
+Finally, we can model a more detailed graph using our dataset. Rather than representing all interactions in a generic way, we can use the `type` field to show the specific type of interaction occurring between each pair of proteins.
 
 <figure markdown="span">
 ![Image title](./assets/model_graph_4.png){ width="550" }
@@ -578,21 +567,21 @@ Figure 10 illustrates the Biolink Model and some of its components organized in 
     #--------        BIOCYPHER GENERAL CONFIGURATION        --------
     #---------------------------------------------------------------
     biocypher:
-    offline: true
-    debug: false
-    schema_config_path: config/schema_config.yaml
-    cache_directory: .cache
+        offline: true
+        debug: false
+        schema_config_path: config/schema_config.yaml
+        cache_directory: .cache
 
     #----------------------------------------------------
     #--------        OUTPUT CONFIGURATION        --------
     #----------------------------------------------------
     neo4j:
-    database_name: neo4j
-    delimiter: '\t'
-    array_delimiter: '|'
-    skip_duplicate_nodes: true
-    skip_bad_relationships: true
-    import_call_bin_prefix: <path to your Neo4j instance from Setup Neo4j section>/bin/
+        database_name: neo4j
+        delimiter: '\t'
+        array_delimiter: '|'
+        skip_duplicate_nodes: true
+        skip_bad_relationships: true
+        import_call_bin_prefix: <path to your Neo4j instance from Setup Neo4j section>/bin/
     ```
 
 The first block is the BioCypher Core Settings, which starts with `biocypher:`
@@ -632,21 +621,21 @@ The default configuration that comes with BioCypher and more configuration param
     #--------        BIOCYPHER GENERAL CONFIGURATION        --------
     #---------------------------------------------------------------
     biocypher:
-    offline: true
-    debug: false
-    schema_config_path: config/schema_config.yaml
-    cache_directory: .cache
+        offline: true
+        debug: false
+        schema_config_path: config/schema_config.yaml
+        cache_directory: .cache
 
     #----------------------------------------------------
     #--------        OUTPUT CONFIGURATION        --------
     #----------------------------------------------------
     neo4j:
-    database_name: neo4j
-    delimiter: '\t'
-    array_delimiter: '|'
-    skip_duplicate_nodes: true
-    skip_bad_relationships: true
-    import_call_bin_prefix: /home/egcarren/.config/neo4j-desktop/Application/Data/dbmss/dbms-08155706-b96e-4e74-a965-7d6d27b78db8/bin/
+        database_name: neo4j
+        delimiter: '\t'
+        array_delimiter: '|'
+        skip_duplicate_nodes: true
+        skip_bad_relationships: true
+        import_call_bin_prefix: /home/egcarren/.config/neo4j-desktop/Application/Data/dbmss/dbms-08155706-b96e-4e74-a965-7d6d27b78db8/bin/
     ```
 
 ### Step 2. Create an adapter
@@ -660,7 +649,7 @@ The default configuration that comes with BioCypher and more configuration param
 
 a. Create a file called `adapter_synthetic_proteins.py` under the folder `/template_package/adapters/`, in this file we are going to create our adapter.
 
-b. Write classes for the different nodes and their properties in our graph. For now, focus on analyzing the following snippet and compare it with the node elements expected in our schema file (`schema_config.yaml`).
+b. Define Enums for the different types of nodes in our graph and their properties. An Enum is simply a list of allowed values for a category — for example, all possible node types in the graph. Using Enums helps ensure that only valid types are used, makes the code easier to read, and avoids typos. For now, just focus on analyzing the snippet and compare its values with the node elements expected in the schema file(`schema_config.yaml`).
 
 ??? example "**File: `/template_package/adapters/adapter_synthetic_proteins.py`**"
 
@@ -682,7 +671,7 @@ b. Write classes for the different nodes and their properties in our graph. For 
         GENE_SYMBOL = "genesymbol"
         NCBI_TAX_ID = "ncbi_tax_id"
     ```
-c. Write classes for the different edges and their properties in our graph. For now, analyze the following snippet and compare it with the edge elements expected in our schema file (`schema_config.yaml`).
+c. Similarly, define Enums for the different types of edges in our graph and their properties. For now, analyze the following snippet and compare the listed types with the edge elements expected in our schema file (`schema_config.yaml`).
 
 ??? example "**File: `/template_package/adapters/adapter_synthetic_proteins.py`**"
 
@@ -722,7 +711,7 @@ BioCypher expects each node or edge being a tuple (datastructure) as explained i
 BioCypher expects each node being a **3-element tuple**, with elements in the following order:
 1. [*mandatory*]  `ID`: this is a unique identifier for the node (i.e., `P53`)
 2. [*mandatory*]  `LABEL`: this is a namespace for the node (i.e, `uniprot`)
-3. [*optional*]   `PROPERTIES`: this is dictionary that contains properties for the node.
+3. [*mandatory*]   `PROPERTIES`: a dictionary containing properties for the node, which may be empty (i.e., have no entries).
 
 For example:
 
@@ -746,12 +735,13 @@ BioCypher expects each edge being a **5-element tuple**, with elements in the fo
 2. [*mandatory*]  `SOURCE`: this is the ID for the source node (i.e, `TP53`)
 3. [*mandatory*]  `TARGET`: this is the ID for the source node (i.e, `CREB1`)
 4. [*mandatory*]  `LABEL`: this is a namespace for the edge (i.e, `activation`, `inhibition`)
-5. [*optional*] `PROPERTIES`: this is dictionary that contains properties for the edge.
+5. [*mandatory*] `PROPERTIES`: a dictionary containing properties for the edge, which may be empty (i.e., have no entries).
+
 
 ```python
 #  ✅ This is a 5-element tuple for BioCypher
 #1   2      3        4                 5
-("", "TP53", "CREB1", "ubiquitination", {"is_directed": True})
+(None, "TP53", "CREB1", "ubiquitination", {"is_directed": True})
 ```
 
 ```python
@@ -1302,9 +1292,9 @@ Finally, write the functions that read the data as a DataFrame and override the 
 
 #### Run the script
 
-You can execute the entire pipeline that loads, processes, and builds the graph by running the following command from the root folder of your project. The example below uses Poetry.
+You can execute the entire pipeline that loads, processes, and builds the graph by running the following command from the root folder of your project. The example below uses `uv`.
 ```bash
-poetry run python create_knowledge_graph.py
+uv run python create_knowledge_graph.py
 ```
 
 > 🏆 **Note:** Once you complete the process, your terminal output should look similar to the following:
@@ -1603,10 +1593,10 @@ Result:
 
 ## Feedback & Contributions
 
-If you found this tutorial helpful or have suggestions for improvement, please open an issue or submit a pull request.
-
-## Acknowledgments
-
-Special thanks to all contributors and the open-source community.
+If you found this tutorial helpful or have suggestions for improvement, please **open an issue** or **submit a pull request** in the [BioCypher repository](https://github.com/biocypher/biocypher/issues/new/choose). Specific feedback on examples, clarity of instructions, or missing details is especially appreciated.
 
 ---
+
+| Last Update | Developed by                                            | Affiliation                                                                                                                                                                  |
+| :---------: | :------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2025.20.18  | Shuangshuang Li <br> Edwin Carreño (GH @ecarrenolozano) | [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) <br> [Saezlab](https://saezlab.org/) - [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) |
