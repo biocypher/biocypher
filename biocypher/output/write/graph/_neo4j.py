@@ -440,12 +440,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         return import_call
 
     def _get_import_call_windows(self, import_cmd: str, database_cmd: str, wipe_cmd: str) -> str:
-<<<<<<< HEAD
         """Get parametrized import call for Neo4j 4 or 5+ (Windows).
-=======
-        """
-        Get parametrized import call for Neo4j 4 or 5+ (Windows).
->>>>>>> 2f160310 (feat: add methods to generate the import script suitable for windows)
 
         Args:
         ----
@@ -454,14 +449,9 @@ class _Neo4jBatchWriter(_BatchWriter):
             wipe_cmd (str): The wipe command to use.
 
         Returns:
-<<<<<<< HEAD
         -------
             str: The import call for Windows.
 
-=======
-        ----
-            str: The import call for Windows.
->>>>>>> 2f160310 (feat: add methods to generate the import script suitable for windows)
         """
         import_call = []
         import_call.append(f"{import_cmd} ")
@@ -472,7 +462,6 @@ class _Neo4jBatchWriter(_BatchWriter):
         import_call.append(f"{wipe_cmd}true " if self.wipe else "")
         import_call.append("--skip-bad-relationships=true " if self.skip_bad_relationships else "")
         import_call.append("--skip-duplicate-nodes=true " if self.skip_duplicate_nodes else "")
-<<<<<<< HEAD
         import_call.extend(
             f'--nodes="{header_path},{parts_path}" ' for header_path, parts_path in self.import_call_nodes
         )
@@ -481,10 +470,3 @@ class _Neo4jBatchWriter(_BatchWriter):
         )
 
         return "".join(import_call)
-=======
-        import_call.extend(f'--nodes="{header_path},{parts_path}" ' for header_path, parts_path in self.import_call_nodes)
-        import_call.extend(f'--relationships="{header_path},{parts_path}" ' for header_path, parts_path in self.import_call_edges)
-        import_call = "".join(import_call)
-
-        return import_call
->>>>>>> 2f160310 (feat: add methods to generate the import script suitable for windows)
