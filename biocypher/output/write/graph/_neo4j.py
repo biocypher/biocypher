@@ -263,6 +263,8 @@ class _Neo4jBatchWriter(_BatchWriter):
             str: The name of the import script (ending in .sh)
 
         """
+        if os.name == "nt":
+            return "neo4j-admin-import-call.ps1"
         return "neo4j-admin-import-call.sh" 
     
     def _construct_import_call(self) -> str:
