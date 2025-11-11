@@ -1164,7 +1164,8 @@ def test_labels_order_dsc(bw):
 
 
 def test_powershell_template_structure():
-    template_path = "c:\\Users\\Edwin\\Documents\\biocypher\\biocypher\\output\\templates\\powershell_template.ps1"
+    template_path = ".\\biocypher\\output\\templates\\powershell_template.ps1"
+
     with open(template_path, encoding="utf-8") as f:
         content = f.read()
 
