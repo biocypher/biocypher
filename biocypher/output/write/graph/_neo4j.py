@@ -1,6 +1,7 @@
 """Module to provide the Neo4j writer class."""
 
 import os
+import sys
 
 from biocypher._logger import logger
 from biocypher.output.write._batch_writer import _BatchWriter, parse_label
@@ -226,7 +227,7 @@ class _Neo4jBatchWriter(_BatchWriter):
                     self.translator.ontology.mapping.extended_schema.get(  # (seems to not work with 'not')
                         schema_label,
                     ).get("use_id")
-                    == False  # noqa: E712 (seems to not work with 'not')
+                    is False
                 ):
                     skip_id = True
 
@@ -263,19 +264,19 @@ class _Neo4jBatchWriter(_BatchWriter):
             str: The name of the import script (ending in .sh)
 
         """
-        if os.name == "nt":
+        if sys.platform.startswith("win"):
             return "neo4j-admin-import-call.ps1"
-        return "neo4j-admin-import-call.sh" 
-    
-    def _construct_import_call(self) -> str:
-        """
-        Construct the import call script for Neo4j admin import.
-        Returns
-        -------     
-            str: The import call script.
-        """
+        return "neo4j-admin-import-call.sh"
 
-        if os.name == "nt":
+    def _construct_import_call(self) -> str:
+        """Construct the import call script for Neo4j admin import.
+
+        Returns
+        -------
+            str: The import call script.
+
+        """
+        if sys.platform.startswith("win"):
             return self._construct_import_call_powershell()
         return self._construct_import_call_bash()
 
@@ -299,13 +300,14 @@ class _Neo4jBatchWriter(_BatchWriter):
             f"then\n\t{import_call_neo4j_v5}\nelse\n\t{import_call_neo4j_v4}\nfi"
         )
         return import_script
-    
+
     def _construct_import_call_powershell(self) -> str:
         """Construct the import call script for Neo4j admin import (PowerShell).
 
         Returns
         -------
             str: PowerShell script for Neo4j admin import.
+
         """
         # Path to the PowerShell template
         template_path = os.path.join(
@@ -317,21 +319,18 @@ class _Neo4jBatchWriter(_BatchWriter):
         )
 
         # Read the template file
-        with open(template_path, "r") as f:
+        with open(template_path) as f:
             template = f.read()
 
-        print(f"Type template: {type(template)}")
-
         # Prepare the dynamic components for the template
-        import_call_neo4j_v4 = self._get_import_call_windows(
-            "import", "--database=", "--force="
-        )
-        import_call_neo4j_v5 = self._get_import_call_windows(
-            "database import full", "", "--overwrite-destination="
-        )
+        import_call_neo4j_v4 = self._get_import_call_windows("import", "--database=", "--force=")
+        import_call_neo4j_v5 = self._get_import_call_windows("database import full", "", "--overwrite-destination=")
 
         # Prepare the version check command
-        neo4j_version_check = f'$version = & powershell -NoProfile -ExecutionPolicy Bypass -File "{self.import_call_bin_prefix}neo4j-admin.ps1" --version'
+        neo4j_version_check = (
+            f"$version = & powershell -NoProfile -ExecutionPolicy Bypass -File "
+            f'"{self.import_call_bin_prefix}neo4j-admin.ps1" --version'
+        )
 
         # Fill in the template with the dynamic components
         import_script = template.format(
@@ -388,8 +387,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         return import_call
 
     def _get_import_call_windows(self, import_cmd: str, database_cmd: str, wipe_cmd: str) -> str:
-        """
-        Get parametrized import call for Neo4j 4 or 5+ (Windows).
+        """Get parametrized import call for Neo4j 4 or 5+ (Windows).
 
         Args:
         ----
@@ -398,8 +396,9 @@ class _Neo4jBatchWriter(_BatchWriter):
             wipe_cmd (str): The wipe command to use.
 
         Returns:
-        ----
+        -------
             str: The import call for Windows.
+
         """
         import_call = []
         import_call.append(f"{import_cmd} ")
@@ -410,8 +409,11 @@ class _Neo4jBatchWriter(_BatchWriter):
         import_call.append(f"{wipe_cmd}true " if self.wipe else "")
         import_call.append("--skip-bad-relationships=true " if self.skip_bad_relationships else "")
         import_call.append("--skip-duplicate-nodes=true " if self.skip_duplicate_nodes else "")
-        import_call.extend(f'--nodes="{header_path},{parts_path}" ' for header_path, parts_path in self.import_call_nodes)
-        import_call.extend(f'--relationships="{header_path},{parts_path}" ' for header_path, parts_path in self.import_call_edges)
-        import_call = "".join(import_call)
+        import_call.extend(
+            f'--nodes="{header_path},{parts_path}" ' for header_path, parts_path in self.import_call_nodes
+        )
+        import_call.extend(
+            f'--relationships="{header_path},{parts_path}" ' for header_path, parts_path in self.import_call_edges
+        )
 
-        return import_call
+        return "".join(import_call)
