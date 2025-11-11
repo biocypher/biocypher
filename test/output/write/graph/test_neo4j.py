@@ -2,7 +2,6 @@ import logging
 import os
 import re
 import sys
-from pathlib import Path
 
 import pytest
 
@@ -1165,7 +1164,11 @@ def test_labels_order_dsc(bw):
 
 
 def test_powershell_template_structure():
-    template_path = Path(".\\biocypher\\output\\templates\\powershell_template.ps1")
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    template_path = os.path.join(
+        base_dir, "..", "..", "..", "..", "biocypher", "output", "templates", "powershell_template.ps1"
+    )
+    template_path = os.path.normpath(template_path)
 
     with open(template_path, encoding="utf-8") as f:
         content = f.read()
