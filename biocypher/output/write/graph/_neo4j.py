@@ -310,13 +310,14 @@ class _Neo4jBatchWriter(_BatchWriter):
             f"then\n\t{import_call_neo4j_v5}\nelse\n\t{import_call_neo4j_v4}\nfi"
         )
         return import_script
-    
+
     def _construct_import_call_powershell(self) -> str:
         """Construct the import call script for Neo4j admin import (PowerShell).
 
         Returns
         -------
             str: PowerShell script for Neo4j admin import.
+
         """
         # Path to the PowerShell template
         template_path = os.path.join(
@@ -328,21 +329,18 @@ class _Neo4jBatchWriter(_BatchWriter):
         )
 
         # Read the template file
-        with open(template_path, "r") as f:
+        with open(template_path) as f:
             template = f.read()
 
-        print(f"Type template: {type(template)}")
-
         # Prepare the dynamic components for the template
-        import_call_neo4j_v4 = self._get_import_call_windows(
-            "import", "--database=", "--force="
-        )
-        import_call_neo4j_v5 = self._get_import_call_windows(
-            "database import full", "", "--overwrite-destination="
-        )
+        import_call_neo4j_v4 = self._get_import_call_windows("import", "--database=", "--force=")
+        import_call_neo4j_v5 = self._get_import_call_windows("database import full", "", "--overwrite-destination=")
 
         # Prepare the version check command
-        neo4j_version_check = f'$version = & powershell -NoProfile -ExecutionPolicy Bypass -File "{self.import_call_bin_prefix}neo4j-admin.ps1" --version'
+        neo4j_version_check = (
+            f"$version = & powershell -NoProfile -ExecutionPolicy Bypass -File "
+            f'"{self.import_call_bin_prefix}neo4j-admin.ps1" --version'
+        )
 
         # Fill in the template with the dynamic components
         import_script = template.format(
