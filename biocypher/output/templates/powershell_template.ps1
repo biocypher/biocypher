@@ -31,7 +31,7 @@ if ( $major -lt 5 )
 '@
 )
     Write-Host "[$(Get-Date -Format 'u')] Detected Neo4j v4 - using legacy import command." -ForegroundColor Yellow
-    Write-Host "[$(Get-Date -Format 'u')]Args for Neo4j v4:"
+    Write-Host "[$(Get-Date -Format 'u')] Args for Neo4j v4:"
     $args_neo4j -split ' ' | ForEach-Object {{ Write-Host "`t$_" }}
 }}
 else
