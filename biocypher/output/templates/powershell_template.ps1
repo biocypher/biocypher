@@ -10,7 +10,7 @@ Write-Host "[$(Get-Date -Format 'u')] Starting Neo4j import process..." -Foregro
 #      Neo4j Binary Settings       #
 # ================================ #
 {neo4j_bin_path}
-Write-Host [$(Get-Date -Format 'u')] "Neo4j bin path set to: $NEO4J_BIN_PATH_WINDOWS"
+Write-Host "[$(Get-Date -Format 'u')] Neo4j bin path set to: $NEO4J_BIN_PATH_WINDOWS"
 
 {neo4j_version_check}
 Write-Host "[$(Get-Date -Format 'u')] Detected Neo4j version: $version"
