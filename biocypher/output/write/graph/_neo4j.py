@@ -319,7 +319,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         )
 
         # Read the template file
-        with open(template_path) as f:
+        with open(template_path, encoding="utf-8") as f:
             template = f.read()
 
         # Prepare the dynamic components for the template
