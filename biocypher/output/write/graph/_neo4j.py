@@ -261,7 +261,7 @@ class _Neo4jBatchWriter(_BatchWriter):
 
         Returns
         -------
-            str: The name of the import script (ending in .sh)
+            str: The name of the import script (ending in .sh or .ps1 depending on OS)
 
         """
         if sys.platform.startswith("win"):
