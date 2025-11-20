@@ -165,3 +165,8 @@ csv:
 networkx:
   ### NetworkX configuration ###
   some_config: some_value # placeholder for technical reasons TODO
+
+biopathnet:
+  entity_types_file_stem: entity_types
+  background_graph_file_stem: train1
+  learning_graph_file_stem: train2
