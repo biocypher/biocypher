@@ -20,7 +20,7 @@ This section provides specialized documentation for AI coding assistants (Copilo
 {
   "mcpServers": {
     "biocypher-mcp": {
-      "url": "https://mcp.biocypher.org/",
+      "url": "https://mcp.biocypher.org/mcp",
       "transport": "http"
     }
   }
