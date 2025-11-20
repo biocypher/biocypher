@@ -7,7 +7,7 @@
     </blockquote>
 </div>
 
-The easiest way to integrate specific BioCypher instructions into your AI-assisted workflow is to connect your software to our dedicated MCP server at [https://mcp.biocypher.org](https://mcp.biocypher.org). You can use our [MCP-ready template](https://github.com/biocypher/mcp-template) to get started. Set up your own repository using the template, load it in your favourite co-programmer, and connect to the MCP to get started on your pipeline.
+The easiest way to integrate specific BioCypher instructions into your AI-assisted workflow is to connect your software to our dedicated MCP server at https://mcp.biocypher.org/mcp (not human-readable). The copilot can help you use our [cookiecutter template](https://github.com/biocypher/biocypher-cookiecutter-template) to get started (this one is also human-usable).
 
 !!! note
 
@@ -33,7 +33,7 @@ You can then ask for guidance in building your knowledge representation. For ins
 Using the CSVs in the `data` directory, how do I build a BioCypher knowledge graph?
 ```
 
-## Why LLM-Specific Documentation?
+## Further LLM-Specific Documentation and Information
 
 BioCypher follows specific patterns and conventions that may not be immediately obvious to AI assistants. These guides provide:
 
@@ -73,14 +73,6 @@ And these edge types:
 
 Please create an adapter that follows the 3-tuple (node_id, node_label, attributes_dict) and 5-tuple (edge_id, source_id, target_id, edge_label, attributes_dict) patterns described in the guide.
 ```
-
-## Contributing
-
-If you find patterns or conventions that would benefit from LLM documentation, please contribute by:
-
-1. Creating a new guide file following the naming convention `llms-*.txt`
-2. Updating the main `llms.txt` index
-3. Adding the guide to this overview page
 
 ## Related Resources
 
