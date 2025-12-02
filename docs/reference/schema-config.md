@@ -84,6 +84,9 @@ ligand receptor interaction:
 
 ### `directed`
 - **Description:** For relationships (edges or reified as nodes), specifies whether the relationship is directed. If `true`, directionality is preserved and two edge types are created: `IS_SOURCE_OF` and `IS_TARGET_OF`. If `false` or omitted, both edges are labeled as `IS_PART_OF`, and directionality is not preserved.
+- **Possible values:**
+  - `true`
+  - `false`
 
 ### `exclude_properties`
 - **Description:** Specifies properties that should be excluded from the current entity or relation, preventing them from being inherited or used.
