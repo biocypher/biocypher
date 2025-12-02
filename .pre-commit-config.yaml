@@ -9,7 +9,7 @@ default_stages:
 minimum_pre_commit_version: 2.7.1
 repos:
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.7
+    rev: v0.2.0
     hooks:
     -   id: ruff
         args:
@@ -17,7 +17,7 @@ repos:
         - --fix
     -   id: ruff-format
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: v4.4.0
     hooks:
     -   id: check-docstring-first
     -   id: end-of-file-fixer
