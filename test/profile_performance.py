@@ -19,6 +19,7 @@ class bcolors:
     UNDERLINE = "\033[4m"
 
 
+# ruff: noqa: E402
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher.output.connect._neo4j_driver import _Neo4jDriver
 
