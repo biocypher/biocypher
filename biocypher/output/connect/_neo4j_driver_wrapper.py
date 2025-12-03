@@ -295,7 +295,7 @@ class Neo4jDriver:
             detection_uri = original_uri.replace("neo4j://", "bolt://", 1)
         elif original_uri.startswith("neo4j+s://"):
             detection_uri = original_uri.replace("neo4j+s://", "bolt+s://", 1)
-        
+
         # Create a temporary driver with bolt:// for detection
         temp_driver = None
         supports_multi_db = False
@@ -324,7 +324,7 @@ class Neo4jDriver:
         finally:
             if temp_driver:
                 temp_driver.close()
-        
+
         # If detection failed, use heuristics to determine if we should apply CE workarounds
         # This handles CI cases where detection might fail but we're still using Community Edition
         if detection_failed:
@@ -332,7 +332,7 @@ class Neo4jDriver:
             # This is a common CI pattern where Community Edition can't handle routing to non-existent DBs
             is_neo4j_protocol = original_uri.startswith("neo4j://") or original_uri.startswith("neo4j+s://")
             is_non_default_db = self.current_db and self.current_db.lower() != "neo4j"
-            
+
             if is_neo4j_protocol and is_non_default_db:
                 logger.info(
                     "Detection failed but using neo4j:// with non-default database. "
@@ -675,9 +675,9 @@ class Neo4jDriver:
         # or if multi_db is False but we have an explicit database set (Community Edition fallback)
         # This ensures the correct database is used even when multi_db is False
         should_set_database = (
-            self.multi_db 
-            or self._is_neo4j_5_plus() 
-            or self.uri.startswith("bolt://") 
+            self.multi_db
+            or self._is_neo4j_5_plus()
+            or self.uri.startswith("bolt://")
             or self.uri.startswith("bolt+s://")
             or (not self.multi_db and db != neo4j.DEFAULT_DATABASE)
         )
@@ -884,7 +884,7 @@ class Neo4jDriver:
         # Don't assume Community Edition just because of URI protocol
         db_to_wipe = self.current_db
         is_non_default_db = db_to_wipe and db_to_wipe.lower() != "neo4j"
-        
+
         # Only treat as Community Edition if multi_db was explicitly disabled
         # (which happens during detection if Community Edition is confirmed)
         if not self.multi_db and is_non_default_db:
