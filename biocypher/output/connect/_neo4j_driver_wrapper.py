@@ -247,6 +247,9 @@ class Neo4jDriver:
             logger.info("No driver provided, initialising it from local config.")
             self.db_connect()
 
+        # Detect Community Edition and adjust settings accordingly
+        self._detect_and_handle_community_edition()
+
         self.ensure_db()
 
         if wipe:
@@ -271,6 +274,74 @@ class Neo4jDriver:
             logger.info("Opened database connection.")
 
         self._register_current_driver()
+
+    def _detect_and_handle_community_edition(self):
+        """
+        Detect Community Edition and adjust settings for compatibility.
+        
+        Community Edition doesn't support multi-database, so we:
+        1. Convert neo4j:// to bolt:// to avoid routing issues
+        2. Disable multi_db mode
+        3. Use default database 'neo4j' if a custom database was requested
+        """
+        if not self.driver or self.offline:
+            return
+
+        # Check if multi-database is supported (Enterprise Edition)
+        # Use a temporary session with default database to check edition
+        try:
+            with self.driver.session(database="neo4j") as session:
+                result = session.run(
+                    """
+                    CALL dbms.components()
+                    YIELD edition
+                    RETURN edition CONTAINS 'enterprise' AS is_enterprise
+                    """
+                )
+                data = result.data()
+                supports_multi_db = data[0].get("is_enterprise", False) if data else False
+        except Exception as e:
+            logger.debug(f"Error detecting Neo4j edition: {e}. Assuming Community Edition.")
+            # If detection fails, assume Community Edition (safer)
+            supports_multi_db = False
+        
+        if not supports_multi_db:
+            logger.info(
+                "Neo4j Community Edition detected. Multi-database features "
+                "are not available. Adjusting configuration for compatibility."
+            )
+            
+            # Convert neo4j:// to bolt:// to avoid routing table issues
+            original_uri = self.uri
+            if original_uri.startswith("neo4j://"):
+                bolt_uri = original_uri.replace("neo4j://", "bolt://", 1)
+                self._db_config["uri"] = bolt_uri
+                logger.info(f"Converted URI from {original_uri} to {bolt_uri} for Community Edition compatibility.")
+                # Reconnect with bolt://
+                self.driver.close()
+                self.db_connect()
+            elif original_uri.startswith("neo4j+s://"):
+                bolt_uri = original_uri.replace("neo4j+s://", "bolt+s://", 1)
+                self._db_config["uri"] = bolt_uri
+                logger.info(f"Converted URI from {original_uri} to {bolt_uri} for Community Edition compatibility.")
+                # Reconnect with bolt+s://
+                self.driver.close()
+                self.db_connect()
+            
+            # Disable multi_db mode
+            if self.multi_db:
+                logger.info("Disabling multi-database mode for Community Edition.")
+                self.multi_db = False
+            
+            # Use default database if a custom database was requested
+            current_db = self.current_db
+            if current_db and current_db.lower() != "neo4j":
+                logger.warning(
+                    f"Requested database '{current_db}' is not supported in Community Edition. "
+                    f"Falling back to default database 'neo4j'."
+                )
+                self._db_config["db"] = "neo4j"
+                self._register_current_driver()
 
     @property
     def _connect_param_available(self) -> bool:
@@ -763,6 +834,15 @@ class Neo4jDriver:
         # Skip if offline mode
         if self.offline:
             logger.debug(f"Offline mode, skipping database creation for '{db_name}'.")
+            return
+
+        # In Community Edition, multi-database operations are not supported
+        # The default database 'neo4j' always exists and is always online
+        if not self.multi_db:
+            logger.debug(
+                f"Multi-database mode disabled (Community Edition). "
+                f"Using default database '{db_name}' which always exists."
+            )
             return
 
         # Check if database exists, create if needed
