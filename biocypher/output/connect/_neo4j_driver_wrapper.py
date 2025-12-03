@@ -860,22 +860,24 @@ class Neo4jDriver:
         self.ensure_db()
 
         # For Community Edition, use default database if current_db is not supported
+        # Skip this check if Enterprise Edition is forced
         db_to_wipe = self.current_db
-        current_uri = self.uri
-        is_neo4j_protocol = current_uri.startswith("neo4j://") or current_uri.startswith("neo4j+s://")
-        is_non_default_db = db_to_wipe and db_to_wipe.lower() != "neo4j"
-        is_community_edition = not self.multi_db or (is_neo4j_protocol and is_non_default_db)
+        if not self._force_enterprise:
+            current_uri = self.uri
+            is_neo4j_protocol = current_uri.startswith("neo4j://") or current_uri.startswith("neo4j+s://")
+            is_non_default_db = db_to_wipe and db_to_wipe.lower() != "neo4j"
+            is_community_edition = not self.multi_db or (is_neo4j_protocol and is_non_default_db)
 
-        if is_community_edition and is_non_default_db:
-            logger.warning(
-                f"Cannot wipe database '{db_to_wipe}' in Community Edition. "
-                f"Using default database 'neo4j' instead. "
-                f"Database will remain 'neo4j' for this session."
-            )
-            # Permanently change to default database for Community Edition
-            db_to_wipe = "neo4j"
-            self._db_config["db"] = "neo4j"
-            self._register_current_driver()
+            if is_community_edition and is_non_default_db:
+                logger.warning(
+                    f"Cannot wipe database '{db_to_wipe}' in Community Edition. "
+                    f"Using default database 'neo4j' instead. "
+                    f"Database will remain 'neo4j' for this session."
+                )
+                # Permanently change to default database for Community Edition
+                db_to_wipe = "neo4j"
+                self._db_config["db"] = "neo4j"
+                self._register_current_driver()
 
         logger.info(f"Wiping database `{db_to_wipe}`.")
         self.query("MATCH (n) DETACH DELETE n;")
@@ -890,32 +892,37 @@ class Neo4jDriver:
             logger.debug(f"Offline mode, skipping database creation for '{db_name}'.")
             return
 
-        # In Community Edition, multi-database operations are not supported
-        # The default database 'neo4j' always exists and is always online
-        # Also skip if URI is bolt:// (which indicates Community Edition or direct connection)
-        # If URI is still neo4j:// and we're checking a non-default database, assume Community Edition
-        current_uri = self.uri
-        is_bolt = current_uri.startswith("bolt://") or current_uri.startswith("bolt+s://")
-        is_neo4j_protocol = current_uri.startswith("neo4j://") or current_uri.startswith("neo4j+s://")
-        is_non_default_db = db_name and db_name.lower() != "neo4j"
+        # If Enterprise Edition is forced, skip Community Edition checks
+        if self._force_enterprise:
+            logger.debug(f"Enterprise Edition forced, proceeding with database check for '{db_name}'.")
+            # Continue to database existence check below
+        else:
+            # In Community Edition, multi-database operations are not supported
+            # The default database 'neo4j' always exists and is always online
+            # Also skip if URI is bolt:// (which indicates Community Edition or direct connection)
+            # If URI is still neo4j:// and we're checking a non-default database, assume Community Edition
+            current_uri = self.uri
+            is_bolt = current_uri.startswith("bolt://") or current_uri.startswith("bolt+s://")
+            is_neo4j_protocol = current_uri.startswith("neo4j://") or current_uri.startswith("neo4j+s://")
+            is_non_default_db = db_name and db_name.lower() != "neo4j"
 
-        if not self.multi_db or is_bolt or (is_neo4j_protocol and is_non_default_db):
-            if not self.multi_db:
-                logger.debug(
-                    f"Multi-database mode disabled (Community Edition). "
-                    f"Using default database '{db_name}' which always exists."
-                )
-            elif is_bolt:
-                logger.debug(
-                    f"Using bolt:// connection (direct mode). "
-                    f"Using default database '{db_name}' which always exists."
-                )
-            else:
-                logger.debug(
-                    f"Using neo4j:// protocol with non-default database '{db_name}' - "
-                    f"assuming Community Edition and skipping database check."
-                )
-            return
+            if not self.multi_db or is_bolt or (is_neo4j_protocol and is_non_default_db):
+                if not self.multi_db:
+                    logger.debug(
+                        f"Multi-database mode disabled (Community Edition). "
+                        f"Using default database '{db_name}' which always exists."
+                    )
+                elif is_bolt:
+                    logger.debug(
+                        f"Using bolt:// connection (direct mode). "
+                        f"Using default database '{db_name}' which always exists."
+                    )
+                else:
+                    logger.debug(
+                        f"Using neo4j:// protocol with non-default database '{db_name}' - "
+                        f"assuming Community Edition and skipping database check."
+                    )
+                return
 
         # Check if database exists, create if needed
         try:
