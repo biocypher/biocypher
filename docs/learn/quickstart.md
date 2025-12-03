@@ -308,6 +308,12 @@ You can also set delimiters for the entities and arrays in your import files.
 For a list of all settings, please refer to the [Configuration](../reference/biocypher-config.md)
 section.
 
+!!! note "Neo4j Driver Required for Online Mode"
+    If you plan to use Neo4j in online mode (`offline: false`), you need to
+    install the Neo4j Python driver: `pip install biocypher[neo4j]` or
+    `uv add "biocypher[neo4j]"`. For offline mode, only the Neo4j database
+    itself needs to be installed.
+
 ```yaml title="biocypher_config.yaml"
 neo4j:
   database_name: biocypher

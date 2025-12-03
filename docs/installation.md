@@ -138,7 +138,10 @@ below to get started.
     # Install the BioCypher package with all the dependencies automatically
     uv add biocypher
 
-    # Or install with optional dependencies (e.g., for AIRR functionality)
+    # Or install with optional dependencies:
+    # - For Neo4j online mode support
+    uv add "biocypher[neo4j]"
+    # - For AIRR functionality
     uv add "biocypher[scirpy]"
     ```
 
@@ -172,8 +175,17 @@ below to get started.
     2. Install BioCypher package from `pip`. Type the following command to install BioCypher package. **Note:** do not forget to activate a virtual environment before do it.
 
         ```shell
+        # Basic installation (no Neo4j driver)
         pip install biocypher
+
+        # With Neo4j online mode support (optional)
+        pip install biocypher[neo4j]
         ```
+
+    !!! note "Neo4j Driver is Optional"
+        The Neo4j Python driver is only required if you plan to use BioCypher
+        with Neo4j in online mode (`offline: false`). For offline mode or other
+        output formats, it is not needed.
 
 ## :material-docker: **Option 3.** Docker
 
@@ -220,9 +232,9 @@ uv creates a virtual environment for you and installs all dependencies.
 
 If you want to run the tests that use a local Neo4j or PostgreSQL DBMS (database management system) instance:
 
-- Make sure that you have a Neo4j instance with the APOC plugin installed and a database named `test` running on standard bolt port `7687`
+- **For Neo4j tests**: Make sure that you have a Neo4j instance (version 4.4.x or 5.x) with the APOC plugin installed and a database named `test` running on standard bolt port `7687`. The Neo4j Python driver will be installed automatically with `uv sync --all-extras`.
 
-- A PostgreSQL instance with the psql command line tool should be installed locally and running on standard port `5432`
+- **For PostgreSQL tests**: A PostgreSQL instance with the psql command line tool should be installed locally and running on standard port `5432`
 
 - Run the tests using `uv run pytest` in the root directory of the repository with the command line argument `--password=<your DBMS password>`.
 
