@@ -848,7 +848,7 @@ class Neo4jDriver:
         is_neo4j_protocol = current_uri.startswith("neo4j://") or current_uri.startswith("neo4j+s://")
         is_non_default_db = db_to_wipe and db_to_wipe.lower() != "neo4j"
         is_community_edition = not self.multi_db or (is_neo4j_protocol and is_non_default_db)
-        
+
         if is_community_edition and is_non_default_db:
             logger.warning(
                 f"Cannot wipe database '{db_to_wipe}' in Community Edition. "
