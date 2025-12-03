@@ -329,20 +329,23 @@ class Neo4jDriver:
 
             # Convert neo4j:// to bolt:// to avoid routing table issues
             # (already converted for detection, but need to update main driver)
-            if original_uri.startswith("neo4j://"):
-                bolt_uri = original_uri.replace("neo4j://", "bolt://", 1)
-                self._db_config["uri"] = bolt_uri
-                logger.info(f"Converted URI from {original_uri} to {bolt_uri} for Community Edition compatibility.")
-                # Reconnect with bolt://
-                self.driver.close()
-                self.db_connect()
-            elif original_uri.startswith("neo4j+s://"):
-                bolt_uri = original_uri.replace("neo4j+s://", "bolt+s://", 1)
-                self._db_config["uri"] = bolt_uri
-                logger.info(f"Converted URI from {original_uri} to {bolt_uri} for Community Edition compatibility.")
-                # Reconnect with bolt+s://
-                self.driver.close()
-                self.db_connect()
+            try:
+                if original_uri.startswith("neo4j://"):
+                    bolt_uri = original_uri.replace("neo4j://", "bolt://", 1)
+                    self._db_config["uri"] = bolt_uri
+                    logger.info(f"Converted URI from {original_uri} to {bolt_uri} for Community Edition compatibility.")
+                    # Reconnect with bolt://
+                    self.driver.close()
+                    self.db_connect()
+                elif original_uri.startswith("neo4j+s://"):
+                    bolt_uri = original_uri.replace("neo4j+s://", "bolt+s://", 1)
+                    self._db_config["uri"] = bolt_uri
+                    logger.info(f"Converted URI from {original_uri} to {bolt_uri} for Community Edition compatibility.")
+                    # Reconnect with bolt+s://
+                    self.driver.close()
+                    self.db_connect()
+            except Exception as e:
+                logger.warning(f"Failed to convert URI and reconnect: {e}. Continuing with original URI.")
 
             # Disable multi_db mode
             if self.multi_db:
@@ -855,16 +858,27 @@ class Neo4jDriver:
         # In Community Edition, multi-database operations are not supported
         # The default database 'neo4j' always exists and is always online
         # Also skip if URI is bolt:// (which indicates Community Edition or direct connection)
-        if not self.multi_db or self.uri.startswith("bolt://") or self.uri.startswith("bolt+s://"):
+        # If URI is still neo4j:// and we're checking a non-default database, assume Community Edition
+        current_uri = self.uri
+        is_bolt = current_uri.startswith("bolt://") or current_uri.startswith("bolt+s://")
+        is_neo4j_protocol = current_uri.startswith("neo4j://") or current_uri.startswith("neo4j+s://")
+        is_non_default_db = db_name and db_name.lower() != "neo4j"
+        
+        if not self.multi_db or is_bolt or (is_neo4j_protocol and is_non_default_db):
             if not self.multi_db:
                 logger.debug(
                     f"Multi-database mode disabled (Community Edition). "
                     f"Using default database '{db_name}' which always exists."
                 )
-            else:
+            elif is_bolt:
                 logger.debug(
                     f"Using bolt:// connection (direct mode). "
                     f"Using default database '{db_name}' which always exists."
+                )
+            else:
+                logger.debug(
+                    f"Using neo4j:// protocol with non-default database '{db_name}' - "
+                    f"assuming Community Edition and skipping database check."
                 )
             return
 
