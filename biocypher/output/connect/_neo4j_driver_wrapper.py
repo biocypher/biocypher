@@ -863,7 +863,7 @@ class Neo4jDriver:
         is_bolt = current_uri.startswith("bolt://") or current_uri.startswith("bolt+s://")
         is_neo4j_protocol = current_uri.startswith("neo4j://") or current_uri.startswith("neo4j+s://")
         is_non_default_db = db_name and db_name.lower() != "neo4j"
-        
+
         if not self.multi_db or is_bolt or (is_neo4j_protocol and is_non_default_db):
             if not self.multi_db:
                 logger.debug(
