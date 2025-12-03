@@ -847,27 +847,22 @@ class Neo4jDriver:
         current_uri = self.uri
         is_neo4j_protocol = current_uri.startswith("neo4j://") or current_uri.startswith("neo4j+s://")
         is_non_default_db = db_to_wipe and db_to_wipe.lower() != "neo4j"
-        original_db = None
-
-        if (not self.multi_db or (is_neo4j_protocol and is_non_default_db)) and is_non_default_db:
+        is_community_edition = not self.multi_db or (is_neo4j_protocol and is_non_default_db)
+        
+        if is_community_edition and is_non_default_db:
             logger.warning(
-                f"Cannot wipe database '{db_to_wipe}' in Community Edition. " f"Using default database 'neo4j' instead."
+                f"Cannot wipe database '{db_to_wipe}' in Community Edition. "
+                f"Using default database 'neo4j' instead. "
+                f"Database will remain 'neo4j' for this session."
             )
-            # Temporarily change current_db for the wipe operation
-            original_db = self.current_db
+            # Permanently change to default database for Community Edition
             db_to_wipe = "neo4j"
             self._db_config["db"] = "neo4j"
             self._register_current_driver()
 
         logger.info(f"Wiping database `{db_to_wipe}`.")
-        try:
-            self.query("MATCH (n) DETACH DELETE n;")
-            self.drop_indices_constraints()
-        finally:
-            # Restore original database if we changed it
-            if original_db is not None:
-                self._db_config["db"] = original_db
-                self._register_current_driver()
+        self.query("MATCH (n) DETACH DELETE n;")
+        self.drop_indices_constraints()
 
     def ensure_db(self):
         """Make sure the database exists and is online."""
