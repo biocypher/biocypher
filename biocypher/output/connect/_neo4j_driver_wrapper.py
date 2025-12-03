@@ -765,12 +765,12 @@ class Neo4jDriver:
     def ensure_db(self):
         """Make sure the database exists and is online."""
         db_name = self.current_db
-        
+
         # Skip if offline mode
         if self.offline:
             logger.debug(f"Offline mode, skipping database creation for '{db_name}'.")
             return
-        
+
         # Check if database exists, create if needed
         try:
             exists = self.db_exists()
@@ -780,8 +780,7 @@ class Neo4jDriver:
                 # Verify creation succeeded
                 if not self.db_exists():
                     raise RuntimeError(
-                        f"Failed to create database '{db_name}'. "
-                        "The database was not created successfully."
+                        f"Failed to create database '{db_name}'. " "The database was not created successfully."
                     )
                 logger.info(f"Database '{db_name}' created successfully.")
             else:
@@ -793,7 +792,7 @@ class Neo4jDriver:
                 f"Failed to ensure database '{db_name}' exists: {e}. "
                 "Please check Neo4j permissions and that the database can be created."
             ) from e
-        
+
         # Check if database is online, start if needed
         try:
             if not self.db_online():
@@ -802,8 +801,7 @@ class Neo4jDriver:
                 # Verify start succeeded
                 if not self.db_online():
                     raise RuntimeError(
-                        f"Failed to start database '{db_name}'. "
-                        "The database was not started successfully."
+                        f"Failed to start database '{db_name}'. " "The database was not started successfully."
                     )
                 logger.info(f"Database '{db_name}' started successfully.")
             else:
