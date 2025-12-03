@@ -697,7 +697,7 @@ class Neo4jDriver:
         # or a fallback database, not the target database itself
         fallback_dbs = self._get_fallback_db
         db_for_query = fallback_dbs[0] if fallback_dbs and len(fallback_dbs) > 0 else "system"
-        
+
         resp, summary = self.query(query, db=db_for_query, fallback_db=fallback_dbs)
 
         if resp:
@@ -735,7 +735,7 @@ class Neo4jDriver:
         # or a fallback database, not the target database itself
         fallback_dbs = self._get_fallback_db
         db_for_query = fallback_dbs[0] if fallback_dbs and len(fallback_dbs) > 0 else "system"
-        
+
         self.query(
             f"{cmd} DATABASE {name or self.current_db} {options or ''};",
             db=db_for_query,
