@@ -650,6 +650,15 @@ class Neo4jDriver:
             "default_access_mode": (neo4j.WRITE_ACCESS if write else neo4j.READ_ACCESS),
         }
 
+        # In Community Edition (multi_db=False), ignore explicit db parameter if it's not the default
+        # and use the current database instead (which was set to 'neo4j' during detection)
+        if not self.multi_db and db and db.lower() != "neo4j" and db != self.current_db:
+            logger.debug(
+                f"Community Edition: ignoring requested database '{db}', "
+                f"using current database '{self.current_db}' instead."
+            )
+            db = self.current_db
+
         # For Neo4j 4.0+, use database parameter if multi_db is True
         # For Neo4j 5.0+, always use database parameter
         if self.multi_db or self._is_neo4j_5_plus():
