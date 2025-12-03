@@ -295,10 +295,11 @@ class Neo4jDriver:
             detection_uri = original_uri.replace("neo4j://", "bolt://", 1)
         elif original_uri.startswith("neo4j+s://"):
             detection_uri = original_uri.replace("neo4j+s://", "bolt+s://", 1)
-
+        
         # Create a temporary driver with bolt:// for detection
         temp_driver = None
         supports_multi_db = False
+        detection_failed = False
         try:
             temp_driver = neo4j.GraphDatabase.driver(uri=detection_uri, auth=self.auth)
             with temp_driver.session(database="neo4j") as session:
@@ -310,16 +311,42 @@ class Neo4jDriver:
                     """
                 )
                 data = result.data()
-                supports_multi_db = data[0].get("is_enterprise", False) if data else False
+                if data:
+                    supports_multi_db = data[0].get("is_enterprise", False)
+                    edition_info = "Enterprise" if supports_multi_db else "Community"
+                    logger.debug(f"Detected Neo4j {edition_info} Edition")
+                else:
+                    detection_failed = True
+                    logger.warning("Neo4j edition detection returned no data.")
         except Exception as e:
-            logger.debug(f"Error detecting Neo4j edition: {e}. Assuming Community Edition.")
-            # If detection fails, assume Community Edition (safer)
-            supports_multi_db = False
+            detection_failed = True
+            logger.debug(f"Error detecting Neo4j edition: {e}")
         finally:
             if temp_driver:
                 temp_driver.close()
+        
+        # If detection failed, use heuristics to determine if we should apply CE workarounds
+        # This handles CI cases where detection might fail but we're still using Community Edition
+        if detection_failed:
+            # Heuristic: If using neo4j:// protocol with non-default database, likely Community Edition
+            # This is a common CI pattern where Community Edition can't handle routing to non-existent DBs
+            is_neo4j_protocol = original_uri.startswith("neo4j://") or original_uri.startswith("neo4j+s://")
+            is_non_default_db = self.current_db and self.current_db.lower() != "neo4j"
+            
+            if is_neo4j_protocol and is_non_default_db:
+                logger.info(
+                    "Detection failed but using neo4j:// with non-default database. "
+                    "Applying Community Edition workarounds as fallback."
+                )
+                supports_multi_db = False  # Apply CE workarounds
+            else:
+                logger.info(
+                    "Neo4j edition detection failed. Not applying Community Edition workarounds. "
+                    "If you encounter DatabaseNotFound errors, you may be using Community Edition."
+                )
+                return  # Don't apply workarounds if detection failed and heuristics don't match
 
-        # If Community Edition or detection failed, adjust settings
+        # If Community Edition detected, adjust settings
         if not supports_multi_db:
             logger.info(
                 "Neo4j Community Edition detected (or detection failed). "
@@ -644,7 +671,17 @@ class Neo4jDriver:
 
         # For Neo4j 4.0+, use database parameter if multi_db is True
         # For Neo4j 5.0+, always use database parameter
-        if self.multi_db or self._is_neo4j_5_plus():
+        # Also always set database parameter if we're using bolt:// (direct connection)
+        # or if multi_db is False but we have an explicit database set (Community Edition fallback)
+        # This ensures the correct database is used even when multi_db is False
+        should_set_database = (
+            self.multi_db 
+            or self._is_neo4j_5_plus() 
+            or self.uri.startswith("bolt://") 
+            or self.uri.startswith("bolt+s://")
+            or (not self.multi_db and db != neo4j.DEFAULT_DATABASE)
+        )
+        if should_set_database:
             session_kwargs["database"] = db
 
         try:
@@ -843,13 +880,14 @@ class Neo4jDriver:
         self.ensure_db()
 
         # For Community Edition, use default database if current_db is not supported
+        # Only apply this if multi_db is explicitly False (detected Community Edition)
+        # Don't assume Community Edition just because of URI protocol
         db_to_wipe = self.current_db
-        current_uri = self.uri
-        is_neo4j_protocol = current_uri.startswith("neo4j://") or current_uri.startswith("neo4j+s://")
         is_non_default_db = db_to_wipe and db_to_wipe.lower() != "neo4j"
-        is_community_edition = not self.multi_db or (is_neo4j_protocol and is_non_default_db)
-
-        if is_community_edition and is_non_default_db:
+        
+        # Only treat as Community Edition if multi_db was explicitly disabled
+        # (which happens during detection if Community Edition is confirmed)
+        if not self.multi_db and is_non_default_db:
             logger.warning(
                 f"Cannot wipe database '{db_to_wipe}' in Community Edition. "
                 f"Using default database 'neo4j' instead. "
