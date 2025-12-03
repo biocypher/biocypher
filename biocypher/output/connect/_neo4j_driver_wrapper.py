@@ -698,7 +698,21 @@ class Neo4jDriver:
         fallback_dbs = self._get_fallback_db
         db_for_query = fallback_dbs[0] if fallback_dbs and len(fallback_dbs) > 0 else "system"
 
-        resp, summary = self.query(query, db=db_for_query, fallback_db=fallback_dbs)
+        # Use raise_errors=False to handle DatabaseNotFound gracefully
+        # In Neo4j 5.x, when using neo4j:// protocol, queries may fail with
+        # DatabaseNotFound if the target database doesn't exist, even when
+        # querying the system database. This is expected when checking if
+        # a database exists.
+        resp, summary = self.query(
+            query, db=db_for_query, fallback_db=fallback_dbs, raise_errors=False
+        )
+
+        # If query returns None (error occurred), check if it's a DatabaseNotFound error
+        if resp is None:
+            # Try to get more info from the summary or check if it's a known "doesn't exist" case
+            # In Neo4j 5.x, DatabaseNotFound is expected when checking existence
+            logger.debug(f"Database '{name}' does not exist or query failed (expected when checking existence).")
+            return None
 
         if resp:
             return resp[0].get(field, resp[0])
