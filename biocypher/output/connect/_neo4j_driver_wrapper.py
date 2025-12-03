@@ -289,6 +289,11 @@ class Neo4jDriver:
         """
         if not self.driver or self.offline:
             return
+        
+        # If Enterprise Edition is forced, skip detection
+        if self._force_enterprise:
+            logger.info("Enterprise Edition mode forced. Skipping Community Edition detection.")
+            return
 
         # Check if multi-database is supported (Enterprise Edition)
         # Use bolt:// for detection to avoid routing table issues
@@ -647,17 +652,7 @@ class Neo4jDriver:
 
         # For Neo4j 4.0+, use database parameter if multi_db is True
         # For Neo4j 5.0+, always use database parameter
-        # Also always set database parameter if we're using bolt:// (direct connection)
-        # or if multi_db is False but we have an explicit database set (Community Edition fallback)
-        # This ensures the correct database is used even when multi_db is False
-        should_set_database = (
-            self.multi_db
-            or self._is_neo4j_5_plus()
-            or self.uri.startswith("bolt://")
-            or self.uri.startswith("bolt+s://")
-            or (not self.multi_db and db != neo4j.DEFAULT_DATABASE)
-        )
-        if should_set_database:
+        if self.multi_db or self._is_neo4j_5_plus():
             session_kwargs["database"] = db
 
         try:
@@ -856,14 +851,13 @@ class Neo4jDriver:
         self.ensure_db()
 
         # For Community Edition, use default database if current_db is not supported
-        # Only apply this if multi_db is explicitly False (detected Community Edition)
-        # Don't assume Community Edition just because of URI protocol
         db_to_wipe = self.current_db
+        current_uri = self.uri
+        is_neo4j_protocol = current_uri.startswith("neo4j://") or current_uri.startswith("neo4j+s://")
         is_non_default_db = db_to_wipe and db_to_wipe.lower() != "neo4j"
+        is_community_edition = not self.multi_db or (is_neo4j_protocol and is_non_default_db)
 
-        # Only treat as Community Edition if multi_db was explicitly disabled
-        # (which happens during detection if Community Edition is confirmed)
-        if not self.multi_db and is_non_default_db:
+        if is_community_edition and is_non_default_db:
             logger.warning(
                 f"Cannot wipe database '{db_to_wipe}' in Community Edition. "
                 f"Using default database 'neo4j' instead. "
