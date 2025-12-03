@@ -302,7 +302,6 @@ class Neo4jDriver:
         # Create a temporary driver with bolt:// for detection
         temp_driver = None
         supports_multi_db = False
-        detection_failed = False
         try:
             temp_driver = neo4j.GraphDatabase.driver(uri=detection_uri, auth=self.auth)
             with temp_driver.session(database="neo4j") as session:
@@ -314,31 +313,16 @@ class Neo4jDriver:
                     """
                 )
                 data = result.data()
-                if data:
-                    supports_multi_db = data[0].get("is_enterprise", False)
-                    edition_info = "Enterprise" if supports_multi_db else "Community"
-                    logger.debug(f"Detected Neo4j {edition_info} Edition")
-                else:
-                    detection_failed = True
-                    logger.warning("Neo4j edition detection returned no data.")
+                supports_multi_db = data[0].get("is_enterprise", False) if data else False
         except Exception as e:
-            detection_failed = True
-            logger.debug(f"Error detecting Neo4j edition: {e}")
+            logger.debug(f"Error detecting Neo4j edition: {e}. Assuming Community Edition.")
+            # If detection fails, assume Community Edition (safer)
+            supports_multi_db = False
         finally:
             if temp_driver:
                 temp_driver.close()
 
-        # If detection failed, don't apply workarounds
-        # This allows Enterprise Edition to work normally even if detection fails
-        if detection_failed:
-            logger.info(
-                "Neo4j edition detection failed. Not applying Community Edition workarounds. "
-                "If you encounter DatabaseNotFound errors, you may be using Community Edition. "
-                "Use --neo4j_enterprise=true to force Enterprise Edition mode."
-            )
-            return  # Don't apply workarounds if detection failed
-
-        # If Community Edition detected, adjust settings
+        # If Community Edition or detection failed, adjust settings
         if not supports_multi_db:
             logger.info(
                 "Neo4j Community Edition detected (or detection failed). "
