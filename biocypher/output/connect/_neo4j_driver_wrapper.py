@@ -328,15 +328,15 @@ class Neo4jDriver:
             if temp_driver:
                 temp_driver.close()
 
-        # If detection failed, default to Community Edition (safer for CI)
-        # This ensures CI works even if detection fails
+        # If detection failed, don't apply workarounds
+        # This allows Enterprise Edition to work normally even if detection fails
         if detection_failed:
             logger.info(
-                "Neo4j edition detection failed. Defaulting to Community Edition mode "
-                "(safer for CI). If you're using Enterprise Edition and encounter issues, "
-                "use --neo4j_enterprise=true to force Enterprise Edition mode."
+                "Neo4j edition detection failed. Not applying Community Edition workarounds. "
+                "If you encounter DatabaseNotFound errors, you may be using Community Edition. "
+                "Use --neo4j_enterprise=true to force Enterprise Edition mode."
             )
-            supports_multi_db = False  # Default to Community Edition
+            return  # Don't apply workarounds if detection failed
 
         # If Community Edition detected, adjust settings
         if not supports_multi_db:
