@@ -15,7 +15,26 @@ runs:
     #   uses: douglascamata/setup-docker-macos-action@v1-alpha
     #   if: ${{ runner.os == 'macOS' }}
     - name: Start Neo4j Docker
-      run: docker run --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/your_password_here --env NEO4J_PLUGINS='["apoc"]' --env=NEO4J_ACCEPT_LICENSE_AGREEMENT=yes -d neo4j:${{ inputs.NEO4J_VERSION }}
+      id: neo4j
+      run: echo "container_id=$(docker run --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/your_password_here --env NEO4J_PLUGINS='["apoc"]' --env=NEO4J_ACCEPT_LICENSE_AGREEMENT=yes -d neo4j:${{ inputs.NEO4J_VERSION }})" >> $GITHUB_OUTPUT
+      shell: bash
+      if: ${{ runner.os == 'Linux' }}
+    - name: Wait for Neo4j to be ready
+      run: |
+        timeout=60
+        elapsed=0
+        container_id="${{ steps.neo4j.outputs.container_id }}"
+        while [ $elapsed -lt $timeout ]; do
+          if docker exec $container_id cypher-shell -u neo4j -p your_password_here "RETURN 1" > /dev/null 2>&1; then
+            echo "Neo4j is ready"
+            exit 0
+          fi
+          echo "Waiting for Neo4j to be ready... ($elapsed/$timeout seconds)"
+          sleep 2
+          elapsed=$((elapsed + 2))
+        done
+        echo "Neo4j failed to become ready within $timeout seconds"
+        exit 1
       shell: bash
       if: ${{ runner.os == 'Linux' }}
     - name: Start Postgres Docker

@@ -755,17 +755,66 @@ class Neo4jDriver:
                 "Driver is closed. Cannot wipe database. " "Please reconnect or create a new driver instance."
             )
 
+        # Ensure database exists before trying to wipe it
+        self.ensure_db()
+
         logger.info(f"Wiping database `{self.current_db}`.")
         self.query("MATCH (n) DETACH DELETE n;")
         self.drop_indices_constraints()
 
     def ensure_db(self):
         """Make sure the database exists and is online."""
-        if not self.db_exists():
-            self.create_db()
-
-        if not self.db_online():
-            self.start_db()
+        db_name = self.current_db
+        
+        # Skip if offline mode
+        if self.offline:
+            logger.debug(f"Offline mode, skipping database creation for '{db_name}'.")
+            return
+        
+        # Check if database exists, create if needed
+        try:
+            exists = self.db_exists()
+            if not exists:
+                logger.info(f"Database '{db_name}' does not exist, creating it...")
+                self.create_db()
+                # Verify creation succeeded
+                if not self.db_exists():
+                    raise RuntimeError(
+                        f"Failed to create database '{db_name}'. "
+                        "The database was not created successfully."
+                    )
+                logger.info(f"Database '{db_name}' created successfully.")
+            else:
+                logger.debug(f"Database '{db_name}' already exists.")
+        except Exception as e:
+            logger.error(f"Failed to check/create database '{db_name}': {e}")
+            # Re-raise to prevent initialization from continuing with a missing database
+            raise RuntimeError(
+                f"Failed to ensure database '{db_name}' exists: {e}. "
+                "Please check Neo4j permissions and that the database can be created."
+            ) from e
+        
+        # Check if database is online, start if needed
+        try:
+            if not self.db_online():
+                logger.info(f"Database '{db_name}' is offline, starting it...")
+                self.start_db()
+                # Verify start succeeded
+                if not self.db_online():
+                    raise RuntimeError(
+                        f"Failed to start database '{db_name}'. "
+                        "The database was not started successfully."
+                    )
+                logger.info(f"Database '{db_name}' started successfully.")
+            else:
+                logger.debug(f"Database '{db_name}' is already online.")
+        except Exception as e:
+            logger.error(f"Failed to check/start database '{db_name}': {e}")
+            # Re-raise to prevent initialization from continuing with an offline database
+            raise RuntimeError(
+                f"Failed to ensure database '{db_name}' is online: {e}. "
+                "Please check Neo4j permissions and that the database can be started."
+            ) from e
 
     def select_db(self, name: str):
         """Set the current database."""
