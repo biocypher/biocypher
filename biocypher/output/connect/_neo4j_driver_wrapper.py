@@ -703,9 +703,7 @@ class Neo4jDriver:
         # DatabaseNotFound if the target database doesn't exist, even when
         # querying the system database. This is expected when checking if
         # a database exists.
-        resp, summary = self.query(
-            query, db=db_for_query, fallback_db=fallback_dbs, raise_errors=False
-        )
+        resp, summary = self.query(query, db=db_for_query, fallback_db=fallback_dbs, raise_errors=False)
 
         # If query returns None (error occurred), check if it's a DatabaseNotFound error
         if resp is None:
