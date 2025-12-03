@@ -1026,11 +1026,11 @@ class Neo4jDriver:
         # Check if driver is available before attempting to query
         if not self.driver or self.offline:
             return None
-        
+
         # Check if driver is closed
         if hasattr(self.driver, "_closed") and self.driver._closed:
             return None
-        
+
         db = self._db_config["db"] or neo4j.DEFAULT_DATABASE
 
         try:
