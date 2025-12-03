@@ -16,8 +16,30 @@ download center](https://neo4j.com/download-center/#community). Please follow
 the [Neo4j documentation](https://neo4j.com/docs/) for correct setup and usage
 on your system.
 
-Be mindful that different versions of Neo4j may differ in features and thus are
-also documented differently.
+!!! note "Neo4j Version Compatibility"
+    BioCypher supports Neo4j versions 4.4.x and 5.x. The Neo4j Python driver
+    is an optional dependency and is only required when using online mode
+    (`offline: false`). For offline mode, you only need the Neo4j database
+    itself installed. BioCypher automatically detects the Neo4j version and
+    adapts its behavior accordingly (e.g., constraint syntax, database
+    parameters).
+
+!!! note "Installing Neo4j Python Driver (Optional)"
+    The Neo4j Python driver is only needed for online mode. If you plan to use
+    BioCypher with Neo4j in online mode, install it as an optional dependency:
+
+    === "pip"
+        ```bash
+        pip install biocypher[neo4j]
+        ```
+
+    === "uv"
+        ```bash
+        uv add "biocypher[neo4j]"
+        ```
+
+    If you try to use online mode without the Neo4j driver installed, BioCypher
+    will raise an error with clear installation instructions.
 
 !!! note "Note"
     We use the APOC library for Neo4j, which is not included automatically, but
@@ -191,12 +213,22 @@ BioCypher provides a Python driver for interacting with Neo4j, which is
 accessed through the `BioCypher` class when setting `offline` to `False`.
 More details can be found in the [API docs](../source/index.md).
 
+!!! warning "Neo4j Driver Required"
+    Online mode requires the Neo4j Python driver to be installed. Install it
+    using `pip install biocypher[neo4j]` or `uv add "biocypher[neo4j]"`. See
+    the [installation section](#install-neo4j) above for details.
+
 <!-- TODO link driver API docs once exists -->
 
 If there exists no BioCypher graph in the currently active database, or
 if the user explicitly specifies so using the `wipe` attribute of the
 driver, a new BioCypher database is created using the schema
 configuration specified in the [schema-config.yaml](../schema-config.md).
+
+!!! note "APOC Plugin Required for Online Mode"
+    When using online mode, BioCypher requires the APOC plugin to be installed
+    in your Neo4j instance. If APOC is not available, BioCypher will raise a
+    clear error message. For offline mode, APOC is not required.
 
 ## Note on labels order
 

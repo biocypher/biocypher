@@ -28,6 +28,12 @@ Furthermore, you can specify whether to use the `offline` or `online` mode.
   instance and BioCypher will connect to this instance and directly writes the
   output to the database.
 
+!!! note "Neo4j Driver Required for Online Mode"
+    When using Neo4j in online mode, you need to install the Neo4j Python driver
+    as an optional dependency: `pip install biocypher[neo4j]` or
+    `uv add "biocypher[neo4j]"`. See the [Neo4j output documentation](neo4j-output.md)
+    for more details.
+
 - For the offline mode set `offline: true`. BioCypher will `write` the
   knowledge graph to files in a designated output folder (standard being
   `biocypher-out/` and the current datetime). Furthermore, you can generate a
@@ -46,7 +52,7 @@ format.
 
 | Method      	| Offline mode 		|  Online mode (in-memory)	|
 | :------------ | :-----------------|---------------------------|
-| `Neo4j`		| :material-check:  | :material-close:  		|
+| `Neo4j`		| :material-check:  | :material-check:  		|
 | `ArangoDB`    | :material-check:	| :material-close: (pending)|
 | `RDF` / `OWL`  | :material-check:	| :material-close: (pending)|
 | `PostgreSQL`  | :material-check:	| :material-close: (pending)|

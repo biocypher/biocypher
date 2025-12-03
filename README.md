@@ -42,7 +42,8 @@ Board](https://github.com/orgs/biocypher/projects/3/views/2).
 
 ## ⚙️ Installation / Usage
 
-Install the package from PyPI using `pip install biocypher`. More comprehensive
+Install the package from PyPI using `pip install biocypher`. For Neo4j online mode
+support, install with `pip install biocypher[neo4j]`. More comprehensive
 installation and configuration instructions can be found
 [here](https://biocypher.org/BioCypher/installation/).
 

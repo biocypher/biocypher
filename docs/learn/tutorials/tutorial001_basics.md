@@ -466,21 +466,21 @@ class has properties already, they will be kept (if they are not present in the
 parent class) or replaced by the parent class properties (if they are present).
 
 !!! note "Note"
-Again, apart from adding the protein isoforms to the input stream, the code
-for this example is identical to the previous one except for the reference to
-the updated schema configuration.
+	Again, apart from adding the protein isoforms to the input stream, the code
+	for this example is identical to the previous one except for the reference to
+	the updated schema configuration.
 
 !!! hint "Hint"
-We now create three separate data files, all of which are children of the
-`protein` class; two implicit children (`uniprot.protein` and `entrez.protein`)
-and one explicit child (`protein isoform`).
+	We now create three separate data files, all of which are children of the
+	`protein` class; two implicit children (`uniprot.protein` and `entrez.protein`)
+	and one explicit child (`protein isoform`).
 
 ## Section 4: Handling relationships
 
 !!! note "Tutorial Files"
-The code for this tutorial can be found at `tutorial/06__relationships.py`.
-Schema files are at `tutorial/06_schema_config.yaml`, configuration in
-`tutorial/06_biocypher_config.yaml`. Data generation happens in `tutorial/data_generator.py`.
+	The code for this tutorial can be found at `tutorial/06__relationships.py`.
+	Schema files are at `tutorial/06_schema_config.yaml`, configuration in
+	`tutorial/06_biocypher_config.yaml`. Data generation happens in `tutorial/data_generator.py`.
 
 Naturally, we do not only want nodes in our knowledge graph, but also edges. In
 BioCypher, the configuration of relationships is very similar to that of nodes,
