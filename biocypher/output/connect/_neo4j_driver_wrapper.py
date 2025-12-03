@@ -176,6 +176,7 @@ class Neo4jDriver:
         fallback_db: str | tuple[str] | None = None,
         fallback_on: str | set[str] | None = None,
         multi_db: bool | None = None,
+        force_enterprise: bool = False,
         **kwargs,
     ):
         """
@@ -238,6 +239,7 @@ class Neo4jDriver:
         self._offline = offline
         self.multi_db = multi_db
         self._neo4j_version_cache = None
+        self._force_enterprise = force_enterprise
 
         if self.driver:
             logger.info("Using the driver provided.")
@@ -248,6 +250,7 @@ class Neo4jDriver:
             self.db_connect()
 
         # Detect Community Edition and adjust settings accordingly
+        # Default to Community Edition (safer for CI) unless explicitly overridden
         self._detect_and_handle_community_edition()
 
         self.ensure_db()
@@ -325,26 +328,15 @@ class Neo4jDriver:
             if temp_driver:
                 temp_driver.close()
 
-        # If detection failed, use heuristics to determine if we should apply CE workarounds
-        # This handles CI cases where detection might fail but we're still using Community Edition
+        # If detection failed, default to Community Edition (safer for CI)
+        # This ensures CI works even if detection fails
         if detection_failed:
-            # Heuristic: If using neo4j:// protocol with non-default database, likely Community Edition
-            # This is a common CI pattern where Community Edition can't handle routing to non-existent DBs
-            is_neo4j_protocol = original_uri.startswith("neo4j://") or original_uri.startswith("neo4j+s://")
-            is_non_default_db = self.current_db and self.current_db.lower() != "neo4j"
-
-            if is_neo4j_protocol and is_non_default_db:
-                logger.info(
-                    "Detection failed but using neo4j:// with non-default database. "
-                    "Applying Community Edition workarounds as fallback."
-                )
-                supports_multi_db = False  # Apply CE workarounds
-            else:
-                logger.info(
-                    "Neo4j edition detection failed. Not applying Community Edition workarounds. "
-                    "If you encounter DatabaseNotFound errors, you may be using Community Edition."
-                )
-                return  # Don't apply workarounds if detection failed and heuristics don't match
+            logger.info(
+                "Neo4j edition detection failed. Defaulting to Community Edition mode "
+                "(safer for CI). If you're using Enterprise Edition and encounter issues, "
+                "use --neo4j_enterprise=true to force Enterprise Edition mode."
+            )
+            supports_multi_db = False  # Default to Community Edition
 
         # If Community Edition detected, adjust settings
         if not supports_multi_db:

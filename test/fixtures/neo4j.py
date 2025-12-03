@@ -78,6 +78,11 @@ def neo4j_param(request):
 
     cli = {key: request.config.getoption(f"--{key}") or param[key] for key in keys}
 
+    # Add neo4j_enterprise flag if provided
+    neo4j_enterprise = request.config.getoption("--neo4j_enterprise")
+    if neo4j_enterprise:
+        cli["neo4j_enterprise"] = neo4j_enterprise.lower() == "true"
+
     return cli
 
 
@@ -101,6 +106,11 @@ def skip_if_offline_neo4j(request, neo4j_param, translator):
             driver_args.update(neo4j_param)
 
             driver_args["database_name"] = "test"
+
+            # Extract neo4j_enterprise flag if present and pass to driver
+            neo4j_enterprise = driver_args.pop("neo4j_enterprise", False)
+            if neo4j_enterprise:
+                driver_args["force_enterprise"] = True
 
             _Neo4jDriver(**driver_args)
 
@@ -128,6 +138,11 @@ def create_driver(request, neo4j_param, translator):
     driver_args.update(neo4j_param)
 
     driver_args["database_name"] = "test"
+
+    # Extract neo4j_enterprise flag if present and pass to driver
+    neo4j_enterprise = driver_args.pop("neo4j_enterprise", False)
+    if neo4j_enterprise:
+        driver_args["force_enterprise"] = True
 
     d = _Neo4jDriver(**driver_args)
 

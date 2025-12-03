@@ -54,6 +54,8 @@ class _Neo4jDriver:
         wipe: bool = False,
         fetch_size: int = 1000,
         increment_version: bool = True,
+        force_enterprise: bool = False,
+        **kwargs,
     ):
         self.translator = translator
 
@@ -66,6 +68,7 @@ class _Neo4jDriver:
             wipe=wipe,
             multi_db=multi_db,
             raise_errors=True,
+            force_enterprise=force_enterprise,
         )
 
         # check for biocypher config in connected graph

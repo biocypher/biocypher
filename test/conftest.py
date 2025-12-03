@@ -23,6 +23,7 @@ def pytest_addoption(parser):
         ("user", "Tests access Neo4j as this user."),
         ("password", "Password to access Neo4j."),
         ("uri", "URI of the Neo4j server."),
+        ("neo4j_enterprise", "Set to 'true' to force Enterprise Edition mode (skip Community Edition workarounds)."),
         # postgresl
         (
             "database_name_postgresql",
