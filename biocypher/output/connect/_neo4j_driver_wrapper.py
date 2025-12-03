@@ -278,7 +278,7 @@ class Neo4jDriver:
     def _detect_and_handle_community_edition(self):
         """
         Detect Community Edition and adjust settings for compatibility.
-        
+
         Community Edition doesn't support multi-database, so we:
         1. Convert neo4j:// to bolt:// to avoid routing issues
         2. Disable multi_db mode
@@ -295,7 +295,7 @@ class Neo4jDriver:
             detection_uri = original_uri.replace("neo4j://", "bolt://", 1)
         elif original_uri.startswith("neo4j+s://"):
             detection_uri = original_uri.replace("neo4j+s://", "bolt+s://", 1)
-        
+
         # Create a temporary driver with bolt:// for detection
         temp_driver = None
         supports_multi_db = False
@@ -318,7 +318,7 @@ class Neo4jDriver:
         finally:
             if temp_driver:
                 temp_driver.close()
-        
+
         # If Community Edition or detection failed, adjust settings
         if not supports_multi_db:
             logger.info(
@@ -326,7 +326,7 @@ class Neo4jDriver:
                 "Multi-database features are not available. "
                 "Adjusting configuration for compatibility."
             )
-            
+
             # Convert neo4j:// to bolt:// to avoid routing table issues
             # (already converted for detection, but need to update main driver)
             if original_uri.startswith("neo4j://"):
@@ -343,12 +343,12 @@ class Neo4jDriver:
                 # Reconnect with bolt+s://
                 self.driver.close()
                 self.db_connect()
-            
+
             # Disable multi_db mode
             if self.multi_db:
                 logger.info("Disabling multi-database mode for Community Edition.")
                 self.multi_db = False
-            
+
             # Use default database if a custom database was requested
             current_db = self.current_db
             if current_db and current_db.lower() != "neo4j":
