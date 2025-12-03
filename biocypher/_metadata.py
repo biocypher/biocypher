@@ -8,7 +8,10 @@ import importlib.metadata
 import os
 import pathlib
 
-import toml
+try:
+    import toml
+except ImportError:
+    toml = None
 
 _VERSION = "0.11.0"
 
@@ -28,8 +31,12 @@ def get_metadata():
     for project_dir in (here, here.parent):
         toml_path = str(project_dir.joinpath(pyproj_toml).absolute())
 
-        if os.path.exists(toml_path):
-            pyproject = toml.load(toml_path)
+        if os.path.exists(toml_path) and toml is not None:
+            try:
+                pyproject = toml.load(toml_path)
+            except Exception:
+                # If toml parsing fails, skip and use fallback
+                continue
 
             # Use modern PEP 621 format (uv/hatchling)
             if "project" in pyproject:

@@ -29,10 +29,10 @@ dependencies = [
     "treelib==1.6.4",
     "rdflib>=6.2.0",
     "networkx>=3.0",
-    "neo4j-utils==0.0.7",
     "pandas>=2.0.1",
     "pooch>=1.7.0",
-    "tqdm>=4.65.0"
+    "tqdm>=4.65.0",
+    "toml>=0.10.2"
 ]
 
 [project.urls]
@@ -43,6 +43,7 @@ Issues = "https://github.com/biocypher/biocypher/issues"
 "Bug Tracker" = "https://github.com/biocypher/biocypher/issues"
 
 [project.optional-dependencies]
+neo4j = ["neo4j>=5.0"]
 scirpy = ["scirpy>=0.22.0"]
 
 [dependency-groups]

@@ -6,12 +6,11 @@ import itertools
 
 from collections.abc import Iterable
 
-import neo4j_utils
-
 from biocypher import _misc
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._logger import logger
 from biocypher._translate import Translator
+from biocypher.output.connect._neo4j_driver_wrapper import Neo4jDriver
 
 logger.debug(f"Loading module {__name__}.")
 __all__ = ["_Neo4jDriver"]
@@ -20,7 +19,7 @@ __all__ = ["_Neo4jDriver"]
 class _Neo4jDriver:
     """
     Manages a BioCypher connection to a Neo4j database using the
-    ``neo4j_utils.Driver`` class.
+    internal ``Neo4jDriver`` class.
 
     Args:
 
@@ -58,7 +57,7 @@ class _Neo4jDriver:
     ):
         self.translator = translator
 
-        self._driver = neo4j_utils.Driver(
+        self._driver = Neo4jDriver(
             db_name=database_name,
             db_uri=uri,
             db_user=user,
@@ -79,6 +78,18 @@ class _Neo4jDriver:
             self._update_meta_graph()
 
     def _update_meta_graph(self):
+        """Update the BioCypher meta graph with version information.
+        
+        Requires APOC to be installed. If APOC is not available, this
+        operation is skipped with a warning.
+        """
+        if not self._driver.has_apoc:
+            logger.warning(
+                "APOC plugin is not available. Skipping meta graph update. "
+                "Install APOC to enable version tracking: https://neo4j.com/labs/apoc/"
+            )
+            return
+
         logger.info("Updating Neo4j meta graph.")
 
         # find current version node
@@ -102,8 +113,8 @@ class _Neo4jDriver:
     def init_db(self):
         """
         Used to initialise a property graph database by setting up new
-        constraints. Wipe has been performed by the ``neo4j_utils.Driver``
-        class` already.
+        constraints. Wipe has been performed by the ``Neo4jDriver``
+        class already.
 
         Todo:
             - set up constraint creation interactively depending on the
@@ -137,7 +148,12 @@ class _Neo4jDriver:
                     self._driver.query(s)
 
     def _get_neo4j_version(self):
-        """Get neo4j version."""
+        """Get neo4j version.
+        
+        Returns the Neo4j server version. If detection fails, defaults to
+        "5.0.0" to use the newer syntax (which is more likely for new
+        installations).
+        """
         try:
             neo4j_version = self._driver.query(
                 """
@@ -149,8 +165,12 @@ class _Neo4jDriver:
             )[0][0]["version"]
             return neo4j_version
         except Exception as e:
-            logger.warning(f"Error detecting Neo4j version: {e} use default version 4.0.0.")
-            return "4.0.0"
+            logger.warning(
+                f"Error detecting Neo4j version: {e}. "
+                "Defaulting to version 5.0.0 syntax. "
+                "If you're using Neo4j 4.x, this may cause errors."
+            )
+            return "5.0.0"
 
     def add_nodes(self, id_type_tuples: Iterable[tuple]) -> tuple:
         """
@@ -237,6 +257,9 @@ class _Neo4jDriver:
 
         Returns:
             True for success, False otherwise.
+
+        Raises:
+            RuntimeError: If APOC is not available and required for the operation.
         """
 
         try:
@@ -249,6 +272,16 @@ class _Neo4jDriver:
             logger.error(msg)
 
             raise ValueError(msg)
+
+        # Check if APOC is available
+        if not self._driver.has_apoc:
+            msg = (
+                "APOC plugin is required for adding nodes. "
+                "Please install APOC in your Neo4j instance. "
+                "See: https://neo4j.com/labs/apoc/"
+            )
+            logger.error(msg)
+            raise RuntimeError(msg)
 
         logger.info(f"Merging {len(entities)} nodes.")
 
@@ -336,6 +369,16 @@ class _Neo4jDriver:
         self.add_biocypher_nodes(nodes)
         logger.info(f"Merging {len(rels)} edges.")
 
+        # Check if APOC is available
+        if not self._driver.has_apoc:
+            msg = (
+                "APOC plugin is required for adding edges. "
+                "Please install APOC in your Neo4j instance. "
+                "See: https://neo4j.com/labs/apoc/"
+            )
+            logger.error(msg)
+            raise RuntimeError(msg)
+
         # cypher query
 
         # merging only on the ids of the entities, passing the
@@ -359,7 +402,9 @@ class _Neo4jDriver:
 
         method = "explain" if explain else "profile" if profile else "query"
 
-        result = getattr(self._driver, method)(edge_query, parameters={"rels": rels})
+        result = getattr(self._driver, method)(
+            edge_query, parameters={"rels": rels}
+        )
 
         logger.info("Finished merging edges.")
 
