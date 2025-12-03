@@ -693,24 +693,10 @@ class Neo4jDriver:
         name = name or self.current_db
         query = f'SHOW DATABASES WHERE name = "{name}";'
 
-        # Database management queries must run against system database
-        # or a fallback database, not the target database itself
-        fallback_dbs = self._get_fallback_db
-        db_for_query = fallback_dbs[0] if fallback_dbs and len(fallback_dbs) > 0 else "system"
-
-        # Use raise_errors=False to handle DatabaseNotFound gracefully
-        # In Neo4j 5.x, when using neo4j:// protocol, queries may fail with
-        # DatabaseNotFound if the target database doesn't exist, even when
-        # querying the system database. This is expected when checking if
-        # a database exists.
-        resp, summary = self.query(query, db=db_for_query, fallback_db=fallback_dbs, raise_errors=False)
-
-        # If query returns None (error occurred), check if it's a DatabaseNotFound error
-        if resp is None:
-            # Try to get more info from the summary or check if it's a known "doesn't exist" case
-            # In Neo4j 5.x, DatabaseNotFound is expected when checking existence
-            logger.debug(f"Database '{name}' does not exist or query failed (expected when checking existence).")
-            return None
+        # Use fallback context manager like original neo4j_utils
+        # This allows query to default to current_db and fallback to system/neo4j on error
+        with self.fallback():
+            resp, summary = self.query(query)
 
         if resp:
             return resp[0].get(field, resp[0])
@@ -743,15 +729,11 @@ class Neo4jDriver:
         options: str | None = None,
     ):
         """Execute a database management command."""
-        # Database management commands must run against system database
-        # or a fallback database, not the target database itself
-        fallback_dbs = self._get_fallback_db
-        db_for_query = fallback_dbs[0] if fallback_dbs and len(fallback_dbs) > 0 else "system"
-
+        # Use fallback_db like original neo4j_utils
+        # Query defaults to current_db, but fallback mechanism will retry against system/neo4j
         self.query(
             f"{cmd} DATABASE {name or self.current_db} {options or ''};",
-            db=db_for_query,
-            fallback_db=fallback_dbs,
+            fallback_db=self._get_fallback_db,
         )
 
     def wipe_db(self):
