@@ -1023,6 +1023,14 @@ class Neo4jDriver:
         Returns:
             APOC version string or None if APOC is not available
         """
+        # Check if driver is available before attempting to query
+        if not self.driver or self.offline:
+            return None
+        
+        # Check if driver is closed
+        if hasattr(self.driver, "_closed") and self.driver._closed:
+            return None
+        
         db = self._db_config["db"] or neo4j.DEFAULT_DATABASE
 
         try:
@@ -1031,7 +1039,12 @@ class Neo4jDriver:
                 data = res.data()
                 if data:
                     return data[0]["output"]
-        except neo4j_exc.ClientError:
+        except (neo4j_exc.ClientError, RuntimeError):
+            # RuntimeError can be raised if driver is offline/closed
+            # ClientError is raised if APOC is not available
+            return None
+        except Exception:
+            # Catch any other exceptions (e.g., connection errors) and return None
             return None
         return None
 
@@ -1043,7 +1056,11 @@ class Neo4jDriver:
         Returns:
             True if APOC is available, False otherwise
         """
-        return bool(self.apoc_version)
+        try:
+            return bool(self.apoc_version)
+        except Exception:
+            # Ensure has_apoc always returns a boolean, even if apoc_version raises
+            return False
 
     def go_offline(self):
         """Switch to offline mode."""
