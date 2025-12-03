@@ -559,7 +559,13 @@ class Neo4jDriver:
 
         try:
             with self.session(**session_kwargs) as session:
-                res = session.run(query, **query_params)
+                # Neo4j driver expects parameters via the 'parameters' argument,
+                # not unpacked as kwargs. This ensures query parameters are correctly
+                # passed to the Cypher query and prevents conflicts with method parameters.
+                if query_params:
+                    res = session.run(query, parameters=query_params)
+                else:
+                    res = session.run(query)
                 return res.data(), res.consume()
 
         except (neo4j_exc.Neo4jError, neo4j_exc.DriverError) as e:
@@ -687,8 +693,12 @@ class Neo4jDriver:
         name = name or self.current_db
         query = f'SHOW DATABASES WHERE name = "{name}";'
 
-        with self.fallback():
-            resp, summary = self.query(query)
+        # Database management queries must run against system database
+        # or a fallback database, not the target database itself
+        fallback_dbs = self._get_fallback_db
+        db_for_query = fallback_dbs[0] if fallback_dbs and len(fallback_dbs) > 0 else "system"
+        
+        resp, summary = self.query(query, db=db_for_query, fallback_db=fallback_dbs)
 
         if resp:
             return resp[0].get(field, resp[0])
@@ -721,9 +731,15 @@ class Neo4jDriver:
         options: str | None = None,
     ):
         """Execute a database management command."""
+        # Database management commands must run against system database
+        # or a fallback database, not the target database itself
+        fallback_dbs = self._get_fallback_db
+        db_for_query = fallback_dbs[0] if fallback_dbs and len(fallback_dbs) > 0 else "system"
+        
         self.query(
             f"{cmd} DATABASE {name or self.current_db} {options or ''};",
-            fallback_db=self._get_fallback_db,
+            db=db_for_query,
+            fallback_db=fallback_dbs,
         )
 
     def wipe_db(self):
