@@ -289,7 +289,7 @@ class Neo4jDriver:
         """
         if not self.driver or self.offline:
             return
-        
+
         # If Enterprise Edition is forced, skip detection
         if self._force_enterprise:
             logger.info("Enterprise Edition mode forced. Skipping Community Edition detection.")
