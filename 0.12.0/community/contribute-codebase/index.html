@@ -1,0 +1,2967 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://biocypher.org/0.12.0/community/contribute-codebase/">
+      
+      
+        <link rel="prev" href="../contribute-docs/">
+      
+      
+      
+      <link rel="icon" href="../../assets/img/favicon_biocypher_32px.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+    
+    
+      
+        <title>Contribute to the Code Base - BioCypher</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Lato";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../assets/css/css-v1.1.0.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#developer-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="BioCypher" class="md-header__button md-logo" aria-label="BioCypher" data-md-component="logo">
+      
+  <img src="../../assets/img/logo-biocypher.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BioCypher
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Contribute to the Code Base
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/biocypher/biocypher" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    biocypher/biocypher
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../biocypher-project/project/" class="md-tabs__link">
+          
+  
+  
+  About
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../installation/" class="md-tabs__link">
+          
+  
+  
+  Get Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../learn/tutorials/tutorial001_basics/" class="md-tabs__link">
+          
+  
+  
+  Learn
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Community
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="BioCypher" class="md-nav__button md-logo" aria-label="BioCypher" data-md-component="logo">
+      
+  <img src="../../assets/img/logo-biocypher.png" alt="logo">
+
+    </a>
+    BioCypher
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/biocypher/biocypher" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    biocypher/biocypher
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    About
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            About
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../biocypher-project/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Project
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../biocypher-project/design-philosophy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Design philosophy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../biocypher-project/use-cases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Use Cases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../biocypher-project/biochatter-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypher + LLMs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../biocypher-project/r-bioc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    R and Bioconductor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Get Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Get Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quickstart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../llms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LLM Integration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Learn
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Learn
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/tutorials/tutorial001_basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/tutorials/tutorial002_handling_ontologies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Handling Ontologies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/tutorials/tutorial003_adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Adapters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/tutorials/pandas_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Example Notebook: BioCypher and Pandas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/tutorials/agent_api_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Agent API Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/tutorials/tutorial_basics_neo4j_offline/tutorial_004_neo4j_offline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hands-on Building Graphs with BioCypher and Neo4j
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    HowTo / FAQ
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            HowTo / FAQ
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/guides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/guides/htg001_standalone_docker_biocypher/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Standalone Docker Image
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Explanations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Explanations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/explanation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/explanation/adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About Adapters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/explanation/ontologies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About Ontologies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/explanation/graph_class_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Graph Class Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/explanation/architecture-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Architecture Migration Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Reference Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Documentation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            API Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/biocypher/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypher
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/biocypher-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypherWorkflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/graph-class/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Graph Class
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/output-write/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output Writing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/output-in-memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output In-Memory
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/output-driver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output Driver
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/download-cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Download and Cache
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/ontology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ontology Handling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/graph-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Graph Handling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/translation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mapping and Translation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Logging
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/source/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Miscellaneous Utility Functions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/biocypher-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypher Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Output Configuration
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Output Configuration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/outputs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/outputs/neo4j-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Neo4j
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/outputs/sqlite-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SQLite
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/outputs/postgresql-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PostgreSQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/outputs/networkx-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    NetworkX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/outputs/tabular-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tabular Format
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/outputs/rdf-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RDF
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/outputs/owl-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    OWL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/outputs/arangodb-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ArangoDB
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/schema-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Schema Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Community
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Community
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Join Us
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contribute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Where to Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contribute-docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contribute to the Documentation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Contribute to the Code Base
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contribute to the Code Base
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#small-contributions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Small Contributions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#larger-contributions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Larger Contributions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dependency management
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dependency management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting up the environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Updating the environment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-quality-and-formal-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code quality and formal requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Versioning
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#finding-an-issue-to-contribute-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      Finding an issue to contribute to
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#submitting-a-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      Submitting a Pull Request
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Submitting a Pull Request">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tips-for-a-successful-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tips for a successful pull request
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-control-git-and-github" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version control, Git, and GitHub
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getting-started-with-git" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting started with Git
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-fork-of-biocypher" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create a fork of BioCypher
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-feature-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a feature branch
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#making-code-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Making code changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pushing-your-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pushing your changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opening-a-pull-request-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      Opening a Pull Request (PR)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-your-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      Updating your Pull Request
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallel-changes-in-the-upstream-main-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parallel changes in the upstream main branch
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#small-contributions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Small Contributions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#larger-contributions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Larger Contributions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dependency management
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dependency management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting up the environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Updating the environment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-quality-and-formal-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code quality and formal requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Versioning
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#finding-an-issue-to-contribute-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      Finding an issue to contribute to
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#submitting-a-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      Submitting a Pull Request
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Submitting a Pull Request">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tips-for-a-successful-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tips for a successful pull request
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-control-git-and-github" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version control, Git, and GitHub
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getting-started-with-git" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting started with Git
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-fork-of-biocypher" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create a fork of BioCypher
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-feature-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a feature branch
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#making-code-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Making code changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pushing-your-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pushing your changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opening-a-pull-request-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      Opening a Pull Request (PR)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-your-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      Updating your Pull Request
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallel-changes-in-the-upstream-main-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parallel changes in the upstream main branch
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/biocypher/biocypher/edit/main/docs/community/contribute-codebase.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This page is redundant with the unified docs in <code>biocypher/documentation</code>.
+Community docs will be maintained there.</p>
+</div>
+<h1 id="developer-guide">Developer Guide</h1>
+<p>Thank you for considering to contribute to the project! This guide will help you
+to get started with the development of the project. If you have any questions,
+please feel free to ask them in the issue tracker or on Zulip.</p>
+<h2 id="small-contributions">Small Contributions</h2>
+<p>If you want to contribute a small change (e.g., a bugfix), you can probably
+immediately go ahead and create a <a href="#submitting-a-pull-request">pull request</a>.
+For more substantial changes or additions, please read on.</p>
+<h2 id="larger-contributions">Larger Contributions</h2>
+<p>If you want to contribute a larger change, please create an
+<a href="../contribute/#categories">issue</a> first. This will allow us to discuss the
+change and make sure that it fits into the project.  It can happen that
+development for a feature is already in progress, so it is important to check
+first to avoid duplicate work. If you have any questions, feel free to approach
+us in any way you like.</p>
+<h2 id="dependency-management">Dependency management</h2>
+<p>We use <a href="https://docs.astral.sh/uv/">uv</a> for dependency management. Please
+make sure that you have installed uv and set up the environment correctly
+before starting development.</p>
+<h3 id="setting-up-the-environment">Setting up the environment</h3>
+<ul>
+<li>
+<p>Install dependencies from the lock file: <code>uv sync --all-extras</code></p>
+</li>
+<li>
+<p>Use the environment: Run commands directly with <code>uv run &lt;command&gt;</code>.</p>
+</li>
+</ul>
+<h3 id="updating-the-environment">Updating the environment</h3>
+<p>If you want to fix dependency issues, please do so in the uv
+framework. If uv does not work for you for some reason, please let us know.</p>
+<p>The uv dependencies are organized in three sections:
+- <strong>Main dependencies</strong> (<code>[project.dependencies]</code>): Core dependencies needed for running BioCypher
+- <strong>Optional dependencies</strong> (<code>[project.optional-dependencies]</code>): Optional features like <code>scirpy</code> for AIRR functionality
+- <strong>Development dependencies</strong> (<code>[dependency-groups.dev]</code>): Dependencies needed for development, testing, and documentation</p>
+<p>For adding new dependencies:</p>
+<ul>
+<li>
+<p>Add new dependencies via <code>uv add</code>:
+<code>uv add &lt;dependency&gt; --group &lt;group&gt;</code>. This will update the <code>pyproject.toml</code>
+and lock file automatically.</p>
+</li>
+<li>
+<p>Add new dependencies via <code>pyproject.toml</code>: Add the dependency to the
+<code>pyproject.toml</code> file in the correct group, including version. Then update the
+lock file: <code>uv lock</code> and install the dependencies: <code>uv sync --all-extras</code>.</p>
+</li>
+</ul>
+<h2 id="code-quality-and-formal-requirements">Code quality and formal requirements</h2>
+<p>For ensuring code quality, the following tools are used:</p>
+<ul>
+<li>
+<p><a href="https://isort.readthedocs.io/en/latest/">isort</a> for sorting imports</p>
+</li>
+<li>
+<p><a href="https://black.readthedocs.io/en/stable/">black</a> for automated code formatting</p>
+</li>
+<li>
+<p><a href="https://github.com/pre-commit/pre-commit-hooks">pre-commit-hooks</a> for
+ensuring some general rules</p>
+</li>
+<li>
+<p><a href="https://github.com/snok/pep585-upgrade">pep585-upgrade</a> for automatically
+upgrading type hints to the new native types defined in PEP 585</p>
+</li>
+<li>
+<p><a href="https://github.com/pre-commit/pygrep-hooks">pygrep-hooks</a> for ensuring some
+general naming rules</p>
+</li>
+<li>
+<p><strong>NEW</strong> <a href="https://docs.astral.sh/ruff/">Ruff</a> An extremely fast Python linter
+and code formatter, written in Rust</p>
+</li>
+</ul>
+<p>We recommend configuring your IDE to execute Ruff on save/type, which will
+automatically keep your code clean and fix some linting errors as you type. This
+is made possible by the fast execution of Ruff and removes the need to run a
+dedicated pre-commit step. For instance, in VSCode or Cursor, you can add this
+to your <code>.vscode/settings.json</code>:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nt">&quot;editor.formatOnType&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">&quot;editor.formatOnSave&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nt">&quot;editor.codeActionsOnSave&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="nt">&quot;source.fixAll.ruff&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;explicit&quot;</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">        </span><span class="nt">&quot;source.organizeImports.ruff&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;explicit&quot;</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nt">&quot;editor.defaultFormatter&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;charliermarsh.ruff&quot;</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Alternatively, pre-commit hooks can be used to automatically or manually run
+these tools before each commit. They are defined in <code>.pre-commit-config.yaml</code>.
+To install the hooks run <code>uv run pre-commit install</code>. The hooks are then
+executed before each commit. For running the hook for all project files (not
+only the changed ones) run <code>uv run pre-commit run --all-files</code>. Our CI runs
+the pre-commit hooks, so running them locally is a good way to check if your
+code conforms to the formatting rules.</p>
+<!--
+The project uses a [Sphinx](https://www.sphinx-doc.org/en/master/) autodoc
+GitHub Actions workflow to generate the documentation. If you add new code,
+please make sure that it is documented accordingly and in a consistent manner
+with the existing code base. The docstrings should follow the [Google style
+guide](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
+To check if the docs build successfully, you can build them locally by running
+`make html` in the `docs` directory.
+
+When adding new code snippets to the documentation, make sure that they are
+automatically tested with
+[doctest](https://sphinx-tutorial.readthedocs.io/step-3/#testing-your-code);
+this ensures that no outdated code snippets are part of the documentation.
+-->
+
+<h2 id="testing">Testing</h2>
+<p>The project uses <a href="https://docs.pytest.org/en/stable/">pytest</a> for testing. To
+run the tests, please run <code>pytest</code> in the root directory of the project. We are
+developing BioCypher using test-driven development. Please make sure that you
+add tests for your code before submitting a pull request.</p>
+<p>The existing tests can also help you to understand how the code works. If you
+have any questions, please feel free to ask them in the issue tracker or on
+Zulip.</p>
+<p><strong>Before submitting a pull request, please make sure that all tests pass and
+that the documentation builds correctly.</strong></p>
+<h2 id="versioning">Versioning</h2>
+<p>We use <a href="https://semver.org/">semantic versioning</a> for the project. This means
+that the version number is incremented according to the following scheme:</p>
+<ul>
+<li>
+<p>Increment the major version number if you make incompatible API changes.</p>
+</li>
+<li>
+<p>Increment the minor version number if you add functionality in a backwards-
+  compatible manner. Since we are still in the 0.x.y version range, most of the
+  significant changes will increase the minor version number.</p>
+</li>
+<li>
+<p>Increment the patch version number if you make backwards-compatible bug fixes.</p>
+</li>
+</ul>
+<p>We use the <code>bumpversion</code> tool to update the version number in the
+<code>pyproject.toml</code> file. This will create a new git tag automatically. Usually,
+versioning is done by the maintainers, so please do not increment versions in
+pull requests by default.</p>
+<h2 id="finding-an-issue-to-contribute-to">Finding an issue to contribute to</h2>
+<p>If you are brand new to BioCypher or open-source development, we recommend
+searching the GitHub "Issues" tab to find issues that interest you. Unassigned
+issues labeled <code>Docs</code> and <a href="https://github.com/biocypher/biocypher/labels/good%20first%20issue">good first
+issue</a> are
+typically good for newer contributors.</p>
+<p>Once you've found an interesting issue, it's a good idea to assign the issue to
+yourself, so nobody else duplicates the work on it.</p>
+<p>If for whatever reason you are not able to continue working with the issue,
+please unassign it, so other people know it's available again. If you want to
+work on an issue that is currently assigned but you're unsure whether work is
+actually being done, feel free to kindly ask the current assignee if you can
+take over (please allow at least a week of inactivity before getting in touch).</p>
+<h2 id="submitting-a-pull-request">Submitting a Pull Request</h2>
+<h3 id="tips-for-a-successful-pull-request">Tips for a successful pull request</h3>
+<p>To improve the chances of your pull request being reviewed, you should:</p>
+<ul>
+<li><strong>Reference an open issue</strong> for non-trivial changes to clarify the PR's purpose.</li>
+<li><strong>Ensure you have appropriate tests</strong>. Tests should be the focus of any PR (apart from documentation changes).</li>
+<li><strong>Keep your pull requests as simple as possible</strong>. Larger PRs take longer to review.</li>
+<li><strong>Ensure that CI is in a green state</strong>. Reviewers may tell you to fix the CI before looking at anything else.</li>
+</ul>
+<h3 id="version-control-git-and-github">Version control, Git, and GitHub</h3>
+<p>BioCypher is hosted on GitHub, and to contribute, you will need to sign up for a
+<a href="https://github.com/signup/free">free GitHub account</a>. We use
+<a href="https://git-scm.com/">Git</a> for version control to allow many people to work
+together on the project.</p>
+<p>If you are new to Git, you can reference some of these resources for learning
+Git. Feel free to reach out to the contributor community for help if needed:</p>
+<ul>
+<li><a href="https://git-scm.com/doc">Git documentation</a>.</li>
+</ul>
+<p>The project follows a forking workflow further described on this page whereby
+contributors fork the repository, make changes and then create a Pull Request.
+So please be sure to read and follow all the instructions in this guide.</p>
+<p>If you are new to contributing to projects through forking on GitHub, take a
+look at the <a href="https://docs.github.com/en/get-started/quickstart/contributing-to-projects">GitHub documentation for contributing to
+projects</a>.
+GitHub provides a quick tutorial using a test repository that may help you
+become more familiar with forking a repository, cloning a fork, creating a
+feature branch, pushing changes and making Pull Requests.</p>
+<p>Below are some useful resources for learning more about forking and Pull
+Requests on GitHub:</p>
+<ul>
+<li>
+<p>the <a href="https://docs.github.com/en/get-started/quickstart/fork-a-repo">GitHub documentation for forking a repo</a>.</p>
+</li>
+<li>
+<p>the <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests">GitHub documentation for collaborating with Pull Requests</a>.</p>
+</li>
+<li>
+<p>the <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks">GitHub documentation for working with forks</a>.</p>
+</li>
+</ul>
+<p>There are also many unwritten rules and conventions that are helpful in
+interacting with other open-source contributors. These
+<a href="https://www.pyopensci.org/lessons/">lessons</a> from PyOpenSci are a good resource
+for learning more about how to interact with other open-source contributors in
+scientific computing.</p>
+<h3 id="getting-started-with-git">Getting started with Git</h3>
+<p><a href="https://docs.github.com/en/get-started/quickstart/set-up-git">GitHub has
+instructions</a> for
+installing git, setting up your SSH key, and configuring git. All these steps
+need to be completed before you can work seamlessly between your local
+repository and GitHub.</p>
+<h3 id="create-a-fork-of-biocypher">Create a fork of BioCypher</h3>
+<p>You will need your own fork of BioCypher in order to eventually open a Pull
+Request. Go to the BioCypher project page and hit the Fork button. Please
+uncheck the box to copy only the main branch before selecting Create Fork. You
+will then want to clone your fork to your machine.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/your-user-name/biocypher.git
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">cd</span><span class="w"> </span>biocypher
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>upstream<span class="w"> </span>https://github.com/biocypher/biocypher.git
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>git<span class="w"> </span>fetch<span class="w"> </span>upstream
+</span></code></pre></div>
+<p>This creates the directory <code>biocypher</code> and connects your repository to the
+upstream (main project) <em>biocypher</em> repository. They have the same name, but
+your local repository and fork are separate from the upstream repository.</p>
+<h3 id="creating-a-feature-branch">Creating a feature branch</h3>
+<p>Your local <code>main</code> branch should always reflect the current state of BioCypher
+repository. First ensure it's up-to-date with the main BioCypher repository.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>main
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>git<span class="w"> </span>pull<span class="w"> </span>upstream<span class="w"> </span>main<span class="w"> </span>--ff-only
+</span></code></pre></div>
+<p>Then, create a feature branch for making your changes. For example, we are going
+to create a branch called <code>my-new-feature-for-biocypher</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>my-new-feature-for-biocypher
+</span></code></pre></div>
+<p>This changes your working branch from <code>main</code> to the
+<code>my-new-feature-for-biocypher</code> branch. Keep any changes in this branch specific
+to one bug or feature so it is clear what the branch brings to <em>BioCypher</em>. You
+can have many feature branches and switch between them using the <code>git
+checkout</code> command.</p>
+<h3 id="making-code-changes">Making code changes</h3>
+<p>Before modifying any code, ensure you follow the contributing environment
+guidelines to set up an appropriate development environment.</p>
+<p>When making changes, follow these BioCypher-specific guidelines:</p>
+<ol>
+<li>
+<p>Keep changes of that branch/PR focused on a single feature or bug fix.</p>
+</li>
+<li>
+<p>Follow roughly the <a href="https://www.conventionalcommits.org/en/v1.0.0/">conventional commit message conventions</a>.</p>
+</li>
+</ol>
+<h3 id="pushing-your-changes">Pushing your changes</h3>
+<p>When you want your <a href="https://git-scm.com/docs/git-commit">committed</a> changes to
+appear publicly on your GitHub page, you can
+<a href="https://git-scm.com/docs/git-push">push</a> your forked feature branch's commits
+to your forked repository on GitHub.</p>
+<p>Now your code is on GitHub, but it is not yet a part of the BioCypher project.
+For that to happen, a Pull Request (PR) needs to be submitted.</p>
+<h3 id="opening-a-pull-request-pr">Opening a Pull Request (PR)</h3>
+<p>If everything looks good according to the general guidelines, you are ready to
+make a Pull Request. A Pull Request is how code from your fork becomes available
+to the project maintainers to review and merge into the project to appear in the
+next release. To submit a Pull Request:</p>
+<ol>
+<li>
+<p>Navigate to your repository on GitHub.</p>
+</li>
+<li>
+<p>Click on the Compare &amp; Pull Request button.</p>
+</li>
+<li>
+<p>You can then click on Commits and Files Changed to make sure everything looks okay one last time.</p>
+</li>
+<li>
+<p>Write a descriptive title that includes prefixes. BioCypher uses a convention for title prefixes, most commonly, <code>feat:</code> for features, <code>fix:</code> for bug fixes, and <code>refactor:</code> for refactoring.</p>
+</li>
+<li>
+<p>Write a description of your changes in the <code>Preview Discussion</code> tab. This description will inform the reviewers about the changes you made, so please include all relevant information, including the motivation, implementation details, and references to any issues that you are addressing.</p>
+</li>
+<li>
+<p>Make sure to <code>Allow edits from maintainers</code>; this allows the maintainers to make changes to your PR directly, which is useful if you are not sure how to fix the PR.</p>
+</li>
+<li>
+<p>Click <code>Send Pull Request</code>.</p>
+</li>
+<li>
+<p>Optionally, you can assign reviewers to your PR, if you know who should review it.</p>
+</li>
+</ol>
+<p>This request then goes to the repository maintainers, and they will review the code.</p>
+<h3 id="updating-your-pull-request">Updating your Pull Request</h3>
+<p>Based on the review you get on your pull request, you will probably need to make
+some changes to the code. You can follow the steps above again to address any
+feedback and update your pull request.</p>
+<h3 id="parallel-changes-in-the-upstream-main-branch">Parallel changes in the upstream <code>main</code> branch</h3>
+<p>In case of simultaneous changes to the upstream code, it is important that
+these changes are reflected in your pull request. To update your feature
+branch with changes in the biocypher <code>main</code> branch, run:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="w">    </span>git<span class="w"> </span>checkout<span class="w"> </span>my-new-feature-for-biocypher
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span>git<span class="w"> </span>fetch<span class="w"> </span>upstream
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span>git<span class="w"> </span>merge<span class="w"> </span>upstream/main
+</span></code></pre></div>
+<p>If there are no conflicts (or they could be fixed automatically), a file with a
+default commit message will open, and you can simply save and quit this file.</p>
+<p>If there are merge conflicts, you need to resolve those conflicts. See
+<a href="https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/">here</a>
+for an explanation on how to do this.</p>
+<p>Once the conflicts are resolved, run:</p>
+<ol>
+<li><code>git add -u</code> to stage any files you've updated;</li>
+<li><code>git commit</code> to finish the merge.</li>
+</ol>
+<p>After the feature branch has been updated locally, you can now update your pull
+request by pushing to the branch on GitHub:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="w">    </span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>my-new-feature-for-biocypher
+</span></code></pre></div>
+<p>Any <code>git push</code> will automatically update your pull request with your branch's changes
+and restart the <code>Continuous Integration</code> checks.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../contribute-docs/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Contribute to the Documentation">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Contribute to the Documentation
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      © Copyright 2021-2025, BioCypher developers.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://biocypher.zulipchat.com/" target="_blank" rel="noopener" title="biocypher.zulipchat.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22.767 3.589c0 1.209-.543 2.283-1.37 2.934l-8.034 7.174c-.149.128-.343-.078-.235-.25l2.946-5.9c.083-.165-.024-.368-.194-.368H4.452c-1.77 0-3.219-1.615-3.219-3.59C1.233 1.616 2.682 0 4.452 0h15.096c1.77-.001 3.219 1.614 3.219 3.589M4.452 24h15.096c1.77 0 3.219-1.616 3.219-3.59s-1.449-3.59-3.219-3.59H8.12c-.17 0-.277-.202-.194-.367l2.946-5.9c.108-.172-.086-.378-.235-.25l-8.033 7.173c-.828.65-1.37 1.725-1.37 2.934 0 1.974 1.448 3.59 3.218 3.59"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://saezlab.org/" target="_blank" rel="noopener" title="saezlab.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 0H4v2h16zM4 24h16v-2H4zM20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m-8 2.75A2.25 2.25 0 0 1 14.25 9 2.25 2.25 0 0 1 12 11.25 2.25 2.25 0 0 1 9.75 9 2.25 2.25 0 0 1 12 6.75M17 17H7v-1.5c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "content.action.edit", "navigation.tabs", "navigation.instant", "navigation.footer"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.50899def.min.js"></script>
+      
+    
+  </body>
+</html>

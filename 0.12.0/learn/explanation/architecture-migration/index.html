@@ -1,0 +1,4258 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://biocypher.org/0.12.0/learn/explanation/architecture-migration/">
+      
+      
+        <link rel="prev" href="../graph_class_guide/">
+      
+      
+        <link rel="next" href="../../../reference/">
+      
+      
+      <link rel="icon" href="../../../assets/img/favicon_biocypher_32px.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+    
+    
+      
+        <title>Architecture Migration Guide - BioCypher</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Lato";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../assets/css/css-v1.1.0.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#biocypher-architecture-migration-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="BioCypher" class="md-header__button md-logo" aria-label="BioCypher" data-md-component="logo">
+      
+  <img src="../../../assets/img/logo-biocypher.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BioCypher
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture Migration Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/biocypher/biocypher" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    biocypher/biocypher
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../biocypher-project/project/" class="md-tabs__link">
+          
+  
+  
+  About
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../installation/" class="md-tabs__link">
+          
+  
+  
+  Get Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../tutorials/tutorial001_basics/" class="md-tabs__link">
+          
+  
+  
+  Learn
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../community/" class="md-tabs__link">
+          
+  
+  
+  Community
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="BioCypher" class="md-nav__button md-logo" aria-label="BioCypher" data-md-component="logo">
+      
+  <img src="../../../assets/img/logo-biocypher.png" alt="logo">
+
+    </a>
+    BioCypher
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/biocypher/biocypher" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    biocypher/biocypher
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    About
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            About
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Project
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/design-philosophy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Design philosophy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/use-cases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Use Cases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/biochatter-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypher + LLMs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/r-bioc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    R and Bioconductor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Get Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Get Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quickstart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../llms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LLM Integration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Learn
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Learn
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tutorial001_basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tutorial002_handling_ontologies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Handling Ontologies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tutorial003_adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Adapters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/pandas_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Example Notebook: BioCypher and Pandas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/agent_api_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Agent API Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tutorial_basics_neo4j_offline/tutorial_004_neo4j_offline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hands-on Building Graphs with BioCypher and Neo4j
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    HowTo / FAQ
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            HowTo / FAQ
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/htg001_standalone_docker_biocypher/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Standalone Docker Image
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Explanations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Explanations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About Adapters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ontologies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About Ontologies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../graph_class_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Graph Class Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Architecture Migration Guide
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Architecture Migration Guide
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Comparison
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#legacy-biocypher-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Legacy BioCypher Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-biocypher-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      New BioCypher Architecture
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Differences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Differences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-object-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Object Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-validation-and-deduplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Validation and Deduplication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-api-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. API Design
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Use Cases
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      New Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="New Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-biocypherworkflow-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. BioCypherWorkflow Class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-graph-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Graph Class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-native-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Native Objects
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#progressive-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Progressive Validation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Progressive Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mode-none-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mode: "none" (Default)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-warn" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mode: "warn"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-strict" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mode: "strict"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Roadmap
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-parallel-development-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Parallel Development (Current)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-feature-parity-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Feature Parity (Next)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-agentic-features-future" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Agentic Features (Future)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-unified-interface-future" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Unified Interface (Future)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Guide
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-new-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      For New Users
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-existing-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Existing Users
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-agent-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Agent Developers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compatibility
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Compatibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wrapper-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wrapper Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#legacy-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Legacy Integration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-overhead" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Overhead
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choosing-the-right-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choosing the Right Approach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Strategy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-vision" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Vision
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-and-trade-offs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitations and Trade-offs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Limitations and Trade-offs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-limited-ontology-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Limited Ontology Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-simplified-deduplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Simplified Deduplication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-reduced-validation-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Reduced Validation Capabilities
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-limited-output-format-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Limited Output Format Support
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-no-batch-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. No Batch Processing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-limited-metadata-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Limited Metadata Handling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-no-data-source-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. No Data Source Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-simplified-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Simplified Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-no-advanced-graph-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      9. No Advanced Graph Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-limited-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      10. Limited Error Handling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-technical-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      11. Technical Limitations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-performance-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      12. Performance Limitations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-each-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      When to Use Each Approach
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="When to Use Each Approach">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-legacy-biocypher-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Legacy BioCypher for:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-new-implementation-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use New Implementation for:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-strategy_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gradual-migration-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gradual Migration Approach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hybrid-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hybrid Approach
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Roadmap
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Reference Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Documentation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            API Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/biocypher/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypher
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/biocypher-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypherWorkflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/graph-class/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Graph Class
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/output-write/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output Writing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/output-in-memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output In-Memory
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/output-driver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output Driver
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/download-cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Download and Cache
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/ontology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ontology Handling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/graph-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Graph Handling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/translation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mapping and Translation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Logging
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Miscellaneous Utility Functions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/biocypher-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypher Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Output Configuration
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Output Configuration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/neo4j-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Neo4j
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/sqlite-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SQLite
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/postgresql-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PostgreSQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/networkx-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    NetworkX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/tabular-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tabular Format
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/rdf-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RDF
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/owl-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    OWL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/arangodb-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ArangoDB
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/schema-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Schema Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Community
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Community
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Join Us
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Where to Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute-docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contribute to the Documentation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute-codebase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contribute to the Code Base
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Comparison
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#legacy-biocypher-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Legacy BioCypher Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-biocypher-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      New BioCypher Architecture
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Differences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Differences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-object-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Object Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-validation-and-deduplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Validation and Deduplication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-api-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. API Design
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Use Cases
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      New Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="New Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-biocypherworkflow-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. BioCypherWorkflow Class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-graph-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Graph Class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-native-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Native Objects
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#progressive-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Progressive Validation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Progressive Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mode-none-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mode: "none" (Default)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-warn" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mode: "warn"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-strict" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mode: "strict"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Roadmap
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-parallel-development-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Parallel Development (Current)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-feature-parity-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Feature Parity (Next)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-agentic-features-future" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Agentic Features (Future)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-unified-interface-future" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Unified Interface (Future)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Guide
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-new-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      For New Users
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-existing-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Existing Users
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-agent-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Agent Developers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compatibility
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Compatibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wrapper-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wrapper Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#legacy-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Legacy Integration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-overhead" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Overhead
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choosing-the-right-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choosing the Right Approach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Strategy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-vision" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Vision
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-and-trade-offs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitations and Trade-offs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Limitations and Trade-offs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-limited-ontology-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Limited Ontology Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-simplified-deduplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Simplified Deduplication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-reduced-validation-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Reduced Validation Capabilities
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-limited-output-format-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Limited Output Format Support
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-no-batch-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. No Batch Processing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-limited-metadata-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Limited Metadata Handling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-no-data-source-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. No Data Source Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-simplified-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Simplified Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-no-advanced-graph-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      9. No Advanced Graph Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-limited-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      10. Limited Error Handling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-technical-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      11. Technical Limitations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-performance-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      12. Performance Limitations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-each-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      When to Use Each Approach
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="When to Use Each Approach">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-legacy-biocypher-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Legacy BioCypher for:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-new-implementation-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use New Implementation for:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-strategy_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gradual-migration-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gradual Migration Approach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hybrid-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hybrid Approach
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Roadmap
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/biocypher/biocypher/edit/main/docs/learn/explanation/architecture-migration.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="biocypher-architecture-migration-guide">BioCypher Architecture Migration Guide</h1>
+<p>This document provides a comprehensive overview of the new BioCypher architecture, the differences between legacy and new implementations, and the roadmap for future integration.</p>
+<h2 id="overview">Overview</h2>
+<p>BioCypher is evolving from an ETL pipeline to a modular, agentic-first knowledge graph framework. This migration introduces new components while maintaining backward compatibility and providing a clear path forward.</p>
+<h2 id="architecture-comparison">Architecture Comparison</h2>
+<h3 id="legacy-biocypher-architecture">Legacy BioCypher Architecture</h3>
+<pre class="mermaid"><code>graph TD
+    A[Raw Data] --&gt; B[Translator]
+    B --&gt; C[BioCypherNode/Edge]
+    C --&gt; D[Deduplicator]
+    D --&gt; E[In-Memory KG]
+    E --&gt; F[Output Writers]
+
+    G[Schema Config] --&gt; B
+    H[Ontology] --&gt; B
+    I[BioCypher Config] --&gt; A</code></pre>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li><strong>Monolithic</strong>: Single <code>BioCypher</code> class orchestrates everything</li>
+<li><strong>ETL-Focused</strong>: Designed for batch processing of large datasets</li>
+<li><strong>Strict Validation</strong>: Mandatory schema validation and deduplication</li>
+<li><strong>Complex Pipeline</strong>: Multi-step translation and processing</li>
+<li><strong>Global State</strong>: Singleton deduplicator across all operations</li>
+</ul>
+<h3 id="new-biocypher-architecture">New BioCypher Architecture</h3>
+<pre class="mermaid"><code>graph TD
+    A[Raw Data] --&gt; B[BioCypherWorkflow]
+    B --&gt; C[Native Graph]
+    C --&gt; D[Wrapper Methods]
+    D --&gt; E[NetworkX/Pandas]
+
+    F[Schema Config] --&gt; B
+    G[Ontology] --&gt; B
+    H[Validation Modes] --&gt; B
+
+    I[Agent Workflows] --&gt; B
+    J[Deterministic Workflows] --&gt; B</code></pre>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li><strong>Modular</strong>: Separate <code>BioCypherWorkflow</code> and <code>Graph</code> classes</li>
+<li><strong>Agentic-First</strong>: Optimized for LLM agent workflows</li>
+<li><strong>Progressive Validation</strong>: Optional validation with flexible modes</li>
+<li><strong>Zero Dependencies</strong>: Pure Python implementation</li>
+<li><strong>Local State</strong>: Per-workflow validation and deduplication</li>
+</ul>
+<h2 id="key-differences">Key Differences</h2>
+<h3 id="1-object-models">1. Object Models</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Legacy BioCypher</th>
+<th>New Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Node Objects</strong></td>
+<td><code>BioCypherNode</code> (complex)</td>
+<td><code>Node</code> (simple dataclass)</td>
+</tr>
+<tr>
+<td><strong>Edge Objects</strong></td>
+<td><code>BioCypherEdge</code> (complex)</td>
+<td><code>Edge</code> (simple dataclass)</td>
+</tr>
+<tr>
+<td><strong>Properties</strong></td>
+<td>Rich metadata + properties</td>
+<td>Simple properties dict</td>
+</tr>
+<tr>
+<td><strong>Methods</strong></td>
+<td><code>get_id()</code>, <code>get_label()</code>, etc.</td>
+<td>Direct attribute access</td>
+</tr>
+<tr>
+<td><strong>Serialization</strong></td>
+<td>Complex internal format</td>
+<td>Simple JSON serialization</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-validation-and-deduplication">2. Validation and Deduplication</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Legacy BioCypher</th>
+<th>New Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Validation</strong></td>
+<td>Warn / strict</td>
+<td>None / warn / strict</td>
+</tr>
+<tr>
+<td><strong>Deduplication</strong></td>
+<td>Global singleton</td>
+<td>Per-workflow tracking</td>
+</tr>
+<tr>
+<td><strong>Schema</strong></td>
+<td>Mandatory</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td><strong>Error Handling</strong></td>
+<td>Fail-fast</td>
+<td>Configurable (warn/continue)</td>
+</tr>
+<tr>
+<td><strong>Performance</strong></td>
+<td>Overhead for all operations</td>
+<td>Zero overhead in "none" mode</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-api-design">3. API Design</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Legacy BioCypher</th>
+<th>New Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Entry Point</strong></td>
+<td><code>BioCypher()</code> class</td>
+<td><code>create_workflow()</code> function</td>
+</tr>
+<tr>
+<td><strong>Configuration</strong></td>
+<td>Complex config files</td>
+<td>Simple parameters</td>
+</tr>
+<tr>
+<td><strong>Workflow</strong></td>
+<td>Batch ETL pipeline</td>
+<td>Interactive graph building</td>
+</tr>
+<tr>
+<td><strong>Output</strong></td>
+<td>Multiple output formats</td>
+<td>Native graph + wrappers</td>
+</tr>
+<tr>
+<td><strong>Learning Curve</strong></td>
+<td>Steep (many concepts)</td>
+<td>Gentle (progressive complexity)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-use-cases">4. Use Cases</h3>
+<table>
+<thead>
+<tr>
+<th>Use Case</th>
+<th>Legacy BioCypher</th>
+<th>New Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ETL Pipelines</strong></td>
+<td>✅ Excellent</td>
+<td>❌ Not suitable</td>
+</tr>
+<tr>
+<td><strong>Agent Workflows</strong></td>
+<td>❌ Too rigid</td>
+<td>✅ Excellent</td>
+</tr>
+<tr>
+<td><strong>Interactive Exploration</strong></td>
+<td>❌ Batch-only</td>
+<td>✅ Excellent</td>
+</tr>
+<tr>
+<td><strong>Large Datasets</strong></td>
+<td>✅ Optimized</td>
+<td>❌ Memory-bound</td>
+</tr>
+<tr>
+<td><strong>Schema Validation</strong></td>
+<td>✅ Comprehensive</td>
+<td>⚠️ Basic only</td>
+</tr>
+<tr>
+<td><strong>Research Prototyping</strong></td>
+<td>❌ Overkill</td>
+<td>✅ Perfect</td>
+</tr>
+<tr>
+<td><strong>Database Integration</strong></td>
+<td>✅ Full support</td>
+<td>❌ Not supported</td>
+</tr>
+<tr>
+<td><strong>Ontology Integration</strong></td>
+<td>✅ Advanced</td>
+<td>❌ Basic only</td>
+</tr>
+<tr>
+<td><strong>Batch Processing</strong></td>
+<td>✅ Optimized</td>
+<td>❌ Not supported</td>
+</tr>
+<tr>
+<td><strong>Metadata Handling</strong></td>
+<td>✅ Rich support</td>
+<td>❌ Basic only</td>
+</tr>
+</tbody>
+</table>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="new-components">New Components</h3>
+<h4 id="1-biocypherworkflow-class">1. <code>BioCypherWorkflow</code> Class</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Simple, clean API</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">workflow</span> <span class="o">=</span> <span class="n">create_workflow</span><span class="p">(</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_graph&quot;</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">validation_mode</span><span class="o">=</span><span class="s2">&quot;warn&quot;</span><span class="p">,</span>  <span class="c1"># none/warn/strict</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">deduplication</span><span class="o">=</span><span class="kc">True</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># Add nodes and edges</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">workflow</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;protein_1&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TP53&quot;</span><span class="p">)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">workflow</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;interaction_1&quot;</span><span class="p">,</span> <span class="s2">&quot;interaction&quot;</span><span class="p">,</span> <span class="s2">&quot;protein_1&quot;</span><span class="p">,</span> <span class="s2">&quot;protein_2&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li>Progressive validation modes</li>
+<li>Optional schema support</li>
+<li>Wrapper methods for compatibility</li>
+<li>Agentic workflow optimization</li>
+</ul>
+<h4 id="2-graph-class">2. <code>Graph</code> Class</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Unified graph representation</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_graph&quot;</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Simple operations</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;node_1&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;TP53&quot;</span><span class="p">})</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;edge_1&quot;</span><span class="p">,</span> <span class="s2">&quot;interaction&quot;</span><span class="p">,</span> <span class="s2">&quot;node_1&quot;</span><span class="p">,</span> <span class="s2">&quot;node_2&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li>Zero dependencies</li>
+<li>Simple, extensible design</li>
+<li>Native BioCypher objects</li>
+<li>Built-in deduplication</li>
+</ul>
+<h4 id="3-native-objects">3. Native Objects</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nd">@dataclass</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Node</span><span class="p">:</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nd">@dataclass</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="k">class</span><span class="w"> </span><span class="nc">Edge</span><span class="p">:</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="n">target</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+</span></code></pre></div>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li>Simple dataclasses</li>
+<li>Direct attribute access</li>
+<li>JSON serializable</li>
+<li>Extensible for agentic features</li>
+</ul>
+<h3 id="progressive-validation">Progressive Validation</h3>
+<p>The new implementation provides three validation modes:</p>
+<h4 id="mode-none-default">Mode: "none" (Default)</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">workflow</span> <span class="o">=</span> <span class="n">create_workflow</span><span class="p">(</span><span class="n">validation_mode</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># No validation overhead</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># Maximum flexibility for agents</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Any node/edge types allowed</span>
+</span></code></pre></div>
+<h4 id="mode-warn">Mode: "warn"</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">workflow</span> <span class="o">=</span> <span class="n">create_workflow</span><span class="p">(</span><span class="n">validation_mode</span><span class="o">=</span><span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="n">deduplication</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1"># Logs warnings for violations</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># Continues processing</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Good for debugging</span>
+</span></code></pre></div>
+<h4 id="mode-strict">Mode: "strict"</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">workflow</span> <span class="o">=</span> <span class="n">create_workflow</span><span class="p">(</span><span class="n">validation_mode</span><span class="o">=</span><span class="s2">&quot;strict&quot;</span><span class="p">,</span> <span class="n">deduplication</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1"># Enforces schema validation</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># Fails fast on violations</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Legacy BioCypher behavior</span>
+</span></code></pre></div>
+<h2 id="migration-roadmap">Migration Roadmap</h2>
+<h3 id="phase-1-parallel-development-current">Phase 1: Parallel Development (Current)</h3>
+<p><strong>Status: ✅ Complete</strong></p>
+<ul>
+<li>[x] New <code>BioCypherWorkflow</code> and <code>Graph</code> classes</li>
+<li>[x] Progressive validation system</li>
+<li>[x] Wrapper methods for compatibility</li>
+<li>[x] Comprehensive test suite</li>
+<li>[x] Documentation and examples</li>
+</ul>
+<p><strong>Goals:</strong></p>
+<ul>
+<li>Keep new functionality separate from legacy code</li>
+<li>Provide compatibility wrappers</li>
+<li>Establish clear migration path</li>
+</ul>
+<h3 id="phase-2-feature-parity-next">Phase 2: Feature Parity (Next)</h3>
+<p><strong>Status: 🔄 Planned</strong></p>
+<ul>
+<li>[ ] Advanced schema validation</li>
+<li>[ ] Ontology integration improvements</li>
+<li>[ ] Performance optimizations</li>
+<li>[ ] Extended wrapper methods</li>
+<li>[ ] Migration utilities</li>
+</ul>
+<p><strong>Goals:</strong></p>
+<ul>
+<li>Match legacy functionality where needed</li>
+<li>Improve performance for large datasets</li>
+<li>Provide migration tools</li>
+</ul>
+<h3 id="phase-3-agentic-features-future">Phase 3: Agentic Features (Future)</h3>
+<p><strong>Status: 🔮 Future</strong></p>
+<ul>
+<li>[ ] Computable functions on nodes/edges</li>
+<li>[ ] Decision logging and reasoning traces</li>
+<li>[ ] Counterfactual inference capabilities</li>
+<li>[ ] MCP (Model Context Protocol) integration</li>
+<li>[ ] Local graph computation</li>
+</ul>
+<p><strong>Goals:</strong></p>
+<ul>
+<li>Enable advanced agentic workflows</li>
+<li>Support LLM integration</li>
+<li>Provide reasoning capabilities</li>
+</ul>
+<h3 id="phase-4-unified-interface-future">Phase 4: Unified Interface (Future)</h3>
+<p><strong>Status: 🔮 Future</strong></p>
+<ul>
+<li>[ ] Integrate with main <code>BioCypher</code> class</li>
+<li>[ ] Unified configuration system</li>
+<li>[ ] Backward compatibility layer</li>
+<li>[ ] Legacy API deprecation</li>
+<li>[ ] Single entry point</li>
+</ul>
+<p><strong>Goals:</strong></p>
+<ul>
+<li>Provide unified interface</li>
+<li>Maintain backward compatibility</li>
+<li>Simplify user experience</li>
+</ul>
+<h2 id="migration-guide">Migration Guide</h2>
+<h3 id="for-new-users">For New Users</h3>
+<p><strong>Start with the new implementation:</strong></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_workflow</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Simple start</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">workflow</span> <span class="o">=</span> <span class="n">create_workflow</span><span class="p">(</span><span class="s2">&quot;my_graph&quot;</span><span class="p">)</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">workflow</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;protein_1&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TP53&quot;</span><span class="p">)</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># Add validation as needed</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">workflow</span> <span class="o">=</span> <span class="n">create_workflow</span><span class="p">(</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>    <span class="s2">&quot;my_graph&quot;</span><span class="p">,</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>    <span class="n">validation_mode</span><span class="o">=</span><span class="s2">&quot;warn&quot;</span><span class="p">,</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>    <span class="n">deduplication</span><span class="o">=</span><span class="kc">True</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="for-existing-users">For Existing Users</h3>
+<p><strong>Gradual migration approach:</strong></p>
+<ol>
+<li><strong>Start with "none" mode</strong> for existing workflows</li>
+<li><strong>Add validation gradually</strong> as needed</li>
+<li><strong>Use wrapper methods</strong> for compatibility</li>
+<li><strong>Migrate to native objects</strong> over time</li>
+</ol>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Legacy approach</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">BioCypher</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span><span class="n">offline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dbms</span><span class="o">=</span><span class="s2">&quot;neo4j&quot;</span><span class="p">)</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1"># New approach (gradual migration)</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_workflow</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="n">workflow</span> <span class="o">=</span> <span class="n">create_workflow</span><span class="p">(</span><span class="n">validation_mode</span><span class="o">=</span><span class="s2">&quot;strict&quot;</span><span class="p">)</span>  <span class="c1"># Legacy-like behavior</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="c1"># Use wrapper for compatibility</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="n">nx_graph</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">to_networkx</span><span class="p">()</span>
+</span></code></pre></div>
+<h3 id="for-agent-developers">For Agent Developers</h3>
+<p><strong>Optimized for agentic workflows:</strong></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Maximum flexibility for agents</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">workflow</span> <span class="o">=</span> <span class="n">create_workflow</span><span class="p">(</span><span class="n">validation_mode</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Add nodes/edges dynamically</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">agent_discovered_entities</span><span class="p">:</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">workflow</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="o">**</span><span class="n">entity</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="c1"># Convert to analysis format when needed</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="n">analysis_graph</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">to_networkx</span><span class="p">()</span>
+</span></code></pre></div>
+<h2 id="compatibility">Compatibility</h2>
+<h3 id="wrapper-methods">Wrapper Methods</h3>
+<p>The new implementation provides compatibility wrappers:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Convert to NetworkX</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">nx_graph</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">to_networkx</span><span class="p">()</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># Convert to Pandas DataFrames</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">nodes_df</span><span class="p">,</span> <span class="n">edges_df</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1"># JSON serialization</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="n">json_str</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+</span></code></pre></div>
+<h3 id="legacy-integration">Legacy Integration</h3>
+<p>Legacy BioCypher can be used alongside new implementation:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Legacy for ETL</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">BioCypher</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">legacy_bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span><span class="n">offline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dbms</span><span class="o">=</span><span class="s2">&quot;neo4j&quot;</span><span class="p">)</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="c1"># New for interactive work</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_workflow</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="n">workflow</span> <span class="o">=</span> <span class="n">create_workflow</span><span class="p">(</span><span class="s2">&quot;interactive_graph&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="memory-usage">Memory Usage</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Legacy BioCypher</th>
+<th>New Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Small Graphs</strong> (&lt; 1K nodes)</td>
+<td>High overhead</td>
+<td>Minimal overhead</td>
+</tr>
+<tr>
+<td><strong>Medium Graphs</strong> (1K-100K nodes)</td>
+<td>Moderate overhead</td>
+<td>Low overhead</td>
+</tr>
+<tr>
+<td><strong>Large Graphs</strong> (&gt; 100K nodes)</td>
+<td>Optimized</td>
+<td>Memory-bound</td>
+</tr>
+</tbody>
+</table>
+<h3 id="validation-overhead">Validation Overhead</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Overhead</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>"none"</strong></td>
+<td>Zero</td>
+<td>Agent workflows, prototyping</td>
+</tr>
+<tr>
+<td><strong>"warn"</strong></td>
+<td>Low</td>
+<td>Development, debugging</td>
+</tr>
+<tr>
+<td><strong>"strict"</strong></td>
+<td>Moderate</td>
+<td>Production, ETL</td>
+</tr>
+</tbody>
+</table>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="choosing-the-right-approach">Choosing the Right Approach</h3>
+<p><strong>Use Legacy BioCypher for:</strong></p>
+<ul>
+<li>Large-scale ETL pipelines</li>
+<li>Batch processing of big datasets</li>
+<li>Complex schema validation requirements</li>
+<li>Production systems requiring proven stability</li>
+</ul>
+<p><strong>Use New Implementation for:</strong></p>
+<ul>
+<li>Agent workflows and LLM integration</li>
+<li>Interactive graph exploration</li>
+<li>Research prototyping</li>
+<li>Small to medium datasets</li>
+<li>When you need flexibility</li>
+</ul>
+<h3 id="migration-strategy">Migration Strategy</h3>
+<ol>
+<li><strong>Start Small</strong>: Begin with simple use cases</li>
+<li><strong>Progressive Validation</strong>: Start with "none", add validation as needed</li>
+<li><strong>Use Wrappers</strong>: Leverage compatibility methods during transition</li>
+<li><strong>Test Thoroughly</strong>: Validate behavior matches expectations</li>
+<li><strong>Plan Gradually</strong>: Don't rush the migration</li>
+</ol>
+<h2 id="future-vision">Future Vision</h2>
+<p>The new BioCypher architecture is designed to support the future of biomedical knowledge graphs:</p>
+<ul>
+<li><strong>Agentic Workflows</strong>: LLM agents can dynamically build and reason over graphs</li>
+<li><strong>Interactive Exploration</strong>: Researchers can explore data interactively</li>
+<li><strong>Flexible Validation</strong>: Users choose their validation level</li>
+<li><strong>Extensible Design</strong>: Easy to add new features and capabilities</li>
+<li><strong>Unified Interface</strong>: Eventually, one API for all use cases</li>
+</ul>
+<h2 id="limitations-and-trade-offs">Limitations and Trade-offs</h2>
+<p>While the new implementation provides significant advantages for agentic workflows, it comes with important limitations compared to the legacy ETL pipeline:</p>
+<h3 id="1-limited-ontology-integration">1. Limited Ontology Integration</h3>
+<p><strong>Legacy BioCypher:</strong></p>
+<ul>
+<li>Full ontology loading and processing (OWL, OBO, RDF/XML)</li>
+<li>Hybrid ontology support (head + tail ontologies)</li>
+<li>Complex ontology mapping and inheritance</li>
+<li>Automatic ontology-based validation</li>
+<li>Support for multiple ontology formats and namespaces</li>
+</ul>
+<p><strong>New Implementation:</strong></p>
+<ul>
+<li>Basic ontology URL support (head_ontology_url parameter)</li>
+<li>No tail ontology support</li>
+<li>No complex ontology mapping</li>
+<li>No automatic ontology-based validation</li>
+<li>Limited to simple ontology references</li>
+</ul>
+<p><strong>Impact:</strong> Users requiring complex ontology integration should continue using legacy BioCypher.</p>
+<h3 id="2-simplified-deduplication">2. Simplified Deduplication</h3>
+<p><strong>Legacy BioCypher:</strong></p>
+<ul>
+<li>Global singleton deduplicator across all operations</li>
+<li>Rich duplicate tracking and reporting</li>
+<li>Per-edge-type deduplication logic</li>
+<li>Comprehensive duplicate statistics</li>
+<li>Integration with batch processing</li>
+</ul>
+<p><strong>New Implementation:</strong></p>
+<ul>
+<li>Per-workflow deduplication tracking</li>
+<li>Simple duplicate detection (ID-based only)</li>
+<li>No global duplicate statistics</li>
+<li>No integration with batch processing</li>
+<li>Optional deduplication (can be disabled)</li>
+</ul>
+<p><strong>Impact:</strong> Large-scale ETL pipelines may miss duplicates that legacy BioCypher would catch.</p>
+<h3 id="3-reduced-validation-capabilities">3. Reduced Validation Capabilities</h3>
+<p><strong>Legacy BioCypher:</strong></p>
+<ul>
+<li>Comprehensive schema validation</li>
+<li>Property whitelist/blacklist filtering</li>
+<li>Complex inheritance validation</li>
+<li>Source, license, and version enforcement</li>
+<li>Multi-level validation pipeline</li>
+</ul>
+<p><strong>New Implementation:</strong></p>
+<ul>
+<li>Basic property type validation</li>
+<li>Simple required property checking</li>
+<li>No inheritance validation</li>
+<li>No metadata enforcement</li>
+<li>Single-level validation</li>
+</ul>
+<p><strong>Impact:</strong> Production systems requiring strict data quality should use legacy BioCypher.</p>
+<h3 id="4-limited-output-format-support">4. Limited Output Format Support</h3>
+<p><strong>Legacy BioCypher:</strong></p>
+<ul>
+<li>15+ output formats (Neo4j, PostgreSQL, ArangoDB, SQLite, RDF, OWL, CSV, NetworkX, AIRR)</li>
+<li>Batch writers with optimized performance</li>
+<li>Database connectivity and online mode</li>
+<li>Custom import scripts and configurations</li>
+<li>Multi-format export capabilities</li>
+</ul>
+<p><strong>New Implementation:</strong></p>
+<ul>
+<li>3 output formats (JSON, NetworkX, Pandas)</li>
+<li>No database connectivity</li>
+<li>No batch processing</li>
+<li>No custom import scripts</li>
+<li>Limited to in-memory formats</li>
+</ul>
+<p><strong>Impact:</strong> Users needing database integration or specific output formats must use legacy BioCypher.</p>
+<h3 id="5-no-batch-processing">5. No Batch Processing</h3>
+<p><strong>Legacy BioCypher:</strong></p>
+<ul>
+<li>Optimized batch processing for large datasets</li>
+<li>Memory-efficient streaming</li>
+<li>Progress tracking and logging</li>
+<li>Error handling and recovery</li>
+<li>Configurable batch sizes</li>
+</ul>
+<p><strong>New Implementation:</strong></p>
+<ul>
+<li>In-memory processing only</li>
+<li>No streaming capabilities</li>
+<li>No progress tracking</li>
+<li>Basic error handling</li>
+<li>Memory-bound by design</li>
+</ul>
+<p><strong>Impact:</strong> Large datasets (&gt;100K nodes) may cause memory issues.</p>
+<h3 id="6-limited-metadata-handling">6. Limited Metadata Handling</h3>
+<p><strong>Legacy BioCypher:</strong></p>
+<ul>
+<li>Rich metadata support (source, license, version)</li>
+<li>Automatic metadata injection</li>
+<li>Metadata validation and enforcement</li>
+<li>Configurable metadata requirements</li>
+<li>Integration with provenance tracking</li>
+</ul>
+<p><strong>New Implementation:</strong></p>
+<ul>
+<li>Basic property support only</li>
+<li>No automatic metadata injection</li>
+<li>No metadata validation</li>
+<li>No provenance tracking</li>
+<li>User must handle metadata manually</li>
+</ul>
+<p><strong>Impact:</strong> Research requiring provenance tracking should use legacy BioCypher.</p>
+<h3 id="7-no-data-source-integration">7. No Data Source Integration</h3>
+<p><strong>Legacy BioCypher:</strong></p>
+<ul>
+<li>Built-in data source adapters</li>
+<li>Download and caching mechanisms</li>
+<li>API integration capabilities</li>
+<li>File format support (CSV, JSON, XML, etc.)</li>
+<li>Data source configuration management</li>
+</ul>
+<p><strong>New Implementation:</strong></p>
+<ul>
+<li>No data source integration</li>
+<li>No download capabilities</li>
+<li>No caching mechanisms</li>
+<li>No API integration</li>
+<li>Manual data loading required</li>
+</ul>
+<p><strong>Impact:</strong> Users must handle data acquisition separately.</p>
+<h3 id="8-simplified-configuration">8. Simplified Configuration</h3>
+<p><strong>Legacy BioCypher:</strong></p>
+<ul>
+<li>Complex configuration system</li>
+<li>Multiple config files (biocypher_config.yaml, schema_config.yaml)</li>
+<li>Environment-specific configurations</li>
+<li>Advanced parameter tuning</li>
+<li>Configuration validation</li>
+</ul>
+<p><strong>New Implementation:</strong></p>
+<ul>
+<li>Simple parameter-based configuration</li>
+<li>No config file support</li>
+<li>No environment-specific settings</li>
+<li>Limited parameter options</li>
+<li>No configuration validation</li>
+</ul>
+<p><strong>Impact:</strong> Complex deployments may require legacy BioCypher's configuration system.</p>
+<h3 id="9-no-advanced-graph-features">9. No Advanced Graph Features</h3>
+<p><strong>Legacy BioCypher:</strong></p>
+<ul>
+<li>Relationship-as-node support</li>
+<li>Complex relationship types</li>
+<li>Multi-graph support</li>
+<li>Advanced indexing</li>
+<li>Graph analytics integration</li>
+</ul>
+<p><strong>New Implementation:</strong></p>
+<ul>
+<li>Basic node/edge/hyperedge support</li>
+<li>Simple relationship types</li>
+<li>Single graph per workflow</li>
+<li>Basic indexing</li>
+<li>Limited analytics</li>
+</ul>
+<p><strong>Impact:</strong> Complex graph structures may not be supported.</p>
+<h3 id="10-limited-error-handling">10. Limited Error Handling</h3>
+<p><strong>Legacy BioCypher:</strong></p>
+<ul>
+<li>Comprehensive error handling</li>
+<li>Graceful degradation</li>
+<li>Error recovery mechanisms</li>
+<li>Detailed error reporting</li>
+<li>Logging and monitoring</li>
+</ul>
+<p><strong>New Implementation:</strong></p>
+<ul>
+<li>Basic error handling</li>
+<li>Fail-fast approach</li>
+<li>No error recovery</li>
+<li>Simple error messages</li>
+<li>Basic logging</li>
+</ul>
+<p><strong>Impact:</strong> Production systems may need more robust error handling.</p>
+<h3 id="11-technical-limitations">11. Technical Limitations</h3>
+<p><strong>Legacy BioCypher:</strong></p>
+<ul>
+<li>Supports 15+ database systems and output formats</li>
+<li>Handles multiple ontology formats (OWL, OBO, RDF/XML)</li>
+<li>Complex inheritance and mapping logic</li>
+<li>Relationship-as-node representation</li>
+<li>Multi-graph support</li>
+<li>Advanced indexing and querying</li>
+</ul>
+<p><strong>New Implementation:</strong></p>
+<ul>
+<li>Limited to 3 output formats (JSON, NetworkX, Pandas)</li>
+<li>Basic ontology URL support only</li>
+<li>Simple inheritance (no complex mapping)</li>
+<li>No relationship-as-node support</li>
+<li>Single graph per workflow</li>
+<li>Basic indexing only</li>
+</ul>
+<p><strong>Impact:</strong> Complex biomedical knowledge representation may not be fully supported.</p>
+<h3 id="12-performance-limitations">12. Performance Limitations</h3>
+<p><strong>Legacy BioCypher:</strong></p>
+<ul>
+<li>Optimized for large-scale processing</li>
+<li>Memory-efficient streaming</li>
+<li>Batch processing with configurable sizes</li>
+<li>Progress tracking and monitoring</li>
+<li>Error recovery and retry mechanisms</li>
+</ul>
+<p><strong>New Implementation:</strong></p>
+<ul>
+<li>In-memory processing only</li>
+<li>No streaming capabilities</li>
+<li>No batch processing</li>
+<li>No progress tracking</li>
+<li>Basic error handling</li>
+</ul>
+<p><strong>Impact:</strong> Performance degrades significantly with large datasets.</p>
+<h2 id="when-to-use-each-approach">When to Use Each Approach</h2>
+<h3 id="use-legacy-biocypher-for">Use Legacy BioCypher for:</h3>
+<ul>
+<li><strong>Large-scale ETL pipelines</strong> (&gt;100K nodes)</li>
+<li><strong>Database integration</strong> (Neo4j, PostgreSQL, etc.)</li>
+<li><strong>Complex ontology requirements</strong></li>
+<li><strong>Production systems</strong> requiring robust validation</li>
+<li><strong>Batch processing</strong> of large datasets</li>
+<li><strong>Multiple output formats</strong></li>
+<li><strong>Provenance tracking</strong> and metadata management</li>
+<li><strong>Data source integration</strong></li>
+<li><strong>Complex configuration</strong> requirements</li>
+</ul>
+<h3 id="use-new-implementation-for">Use New Implementation for:</h3>
+<ul>
+<li><strong>Agent workflows</strong> and LLM integration</li>
+<li><strong>Interactive exploration</strong> and prototyping</li>
+<li><strong>Small to medium datasets</strong> (&lt;100K nodes)</li>
+<li><strong>Research and development</strong></li>
+<li><strong>Simple graph operations</strong></li>
+<li><strong>Maximum flexibility</strong> requirements</li>
+<li><strong>Rapid prototyping</strong></li>
+<li><strong>Educational purposes</strong></li>
+</ul>
+<h2 id="migration-strategy_1">Migration Strategy</h2>
+<h3 id="gradual-migration-approach">Gradual Migration Approach</h3>
+<ol>
+<li><strong>Start with New Implementation</strong> for new projects</li>
+<li><strong>Use Legacy BioCypher</strong> for existing ETL pipelines</li>
+<li><strong>Migrate incrementally</strong> as features are added</li>
+<li><strong>Use wrapper methods</strong> for compatibility</li>
+<li><strong>Plan for Phase 2</strong> feature additions</li>
+</ol>
+<h3 id="hybrid-approach">Hybrid Approach</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Use both approaches together</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">BioCypher</span><span class="p">,</span> <span class="n">create_workflow</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># Legacy for ETL</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="n">legacy_bc</span> <span class="o">=</span> <span class="n">BioCypher</span><span class="p">(</span><span class="n">offline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dbms</span><span class="o">=</span><span class="s2">&quot;neo4j&quot;</span><span class="p">)</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="c1"># ... process large dataset ...</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="c1"># New for interactive work</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="n">workflow</span> <span class="o">=</span> <span class="n">create_workflow</span><span class="p">(</span><span class="s2">&quot;interactive_graph&quot;</span><span class="p">)</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="c1"># ... explore and analyze ...</span>
+</span></code></pre></div>
+<h2 id="future-roadmap">Future Roadmap</h2>
+<p>The limitations identified above will be addressed in future phases:</p>
+<ul>
+<li><strong>Phase 2</strong>: Enhanced ontology support, batch processing, more output formats</li>
+<li><strong>Phase 3</strong>: Advanced validation, metadata handling, data source integration</li>
+<li><strong>Phase 4</strong>: Unified interface with full legacy compatibility</li>
+</ul>
+<p>This migration represents BioCypher's evolution from a batch ETL tool to a comprehensive knowledge graph framework for the AI era, with a clear path for addressing current limitations.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../graph_class_guide/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Graph Class Guide">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Graph Class Guide
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../../reference/" class="md-footer__link md-footer__link--next" aria-label="Next: Reference Index">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Reference Index
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      © Copyright 2021-2025, BioCypher developers.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://biocypher.zulipchat.com/" target="_blank" rel="noopener" title="biocypher.zulipchat.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22.767 3.589c0 1.209-.543 2.283-1.37 2.934l-8.034 7.174c-.149.128-.343-.078-.235-.25l2.946-5.9c.083-.165-.024-.368-.194-.368H4.452c-1.77 0-3.219-1.615-3.219-3.59C1.233 1.616 2.682 0 4.452 0h15.096c1.77-.001 3.219 1.614 3.219 3.589M4.452 24h15.096c1.77 0 3.219-1.616 3.219-3.59s-1.449-3.59-3.219-3.59H8.12c-.17 0-.277-.202-.194-.367l2.946-5.9c.108-.172-.086-.378-.235-.25l-8.033 7.173c-.828.65-1.37 1.725-1.37 2.934 0 1.974 1.448 3.59 3.218 3.59"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://saezlab.org/" target="_blank" rel="noopener" title="saezlab.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 0H4v2h16zM4 24h16v-2H4zM20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m-8 2.75A2.25 2.25 0 0 1 14.25 9 2.25 2.25 0 0 1 12 11.25 2.25 2.25 0 0 1 9.75 9 2.25 2.25 0 0 1 12 6.75M17 17H7v-1.5c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "content.action.edit", "navigation.tabs", "navigation.instant", "navigation.footer"], "search": "../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.50899def.min.js"></script>
+      
+    
+  </body>
+</html>

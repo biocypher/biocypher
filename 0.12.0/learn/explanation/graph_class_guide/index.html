@@ -1,0 +1,4050 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://biocypher.org/0.12.0/learn/explanation/graph_class_guide/">
+      
+      
+        <link rel="prev" href="../ontologies/">
+      
+      
+        <link rel="next" href="../architecture-migration/">
+      
+      
+      <link rel="icon" href="../../../assets/img/favicon_biocypher_32px.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+    
+    
+      
+        <title>Graph Class Guide - BioCypher</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Lato";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../assets/css/css-v1.1.0.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#biocypher-graph-class-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="BioCypher" class="md-header__button md-logo" aria-label="BioCypher" data-md-component="logo">
+      
+  <img src="../../../assets/img/logo-biocypher.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BioCypher
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Graph Class Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/biocypher/biocypher" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    biocypher/biocypher
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../biocypher-project/project/" class="md-tabs__link">
+          
+  
+  
+  About
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../installation/" class="md-tabs__link">
+          
+  
+  
+  Get Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../tutorials/tutorial001_basics/" class="md-tabs__link">
+          
+  
+  
+  Learn
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../community/" class="md-tabs__link">
+          
+  
+  
+  Community
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="BioCypher" class="md-nav__button md-logo" aria-label="BioCypher" data-md-component="logo">
+      
+  <img src="../../../assets/img/logo-biocypher.png" alt="logo">
+
+    </a>
+    BioCypher
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/biocypher/biocypher" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    biocypher/biocypher
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    About
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            About
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Project
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/design-philosophy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Design philosophy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/use-cases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Use Cases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/biochatter-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypher + LLMs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../biocypher-project/r-bioc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    R and Bioconductor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Get Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Get Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quickstart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../llms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LLM Integration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Learn
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Learn
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tutorial001_basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tutorial002_handling_ontologies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Handling Ontologies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tutorial003_adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Adapters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/pandas_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Example Notebook: BioCypher and Pandas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/agent_api_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Agent API Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tutorial_basics_neo4j_offline/tutorial_004_neo4j_offline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hands-on Building Graphs with BioCypher and Neo4j
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    HowTo / FAQ
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            HowTo / FAQ
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/htg001_standalone_docker_biocypher/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Standalone Docker Image
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Explanations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Explanations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About Adapters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ontologies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About Ontologies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Graph Class Guide
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Graph Class Guide
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design Philosophy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design Philosophy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Principles
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Class Structure
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Class Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Classes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-types-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edge Types Enum
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Structures
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Structures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#node-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      Node Class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edge Class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyperedge-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      HyperEdge Class
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#graph-class-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Graph Class Architecture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Graph Class Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#internal-data-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Internal Data Structures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#indexing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Indexing Strategy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#node-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Node Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Node Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Nodes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#querying-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Querying Nodes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Node Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edge Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Edge Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-edges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Edges
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#querying-edges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Querying Edges
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edge Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyperedge-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hyperedge Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Hyperedge Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-hyperedges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Hyperedges
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#querying-hyperedges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Querying Hyperedges
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#graph-traversal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Graph Traversal
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Graph Traversal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#neighbor-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Neighbor Discovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path-finding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Path Finding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connected-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connected Components
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#graph-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Graph Analysis
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Graph Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Statistics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subgraph-extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subgraph Extraction
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Serialization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Serialization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#json-exportimport" class="md-nav__link">
+    <span class="md-ellipsis">
+      JSON Export/Import
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dictionary-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dictionary Conversion
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Characteristics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#time-complexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Time Complexity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimization-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimization Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Features
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-nodeedge-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Node/Edge Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complex-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complex Properties
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hypergraph-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hypergraph Applications
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-use-descriptive-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Use Descriptive IDs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-leverage-type-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Leverage Type System
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-use-properties-for-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Use Properties for Metadata
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-validate-data-integrity" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Validate Data Integrity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-use-hyperedges-for-complex-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Use Hyperedges for Complex Relationships
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-with-biocypher-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with BioCypher Agent
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Enhancements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Architecture Migration Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Reference Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Documentation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            API Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/biocypher/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypher
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/biocypher-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypherWorkflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/graph-class/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Graph Class
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/output-write/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output Writing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/output-in-memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output In-Memory
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/output-driver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output Driver
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/download-cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Download and Cache
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/ontology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ontology Handling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/graph-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Graph Handling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/translation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mapping and Translation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Logging
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/source/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Miscellaneous Utility Functions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/biocypher-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioCypher Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Output Configuration
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Output Configuration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/neo4j-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Neo4j
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/sqlite-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SQLite
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/postgresql-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PostgreSQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/networkx-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    NetworkX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/tabular-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tabular Format
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/rdf-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RDF
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/owl-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    OWL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/outputs/arangodb-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ArangoDB
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/schema-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Schema Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Community
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Community
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Join Us
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Where to Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute-docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contribute to the Documentation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute-codebase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contribute to the Code Base
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design Philosophy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design Philosophy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Principles
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Class Structure
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Class Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Classes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-types-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edge Types Enum
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Structures
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Structures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#node-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      Node Class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edge Class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyperedge-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      HyperEdge Class
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#graph-class-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Graph Class Architecture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Graph Class Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#internal-data-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Internal Data Structures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#indexing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Indexing Strategy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#node-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Node Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Node Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Nodes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#querying-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Querying Nodes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Node Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edge Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Edge Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-edges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Edges
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#querying-edges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Querying Edges
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edge Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyperedge-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hyperedge Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Hyperedge Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-hyperedges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Hyperedges
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#querying-hyperedges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Querying Hyperedges
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#graph-traversal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Graph Traversal
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Graph Traversal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#neighbor-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Neighbor Discovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path-finding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Path Finding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connected-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connected Components
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#graph-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Graph Analysis
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Graph Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Statistics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subgraph-extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subgraph Extraction
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Serialization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Serialization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#json-exportimport" class="md-nav__link">
+    <span class="md-ellipsis">
+      JSON Export/Import
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dictionary-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dictionary Conversion
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Characteristics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#time-complexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Time Complexity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimization-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimization Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Features
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-nodeedge-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Node/Edge Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complex-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complex Properties
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hypergraph-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hypergraph Applications
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-use-descriptive-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Use Descriptive IDs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-leverage-type-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Leverage Type System
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-use-properties-for-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Use Properties for Metadata
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-validate-data-integrity" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Validate Data Integrity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-use-hyperedges-for-complex-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Use Hyperedges for Complex Relationships
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-with-biocypher-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with BioCypher Agent
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Enhancements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/biocypher/biocypher/edit/main/docs/learn/explanation/graph_class_guide.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="biocypher-graph-class-guide">BioCypher Graph Class Guide</h1>
+<h2 id="overview">Overview</h2>
+<p>The <code>Graph</code> class is the core data structure of the BioCypher Agent API, providing a unified representation for various types of graphs including simple graphs, directed graphs, weighted graphs, multigraphs, and hypergraphs. It's designed to be a pure Python implementation with no external dependencies, making it perfect for sandbox environments and LLM agent integration.</p>
+<h2 id="design-philosophy">Design Philosophy</h2>
+<h3 id="core-principles">Core Principles</h3>
+<ol>
+<li><strong>Unified Representation</strong>: Single class handles all graph types</li>
+<li><strong>Pure Python</strong>: No external dependencies for basic operations</li>
+<li><strong>Type Safety</strong>: Comprehensive type annotations with modern syntax</li>
+<li><strong>Extensibility</strong>: Easy to add new features and capabilities</li>
+<li><strong>Performance</strong>: Optimized for common operations</li>
+<li><strong>Serialization</strong>: Built-in JSON export/import</li>
+</ol>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Multiple Graph Types</strong>: Simple, directed, weighted, hypergraphs</li>
+<li><strong>Property Graphs</strong>: Rich metadata on nodes and edges</li>
+<li><strong>Efficient Indexing</strong>: Type-based and adjacency indexes</li>
+<li><strong>Path Finding</strong>: BFS-based path discovery</li>
+<li><strong>Statistics</strong>: Comprehensive graph analytics</li>
+<li><strong>Serialization</strong>: JSON export/import for persistence</li>
+</ul>
+<h2 id="class-structure">Class Structure</h2>
+<h3 id="core-classes">Core Classes</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Edge</span><span class="p">,</span> <span class="n">HyperEdge</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Main graph class</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="s2">&quot;my_graph&quot;</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># Data structures</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">})</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">edge</span> <span class="o">=</span> <span class="n">Edge</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">})</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">hyperedge</span> <span class="o">=</span> <span class="n">HyperEdge</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;node1&quot;</span><span class="p">,</span> <span class="s2">&quot;node2&quot;</span><span class="p">,</span> <span class="s2">&quot;node3&quot;</span><span class="p">},</span> <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="s2">&quot;complex&quot;</span><span class="p">})</span>
+</span></code></pre></div>
+<h3 id="edge-types-enum">Edge Types Enum</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">EdgeType</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">EdgeType</span><span class="o">.</span><span class="n">SIMPLE</span>      <span class="c1"># Undirected edges</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">EdgeType</span><span class="o">.</span><span class="n">DIRECTED</span>    <span class="c1"># Directed edges</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">EdgeType</span><span class="o">.</span><span class="n">WEIGHTED</span>    <span class="c1"># Weighted edges</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">EdgeType</span><span class="o">.</span><span class="n">HYPEREDGE</span>   <span class="c1"># Hypergraph edges</span>
+</span></code></pre></div>
+<h2 id="data-structures">Data Structures</h2>
+<h3 id="node-class">Node Class</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nd">@dataclass</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Node</span><span class="p">:</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>                    <span class="c1"># Unique identifier</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>                  <span class="c1"># Node category/type</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="c1"># Metadata dictionary</span>
+</span></code></pre></div>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Immutable ID and type</li>
+<li>Flexible property dictionary</li>
+<li>Validation in <code>__post_init__</code></li>
+<li>Dictionary conversion methods</li>
+</ul>
+<p><strong>Example:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;TP53&quot;</span><span class="p">,</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="s2">&quot;tumor_suppressor&quot;</span><span class="p">,</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="s2">&quot;uniprot_id&quot;</span><span class="p">:</span> <span class="s2">&quot;P04637&quot;</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">})</span>
+</span></code></pre></div></p>
+<h3 id="edge-class">Edge Class</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nd">@dataclass</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Edge</span><span class="p">:</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>                    <span class="c1"># Unique identifier</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>                  <span class="c1"># Edge category/type</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span>                <span class="c1"># Source node ID</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">target</span><span class="p">:</span> <span class="nb">str</span>                <span class="c1"># Target node ID</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="c1"># Metadata dictionary</span>
+</span></code></pre></div>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Directed relationship representation</li>
+<li>Source and target validation</li>
+<li>Flexible property dictionary</li>
+<li>Dictionary conversion methods</li>
+</ul>
+<p><strong>Example:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">edge</span> <span class="o">=</span> <span class="n">Edge</span><span class="p">(</span><span class="s2">&quot;interaction_1&quot;</span><span class="p">,</span> <span class="s2">&quot;interaction&quot;</span><span class="p">,</span> <span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;BRAF&quot;</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="s2">&quot;confidence&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="s2">&quot;evidence&quot;</span><span class="p">:</span> <span class="s2">&quot;literature&quot;</span><span class="p">,</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;co-immunoprecipitation&quot;</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">})</span>
+</span></code></pre></div></p>
+<h3 id="hyperedge-class">HyperEdge Class</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nd">@dataclass</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">HyperEdge</span><span class="p">:</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>                    <span class="c1"># Unique identifier</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>                  <span class="c1"># Edge category/type</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">nodes</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>            <span class="c1"># Set of connected node IDs</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="c1"># Metadata dictionary</span>
+</span></code></pre></div>
+<p><strong>Features:</strong>
+- Multi-node relationship representation
+- Set-based node collection
+- Minimum 2 nodes validation
+- Dictionary conversion methods</p>
+<p><strong>Example:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">hyperedge</span> <span class="o">=</span> <span class="n">HyperEdge</span><span class="p">(</span><span class="s2">&quot;complex_1&quot;</span><span class="p">,</span> <span class="s2">&quot;protein_complex&quot;</span><span class="p">,</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>                     <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;MDM2&quot;</span><span class="p">,</span> <span class="s2">&quot;CDKN1A&quot;</span><span class="p">},</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>                     <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>                         <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="s2">&quot;cell_cycle_control&quot;</span><span class="p">,</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>                         <span class="s2">&quot;complex_type&quot;</span><span class="p">:</span> <span class="s2">&quot;regulatory&quot;</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>                     <span class="p">})</span>
+</span></code></pre></div></p>
+<h2 id="graph-class-architecture">Graph Class Architecture</h2>
+<h3 id="internal-data-structures">Internal Data Structures</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Graph</span><span class="p">:</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;graph&quot;</span><span class="p">,</span> <span class="n">directed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>        <span class="c1"># Core data structures</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Node</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Edge</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_hyperedges</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HyperEdge</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>        <span class="c1"># Type indexes for efficient querying</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_node_types</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_hyperedge_types</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>        <span class="c1"># Adjacency indexes for efficient traversal</span>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_outgoing</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_incoming</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>        <span class="c1"># Statistics</span>
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_stats</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>            <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>            <span class="s2">&quot;edges&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-8-21"><a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>            <span class="s2">&quot;hyperedges&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-8-22"><a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>            <span class="s2">&quot;node_types&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-8-23"><a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>            <span class="s2">&quot;edge_types&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-8-24"><a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>            <span class="s2">&quot;hyperedge_types&quot;</span><span class="p">:</span> <span class="mi">0</span>
+</span><span id="__span-8-25"><a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>        <span class="p">}</span>
+</span></code></pre></div>
+<h3 id="indexing-strategy">Indexing Strategy</h3>
+<p>The Graph class uses multiple indexes for efficient operations:</p>
+<ol>
+<li><strong>Primary Indexes</strong>: Direct access to nodes, edges, hyperedges by ID</li>
+<li><strong>Type Indexes</strong>: Fast filtering by node/edge type</li>
+<li><strong>Adjacency Indexes</strong>: Efficient neighbor and path finding</li>
+<li><strong>Statistics</strong>: Real-time graph metrics</li>
+</ol>
+<h2 id="core-operations">Core Operations</h2>
+<h3 id="node-operations">Node Operations</h3>
+<h4 id="adding-nodes">Adding Nodes</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">node_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a node to the graph.</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="sd">    Args:</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="sd">        node_id: Unique identifier for the node</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="sd">        node_type: Type/category of the node</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="sd">        properties: Optional properties dictionary</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="sd">    Returns:</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="sd">        bool: True if node was added, False if it already exists</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span></code></pre></div>
+<p><strong>Example:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="s2">&quot;biomedical&quot;</span><span class="p">)</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s2">&quot;tumor_suppressor&quot;</span><span class="p">)</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;BRAF&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;BRAF&quot;</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s2">&quot;kinase&quot;</span><span class="p">)</span>
+</span></code></pre></div></p>
+<h4 id="querying-nodes">Querying Nodes</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Get specific node</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">node</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">)</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># Get all nodes</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="n">all_nodes</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">()</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1"># Get nodes by type</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="n">proteins</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">(</span><span class="s2">&quot;protein&quot;</span><span class="p">)</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="c1"># Get node IDs</span>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="n">protein_ids</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_node_ids</span><span class="p">(</span><span class="s2">&quot;protein&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h4 id="node-management">Node Management</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Check if node exists</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">has_node</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">):</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TP53 exists&quot;</span><span class="p">)</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="c1"># Remove node (and connected edges)</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="n">graph</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="edge-operations">Edge Operations</h3>
+<h4 id="adding-edges">Adding Edges</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>             <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add an edge to the graph.</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="sd">    Args:</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="sd">        edge_id: Unique identifier for the edge</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="sd">        edge_type: Type/category of the edge</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="sd">        source: Source node ID</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="sd">        target: Target node ID</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="sd">        properties: Optional properties dictionary</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="sd">    Returns:</span>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="sd">        bool: True if edge was added, False if it already exists</span>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span></code></pre></div>
+<p><strong>Example:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;TP53_BRAF&quot;</span><span class="p">,</span> <span class="s2">&quot;interaction&quot;</span><span class="p">,</span> <span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;BRAF&quot;</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;BRAF_cancer&quot;</span><span class="p">,</span> <span class="s2">&quot;causes&quot;</span><span class="p">,</span> <span class="s2">&quot;BRAF&quot;</span><span class="p">,</span> <span class="s2">&quot;cancer&quot;</span><span class="p">,</span> <span class="n">evidence</span><span class="o">=</span><span class="s2">&quot;strong&quot;</span><span class="p">)</span>
+</span></code></pre></div></p>
+<h4 id="querying-edges">Querying Edges</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Get specific edge</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="n">edge</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_edge</span><span class="p">(</span><span class="s2">&quot;TP53_BRAF&quot;</span><span class="p">)</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="c1"># Get all edges</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="n">all_edges</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_edges</span><span class="p">()</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="c1"># Get edges by type</span>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="n">interactions</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_edges</span><span class="p">(</span><span class="s2">&quot;interaction&quot;</span><span class="p">)</span>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="c1"># Get edges between nodes</span>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="n">edges</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_edges_between</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;BRAF&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h4 id="edge-management">Edge Management</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Check if edge exists</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="s2">&quot;TP53_BRAF&quot;</span><span class="p">):</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Interaction exists&quot;</span><span class="p">)</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="c1"># Remove edge</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="n">graph</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="s2">&quot;TP53_BRAF&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="hyperedge-operations">Hyperedge Operations</h3>
+<h4 id="adding-hyperedges">Adding Hyperedges</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">add_hyperedge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hyperedge_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hyperedge_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>                  <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a hyperedge to the graph.</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="sd">    Args:</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="sd">        hyperedge_id: Unique identifier for the hyperedge</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="sd">        hyperedge_type: Type/category of the hyperedge</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="sd">        nodes: Set of connected node IDs</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="sd">        properties: Optional properties dictionary</span>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="sd">    Returns:</span>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="sd">        bool: True if hyperedge was added, False if it already exists</span>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span></code></pre></div>
+<p><strong>Example:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_hyperedge</span><span class="p">(</span><span class="s2">&quot;apoptosis_complex&quot;</span><span class="p">,</span> <span class="s2">&quot;protein_complex&quot;</span><span class="p">,</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>                   <span class="p">{</span><span class="s2">&quot;BCL2&quot;</span><span class="p">,</span> <span class="s2">&quot;BAX&quot;</span><span class="p">,</span> <span class="s2">&quot;CASP9&quot;</span><span class="p">,</span> <span class="s2">&quot;CASP3&quot;</span><span class="p">},</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>                   <span class="n">function</span><span class="o">=</span><span class="s2">&quot;programmed_cell_death&quot;</span><span class="p">)</span>
+</span></code></pre></div></p>
+<h4 id="querying-hyperedges">Querying Hyperedges</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Get specific hyperedge</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="n">hyperedge</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_hyperedge</span><span class="p">(</span><span class="s2">&quot;apoptosis_complex&quot;</span><span class="p">)</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># Get all hyperedges</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="n">all_hyperedges</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_hyperedges</span><span class="p">()</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="c1"># Get hyperedges by type</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="n">complexes</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_hyperedges</span><span class="p">(</span><span class="s2">&quot;protein_complex&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="graph-traversal">Graph Traversal</h2>
+<h3 id="neighbor-discovery">Neighbor Discovery</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get neighboring nodes.</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="sd">    Args:</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="sd">        node_id: Node identifier</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="sd">        direction: &quot;in&quot;, &quot;out&quot;, or &quot;both&quot;</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="sd">    Returns:</span>
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="sd">        set[str]: Set of neighboring node IDs</span>
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span></code></pre></div>
+<p><strong>Example:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Get all neighbors</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="n">neighbors</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_neighbors</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">)</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># Get outgoing neighbors only</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="n">outgoing</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_neighbors</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">)</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="c1"># Get incoming neighbors only</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="n">incoming</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_neighbors</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;in&quot;</span><span class="p">)</span>
+</span></code></pre></div></p>
+<h3 id="path-finding">Path Finding</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">find_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Edge</span><span class="p">]]:</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Find all paths between two nodes.</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="sd">    Args:</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="sd">        source: Source node ID</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="sd">        target: Target node ID</span>
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="sd">        max_length: Maximum path length</span>
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="sd">    Returns:</span>
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a><span class="sd">        list[list[Edge]]: List of paths, each path is a list of edges</span>
+</span><span id="__span-22-11"><a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span></code></pre></div>
+<p><strong>Example:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># Find paths between nodes</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="n">paths</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">find_paths</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;cancer&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">paths</span><span class="p">):</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Path </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">edge</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2"> --[</span><span class="si">{</span><span class="n">edge</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">]--&gt; </span><span class="si">{</span><span class="n">edge</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div></p>
+<h3 id="connected-components">Connected Components</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_connected_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Edge</span><span class="p">]:</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get edges connected to a node.</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="sd">    Args:</span>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="sd">        node_id: Node identifier</span>
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="sd">        direction: &quot;in&quot;, &quot;out&quot;, or &quot;both&quot;</span>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="sd">    Returns:</span>
+</span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a><span class="sd">        list[Edge]: List of connected edges</span>
+</span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span></code></pre></div>
+<h2 id="graph-analysis">Graph Analysis</h2>
+<h3 id="statistics">Statistics</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get comprehensive graph statistics.</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="sd">    Returns:</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="sd">        dict[str, Any]: Statistics including basic counts, type breakdowns, and connectivity</span>
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span></code></pre></div>
+<p><strong>Example:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="n">stats</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">()</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Basic stats: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;basic&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node types: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;node_types&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edge types: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;edge_types&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connectivity: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;connectivity&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Statistics Structure:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="p">{</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>    <span class="s2">&quot;basic&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>        <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>        <span class="s2">&quot;edges&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>        <span class="s2">&quot;hyperedges&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>        <span class="s2">&quot;node_types&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>        <span class="s2">&quot;edge_types&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>        <span class="s2">&quot;hyperedge_types&quot;</span><span class="p">:</span> <span class="mi">1</span>
+</span><span id="__span-27-9"><a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>    <span class="p">},</span>
+</span><span id="__span-27-10"><a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>    <span class="s2">&quot;node_types&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span id="__span-27-11"><a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a>        <span class="s2">&quot;protein&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+</span><span id="__span-27-12"><a id="__codelineno-27-12" name="__codelineno-27-12" href="#__codelineno-27-12"></a>        <span class="s2">&quot;disease&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+</span><span id="__span-27-13"><a id="__codelineno-27-13" name="__codelineno-27-13" href="#__codelineno-27-13"></a>        <span class="s2">&quot;drug&quot;</span><span class="p">:</span> <span class="mi">2</span>
+</span><span id="__span-27-14"><a id="__codelineno-27-14" name="__codelineno-27-14" href="#__codelineno-27-14"></a>    <span class="p">},</span>
+</span><span id="__span-27-15"><a id="__codelineno-27-15" name="__codelineno-27-15" href="#__codelineno-27-15"></a>    <span class="s2">&quot;edge_types&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span id="__span-27-16"><a id="__codelineno-27-16" name="__codelineno-27-16" href="#__codelineno-27-16"></a>        <span class="s2">&quot;interaction&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+</span><span id="__span-27-17"><a id="__codelineno-27-17" name="__codelineno-27-17" href="#__codelineno-27-17"></a>        <span class="s2">&quot;causes&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+</span><span id="__span-27-18"><a id="__codelineno-27-18" name="__codelineno-27-18" href="#__codelineno-27-18"></a>        <span class="s2">&quot;treats&quot;</span><span class="p">:</span> <span class="mi">3</span>
+</span><span id="__span-27-19"><a id="__codelineno-27-19" name="__codelineno-27-19" href="#__codelineno-27-19"></a>    <span class="p">},</span>
+</span><span id="__span-27-20"><a id="__codelineno-27-20" name="__codelineno-27-20" href="#__codelineno-27-20"></a>    <span class="s2">&quot;hyperedge_types&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span id="__span-27-21"><a id="__codelineno-27-21" name="__codelineno-27-21" href="#__codelineno-27-21"></a>        <span class="s2">&quot;protein_complex&quot;</span><span class="p">:</span> <span class="mi">2</span>
+</span><span id="__span-27-22"><a id="__codelineno-27-22" name="__codelineno-27-22" href="#__codelineno-27-22"></a>    <span class="p">},</span>
+</span><span id="__span-27-23"><a id="__codelineno-27-23" name="__codelineno-27-23" href="#__codelineno-27-23"></a>    <span class="s2">&quot;connectivity&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span id="__span-27-24"><a id="__codelineno-27-24" name="__codelineno-27-24" href="#__codelineno-27-24"></a>        <span class="s2">&quot;isolated_nodes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-27-25"><a id="__codelineno-27-25" name="__codelineno-27-25" href="#__codelineno-27-25"></a>        <span class="s2">&quot;connected_nodes&quot;</span><span class="p">:</span> <span class="mi">10</span>
+</span><span id="__span-27-26"><a id="__codelineno-27-26" name="__codelineno-27-26" href="#__codelineno-27-26"></a>    <span class="p">}</span>
+</span><span id="__span-27-27"><a id="__codelineno-27-27" name="__codelineno-27-27" href="#__codelineno-27-27"></a><span class="p">}</span>
+</span></code></pre></div></p>
+<h3 id="subgraph-extraction">Subgraph Extraction</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">include_edges</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Graph&#39;</span><span class="p">:</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract a subgraph containing specified nodes.</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="sd">    Args:</span>
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="sd">        node_ids: Set of node IDs to include</span>
+</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a><span class="sd">        include_edges: Whether to include edges between included nodes</span>
+</span><span id="__span-28-7"><a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a>
+</span><span id="__span-28-8"><a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="sd">    Returns:</span>
+</span><span id="__span-28-9"><a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a><span class="sd">        Graph: New graph containing the subgraph</span>
+</span><span id="__span-28-10"><a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span></code></pre></div>
+<p><strong>Example:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1"># Extract subgraph around TP53</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="n">tp53_neighbors</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_neighbors</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">)</span>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="n">subgraph</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_subgraph</span><span class="p">({</span><span class="s2">&quot;TP53&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="n">tp53_neighbors</span><span class="p">)</span>
+</span></code></pre></div></p>
+<h2 id="serialization">Serialization</h2>
+<h3 id="json-exportimport">JSON Export/Import</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert graph to JSON string.&quot;&quot;&quot;</span>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load graph from JSON string.&quot;&quot;&quot;</span>
+</span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a>
+</span><span id="__span-30-7"><a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a><span class="nd">@classmethod</span>
+</span><span id="__span-30-8"><a id="__codelineno-30-8" name="__codelineno-30-8" href="#__codelineno-30-8"></a><span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Graph&#39;</span><span class="p">:</span>
+</span><span id="__span-30-9"><a id="__codelineno-30-9" name="__codelineno-30-9" href="#__codelineno-30-9"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create graph from JSON string.&quot;&quot;&quot;</span>
+</span></code></pre></div>
+<p><strong>Example:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="c1"># Export to JSON</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="n">json_data</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;graph.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+</span><span id="__span-31-5"><a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>
+</span><span id="__span-31-6"><a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a><span class="c1"># Import from JSON</span>
+</span><span id="__span-31-7"><a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="n">new_graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+</span><span id="__span-31-8"><a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a>
+</span><span id="__span-31-9"><a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a><span class="c1"># Or load into existing graph</span>
+</span><span id="__span-31-10"><a id="__codelineno-31-10" name="__codelineno-31-10" href="#__codelineno-31-10"></a><span class="n">graph</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+</span></code></pre></div></p>
+<h3 id="dictionary-conversion">Dictionary Conversion</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert graph to dictionary representation.&quot;&quot;&quot;</span>
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a><span class="nd">@classmethod</span>
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Graph&#39;</span><span class="p">:</span>
+</span><span id="__span-32-6"><a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create graph from dictionary representation.&quot;&quot;&quot;</span>
+</span></code></pre></div>
+<h2 id="performance-characteristics">Performance Characteristics</h2>
+<h3 id="time-complexity">Time Complexity</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Complexity</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add node</td>
+<td>O(1)</td>
+<td>Average case</td>
+</tr>
+<tr>
+<td>Add edge</td>
+<td>O(1)</td>
+<td>Average case</td>
+</tr>
+<tr>
+<td>Add hyperedge</td>
+<td>O(k)</td>
+<td>k = number of nodes in hyperedge</td>
+</tr>
+<tr>
+<td>Get node</td>
+<td>O(1)</td>
+<td>Hash table lookup</td>
+</tr>
+<tr>
+<td>Get edge</td>
+<td>O(1)</td>
+<td>Hash table lookup</td>
+</tr>
+<tr>
+<td>Query by type</td>
+<td>O(n)</td>
+<td>n = number of items of that type</td>
+</tr>
+<tr>
+<td>Get neighbors</td>
+<td>O(deg(v))</td>
+<td>deg(v) = degree of node v</td>
+</tr>
+<tr>
+<td>Path finding</td>
+<td>O(V + E)</td>
+<td>BFS-based</td>
+</tr>
+<tr>
+<td>Serialization</td>
+<td>O(n)</td>
+<td>n = total number of nodes/edges</td>
+</tr>
+</tbody>
+</table>
+<h3 id="memory-usage">Memory Usage</h3>
+<ul>
+<li><strong>Small graphs</strong> (&lt; 1K nodes): ~1-10 MB</li>
+<li><strong>Medium graphs</strong> (1K-100K nodes): ~10-100 MB</li>
+<li><strong>Large graphs</strong> (&gt; 100K nodes): Consider external storage</li>
+</ul>
+<h3 id="optimization-features">Optimization Features</h3>
+<ol>
+<li><strong>Hash-based Indexes</strong>: O(1) node/edge lookup</li>
+<li><strong>Type Indexes</strong>: Fast filtering by type</li>
+<li><strong>Adjacency Indexes</strong>: Efficient neighbor discovery</li>
+<li><strong>Lazy Statistics</strong>: Computed on-demand</li>
+<li><strong>Memory-efficient</strong>: No redundant data storage</li>
+</ol>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="custom-nodeedge-types">Custom Node/Edge Types</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="c1"># Define custom types</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;pathway_1&quot;</span><span class="p">,</span> <span class="s2">&quot;biological_pathway&quot;</span><span class="p">,</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>               <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Apoptosis&quot;</span><span class="p">,</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>               <span class="n">pathway_type</span><span class="o">=</span><span class="s2">&quot;cell_death&quot;</span><span class="p">)</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a>
+</span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;regulates_1&quot;</span><span class="p">,</span> <span class="s2">&quot;regulates&quot;</span><span class="p">,</span>
+</span><span id="__span-33-7"><a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a>              <span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;apoptosis_pathway&quot;</span><span class="p">,</span>
+</span><span id="__span-33-8"><a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a>              <span class="n">regulation_type</span><span class="o">=</span><span class="s2">&quot;activation&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="complex-properties">Complex Properties</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="c1"># Rich metadata</span>
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span>
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>               <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span>
+</span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>               <span class="n">function</span><span class="o">=</span><span class="s2">&quot;tumor_suppressor&quot;</span><span class="p">,</span>
+</span><span id="__span-34-5"><a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a>               <span class="n">uniprot_id</span><span class="o">=</span><span class="s2">&quot;P04637&quot;</span><span class="p">,</span>
+</span><span id="__span-34-6"><a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a>               <span class="n">molecular_weight</span><span class="o">=</span><span class="mi">43653</span><span class="p">,</span>
+</span><span id="__span-34-7"><a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a>               <span class="n">amino_acid_count</span><span class="o">=</span><span class="mi">393</span><span class="p">,</span>
+</span><span id="__span-34-8"><a id="__codelineno-34-8" name="__codelineno-34-8" href="#__codelineno-34-8"></a>               <span class="n">confidence</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span>
+</span><span id="__span-34-9"><a id="__codelineno-34-9" name="__codelineno-34-9" href="#__codelineno-34-9"></a>               <span class="n">sources</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;UniProt&quot;</span><span class="p">,</span> <span class="s2">&quot;PubMed&quot;</span><span class="p">],</span>
+</span><span id="__span-34-10"><a id="__codelineno-34-10" name="__codelineno-34-10" href="#__codelineno-34-10"></a>               <span class="n">last_updated</span><span class="o">=</span><span class="s2">&quot;2024-01-15&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="hypergraph-applications">Hypergraph Applications</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="c1"># Protein complexes</span>
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_hyperedge</span><span class="p">(</span><span class="s2">&quot;TP53_complex&quot;</span><span class="p">,</span> <span class="s2">&quot;protein_complex&quot;</span><span class="p">,</span>
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a>                   <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;MDM2&quot;</span><span class="p">,</span> <span class="s2">&quot;CDKN1A&quot;</span><span class="p">},</span>
+</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a>                   <span class="n">function</span><span class="o">=</span><span class="s2">&quot;cell_cycle_control&quot;</span><span class="p">,</span>
+</span><span id="__span-35-5"><a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a>                   <span class="n">complex_type</span><span class="o">=</span><span class="s2">&quot;regulatory&quot;</span><span class="p">)</span>
+</span><span id="__span-35-6"><a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a>
+</span><span id="__span-35-7"><a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a><span class="c1"># Biological pathways</span>
+</span><span id="__span-35-8"><a id="__codelineno-35-8" name="__codelineno-35-8" href="#__codelineno-35-8"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_hyperedge</span><span class="p">(</span><span class="s2">&quot;apoptosis_pathway&quot;</span><span class="p">,</span> <span class="s2">&quot;biological_pathway&quot;</span><span class="p">,</span>
+</span><span id="__span-35-9"><a id="__codelineno-35-9" name="__codelineno-35-9" href="#__codelineno-35-9"></a>                   <span class="p">{</span><span class="s2">&quot;BCL2&quot;</span><span class="p">,</span> <span class="s2">&quot;BAX&quot;</span><span class="p">,</span> <span class="s2">&quot;CASP9&quot;</span><span class="p">,</span> <span class="s2">&quot;CASP3&quot;</span><span class="p">,</span> <span class="s2">&quot;CASP7&quot;</span><span class="p">},</span>
+</span><span id="__span-35-10"><a id="__codelineno-35-10" name="__codelineno-35-10" href="#__codelineno-35-10"></a>                   <span class="n">pathway_type</span><span class="o">=</span><span class="s2">&quot;cell_death&quot;</span><span class="p">,</span>
+</span><span id="__span-35-11"><a id="__codelineno-35-11" name="__codelineno-35-11" href="#__codelineno-35-11"></a>                   <span class="n">regulation</span><span class="o">=</span><span class="s2">&quot;extrinsic_and_intrinsic&quot;</span><span class="p">)</span>
+</span><span id="__span-35-12"><a id="__codelineno-35-12" name="__codelineno-35-12" href="#__codelineno-35-12"></a>
+</span><span id="__span-35-13"><a id="__codelineno-35-13" name="__codelineno-35-13" href="#__codelineno-35-13"></a><span class="c1"># Drug targets</span>
+</span><span id="__span-35-14"><a id="__codelineno-35-14" name="__codelineno-35-14" href="#__codelineno-35-14"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_hyperedge</span><span class="p">(</span><span class="s2">&quot;cancer_treatment&quot;</span><span class="p">,</span> <span class="s2">&quot;drug_target_set&quot;</span><span class="p">,</span>
+</span><span id="__span-35-15"><a id="__codelineno-35-15" name="__codelineno-35-15" href="#__codelineno-35-15"></a>                   <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;BRAF&quot;</span><span class="p">,</span> <span class="s2">&quot;EGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;PIK3CA&quot;</span><span class="p">},</span>
+</span><span id="__span-35-16"><a id="__codelineno-35-16" name="__codelineno-35-16" href="#__codelineno-35-16"></a>                   <span class="n">drug_class</span><span class="o">=</span><span class="s2">&quot;targeted_therapy&quot;</span><span class="p">,</span>
+</span><span id="__span-35-17"><a id="__codelineno-35-17" name="__codelineno-35-17" href="#__codelineno-35-17"></a>                   <span class="n">cancer_type</span><span class="o">=</span><span class="s2">&quot;multiple&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-use-descriptive-ids">1. Use Descriptive IDs</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="c1"># Good</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;TP53_protein&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TP53&quot;</span><span class="p">)</span>
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;TP53_regulates_BRAF&quot;</span><span class="p">,</span> <span class="s2">&quot;regulates&quot;</span><span class="p">,</span> <span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;BRAF&quot;</span><span class="p">)</span>
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a>
+</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a><span class="c1"># Avoid</span>
+</span><span id="__span-36-6"><a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;n1&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TP53&quot;</span><span class="p">)</span>
+</span><span id="__span-36-7"><a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;e1&quot;</span><span class="p">,</span> <span class="s2">&quot;regulates&quot;</span><span class="p">,</span> <span class="s2">&quot;n1&quot;</span><span class="p">,</span> <span class="s2">&quot;n2&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="2-leverage-type-system">2. Leverage Type System</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="c1"># Use consistent types</span>
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;protein_1&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;disease_1&quot;</span><span class="p">,</span> <span class="s2">&quot;disease&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</span><span id="__span-37-4"><a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;interaction_1&quot;</span><span class="p">,</span> <span class="s2">&quot;interaction&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="3-use-properties-for-metadata">3. Use Properties for Metadata</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="c1"># Include relevant properties</span>
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span>
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>               <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span>
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>               <span class="n">function</span><span class="o">=</span><span class="s2">&quot;tumor_suppressor&quot;</span><span class="p">,</span>
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>               <span class="n">confidence</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span>
+</span><span id="__span-38-6"><a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>               <span class="n">sources</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;UniProt&quot;</span><span class="p">,</span> <span class="s2">&quot;PubMed&quot;</span><span class="p">])</span>
+</span></code></pre></div>
+<h3 id="4-validate-data-integrity">4. Validate Data Integrity</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="c1"># Check for required nodes before adding edges</span>
+</span><span id="__span-39-2"><a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a><span class="k">if</span> <span class="ow">not</span> <span class="n">graph</span><span class="o">.</span><span class="n">has_node</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">):</span>
+</span><span id="__span-39-3"><a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>    <span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TP53&quot;</span><span class="p">)</span>
+</span><span id="__span-39-4"><a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a>
+</span><span id="__span-39-5"><a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;interaction_1&quot;</span><span class="p">,</span> <span class="s2">&quot;interaction&quot;</span><span class="p">,</span> <span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;BRAF&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="5-use-hyperedges-for-complex-relationships">5. Use Hyperedges for Complex Relationships</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="c1"># For multi-node relationships</span>
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_hyperedge</span><span class="p">(</span><span class="s2">&quot;complex_1&quot;</span><span class="p">,</span> <span class="s2">&quot;protein_complex&quot;</span><span class="p">,</span>
+</span><span id="__span-40-3"><a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>                   <span class="p">{</span><span class="s2">&quot;protein_1&quot;</span><span class="p">,</span> <span class="s2">&quot;protein_2&quot;</span><span class="p">,</span> <span class="s2">&quot;protein_3&quot;</span><span class="p">},</span>
+</span><span id="__span-40-4"><a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a>                   <span class="n">function</span><span class="o">=</span><span class="s2">&quot;cell_cycle_control&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="integration-with-biocypher-agent">Integration with BioCypher Agent</h2>
+<p>The Graph class is the underlying data structure for the <code>BioCypherWorkflow</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">biocypher</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_workflow</span>
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a><span class="c1"># Create agent (uses Graph internally)</span>
+</span><span id="__span-41-4"><a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a><span class="n">agent</span> <span class="o">=</span> <span class="n">create_workflow</span><span class="p">(</span><span class="s2">&quot;my_knowledge&quot;</span><span class="p">)</span>
+</span><span id="__span-41-5"><a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a>
+</span><span id="__span-41-6"><a id="__codelineno-41-6" name="__codelineno-41-6" href="#__codelineno-41-6"></a><span class="c1"># Access underlying graph</span>
+</span><span id="__span-41-7"><a id="__codelineno-41-7" name="__codelineno-41-7" href="#__codelineno-41-7"></a><span class="n">graph</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">get_graph</span><span class="p">()</span>
+</span><span id="__span-41-8"><a id="__codelineno-41-8" name="__codelineno-41-8" href="#__codelineno-41-8"></a>
+</span><span id="__span-41-9"><a id="__codelineno-41-9" name="__codelineno-41-9" href="#__codelineno-41-9"></a><span class="c1"># Use graph methods directly</span>
+</span><span id="__span-41-10"><a id="__codelineno-41-10" name="__codelineno-41-10" href="#__codelineno-41-10"></a><span class="n">stats</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_statistics</span><span class="p">()</span>
+</span><span id="__span-41-11"><a id="__codelineno-41-11" name="__codelineno-41-11" href="#__codelineno-41-11"></a><span class="n">paths</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">find_paths</span><span class="p">(</span><span class="s2">&quot;node1&quot;</span><span class="p">,</span> <span class="s2">&quot;node2&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="future-enhancements">Future Enhancements</h2>
+<p>The Graph class is designed to be extensible. Future enhancements may include
+(if reasonable to implement and not covered by other packages already):</p>
+<ol>
+<li>
+<p><strong>Schema Validation and Persistence</strong>:</p>
+<ul>
+<li>Agent-in-the-loop schema validation of entities</li>
+<li>Automatic rollback of inconsistent operations</li>
+<li>Namespace management for alignment with ontologies</li>
+</ul>
+</li>
+<li>
+<p><strong>Connectivity with Pre-existing Databases</strong>:</p>
+<ul>
+<li>Connect to and extract consistent subgraphs from existing databases (such as Open Targets)</li>
+<li>Automatically adapt to external schema configurations</li>
+<li>Encode meta-level workflows as a reasoning graph</li>
+</ul>
+</li>
+<li>
+<p><strong>Query Language</strong>:</p>
+<ul>
+<li>GraphQL-like querying</li>
+<li>Pattern matching</li>
+<li>Complex graph queries</li>
+</ul>
+</li>
+<li>
+<p><strong>Visualization</strong>:</p>
+<ul>
+<li>Built-in graph plotting</li>
+<li>Interactive visualizations</li>
+<li>Export to visualization formats</li>
+</ul>
+</li>
+<li>
+<p><strong>Machine Learning</strong>:</p>
+<ul>
+<li>Connect graph representation to ML / DL libraries</li>
+<li>Node embeddings</li>
+<li>Graph neural networks</li>
+<li>Graph-based ML algorithms</li>
+</ul>
+</li>
+<li>
+<p><strong>Performance Optimizations</strong>:</p>
+<ul>
+<li>Parallel processing</li>
+<li>Memory-mapped storage</li>
+<li>Distributed graph operations</li>
+</ul>
+</li>
+</ol>
+<h2 id="conclusion">Conclusion</h2>
+<p>The Graph class provides a powerful, flexible foundation for knowledge graph representation. Its unified design supports various graph types while maintaining simplicity and performance. The pure Python implementation makes it ideal for sandbox environments and LLM agent integration, while the comprehensive API enables sophisticated graph operations and analysis.</p>
+<p>Key strengths:</p>
+<ul>
+<li><strong>Unified Design</strong>: Single class for all graph types</li>
+<li><strong>Pure Python</strong>: No external dependencies</li>
+<li><strong>Type Safety</strong>: Modern type annotations</li>
+<li><strong>Performance</strong>: Optimized for common operations</li>
+<li><strong>Extensibility</strong>: Easy to add new features</li>
+<li><strong>Serialization</strong>: Built-in persistence</li>
+</ul>
+<p>The Graph class serves as the core data structure for the BioCypher Agent API, providing the foundation for LLM agent knowledge graph construction and reasoning.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../ontologies/" class="md-footer__link md-footer__link--prev" aria-label="Previous: About Ontologies">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                About Ontologies
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../architecture-migration/" class="md-footer__link md-footer__link--next" aria-label="Next: Architecture Migration Guide">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Architecture Migration Guide
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      © Copyright 2021-2025, BioCypher developers.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://biocypher.zulipchat.com/" target="_blank" rel="noopener" title="biocypher.zulipchat.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22.767 3.589c0 1.209-.543 2.283-1.37 2.934l-8.034 7.174c-.149.128-.343-.078-.235-.25l2.946-5.9c.083-.165-.024-.368-.194-.368H4.452c-1.77 0-3.219-1.615-3.219-3.59C1.233 1.616 2.682 0 4.452 0h15.096c1.77-.001 3.219 1.614 3.219 3.589M4.452 24h15.096c1.77 0 3.219-1.616 3.219-3.59s-1.449-3.59-3.219-3.59H8.12c-.17 0-.277-.202-.194-.367l2.946-5.9c.108-.172-.086-.378-.235-.25l-8.033 7.173c-.828.65-1.37 1.725-1.37 2.934 0 1.974 1.448 3.59 3.218 3.59"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://saezlab.org/" target="_blank" rel="noopener" title="saezlab.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 0H4v2h16zM4 24h16v-2H4zM20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m-8 2.75A2.25 2.25 0 0 1 14.25 9 2.25 2.25 0 0 1 12 11.25 2.25 2.25 0 0 1 9.75 9 2.25 2.25 0 0 1 12 6.75M17 17H7v-1.5c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "content.action.edit", "navigation.tabs", "navigation.instant", "navigation.footer"], "search": "../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.50899def.min.js"></script>
+      
+    
+  </body>
+</html>
