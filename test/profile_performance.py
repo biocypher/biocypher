@@ -5,6 +5,7 @@ import pstats
 import random
 import timeit
 
+
 # ANSI color codes for terminal output
 class bcolors:
     HEADER = "\033[95m"
@@ -16,6 +17,7 @@ class bcolors:
     ENDC = "\033[0m"
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
+
 
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher.output.connect._neo4j_driver import _Neo4jDriver

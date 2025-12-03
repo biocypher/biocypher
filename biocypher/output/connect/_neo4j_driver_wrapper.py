@@ -13,6 +13,7 @@ import itertools
 import os
 import re
 import warnings
+
 from typing import Literal
 
 import appdirs
@@ -68,26 +69,26 @@ def _if_none(*values):
 def _pretty_profile(d, lines=None, indent=0):
     """
     Pretty format a Neo4j profile dict.
-    
+
     Takes Neo4j profile dictionary and an optional header as
     list and creates a list of strings to be printed.
-    
+
     Args:
         d: Profile dictionary or list
         lines: Optional list to append to
         indent: Indentation level
-        
+
     Returns:
         List of formatted strings
     """
     if lines is None:
         lines = []
-    
+
     # ANSI color codes for terminal output
     OKBLUE = "\033[94m"
     WARNING = "\033[93m"
     ENDC = "\033[0m"
-    
+
     # if more items, branch
     if d:
         if isinstance(d, list):
@@ -96,16 +97,11 @@ def _pretty_profile(d, lines=None, indent=0):
         elif isinstance(d, dict):
             typ = d.pop("operatorType", None)
             if typ:
-                lines.append(
-                    ("\t" * indent)
-                    + "|"
-                    + "\t"
-                    + f"{OKBLUE}Step: {typ} {ENDC}"
-                )
-            
+                lines.append(("\t" * indent) + "|" + "\t" + f"{OKBLUE}Step: {typ} {ENDC}")
+
             # buffer children
             chi = d.pop("children", None)
-            
+
             for key, value in d.items():
                 if key == "args":
                     _pretty_profile(value, lines, indent)
@@ -113,26 +109,14 @@ def _pretty_profile(d, lines=None, indent=0):
                 # both in the same process
                 elif key == "Time" or key == "time":
                     lines.append(
-                        ("\t" * indent)
-                        + "|"
-                        + "\t"
-                        + str(key)
-                        + ": "
-                        + f"{WARNING}{value:,}{ENDC}".replace(",", " ")
+                        ("\t" * indent) + "|" + "\t" + str(key) + ": " + f"{WARNING}{value:,}{ENDC}".replace(",", " ")
                     )
                 else:
-                    lines.append(
-                        ("\t" * indent)
-                        + "|"
-                        + "\t"
-                        + str(key)
-                        + ": "
-                        + str(value)
-                    )
-            
+                    lines.append(("\t" * indent) + "|" + "\t" + str(key) + ": " + str(value))
+
             # now the children
             _pretty_profile(chi, lines, indent + 1)
-    
+
     return lines
 
 
@@ -235,10 +219,7 @@ class Neo4jDriver:
                 Ignored.
         """
         if not NEO4J_AVAILABLE:
-            raise ImportError(
-                "Neo4j driver is not installed. Install it with: "
-                "pip install neo4j>=5.0"
-            )
+            raise ImportError("Neo4j driver is not installed. Install it with: " "pip install neo4j>=5.0")
 
         self.driver = getattr(driver, "driver", driver)
         self._db_config = {
@@ -294,12 +275,12 @@ class Neo4jDriver:
     @property
     def _connect_param_available(self) -> bool:
         """Check for essential connection parameters."""
-        return all(
-            self._db_config.get(k, None) for k in self._connect_essential
-        )
+        return all(self._db_config.get(k, None) for k in self._connect_essential)
 
     @property
-    def status(self) -> Literal[
+    def status(
+        self,
+    ) -> Literal[
         "no driver",
         "no connection",
         "db offline",
@@ -427,12 +408,7 @@ class Neo4jDriver:
     @property
     def current_db(self) -> str:
         """Name of the current database."""
-        return (
-            self._db_config["db"]
-            or self._driver_con_db
-            or self.home_db
-            or neo4j.DEFAULT_DATABASE
-        )
+        return self._db_config["db"] or self._driver_con_db or self.home_db or neo4j.DEFAULT_DATABASE
 
     @current_db.setter
     def current_db(self, name: str):
@@ -488,18 +464,12 @@ class Neo4jDriver:
     @property
     def _get_fallback_db(self) -> tuple[str]:
         """Get fallback database tuple."""
-        return _to_tuple(
-            getattr(self, "_fallback_db", None)
-            or self._db_config["fallback_db"]
-        )
+        return _to_tuple(getattr(self, "_fallback_db", None) or self._db_config["fallback_db"])
 
     @property
     def _get_fallback_on(self) -> set[str]:
         """Get fallback error types."""
-        return _to_set(
-            getattr(self, "_fallback_on", None)
-            or self._db_config["fallback_on"]
-        )
+        return _to_set(getattr(self, "_fallback_on", None) or self._db_config["fallback_on"])
 
     def query(
         self,
@@ -558,28 +528,20 @@ class Neo4jDriver:
 
         if not self.driver:
             if raise_errors:
-                raise RuntimeError(
-                    "Driver is not available. The driver may be closed or in offline mode."
-                )
+                raise RuntimeError("Driver is not available. The driver may be closed or in offline mode.")
             logger.error("Driver is not available. Cannot execute query.")
             return None, None
 
         # Check if driver is closed (Neo4j 5.x driver has _closed attribute)
         if hasattr(self.driver, "_closed") and self.driver._closed:
             if raise_errors:
-                raise RuntimeError(
-                    "Driver is closed. Please reconnect or create a new driver instance."
-                )
+                raise RuntimeError("Driver is closed. Please reconnect or create a new driver instance.")
             logger.error("Driver is closed. Cannot execute query.")
             return None, None
 
         db = db or self._db_config["db"] or neo4j.DEFAULT_DATABASE
         fetch_size = fetch_size or self._db_config["fetch_size"]
-        raise_errors = (
-            self._db_config["raise_errors"]
-            if raise_errors is None
-            else raise_errors
-        )
+        raise_errors = self._db_config["raise_errors"] if raise_errors is None else raise_errors
 
         # Combine parameters dict with kwargs (kwargs for backward compatibility)
         query_params = dict(parameters or {}, **kwargs)
@@ -587,9 +549,7 @@ class Neo4jDriver:
         # Neo4j 5+ uses database parameter, older versions use it conditionally
         session_kwargs = {
             "fetch_size": fetch_size,
-            "default_access_mode": (
-                neo4j.WRITE_ACCESS if write else neo4j.READ_ACCESS
-            ),
+            "default_access_mode": (neo4j.WRITE_ACCESS if write else neo4j.READ_ACCESS),
         }
 
         # For Neo4j 4.0+, use database parameter if multi_db is True
@@ -604,16 +564,12 @@ class Neo4jDriver:
 
         except (neo4j_exc.Neo4jError, neo4j_exc.DriverError) as e:
             fallback_db = fallback_db or getattr(self, "_fallback_db", ())
-            fallback_on = _to_set(
-                _if_none(fallback_on, self._get_fallback_on)
-            )
+            fallback_on = _to_set(_if_none(fallback_on, self._get_fallback_on))
 
             if self._match_error(e, fallback_on):
                 for fdb in _to_tuple(fallback_db):
                     if fdb != db:
-                        logger.warning(
-                            f"Running query against fallback database `{fdb}`."
-                        )
+                        logger.warning(f"Running query against fallback database `{fdb}`.")
                         return self.query(
                             query=query,
                             db=fdb,
@@ -667,16 +623,14 @@ class Neo4jDriver:
                 - list of str: a list of strings ready for printing
         """
         logger.info("Explaining a query.")
-        data, summary = self.query(
-            query, db, fetch_size, write, explain=True, **kwargs
-        )
-        
+        data, summary = self.query(query, db, fetch_size, write, explain=True, **kwargs)
+
         if not summary:
             return None, []
-        
+
         plan = summary.plan
         printout = _pretty_profile(plan)
-        
+
         return plan, printout
 
     def profile(self, query, db=None, fetch_size=None, write=True, **kwargs):
@@ -696,22 +650,18 @@ class Neo4jDriver:
                 - list of str: a list of strings ready for printing
         """
         logger.info("Profiling a query.")
-        data, summary = self.query(
-            query, db, fetch_size, write, profile=True, **kwargs
-        )
-        
+        data, summary = self.query(query, db, fetch_size, write, profile=True, **kwargs)
+
         if not summary:
             return None, []
-        
+
         prof = summary.profile
-        exec_time = (
-            summary.result_available_after + summary.result_consumed_after
-        )
-        
+        exec_time = summary.result_available_after + summary.result_consumed_after
+
         # get print representation
         header = f"Execution time: {exec_time:n}\n"
         printout = _pretty_profile(prof, [header], indent=0)
-        
+
         return prof, printout
 
     def db_exists(self, name: str | None = None) -> bool:
@@ -780,17 +730,15 @@ class Neo4jDriver:
         """Delete all contents of the current database."""
         if not self.driver:
             raise RuntimeError(
-                "Driver is not available. Cannot wipe database. "
-                "The driver may be closed or in offline mode."
+                "Driver is not available. Cannot wipe database. " "The driver may be closed or in offline mode."
             )
-        
+
         # Check if driver is closed (Neo4j 5.x driver has _closed attribute)
         if hasattr(self.driver, "_closed") and self.driver._closed:
             raise RuntimeError(
-                "Driver is closed. Cannot wipe database. "
-                "Please reconnect or create a new driver instance."
+                "Driver is closed. Cannot wipe database. " "Please reconnect or create a new driver instance."
             )
-        
+
         logger.info(f"Wiping database `{self.current_db}`.")
         self.query("MATCH (n) DETACH DELETE n;")
         self.drop_indices_constraints()
@@ -847,7 +795,7 @@ class Neo4jDriver:
         what: Literal["indexes", "indices", "constraints"] = "constraints",
     ):
         """Drop indices or constraints.
-        
+
         Compatible with Neo4j 4.x and 5.x. Uses SHOW syntax which is
         available in both versions.
         """
@@ -903,10 +851,7 @@ class Neo4jDriver:
         what_u = what_s.get(what, None)
 
         if not what_u:
-            msg = (
-                f'Allowed keywords are: "indexes", "indices" or "constraints", '
-                f'not `{what}`.'
-            )
+            msg = f'Allowed keywords are: "indexes", "indices" or "constraints", ' f"not `{what}`."
             logger.error(msg)
             raise ValueError(msg)
 
@@ -921,9 +866,7 @@ class Neo4jDriver:
     @property
     def edge_count(self) -> int | None:
         """Number of edges in the database."""
-        res, summary = self.query(
-            "MATCH ()-[r]->() RETURN COUNT(r) AS count;"
-        )
+        res, summary = self.query("MATCH ()-[r]->() RETURN COUNT(r) AS count;")
         return res[0]["count"] if res else None
 
     @property
@@ -1003,16 +946,12 @@ class Neo4jDriver:
     def session(self, **kwargs):
         """Context manager with a database connection session."""
         if not self.driver:
-            raise RuntimeError(
-                "Driver is not available. The driver may be closed or in offline mode."
-            )
-        
+            raise RuntimeError("Driver is not available. The driver may be closed or in offline mode.")
+
         # Check if driver is closed
         if hasattr(self.driver, "_closed") and self.driver._closed:
-            raise RuntimeError(
-                "Driver is closed. Please reconnect or create a new driver instance."
-            )
-        
+            raise RuntimeError("Driver is closed. Please reconnect or create a new driver instance.")
+
         session = self.driver.session(**kwargs)
 
         try:
@@ -1033,10 +972,7 @@ class Neo4jDriver:
 
     def __repr__(self):
         """String representation."""
-        return (
-            f"<{self.__class__.__name__} "
-            f"{self._connection_str if self.driver else '[offline]'}>"
-        )
+        return f"<{self.__class__.__name__} " f"{self._connection_str if self.driver else '[offline]'}>"
 
     @property
     def _connection_str(self) -> str:
@@ -1049,11 +985,7 @@ class Neo4jDriver:
             self.driver.__class__.__name__,
         )[0].lower()
 
-        address = (
-            self.driver._pool.address
-            if hasattr(self.driver, "_pool")
-            else ("unknown", 0)
-        )
+        address = self.driver._pool.address if hasattr(self.driver, "_pool") else ("unknown", 0)
 
         return f"{protocol}://{address[0]}:{address[1]}/{self.user or 'unknown'}"
 
@@ -1071,7 +1003,7 @@ class Neo4jDriver:
     def apoc_version(self) -> str | None:
         """
         Version of the APOC plugin available in the current database.
-        
+
         Returns:
             APOC version string or None if APOC is not available
         """
@@ -1091,7 +1023,7 @@ class Neo4jDriver:
     def has_apoc(self) -> bool:
         """
         Check if APOC is available in the current database.
-        
+
         Returns:
             True if APOC is available, False otherwise
         """
@@ -1157,9 +1089,5 @@ class Neo4jDriver:
         errors = {str_to_exc(e) for e in _to_set(errors)}
 
         return error in errors or (
-            isinstance(error, type)
-            and any(
-                issubclass(error, e) for e in errors if isinstance(e, type)
-            )
+            isinstance(error, type) and any(issubclass(error, e) for e in errors if isinstance(e, type))
         )
-

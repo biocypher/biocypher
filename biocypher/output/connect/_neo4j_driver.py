@@ -79,7 +79,7 @@ class _Neo4jDriver:
 
     def _update_meta_graph(self):
         """Update the BioCypher meta graph with version information.
-        
+
         Requires APOC to be installed. If APOC is not available, this
         operation is skipped with a warning.
         """
@@ -149,7 +149,7 @@ class _Neo4jDriver:
 
     def _get_neo4j_version(self):
         """Get neo4j version.
-        
+
         Returns the Neo4j server version. If detection fails, defaults to
         "5.0.0" to use the newer syntax (which is more likely for new
         installations).
@@ -402,9 +402,7 @@ class _Neo4jDriver:
 
         method = "explain" if explain else "profile" if profile else "query"
 
-        result = getattr(self._driver, method)(
-            edge_query, parameters={"rels": rels}
-        )
+        result = getattr(self._driver, method)(edge_query, parameters={"rels": rels})
 
         logger.info("Finished merging edges.")
 
