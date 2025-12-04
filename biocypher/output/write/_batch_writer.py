@@ -162,8 +162,8 @@ class _BatchWriter(_Writer, ABC):
         which need to be overwritten by the child classes.
 
         Each batch writer instance has a fixed representation that needs to be
-        passed at instantiation via the :py:attr:`schema` argument. The instance
-        also expects an ontology adapter via :py:attr:`ontology_adapter` to be
+        passed at instantiation via the `schema` argument. The instance
+        also expects an ontology adapter via `ontology_adapter` to be
         able to convert and extend the hierarchy.
 
         Requires the following methods to be overwritten by database-specific
