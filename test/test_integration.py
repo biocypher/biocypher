@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 
 import networkx as nx
 import pytest
@@ -87,7 +88,11 @@ def test_write_schema_info_as_node(core, _get_nodes):
     assert schema_part == schema
 
     # test import call
-    import_call_path = os.path.join(core._output_directory, "neo4j-admin-import-call.sh")
+    if sys.platform.startswith("win"):
+        import_call_filename = "neo4j-admin-import-call.ps1"
+    else:
+        import_call_filename = "neo4j-admin-import-call.sh"
+    import_call_path = os.path.join(core._output_directory, import_call_filename)
     assert os.path.exists(import_call_path)
     with open(import_call_path, "r") as f:
         import_call = f.read()
