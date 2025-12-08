@@ -2,6 +2,9 @@
 
 import os
 
+import copy
+import networkx as nx
+
 from biocypher._logger import logger
 from biocypher.output.write._writer import _Writer
 
@@ -55,6 +58,11 @@ class _BioPathNetWriter(_Writer):
         dict_entity_types = {}
         str_nodes_props_graph = []
 
+        graph_hierarchy = copy.copy(self.translator.ontology._head_ontology.get_nx_graph()).reverse()
+        logger.debug(f"type(graph_hierarchy) = {type(graph_hierarchy)}")
+        logger.debug(f"graph_hierarchy = {graph_hierarchy.nodes()}")
+        ancestors_set = set()
+
         for entity in nodes:
             semantic_type = entity.get_type()
             entity_id = entity.get_id()
@@ -69,14 +77,58 @@ class _BioPathNetWriter(_Writer):
                 if value:
                     str_nodes_props_graph.append(" ".join([entity_id, key, str(value)]))
 
+            # Add all ancestors of the entity type in the set, in order to reconstruct
+            # the useful part of the ontology for passing it to BioPathNet
+            ancestors = nx.ancestors(graph_hierarchy, semantic_type )|{semantic_type}
+            logger.debug(f"Adding the type : {semantic_type}")
+            logger.debug(f"Ancestors : {ancestors}")
+            ancestors_set.update(ancestors)
+
+        # Reconstruct the subgraph corresponding to the usefull part of the ontology
+        logger.debug(f"ancestors_set : {ancestors_set}")
+        sub_hierarchy = graph_hierarchy.subgraph(ancestors_set)
+
         passed = self._write_semantic_types_in_file(dict_entity_types)
         if passed:
             passed = self._write_properties_in_file(str_nodes_props_graph)
+            if passed:
+                passed = self._write_hierarchy_in_file(sub_hierarchy)
 
         if passed:
             return True
         else:
             return False
+
+
+    def _write_hierarchy_in_file(
+        self,
+        subgraph: nx.DiGraph,
+    ) -> bool:
+        """
+        Writes the list of edges of the used part of the ontology T-box
+        in the BPN learning graph file.
+
+        For each edge of the graph, a line containing the following string:
+            source is_a target
+        is written.
+        """
+        file_name = os.path.join(self.output_directory,
+                                 f"{self.learning_graph_file_stem[0]}.{self.file_format[0]}")
+        with open(file_name, 'a', encoding='utf-8') as f:
+            logger.debug(f"subgraph = {subgraph}")
+            logger.debug(f"subgraph.edges() = {subgraph.edges()}")
+            for edge in subgraph.edges():
+                source, target = edge
+                relation = "is_a"
+                str_line = " ".join([target, relation, source, "\n"])
+                f.write(str_line)
+                logger.debug(f"New line in file {self.learning_graph_file_stem[0]}.{self.file_format[0]} : {str_line}")
+
+        return True
+
+
+
+
 
     def _write_semantic_types_in_file(
         self,
@@ -89,17 +141,22 @@ class _BioPathNetWriter(_Writer):
         For each entity of the graph, a line containing the following string:
             entity_id entity_semantic_type
         is written.
-        """
+y        """
         file_name = os.path.join(self.output_directory,
                                  f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
+        file2_name = os.path.join(self.output_directory,
+                                 f"{self.learning_graph_file_stem[0]}.{self.file_format[0]}")
         logger.debug(f"In _biopathnet.py, output_directory = {self.output_directory}")
         logger.debug(f"In _biopathnet.py, entity_types_file_stem = {self.entity_types_file_stem}")
         logger.debug(f"In _biopathnet.py, file_format= {self.file_format}")
         logger.debug(f"In _biopathnet.py, filename = {file_name}")
-        with open(file_name, 'w', encoding='utf-8') as f:
-            for id, type in entities_semantic_types.items():
-                line = " ".join([id, type, "\n"])
-                f.write(line)
+        with open(file_name, 'a', encoding='utf-8') as f:
+            with open(file2_name, 'a', encoding='utf-8') as f2:
+                for id, type in entities_semantic_types.items():
+                    line1 = " ".join([id, type, "\n"])
+                    f.write(line1)
+                    line2 = " ".join([id, "is_a", type, "\n"])
+                    f2.write(line2)
 
         return True
 
@@ -147,12 +204,14 @@ class _BioPathNetWriter(_Writer):
         # See if it is needed or not. Fix if needed
         file_name = os.path.join(self.output_directory,
                                  f"{self.learning_graph_file_stem[0]}.{self.file_format[0]}")
-        with open(file_name, 'w', encoding='utf-8') as f:
+        with open(file_name, 'a', encoding='utf-8') as f:
             for edge in edges:
                 source = edge.get_source_id()
                 target = edge.get_target_id()
-                relation = edge.get_id()
+                relation = edge.get_label()
                 #relation_properties = edge.get_properties()
+
+                print(f"relation id = `{relation}'")
                 if relation is None:
                     relation = "".join([source, "_", target])
 
@@ -169,7 +228,7 @@ class _BioPathNetWriter(_Writer):
             str: The name of the import script (ending in .sh)
 
         """
-        return ""
+        return "noop.sh"
 
     def _construct_import_call(self) -> str:
         """Write the import call.
@@ -181,4 +240,4 @@ class _BioPathNetWriter(_Writer):
             bool: The return value. True for success, False otherwise.
 
         """
-        return ""
+        return "# TODO?"
