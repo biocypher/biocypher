@@ -1,5 +1,7 @@
 import logging
 import os
+import re
+import sys
 
 import pytest
 
@@ -88,7 +90,12 @@ def test_neo4j_write_node_data_headers_import_call(bw, _get_nodes):
 
     protein_header_csv = os.path.join(tmp_path, "Protein-header.csv")
     micro_rna_header_csv = os.path.join(tmp_path, "MicroRNA-header.csv")
-    import_call_path = os.path.join(tmp_path, "neo4j-admin-import-call.sh")
+
+    # Determine import call script name based on OS
+    if sys.platform.startswith("win"):
+        import_call_path = os.path.join(tmp_path, "neo4j-admin-import-call.ps1")
+    else:
+        import_call_path = os.path.join(tmp_path, "neo4j-admin-import-call.sh")
 
     with open(protein_header_csv) as f:
         protein_header = f.read()
@@ -129,6 +136,29 @@ def test_construct_import_call(bw):
 
     import_script = bw._construct_import_call()
 
+    assert "neo4j-admin" in import_script
+    assert "import" in import_script
+    assert "--database=neo4j" in import_script
+
+    if sys.platform.startswith("win"):
+        # PowerShell-specific assertions
+        assert ".ps1" in import_script
+        assert "$version" in import_script or "powershell" in import_script
+        assert "$NEO4J_BIN_PATH_WINDOWS" in import_script
+        assert "--overwrite-destination=true" in import_script or "--force=true" in import_script
+    else:
+        # Bash-specific assertions
+        assert "#!/bin/bash" in import_script
+        assert "bin/neo4j-admin import" in import_script
+        assert "--overwrite-destination=true" in import_script or "--force=true" in import_script
+        assert "database import full neo4j" in import_script or "import --database=neo4j" in import_script
+
+
+def test_construct_import_call_bash(bw):
+    assert isinstance(bw, _Neo4jBatchWriter)
+
+    import_script = bw._construct_import_call_bash()
+
     assert "--overwrite-destination=true" in import_script
     assert "bin/neo4j-admin import" in import_script
     assert "--force=true" in import_script
@@ -136,6 +166,24 @@ def test_construct_import_call(bw):
     assert "neo4j" in import_script
     assert "bin/neo4j-admin database import full neo4j" in import_script
     assert "bin/neo4j-admin import --database=neo4j" in import_script
+
+
+def test_construct_import_call_powershell(bw):
+    assert isinstance(bw, _Neo4jBatchWriter)
+
+    import_script = bw._construct_import_call_powershell()
+
+    assert "$version" in import_script or "powershell" in import_script
+    assert "neo4j-admin" in import_script
+    assert ".ps1" in import_script
+
+    assert "--overwrite-destination=true" in import_script
+    assert "$NEO4J_BIN_PATH_WINDOWS $args_neo4j" in import_script
+    assert "--force=true" in import_script
+    assert "--database=neo4j" in import_script
+    assert "neo4j" in import_script
+    assert "database import full neo4j" in import_script
+    assert "import --database=neo4j" in import_script
 
 
 def test_write_hybrid_ontology_nodes(bw):
@@ -757,7 +805,12 @@ def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
 
     perturbed_in_disease_csv = os.path.join(tmp_path, "PERTURBED_IN_DISEASE-header.csv")
     is_mutated_in_csv = os.path.join(tmp_path, "Is_Mutated_In-header.csv")
-    call_csv = os.path.join(tmp_path, "neo4j-admin-import-call.sh")
+
+    # Determine import call script name based on OS
+    if sys.platform.startswith("win"):
+        call_csv = os.path.join(tmp_path, "neo4j-admin-import-call.ps1")
+    else:
+        call_csv = os.path.join(tmp_path, "neo4j-admin-import-call.sh")
 
     with open(perturbed_in_disease_csv) as f:
         perturbed_in_disease = f.read()
@@ -1108,3 +1161,55 @@ def test_labels_order_dsc(bw):
         "FunctionalEffectVariant",
         "AlteredGeneProductLevel",
     ]
+
+
+def test_powershell_template_structure():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    template_path = os.path.join(
+        base_dir, "..", "..", "..", "..", "biocypher", "output", "templates", "powershell_template.ps1"
+    )
+    template_path = os.path.normpath(template_path)
+
+    with open(template_path, encoding="utf-8") as f:
+        content = f.read()
+
+    # Check for Neo4j bin path placeholder and output
+    assert "{neo4j_bin_path}" in content
+    assert "$NEO4J_BIN_PATH_WINDOWS" in content
+
+    # Check for Neo4j version check placeholder and output
+    assert "{neo4j_version_check}" in content
+    assert "$version" in content
+
+    # Check for major version extraction
+    assert "$major_version" in content
+    assert "$major = [int]$major_version" in content
+
+    # Check for v4 and v5 argument placeholders
+    assert "{args_neo4j_v4}" in content
+    assert "{args_neo4j_v5}" in content
+
+    # Check for conditional logic for version
+    assert "if ( $major -lt 5 )" in content
+    assert "else" in content
+
+    # Check for import call
+    assert 'Invoke-Expression "$NEO4J_BIN_PATH_WINDOWS $args_neo4j"' in content
+
+    # Check for exit code handling
+    assert "if ($LASTEXITCODE -eq 0)" in content
+    assert "Import completed successfully" in content
+    assert "Import failed with exit code $LASTEXITCODE" in content
+
+    # Check for script finished message
+    assert "Script finished." in content
+
+    # Optionally, check for all placeholders using regex
+    placeholders = re.findall(r"\{[a-zA-Z0-9_]+\}", content)
+    expected_placeholders = {
+        "{neo4j_bin_path}",
+        "{neo4j_version_check}",
+        "{args_neo4j_v4}",
+        "{args_neo4j_v5}",
+    }
+    assert expected_placeholders.issubset(set(placeholders))
