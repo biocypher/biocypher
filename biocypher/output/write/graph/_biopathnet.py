@@ -211,11 +211,10 @@ y        """
                 relation = edge.get_label()
                 #relation_properties = edge.get_properties()
 
-                print(f"relation id = `{relation}'")
                 if relation is None:
                     relation = "".join([source, "_", target])
 
-                f.write(" ".join([source, relation, target, "\n"]))
+                f.write("\t".join([source, relation, target, "\n"]))
         return True
 
     def _get_import_script_name(self) -> str:
