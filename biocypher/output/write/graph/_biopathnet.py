@@ -161,12 +161,15 @@ y        """
             with open(file2_name, 'a', encoding='utf-8') as f2:
                 with open(file3_name, 'w', encoding='utf-8') as f3:
                     for id, type in entities_semantic_types.items():
-                        all_nodes.add(id)
-                        all_nodes.add(type)
                         line1 = "\t".join([id, type])
                         f.write(line1+'\n')
+                        if type not in all_nodes:
+                            line1b = "\t".join([type, "class"])
+                            f.write(line1b+'\n')
                         line2 = "\t".join([id, "is_a", type])
                         f2.write(line2+'\n')
+                        all_nodes.add(id)
+                        all_nodes.add(type)
                     for n in all_nodes:
                         line3 = "\t".join([n, n])
                         f3.write(line3+'\n')
