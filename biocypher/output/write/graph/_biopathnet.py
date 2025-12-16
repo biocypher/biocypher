@@ -155,7 +155,7 @@ y        """
         logger.debug(f"In _biopathnet.py, file_format= {self.file_format}")
         logger.debug(f"In _biopathnet.py, filename = {file_name}")
 
-        all_nodes = {}
+        all_nodes = set()
         
         with open(file_name, 'a', encoding='utf-8') as f:
             with open(file2_name, 'a', encoding='utf-8') as f2:
