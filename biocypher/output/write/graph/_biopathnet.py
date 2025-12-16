@@ -118,24 +118,29 @@ class _BioPathNetWriter(_Writer):
                                  f"{self.learning_graph_file_stem[0]}.{self.file_format[0]}")
         file2_name = os.path.join(self.output_directory,
                                  f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
+        file3_name = os.path.join(self.output_directory,
+                                 f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
         with open(file_name, 'a', encoding='utf-8') as f:
             with open(file2_name, 'a', encoding='utf-8') as f2:
-                logger.debug(f"subgraph = {subgraph}")
-                logger.debug(f"subgraph.edges() = {subgraph.edges()}")
-                all_classes = set()
-                all_entities = set()
-                for edge in subgraph.edges():
-                    source, target = edge
-                    relation = "is_a"
-                    str_line = "\t".join([target, relation, source])
-                    f.write(str_line+'\n')
-                    str_line2 = "\t".join([target, source])
-                    f2.write(str_line2+'\n')
-                    logger.debug(f"New line in file {self.learning_graph_file_stem[0]}.{self.file_format[0]} : {str_line}")
-                    all_classes.add(source)
-                    all_entities.add(target)
-                root_type = list(all_classes-all_entities)[0]
-                f2.write("\t".join([root_type, "THING"])+'\n')
+                with open(file3_name, 'a', encoding='utf-8') as f3:
+                    logger.debug(f"subgraph = {subgraph}")
+                    logger.debug(f"subgraph.edges() = {subgraph.edges()}")
+                    all_classes = set()
+                    all_entities = set()
+                    for edge in subgraph.edges():
+                        source, target = edge
+                        relation = "is_a"
+                        str_line = "\t".join([target, relation, source])
+                        f.write(str_line+'\n')
+                        str_line2 = "\t".join([target, source])
+                        f2.write(str_line2+'\n')
+                        str_line3 = "\t".join([target, target])
+                        f3.write(str_line3+'\n')
+                        all_classes.add(source)
+                        all_entities.add(target)
+                    root_type = list(all_classes-all_entities)[0]
+                    f2.write("\t".join([root_type, "THING"])+'\n')
+                    f3.write("\t".join([root_type, root_type])+'\n')
                 
 
         return True
@@ -206,12 +211,17 @@ class _BioPathNetWriter(_Writer):
                                  f"{self.background_graph_file_stem[0]}.{self.file_format[0]}")
         file2_name = os.path.join(self.output_directory,
                                  f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
+        file3_name = os.path.join(self.output_directory,
+                                 f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
         with open(file_name, 'a', encoding='utf-8') as f:
             with open(file2_name, 'a', encoding='utf-8') as f2:
-                for str_prop in list_str_node_props:
-                    f.write("".join([str_prop, "\n"]))
-                    entity, prop, value = str_prop.strip().split()
-                    f2.write("\t".join([value, "property_value"])+'\n')
+                with open(file3_name, 'a', encoding='utf-8') as f3:
+                    for str_prop in list_str_node_props:
+                        f.write("".join([str_prop, "\n"]))
+                        entity, prop, value = str_prop.strip().split()
+                        f2.write("\t".join([value, "property_value"])+'\n')
+                        f3.write("\t".join([value, value])+'\n')
+                        
 
         return True
 
