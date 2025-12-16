@@ -154,15 +154,21 @@ y        """
         logger.debug(f"In _biopathnet.py, entity_types_file_stem = {self.entity_types_file_stem}")
         logger.debug(f"In _biopathnet.py, file_format= {self.file_format}")
         logger.debug(f"In _biopathnet.py, filename = {file_name}")
+
+        all_nodes = {}
+        
         with open(file_name, 'a', encoding='utf-8') as f:
             with open(file2_name, 'a', encoding='utf-8') as f2:
                 with open(file3_name, 'w', encoding='utf-8') as f3:
                     for id, type in entities_semantic_types.items():
+                        all_nodes.add(id)
+                        all_nodes.add(type)
                         line1 = "\t".join([id, type])
                         f.write(line1+'\n')
                         line2 = "\t".join([id, "is_a", type])
                         f2.write(line2+'\n')
-                        line3 = "\t".join([id, id])
+                    for n in all_nodes:
+                        line3 = "\t".join([n, n])
                         f3.write(line3+'\n')
 
         return True
