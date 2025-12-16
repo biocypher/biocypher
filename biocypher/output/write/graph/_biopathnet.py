@@ -204,9 +204,14 @@ class _BioPathNetWriter(_Writer):
         """
         file_name = os.path.join(self.output_directory,
                                  f"{self.background_graph_file_stem[0]}.{self.file_format[0]}")
-        with open(file_name, 'w', encoding='utf-8') as f:
-            for str_prop in list_str_node_props:
-                f.write("".join([str_prop, "\n"]))
+        file2_name = os.path.join(self.output_directory,
+                                 f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
+        with open(file_name, 'a', encoding='utf-8') as f:
+            with open(file2_name, 'a', encoding='utf-8') as f2:
+                for str_prop in list_str_node_props:
+                    f.write("".join([str_prop, "\n"]))
+                    entity, prop, value = str_prop.strip().split()
+                    f2.write("\t".join([value, "property_value"])+'\n')
 
         return True
 
