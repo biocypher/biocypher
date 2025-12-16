@@ -116,15 +116,27 @@ class _BioPathNetWriter(_Writer):
         """
         file_name = os.path.join(self.output_directory,
                                  f"{self.learning_graph_file_stem[0]}.{self.file_format[0]}")
+        file2_name = os.path.join(self.output_directory,
+                                 f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
         with open(file_name, 'a', encoding='utf-8') as f:
-            logger.debug(f"subgraph = {subgraph}")
-            logger.debug(f"subgraph.edges() = {subgraph.edges()}")
-            for edge in subgraph.edges():
-                source, target = edge
-                relation = "is_a"
-                str_line = "\t".join([target, relation, source])
-                f.write(str_line+'\n')
-                logger.debug(f"New line in file {self.learning_graph_file_stem[0]}.{self.file_format[0]} : {str_line}")
+            with open(file2_name, 'a', encoding='utf-8') as f2:
+                logger.debug(f"subgraph = {subgraph}")
+                logger.debug(f"subgraph.edges() = {subgraph.edges()}")
+                all_classes = set()
+                all_entities = set()
+                for edge in subgraph.edges():
+                    source, target = edge
+                    relation = "is_a"
+                    str_line = "\t".join([target, relation, source])
+                    f.write(str_line+'\n')
+                    str_line2 = "\t".join([target, source])
+                    f2.write(str_line2+'\n')
+                    logger.debug(f"New line in file {self.learning_graph_file_stem[0]}.{self.file_format[0]} : {str_line}")
+                    all_classes.add(source)
+                    all_entities.add(target)
+                root_type = list(all_classes-all_entities)[0]
+                f2.write("\t".join([root_type, "THING"])+'\n')
+                
 
         return True
 
@@ -143,7 +155,7 @@ class _BioPathNetWriter(_Writer):
         For each entity of the graph, a line containing the following string:
             entity_id entity_semantic_type
         is written.
-y        """
+        """
         file_name = os.path.join(self.output_directory,
                                  f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
         file2_name = os.path.join(self.output_directory,
@@ -159,13 +171,13 @@ y        """
         
         with open(file_name, 'a', encoding='utf-8') as f:
             with open(file2_name, 'a', encoding='utf-8') as f2:
-                with open(file3_name, 'w', encoding='utf-8') as f3:
+                with open(file3_name, 'a', encoding='utf-8') as f3:
                     for id, type in entities_semantic_types.items():
                         line1 = "\t".join([id, type])
                         f.write(line1+'\n')
-                        if type not in all_nodes:
-                            line1b = "\t".join([type, "class"])
-                            f.write(line1b+'\n')
+                        # if type not in all_nodes:
+                        #     line1b = "\t".join([type, "class"])
+                        #     f.write(line1b+'\n')
                         line2 = "\t".join([id, "is_a", type])
                         f2.write(line2+'\n')
                         all_nodes.add(id)
