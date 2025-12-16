@@ -20,6 +20,7 @@ class _BioPathNetWriter(_Writer):
         output_directory: str | None = None,
         file_format: str = "txt",
         entity_types_file_stem: str = "entity_types",
+        entity_names_file_stem: str = "entity_names",
         background_graph_file_stem: str = "train1",
         learning_graph_file_stem: str = "train2",
         **kwargs,
@@ -37,6 +38,7 @@ class _BioPathNetWriter(_Writer):
 
         self.file_format = "txt",
         self.entity_types_file_stem = entity_types_file_stem,
+        self.entity_names_file_stem = entity_names_file_stem,
         self.background_graph_file_stem = background_graph_file_stem,
         self.learning_graph_file_stem = learning_graph_file_stem,
 
@@ -75,7 +77,7 @@ class _BioPathNetWriter(_Writer):
             for key, value in properties.items():
                 # only write value if it exists.
                 if value:
-                    str_nodes_props_graph.append(" ".join([entity_id, key, str(value)]))
+                    str_nodes_props_graph.append("\t".join([entity_id, key, str(value)]))
 
             # Add all ancestors of the entity type in the set, in order to reconstruct
             # the useful part of the ontology for passing it to BioPathNet
@@ -120,8 +122,8 @@ class _BioPathNetWriter(_Writer):
             for edge in subgraph.edges():
                 source, target = edge
                 relation = "is_a"
-                str_line = " ".join([target, relation, source, "\n"])
-                f.write(str_line)
+                str_line = "\t".join([target, relation, source])
+                f.write(str_line+'\n')
                 logger.debug(f"New line in file {self.learning_graph_file_stem[0]}.{self.file_format[0]} : {str_line}")
 
         return True
@@ -146,17 +148,22 @@ y        """
                                  f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
         file2_name = os.path.join(self.output_directory,
                                  f"{self.learning_graph_file_stem[0]}.{self.file_format[0]}")
+        file3_name = os.path.join(self.output_directory,
+                                 f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
         logger.debug(f"In _biopathnet.py, output_directory = {self.output_directory}")
         logger.debug(f"In _biopathnet.py, entity_types_file_stem = {self.entity_types_file_stem}")
         logger.debug(f"In _biopathnet.py, file_format= {self.file_format}")
         logger.debug(f"In _biopathnet.py, filename = {file_name}")
         with open(file_name, 'a', encoding='utf-8') as f:
             with open(file2_name, 'a', encoding='utf-8') as f2:
-                for id, type in entities_semantic_types.items():
-                    line1 = " ".join([id, type, "\n"])
-                    f.write(line1)
-                    line2 = " ".join([id, "is_a", type, "\n"])
-                    f2.write(line2)
+                with open(file3_name, 'w', encoding='utf-8') as f3:
+                    for id, type in entities_semantic_types.items():
+                        line1 = "\t".join([id, type])
+                        f.write(line1+'\n')
+                        line2 = "\t".join([id, "is_a", type])
+                        f2.write(line2+'\n')
+                        line3 = "\t".join([id, id])
+                        f3.write(line3+'\n')
 
         return True
 
@@ -214,7 +221,7 @@ y        """
                 if relation is None:
                     relation = "".join([source, "_", target])
 
-                f.write("\t".join([source, relation, target, "\n"]))
+                f.write("\t".join([source, relation, target])+'\n')
         return True
 
     def _get_import_script_name(self) -> str:
