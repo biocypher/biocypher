@@ -13,6 +13,12 @@ class _BioPathNetWriter(_Writer):
     """
     Write BioCypher's property graph into a set of BioPathNet input files.
 
+    Writes one skg for learning, validation or test as a list of lines each containing a triple.
+    As BioPathNet is launched with the same entity_names and entity_types file,
+    appends information in the entity_types and entity_names files. This way, these files can
+    contain the information about all the entities from learning, validatio and test graphs.
+    
+
     """
 
     def __init__(
@@ -21,8 +27,9 @@ class _BioPathNetWriter(_Writer):
         file_format: str = "txt",
         entity_types_file_stem: str = "entity_types",
         entity_names_file_stem: str = "entity_names",
-        background_graph_file_stem: str = "train1",
-        learning_graph_file_stem: str = "train2",
+        background_graph_file_stem: str = "brg",
+#        learning_graph_file_stem: str = "train2",
+        skg_file_stem: str = "skg",
         **kwargs,
     ):
         super().__init__(
@@ -40,7 +47,7 @@ class _BioPathNetWriter(_Writer):
         self.entity_types_file_stem = entity_types_file_stem,
         self.entity_names_file_stem = entity_names_file_stem,
         self.background_graph_file_stem = background_graph_file_stem,
-        self.learning_graph_file_stem = learning_graph_file_stem,
+        self.skg_file_stem= skg_file_stem,
 
     def _write_node_data(
         self,
@@ -115,7 +122,7 @@ class _BioPathNetWriter(_Writer):
         is written.
         """
         file_name = os.path.join(self.output_directory,
-                                 f"{self.learning_graph_file_stem[0]}.{self.file_format[0]}")
+                                 f"{self.skg_file_stem[0]}.{self.file_format[0]}")
         file2_name = os.path.join(self.output_directory,
                                  f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
         file3_name = os.path.join(self.output_directory,
@@ -164,7 +171,7 @@ class _BioPathNetWriter(_Writer):
         file_name = os.path.join(self.output_directory,
                                  f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
         file2_name = os.path.join(self.output_directory,
-                                 f"{self.learning_graph_file_stem[0]}.{self.file_format[0]}")
+                                 f"{self.skg_file_stem[0]}.{self.file_format[0]}")
         file3_name = os.path.join(self.output_directory,
                                  f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
         logger.debug(f"In _biopathnet.py, output_directory = {self.output_directory}")
@@ -246,7 +253,7 @@ class _BioPathNetWriter(_Writer):
         # and thus add a lot of nodes to the BioPatNet NN.
         # See if it is needed or not. Fix if needed
         file_name = os.path.join(self.output_directory,
-                                 f"{self.learning_graph_file_stem[0]}.{self.file_format[0]}")
+                                 f"{self.skg_file_stem[0]}.{self.file_format[0]}")
         with open(file_name, 'a', encoding='utf-8') as f:
             for edge in edges:
                 source = edge.get_source_id()
