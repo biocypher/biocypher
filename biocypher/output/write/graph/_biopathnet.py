@@ -99,9 +99,9 @@ class _BioPathNetWriter(_Writer):
 
         passed = self._write_semantic_types_in_file(dict_entity_types)
         if passed:
-            # passed = self._write_properties_in_file(str_nodes_props_graph)
-            # if passed:
-            passed = self._write_hierarchy_in_file(sub_hierarchy)
+            passed = self._write_properties_in_file(str_nodes_props_graph)
+            if passed:
+                passed = self._write_hierarchy_in_file(sub_hierarchy)
 
         if passed:
             return True
@@ -224,11 +224,11 @@ class _BioPathNetWriter(_Writer):
             with open(file2_name, 'a+', encoding='utf-8') as f2:
                 with open(file3_name, 'a+', encoding='utf-8') as f3:
                     for str_prop in list_str_node_props:
-                        f.write("".join([str_prop, "\n"]))
                         entity, prop, value = str_prop.strip().split()
-                        #FIXME: see how to handle properties that have the same value has an individual id
-                        f2.write("\t".join([value, "property_value"])+'\n')
-                        f3.write("\t".join([value, value])+'\n')
+                        prefixed_value = "_".join([prop, value])
+                        f.write("\t".join([entity, prop, prefixed_value, "\n"]))
+                        f2.write("\t".join([prefixed_value, "property_value"])+'\n')
+                        f3.write("\t".join([prefixed_value, value])+'\n')
                         
 
         return True
