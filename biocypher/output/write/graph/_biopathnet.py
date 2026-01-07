@@ -226,7 +226,7 @@ class _BioPathNetWriter(_Writer):
                     for str_prop in list_str_node_props:
                         entity, prop, value = str_prop.strip().split()
                         prefixed_value = "_".join([prop, value])
-                        f.write("\t".join([entity, prop, prefixed_value, "\n"]))
+                        f.write("\t".join([entity, prop, prefixed_value])+'\n')
                         f2.write("\t".join([prefixed_value, "property_value"])+'\n')
                         f3.write("\t".join([prefixed_value, value])+'\n')
                         
