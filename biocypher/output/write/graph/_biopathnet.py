@@ -127,9 +127,9 @@ class _BioPathNetWriter(_Writer):
                                  f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
         file3_name = os.path.join(self.output_directory,
                                  f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
-        with open(file_name, 'a', encoding='utf-8') as f:
-            with open(file2_name, 'a', encoding='utf-8') as f2:
-                with open(file3_name, 'a', encoding='utf-8') as f3:
+        with open(file_name, 'a+', encoding='utf-8') as f:
+            with open(file2_name, 'a+', encoding='utf-8') as f2:
+                with open(file3_name, 'a+', encoding='utf-8') as f3:
                     logger.debug(f"subgraph = {subgraph}")
                     logger.debug(f"subgraph.edges() = {subgraph.edges()}")
                     all_classes = set()
@@ -181,9 +181,9 @@ class _BioPathNetWriter(_Writer):
 
         all_nodes = set()
         
-        with open(file_name, 'a', encoding='utf-8') as f:
-            with open(file2_name, 'a', encoding='utf-8') as f2:
-                with open(file3_name, 'a', encoding='utf-8') as f3:
+        with open(file_name, 'a+', encoding='utf-8') as f:
+            with open(file2_name, 'a+', encoding='utf-8') as f2:
+                with open(file3_name, 'a+', encoding='utf-8') as f3:
                     for id, type in entities_semantic_types.items():
                         line1 = "\t".join([id, type])
                         f.write(line1+'\n')
@@ -220,9 +220,9 @@ class _BioPathNetWriter(_Writer):
                                  f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
         file3_name = os.path.join(self.output_directory,
                                  f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
-        with open(file_name, 'a', encoding='utf-8') as f:
-            with open(file2_name, 'a', encoding='utf-8') as f2:
-                with open(file3_name, 'a', encoding='utf-8') as f3:
+        with open(file_name, 'a+', encoding='utf-8') as f:
+            with open(file2_name, 'a+', encoding='utf-8') as f2:
+                with open(file3_name, 'a+', encoding='utf-8') as f3:
                     for str_prop in list_str_node_props:
                         f.write("".join([str_prop, "\n"]))
                         entity, prop, value = str_prop.strip().split()
