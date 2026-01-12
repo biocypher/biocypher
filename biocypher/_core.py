@@ -688,6 +688,12 @@ class BioCypher:
         if not self._offline:
             msg = "Cannot write import call in online mode."
             raise NotImplementedError(msg)
+        else:
+            if not self._writer:
+                logger.warning(
+                    "No edges or nodes were added, I'll try to continue, but you may want to double-check your data."
+                )
+                self._initialize_writer()
 
         return self._writer.write_import_call()
 
