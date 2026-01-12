@@ -1,4 +1,5 @@
 # Contributing
+
 We are very happy about all kinds of contributions. Thanks for considering to
 help us out! The simplest way of contributing is to give feedback on the
 project, either via creating an issue here on GitHub or by sending a message to
@@ -9,4 +10,4 @@ that you have read the [Developer Guide](DEVELOPER.md) before you start working
 on a pull request.
 
 Before joining the community, please also make sure that you agree with our
-[Code of Conduct](CODE_OF_CONDUCT.md).
+[Code of Conduct](CODE_OF_CONDUCT.md) and our [License](LICENSE).

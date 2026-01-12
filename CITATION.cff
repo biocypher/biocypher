@@ -22,4 +22,4 @@ repository: 'https://github.com/biocypher'
 repository-code: 'https://github.com/biocypher/biocypher'
 repository-artifact: 'https://pypi.org/project/biocypher/'
 url: 'https://biocypher.org/'
-license: MIT
+license: Apache-2.0
