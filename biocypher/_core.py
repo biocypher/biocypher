@@ -690,7 +690,7 @@ class BioCypher:
             raise NotImplementedError(msg)
         else:
             if not self._writer:
-                logger.error("No edge or node were added, I'll try to continue, but you may double-check your data.")
+                logger.warning("No edges or nodes were added, I'll try to continue, but you may want to double-check your data.")
                 self._initialize_writer()
 
         return self._writer.write_import_call()
