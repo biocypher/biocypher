@@ -225,7 +225,7 @@ If you want to directly install BioCypher, here are the steps (requires [uv](htt
 
 ```bash title="Execute in bash"
 git clone https://github.com/biocypher/biocypher
-cd BioCypher
+cd biocypher
 uv sync --all-extras
 ```
 uv creates a virtual environment for you and installs all dependencies.
