@@ -72,10 +72,10 @@ below to get started.
     uv sync --all-extras
     ```
 
-    **Step 6:** Run the script `create_workflow.py`
+    **Step 6:** Run the KG creation script
 
     ```bash
-    uv run python create_workflow.py
+    uv run python create_knowledge_graph.py
     ```
 
 === "Cloning the project template directly"
@@ -109,10 +109,10 @@ below to get started.
     uv sync --all-extras
     ```
 
-    **Step 5:** Run the script `create_workflow.py`
+    **Step 5:** Run the KG creation script
 
     ```bash
-    uv run python create_workflow.py
+    uv run python create_knowledge_graph.py
     ```
 
 
