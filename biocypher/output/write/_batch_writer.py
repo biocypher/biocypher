@@ -290,7 +290,7 @@ class _BatchWriter(_Writer, ABC):
         if labels_order not in self._labels_orders:
             msg = (
                 f"A batch writer 'labels_order' parameter cannot be '{labels_order}',"
-                "must be one of: {' ,'.join(self._labels_orders)}",
+                f"must be one of: {' ,'.join(self._labels_orders)}",
             )
             raise ValueError(msg)
         self.labels_order = labels_order
@@ -424,6 +424,44 @@ class _BatchWriter(_Writer, ABC):
 
         return True
 
+    def _get_all_labels(self, label, force: bool = False):
+        all_labels = {}
+        # get label hierarchy
+        # multiple labels:
+        if not force:
+            all_labels = self.translator.ontology.get_ancestors(label)
+        else:
+            all_labels = None
+
+        if all_labels:
+            # convert to pascal case
+            all_labels = [self.translator.name_sentence_to_pascal(label) for label in all_labels]
+            # remove duplicates
+            all_labels = list(OrderedDict.fromkeys(all_labels))
+            match self.labels_order:
+                case "Ascending":
+                    pass  # Default from get_ancestors.
+                case "Alphabetical":
+                    all_labels.sort()
+                case "Descending":
+                    all_labels.reverse()
+                case "Leaves":
+                    if len(all_labels) < 1:
+                        msg = "Labels list cannot be empty when using 'Leaves' order."
+                        raise ValueError(msg)
+                    all_labels = [all_labels[0]]
+                case _:
+                    # In case someone touched _label_orders after constructor.
+                    if self.labels_order not in self._labels_orders:
+                        msg = f"Invalid labels_order: {self.labels_order}. " f"Must be one of {self._labels_orders}"
+                        raise ValueError(msg)
+            # concatenate with array delimiters
+            all_labels = self._write_array_string(all_labels)
+        else:
+            all_labels = self.translator.name_sentence_to_pascal(label)
+
+        return all_labels
+
     def _write_node_data(self, nodes, batch_size, force: bool = False):
         """Write biocypher nodes to CSV.
 
@@ -472,7 +510,6 @@ class _BatchWriter(_Writer, ABC):
 
                 if label not in bins.keys():
                     # start new list
-                    all_labels = None
                     bins[label].append(node)
                     bin_l[label] = 1
 
@@ -512,45 +549,7 @@ class _BatchWriter(_Writer, ABC):
                     # user to select desired properties and restart the process
 
                     reference_props[label] = d
-
-                    # get label hierarchy
-                    # multiple labels:
-                    if not force:
-                        all_labels = self.translator.ontology.get_ancestors(label)
-                    else:
-                        all_labels = None
-
-                    if all_labels:
-                        # convert to pascal case
-                        all_labels = [self.translator.name_sentence_to_pascal(label) for label in all_labels]
-                        # remove duplicates
-                        all_labels = list(OrderedDict.fromkeys(all_labels))
-                        match self.labels_order:
-                            case "Ascending":
-                                pass  # Default from get_ancestors.
-                            case "Alphabetical":
-                                all_labels.sort()
-                            case "Descending":
-                                all_labels.reverse()
-                            case "Leaves":
-                                if len(all_labels) < 1:
-                                    msg = "Labels list cannot be empty when using 'Leaves' order."
-                                    raise ValueError(msg)
-                                all_labels = [all_labels[0]]
-                            case _:
-                                # In case someone touched _label_orders after constructor.
-                                if self.labels_order not in self._labels_orders:
-                                    msg = (
-                                        f"Invalid labels_order: {self.labels_order}. "
-                                        f"Must be one of {self._labels_orders}"
-                                    )
-                                    raise ValueError(msg)
-                        # concatenate with array delimiters
-                        all_labels = self._write_array_string(all_labels)
-                    else:
-                        all_labels = self.translator.name_sentence_to_pascal(label)
-
-                    labels[label] = all_labels
+                    labels[label] = self._get_all_labels(label, force)
 
                 else:
                     # add to list
@@ -695,6 +694,7 @@ class _BatchWriter(_Writer, ABC):
 
         return True
 
+    # FIXME why does _write_node_data has a `force` arg, and not _write_edge_data?
     def _write_edge_data(self, edges, batch_size):
         """Write biocypher edges to CSV.
 
@@ -765,6 +765,10 @@ class _BatchWriter(_Writer, ABC):
                             if isinstance(v, dict):
                                 if v.get("label_as_edge") == label:
                                     cprops = v.get("properties")
+                                    logger.warning(
+                                        "`label_as_edge` will be depreciated in a next version,"
+                                        "please use edge types that exists in your ontology's taxonomy."
+                                    )
                                     break
                     if cprops:
                         d = cprops
@@ -951,11 +955,9 @@ class _BatchWriter(_Writer, ABC):
                 entries.append(self.delim.join(plist))
 
             entries.append(e.get_target_id())
-            entries.append(
-                self.translator.name_sentence_to_pascal(
-                    e.get_label(),
-                ),
-            )
+
+            all_labels = self._get_all_labels(label)
+            entries.append(all_labels)
 
             lines.append(
                 self.delim.join(entries) + "\n",
