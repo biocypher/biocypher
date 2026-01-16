@@ -1091,7 +1091,8 @@ def test_check_label_name():
 
 
 def make_labels(bw, order):
-    bw.labels_order = order
+    bw.node_labels_order = order
+    bw.edge_labels_order = order
     nodes = [
         BioCypherNode(
             node_id="agpl:0001",

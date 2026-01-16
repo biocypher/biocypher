@@ -88,11 +88,12 @@ neo4j:
 
   # How to write the labels in the export files.
 
-  labels_order: "Ascending" # Default: From more specific to more generic.
+  node_labels_order: "Ascending" # Default: From more specific to more generic.
+  edge_labels_order: "Ascending"
   # Or:
-  # labels_order: "Descending" # From more generic to more specific.
-  # labels_order: "Alphabetical" # Alphabetically. Legacy option.
-  # labels_order: "Leaves" # Only the more specific label.
+  # *_labels_order: "Descending" # From more generic to more specific.
+  # *_labels_order: "Alphabetical" # Alphabetically. Legacy option.
+  # *_labels_order: "Leaves" # Only the more specific label.
 
   ## MultiDB functionality
   ## Set to false for using community edition or older versions of Neo4j

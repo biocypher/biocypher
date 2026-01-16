@@ -150,7 +150,8 @@ class _BatchWriter(_Writer, ABC):
         db_port: str = None,
         file_format: str = None,
         rdf_namespaces: dict = {},
-        labels_order: str = "Ascending",
+        node_labels_order: str = "Ascending",
+        edge_labels_order: str = "Ascending",
         **kwargs,
     ):
         """Write node and edge representations to disk.
@@ -240,8 +241,12 @@ class _BatchWriter(_Writer, ABC):
             rdf_namespaces:
                 The namespaces for RDF.
 
-            labels_order:
-                The order of labels, to reflect the hierarchy (or not).
+            node_labels_order:
+                The order of node labels, to reflect the hierarchy (or not).
+                Default: "Ascending" (from more specific to more generic).
+
+            edge_labels_order:
+                The order of edge labels, to reflect the hierarchy (or not).
                 Default: "Ascending" (from more specific to more generic).
 
         """
@@ -287,13 +292,21 @@ class _BatchWriter(_Writer, ABC):
         self.parts = {}  # dict to store the paths of part files for each label
 
         self._labels_orders = ["Alphabetical", "Ascending", "Descending", "Leaves"]
-        if labels_order not in self._labels_orders:
+        if node_labels_order not in self._labels_orders:
             msg = (
-                f"A batch writer 'labels_order' parameter cannot be '{labels_order}',"
+                f"A batch writer 'node_labels_order' parameter cannot be '{node_labels_order}',"
                 f"must be one of: {' ,'.join(self._labels_orders)}",
             )
             raise ValueError(msg)
-        self.labels_order = labels_order
+        self.node_labels_order = node_labels_order
+
+        if edge_labels_order not in self._labels_orders:
+            msg = (
+                f"A batch writer 'edge_labels_order' parameter cannot be '{edge_labels_order}',"
+                f"must be one of: {' ,'.join(self._labels_orders)}",
+            )
+            raise ValueError(msg)
+        self.edge_labels_order = edge_labels_order
 
         # TODO not memory efficient, but should be fine for most cases; is
         # there a more elegant solution?
@@ -424,7 +437,7 @@ class _BatchWriter(_Writer, ABC):
 
         return True
 
-    def _get_all_labels(self, label, force: bool = False):
+    def _get_all_labels(self, label, labels_order, force: bool = False):
         all_labels = {}
         # get label hierarchy
         # multiple labels:
@@ -438,7 +451,7 @@ class _BatchWriter(_Writer, ABC):
             all_labels = [self.translator.name_sentence_to_pascal(label) for label in all_labels]
             # remove duplicates
             all_labels = list(OrderedDict.fromkeys(all_labels))
-            match self.labels_order:
+            match labels_order:
                 case "Ascending":
                     pass  # Default from get_ancestors.
                 case "Alphabetical":
@@ -452,8 +465,8 @@ class _BatchWriter(_Writer, ABC):
                     all_labels = [all_labels[0]]
                 case _:
                     # In case someone touched _label_orders after constructor.
-                    if self.labels_order not in self._labels_orders:
-                        msg = f"Invalid labels_order: {self.labels_order}. " f"Must be one of {self._labels_orders}"
+                    if labels_order not in self._labels_orders:
+                        msg = f"Invalid labels_order: {labels_order}. " f"Must be one of {self._labels_orders}"
                         raise ValueError(msg)
             # concatenate with array delimiters
             all_labels = self._write_array_string(all_labels)
@@ -549,7 +562,7 @@ class _BatchWriter(_Writer, ABC):
                     # user to select desired properties and restart the process
 
                     reference_props[label] = d
-                    labels[label] = self._get_all_labels(label, force)
+                    labels[label] = self._get_all_labels(label, self.node_labels_order, force)
 
                 else:
                     # add to list
@@ -956,7 +969,7 @@ class _BatchWriter(_Writer, ABC):
 
             entries.append(e.get_target_id())
 
-            all_labels = self._get_all_labels(label)
+            all_labels = self._get_all_labels(label, self.edge_labels_order)
             entries.append(all_labels)
 
             lines.append(

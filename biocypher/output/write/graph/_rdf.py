@@ -57,7 +57,6 @@ class _RDFWriter(_BatchWriter):
         db_port: str = None,
         file_format: str = None,
         rdf_namespaces: dict = {},
-        labels_order: str = "Ascending",
         **kwargs,
     ):
         super().__init__(
@@ -80,7 +79,6 @@ class _RDFWriter(_BatchWriter):
             db_port=db_port,
             file_format=file_format,
             rdf_namespaces=rdf_namespaces,
-            labels_order=labels_order,
             **kwargs,
         )
         if not self.rdf_namespaces:
