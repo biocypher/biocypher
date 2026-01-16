@@ -289,7 +289,7 @@ class _BatchWriter(_Writer, ABC):
         self._labels_orders = ["Alphabetical", "Ascending", "Descending", "Leaves"]
         if labels_order not in self._labels_orders:
             msg = (
-                f"neo4j's 'labels_order' parameter cannot be '{labels_order}',"
+                f"A batch writer 'labels_order' parameter cannot be '{labels_order}',"
                 "must be one of: {' ,'.join(self._labels_orders)}",
             )
             raise ValueError(msg)
@@ -545,7 +545,7 @@ class _BatchWriter(_Writer, ABC):
                                         f"Must be one of {self._labels_orders}"
                                     )
                                     raise ValueError(msg)
-                        # concatenate with array delimiter
+                        # concatenate with array delimiters
                         all_labels = self._write_array_string(all_labels)
                     else:
                         all_labels = self.translator.name_sentence_to_pascal(label)
