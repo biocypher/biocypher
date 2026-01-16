@@ -73,7 +73,7 @@ neo4j:  ### Neo4j configuration ###
   array_delimiter: '|'
   quote_character: "'"
 
-  # How to write the labels in the export files.
+  # How to write the node labels in the export files.
   labels_order: "Ascending" # Default: From more specific to more generic.
   # Or:
   # labels_order: "Descending" # From more generic to more specific.
@@ -233,10 +233,10 @@ configuration specified in the [schema-config.yaml](../schema-config.md).
 ## Note on labels order
 
 Neo4j does not support managing the hierarchy of types of the vocabulary given
-by the input ontology. What it does is to attach to nodes and edges each type
+by the input ontology. What it does is to attach to nodes each type
 label of all the ancestors in the types hierarchy.
 
-By default, the Neo4j driver exports those type labels as a sorted list
+By default, the Neo4j driver exports the nodes' type labels as a sorted list
 (`Ascending`), which means the labels are ordered from most specific to most
 general in the ontology. You can set `labels_order` to either `Ascending`,
 `Descending`, or `Alphabetical`.
@@ -245,3 +245,6 @@ To get even simpler labels, you can set `labels_order: Leaves`, which
 will remove all but the most specific type label (the "leaf" of the types
 tree). Be warned that the resulting export will completely lose the ontological
 information, hence making it impossible to query the graph on high-level types.
+
+Note, however, that the Neo4j database doesn't allow attaching several type
+labels to edges,. Hence it is always set to "Leaves" for edges.

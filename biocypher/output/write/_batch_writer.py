@@ -8,6 +8,8 @@ from abc import ABC, abstractmethod
 from collections import OrderedDict, defaultdict
 from types import GeneratorType
 
+import networkx
+
 from more_itertools import peekable
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
@@ -151,6 +153,8 @@ class _BatchWriter(_Writer, ABC):
         file_format: str = None,
         rdf_namespaces: dict = {},
         labels_order: str = "Ascending",
+        node_labels_order: str = "Ascending",
+        edge_labels_order: str = "Ascending",
         **kwargs,
     ):
         """Write node and edge representations to disk.
@@ -241,8 +245,30 @@ class _BatchWriter(_Writer, ABC):
                 The namespaces for RDF.
 
             labels_order:
-                The order of labels, to reflect the hierarchy (or not).
-                Default: "Ascending" (from more specific to more generic).
+                The order of node and edges labels, reflecting the types of ancestors in the taxonomy.
+                Options are:
+                    * "Ascending": From more specific to more generic (the default).
+                    * "Descending": From more generic to more specific.
+                    * "Alphabetical": Alphabetically. Legacy option.
+                    * "Leaves": Only the more specific label.
+
+            node_labels_order:
+                The order of node labels, reflecting the types of ancestors in the taxonomy.
+                Options are:
+                    * "None": Use labels_order (the default).
+                    * "Ascending": From more specific to more generic.
+                    * "Descending": From more generic to more specific.
+                    * "Alphabetical": Alphabetically. Legacy option.
+                    * "Leaves": Only the more specific label.
+
+            edge_labels_order:
+                The order of edge labels, reflecting the types of ancestors in the taxonomy.
+                Options are:
+                    * "None": Use labels_order (the default).
+                    * "Ascending": From more specific to more generic.
+                    * "Descending": From more generic to more specific.
+                    * "Alphabetical": Alphabetically. Legacy option.
+                    * "Leaves": Only the more specific label.
 
         """
         super().__init__(
@@ -286,17 +312,63 @@ class _BatchWriter(_Writer, ABC):
 
         self.parts = {}  # dict to store the paths of part files for each label
 
-        self._labels_orders = ["Alphabetical", "Ascending", "Descending", "Leaves"]
-        if labels_order not in self._labels_orders:
-            msg = (
-                f"A batch writer 'labels_order' parameter cannot be '{labels_order}',"
-                "must be one of: {' ,'.join(self._labels_orders)}",
-            )
-            raise ValueError(msg)
+        self._labels_orders = ["Alphabetical", "Ascending", "Descending", "Leaves", "None"]
         self.labels_order = labels_order
+        self.node_labels_order = node_labels_order
+        self.edge_labels_order = edge_labels_order
+        self._check_labels_order()
 
         # TODO not memory efficient, but should be fine for most cases; is
         # there a more elegant solution?
+
+    def _check_labels_order(self):
+        # Check for legit values.
+        for order in ["labels_order", "node_labels_order", "edge_labels_order"]:
+            if getattr(self, order) not in self._labels_orders:
+                msg = (
+                    f"A batch writer `{order}` parameter cannot be `{getattr(self, order)}`,"
+                    f"must be one of: {' ,'.join(self._labels_orders)}",
+                )
+                logger.error(msg)
+                raise ValueError(msg)
+
+        # Check consistency of the triplet.
+        # *_labels_order are the real parameters,
+        # labels_order is just a shortcut to set the two others.
+        if self.labels_order == "None" and (self.node_labels_order == "None" or self.edge_labels_order == "None"):
+            msg = (
+                "You have to set either `labels_order` or "
+                "both `node_labels_order` and `edge_labels_order`."
+                "Current setting:\n"
+                f"- labels_order = `{self.labels_order}`\n"
+                f"- node_labels_order = `{self.node_labels_order}`\n"
+                f"- edge_labels_order = `{self.edge_labels_order}`\n"
+            )
+            logger.error(msg)
+            raise ValueError(msg)
+
+        elif self.labels_order != "None":
+            if self.edge_labels_order != self.labels_order or self.node_labels_order != self.labels_order:
+                msg = (
+                    f"`labels_order`=`{self.labels_order}` "
+                    "superseeded by either "
+                    f"`node_labels_order`=`{self.node_labels_order}` "
+                    f"or `edge_labels_order`=`{self.edge_labels_order}`."
+                )
+                logger.info(msg)
+
+            if self.node_labels_order == "None":
+                msg = "`node_labels_order` set to `labels_order`=" f"`{self.labels_order}`."
+                self.node_labels_order = self.labels_order
+                logger.info(msg)
+
+            if self.edge_labels_order == "None":
+                msg = "`node_labels_order` set to `labels_order`=" f"`{self.labels_order}`."
+                self.edge_labels_order = self.labels_order
+                logger.info(msg)
+
+        assert self.node_labels_order != "None", "node_labels_order must be set"
+        assert self.edge_labels_order != "None", "edge_labels_order must be set"
 
     @property
     def import_call_file_prefix(self):
@@ -424,6 +496,51 @@ class _BatchWriter(_Writer, ABC):
 
         return True
 
+    def _get_all_labels(self, label, labels_order, force: bool = False):
+        all_labels = {}
+        # get label hierarchy
+        # multiple labels:
+        if not force:
+            # If the type label is not in the taxonomy
+            # (i.e. it has been set with `label_as_edge`).
+            # FIXME depreciate label_as_edge.
+            try:
+                all_labels = self.translator.ontology.get_ancestors(label)
+            except networkx.exception.NetworkXError:
+                # There's no ancestor.
+                all_labels = [label]
+        else:
+            all_labels = None
+
+        if all_labels:
+            # convert to pascal case
+            all_labels = [self.translator.name_sentence_to_pascal(label) for label in all_labels]
+            # remove duplicates
+            all_labels = list(OrderedDict.fromkeys(all_labels))
+            match labels_order:
+                case "Ascending":
+                    pass  # Default from get_ancestors.
+                case "Alphabetical":
+                    all_labels.sort()
+                case "Descending":
+                    all_labels.reverse()
+                case "Leaves":
+                    if len(all_labels) < 1:
+                        msg = "Labels list cannot be empty when using 'Leaves' order."
+                        raise ValueError(msg)
+                    all_labels = [all_labels[0]]
+                case _:
+                    # In case someone touched _label_orders after constructor.
+                    if labels_order not in self._labels_orders:
+                        msg = f"Invalid labels_order: {labels_order}. " f"Must be one of {self._labels_orders}"
+                        raise ValueError(msg)
+            # concatenate with array delimiters
+            all_labels = self._write_array_string(all_labels)
+        else:
+            all_labels = self.translator.name_sentence_to_pascal(label)
+
+        return all_labels
+
     def _write_node_data(self, nodes, batch_size, force: bool = False):
         """Write biocypher nodes to CSV.
 
@@ -472,7 +589,6 @@ class _BatchWriter(_Writer, ABC):
 
                 if label not in bins.keys():
                     # start new list
-                    all_labels = None
                     bins[label].append(node)
                     bin_l[label] = 1
 
@@ -512,45 +628,7 @@ class _BatchWriter(_Writer, ABC):
                     # user to select desired properties and restart the process
 
                     reference_props[label] = d
-
-                    # get label hierarchy
-                    # multiple labels:
-                    if not force:
-                        all_labels = self.translator.ontology.get_ancestors(label)
-                    else:
-                        all_labels = None
-
-                    if all_labels:
-                        # convert to pascal case
-                        all_labels = [self.translator.name_sentence_to_pascal(label) for label in all_labels]
-                        # remove duplicates
-                        all_labels = list(OrderedDict.fromkeys(all_labels))
-                        match self.labels_order:
-                            case "Ascending":
-                                pass  # Default from get_ancestors.
-                            case "Alphabetical":
-                                all_labels.sort()
-                            case "Descending":
-                                all_labels.reverse()
-                            case "Leaves":
-                                if len(all_labels) < 1:
-                                    msg = "Labels list cannot be empty when using 'Leaves' order."
-                                    raise ValueError(msg)
-                                all_labels = [all_labels[0]]
-                            case _:
-                                # In case someone touched _label_orders after constructor.
-                                if self.labels_order not in self._labels_orders:
-                                    msg = (
-                                        f"Invalid labels_order: {self.labels_order}. "
-                                        f"Must be one of {self._labels_orders}"
-                                    )
-                                    raise ValueError(msg)
-                        # concatenate with array delimiters
-                        all_labels = self._write_array_string(all_labels)
-                    else:
-                        all_labels = self.translator.name_sentence_to_pascal(label)
-
-                    labels[label] = all_labels
+                    labels[label] = self._get_all_labels(label, self.node_labels_order, force)
 
                 else:
                     # add to list
@@ -695,6 +773,7 @@ class _BatchWriter(_Writer, ABC):
 
         return True
 
+    # FIXME why does _write_node_data has a `force` arg, and not _write_edge_data?
     def _write_edge_data(self, edges, batch_size):
         """Write biocypher edges to CSV.
 
@@ -765,6 +844,10 @@ class _BatchWriter(_Writer, ABC):
                             if isinstance(v, dict):
                                 if v.get("label_as_edge") == label:
                                     cprops = v.get("properties")
+                                    logger.warning(
+                                        "`label_as_edge` will be depreciated in a next version,"
+                                        "please use edge types that exists in your ontology's taxonomy."
+                                    )
                                     break
                     if cprops:
                         d = cprops
@@ -951,11 +1034,9 @@ class _BatchWriter(_Writer, ABC):
                 entries.append(self.delim.join(plist))
 
             entries.append(e.get_target_id())
-            entries.append(
-                self.translator.name_sentence_to_pascal(
-                    e.get_label(),
-                ),
-            )
+
+            all_labels = self._get_all_labels(label, self.edge_labels_order)
+            entries.append(all_labels)
 
             lines.append(
                 self.delim.join(entries) + "\n",
