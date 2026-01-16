@@ -95,6 +95,8 @@ def get_writer(
         raise ValueError(msg)
 
     if writer is not None:
+        # FIXME: passing dbms_config as kwargs would ensure that we pass all config by default.
+        # TODO: to do that, config options names need to be aligned first.
         return writer(
             translator=translator,
             deduplicator=deduplicator,
@@ -107,6 +109,7 @@ def get_writer(
             import_call_file_prefix=dbms_config.get("import_call_file_prefix"),
             wipe=dbms_config.get("wipe"),
             strict_mode=strict_mode,
+            labels_order=dbms_config.get("labels_order"),  # batch writer
             skip_bad_relationships=dbms_config.get("skip_bad_relationships"),  # neo4j
             skip_duplicate_nodes=dbms_config.get("skip_duplicate_nodes"),  # neo4j
             db_user=dbms_config.get("user"),  # psql
