@@ -85,7 +85,6 @@ class _OWLWriter(_RDFWriter):
         db_port: str = None,
         file_format: str = None,
         rdf_namespaces: dict = {},
-        labels_order: str = "Ascending",
         edge_model: str = "Association",
         file_stem: str = "biocypher",
         **kwargs,
@@ -187,7 +186,6 @@ class _OWLWriter(_RDFWriter):
             db_port=db_port,
             file_format=file_format,
             rdf_namespaces=rdf_namespaces,
-            labels_order=labels_order,
             **kwargs,
         )
 

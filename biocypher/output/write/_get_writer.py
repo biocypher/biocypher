@@ -95,6 +95,16 @@ def get_writer(
         raise ValueError(msg)
 
     if writer is not None:
+        if "labels_order" in dbms_config:
+            logger.warning(
+                "The `labels_order` option is DEPRECATED. "
+                "Please use `node_labels_order` and `edge_labels_order` instead. "
+                "I'll set both to the value you passed, "
+                "but this will become an error in future versions."
+            )
+            dbms_config["node_labels_order"] = dbms_config["labels_order"]
+            dbms_config["edge_labels_order"] = dbms_config["labels_order"]
+
         # FIXME: passing dbms_config as kwargs would ensure that we pass all config by default.
         # TODO: to do that, config options names need to be aligned first.
         return writer(
@@ -109,7 +119,8 @@ def get_writer(
             import_call_file_prefix=dbms_config.get("import_call_file_prefix"),
             wipe=dbms_config.get("wipe"),
             strict_mode=strict_mode,
-            labels_order=dbms_config.get("labels_order"),  # batch writer
+            node_labels_order=dbms_config.get("node_labels_order"),  # batch writer
+            edge_labels_order=dbms_config.get("edge_labels_order"),  # batch writer
             skip_bad_relationships=dbms_config.get("skip_bad_relationships"),  # neo4j
             skip_duplicate_nodes=dbms_config.get("skip_duplicate_nodes"),  # neo4j
             db_user=dbms_config.get("user"),  # psql
