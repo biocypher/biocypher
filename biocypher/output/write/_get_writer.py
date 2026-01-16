@@ -109,7 +109,7 @@ def get_writer(
             import_call_file_prefix=dbms_config.get("import_call_file_prefix"),
             wipe=dbms_config.get("wipe"),
             strict_mode=strict_mode,
-            labels_order=dbms_config.get("labels_order"), # batch writer
+            labels_order=dbms_config.get("labels_order"),  # batch writer
             skip_bad_relationships=dbms_config.get("skip_bad_relationships"),  # neo4j
             skip_duplicate_nodes=dbms_config.get("skip_duplicate_nodes"),  # neo4j
             db_user=dbms_config.get("user"),  # psql
