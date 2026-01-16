@@ -1,0 +1,154 @@
+# BioCypher Functionality Index for LLMs
+
+## Available LLM Documentation Files
+
+For specific guidance, refer to these files in the documentation root, https://biocypher.org/BioCypher/:
+
+- **llms-adapters.txt** - Complete guide for creating BioCypher adapters
+- **llms-example-adapter.txt** - Full working example of a GEO adapter
+- **llms.md** - Human-readable overview (this page)
+
+## Core Components
+
+### BioCypher Class
+- Main entry point for knowledge graph creation
+- Handles schema validation, data processing, and output generation
+- Methods: `add_node()`, `add_edge()`, `write()`, `get_graph()`
+
+### Adapters
+- Transform external data into BioCypher canonical format
+- Interface: `get_nodes()` and `get_edges()` methods returning iterables
+- Node format: (node_id, node_label, attributes_dict)
+- Edge format: (edge_id, source_id, target_id, edge_label, attributes_dict)
+
+### Schema Configuration
+- YAML-based schema definition
+- Defines node types, edge types, and their properties
+- Uses `input_label` to map adapter outputs to schema concepts
+- Supports inheritance and property overrides
+
+## Data Processing
+
+### Node Creation
+- 3-tuple format: (node_id, node_label, attributes_dict)
+- node_id: unique identifier (preferably CURIE format)
+- node_label: must match schema input_label
+- attributes_dict: property key-value pairs
+
+### Edge Creation
+- 5-tuple format: (edge_id, source_id, target_id, edge_label, attributes_dict)
+- edge_id: optional unique identifier
+- source_id/target_id: must reference existing node IDs
+- edge_label: must match schema input_label
+- attributes_dict: edge property key-value pairs
+
+### Data Validation
+- Schema compliance checking
+- Node/edge label validation
+- Property type validation
+- Provenance field validation (strict mode)
+
+## Output Formats
+
+### Graph Databases
+- Neo4j: Cypher queries and batch operations
+- ArangoDB: AQL queries and document operations
+- PostgreSQL: SQL operations with graph extensions
+
+### File Formats
+- RDF: Turtle, N-Triples, RDF/XML
+- OWL: Ontology Web Language
+- NetworkX: Python graph library format
+- Tabular: CSV, TSV with node/edge tables
+
+### In-Memory
+- NetworkX graph objects
+- Pandas DataFrames
+- Python dictionaries and lists
+
+## Utility Functions
+
+### Download and Cache
+- `download_and_cache_file()`: Download files with caching
+- `download_and_cache_ftp()`: FTP file downloads
+- `download_and_cache_http()`: HTTP file downloads
+
+### Ontology Handling
+- `load_ontology()`: Load OWL/TTL ontology files
+- `get_ontology_mapping()`: Extract entity mappings
+- `get_ontology_hierarchy()`: Extract class hierarchies
+
+### Graph Operations
+- `get_subgraph()`: Extract subgraphs by criteria
+- `merge_graphs()`: Combine multiple graphs
+- `deduplicate_nodes()`: Remove duplicate nodes
+- `deduplicate_edges()`: Remove duplicate edges
+
+## Configuration
+
+### BioCypher Configuration
+- `biocypher_config.yaml`: Main configuration file
+- Database connection settings
+- Output format specifications
+- Logging and validation options
+
+### Schema Configuration
+- `schema_config.yaml`: Schema definition file
+- Node and edge type definitions
+- Property specifications
+- Inheritance relationships
+
+## Common Patterns
+
+### Adapter Patterns
+- Simple adapter pattern: Direct data transformation
+- Resource-based pattern: Using BioCypher's Resource classes
+- Generator-based pattern: Memory-efficient streaming
+- Schema-driven pattern: Validation against schema configuration
+
+### Error Handling
+- Graceful handling of missing data
+- Schema validation errors
+- Network/IO error recovery
+- Data type conversion errors
+
+### Performance Optimization
+- Generator-based data processing
+- Batch operations for large datasets
+- Memory-efficient graph operations
+- Caching for repeated operations
+
+## Integration Points
+
+### External Libraries
+- GEOparse: NCBI GEO data access
+- Pandas: Data manipulation
+- NetworkX: Graph operations
+- RDFlib: RDF processing
+- OWLready2: OWL ontology handling
+
+### Database Drivers
+- Neo4j: py2neo driver
+- PostgreSQL: psycopg2 driver
+- ArangoDB: python-arango driver
+- SQLite: sqlite3 (built-in)
+
+## Validation Rules
+
+### Schema Compliance
+- All node labels must exist in schema
+- All edge labels must exist in schema
+- Required properties must be present
+- Property types must match schema definition
+
+### Data Quality
+- Node IDs must be unique
+- Edge source/target must reference valid nodes
+- CURIE format preferred for node IDs
+- Provenance fields required in strict mode
+
+### Performance Constraints
+- Memory usage for large datasets
+- Network timeouts for external data
+- File size limits for downloads
+- Processing time for complex operations
