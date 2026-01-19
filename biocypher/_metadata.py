@@ -13,7 +13,7 @@ try:
 except ImportError:
     toml = None
 
-_VERSION = "0.12.3"
+_VERSION = "0.12.4"
 
 
 def get_metadata():
