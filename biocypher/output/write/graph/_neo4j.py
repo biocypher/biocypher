@@ -37,6 +37,16 @@ class _Neo4jBatchWriter(_BatchWriter):
         # Should read the configuration and setup import_call_bin_prefix.
         super().__init__(*args, **kwargs)
 
+        # Forces edges to have a single label.
+        if self.edge_labels_order != "Leaves":
+            msg = (
+                "Neo4j supports only edge_labels_order: 'Leaves', "
+                "I'll set it for you, but you should fix your configuration "
+                "file in the `neo4j` section."
+            )
+            self.edge_labels_order = "Leaves"
+            logger.warning(msg)
+
     def _get_default_import_call_bin_prefix(self):
         """Method to provide the default string for the import call bin prefix.
 

@@ -653,7 +653,7 @@ def test_write_edge_data_from_list(bw, _get_edges):
     assert "p1;" in perturbed_in_disease
     assert "PERTURBED_IN_DISEASE" in perturbed_in_disease
     assert "\n" in perturbed_in_disease
-    assert "p2;PERTURBED_IN_DISEASE" in perturbed_in_disease
+    assert "p2;'PERTURBED_IN_DISEASE'" in perturbed_in_disease
     assert "m0;" in is_mutated_in
     assert "mrel0;" in is_mutated_in
     assert "'3-UTR';" in is_mutated_in
@@ -1091,7 +1091,8 @@ def test_check_label_name():
 
 
 def make_labels(bw, order):
-    bw.labels_order = order
+    bw.node_labels_order = order
+    bw.edge_labels_order = order
     nodes = [
         BioCypherNode(
             node_id="agpl:0001",

@@ -110,6 +110,8 @@ def get_writer(
             wipe=dbms_config.get("wipe"),
             strict_mode=strict_mode,
             labels_order=dbms_config.get("labels_order"),  # batch writer
+            node_labels_order=dbms_config.get("node_labels_order"),  # batch writer
+            edge_labels_order=dbms_config.get("edge_labels_order"),  # batch writer
             skip_bad_relationships=dbms_config.get("skip_bad_relationships"),  # neo4j
             skip_duplicate_nodes=dbms_config.get("skip_duplicate_nodes"),  # neo4j
             db_user=dbms_config.get("user"),  # psql

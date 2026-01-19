@@ -87,12 +87,13 @@ neo4j:
   quote_character: "'"
 
   # How to write the labels in the export files.
-
   labels_order: "Ascending" # Default: From more specific to more generic.
+  node_labels_order: "None" # Default: use labels_order.
+  edge_labels_order: "None"
   # Or:
-  # labels_order: "Descending" # From more generic to more specific.
-  # labels_order: "Alphabetical" # Alphabetically. Legacy option.
-  # labels_order: "Leaves" # Only the more specific label.
+  # - "Descending" # From more generic to more specific.
+  # - "Alphabetical" # Alphabetically. Legacy option.
+  # - "Leaves" # Only the more specific label.
 
   ## MultiDB functionality
   ## Set to false for using community edition or older versions of Neo4j
@@ -125,6 +126,14 @@ postgresql:
   delimiter: '\t'
   # import_call_bin_prefix: '' # path to "psql"
   # import_call_file_prefix: '/path/to/files'
+
+  labels_order: "Ascending" # Default: From more specific to more generic.
+  node_labels_order: "None" # Default: use labels_order.
+  edge_labels_order: "None"
+  # Or:
+  # - "Descending" # From more generic to more specific.
+  # - "Alphabetical" # Alphabetically. Legacy option.
+  # - "Leaves" # Only the more specific label.
 
 rdf:
   ### RDF configuration ###

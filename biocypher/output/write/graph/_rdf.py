@@ -57,7 +57,6 @@ class _RDFWriter(_BatchWriter):
         db_port: str = None,
         file_format: str = None,
         rdf_namespaces: dict = {},
-        labels_order: str = "Ascending",
         **kwargs,
     ):
         super().__init__(
@@ -80,7 +79,6 @@ class _RDFWriter(_BatchWriter):
             db_port=db_port,
             file_format=file_format,
             rdf_namespaces=rdf_namespaces,
-            labels_order=labels_order,
             **kwargs,
         )
         if not self.rdf_namespaces:
@@ -103,6 +101,24 @@ class _RDFWriter(_BatchWriter):
             raise RuntimeError(msg)
 
         self.namespaces = {}
+
+        if self.edge_labels_order != "Leaves":
+            msg = (
+                "RDF/OWL support only edge_labels_order: 'Leaves', "
+                "I'll set it for you, but you should fix your configuration "
+                "file in the `rdf` or `owl` section."
+            )
+            self.edge_labels_order = "Leaves"
+            logger.warning(msg)
+
+        if self.node_labels_order != "Leaves":
+            msg = (
+                "RDF/OWL support only node_labels_order: 'Leaves', "
+                "I'll set it for you, but you should fix your configuration "
+                "file in the `rdf` or `owl` section."
+            )
+            self.node_labels_order = "Leaves"
+            logger.warning(msg)
 
     def _get_import_script_name(self) -> str:
         """Return the name of the RDF admin import script.
