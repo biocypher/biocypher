@@ -250,7 +250,7 @@ class _BatchWriter(_Writer, ABC):
                     * "Ascending": From more specific to more generic (the default).
                     * "Descending": From more generic to more specific.
                     * "Alphabetical": Alphabetically. Legacy option.
-                    * "Leaves": Only the more specific label.
+                    * "Leaves": Only the most specific label.
 
             node_labels_order:
                 The order of node labels, reflecting the types of ancestors in the taxonomy.
@@ -259,7 +259,7 @@ class _BatchWriter(_Writer, ABC):
                     * "Ascending": From more specific to more generic.
                     * "Descending": From more generic to more specific.
                     * "Alphabetical": Alphabetically. Legacy option.
-                    * "Leaves": Only the more specific label.
+                    * "Leaves": Only the most specific label.
 
             edge_labels_order:
                 The order of edge labels, reflecting the types of ancestors in the taxonomy.
@@ -268,7 +268,7 @@ class _BatchWriter(_Writer, ABC):
                     * "Ascending": From more specific to more generic.
                     * "Descending": From more generic to more specific.
                     * "Alphabetical": Alphabetically. Legacy option.
-                    * "Leaves": Only the more specific label.
+                    * "Leaves": Only the most specific label.
 
         """
         super().__init__(
@@ -351,7 +351,7 @@ class _BatchWriter(_Writer, ABC):
             if self.edge_labels_order != self.labels_order or self.node_labels_order != self.labels_order:
                 msg = (
                     f"`labels_order`=`{self.labels_order}` "
-                    "superseeded by either "
+                    "superseded by either "
                     f"`node_labels_order`=`{self.node_labels_order}` "
                     f"or `edge_labels_order`=`{self.edge_labels_order}`."
                 )
@@ -503,7 +503,7 @@ class _BatchWriter(_Writer, ABC):
         if not force:
             # If the type label is not in the taxonomy
             # (i.e. it has been set with `label_as_edge`).
-            # FIXME depreciate label_as_edge.
+            # FIXME deprecate label_as_edge.
             try:
                 all_labels = self.translator.ontology.get_ancestors(label)
             except networkx.exception.NetworkXError:
@@ -845,7 +845,7 @@ class _BatchWriter(_Writer, ABC):
                                 if v.get("label_as_edge") == label:
                                     cprops = v.get("properties")
                                     logger.warning(
-                                        "`label_as_edge` will be depreciated in a next version,"
+                                        "`label_as_edge` will be deprecated in a future version,"
                                         "please use edge types that exists in your ontology's taxonomy."
                                     )
                                     break
