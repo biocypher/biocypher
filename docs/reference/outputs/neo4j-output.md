@@ -246,5 +246,5 @@ will remove all but the most specific type label (the "leaf" of the types
 tree). Be warned that the resulting export will completely lose the ontological
 information, hence making it impossible to query the graph on high-level types.
 
-Note, however, that the Neo4j database doesn't allow attaching several type
-labels to edges,. Hence it is always set to "Leaves" for edges.
+Note that the Neo4j database doesn't allow attaching multiple type labels to
+edges. Hence, it is always set to "Leaves" for edges.
