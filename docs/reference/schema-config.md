@@ -1,8 +1,13 @@
 # Schema Configuration Reference
 
+!!! tip "Understanding Schema Configuration"
+    Before diving into the technical details, we recommend reading [Schema Configuration: Philosophy and Concepts](../learn/explanation/schema-config-philosophy.md) to understand how schema configuration bridges grounding in ontologies with pragmatic project-specific needs.
+
 ## Purpose:
 
 The schema file defines the structure of a BioCypher knowledge graph, specifying which entities and relationships are included and how they are represented. It ensures alignment with biomedical ontologies like the [Biolink model](https://biolink.github.io/biolink-model/), serving as a blueprint for constructing a domain-specific knowledge graph.
+
+The schema configuration serves a dual role: it **grounds** your knowledge graph in well-defined ontological concepts while allowing you to **select** only the concepts relevant to your specific project. For a deeper understanding of this philosophy, see [Schema Configuration: Philosophy and Concepts](../learn/explanation/schema-config-philosophy.md).
 
 ## Convention for naming:
 

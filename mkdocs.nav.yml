@@ -33,6 +33,8 @@ nav:
                 - learn/explanation/index.md
                 - About Adapters: learn/explanation/adapters.md
                 - About Ontologies: learn/explanation/ontologies.md
+                - Schema Configuration Philosophy: learn/explanation/schema-config-philosophy.md
+                - Graph Class Guide: learn/explanation/graph_class_guide.md
                 - Architecture Migration Guide: learn/explanation/architecture-migration.md
 
     - Reference:
