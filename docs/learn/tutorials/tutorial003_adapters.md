@@ -196,6 +196,9 @@ While edges are represented as 5-tuples, containing:
   an ontological class via the `input_label` field in the schema configuration)
 - a dictionary of relationship attributes
 
+!!! tip "Understanding the Adapter–Schema Config Contract"
+    The `input_label` field in the schema configuration serves as a contract between adapters and the rest of the BioCypher system. Adapters produce data with labels matching the schema config's `input_label`, which then maps to ontology-grounded concepts. For a deeper understanding of how adapters, schema configuration, and ontologies work together, see [Schema Configuration: Philosophy and Concepts](../explanation/schema-config-philosophy.md#the-adapter-schema-config-ontology-link).
+
 !!! note "Standardised node and edge representation"
 	This representation will probably be subject to change soon and yield to a more
 	standardised interface for nodes and edges, derived from a BioCypher core class.

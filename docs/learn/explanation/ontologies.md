@@ -183,7 +183,12 @@ stores it at the specified location.
 ## Using ontologies: plain Biolink
 BioCypher maps any input data to the underlying ontology; in the basic case, the
 Biolink model. This mapping is defined in the schema configuration
-(`schema_config.yaml`, see also [here](qs_schema-config)). In the simplest case,
+(`schema_config.yaml`, see also [here](../../reference/schema-config.md)). 
+
+!!! tip "Understanding the Schema Config–Ontology Relationship"
+    The schema configuration serves as a bridge between grounding your knowledge graph in well-defined ontological concepts and selecting what's pragmatically relevant for your project. For a comprehensive explanation of this philosophy, see [Schema Configuration: Philosophy and Concepts](schema-config-philosophy.md).
+
+In the simplest case,
 the representation of a concept in the knowledge graph to be built and the
 Biolink model class representing this concept are synonymous. For instance, the
 concept *protein* is represented by the Biolink class *protein*. To introduce
