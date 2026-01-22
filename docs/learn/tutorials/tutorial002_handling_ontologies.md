@@ -109,7 +109,7 @@ bc.show_ontology_structure()
 
 This will build the ontology scaffold and print a tree visualisation of its
 hierarchy to the console using the treelib library. You can see this in action
-in tutorial [part 6](tut_relationships) (`tutorial/06_relationships.py`). The
+in tutorial [part 6](tutorial001_basics.md#section-4-handling-relationships) (`tutorial/06_relationships.py`). The
 output will look something like this:
 
 ```text

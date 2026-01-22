@@ -77,18 +77,18 @@ project is to specify them in the biocypher configuration file
 (`biocypher_config.yaml`). This file is used to specify the location of the
 ontology files, as well as the root node of the main ("head") ontology and join
 nodes as fusion points for all "tail" ontologies. For more info, see the
-[section on hybridising ontologies](tut_hybridising).
+[section on hybridising ontologies](#hybridising-ontologies).
 
 ## Visualising ontologies
 
 BioCypher provides a simple way of visualising the ontology hierarchy. This is
 useful for debugging and for getting a quick overview of the ontology and which
 parts are actually used in the knowledge graph to be created. Depending on your
-use case you can either visualise the [parts of the ontology](vis_parts) used in
+use case you can either visualise the [parts of the ontology](#visualise-only-the-parts-of-the-ontology-used-in-the-knowledge-graph) used in
 the knowledge graph (sufficient for most use cases) or the [full
-ontology](vis_full). If the used ontology is more complex and contains multiple
+ontology](#visualise-the-full-ontology). If the used ontology is more complex and contains multiple
 inheritance please refer to the section on [visualising complex
-ontologies](vis_complex).
+ontologies](#visualise-complex-ontologies).
 
 ### Visualise only the parts of the ontology used in the knowledge graph
 
@@ -109,7 +109,7 @@ bc.show_ontology_structure()
 
 This will build the ontology scaffold and print a tree visualisation of its
 hierarchy to the console using the treelib library. You can see this in action
-in tutorial [part 6](tut_relationships) (`tutorial/06_relationships.py`). The
+in tutorial [part 6](../tutorials/tutorial001_basics.md#section-4-handling-relationships) (`tutorial/06_relationships.py`). The
 output will look something like this:
 
 ```text
@@ -194,7 +194,7 @@ Biolink model class representing this concept are synonymous. For instance, the
 concept *protein* is represented by the Biolink class *protein*. To introduce
 proteins into the knowledge graph, one would simply define a node constituent
 with the class label *protein*. This is the mechanism we implicitly used for
-proteins in the basic tutorial ([part 1](tut_01_schema)); to reiterate:
+proteins in the basic tutorial ([part 1](../tutorials/tutorial001_basics.md#section-1-adding-data)); to reiterate:
 
 ```yaml title="schema_config.yaml"
 protein:
@@ -207,9 +207,9 @@ protein:
 ## Model extensions
 There are multiple reasons why a user might want to modify the basic model of
 the ontology or ontologies used. A class that is relevant to the user's task
-might be missing ([Explicit inheritance](tut_explicit)). A class might not be
+might be missing ([Explicit inheritance](#explicit-inheritance)). A class might not be
 granular enough, and the user would like to split it into subclasses based on
-distinct inputs ([Implicit inheritance](tut_implicit)). For some very common use
+distinct inputs ([Implicit inheritance](#implicit-inheritance)). For some very common use
 cases, we recommend going one step further and, maybe after some testing using
 the above "soft" model extensions, proposing the introduction of a new class to
 the model itself. For instance, Biolink is an open source community project, and
@@ -221,9 +221,9 @@ for OBO Foundry ontologies.
 BioCypher provides further methods for ontology manipulation. The name of a
 class of the model may be too unwieldy for the use inside the desired knowledge
 graph, and the user would like to introduce a synonym/alias
-([Synonyms](tut_synonyms)). Finally, the user might want to extend the basic
+([Synonyms](#synonyms)). Finally, the user might want to extend the basic
 model with another, more specialised ontology ([Hybridising
-ontologies](tut_hybridising)).
+ontologies](#hybridising-ontologies)).
 
 
 ### Explicit inheritance
@@ -253,7 +253,7 @@ is even recommended to do so to situate all components of the knowledge graph in
 the ontological hierarchy. However, to have the ancestry represented in the
 resulting Neo4j graph DB, multiple labels are required. For instance, we have
 already used the `protein protein interaction` relationship in the basic
-tutorial ([part 6](tut_relationships)), making it a child of the Biolink model
+tutorial ([part 6](../tutorials/tutorial001_basics.md#section-4-handling-relationships)), making it a child of the Biolink model
 class `pairwise molecular interaction`. To reiterate:
 
 ```yaml	title="schema_config.yaml"
@@ -290,13 +290,13 @@ a class has multiple input labels that each refer to a distinct preferred
 identifier. In other words, if both the `input_label` and the `preferred_id`
 fields of a schema configuration class are lists, BioCypher will automatically
 create a subclass for each of the preferred identifiers. This is demonstrated in
-[part 3](implicit_subclass) of the basic tutorial.
+[part 3](../tutorials/tutorial001_basics.md#section-3-handling-properties) of the basic tutorial.
 
 !!! Warning "Caution"
     If only the `input_label` field - but not the `preferred_id` field - is a
     list, BioCypher will merge the inputs instead. This is useful for cases where
     different input streams should be unified under the same class label. See
-    [part 2](merging) of the basic tutorial for more information.
+    [part 2](../tutorials/tutorial001_basics.md#section-2-merging-data) of the basic tutorial for more information.
 
 To make this more concrete, let's consider the example of `pathway` annotations.
 There are multiple projects that provide pathway annotations, such as Reactome

@@ -16,7 +16,7 @@
 
     Follow our detailed tutorial for on-boarding BioCypher.
 
-    [:octicons-book-24: To the tutorial](../tutorials/tutorial001_basics){ .text-center }
+    [:octicons-book-24: To the tutorial](tutorials/tutorial001_basics.md){ .text-center }
 
 </div>
 
@@ -35,7 +35,7 @@ consecutive steps:
 
 1. Clearly define the scope of your project, including the data sources you
 want to use, the entities and relationships you want to represent, and the
-[ontologies](./tutorials/tutorial002_handling_ontologies.md) that should inform
+[ontologies](tutorials/tutorial002_handling_ontologies.md) that should inform
 these entities.
 
 1. Using these definitions, find existing adapters of data sources or, if
@@ -165,7 +165,7 @@ protein:                    # top-level entry, has to match ontology
     For BioCypher classes, similar to the internal representation in the Biolink
     model, we use lower sentence-case notation, e.g., `protein` and `small
     molecule`. For file names and Neo4j labels, these are converted to PascalCase.
-    For more information, see the [Ontology tutorial](tutorial_ontologies).
+    For more information, see the [Ontology tutorial](explanation/ontologies.md).
 
 
 The above configuration of the protein class specifies its representation as a
@@ -199,7 +199,7 @@ Tutorial](tutorials/tutorial001_basics.md#schema-configuration).
 ## BioCypher API documentation
 
 BioCypher is instantiated using the `BioCypher()` class, which can be called
-without arguments, given that the [configuration](qs_config) files are either
+without arguments, given that the [configuration](../reference/biocypher-config.md) files are either
 present in the working directory, or the pipeline should be run with default
 settings.
 
