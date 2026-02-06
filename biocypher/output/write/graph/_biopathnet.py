@@ -16,7 +16,7 @@ class _BioPathNetWriter(_Writer):
     Writes one skg for learning, validation or test as a list of lines each containing a triple.
     As BioPathNet is launched with the same entity_names and entity_types file,
     appends information in the entity_types and entity_names files. This way, these files can
-    contain the information about all the entities from learning, validatio and test graphs.
+    contain the information about all the entities from learning, validation and test graphs.
     
 
     """
@@ -115,14 +115,16 @@ class _BioPathNetWriter(_Writer):
     ) -> bool:
         """
         Writes the list of edges of the used part of the ontology T-box
-        in the BPN learning graph file.
+        in the BRG graph file.
 
         For each edge of the graph, a line containing the following string:
             source is_a target
         is written.
+
+        the entity_types and entity_names files are completed with values of all the hierarchy nodes.
         """
         file_name = os.path.join(self.output_directory,
-                                 f"{self.skg_file_stem[0]}.{self.file_format[0]}")
+                                 f"{self.background_graph_file_stem[0]}.{self.file_format[0]}")
         file2_name = os.path.join(self.output_directory,
                                  f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
         file3_name = os.path.join(self.output_directory,
