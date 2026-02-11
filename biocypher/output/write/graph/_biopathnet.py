@@ -204,11 +204,13 @@ class _BioPathNetWriter(_Writer):
                     for id, type in entities_semantic_types.items():
                         line1 = "\t".join([id, type])
                         f.write(line1+'\n')
-                        # if type not in all_nodes:
-                        #     line1b = "\t".join([type, "class"])
-                        #     f.write(line1b+'\n')
-                        line2 = "\t".join([id, "is_a", type])
-                        f2.write(line2+'\n')
+                        # FIXME commented for now,
+                        # to write all the type hierarchy in the BGR,
+                        # but we should add an option to choose wether
+                        # to write the hierarchy in the BGR or in the
+                        # learning graph. 
+                        # line2 = "\t".join([id, "is_a", type])
+                        # f2.write(line2+'\n')
                         all_nodes.add(id)
                         all_nodes.add(type)
                     for n in all_nodes:
