@@ -111,7 +111,6 @@ markdown_extensions:
   - admonition
   - attr_list
   - md_in_html
-  - neoteroi.timeline
   #----- Python Markdown Extensions
   - pymdownx.details
   - pymdownx.emoji:
@@ -166,7 +165,6 @@ extra:
     provider: mike
 
 extra_css:
-  - assets/css/css-v1.1.0.css
   - stylesheets/extra.css
 
 copyright: © Copyright 2021-2025, BioCypher developers.
