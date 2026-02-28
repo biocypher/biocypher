@@ -324,10 +324,18 @@ class _BatchWriter(_Writer, ABC):
     def _check_labels_order(self):
         # Check for legit values.
         for order in ["labels_order", "node_labels_order", "edge_labels_order"]:
+            if getattr(self, order) is None:
+                msg = (
+                    f"A batch writer `{order}` parameter must be set, "
+                    f"it must be one of: {', '.join(self._labels_orders)}",
+                )
+                logger.error(msg)
+                raise ValueError(msg)
+
             if getattr(self, order) not in self._labels_orders:
                 msg = (
-                    f"A batch writer `{order}` parameter cannot be `{getattr(self, order)}`,"
-                    f"must be one of: {' ,'.join(self._labels_orders)}",
+                    f"A batch writer `{order}` parameter cannot be `{getattr(self, order)}`, "
+                    f"it must be one of: {', '.join(self._labels_orders)}",
                 )
                 logger.error(msg)
                 raise ValueError(msg)

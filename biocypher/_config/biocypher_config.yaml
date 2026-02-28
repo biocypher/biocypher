@@ -138,12 +138,18 @@ postgresql:
 rdf:
   ### RDF configuration ###
   file_format: turtle # turtle or ttl, xml, json-ld, ntriples, n3, trig, trix or nquads
+  labels_order: "Ascending" # Default: From more specific to more generic.
+  node_labels_order: "None" # Default: use labels_order.
+  edge_labels_order: "None"
 
 owl:
   ### OWL configuration ###
   file_format: turtle # turtle or ttl, xml, json-ld, ntriples, n3, trig, trix or nquads
   edge_model: Association # or: ObjectProperty
   file_stem: biocypher # without the extension
+  labels_order: "Ascending" # Default: From more specific to more generic.
+  node_labels_order: "None" # Default: use labels_order.
+  edge_labels_order: "None"
 
 sqlite:
   ### SQLite configuration ###

@@ -77,8 +77,16 @@ def get_writer(
         instance: an instance of the selected writer class.
 
     """
-    dbms_config = _config(dbms) or {}
 
+    if dbms not in DBMS_TO_CLASS:
+        msg = (
+            f"The DBMS `{dbms}` is unknown to me. Please set the `dbms` option to one of the following: "
+            f"{', '.join(DBMS_TO_CLASS.keys())}."
+        )
+        logger.error(msg)
+        raise ValueError(msg)
+
+    dbms_config = _config(dbms) or {}
     writer = DBMS_TO_CLASS[dbms]
 
     if "rdf_format" in dbms_config:
