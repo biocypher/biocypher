@@ -230,7 +230,6 @@ class _BioPathNetWriter(_Writer):
                         f.write("\t".join([entity, prop, prefixed_value])+'\n')
                         f2.write("\t".join([prefixed_value, "property_value"])+'\n')
                         f3.write("\t".join([prefixed_value, value])+'\n')
-                        
 
         return True
 
