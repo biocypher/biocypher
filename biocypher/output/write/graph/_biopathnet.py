@@ -297,6 +297,8 @@ class _BioPathNetWriter(_Writer):
             str: The name of the import script (ending in .sh)
 
         """
+        with open("noop.sh", 'w'):
+            pass
         return "noop.sh"
 
     def _construct_import_call(self) -> str:
