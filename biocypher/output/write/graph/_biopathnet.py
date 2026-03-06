@@ -301,14 +301,3 @@ class _BioPathNetWriter(_Writer):
             pass
         return "noop.sh"
 
-    def _construct_import_call(self) -> str:
-        """Write the import call.
-
-        This function is not applicable for BioPathNet.
-
-        Returns
-        -------
-            bool: The return value. True for success, False otherwise.
-
-        """
-        return "# TODO?"
