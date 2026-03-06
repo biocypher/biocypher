@@ -115,8 +115,10 @@ class Translator:
                 except AttributeError as err:
                     logger.error(err)
                     logger.error(f"while getting properties from {_ontology_class}.")
-                    logger.error("Maybe you mistype your properties." \
-                        "Ensure that the `property` section is a dictionary, and not a list.")
+                    logger.error(
+                        "Maybe you mistype your properties."
+                        "Ensure that the `property` section is a dictionary, and not a list."
+                    )
                     raise err
 
                 # preferred id
