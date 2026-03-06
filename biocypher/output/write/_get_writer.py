@@ -14,6 +14,7 @@ from biocypher.output.write.graph._arangodb import _ArangoDBBatchWriter
 from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
 from biocypher.output.write.graph._networkx import _NetworkXWriter
 from biocypher.output.write.graph._owl import _OWLWriter
+from biocypher.output.write.graph._biopathnet import _BioPathNetWriter
 from biocypher.output.write.graph._rdf import _RDFWriter
 from biocypher.output.write.relational._csv import _PandasCSVWriter
 from biocypher.output.write.relational._postgresql import _PostgreSQLBatchWriter
@@ -43,6 +44,8 @@ DBMS_TO_CLASS = {
     "RDF": _RDFWriter,
     "owl": _OWLWriter,
     "OWL": _OWLWriter,
+    "biopathnet": _BioPathNetWriter,
+    "BioPathNet": _BioPathNetWriter,
     "csv": _PandasCSVWriter,
     "CSV": _PandasCSVWriter,
     "pandas": _PandasCSVWriter,
