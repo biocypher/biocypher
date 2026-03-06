@@ -260,7 +260,6 @@ class _BioPathNetWriter(_Writer):
                 source = edge.get_source_id()
                 target = edge.get_target_id()
                 relation = edge.get_label()
-                #relation_properties = edge.get_properties()
 
                 if relation is None:
                     relation = "".join([source, "_", target])
