@@ -327,7 +327,7 @@ class _BatchWriter(_Writer, ABC):
             if getattr(self, order) is None:
                 msg = (
                     f"A batch writer `{order}` parameter must be set, "
-                    f"it must be one of: {', '.join(self._labels_orders)}",
+                    f"it must be one of: {', '.join(self._labels_orders)}.",
                 )
                 logger.error(msg)
                 raise ValueError(msg)
@@ -335,7 +335,7 @@ class _BatchWriter(_Writer, ABC):
             if getattr(self, order) not in self._labels_orders:
                 msg = (
                     f"A batch writer `{order}` parameter cannot be `{getattr(self, order)}`, "
-                    f"it must be one of: {', '.join(self._labels_orders)}",
+                    f"it must be one of: {', '.join(self._labels_orders)}.",
                 )
                 logger.error(msg)
                 raise ValueError(msg)
