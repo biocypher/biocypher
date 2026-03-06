@@ -65,7 +65,9 @@ class _BioPathNetWriter(_Writer):
         dict_entity_types = {}
         str_nodes_props_graph = []
 
-        graph_hierarchy = copy.copy(self.translator.ontology._head_ontology.get_nx_graph()).reverse()
+        graph_hierarchy = copy.copy(
+            self.translator.ontology._head_ontology.get_nx_graph()
+        ).reverse()
         logger.debug(f"type(graph_hierarchy) = {type(graph_hierarchy)}")
         logger.debug(f"graph_hierarchy = {graph_hierarchy.nodes()}")
         ancestors_set = set()
