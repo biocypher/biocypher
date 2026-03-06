@@ -98,18 +98,6 @@ class _BioPathNetWriter(_Writer):
         logger.debug(f"ancestors_set : {ancestors_set}")
         sub_hierarchy = graph_hierarchy.subgraph(ancestors_set)
 
-        # Look for instances of all used types that are not in the graph,
-        # to add them in the entity_types files, in order to use them for negative sampling
-        # graph = copy.copy(self.translator.ontology._head_ontology.get_nx_graph())
-        # for t in all_types:
-        #     logger.info("t=", t, type(t))
-        #     instances = graph.predecessors(t)
-        #     for i in instances:
-        #         logger.info("instance=", i, type(i))
-        #         if i not in dict_entity_types.keys():
-        #             dict_entity_types[i] = type
-                    
-
         passed = self._write_semantic_types_in_file(dict_entity_types)
         if passed:
             passed = self._write_properties_in_file(str_nodes_props_graph)
