@@ -13,7 +13,6 @@ def bw_biopathnet(translator, deduplicator, tmp_path_session):
         entity_types_file_stem="entity_types",
         background_graph_file_stem="train1",
         learning_graph_file_stem="train2",
-
     )
 
     yield bw_biopathnet
