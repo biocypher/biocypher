@@ -146,6 +146,9 @@ output should be configured here; if (and only if) an entity is represented in
 the schema configuration _and_ is present in the input data stream, it will be
 part of our knowledge graph.
 
+!!! tip "Understanding Schema Configuration Philosophy"
+    The schema configuration serves a dual role: it **grounds** your knowledge graph in well-defined ontological concepts while allowing you to **select** only what's relevant for your project. It acts as a bridge between adapters (data sources) and ontologies (semantic foundation). For a deeper explanation of this philosophy, see [Schema Configuration: Philosophy and Concepts](../explanation/schema-config-philosophy.md).
+
 In our case, since we only import proteins, we only require few lines of
 configuration:
 

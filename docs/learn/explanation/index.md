@@ -10,6 +10,7 @@ The purpose of this documentation is to provide a comprehensive guide to underst
 
 - [About Adapters](adapters.md)
 - [About Ontologies](ontologies.md)
+- [Schema Configuration: Philosophy and Concepts](schema-config-philosophy.md)
 
 <!-- TODO there are "basics-knowledge-graphs.md" and
 "knowledge-graph-biocypher.md" to still consider, fill in, etc. I am not
