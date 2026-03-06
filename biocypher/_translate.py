@@ -109,8 +109,18 @@ class Translator:
             _ontology_class = self._get_ontology_mapping(_type)
 
             if _ontology_class:
-                # filter properties for those specified in schema_config if any
-                _filtered_props = self._filter_props(_ontology_class, _props)
+                try:
+                    # filter properties for those specified in schema_config if any
+                    _filtered_props = self._filter_props(_ontology_class, _props)
+                except AttributeError as err:
+                    msg = (
+                        f"Error: {err} "
+                        "while getting properties from {_ontology_class}. "
+                        "Maybe you mistyped your properties. "
+                        "Please ensure the `properties` section is a dictionary, not a list."
+                    )
+                    logger.error(msg)
+                    raise err
 
                 # preferred id
                 _preferred_id = self._get_preferred_id(_ontology_class)
