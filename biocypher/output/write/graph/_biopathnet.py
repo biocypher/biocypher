@@ -77,7 +77,7 @@ class _BioPathNetWriter(_Writer):
             semantic_type = entity.get_type()
             entity_id = entity.get_id()
             # store the sematic types of each node of the graph to be
-            # written in the entity_tyes.txt file of BioPathNet
+            # written in the `entity_types.txt` file of BioPathNet
             if entity_id not in dict_entity_types.keys():
                 dict_entity_types[entity_id] = semantic_type
 
