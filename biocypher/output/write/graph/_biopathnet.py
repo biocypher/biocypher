@@ -37,7 +37,7 @@ class _BioPathNetWriter(_Writer):
         )
 
         if not output_directory:
-            msg = "You need to indicate a 'output_directory'."
+            msg = "You need to indicate an 'output_directory'."
             logger.error(msg)
             raise RuntimeError(msg)
 
