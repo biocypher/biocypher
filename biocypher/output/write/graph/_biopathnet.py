@@ -17,8 +17,6 @@ class _BioPathNetWriter(_Writer):
     As BioPathNet is launched with the same entity_names and entity_types file,
     appends information in the entity_types and entity_names files. This way, these files can
     contain the information about all the entities from learning, validation and test graphs.
-    
-
     """
 
     def __init__(
