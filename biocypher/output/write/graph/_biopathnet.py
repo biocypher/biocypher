@@ -151,7 +151,6 @@ class _BioPathNetWriter(_Writer):
                     root_type = list(all_classes-all_entities)[0]
                     f2.write("\t".join([root_type, "THING"])+'\n')
                     f3.write("\t".join([root_type, root_type])+'\n')
-                
 
         return True
 
