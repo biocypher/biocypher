@@ -72,7 +72,6 @@ class _BioPathNetWriter(_Writer):
         logger.debug(f"graph_hierarchy = {graph_hierarchy.nodes()}")
         ancestors_set = set()
 
-        # all_types = set()
 
         for entity in nodes:
             semantic_type = entity.get_type()
