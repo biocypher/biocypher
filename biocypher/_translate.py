@@ -113,12 +113,13 @@ class Translator:
                     # filter properties for those specified in schema_config if any
                     _filtered_props = self._filter_props(_ontology_class, _props)
                 except AttributeError as err:
-                    logger.error(err)
-                    logger.error(f"while getting properties from {_ontology_class}.")
-                    logger.error(
-                        "Maybe you mistype your properties."
-                        "Ensure that the `property` section is a dictionary, and not a list."
+                    msg = (
+                        f"Error: {err} "
+                        "while getting properties from {_ontology_class}. "
+                        "Maybe you mistyped your properties. "
+                        "Please ensure the `properties` section is a dictionary, not a list."
                     )
+                    logger.error(msg)
                     raise err
 
                 # preferred id
