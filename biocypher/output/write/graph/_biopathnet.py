@@ -155,9 +155,6 @@ class _BioPathNetWriter(_Writer):
         return True
 
 
-
-
-
     def _write_semantic_types_in_file(
         self,
         entities_semantic_types: dict,
