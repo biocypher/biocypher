@@ -17,6 +17,11 @@ class _BioPathNetWriter(_Writer):
     As BioPathNet is launched with the same entity_names and entity_types file,
     appends information in the entity_types and entity_names files. This way, these files can
     contain the information about all the entities from learning, validation and test graphs.
+
+    To generate the needed 3 graphs (learning, validation and test) for BioPathNet,
+    the biocypher's BioPathNet writer must be called 3 tymes, with the corresponding
+    3 SKGs.
+
     """
 
     def __init__(
@@ -26,7 +31,6 @@ class _BioPathNetWriter(_Writer):
         entity_types_file_stem: str = "entity_types",
         entity_names_file_stem: str = "entity_names",
         background_graph_file_stem: str = "brg",
-#        learning_graph_file_stem: str = "train2",
         skg_file_stem: str = "skg",
         **kwargs,
     ):
@@ -85,7 +89,7 @@ class _BioPathNetWriter(_Writer):
             for key, value in properties.items():
                 # only write value if it exists.
                 if value:
-                    str_nodes_props_graph.append("\t".join([entity_id, key, str(value)]))
+                    str_nodes_props_graph.append("\t".join([entity_id, key, str(value).replace(' ', '')]))
 
             # Add all ancestors of the entity type in the set, in order to reconstruct
             # the useful part of the ontology for passing it to BioPathNet
@@ -281,3 +285,17 @@ class _BioPathNetWriter(_Writer):
             pass
         return "noop.sh"
 
+    def _construct_import_call(self) -> str:
+        """Function to construct the import call detailing folder and
+        individual node and edge headers and data files, as well as
+        delimiters and database name. Built after all data has been
+        processed to ensure that nodes are called before any edges.
+
+        Returns
+        -------
+            str: command for importing the output files into a DBMS.
+
+        """
+        with open("noop.sh", 'w'):
+            pass
+        return "noop.sh"

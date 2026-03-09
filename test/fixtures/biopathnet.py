@@ -11,8 +11,8 @@ def bw_biopathnet(translator, deduplicator, tmp_path_session):
         output_directory=tmp_path_session,
         file_format="txt",
         entity_types_file_stem="entity_types",
-        background_graph_file_stem="train1",
-        learning_graph_file_stem="train2",
+        background_graph_file_stem="brg",
+        learning_graph_file_stem="skg",
     )
 
     yield bw_biopathnet

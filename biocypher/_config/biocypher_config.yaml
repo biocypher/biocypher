@@ -167,6 +167,8 @@ networkx:
   some_config: some_value # placeholder for technical reasons TODO
 
 biopathnet:
+  file_format: txt
   entity_types_file_stem: entity_types
-  background_graph_file_stem: train1
-  learning_graph_file_stem: train2
+  entity_names_file_stem: entity_names
+  background_graph_file_stem: brg
+  skg_file_stem: skg
