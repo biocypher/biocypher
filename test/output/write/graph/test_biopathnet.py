@@ -14,8 +14,8 @@ def test_biopathnet_writer_nodes(bw_biopathnet, _get_nodes):
 
     passed_nodes = bw_biopathnet.write_nodes(node_gen(nodes), batch_size=1e6)
     assert passed_nodes
-#    write_result = bw_biopathnet.write_import_call()
-#    assert write_result
+    #    write_result = bw_biopathnet.write_import_call()
+    #    assert write_result
 
     tmp_path = bw_biopathnet.output_directory
 
@@ -26,13 +26,15 @@ def test_biopathnet_writer_nodes(bw_biopathnet, _get_nodes):
     expected_files = ["entity_types.txt", "entity_names.txt", "brg.txt", "skg.txt"]
     for file in produced_files:
         assert file in expected_files
-        f = open(os.path.join(tmp_path, file), 'r')
+        f = open(os.path.join(tmp_path, file), "r")
         logger.debug(f"Contents of {file} is \n{f.read()}")
 
     len_lines = 0
     with open(f"{tmp_path}/entity_types.txt", "rb") as f:
         lines = f.readlines()
         len_lines = len(lines)
+
+
 #    assert len(nodes) == len_lines
 
 
@@ -45,8 +47,8 @@ def test_biopathnet_writer_edges(bw_biopathnet, _get_edges):
 
     passed_edges = bw_biopathnet.write_edges(edge_gen(edges), batch_size=1e6)
     assert passed_edges
-#    write_result = bw_biopathnet.write_import_call()
-#    assert write_result
+    #    write_result = bw_biopathnet.write_import_call()
+    #    assert write_result
 
     tmp_path = bw_biopathnet.output_directory
 
@@ -57,5 +59,5 @@ def test_biopathnet_writer_edges(bw_biopathnet, _get_edges):
     expected_files = ["entity_types.txt", "entity_names.txt", "brg.txt", "skg.txt"]
     for file in produced_files:
         assert file in expected_files
-        f = open(os.path.join(tmp_path, file), 'r')
+        f = open(os.path.join(tmp_path, file), "r")
         logger.debug(f"Contents of {file} is \n{f.read()}")

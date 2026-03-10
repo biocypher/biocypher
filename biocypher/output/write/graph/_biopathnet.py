@@ -1,8 +1,8 @@
 """Module to provide the BioPathNet writer class."""
 
+import copy
 import os
 
-import copy
 import networkx as nx
 
 from biocypher._logger import logger
@@ -45,11 +45,11 @@ class _BioPathNetWriter(_Writer):
             logger.error(msg)
             raise RuntimeError(msg)
 
-        self.file_format = "txt",
-        self.entity_types_file_stem = entity_types_file_stem,
-        self.entity_names_file_stem = entity_names_file_stem,
-        self.background_graph_file_stem = background_graph_file_stem,
-        self.skg_file_stem= skg_file_stem,
+        self.file_format = ("txt",)
+        self.entity_types_file_stem = (entity_types_file_stem,)
+        self.entity_names_file_stem = (entity_names_file_stem,)
+        self.background_graph_file_stem = (background_graph_file_stem,)
+        self.skg_file_stem = (skg_file_stem,)
 
     def _write_node_data(
         self,
@@ -69,13 +69,10 @@ class _BioPathNetWriter(_Writer):
         dict_entity_types = {}
         str_nodes_props_graph = []
 
-        graph_hierarchy = copy.copy(
-            self.translator.ontology._head_ontology.get_nx_graph()
-        ).reverse()
+        graph_hierarchy = copy.copy(self.translator.ontology._head_ontology.get_nx_graph()).reverse()
         logger.debug(f"type(graph_hierarchy) = {type(graph_hierarchy)}")
         logger.debug(f"graph_hierarchy = {graph_hierarchy.nodes()}")
         ancestors_set = set()
-
 
         for entity in nodes:
             semantic_type = entity.get_type()
@@ -89,11 +86,11 @@ class _BioPathNetWriter(_Writer):
             for key, value in properties.items():
                 # only write value if it exists.
                 if value:
-                    str_nodes_props_graph.append("\t".join([entity_id, key, str(value).replace(' ', '')]))
+                    str_nodes_props_graph.append("\t".join([entity_id, key, str(value).replace(" ", "")]))
 
             # Add all ancestors of the entity type in the set, in order to reconstruct
             # the useful part of the ontology for passing it to BioPathNet
-            ancestors = nx.ancestors(graph_hierarchy, semantic_type )|{semantic_type}
+            ancestors = nx.ancestors(graph_hierarchy, semantic_type) | {semantic_type}
             logger.debug(f"Adding the type : {semantic_type}")
             logger.debug(f"Ancestors : {ancestors}")
             ancestors_set.update(ancestors)
@@ -113,7 +110,6 @@ class _BioPathNetWriter(_Writer):
         else:
             return False
 
-
     def _write_hierarchy_in_file(
         self,
         subgraph: nx.DiGraph,
@@ -128,15 +124,12 @@ class _BioPathNetWriter(_Writer):
 
         the entity_types and entity_names files are completed with values of all the hierarchy nodes.
         """
-        file_name = os.path.join(self.output_directory,
-                                 f"{self.background_graph_file_stem[0]}.{self.file_format[0]}")
-        file2_name = os.path.join(self.output_directory,
-                                 f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
-        file3_name = os.path.join(self.output_directory,
-                                 f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
-        with open(file_name, 'a+', encoding='utf-8') as f:
-            with open(file2_name, 'a+', encoding='utf-8') as f2:
-                with open(file3_name, 'a+', encoding='utf-8') as f3:
+        file_name = os.path.join(self.output_directory, f"{self.background_graph_file_stem[0]}.{self.file_format[0]}")
+        file2_name = os.path.join(self.output_directory, f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
+        file3_name = os.path.join(self.output_directory, f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
+        with open(file_name, "a+", encoding="utf-8") as f:
+            with open(file2_name, "a+", encoding="utf-8") as f2:
+                with open(file3_name, "a+", encoding="utf-8") as f3:
                     logger.debug(f"subgraph = {subgraph}")
                     logger.debug(f"subgraph.edges() = {subgraph.edges()}")
                     all_classes = set()
@@ -145,19 +138,18 @@ class _BioPathNetWriter(_Writer):
                         source, target = edge
                         relation = "is_a"
                         str_line = "\t".join([target, relation, source])
-                        f.write(str_line+'\n')
+                        f.write(str_line + "\n")
                         str_line2 = "\t".join([target, source])
-                        f2.write(str_line2+'\n')
+                        f2.write(str_line2 + "\n")
                         str_line3 = "\t".join([target, target])
-                        f3.write(str_line3+'\n')
+                        f3.write(str_line3 + "\n")
                         all_classes.add(source)
                         all_entities.add(target)
-                    root_type = list(all_classes-all_entities)[0]
-                    f2.write("\t".join([root_type, "THING"])+'\n')
-                    f3.write("\t".join([root_type, root_type])+'\n')
+                    root_type = list(all_classes - all_entities)[0]
+                    f2.write("\t".join([root_type, "THING"]) + "\n")
+                    f3.write("\t".join([root_type, root_type]) + "\n")
 
         return True
-
 
     def _write_semantic_types_in_file(
         self,
@@ -171,37 +163,34 @@ class _BioPathNetWriter(_Writer):
             entity_id entity_semantic_type
         is written.
         """
-        file_name = os.path.join(self.output_directory,
-                                 f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
-        file2_name = os.path.join(self.output_directory,
-                                 f"{self.skg_file_stem[0]}.{self.file_format[0]}")
-        file3_name = os.path.join(self.output_directory,
-                                 f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
+        file_name = os.path.join(self.output_directory, f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
+        file2_name = os.path.join(self.output_directory, f"{self.skg_file_stem[0]}.{self.file_format[0]}")
+        file3_name = os.path.join(self.output_directory, f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
         logger.debug(f"In _biopathnet.py, output_directory = {self.output_directory}")
         logger.debug(f"In _biopathnet.py, entity_types_file_stem = {self.entity_types_file_stem}")
         logger.debug(f"In _biopathnet.py, file_format= {self.file_format}")
         logger.debug(f"In _biopathnet.py, filename = {file_name}")
 
         all_nodes = set()
-        
-        with open(file_name, 'a+', encoding='utf-8') as f:
-            with open(file2_name, 'a+', encoding='utf-8') as f2:
-                with open(file3_name, 'a+', encoding='utf-8') as f3:
+
+        with open(file_name, "a+", encoding="utf-8") as f:
+            with open(file2_name, "a+", encoding="utf-8") as f2:
+                with open(file3_name, "a+", encoding="utf-8") as f3:
                     for id, type in entities_semantic_types.items():
                         line1 = "\t".join([id, type])
-                        f.write(line1+'\n')
+                        f.write(line1 + "\n")
                         # FIXME commented for now,
                         # to write all the type hierarchy in the BGR,
                         # but we should add an option to choose wether
                         # to write the hierarchy in the BGR or in the
-                        # learning graph. 
+                        # learning graph.
                         # line2 = "\t".join([id, "is_a", type])
                         # f2.write(line2+'\n')
                         all_nodes.add(id)
                         all_nodes.add(type)
                     for n in all_nodes:
                         line3 = "\t".join([n, n])
-                        f3.write(line3+'\n')
+                        f3.write(line3 + "\n")
 
         return True
 
@@ -219,21 +208,18 @@ class _BioPathNetWriter(_Writer):
         A line contains the following string:
             entity_id property_type property_value
         """
-        file_name = os.path.join(self.output_directory,
-                                 f"{self.background_graph_file_stem[0]}.{self.file_format[0]}")
-        file2_name = os.path.join(self.output_directory,
-                                 f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
-        file3_name = os.path.join(self.output_directory,
-                                 f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
-        with open(file_name, 'a+', encoding='utf-8') as f:
-            with open(file2_name, 'a+', encoding='utf-8') as f2:
-                with open(file3_name, 'a+', encoding='utf-8') as f3:
+        file_name = os.path.join(self.output_directory, f"{self.background_graph_file_stem[0]}.{self.file_format[0]}")
+        file2_name = os.path.join(self.output_directory, f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
+        file3_name = os.path.join(self.output_directory, f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
+        with open(file_name, "a+", encoding="utf-8") as f:
+            with open(file2_name, "a+", encoding="utf-8") as f2:
+                with open(file3_name, "a+", encoding="utf-8") as f3:
                     for str_prop in list_str_node_props:
                         entity, prop, value = str_prop.strip().split()
                         prefixed_value = "_".join([prop, value])
-                        f.write("\t".join([entity, prop, prefixed_value])+'\n')
-                        f2.write("\t".join([prefixed_value, "property_value"])+'\n')
-                        f3.write("\t".join([prefixed_value, value])+'\n')
+                        f.write("\t".join([entity, prop, prefixed_value]) + "\n")
+                        f2.write("\t".join([prefixed_value, "property_value"]) + "\n")
+                        f3.write("\t".join([prefixed_value, value]) + "\n")
 
         return True
 
@@ -257,9 +243,8 @@ class _BioPathNetWriter(_Writer):
         # It would require to transform the relations into nodes,
         # and thus add a lot of nodes to the BioPatNet NN.
         # See if it is needed or not. Fix if needed
-        file_name = os.path.join(self.output_directory,
-                                 f"{self.skg_file_stem[0]}.{self.file_format[0]}")
-        with open(file_name, 'a', encoding='utf-8') as f:
+        file_name = os.path.join(self.output_directory, f"{self.skg_file_stem[0]}.{self.file_format[0]}")
+        with open(file_name, "a", encoding="utf-8") as f:
             for edge in edges:
                 source = edge.get_source_id()
                 target = edge.get_target_id()
@@ -268,7 +253,7 @@ class _BioPathNetWriter(_Writer):
                 if not relation:
                     relation = "".join([source, "_", target])
 
-                f.write("\t".join([source, relation, target])+'\n')
+                f.write("\t".join([source, relation, target]) + "\n")
         return True
 
     def _get_import_script_name(self) -> str:
@@ -281,7 +266,7 @@ class _BioPathNetWriter(_Writer):
             str: The name of the import script (ending in .sh)
 
         """
-        with open("noop.sh", 'w'):
+        with open("noop.sh", "w"):
             pass
         return "noop.sh"
 
@@ -296,6 +281,6 @@ class _BioPathNetWriter(_Writer):
             str: command for importing the output files into a DBMS.
 
         """
-        with open("noop.sh", 'w'):
+        with open("noop.sh", "w"):
             pass
         return "noop.sh"
