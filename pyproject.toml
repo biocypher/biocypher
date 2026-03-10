@@ -10,7 +10,7 @@ authors = [
 ]
 license = {text = "Apache-2.0"}
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -45,8 +45,6 @@ Issues = "https://github.com/biocypher/biocypher/issues"
 [project.optional-dependencies]
 neo4j = ["neo4j>=5.0"]
 scirpy = ["scirpy>=0.22.0"]
-numba = ["numba>=0.62.0"] # Needed for scirpyi
-scikit-learn = ["scikit-learn>1.7.1"]
 
 [dependency-groups]
 dev = [
