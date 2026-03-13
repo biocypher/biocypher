@@ -666,9 +666,10 @@ class Ontology:
                 # If this class is in the schema, but not in the loaded vocabulary.
                 if not self._nx_graph.has_node(key):
                     msg = (
-                        f"Node {key} not found in ontology, but also has no inheritance definition. Please check your "
-                        "schema for spelling errors, first letter not in lower case, use of underscores, a missing "
-                        "`is_a` definition (SubClassOf a root node), or missing labels in class or super-classes."
+                        f"Class `{key}` not found in ontology, but also has no inheritance definition."
+                        " Please check your schema for spelling errors, first letter not in lower case, use of "
+                        "underscores, a missing `is_a` definition (SubClassOf a root node), or missing labels "
+                        "in class or super-classes."
                     )
                     logger.error(msg)
                     raise ValueError(msg)

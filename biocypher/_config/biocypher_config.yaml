@@ -171,3 +171,10 @@ csv:
 networkx:
   ### NetworkX configuration ###
   some_config: some_value # placeholder for technical reasons TODO
+
+biopathnet:
+  file_format: txt
+  entity_types_file_stem: entity_types
+  entity_names_file_stem: entity_names
+  background_graph_file_stem: brg
+  skg_file_stem: skg
