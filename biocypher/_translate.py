@@ -163,7 +163,7 @@ class Translator:
                 "properties as a list?)"
             )
             logger.error(msg)
-            raise Exception(msg)
+            raise AttributeError(msg)
 
         # strict mode: add required properties (only if there is a whitelist)
         if self.strict_mode and filter_props:

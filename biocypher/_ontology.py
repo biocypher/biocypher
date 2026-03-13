@@ -672,7 +672,6 @@ class Ontology:
                         "in class or super-classes."
                     )
                     logger.error(msg)
-                    print(self._nx_graph.adj)
                     raise ValueError(msg)
 
                 # It is a root and it is in the loaded vocabulary.
