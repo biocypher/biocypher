@@ -2,33 +2,43 @@
 
 <div class="grid cards" markdown>
 
--   :bulb:{ .lg .middle } __Already Familiar?__
+-   :bulb:{ .lg .middle } __I want a project template__
 
     ---
 
-    We have a project template (batteries included!)
+    Start from a batteries-included template repository and adapt it to your own data.
 
-    [:octicons-mark-github-24: To the template](https://github.com/biocypher/project-template){ .text-center }
+    [:octicons-mark-github-24: Use the template](https://github.com/biocypher/project-template){ .text-center }
 
--   :new:{ .lg .middle } __New to BioCypher?__
+-   :rocket:{ .lg .middle } __I want to play with small graphs or use an LLM agent__
 
     ---
 
-    Follow our detailed tutorial for on-boarding BioCypher.
+    Use the lightweight Agent API to build and explore an in-memory knowledge graph.
 
-    [:octicons-book-24: To the tutorial](tutorials/tutorial001_basics.md){ .text-center }
+    [:octicons-book-24: To the Agent API tutorial](tutorials/agent_api_guide.md){ .text-center }
+
+-   :new:{ .lg .middle } __I want to build a full extract-transform-load (TL) pipeline__
+
+    ---
+
+    Follow the step-by-step tutorial series to build a production-style KG.
+
+    [:octicons-book-24: To the Basics tutorial](tutorials/tutorial001_basics.md){ .text-center }
 
 </div>
 
 !!! note "Note"
-    If you already know how BioCypher works, we provide here a quickstart into
-    the knowledge graph build process. We provide a template repository on
-    GitHub, which you can use to get started with your own project. You can get
-    it [here](https://github.com/biocypher/project-template). To set up a new
-    project, simply follow the instructions in the README.
+    If you already know how BioCypher works, you can go straight to the project
+    template and adapt it to your use case:
+    [template repository](https://github.com/biocypher/project-template). To set
+    up a new project, simply follow the instructions in the README.
 
     If you are new to BioCypher and would like a step-by-step introduction to
-    the package, please follow the [tutorial](./tutorials/tutorial001_basics.md).
+    the package, please follow the
+    [Basics tutorial](./tutorials/tutorial001_basics.md). If you prefer to work
+    with small, in-memory graphs or LLM agents, start with the
+    [Agent API tutorial](./tutorials/agent_api_guide.md).
 
 The BioCypher workflow of creating your own knowledge graph consists of three
 consecutive steps:

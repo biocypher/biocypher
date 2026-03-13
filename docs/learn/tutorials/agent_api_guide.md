@@ -1,5 +1,17 @@
 # BioCypher Agent API Guide
 
+**Level:** Beginner (Agent API track)
+**Who is this for?** Users who want to create and explore small to medium-sized knowledge graphs in memory, especially in LLM or notebook workflows, without setting up databases or YAML configs.
+**What you will do:** Use the Agent API to create a graph, add nodes and edges, query and analyse it, and persist it to and from JSON.
+**Estimated time:** 20–30 minutes.
+
+After working through this guide you will be able to:
+
+- Initialize a `BioCypherWorkflow` with `create_workflow`.
+- Add nodes, edges, and hyperedges with direct property assignment.
+- Run simple graph analysis (paths, neighbours, statistics).
+- Export and import graphs via JSON, NetworkX, and Pandas.
+
 ## Overview
 
 The BioCypher Agent API provides a streamlined interface for LLM agents to create and manage knowledge graphs. It was designed to address the complexity of the original BioCypher framework while maintaining its powerful capabilities for biomedical knowledge representation.

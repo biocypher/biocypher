@@ -1,5 +1,17 @@
 # Tutorial - Basics
 
+**Level:** Beginner (Hands-on track)
+**Who is this for?** Developers with basic Python knowledge who want to build their first BioCypher knowledge graph using the full extract-transform-load pipeline.
+**What you will build:** A small knowledge graph of simulated proteins and interactions, written either as Neo4j-ready CSV files or as Pandas DataFrames.
+**Estimated time:** 30–45 minutes.
+
+By the end of this tutorial you will be able to:
+
+- Instantiate the legacy `BioCypher` interface with configuration files.
+- Create a simple adapter (data stream) that yields node and edge tuples.
+- Configure a minimal `schema_config.yaml` to map input labels to ontology-backed classes.
+- Run BioCypher in offline mode and inspect the generated output.
+
 The main purpose of BioCypher is to facilitate the pre-processing of biomedical
 data to save development time in the maintenance of curated knowledge graphs
 and to allow the simple and efficient creation of task-specific lightweight
@@ -22,6 +34,18 @@ format. The first uses a CSV output format to write files suitable for Neo4j
 admin import, and the second creates an in-memory collection of Pandas
 dataframes. You can find both in the `tutorial` directory of the BioCypher
 repository; the Pandas version of each tutorial step is suffixed with `_pandas`.
+
+!!! info "Code mapping for this tutorial"
+    The runnable code for this tutorial lives in the `tutorial` directory of the
+    BioCypher repository:
+
+    - Step 1 – Adding data: `tutorial/01__basic_import.py`, `tutorial/01_schema_config.yaml`, `tutorial/01_biocypher_config.yaml`
+    - Step 2 – Merging data: `tutorial/02__merge.py`, `tutorial/02_schema_config.yaml`, `tutorial/02_biocypher_config.yaml`
+    - Step 3 – Implicit subclasses: `tutorial/03__implicit_subclass.py`, `tutorial/03_schema_config.yaml`, `tutorial/03_biocypher_config.yaml`
+    - Step 4 – Properties and inheritance: `tutorial/04__properties.py`, `tutorial/04_schema_config.yaml`, `tutorial/04_biocypher_config.yaml`
+      and `tutorial/05__property_inheritance.py`, `tutorial/05_schema_config.yaml`, `tutorial/05_biocypher_config.yaml`
+    - Step 5 – Relationships: `tutorial/06__relationships.py`, `tutorial/06_schema_config.yaml`, `tutorial/06_biocypher_config.yaml`
+    - Step 6 – Synonyms (used in the ontologies tutorial): `tutorial/07__synonyms.py`, `tutorial/07_schema_config.yaml`, `tutorial/07_biocypher_config.yaml`
 
 !!! info "Neo4j"
 	While you can use the files generated to create an actual Neo4j database, it

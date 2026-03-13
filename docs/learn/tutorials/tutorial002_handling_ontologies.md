@@ -1,83 +1,28 @@
 # Tutorial - Handling Ontologies
 
+**Level:** Intermediate (Hands-on track)
+**Who is this for?** Users who have completed the Basics tutorial and want to understand how ontologies shape their BioCypher graphs.
+**What you will do:** Configure and inspect ontology-backed schemas, extend models with explicit and implicit inheritance, and work with synonyms and hybrid ontologies.
+**Estimated time:** 30–45 minutes.
+
+By the end of this tutorial you will be able to:
+
+- Understand how schema configuration relates to ontologies in BioCypher.
+- Visualise which parts of an ontology are used in your project.
+- Extend the base model with explicit subclasses, implicit subclasses, and synonyms.
+- Hybridise Biolink with more specialised ontologies (e.g. Sequence Ontology, MONDO).
+
 ![Adapters and ontologies](../../assets/img/modularity-biocypher.png)
 
 BioCypher relies on ontologies to ground the knowledge graph contents in
-biology. This has the advantages of providing machine readability and therefore
-automation capabilities as well as making working with BioCypher accessible to
-biologically oriented researchers. However, it also means that BioCypher
-requires a certain amount of knowledge about ontologies and how to use them. We
-try to make dealing with ontologies as easy as possible, but some basic
-understanding is required. In the following we will cover the basics of
-ontologies and how to use them in BioCypher.
+biology. If you need a more conceptual introduction before diving into the
+hands-on steps, see the explanations:
 
-## What is an ontology?
-An ontology is a formal representation of a domain of knowledge. It is a
-hierarchical structure of concepts and relations. The concepts are organized
-into a hierarchy, where each concept is a subclass of a more general concept.
-For instance, a *wardrobe* is a subclass of a *piece of furniture*. Individual
-wardrobes, such as yours or mine, are instances of the concept *wardrobe*, and
-as such would be represented as *Wardrobe* nodes in a knowledge graph. In
-BioCypher, these nodes would additionally inherit the *PieceOfFurniture* label
-from the ontological hierarchy of things.
+- [About Ontologies](../explanation/ontologies.md)
+- [Schema Configuration: Philosophy and Concepts](../explanation/schema-config-philosophy.md)
 
-!!! note "Note"
-	Why is the class called *piece of furniture* but the label is *PieceOfFurniture*?
-
-	The Biolink model uses two different case notations for its labels: the
-	"internal" designation of classes is in lower sentence case ("protein",
-  	"pairwise molecular interaction"), while the "external" designation is in
-  	PascalCase ("Protein", "PairwiseMolecularInteraction"). BioCypher uses the same
-	paradigm: in most cases (input, schema configuration, internally), the lower
-	sentence case is used, while in the output (Neo4j labels, file system names) the
-	PascalCase is more suitable; Neo4j labels and system file names don't deal well
-	with spaces and special characters. Therefore, we check the output file names
-	for their compliance with the [Neo4j naming
-	rules](https://neo4j.com/docs/cypher-manual/current/syntax/naming/). All non
-	compliant characters are removed from the file name (e.g. if the ontology class
-	is called "desk (piece of furniture)", the brackets would be removed and the
-	file name will be "DeskPieceOfFurniture"). We also remove the "biolink:"
-	[CURIE](https://en.wikipedia.org/wiki/CURIE) prefix for use in file names and
-	Neo4j labels.
-
-
-The relations between concepts can also be organized into a hierarchy. In the
-specific case of a Neo4j graph, however, relationships cannot possess multiple
-labels; therefore, if concept inheritance is desired for relationships, they
-need to be "reified", i.e., turned into nodes. BioCypher provides a simple way
-of converting edges to nodes and vice versa (using the `represented_as` field).
-For a more in-depth explanation of ontologies, we recommend [this
-introduction](https://oboacademy.github.io/obook/explanation/intro-to-ontologies/).
-
-## How BioCypher uses ontologies
-BioCypher is agnostic to the choice of ontology. Practically, we have built our
-initial projects around the [Biolink
-model](https://biolink.github.io/biolink-model/), because it provides a large
-but shallow collection of concepts that are relevant to the biomedical domain.
-Other examples of generalist ontologies are the [Experimental Factor Ontology](
-https://www.ebi.ac.uk/ols/ontologies/efo) and the [Basic Formal Ontology](
-https://obofoundry.org/ontology/bfo.html). To account for the specific
-requirements of expert systems, it is possible to use multiple ontologies in the
-same project. For instance, one might want to extend the rather basic classes
-relating to molecular interactions in Biolink (the most specific being `pairwise
-molecular interaction`) with more specific classes from a more domain-specific
-ontology, such as the EBI molecular interactions ontology
-([PSI-MI](https://www.ebi.ac.uk/ols/ontologies/mi)). A different project may
-need to define very specific genetics concepts, and thus extend the Biolink
-model at the terminal node ``sequence variant`` with the corresponding subtree
-of the [Sequence Ontology](http://www.sequenceontology.org/). The [OBO
-Foundry](https://obofoundry.org) and the
-[BioPortal](https://bioportal.bioontology.org/) collect many such specialised
-ontologies.
-
-The default format for ingesting ontology definitions into BioCypher is the Web
-Ontology Language (OWL); BioCypher can read ``.owl``, ``.rdf``, and ``.ttl``
-files. The preferred way to specify the ontology or ontologies to be used in a
-project is to specify them in the biocypher configuration file
-(`biocypher_config.yaml`). This file is used to specify the location of the
-ontology files, as well as the root node of the main ("head") ontology and join
-nodes as fusion points for all "tail" ontologies. For more info, see the
-[section on hybridising ontologies](#hybridising-ontologies).
+The sections below assume that background and focus on practical configuration
+and inspection.
 
 ## Visualising ontologies
 
