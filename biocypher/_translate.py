@@ -157,8 +157,11 @@ class Translator:
         """
         filter_props = self.ontology.mapping.extended_schema[bl_type].get("properties", {})
 
-        if type(filter_props) != dict:
-            msg = f"Properties for type {bl_type} should be a dictonary. Verify your schema (did you declared properties as a list?)"
+        if not filter_props.instanceOf(dict):
+            msg = (
+                f"Properties for type {bl_type} should be a dictonary. Verify your schema (did you declared "
+                "properties as a list?)"
+            )
             logger.error(msg)
             raise Exception(msg)
 

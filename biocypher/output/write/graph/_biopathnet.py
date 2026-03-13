@@ -164,7 +164,6 @@ class _BioPathNetWriter(_Writer):
         is written.
         """
         file_name = os.path.join(self.output_directory, f"{self.entity_types_file_stem[0]}.{self.file_format[0]}")
-        file2_name = os.path.join(self.output_directory, f"{self.skg_file_stem[0]}.{self.file_format[0]}")
         file3_name = os.path.join(self.output_directory, f"{self.entity_names_file_stem[0]}.{self.file_format[0]}")
         logger.debug(f"In _biopathnet.py, output_directory = {self.output_directory}")
         logger.debug(f"In _biopathnet.py, entity_types_file_stem = {self.entity_types_file_stem}")
@@ -174,23 +173,22 @@ class _BioPathNetWriter(_Writer):
         all_nodes = set()
 
         with open(file_name, "a+", encoding="utf-8") as f:
-            with open(file2_name, "a+", encoding="utf-8") as f2:
-                with open(file3_name, "a+", encoding="utf-8") as f3:
-                    for id, type in entities_semantic_types.items():
-                        line1 = "\t".join([id, type])
-                        f.write(line1 + "\n")
-                        # FIXME commented for now,
-                        # to write all the type hierarchy in the BGR,
-                        # but we should add an option to choose wether
-                        # to write the hierarchy in the BGR or in the
-                        # learning graph.
-                        # line2 = "\t".join([id, "is_a", type])
-                        # f2.write(line2+'\n')
-                        all_nodes.add(id)
-                        all_nodes.add(type)
-                    for n in all_nodes:
-                        line3 = "\t".join([n, n])
-                        f3.write(line3 + "\n")
+            with open(file3_name, "a+", encoding="utf-8") as f3:
+                for id, type in entities_semantic_types.items():
+                    line1 = "\t".join([id, type])
+                    f.write(line1 + "\n")
+                    # FIXME commented for now,
+                    # to write all the type hierarchy in the BGR,
+                    # but we should add an option to choose wether
+                    # to write the hierarchy in the BGR or in the
+                    # learning graph.
+                    # line2 = "\t".join([id, "is_a", type])
+                    # f2.write(line2+'\n')
+                    all_nodes.add(id)
+                    all_nodes.add(type)
+                for n in all_nodes:
+                    line3 = "\t".join([n, n])
+                    f3.write(line3 + "\n")
 
         return True
 

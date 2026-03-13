@@ -29,12 +29,11 @@ def test_biopathnet_writer_nodes(bw_biopathnet, _get_nodes):
         f = open(os.path.join(tmp_path, file), "r")
         logger.debug(f"Contents of {file} is \n{f.read()}")
 
-    len_lines = 0
-    with open(f"{tmp_path}/entity_types.txt", "rb") as f:
-        lines = f.readlines()
-        len_lines = len(lines)
-
-
+#TODO: add test
+#    len_lines = 0
+#    with open(f"{tmp_path}/entity_types.txt", "rb") as f:
+#        lines = f.readlines()
+#        len_lines = len(lines)
 #    assert len(nodes) == len_lines
 
 
