@@ -109,8 +109,18 @@ class Translator:
             _ontology_class = self._get_ontology_mapping(_type)
 
             if _ontology_class:
-                # filter properties for those specified in schema_config if any
-                _filtered_props = self._filter_props(_ontology_class, _props)
+                try:
+                    # filter properties for those specified in schema_config if any
+                    _filtered_props = self._filter_props(_ontology_class, _props)
+                except AttributeError as err:
+                    msg = (
+                        f"Error: {err} "
+                        "while getting properties from {_ontology_class}. "
+                        "Maybe you mistyped your properties. "
+                        "Please ensure the `properties` section is a dictionary, not a list."
+                    )
+                    logger.error(msg)
+                    raise err
 
                 # preferred id
                 _preferred_id = self._get_preferred_id(_ontology_class)
@@ -146,6 +156,14 @@ class Translator:
         return the original properties.
         """
         filter_props = self.ontology.mapping.extended_schema[bl_type].get("properties", {})
+
+        if not isinstance(filter_props, dict):
+            msg = (
+                f"Properties for type {bl_type} should be a dictonary. Verify your schema (did you declared "
+                "properties as a list?)"
+            )
+            logger.error(msg)
+            raise AttributeError(msg)
 
         # strict mode: add required properties (only if there is a whitelist)
         if self.strict_mode and filter_props:

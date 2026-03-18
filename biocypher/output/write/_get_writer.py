@@ -11,6 +11,7 @@ from biocypher._logger import logger
 from biocypher.output.write._batch_writer import _BatchWriter
 from biocypher.output.write.graph._airr import _AirrWriter
 from biocypher.output.write.graph._arangodb import _ArangoDBBatchWriter
+from biocypher.output.write.graph._biopathnet import _BioPathNetWriter
 from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
 from biocypher.output.write.graph._networkx import _NetworkXWriter
 from biocypher.output.write.graph._owl import _OWLWriter
@@ -43,6 +44,8 @@ DBMS_TO_CLASS = {
     "RDF": _RDFWriter,
     "owl": _OWLWriter,
     "OWL": _OWLWriter,
+    "biopathnet": _BioPathNetWriter,
+    "BioPathNet": _BioPathNetWriter,
     "csv": _PandasCSVWriter,
     "CSV": _PandasCSVWriter,
     "pandas": _PandasCSVWriter,
@@ -77,8 +80,16 @@ def get_writer(
         instance: an instance of the selected writer class.
 
     """
-    dbms_config = _config(dbms) or {}
 
+    if dbms not in DBMS_TO_CLASS:
+        msg = (
+            f"The DBMS `{dbms}` is not supported. Please set the `dbms` option to one of the following: "
+            f"{', '.join(DBMS_TO_CLASS.keys())}."
+        )
+        logger.error(msg)
+        raise ValueError(msg)
+
+    dbms_config = _config(dbms) or {}
     writer = DBMS_TO_CLASS[dbms]
 
     if "rdf_format" in dbms_config:
