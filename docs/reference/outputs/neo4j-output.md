@@ -93,6 +93,8 @@ neo4j:  ### Neo4j configuration ###
   import_call_bin_prefix: bin/  # path to "neo4j-admin"
   import_call_file_prefix: path/to/files/
 
+  # The shell with which to execute the import script file.
+  shell: system  # Either 'system' (the system's shell) or the path to your shell of choice.
 ```
 
 ---
@@ -176,6 +178,13 @@ files on disk, so no data need to be copied around.
     import statement for the detected version. Therefore, make sure to run
     the script from the targeted DBMS root location.
 
+!!! note "Note"
+    The import script is run by the system's shell. Some (old) shells may not
+    handle the version testing code. If you get a warning about that, you may
+    ask BioCypher to call another (more modern) shell from the import script
+    with the `shell` option. This should be set to a shebang-compatible
+    command or path, for instance: `shell: /usr/bin/bash` or even
+    `shell: /usr/bin/env zsh`.
 
 Neo4j can manage multiple projects, each with multiple DBMS (database management
 system) instances, each of which can house multiple databases. The screenshot

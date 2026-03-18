@@ -148,7 +148,7 @@ def test_construct_import_call(bw):
         assert "--overwrite-destination=true" in import_script or "--force=true" in import_script
     else:
         # Bash-specific assertions
-        assert "#!/bin/bash" in import_script
+        assert "#!" in import_script
         assert "bin/neo4j-admin import" in import_script
         assert "--overwrite-destination=true" in import_script or "--force=true" in import_script
         assert "database import full neo4j" in import_script or "import --database=neo4j" in import_script
