@@ -1,0 +1,161 @@
+# BioCypher Adapter Creation (LLM Guide)
+
+> This guide instructs AI coding assistants (Copilot, Cursor, Claude, etc.) how to create BioCypher adapters.
+> Adapters transform arbitrary input data (e.g. NCBI GEO metadata) into BioCypher's canonical format, using the schema configuration YAML as the contract.
+> Output must be a collection of node tuples (3 elements) and edge tuples (5 elements), aligned with the schema.
+> BioCypher provides base classes and utilities to help with common adapter patterns.
+
+Adapters follow the **idiomatic BioCypher interface**: they expose one or more iterables that yield nodes and edges. The key steps for an LLM to generate an adapter are:
+
+## 1. Schema Analysis
+
+- Load and parse the `schema_config.yaml`.
+- Identify all node and edge types, their `input_label`s, and required properties.
+- **Rule**: all adapter outputs must match the schema's input labels and property names.
+
+## 2. Data Retrieval
+
+- Use BioCypher's `Resource` and `FileDownload` classes for data retrieval and caching.
+- Implement retrieval directly (for GEO: `GEOparse.get_GEO("GSE12345")`).
+- Consider using external libraries like `GEOparse`, `pandas`, or `requests` for data access.
+
+## 3. Metadata Parsing
+
+- Inspect metadata objects (e.g. GSE, GSM, GPL in GEOparse).
+- For each concept in the schema, extract relevant fields.
+- Normalize divergent field names (e.g. `"disease_state"` → `"disease"`) to schema properties.
+
+## 4. Node Creation (3-tuple)
+
+Each node is `(node_id, node_label, attributes_dict)`
+- `node_id`: unique string, ideally CURIE-like (e.g. `GEO:GSM12345`).
+- `node_label`: must equal the schema's `input_label`.
+- `attributes_dict`: keys = schema properties; include provenance fields if strict mode (`source`, `version`, `licence`).
+
+## 5. Edge Creation (5-tuple)
+
+Each edge is `(edge_id, source_id, target_id, edge_label, attributes_dict)`
+- `edge_id`: optional unique string.
+- `source_id` / `target_id`: must reference valid node IDs created above.
+- `edge_label`: must equal the schema's `input_label` for this relation.
+- `attributes_dict`: properties defined in the schema (or empty if none).
+
+## 6. Multiple Metadata Formats
+
+- If series differ in structure, handle conditionally or create specialized subclasses.
+- Ensure **all schema concepts are extracted** regardless of metadata divergence.
+
+## 7. Validation
+
+- Confirm every adapter output type exists in schema.
+- Avoid extra types.
+- If strict mode: check provenance fields present.
+
+## Example Pattern (Pseudo-Python)
+
+```python
+import GEOparse
+from biocypher._get import FileDownload
+
+class GEOAdapter:
+    def __init__(self, gse_id: str):
+        self.gse_id = gse_id
+        self.series = GEOparse.get_GEO(gse_id)
+
+    def get_nodes(self):
+        # Series node
+        yield (
+            f"GEO:{self.series.name}",    # node_id
+            "geo_series",                 # node_label (matches schema input_label)
+            {
+                "title": self.series.metadata.get("title"),
+                "summary": self.series.metadata.get("summary"),
+                "source": "GEO",
+                "version": self.series.metadata.get("submission_date"),
+            },
+        )
+
+        # Sample nodes
+        for sample in self.series.gsms.values():
+            yield (
+                f"GEO:{sample.name}",      # node_id
+                "geo_sample",             # node_label (matches schema input_label)
+                {
+                    "disease": sample.metadata.get("disease_state"),
+                    "organism": sample.metadata.get("organism_ch1"),
+                    "source": "GEO",
+                    "version": self.series.metadata.get("submission_date"),
+                },
+            )
+
+    def get_edges(self):
+        for gsm in self.series.gsms.values():
+            yield (
+                None,                     # edge_id
+                f"GEO:{self.series.name}",# source_id (series)
+                f"GEO:{gsm.name}",        # target_id (sample)
+                "HAS_SAMPLE",             # edge_label (matches schema input_label)
+                {},
+            )
+```
+
+## Common Patterns
+
+### Resource Management
+
+```python
+from biocypher._get import FileDownload
+
+class MyAdapter:
+    def __init__(self, data_url: str):
+        # Use BioCypher's resource management for downloads
+        self.resource = FileDownload(
+            name="my_data",
+            url_s=data_url,
+            lifetime=30  # days
+        )
+        self.data_file = self.resource.get()
+```
+
+### Schema Validation
+
+```python
+def validate_schema_compliance(self, schema_config):
+    """Ensure adapter outputs match schema requirements."""
+    schema_nodes = {node['input_label'] for node in schema_config['nodes']}
+    schema_edges = {edge['input_label'] for edge in schema_config['edges']}
+
+    # Validate node labels
+    for node_id, node_label, _ in self.get_nodes():
+        if node_label not in schema_nodes:
+            raise ValueError(f"Node label '{node_label}' not in schema")
+
+    # Validate edge labels
+    for _, _, _, edge_label, _ in self.get_edges():
+        if edge_label not in schema_edges:
+            raise ValueError(f"Edge label '{edge_label}' not in schema")
+```
+
+### Error Handling
+
+```python
+def safe_extract(self, metadata, key, default=None):
+    """Safely extract metadata with fallback."""
+    try:
+        return metadata.get(key, default)
+    except (AttributeError, KeyError):
+        return default
+```
+
+## Key Principles
+
+1. **Schema as Contract**: The schema configuration is the single source of truth
+2. **Consistent Naming**: Use schema `input_label`s exactly as defined
+3. **Provenance Tracking**: Include source, version, and license when available
+4. **Error Resilience**: Handle missing or malformed data gracefully
+5. **Performance**: Use generators for memory efficiency with large datasets
+
+## Related Files
+
+- **llms-example-adapter.txt** - Complete working example
+- **llms.txt** - Functionality index and reference
