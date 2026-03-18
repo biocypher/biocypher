@@ -93,9 +93,9 @@ class _BioPathNetWriter(_Writer):
             # If there is no node in the graph with the semantic_type of the current node, we look for nodes
             # which types are synonyms o fthis semantic_type.
             if not graph_hierarchy.has_node(semantic_type):
-                for n,d in graph_hierarchy.nodes().items():
+                for n, d in graph_hierarchy.nodes().items():
                     if "synonym_for" in d:
-                        if d['synonym_for'] == semantic_type:
+                        if d["synonym_for"] == semantic_type:
                             semantic_type = n
                             break
             ancestors = nx.ancestors(graph_hierarchy, semantic_type) | {semantic_type}

@@ -743,17 +743,12 @@ class Ontology:
 
             if value.get("synonym_for"):
                 # change node label to synonym
-                # and change the synonym to key to keep the information for further use
                 if value["synonym_for"] not in self._nx_graph.nodes:
                     msg = f"Node {value['synonym_for']} not found in ontology."
                     logger.error(msg)
                     raise ValueError(msg)
 
-                new_key = value["synonym_for"]
-                new_value = value
-                new_value["synonym_for"]=key
-                self._nx_graph = nx.relabel_nodes(self._nx_graph, {key: new_key})
-                self._nx_graph.nodes[new_key].update(new_value)
+                self._nx_graph = nx.relabel_nodes(self._nx_graph, {value["synonym_for"]: key})
 
     def get_ancestors(self, node_label: str) -> list:
         """Get the ancestors of a node in the ontology.
