@@ -1,0 +1,293 @@
+# Example Adapter Implementation
+
+This document provides a complete, working example of a BioCypher adapter that demonstrates the patterns and best practices described in llms-adapters.txt.
+
+## Complete GEO Adapter Example
+
+```python
+#!/usr/bin/env python3
+"""
+Example GEO Adapter for BioCypher
+
+This adapter demonstrates the complete pattern for creating a BioCypher adapter
+that transforms NCBI GEO data into BioCypher's canonical format.
+"""
+
+import GEOparse
+from typing import Iterator, Tuple, Dict, Any
+from biocypher._get import FileDownload
+
+
+class GEOAdapter:
+    """
+    BioCypher adapter for NCBI GEO data.
+
+    Transforms GEO series and sample metadata into BioCypher nodes and edges
+    following the schema configuration contract.
+    """
+
+    def __init__(self, gse_id: str, schema_config: Dict[str, Any] = None):
+        """
+        Initialize the GEO adapter.
+
+        Args:
+            gse_id: GEO Series ID (e.g., "GSE12345")
+            schema_config: Schema configuration for validation
+        """
+        self.gse_id = gse_id
+        self.schema_config = schema_config
+        self.series = None
+        self._load_data()
+
+    def _load_data(self):
+        """Load GEO data using GEOparse."""
+        try:
+            self.series = GEOparse.get_GEO(self.gse_id)
+            print(f"Loaded GEO series: {self.series.name}")
+        except Exception as e:
+            raise RuntimeError(f"Failed to load GEO series {self.gse_id}: {e}")
+
+    def _validate_schema_compliance(self):
+        """Validate that adapter outputs match schema requirements."""
+        if not self.schema_config:
+            return
+
+        schema_nodes = {node['input_label'] for node in self.schema_config.get('nodes', [])}
+        schema_edges = {edge['input_label'] for edge in self.schema_config.get('edges', [])}
+
+        # Validate node labels
+        for node_id, node_label, _ in self.get_nodes():
+            if node_label not in schema_nodes:
+                raise ValueError(f"Node label '{node_label}' not in schema")
+
+        # Validate edge labels
+        for _, _, _, edge_label, _ in self.get_edges():
+            if edge_label not in schema_edges:
+                raise ValueError(f"Edge label '{edge_label}' not in schema")
+
+    def _safe_extract(self, metadata: Dict[str, Any], key: str, default: Any = None) -> Any:
+        """
+        Safely extract metadata with fallback.
+
+        Args:
+            metadata: Metadata dictionary
+            key: Key to extract
+            default: Default value if key not found
+
+        Returns:
+            Extracted value or default
+        """
+        try:
+            return metadata.get(key, default)
+        except (AttributeError, KeyError):
+            return default
+
+    def get_nodes(self) -> Iterator[Tuple[str, str, Dict[str, Any]]]:
+        """
+        Generate nodes from GEO data.
+
+        Yields:
+            Tuple of (node_id, node_label, attributes_dict)
+        """
+        # Series node
+        yield (
+            f"GEO:{self.series.name}",    # node_id
+            "geo_series",                 # node_label (matches schema input_label)
+            {
+                "title": self._safe_extract(self.series.metadata, "title"),
+                "summary": self._safe_extract(self.series.metadata, "summary"),
+                "submission_date": self._safe_extract(self.series.metadata, "submission_date"),
+                "last_update_date": self._safe_extract(self.series.metadata, "last_update_date"),
+                "source": "GEO",
+                "version": self._safe_extract(self.series.metadata, "submission_date"),
+            },
+        )
+
+        # Sample nodes
+        for sample_name, sample in self.series.gsms.items():
+            yield (
+                f"GEO:{sample_name}",     # node_id
+                "geo_sample",             # node_label (matches schema input_label)
+                {
+                    "disease": self._safe_extract(sample.metadata, "disease_state"),
+                    "organism": self._safe_extract(sample.metadata, "organism_ch1"),
+                    "tissue": self._safe_extract(sample.metadata, "tissue_ch1"),
+                    "cell_type": self._safe_extract(sample.metadata, "cell_type_ch1"),
+                    "treatment": self._safe_extract(sample.metadata, "treatment_protocol_ch1"),
+                    "source": "GEO",
+                    "version": self._safe_extract(self.series.metadata, "submission_date"),
+                },
+            )
+
+        # Platform nodes (if available)
+        for platform_name, platform in self.series.gpls.items():
+            yield (
+                f"GEO:{platform_name}",   # node_id
+                "geo_platform",           # node_label (matches schema input_label)
+                {
+                    "title": self._safe_extract(platform.metadata, "title"),
+                    "technology": self._safe_extract(platform.metadata, "technology"),
+                    "source": "GEO",
+                    "version": self._safe_extract(self.series.metadata, "submission_date"),
+                },
+            )
+
+    def get_edges(self) -> Iterator[Tuple[str, str, str, str, Dict[str, Any]]]:
+        """
+        Generate edges from GEO data.
+
+        Yields:
+            Tuple of (edge_id, source_id, target_id, edge_label, attributes_dict)
+        """
+        # Series to Sample relationships
+        for sample_name in self.series.gsms.keys():
+            yield (
+                f"series_sample_{self.series.name}_{sample_name}",  # edge_id
+                f"GEO:{self.series.name}",                          # source_id (series)
+                f"GEO:{sample_name}",                               # target_id (sample)
+                "HAS_SAMPLE",                                       # edge_label (matches schema input_label)
+                {
+                    "source": "GEO",
+                    "version": self._safe_extract(self.series.metadata, "submission_date"),
+                },
+            )
+
+        # Sample to Platform relationships
+        for sample_name, sample in self.series.gsms.items():
+            platform_name = self._safe_extract(sample.metadata, "platform_id")
+            if platform_name and platform_name in self.series.gpls:
+                yield (
+                    f"sample_platform_{sample_name}_{platform_name}",  # edge_id
+                    f"GEO:{sample_name}",                               # source_id (sample)
+                    f"GEO:{platform_name}",                             # target_id (platform)
+                    "USES_PLATFORM",                                    # edge_label (matches schema input_label)
+                    {
+                        "source": "GEO",
+                        "version": self._safe_extract(self.series.metadata, "submission_date"),
+                    },
+                )
+
+    def validate(self) -> bool:
+        """
+        Validate the adapter output against schema.
+
+        Returns:
+            True if validation passes, raises exception otherwise
+        """
+        self._validate_schema_compliance()
+        return True
+
+
+# Usage Example
+def main():
+    """Example usage of the GEO adapter."""
+
+    # Example schema configuration
+    schema_config = {
+        "nodes": [
+            {
+                "input_label": "geo_series",
+                "properties": ["title", "summary", "source", "version"]
+            },
+            {
+                "input_label": "geo_sample",
+                "properties": ["disease", "organism", "source", "version"]
+            },
+            {
+                "input_label": "geo_platform",
+                "properties": ["title", "technology", "source", "version"]
+            }
+        ],
+        "edges": [
+            {
+                "input_label": "HAS_SAMPLE",
+                "source": "geo_series",
+                "target": "geo_sample",
+                "properties": ["source", "version"]
+            },
+            {
+                "input_label": "USES_PLATFORM",
+                "source": "geo_sample",
+                "target": "geo_platform",
+                "properties": ["source", "version"]
+            }
+        ]
+    }
+
+    # Create adapter
+    adapter = GEOAdapter("GSE12345", schema_config)
+
+    # Validate
+    adapter.validate()
+
+    # Generate nodes and edges
+    nodes = list(adapter.get_nodes())
+    edges = list(adapter.get_edges())
+
+    print(f"Generated {len(nodes)} nodes and {len(edges)} edges")
+
+    # Example node output
+    print("\nExample node:")
+    print(nodes[0])
+
+    # Example edge output
+    print("\nExample edge:")
+    print(edges[0])
+
+
+if __name__ == "__main__":
+    main()
+```
+
+## Key Features Demonstrated
+
+### 1. Schema Compliance
+- Validates node and edge labels against schema configuration
+- Ensures all required properties are present
+- Raises clear error messages for violations
+
+### 2. Error Handling
+- Safe metadata extraction with fallbacks
+- Graceful handling of missing or malformed data
+- Comprehensive exception handling
+
+### 3. Data Transformation
+- Converts GEO metadata to BioCypher canonical format
+- Handles multiple entity types (series, samples, platforms)
+- Creates meaningful relationships between entities
+
+### 4. Provenance Tracking
+- Includes source and version information
+- Maintains data lineage
+- Supports strict mode requirements
+
+### 5. Memory Efficiency
+- Uses generators for streaming data
+- Processes large datasets without loading everything into memory
+- Supports incremental processing
+
+## Integration with BioCypher
+
+```python
+from biocypher import BioCypher
+
+# Initialize BioCypher
+bc = BioCypher()
+
+# Create adapter
+adapter = GEOAdapter("GSE12345")
+
+# Add nodes and edges to BioCypher
+bc.add_nodes(adapter.get_nodes())
+bc.add_edges(adapter.get_edges())
+
+# Write to database
+bc.write()
+```
+
+This example demonstrates all the patterns and best practices described in llms-adapters.txt and can serve as a template for creating new adapters.
+
+## Related Files
+
+- **llms-adapters.txt** - Adapter creation guide
+- **llms.txt** - Functionality index and reference
