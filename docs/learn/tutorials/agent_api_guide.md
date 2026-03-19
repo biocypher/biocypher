@@ -1,9 +1,9 @@
 # BioCypher Agent API Guide
 
-**Level:** Beginner (Agent API track)
-**Who is this for?** Users who want to create and explore small to medium-sized knowledge graphs in memory, especially in LLM or notebook workflows, without setting up databases or YAML configs.
-**What you will do:** Use the Agent API to create a graph, add nodes and edges, query and analyse it, and persist it to and from JSON.
-**Estimated time:** 20–30 minutes.
+**Level:** Beginner (Agent API track)  
+**Who is this for?** Users who want to create and explore small to medium-sized knowledge graphs in memory, especially in LLM or notebook workflows, without setting up databases or YAML configs.  
+**What you will do:** Use the Agent API to create a graph, add nodes and edges, query and analyse it, and persist it to and from JSON.  
+**Estimated time:** 20–30 minutes.  
 
 After working through this guide you will be able to:
 

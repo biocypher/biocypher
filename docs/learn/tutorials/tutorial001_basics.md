@@ -1,9 +1,9 @@
 # Tutorial - Basics
 
-**Level:** Beginner (Hands-on track)
-**Who is this for?** Developers with basic Python knowledge who want to build their first BioCypher knowledge graph using the full extract-transform-load pipeline.
-**What you will build:** A small knowledge graph of simulated proteins and interactions, written either as Neo4j-ready CSV files or as Pandas DataFrames.
-**Estimated time:** 30–45 minutes.
+**Level:** Beginner (Hands-on track)  
+**Who is this for?** Developers with basic Python knowledge who want to build their first BioCypher knowledge graph using the full extract-transform-load pipeline.  
+**What you will build:** A small knowledge graph of simulated proteins and interactions, written either as Neo4j-ready CSV files or as Pandas DataFrames.  
+**Estimated time:** 30–45 minutes.  
 
 By the end of this tutorial you will be able to:
 

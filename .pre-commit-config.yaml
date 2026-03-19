@@ -25,6 +25,7 @@ repos:
     -   id: mixed-line-ending
     -   id: trailing-whitespace
         exclude: ^.bumpversion.cfg$
+        exclude_types: [markdown]
     -   id: check-merge-conflict
     -   id: check-case-conflict
     -   id: check-symlinks
