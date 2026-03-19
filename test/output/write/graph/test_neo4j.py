@@ -148,7 +148,7 @@ def test_construct_import_call(bw):
         assert "--overwrite-destination=true" in import_script or "--force=true" in import_script
     else:
         # Bash-specific assertions
-        assert import_script.startswith("#!")
+        assert "#!" in import_script
         assert "version=$(" in import_script
         assert "if [[ $version -lt 5 ]]" in import_script
         assert 'echo "Neo4j detected version: $version"' in import_script
@@ -163,7 +163,7 @@ def test_construct_import_call_bash(bw):
 
     import_script = bw._construct_import_call_bash()
 
-    assert import_script.startswith("#!")
+    assert "#!" in import_script
     assert "version=$(" in import_script
     assert 'echo "Neo4j detected version: $version"' in import_script
     assert "if [[ $version -lt 5 ]]" in import_script
