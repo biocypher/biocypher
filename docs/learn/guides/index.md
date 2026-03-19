@@ -6,6 +6,8 @@
 
 Start here after you have completed at least one tutorial and want to achieve a specific goal.
 
+We need to add some specific use cases here, maybe comes from converting the adapters for the registry.
+
 1. [How do I create a standalone Docker image for a BioCypher KG?](htg001_standalone_docker_biocypher.md)
 2. How do I use or create an Adapter to read data? *(planned – builds on the Adapters tutorial)*
 3. How do I combine data from different Adapters? *(planned – builds on the Basics and Adapters tutorials)*
