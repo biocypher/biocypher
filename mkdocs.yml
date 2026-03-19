@@ -67,8 +67,11 @@ nav:
 
       - Explanations:
           - Overview: learn/explanation/index.md
-          - About Adapters: learn/explanation/adapters.md
-          - About Ontologies: learn/explanation/ontologies.md
+          - About Documentation: learn/explanation/about-documentation.md
+          - Knowledge Graphs: learn/explanation/basics-knowledge-graphs.md
+          - Ontologies: learn/explanation/ontologies.md
+          - Knowledge Graphs in BioCypher: learn/explanation/knowledge-graph-biocypher.md
+          - Adapters: learn/explanation/adapters.md
           - Schema Configuration Philosophy: learn/explanation/schema-config-philosophy.md
           - Graph Class Guide: learn/explanation/graph_class_guide.md
           - Architecture Migration Guide: learn/explanation/architecture-migration.md

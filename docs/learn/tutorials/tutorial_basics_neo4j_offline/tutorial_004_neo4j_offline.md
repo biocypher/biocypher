@@ -63,7 +63,7 @@ In this section, you will set up your working environment using the BioCypher Pr
 
 You should always first create a dedicated Python environment for your project, and then install the dependencies into the environment. Environments can be managed by [conda](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html), [uv](https://docs.astral.sh/uv/pip/environments/) ,[poetry](https://python-poetry.org/docs/managing-environments/) or [venv](https://docs.python.org/3/library/venv.html), for example.
 
-After you have created your environment, activate the environment and install the required packages using your preferred package manager.
+After you have created your environment, activate> **Note:** the environment and install the required packages using your preferred package manager.
 
 **Using uv: (recommended)**
 ```bash
@@ -82,7 +82,7 @@ pip install .
 
 You also need to install Jupyter into your environment, i.e. `pip install jupyter`, if later you want to explore the sample data in a Jupyter notebook.
 
-### Setup Neo4j
+### Setup Neo4j> **Note:**
 
 In this section, we will create a Neo4j instance to use later in the tutorial. It is important to set this up now.
 

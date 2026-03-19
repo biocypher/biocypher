@@ -12,7 +12,7 @@ Choose the Python UI track if you are comfortable with directly writing Python c
 
     ---
 
-    [Use BioCypher through the Python interface](tutorials/tutorial_basics_neo4j_offline/tutorial_004_neo4j_offline.md){ .text-center }
+    [Use BioCypher through the Python interface](tutorial_basics_neo4j_offline/tutorial_004_neo4j_offline.md){ .text-center }
 
 -   :material-set-merge:{ .lg .middle } __Data merging__
 
@@ -20,7 +20,7 @@ Choose the Python UI track if you are comfortable with directly writing Python c
 
     ---
 
-    [Use BioCypher to merge data](tutorials/tutorial002_handling_ontologies.md){ .text-center }
+    [Use BioCypher to merge data](tutorial002_handling_ontologies.md){ .text-center }
 
 -   :simple-instructure:{ .lg .middle } __Data transformation__
 
@@ -28,7 +28,7 @@ Choose the Python UI track if you are comfortable with directly writing Python c
 
     ---
 
-    [Use BioCypher for complex graph operations](tutorials/tutorial002_handling_ontologies.md){ .text-center }
+    [Use BioCypher for complex graph operations](tutorial002_handling_ontologies.md){ .text-center }
 
 </div>
 
@@ -44,6 +44,6 @@ Choose the LLM-assisted UI track if you are comfortable with developing your dat
 
     ---
 
-    [Use BioCypher through the agentic interface](tutorials/agent_api_guide.md){ .text-center }
+    [Use BioCypher through the agentic interface](agent_api_guide.md){ .text-center }
 
 </div>
