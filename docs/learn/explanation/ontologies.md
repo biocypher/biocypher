@@ -21,6 +21,10 @@ as such would be represented as *Wardrobe* nodes in a knowledge graph. In
 BioCypher, these nodes would additionally inherit the *PieceOfFurniture* label
 from the ontological hierarchy of things.
 
+<!-- TODO shiftmention of Biolink to after the basic explanation of an ontology; 
+maybe include some few different real-life examples of ontologies that are actually
+used -->
+
 !!! note "Note"
     Why is the class called *piece of furniture* but the label is *PieceOfFurniture*?
 
@@ -48,6 +52,10 @@ need to be "reified", i.e., turned into nodes. BioCypher provides a simple way
 of converting edges to nodes and vice versa (using the `represented_as` field).
 For a more in-depth explanation of ontologies, we recommend [this
 introduction](https://oboacademy.github.io/obook/explanation/intro-to-ontologies/).
+
+## Ontology examples and the Biolink ontology
+some more stuff
+
 
 ## How BioCypher uses ontologies
 BioCypher is agnostic to the choice of ontology. Practically, we have built our

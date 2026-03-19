@@ -12,7 +12,7 @@ The purpose of this section is to provide a comprehensive guide to understanding
 
     ---
 
-    [Learn about knowledge graphs](basics-knowledge-graph.md){ .text-center }
+    [Learn about knowledge graphs](basics-knowledge-graphs.md){ .text-center }
 
 -   :octicons-workflow-16:{ .lg .middle } __Data workflows__
 
@@ -36,7 +36,6 @@ The purpose of this section is to provide a comprehensive guide to understanding
 
 ## Catalog
 
-- [Documentation](about-documentation.md)
 - [Knowledge Graphs](basics-knowledge-graphs.md)
 - [Ontologies](ontologies.md)
 - [Knowledge Graphs in BioCypher](knowledge-graph-biocypher.md)

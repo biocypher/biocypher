@@ -67,7 +67,6 @@ nav:
 
       - Explanations:
           - Overview: learn/explanation/index.md
-          - About Documentation: learn/explanation/about-documentation.md
           - Knowledge Graphs: learn/explanation/basics-knowledge-graphs.md
           - Ontologies: learn/explanation/ontologies.md
           - Knowledge Graphs in BioCypher: learn/explanation/knowledge-graph-biocypher.md
