@@ -51,6 +51,7 @@ nav:
       - LLM Integration: llms.md
 
   - Learn:
+      - Overview: learn/index.md
       - Tutorials:
           - Agent API track:
               - Agent API (Beginner): learn/tutorials/agent_api_guide.md
@@ -147,6 +148,7 @@ plugins:
             heading_level: 3
   - mkdocs-jupyter
   - mike
+  - tags
 
 repo_url: https://github.com/biocypher/biocypher
 repo_name: biocypher/biocypher
@@ -170,3 +172,12 @@ extra_css:
   - stylesheets/extra.css
 
 copyright: © Copyright 2021-2025, BioCypher developers.
+
+tags:
+   - beginner
+   - advanced
+   - tutorial
+   - howto
+   - faq
+   - explanation
+   - reference
