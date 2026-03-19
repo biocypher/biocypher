@@ -34,7 +34,7 @@
 
 <div class="grid cards" markdown>
 
--   :octicons-move-to-end-16:{ .lg .middle } __Using BioCyper: Python__
+-   :octicons-code-16:{ .lg .middle } __BioCyper - code UI__
 
     :material-tag-outline: <span class="difficulty-badge difficulty-badge--beginner">Beginner</span>
 
@@ -42,7 +42,7 @@
 
     [Use BioCypher through the Python interface](tutorials/tutorial_basics_neo4j_offline/tutorial_004_neo4j_offline.md){ .text-center }
 
--   :octicons-move-to-end-16:{ .lg .middle } __Using BioCypher: With a coding assistant__
+-   :material-chat:{ .lg .middle } __BioCypher - LLM-assisted UI__
 
     :material-tag-outline: <span class="difficulty-badge difficulty-badge--beginner">Beginner</span>
 

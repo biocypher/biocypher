@@ -53,14 +53,13 @@ nav:
   - Learn:
       - Overview: learn/index.md
       - Tutorials:
-          - Agent API track:
+          - Overview: learn/tutorials/index.md
+          - Python UI track:
+              - Hands-on Protein Graphs with BioCypher and Neo4j (Beginner): learn/tutorials/tutorial_basics_neo4j_offline/tutorial_004_neo4j_offline.md
+              - Handling complex graph operations (Advanced): learn/tutorials/tutorial002_handling_ontologies.md
+              - Data harmonization and merging (Advanced): learn/tutorials/tutorial002_handling_ontologies.md
+          - LLM-assisted UI track:
               - Agent API (Beginner): learn/tutorials/agent_api_guide.md
-          - Full hands-on track:
-              - Basics (Beginner): learn/tutorials/tutorial001_basics.md
-              - Hands-on Protein Graphs with BioCypher and Neo4j (Intermediate): learn/tutorials/tutorial_basics_neo4j_offline/tutorial_004_neo4j_offline.md
-              - Handling Ontologies (Intermediate): learn/tutorials/tutorial002_handling_ontologies.md
-              - Adapters (Intermediate): learn/tutorials/tutorial003_adapters.md
-              - BioCypher and Pandas (Intermediate): learn/tutorials/pandas_tutorial.ipynb
 
       - HowTo / FAQ:
           - Overview: learn/guides/index.md
