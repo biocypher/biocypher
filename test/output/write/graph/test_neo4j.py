@@ -163,20 +163,32 @@ def test_construct_import_call_bash(bw):
 
     import_script = bw._construct_import_call_bash()
 
-    assert "#!" in import_script
-    assert "version=$(" in import_script
-    assert 'echo "Neo4j detected version: $version"' in import_script
-    assert "if [[ $version -lt 5 ]]" in import_script
-    assert "else" in import_script
-    assert "fi" in import_script
-    assert "--overwrite-destination=true" in import_script
-    assert "bin/neo4j-admin import" in import_script
-    assert "--force=true" in import_script
-    assert "--database=neo4j" in import_script
-    assert "bin/neo4j-admin database import full neo4j" in import_script
-    assert "bin/neo4j-admin import --database=neo4j" in import_script
-    assert '--delimiter=";"' in import_script
-    assert '--array-delimiter="|"' in import_script
+    if not sys.platform.startswith("win"):
+        if "SHELL" in os.environ:
+            assert "#!" in import_script
+            assert "version=$(" in import_script
+            assert 'echo "Neo4j detected version: $version"' in import_script
+            assert "if [[ $version -lt 5 ]]" in import_script
+            assert "else" in import_script
+            assert "fi" in import_script
+            assert "--overwrite-destination=true" in import_script
+            assert "bin/neo4j-admin import" in import_script
+            assert "--force=true" in import_script
+            assert "--database=neo4j" in import_script
+            assert "bin/neo4j-admin database import full neo4j" in import_script
+            assert "bin/neo4j-admin import --database=neo4j" in import_script
+            assert '--delimiter=";"' in import_script
+            assert '--array-delimiter="|"' in import_script
+        else:
+            assert "#" in import_script
+            assert "bin/neo4j-admin import" in import_script
+            assert "--database=neo4j" in import_script
+            assert '--delimiter=";"' in import_script
+            assert '--array-delimiter="|"' in import_script
+            assert "--force=true" in import_script
+
+            assert "bin/neo4j-admin database import full neo4j" in import_script
+            assert "--overwrite-destination=true" in import_script
 
 
 def test_construct_import_call_powershell(bw):
