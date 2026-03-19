@@ -29,14 +29,14 @@ class _Neo4jBatchWriter(_BatchWriter):
 
         Check the version of Neo4j and adds a command scope if version >= 5.
 
-        Args
+        Args:
         ----
-
             shell: the path toward the shell to use in the import script (default 'system' means the system's one)
 
-        Returns
+        Returns:
         -------
             _Neo4jBatchWriter: An instance of the writer.
+
         """
         # Should read the configuration and setup import_call_bin_prefix.
         super().__init__(*args, **kwargs)
@@ -311,44 +311,56 @@ class _Neo4jBatchWriter(_BatchWriter):
         import_call_neo4j_v5 = self._get_import_call("database import full", "", "--overwrite-destination=")
         neo4j_version_check = f"version=$({self.import_call_bin_prefix}neo4j-admin --version | cut -d '.' -f 1)"
 
+        supported = ["bash", "zsh", "ksh"]
         shell = self.shell
-        if self.shell == "system":
+
+        # Resolve shell
+        if shell == "system":
             if "SHELL" in os.environ:
                 shell = os.environ["SHELL"]
-                supported = ["bash", "zsh", "ksh"]
-                if all(s not in shell for s in supported):
-                    logger.warning(
-                        f"Your shell `{shell}` is not known to support the import script."
-                        f" Known supported shells: {', '.join(supported)}."
-                        " Double-check if it supports double-brackets testing."
-                        " If it does not, comment the test lines and the call"
-                        " to the Neo4j version that you don't have."
-                    )
-
-                import_script = f"""#!{shell}
-                {neo4j_version_check}
-                echo "Neo4j detected version: $version" >&2
-                # If Neo4j's version < 5.
-                if [[ $version -lt 5 ]] ; then
-                    # Old interface.
-                    {import_call_neo4j_v4}
-                else
-                    # New interface.
-                    {import_call_neo4j_v5}
-                fi
-                """
-
             else:
                 logger.warning(
                     "There is no shell that can be detected."
                     " The import script will assume it uses Neo4j version 5."
                     " If you have Neo4j version 4 of earlier,"
-                    " uncomment the related line in the import script."
+                    " uncomment the related line in the import script.",
                 )
-                import_script = f"""
-                # {import_call_neo4j_v4}
-                {import_call_neo4j_v5}
+                return f"""
+                    # {import_call_neo4j_v4}
+                    {import_call_neo4j_v5}
                 """
+
+        elif not os.path.isfile(shell) or not os.access(shell, os.X_OK):
+            msg = (
+                f"Configured shell path is invalid or not executable: {shell}. "
+                "Provide an absolute path to an executable shell or use 'system'."
+            )
+            raise ValueError(msg)
+
+        # Compatibility check (single place)
+        shell_name = os.path.basename(shell)
+        if all(s not in shell_name for s in supported):
+            logger.warning(
+                f"Configured shell `{shell}` is not known to support the import script."
+                f" Known supported shells: {', '.join(supported)}."
+                " Double-check if it supports double-brackets testing."
+                " If it does not, comment the test lines and the call"
+                " to the Neo4j version that you don't have.",
+            )
+
+        # Single script definition
+        import_script = f"""#!{shell}
+            {neo4j_version_check}
+            echo "Neo4j detected version: $version" >&2
+            # If Neo4j's version < 5.
+            if [[ $version -lt 5 ]] ; then
+                # Old interface.
+                {import_call_neo4j_v4}
+            else
+                # New interface.
+                {import_call_neo4j_v5}
+            fi
+        """
 
         return import_script
 
