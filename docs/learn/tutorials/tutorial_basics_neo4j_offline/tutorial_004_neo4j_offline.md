@@ -63,7 +63,7 @@ In this section, you will set up your working environment using the BioCypher Pr
 
 You should always first create a dedicated Python environment for your project, and then install the dependencies into the environment. Environments can be managed by [conda](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html), [uv](https://docs.astral.sh/uv/pip/environments/) ,[poetry](https://python-poetry.org/docs/managing-environments/) or [venv](https://docs.python.org/3/library/venv.html), for example.
 
-After you have created your environment, activate> **Note:** the environment and install the required packages using your preferred package manager.
+After you have created your environment, activate the environment and install the required packages using your preferred package manager.
 
 **Using uv: (recommended)**
 ```bash
@@ -608,7 +608,7 @@ The second block is the Database Management System Settings, which starts with t
 | `skip_bad_relationships` | `true`            | Whether to skip relationships with missing endpoints |
 | `import_call_bin_prefix` | i.e., `/usr/bin/` | Prefix for the import command binary (optional)      |
 
-The `import_call_bin_prefix` is the path to your Neo4j instance that you looked up in [section Setup Neo4j](#setup-neo4j) together with the prefix `/bin`.
+The `import_call_bin_prefix` is the path to your Neo4j instance that you looked up in [section Setup Neo4j](###setup-neo4j) together with the prefix `/bin`.
 
 The default configuration that comes with BioCypher and more configuration parameters for the Settings are listed in [BioCypher Configuration Reference](https://biocypher.org/BioCypher/reference/biocypher-config/).
 
@@ -1218,7 +1218,7 @@ Finally, write the functions that read the data as a DataFrame and override the 
 > Integrate the aforementioned snippets in a single file called `create_knowledge_graph.py` script and **RUN IT**!
 
 ??? success "Answer:"
-    See the example below for a completed <code>create_knowledge_graph.yaml</code>.
+    See the example below for a completed <code>create_knowledge_graph.py</code>.
 
     **File: `create_knowledge_graph.py`**
 
