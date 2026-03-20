@@ -18,7 +18,7 @@
 
     [:octicons-book-24: To the Agent API tutorial](tutorials/agent_api_guide.md){ .text-center }
 
--   :new:{ .lg .middle } __I want to build a full extract-transform-load (TL) pipeline__
+-   :new:{ .lg .middle } __I want to build a full extract-transform-load (ETL) pipeline__
 
     ---
 

@@ -6,7 +6,7 @@ Choose the Python UI track if you are comfortable with directly writing Python c
 
 <div class="grid cards" markdown>
 
--   :octicons-code-16:{ .lg .middle } __BioCyper - code UI__
+-   :octicons-code-16:{ .lg .middle } __BioCypher - code UI__
 
     :material-tag-outline: <span class="difficulty-badge difficulty-badge--beginner">Beginner</span>
 

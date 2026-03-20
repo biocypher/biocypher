@@ -82,7 +82,8 @@ pip install .
 
 You also need to install Jupyter into your environment, i.e. `pip install jupyter`, if later you want to explore the sample data in a Jupyter notebook.
 
-### Setup Neo4j> **Note:**
+### Setup Neo4j
+> **Note:**
 
 In this section, we will create a Neo4j instance to use later in the tutorial. It is important to set this up now.
 

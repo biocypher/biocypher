@@ -54,9 +54,13 @@ For a more in-depth explanation of ontologies, we recommend [this
 introduction](https://oboacademy.github.io/obook/explanation/intro-to-ontologies/).
 
 ## Ontology examples and the Biolink ontology
-some more stuff
-
-
+In the biomedical domain, a variety of ontologies are used to describe entities
+and their relationships in a consistent, machine-readable way. Examples include
+the Gene Ontology (GO) for molecular functions, biological processes, and cellular
+components, disease ontologies such as MONDO, and phenotype ontologies like HPO.
+The Biolink model is a schema-level ontology that provides a broad, harmonised set
+of classes and relationships across these domains, making it useful as a common
+integration layer for heterogeneous biomedical data.
 ## How BioCypher uses ontologies
 BioCypher is agnostic to the choice of ontology. Practically, we have built our
 initial projects around the [Biolink
