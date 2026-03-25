@@ -1,0 +1,21 @@
+/* Difficulty labels shown on learning cards */
+.difficulty-badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  vertical-align: middle;
+}
+
+.difficulty-badge--beginner {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.difficulty-badge--advanced {
+  background: #dbeafe;
+  color: #1e3a8a;
+}

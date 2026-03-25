@@ -1,5 +1,5 @@
 # BioCypher Graph Class Guide
-
+<!-- TODO refactor -->
 ## Overview
 
 The `Graph` class is the core data structure of the BioCypher Agent API, providing a unified representation for various types of graphs including simple graphs, directed graphs, weighted graphs, multigraphs, and hypergraphs. It's designed to be a pure Python implementation with no external dependencies, making it perfect for sandbox environments and LLM agent integration.

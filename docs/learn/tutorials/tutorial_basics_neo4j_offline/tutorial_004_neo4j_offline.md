@@ -1,3 +1,7 @@
+---
+tags:
+  - beginner
+---
 # 🧑‍💻 Hands-on Building Graphs with BioCypher (offline mode) and Neo4j
 
 ## Overview
@@ -79,6 +83,7 @@ pip install .
 You also need to install Jupyter into your environment, i.e. `pip install jupyter`, if later you want to explore the sample data in a Jupyter notebook.
 
 ### Setup Neo4j
+> **Note:**
 
 In this section, we will create a Neo4j instance to use later in the tutorial. It is important to set this up now.
 
@@ -604,7 +609,7 @@ The second block is the Database Management System Settings, which starts with t
 | `skip_bad_relationships` | `true`            | Whether to skip relationships with missing endpoints |
 | `import_call_bin_prefix` | i.e., `/usr/bin/` | Prefix for the import command binary (optional)      |
 
-The `import_call_bin_prefix` is the path to your Neo4j instance that you looked up in [section Setup Neo4j](#setup-neo4j) together with the prefix `/bin`.
+The `import_call_bin_prefix` is the path to your Neo4j instance that you looked up in [section Setup Neo4j](###setup-neo4j) together with the prefix `/bin`.
 
 The default configuration that comes with BioCypher and more configuration parameters for the Settings are listed in [BioCypher Configuration Reference](https://biocypher.org/BioCypher/reference/biocypher-config/).
 
@@ -1214,7 +1219,7 @@ Finally, write the functions that read the data as a DataFrame and override the 
 > Integrate the aforementioned snippets in a single file called `create_knowledge_graph.py` script and **RUN IT**!
 
 ??? success "Answer:"
-    See the example below for a completed <code>create_knowledge_graph.yaml</code>.
+    See the example below for a completed <code>create_knowledge_graph.py</code>.
 
     **File: `create_knowledge_graph.py`**
 

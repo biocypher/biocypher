@@ -1,5 +1,17 @@
 # Tutorial - Adapters
 
+**Level:** Intermediate (Hands-on track)
+**Who is this for?** Users who understand the basics of BioCypher configuration and want to connect real data sources.
+**What you will do:** Design and implement adapters that load data from external resources and feed node/edge streams into BioCypher.
+**Estimated time:** 30–45 minutes.
+
+By the end of this tutorial you will be able to:
+
+- Distinguish between simple (script-driven) and class-based adapter architectures.
+- Implement adapters that yield node and edge tuples in the expected format.
+- Connect multiple adapters into a single pipeline.
+- Decide when to start from the project template vs. writing an adapter from scratch.
+
 !!! note "Existing and planned adapters—overview"
 	For a list of existing and planned adapters, please see
 	[here](https://github.com/orgs/biocypher/projects/3). You can also get an

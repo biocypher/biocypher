@@ -1,5 +1,5 @@
 # Adapters
-
+<!-- TODO refactor -->
 ## Introduction
 
 BioCypher is a modular framework, with the main purpose of avoiding redundant
