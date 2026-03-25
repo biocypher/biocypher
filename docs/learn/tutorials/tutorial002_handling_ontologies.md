@@ -16,12 +16,12 @@ By the end of this tutorial you will be able to:
 
 BioCypher relies on ontologies to ground the knowledge graph contents in
 biology. If you need a more conceptual introduction before diving into the
-hands-on steps, see the explanations:
+hands-on steps, see these explanations:
 
 - [About Ontologies](../explanation/ontologies.md)
 - [Schema Configuration: Philosophy and Concepts](../explanation/schema-config-philosophy.md)
 
-The sections below assume that background and focus on practical configuration
+The sections below assume you understand these concepts, and focuses on practical configuration
 and inspection.
 
 ## Visualising ontologies
