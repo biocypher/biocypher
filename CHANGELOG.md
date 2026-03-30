@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.3](https://github.com/biocypher/biocypher/compare/biocypher-v0.13.2...biocypher-v0.13.3) (2026-03-30)
+
+
+### Miscellaneous
+
+* trigger patch release ([#496](https://github.com/biocypher/biocypher/issues/496)) ([741dd32](https://github.com/biocypher/biocypher/commit/741dd32884c291449f3c273f5df51940aafe50ee))
+
 ## [0.13.2](https://github.com/biocypher/biocypher/compare/biocypher-v0.13.1...biocypher-v0.13.2) (2026-03-30)
 
 
