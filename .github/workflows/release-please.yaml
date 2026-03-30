@@ -11,8 +11,61 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - uses: googleapis/release-please-action@v4
+        id: release
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  call-tests_and_code_quality:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    uses: "./.github/workflows/tests_and_code_quality.yaml"
+    with:
+      ref: refs/tags/${{ needs.release-please.outputs.tag_name }}
+
+  build_and_deploy_artifact:
+    needs:
+      - release-please
+      - call-tests_and_code_quality
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: 3.9
+    environment:
+      name: release
+      url: https://upload.pypi.org/legacy/
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      #----------------------------------------------
+      # check-out repo and set-up python and uv
+      #----------------------------------------------
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+      - name: Setup Python and uv
+        uses: ./.github/actions/setup
+      #----------------------------------------------
+      #            install dependencies
+      #----------------------------------------------
+      - name: Install dependencies
+        uses: ./.github/actions/install
+      #----------------------------------------------
+      #             build artifact
+      #----------------------------------------------
+      - name: Build artifact
+        run: uv build
+      #----------------------------------------------
+      #             upload to PyPi
+      #----------------------------------------------
+      - name: Publish artifact to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://upload.pypi.org/legacy/
