@@ -22,9 +22,13 @@ The creation of KGs is a complex task; BioCypher helps you in creating and
 maintaining your own KG. For more overview, usage notes, and a tutorial, read
 the docs [here](https://biocypher.org).
 
-<p align="center">
-  <img src="docs/assets/img/graphical-abstract-biocypher.png" alt="Graphical Abstract" width="70%">
-</p>
+<img
+    style="display: block;
+           margin-left: auto;
+           margin-right: auto;
+           width: 70%;"
+    src="https://raw.githubusercontent.com/biocypher/biocypher/main/docs/assets/img/graphical-abstract-biocypher.png"
+    alt="Graphical Abstract" />
 
 ## 📖 Documentation
 
