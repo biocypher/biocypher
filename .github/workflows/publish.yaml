@@ -1,21 +1,19 @@
 name: Publish
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - "*"
-    # TODO: ensure semver style - "[0-9]+.[0-9]+.[0-9]+(-[a-z]+)?(.[0-9]+)?"
+  release:
+    types:
+      - published
 
 jobs:
   call-tests_and_code_quality:
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     uses: "./.github/workflows/tests_and_code_quality.yaml"
+    with:
+      ref: refs/tags/${{ github.event.release.tag_name }}
 
   build_and_deploy_artifact:
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     needs: call-tests_and_code_quality
+    if: github.event.release.prerelease == false
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: 3.9
@@ -24,13 +22,15 @@ jobs:
       url: https://upload.pypi.org/legacy/
     permissions:
       id-token: write
-      contents: write
+      contents: read
     steps:
     #----------------------------------------------
     # check-out repo and set-up python and uv
     #----------------------------------------------
     - name: Checkout Repository
       uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.release.tag_name }}
     - name: Setup Python and uv
       uses: ./.github/actions/setup
     #----------------------------------------------
@@ -50,15 +50,3 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         repository-url: https://upload.pypi.org/legacy/
-    #----------------------------------------------
-    #           create Github release
-    #----------------------------------------------
-    - name: Create Github release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.ref_name }}
-      run: |
-        gh release create "$tag" \
-            --repo="$GITHUB_REPOSITORY" \
-            --title="$tag" \
-            --generate-notes
