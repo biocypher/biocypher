@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.4](https://github.com/biocypher/biocypher/compare/biocypher-v0.13.3...biocypher-v0.13.4) (2026-03-30)
+
+
+### Bug Fixes
+
+* **neo4j:** version + shell handling in import ([#490](https://github.com/biocypher/biocypher/issues/490)) ([6f353a5](https://github.com/biocypher/biocypher/commit/6f353a5b846858f78e3e710ce8d6197d1c8bf11c))
+
 ## [0.13.3](https://github.com/biocypher/biocypher/compare/biocypher-v0.13.2...biocypher-v0.13.3) (2026-03-30)
 
 
