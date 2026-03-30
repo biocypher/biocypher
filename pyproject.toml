@@ -54,7 +54,6 @@ dev = [
     "neoteroi-mkdocs>=1.1.0",
     "pytest>=6.0",
     "pre-commit>=2.17.0",
-    "bump2version",
     "coverage>=6.0",
     "pytest-cov>=3.0.0",
     "hypothesis>=6.50.1",

@@ -144,10 +144,21 @@ that the version number is incremented according to the following scheme:
 
 - Increment the patch version number if you make backwards-compatible bug fixes.
 
-We use the `bumpversion` tool to update the version number in the
-`pyproject.toml` file. This will create a new git tag automatically. Usually,
-versioning is done by the maintainers, so please do not increment versions in
-pull requests by default.
+We use [`release-please`](https://github.com/googleapis/release-please) for
+automated versioning, changelog generation, and release PR management.
+
+Usually, versioning is done by maintainers, so please do not increment versions
+in pull requests by default.
+
+For contributors:
+
+- follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+  in commit messages (for example `feat: ...`, `fix: ...`, `docs: ...`);
+- do not manually bump versions in `pyproject.toml` for normal feature/fix PRs.
+
+After merges to `main`, release-please creates or updates the release PR. After
+that PR is merged, BioCypher publishes a tag and GitHub Release, and then
+publishes to PyPI automatically from the release event.
 
 ## Finding an issue to contribute to
 
