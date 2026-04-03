@@ -167,6 +167,20 @@ header and data files for each entity type, the import call conveniently
 aggregates this information into one command, detailing the location of all
 files on disk, so no data need to be copied around.
 
+!!! tip "Schema Info for BioChatter"
+    To enable LLM-powered querying of your knowledge graph via
+    [BioChatter](../../biocypher-project/biochatter-integration.md), you can
+    generate a schema info file that describes the structure of the built KG:
+
+    ```python
+    bc.write_schema_info()                # writes schema_info.yaml to output directory
+    bc.write_schema_info(as_node=True)    # also adds a schema_info node to the KG
+    ```
+
+    When using `as_node=True`, the import call is automatically regenerated to
+    include the schema info node. Call this **after** `write_nodes()` and
+    `write_edges()`.
+
 !!! note "Note"
     The generated import call differs between Neo4j version 4 and 5.
     Starting from major version 5, Neo4j `import` command needs the
