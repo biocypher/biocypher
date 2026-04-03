@@ -1202,7 +1202,15 @@ Finally, write the functions that read the data as a DataFrame and override the 
         bc.write_import_call()
         ```
 
-6. Print summary
+6. (Optional) Generate schema info for [BioChatter](../../../biocypher-project/biochatter-integration.md) integration
+
+    ??? example "**File: `create_knowledge_graph.py`**"
+        ```python
+        # Generate schema info for LLM-powered querying via BioChatter
+        bc.write_schema_info()
+        ```
+
+7. Print summary
 
     ??? example "**File: `create_knowledge_graph.py`**"
         ```python
@@ -1283,6 +1291,9 @@ Finally, write the functions that read the data as a DataFrame and override the 
 
     # Generate assets for Neo4j exportation
     bc.write_import_call()
+
+    # (Optional) Generate schema info for BioChatter
+    bc.write_schema_info()
 
     # Print a summary when
     bc.summary()
