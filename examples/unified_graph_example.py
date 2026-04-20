@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Unified Graph Example - Simplified Knowledge Representation
 
 This example demonstrates how the unified Graph class streamlines knowledge

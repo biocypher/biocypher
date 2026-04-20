@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """BioCypher Agent Integration Example
 
 This example demonstrates how LLM agents can use BioCypher to create and
