@@ -59,6 +59,7 @@ nav:
               - Handling complex graph operations (Advanced): learn/tutorials/tutorial002_handling_ontologies.md
               - Data harmonization and merging (Advanced): learn/tutorials/tutorial002_handling_ontologies.md
           - LLM-assisted UI track:
+              - Agent-supported hands-on Protein Graphs with BioCypher and Neo4j (Beginner): learn/tutorials/tutorial_basic_with_agents/tutorial_basic_with_agents.md
               - Agent API (Beginner): learn/tutorials/agent_api_guide.md
 
       - HowTo / FAQ:
