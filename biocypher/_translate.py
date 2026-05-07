@@ -59,9 +59,16 @@ class Translator:
 
     def translate_entities(self, entities):
         entities = peekable(entities)
-        if isinstance(entities.peek(), BioCypherEdge | BioCypherNode | BioCypherRelAsNode):
+        try:
+            first = entities.peek()
+        except StopIteration:
+            logger.warning(
+                "Received empty iterable in translate_entities. No entities will be written."
+            )
+            return (x for x in [])
+        if isinstance(first, BioCypherEdge | BioCypherNode | BioCypherRelAsNode):
             translated_entities = entities
-        elif len(entities.peek()) < 4:
+        elif len(first) < 4:
             translated_entities = self.translate_nodes(entities)
         else:
             translated_entities = self.translate_edges(entities)

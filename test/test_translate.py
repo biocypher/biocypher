@@ -576,3 +576,13 @@ def test_strict_mode_property_filter(translator):
     assert "source" in translated_protein_node[0].get_properties().keys()
     assert "licence" in translated_protein_node[0].get_properties().keys()
     assert "version" in translated_protein_node[0].get_properties().keys()
+
+
+def test_translate_entities_empty_iterable(translator, caplog):
+    import logging
+
+    with caplog.at_level(logging.WARNING):
+        result = translator.translate_entities([])
+
+    assert list(result) == []
+    assert any("empty iterable" in msg.lower() for msg in caplog.messages)

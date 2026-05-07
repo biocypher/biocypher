@@ -1,3 +1,4 @@
+import logging
 import os
 
 import pytest
@@ -140,3 +141,17 @@ def test_get_writer_in_online_mode(core):
         with pytest.raises(NotImplementedError) as e:
             core._initialize_writer()
         assert str(e.value) == "Cannot get writer in online mode."
+
+
+def test_write_nodes_empty_iterable(core, caplog):
+    with caplog.at_level(logging.WARNING):
+        core.write_nodes([])
+
+    assert any("empty iterable" in msg.lower() for msg in caplog.messages)
+
+
+def test_write_edges_empty_iterable(core, caplog):
+    with caplog.at_level(logging.WARNING):
+        core.write_edges([])
+
+    assert any("empty iterable" in msg.lower() for msg in caplog.messages)
