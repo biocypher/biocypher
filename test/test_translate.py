@@ -576,3 +576,20 @@ def test_strict_mode_property_filter(translator):
     assert "source" in translated_protein_node[0].get_properties().keys()
     assert "licence" in translated_protein_node[0].get_properties().keys()
     assert "version" in translated_protein_node[0].get_properties().keys()
+
+
+def test_translate_entities_empty_iterable(translator):
+    """translate_entities with an empty iterable should warn and return an empty iterator (issue #493)."""
+    result = list(translator.translate_entities([]))
+    assert result == []
+
+
+def test_translate_entities_empty_generator(translator):
+    """translate_entities with an empty generator should warn and return an empty iterator (issue #493)."""
+
+    def empty_gen():
+        return
+        yield  # make it a generator
+
+    result = list(translator.translate_entities(empty_gen()))
+    assert result == []
