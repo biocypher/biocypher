@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.5](https://github.com/biocypher/biocypher/compare/biocypher-v0.13.4...biocypher-v0.13.5) (2026-05-07)
+
+
+### Bug Fixes
+
+* handle empty iterables in write_nodes/write_edges without crashing ([#504](https://github.com/biocypher/biocypher/issues/504)) ([3b30e7b](https://github.com/biocypher/biocypher/commit/3b30e7be0a101ad5d9b8d732c9cb399c4ea60034))
+
 ## [0.13.4](https://github.com/biocypher/biocypher/compare/biocypher-v0.13.3...biocypher-v0.13.4) (2026-03-30)
 
 
