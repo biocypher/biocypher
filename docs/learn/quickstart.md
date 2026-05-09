@@ -261,6 +261,20 @@ To retrieve the dataframe once all entities are in the graph, we can call
 df = bc.to_df()
 ```
 
+After writing all nodes and edges, you can finalize the build:
+
+```python
+bc.write_import_call()    # generate database import script (offline mode)
+bc.write_schema_info()    # generate schema info for BioChatter (optional)
+```
+
+The `write_schema_info()` method creates a `schema_info.yaml` file that
+describes the structure of your knowledge graph, which can be used by
+[BioChatter](../biocypher-project/biochatter-integration.md) to enable
+LLM-powered querying. See the [BioChatter integration
+page](../biocypher-project/biochatter-integration.md#connecting-via-schema-info)
+for details.
+
 For more information on the usage of these functions, please refer to the
 [Tutorial](../learn/tutorials/tutorial001_basics.md) section and the [full API documentation](../reference/source/index.md).
 
