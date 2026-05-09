@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.13.6](https://github.com/biocypher/biocypher/compare/biocypher-v0.13.5...biocypher-v0.13.6) (2026-05-09)
+
+
+### Bug Fixes
+
+* **get:** preserve query params in cache filenames; hash full URL when too long ([#507](https://github.com/biocypher/biocypher/issues/507)) ([538b8b3](https://github.com/biocypher/biocypher/commit/538b8b328df0810a9d4f40a239c284ec5654e0e0))
+
+
+### Documentation
+
+* **create:** fix BioCypherEdge docstring inaccuracies ([#508](https://github.com/biocypher/biocypher/issues/508)) ([e23c68c](https://github.com/biocypher/biocypher/commit/e23c68c80b76eca1976288677c5bacdbaf7fb9ee)), closes [#391](https://github.com/biocypher/biocypher/issues/391)
+* document write_schema_info() workflow for BioChatter integration ([#499](https://github.com/biocypher/biocypher/issues/499)) ([9cb0042](https://github.com/biocypher/biocypher/commit/9cb004265a33100cd3909ada3c53208d7aac9dee))
+
 ## [0.13.5](https://github.com/biocypher/biocypher/compare/biocypher-v0.13.4...biocypher-v0.13.5) (2026-05-07)
 
 
