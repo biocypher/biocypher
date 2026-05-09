@@ -165,27 +165,22 @@ class BioCypherNode:
 @dataclass(frozen=True)
 class BioCypherEdge:
     """
-    Handoff class to represent biomedical relationships in Neo4j.
+    Handoff class to represent biomedical relationships as graph edges.
 
-    Has source and target ids, label, property dict; ids and label (in
-    the Neo4j sense of a label, ie, the entity descriptor after the
-    colon, such as ":TARGETS") are non-optional and called source_id,
-    target_id, and relationship_label to avoid confusion with properties
-    called "label", which usually denotes the human-readable form.
-    Relationship labels are written in UPPERCASE and as verbs, as per
-    Neo4j consensus.
+    Has source and target ids, label, and property dict. The ids and
+    label are non-optional and called source_id, target_id, and
+    relationship_label to avoid confusion with properties called "label",
+    which usually denotes the human-readable form. Relationship labels
+    are written in UPPERCASE and as verbs.
 
     Args:
-
-        source_id (string): consensus "best" id for biological entity
-
-        target_id (string): consensus "best" id for biological entity
-
-        relationship_label (string): type of interaction, UPPERCASE
-
+        source_id (str): consensus "best" id for the source biological entity
+        target_id (str): consensus "best" id for the target biological entity
+        relationship_label (str): type of interaction, UPPERCASE
+        relationship_id (str, optional): unique identifier for this
+            relationship instance; defaults to None
         properties (dict): collection of all other properties of the
-        respective edge
-
+            respective edge
     """
 
     source_id: str
@@ -223,10 +218,10 @@ class BioCypherEdge:
 
     def get_id(self) -> Union[str, None]:
         """
-        Returns primary node identifier or None.
+        Returns the relationship identifier or None.
 
         Returns:
-            str: node_id
+            str or None: relationship_id
         """
 
         return self.relationship_id
