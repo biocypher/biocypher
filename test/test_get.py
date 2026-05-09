@@ -410,3 +410,59 @@ def test_download_file_with_long_url(mock_get):
     with open(paths[0], "rb") as f:
         content = f.read()
         assert b"test file content" in content
+
+
+@patch("requests.get")
+def test_api_request_long_query_string(mock_get):
+    """Regression test for issue #433: short path + long query string → ENAMETOOLONG."""
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json = lambda: {"data": "test content"}
+    mock_response.raise_for_status = Mock()
+    mock_get.return_value = mock_response
+
+    # Reproduce the real-world pattern: short endpoint name, many query params
+    conditions = [f"linear_sequence.ilike.*SEQ{i}*" for i in range(20)]
+    query = "or=(" + ",".join(conditions) + ")"
+    long_url = f"https://query-api.example.org/epitope_search?{query}"
+
+    downloader = Downloader(cache_dir=None)
+    resource = APIRequest(name="iedb_test", url_s=long_url, lifetime=1)
+    paths = downloader.download(resource)
+
+    assert os.path.exists(paths[0])
+    filename = os.path.basename(paths[0])
+    assert len(filename) <= 150, f"Filename too long: {len(filename)} chars"
+
+
+@patch("requests.get")
+def test_api_request_multiple_urls_distinct_cache_files(mock_get):
+    """Multiple URLs to the same endpoint with different query params must not share a cache file.
+
+    Regression test for issue #433: stripping query params caused every URL
+    to the same path to collide on the same cached filename.
+    """
+    call_count = [0]
+
+    def side_effect(url, **kwargs):
+        call_count[0] += 1
+        resp = Mock()
+        resp.status_code = 200
+        resp.json = lambda n=call_count[0]: {"result": n}
+        resp.raise_for_status = Mock()
+        return resp
+
+    mock_get.side_effect = side_effect
+
+    url_a = "https://example.com/api/search?filter=alpha"
+    url_b = "https://example.com/api/search?filter=beta"
+
+    downloader = Downloader(cache_dir=None)
+    resource = APIRequest(name="search_test", url_s=[url_a, url_b], lifetime=1)
+    paths = downloader.download(resource)
+
+    # Each URL must produce a distinct cache file
+    assert len(paths) == 2
+    assert paths[0] != paths[1], "Different query params produced the same cache file"
+    assert os.path.exists(paths[0])
+    assert os.path.exists(paths[1])
