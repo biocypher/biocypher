@@ -801,6 +801,40 @@ def test_write_edge_data_from_list_no_props(bw):
     assert "\n" in is_mutated_in
 
 
+def test_write_edge_data_boolean_properties(bw):
+    """Boolean properties must be written as lowercase 'true'/'false' for Neo4j admin import."""
+    edges = [
+        BioCypherEdge(
+            relationship_id="gg1",
+            source_id="g1",
+            target_id="g2",
+            relationship_label="gene to gene association",
+            properties={"directional": True, "curated": False, "score": 0.9},
+        ),
+        BioCypherEdge(
+            relationship_id="gg2",
+            source_id="g3",
+            target_id="g4",
+            relationship_label="gene to gene association",
+            properties={"directional": False, "curated": True, "score": 0.5},
+        ),
+    ]
+
+    passed = bw._write_edge_data(edges, batch_size=int(1e4))
+
+    tmp_path = bw.outdir
+    gene_gene_csv = os.path.join(tmp_path, "GeneToGeneAssociation-part000.csv")
+
+    with open(gene_gene_csv) as f:
+        gene_gene = f.read()
+
+    assert passed
+    assert "true" in gene_gene
+    assert "false" in gene_gene
+    assert "True" not in gene_gene
+    assert "False" not in gene_gene
+
+
 @pytest.mark.parametrize("length", [8], scope="module")
 def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
     edges = _get_edges
@@ -902,7 +936,7 @@ def test_BioCypherRelAsNode_implementation(bw, _get_rel_as_nodes):
     assert "p2;" in is_target_of
     assert "IS_TARGET_OF" in is_target_of
     assert "\n" in is_target_of
-    assert "i1;True;-1;'i1';'id'" in post_translational_interaction
+    assert "i1;true;-1;'i1';'id'" in post_translational_interaction
     assert "Association" in post_translational_interaction
     assert "\n" in post_translational_interaction
 

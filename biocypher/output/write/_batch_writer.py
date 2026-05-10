@@ -754,6 +754,8 @@ class _BatchWriter(_Writer, ABC):
                     p = n_props.get(k)
                     if p is None:  # TODO make field empty instead of ""?
                         plist.append("")
+                    elif v in ["bool", "boolean"]:
+                        plist.append(str(p).lower())
                     elif v in [
                         "int",
                         "integer",
@@ -761,8 +763,6 @@ class _BatchWriter(_Writer, ABC):
                         "float",
                         "double",
                         "dbl",
-                        "bool",
-                        "boolean",
                     ]:
                         plist.append(str(p))
                     elif isinstance(p, list):
@@ -991,6 +991,8 @@ class _BatchWriter(_Writer, ABC):
                 p = e_props.get(k)
                 if p is None:  # TODO make field empty instead of ""?
                     plist.append("")
+                elif v in ["bool", "boolean"]:
+                    plist.append(str(p).lower())
                 elif v in [
                     "int",
                     "integer",
@@ -998,8 +1000,6 @@ class _BatchWriter(_Writer, ABC):
                     "float",
                     "double",
                     "dbl",
-                    "bool",
-                    "boolean",
                 ]:
                     plist.append(str(p))
                 elif isinstance(p, list):
