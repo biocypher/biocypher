@@ -253,6 +253,7 @@ configuration specified in the [schema-config.yaml](../schema-config.md).
     in your Neo4j instance. If APOC is not available, BioCypher will raise a
     clear error message. For offline mode, APOC is not required.
 
+
 ## Note on labels order
 
 Neo4j does not support managing the hierarchy of types of the vocabulary given
@@ -271,3 +272,14 @@ information, hence making it impossible to query the graph on high-level types.
 
 Note that the Neo4j database doesn't allow attaching multiple type labels to
 edges. Hence, it is always set to "Leaves" for edges.
+
+
+## Note on property names
+
+Neo4j does not support having the colon character in property names.
+For instance, it would be impossible to use a raw IRI (like an URL) as a
+property name in a Neo4j database import script.
+
+BioCypher will thus take care of replacing any colon it finds in a property
+name with the placeholder: `_COLON_`. You may thus find that property names
+set from an IRI will look like: `https_COLON_//domain.tld/prop`.
