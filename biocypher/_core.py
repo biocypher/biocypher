@@ -118,15 +118,6 @@ class BioCypher:
         else:
             self._offline = offline
 
-        # Check if pandas/tabular is being used in offline mode
-        if self._offline and self._dbms.lower() in ["pandas", "tabular"]:
-            msg = (
-                f"The '{self._dbms}' DBMS is only available in online mode. "
-                f"If you want to write CSV files, use 'csv' as the DBMS. "
-                f"If you want to use pandas, set 'offline: false' in your configuration."
-            )
-            raise ValueError(msg)
-
         if strict_mode is None:
             self._strict_mode = self.base_config["strict_mode"]
         else:
@@ -369,12 +360,12 @@ class BioCypher:
         objects. Depending on the configuration the translated nodes are then
         passed to the
 
-        - `_writer`: if `_offline` is set to `False`
+        - `_writer`: if `_offline` is set to `True`
 
         - `_in_memory_kg`: if `_offline` is set to `False` and the `_dbms` is an
             `IN_MEMORY_DBMS`
 
-        - `_driver`: if `_offline` is set to `True` and the `_dbms` is not an
+        - `_driver`: if `_offline` is set to `False` and the `_dbms` is not an
             `IN_MEMORY_DBMS`
 
         """
@@ -404,12 +395,12 @@ class BioCypher:
         objects. Depending on the configuration the translated edges are then
         passed to the
 
-        - `_writer`: if `_offline` is set to `False`
+        - `_writer`: if `_offline` is set to `True`
 
         - `_in_memory_kg`: if `_offline` is set to `False` and the `_dbms` is an
             `IN_MEMORY_DBMS`
 
-        - `_driver`: if `_offline` is set to `True` and the `_dbms` is not an
+        - `_driver`: if `_offline` is set to `False` and the `_dbms` is not an
             `IN_MEMORY_DBMS`
 
         """
