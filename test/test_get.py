@@ -255,7 +255,27 @@ def test_download_zip_and_expiration():
     ],
     indirect=True,
 )
-def test_cache_api_request(downloader):
+@patch("requests.get")
+def test_cache_api_request(mock_get, downloader):
+    mock_data = {
+        "P12345.json": {"uniprotId": "P12345", "entryType": "UniProtKB reviewed (Swiss-Prot)"},
+        "P69905.json": {"uniprotId": "P69905", "entryType": "UniProtKB reviewed (Swiss-Prot)"},
+        "countTotal": {"count": 12345},
+    }
+
+    def side_effect(url=None, **kwargs):
+        resp = Mock()
+        resp.status_code = 200
+        resp.raise_for_status = Mock()
+        for key, data in mock_data.items():
+            if key in url:
+                resp.json = lambda d=data: d
+                return resp
+        resp.json = lambda: {}
+        return resp
+
+    mock_get.side_effect = side_effect
+
     api1 = APIRequest(
         name="uniprot_api",
         url_s=[
@@ -298,7 +318,14 @@ def test_cache_api_request(downloader):
         assert api_request1 == api_request2
 
 
-def test_api_expiration():
+@patch("requests.get")
+def test_api_expiration(mock_get):
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json = lambda: {"uniprotId": "P12345", "entryType": "UniProtKB reviewed (Swiss-Prot)"}
+    mock_response.raise_for_status = Mock()
+    mock_get.return_value = mock_response
+
     downloader = Downloader(cache_dir=None)
     assert os.path.exists(downloader.cache_dir)
     assert os.path.exists(downloader.cache_file)
@@ -330,7 +357,17 @@ def test_api_expiration():
     assert paths[0] is not None
 
 
-def test_download_with_parameter():
+@patch("biocypher._get.pooch.retrieve")
+def test_download_with_parameter(mock_retrieve):
+    def side_effect(url, known_hash, fname, path, **kwargs):
+        full_path = os.path.join(path, fname)
+        os.makedirs(path, exist_ok=True)
+        with open(full_path, "w") as f:
+            f.write("source\ttarget\tweight\nA\tB\t0.9\n")
+        return full_path
+
+    mock_retrieve.side_effect = side_effect
+
     downloader = Downloader(cache_dir=None)
     resource = FileDownload(
         name="zenodo",
