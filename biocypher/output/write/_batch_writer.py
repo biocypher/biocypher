@@ -944,8 +944,9 @@ class _BatchWriter(_Writer, ABC):
                             if v.get("label_as_edge") == label:
                                 cprops = v.get("properties")
                                 logger.warning(
-                                    "`label_as_edge` will be deprecated in a future version,"
-                                    "please use edge types that exists in your ontology's taxonomy.",
+                                    f"`label_as_edge` is deprecated. Use `synonym_for` instead: "
+                                    f"rename '{k}' to '{label}' in your schema and add "
+                                    f"`synonym_for: {k}` to keep the edge grounded in the ontology.",
                                 )
                                 break
                 if cprops:
