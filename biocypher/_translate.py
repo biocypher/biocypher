@@ -120,7 +120,7 @@ class Translator:
                 except AttributeError as err:
                     msg = (
                         f"Error: {err} "
-                        "while getting properties from {_ontology_class}. "
+                        f"while getting properties from {_ontology_class}. "
                         "Maybe you mistyped your properties. "
                         "Please ensure the `properties` section is a dictionary, not a list."
                     )
