@@ -41,6 +41,6 @@ def test_read_config_merges_user_and_local(monkeypatch):
 
     result = read_config()
 
-    assert result["neo4j"]["uri"] == "neo4j://myserver:7687"   # from user
+    assert result["neo4j"]["uri"] == "neo4j://myserver:7687"  # from user
     assert result["neo4j"]["database_name"] == "my_project_db"  # from local
-    assert result["neo4j"]["password"] == "neo4j"               # from defaults
+    assert result["neo4j"]["password"] == "neo4j"  # from defaults
