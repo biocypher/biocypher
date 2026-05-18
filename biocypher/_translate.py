@@ -5,6 +5,7 @@ BioCypherNode and BioCypherEdge objects.
 """
 
 import warnings
+
 from collections.abc import Generator, Iterable
 from typing import Any
 
