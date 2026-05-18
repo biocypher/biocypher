@@ -89,15 +89,9 @@ class BioCypherNode:
 
             elif isinstance(v, list):
                 self.properties[k] = [
-                    val.replace(
-                        os.linesep,
-                        " ",
-                    )
-                    .replace(
-                        "\n",
-                        " ",
-                    )
-                    .replace("\r", " ")
+                    val.replace(os.linesep, " ").replace("\n", " ").replace("\r", " ")
+                    if isinstance(val, str)
+                    else val
                     for val in v
                 ]
 
