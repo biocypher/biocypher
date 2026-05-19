@@ -3,6 +3,7 @@ BioCypher 'mapping' module. Handles the mapping of user-defined schema to the
 underlying ontology.
 """
 
+import warnings
 from typing import Optional
 from urllib.request import urlopen
 
@@ -66,8 +67,17 @@ class OntologyMapping:
             if "represented_as" not in v:
                 continue
 
-            # preferred_id optional: if not provided, use `id`
-            if not v.get("preferred_id"):
+            # `namespace` is the preferred field name; `preferred_id` is deprecated
+            if v.get("namespace") is not None:
+                v["preferred_id"] = v.pop("namespace")
+            elif v.get("preferred_id") is not None:
+                warnings.warn(
+                    f"The 'preferred_id' field in schema config entry '{k}' is "
+                    "deprecated. Please use 'namespace' instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+            else:
                 v["preferred_id"] = "id"
 
             # k is an entity that is present in the ontology
