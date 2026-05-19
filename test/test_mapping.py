@@ -1,6 +1,5 @@
 import warnings
 
-import pytest
 
 from biocypher._mapping import OntologyMapping
 

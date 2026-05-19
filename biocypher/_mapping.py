@@ -4,6 +4,7 @@ underlying ontology.
 """
 
 import warnings
+
 from typing import Optional
 from urllib.request import urlopen
 
