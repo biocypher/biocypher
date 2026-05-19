@@ -38,3 +38,29 @@ def test_rel_as_node(rel_as_node):
 def test_rel_as_node_invalid_node():
     with pytest.raises(TypeError):
         BioCypherRelAsNode("str", 1, 2.5122)
+
+
+def test_node_list_property_with_non_string_values():
+    """BioCypherNode must not crash when a list property contains non-string values.
+
+    Previously the newline-sanitisation loop called .replace() on every list
+    element without checking the type, causing AttributeError for ints, floats,
+    booleans, and None values.
+    """
+    node = BioCypherNode(
+        node_id="n1",
+        node_label="Test",
+        properties={
+            "int_list": [1, 2, 3],
+            "float_list": [1.1, 2.2],
+            "bool_list": [True, False],
+            "mixed_list": ["a", 1, None],
+            "str_list": ["hello\nworld", "foo\rbar"],
+        },
+    )
+    assert node.properties["int_list"] == [1, 2, 3]
+    assert node.properties["float_list"] == [1.1, 2.2]
+    assert node.properties["bool_list"] == [True, False]
+    assert node.properties["mixed_list"] == ["a", 1, None]
+    # string entries still get newlines sanitised
+    assert node.properties["str_list"] == ["hello world", "foo bar"]
