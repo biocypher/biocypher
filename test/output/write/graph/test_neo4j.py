@@ -1072,6 +1072,32 @@ def test_write_strict(bw_strict):
     assert "BiologicalEntity" in protein
 
 
+def test_write_strict_edge_does_not_mutate_schema(bw_strict):
+    """In strict mode, writing edges must not modify the schema properties dict.
+
+    Previously, `d = cprops` (a reference) was used instead of `d = dict(cprops)`
+    (a copy), so strict-mode keys ("source", "version", "licence") were injected
+    permanently into the extended_schema on the first write of each edge label.
+    """
+    schema = bw_strict.translator.ontology.mapping.extended_schema
+    original_props = dict(schema["gene to gene association"]["properties"])
+
+    edge = BioCypherEdge(
+        source_id="g1",
+        target_id="g2",
+        relationship_label="gene to gene association",
+        properties={"directional": True, "curated": False, "score": 0.9},
+    )
+
+    bw_strict._write_edge_data([edge], batch_size=int(1e4))
+
+    mutated_props = schema["gene to gene association"]["properties"]
+    assert "source" not in mutated_props, "strict-mode key 'source' was injected into schema"
+    assert "version" not in mutated_props, "strict-mode key 'version' was injected into schema"
+    assert "licence" not in mutated_props, "strict-mode key 'licence' was injected into schema"
+    assert mutated_props == original_props, "schema properties were modified by _write_edge_data"
+
+
 @pytest.mark.parametrize("length", [4], scope="module")
 def test_tab_delimiter(bw_tab, _get_nodes):
     passed = bw_tab.write_nodes(_get_nodes)

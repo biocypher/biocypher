@@ -858,7 +858,7 @@ class _BatchWriter(_Writer, ABC):
                                     )
                                     break
                     if cprops:
-                        d = cprops
+                        d = dict(cprops)
 
                         # add strict mode properties
                         if self.strict_mode:
