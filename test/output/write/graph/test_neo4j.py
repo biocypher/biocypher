@@ -299,6 +299,38 @@ def test_write_node_data_from_list(bw, _get_nodes):
     assert "ChemicalEntity" in micro_rna
 
 
+def test_write_node_data_boolean_properties(bw):
+    """Boolean node properties must be written as lowercase 'true'/'false' for Neo4j admin import."""
+    nodes = [
+        BioCypherNode(
+            node_id="i1",
+            node_label="post translational interaction",
+            properties={"directed": True, "effect": -1},
+        ),
+        BioCypherNode(
+            node_id="i2",
+            node_label="post translational interaction",
+            properties={"directed": False, "effect": 1},
+        ),
+    ]
+
+    passed = bw._write_node_data(nodes, batch_size=int(1e4))
+
+    post_translational_interaction_csv = os.path.join(
+        bw.outdir,
+        "PostTranslationalInteraction-part000.csv",
+    )
+
+    with open(post_translational_interaction_csv) as f:
+        post_translational_interaction = f.read()
+
+    assert passed
+    assert "i1;true;-1;'i1';'id'" in post_translational_interaction
+    assert "i2;false;1;'i2';'id'" in post_translational_interaction
+    assert "True" not in post_translational_interaction
+    assert "False" not in post_translational_interaction
+
+
 @pytest.mark.parametrize("length", [4], scope="module")
 def test_write_node_data_from_list_not_compliant_names(monkeypatch, caplog, bw, _get_nodes_non_compliant_names):
     nodes = _get_nodes_non_compliant_names
