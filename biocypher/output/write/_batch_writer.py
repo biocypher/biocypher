@@ -155,6 +155,7 @@ class _BatchWriter(_Writer, ABC):
         labels_order: str = "Ascending",
         node_labels_order: str = "Ascending",
         edge_labels_order: str = "Ascending",
+        validation_mode: str = "warn",  # FIXME should be integrated with BioCypherWorkflow, somehow.
         **kwargs,
     ):
         """Write node and edge representations to disk.
@@ -270,6 +271,11 @@ class _BatchWriter(_Writer, ABC):
                     * "Alphabetical": Alphabetically. Legacy option.
                     * "Leaves": Only the most specific label.
 
+            validation_mode:
+                How to handle properties type casting errors:
+                    * "strict": will raise an exception.
+                    * "warn": will log an error, but cast as string.
+                    * "none": will silently cast as string.
         """
         super().__init__(
             translator=translator,
@@ -317,6 +323,8 @@ class _BatchWriter(_Writer, ABC):
         self.node_labels_order = node_labels_order
         self.edge_labels_order = edge_labels_order
         self._check_labels_order()
+
+        self.validation_mode = validation_mode
 
         # TODO not memory efficient, but should be fine for most cases; is
         # there a more elegant solution?
@@ -689,6 +697,92 @@ class _BatchWriter(_Writer, ABC):
 
             return self._write_node_data(gen(nodes), batch_size=batch_size)
 
+    def __format_props(self, element_props, prop_dict, element=None):
+        """Format property values according to their declared types.
+
+        If properties are declared as numbers (int, float or bool),
+        interpret them as such before serializing into string.
+        If input value is already a number, this does nothing.
+        BUT if the input value is a number serialized into a string,
+        then it will correctly interpret it, instead of passing it as
+        a string.
+        If properties are declared as string (or anything else),
+        then quote their value.
+        """
+
+        def to_int(val):
+            if isinstance(val, int):
+                return val
+            else:
+                # Handle gracefully cases where: val = "12.0"
+                return round(float(val))
+
+        def to_bool(val):
+            if isinstance(val, bool):
+                return val
+            # FIXME should be configurable
+            elif val.lower() in ["true", "1", "yes", "y", "on"]:
+                return True
+            elif val.lower() in ["false", "0", "no", "n", "off"]:
+                return False
+            else:
+                raise ValueError(f"invalid literal for bool: '{val}'")
+
+        def to_float(val):
+            return float(val)
+
+        casters = {
+            "int": to_int,
+            "integer": to_int,
+            "long": to_int,
+            "float": to_float,
+            "double": to_float,
+            "dbl": to_float,
+            "bool": to_bool,
+            "boolean": to_bool,
+        }
+        undefined = ["", "nd", "empty", "null", "nan"]  # FIXME should be configurable
+
+        plist = []
+        # TL;DR: Makes all into strings, put actual strings in quotes.
+        for k, v in prop_dict.items():
+            p = element_props.get(k)
+            if p is None or str(p).lower() in undefined:
+                # NOTE: do not test `if not p`, this would collide
+                #       with boolean casters.
+                # Serialized emptyness is a quoted empty string.
+                plist.append("")
+            elif v in casters.keys():
+                # Intepret as number, then serialize into a string.
+                # TODO instead of using direct type conversion,
+                # it may be possible to allow the user to pass in the schema
+                # a predicate in the string format mini-language. E.G. `.2f`
+                # See https://docs.python.org/3/library/string.html#formatspec
+                try:
+                    plist.append(str(casters[v](p)))
+                except ValueError as e:
+                    elem = element.get_id()
+                    if self.validation_mode in ["strict", "warn"]:
+                        msg = f"While casting property `{k}` {casters[v].__name__}({v}), for element: `{elem}`."
+                    if self.validation_mode == "strict":
+                        logger.error(msg)
+                        logger.error(e)
+                        raise e
+                    elif self.validation_mode == "warn":
+                        logger.error(msg)
+                        logger.warning(e)
+                        logger.warning(f"Property `{k}` of element `{elem}` is thus down-casted as a string.")
+                    plist.append(f"{self.quote}{p!s}{self.quote}")
+            elif isinstance(p, list):
+                # Serialize a list, managing the separator correctly,
+                # depending on the targeted backend.
+                plist.append(self._write_array_string(p))
+            else:
+                # Explicit quotes for anything else than a number
+                # (so probably a string).
+                plist.append(f"{self.quote}{p!s}{self.quote}")
+        return plist
+
     def _write_single_node_list_to_file(
         self,
         node_list: list,
@@ -748,27 +842,7 @@ class _BatchWriter(_Writer, ABC):
             line = [n.get_id()]
 
             if ref_props:
-                plist = []
-                # make all into strings, put actual strings in quotes
-                for k, v in prop_dict.items():
-                    p = n_props.get(k)
-                    if p is None:  # TODO make field empty instead of ""?
-                        plist.append("")
-                    elif v in [
-                        "int",
-                        "integer",
-                        "long",
-                        "float",
-                        "double",
-                        "dbl",
-                        "bool",
-                        "boolean",
-                    ]:
-                        plist.append(str(p))
-                    elif isinstance(p, list):
-                        plist.append(self._write_array_string(p))
-                    else:
-                        plist.append(f"{self.quote}{p!s}{self.quote}")
+                plist = self.__format_props(n_props, prop_dict, n)
 
                 line.append(self.delim.join(plist))
             line.append(labels)
@@ -985,27 +1059,7 @@ class _BatchWriter(_Writer, ABC):
                 )
                 return False
 
-            plist = []
-            # make all into strings, put actual strings in quotes
-            for k, v in prop_dict.items():
-                p = e_props.get(k)
-                if p is None:  # TODO make field empty instead of ""?
-                    plist.append("")
-                elif v in [
-                    "int",
-                    "integer",
-                    "long",
-                    "float",
-                    "double",
-                    "dbl",
-                    "bool",
-                    "boolean",
-                ]:
-                    plist.append(str(p))
-                elif isinstance(p, list):
-                    plist.append(self._write_array_string(p))
-                else:
-                    plist.append(self.quote + str(p) + self.quote)
+            plist = self.__format_props(e_props, prop_dict, e)
 
             entries = [e.get_source_id()]
 
