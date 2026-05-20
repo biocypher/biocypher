@@ -31,6 +31,34 @@ def downloader_with_specified_cache_dir(tmp_path):
     return Downloader(cache_dir=str(tmp_cache_dir))
 
 
+def _mock_retrieve(url, known_hash, fname, path, **kwargs):
+    _mock_retrieve.calls += 1
+    timestamp = datetime.now().timestamp() + _mock_retrieve.calls
+    os.makedirs(path, exist_ok=True)
+
+    if fname.endswith(".zip"):
+        unzip_dir = os.path.join(path, f"{fname}.unzip")
+        os.makedirs(unzip_dir, exist_ok=True)
+        paths = [
+            os.path.join(unzip_dir, "file1.csv"),
+            os.path.join(unzip_dir, "file2.csv"),
+        ]
+        for file_path in paths:
+            with open(file_path, "w") as f:
+                f.write("source,target\nA,B\n")
+            os.utime(file_path, (timestamp, timestamp))
+        return paths
+
+    full_path = os.path.join(path, fname)
+    with open(full_path, "w") as f:
+        f.write(f"mocked content from {url}\n")
+    os.utime(full_path, (timestamp, timestamp))
+    return full_path
+
+
+_mock_retrieve.calls = 0
+
+
 @given(
     st.builds(
         Resource,
@@ -94,7 +122,8 @@ def test_downloader(downloader):
     ],
     indirect=True,
 )
-def test_download_file(downloader):
+@patch("biocypher._get.pooch.retrieve", side_effect=_mock_retrieve)
+def test_download_file(mock_retrieve, downloader):
     resource = FileDownload(
         "test_resource",
         "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_config.yaml",
@@ -119,6 +148,7 @@ def test_download_file(downloader):
     assert len(paths) == 1
     # should download again
     assert initial_download_time < os.path.getmtime(paths[0])
+    assert mock_retrieve.call_count == 2
 
 
 @pytest.mark.parametrize(
@@ -129,7 +159,8 @@ def test_download_file(downloader):
     ],
     indirect=True,
 )
-def test_download_lists(downloader):
+@patch("biocypher._get.pooch.retrieve", side_effect=_mock_retrieve)
+def test_download_lists(mock_retrieve, downloader):
     resource1 = FileDownload(
         name="test_resource1",
         url_s=[
@@ -187,6 +218,7 @@ def test_download_lists(downloader):
     assert isinstance(downloader.cache_dict["test_resource2"]["url"], list)
     assert len(downloader.cache_dict["test_resource2"]["url"]) == 1
     assert downloader.cache_dict["test_resource2"]["lifetime"] == 0
+    assert mock_retrieve.call_count == 3
 
 
 @pytest.mark.skip(reason="Inconsistent FTP server response")
@@ -213,7 +245,8 @@ def test_download_directory_and_caching():
     assert "tmp" in paths[0]
 
 
-def test_download_zip_and_expiration():
+@patch("biocypher._get.pooch.retrieve", side_effect=_mock_retrieve)
+def test_download_zip_and_expiration(mock_retrieve):
     # use temp dir, no cache file present
     downloader = Downloader(cache_dir=None)
     assert os.path.exists(downloader.cache_dir)
@@ -245,6 +278,7 @@ def test_download_zip_and_expiration():
     paths = downloader.download(resource)
     # should download again
     assert paths[0] is not None
+    assert mock_retrieve.call_count == 2
 
 
 @pytest.mark.parametrize(
