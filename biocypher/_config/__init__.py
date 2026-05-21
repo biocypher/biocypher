@@ -82,19 +82,28 @@ def read_config() -> dict:
     local = _read_yaml("biocypher_config.yaml") or _read_yaml("config/biocypher_config.yaml") or {}
 
     for key in defaults:
-        # Apply user-level settings on top of defaults first
-        if key in user and user[key] is not None:
-            if isinstance(defaults[key], dict):
-                defaults[key].update(user[key])
+        # Apply user-level settings on top of defaults first.
+        # An explicit `null` in user config clears the default (e.g.
+        # `head_ontology: null` for headless mode).
+        if key in user:
+            value = user[key]
+            if value is None:
+                defaults[key] = None
+            elif isinstance(defaults[key], dict) and isinstance(value, dict):
+                defaults[key].update(value)
             else:
-                defaults[key] = user[key]
+                defaults[key] = value
 
-        # Apply local settings on top (local takes precedence over user)
-        if key in local and local[key] is not None:
-            if isinstance(defaults[key], dict):
-                defaults[key].update(local[key])
+        # Apply local settings on top (local takes precedence over user).
+        # Same explicit-null-clears-default semantics.
+        if key in local:
+            value = local[key]
+            if value is None:
+                defaults[key] = None
+            elif isinstance(defaults[key], dict) and isinstance(value, dict):
+                defaults[key].update(value)
             else:
-                defaults[key] = local[key]
+                defaults[key] = value
 
     return defaults
 

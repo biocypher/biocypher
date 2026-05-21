@@ -894,3 +894,56 @@ class Ontology:
                 # RDFlib uses the + operator for merging.
                 graph += onto.get_rdf_graph()
         return graph
+
+
+class NullOntology:
+    """Headless ontology shim used when no head ontology is configured.
+
+    Exposes the subset of the :class:`Ontology` API that the translator and
+    the common batch writers (csv, pandas, sqlite, postgres) read at runtime:
+    ``.mapping`` (the user's schema_config-derived
+    :class:`~biocypher._mapping.OntologyMapping`) and ``get_ancestors`` (which
+    yields just the label itself, since the class hierarchy is whatever the
+    schema_config declares — no rdflib/biolink involved).
+
+    Writer-specific surfaces that genuinely need an OWL/networkx graph (the
+    OWL writer, biopathnet, ``show_ontology_structure``, RDF export, the
+    Neo4j connector's schema dump via :py:meth:`Ontology.get_rdf_graph`) raise
+    :class:`NotImplementedError` so headless misuse fails loudly with a clear
+    message rather than yielding silently wrong output.
+    """
+
+    def __init__(self, ontology_mapping: Optional["OntologyMapping"] = None) -> None:
+        self.mapping = ontology_mapping
+        # Mirror the attribute Ontology exposes so callers that peek don't break.
+        self._extended_nodes: set[str] = set()
+
+    def get_ancestors(self, node_label: str):
+        """Return the lone label — no class hierarchy in headless mode."""
+        return [node_label]
+
+    def get_dict(self) -> dict:
+        """Mirror :py:meth:`Ontology.get_dict` for the Neo4j connector contract."""
+        return {
+            "node_id": datetime.now().strftime("v%Y%m%d-%H%M%S"),
+            "node_label": "BioCypher",
+            "properties": {
+                "schema": "self.ontology_mapping.extended_schema",
+            },
+        }
+
+    def show_ontology_structure(self, to_disk: str = None, full: bool = False):
+        msg = (
+            "show_ontology_structure() is unavailable in headless mode "
+            "(`head_ontology: null`). Configure a `head_ontology` URL to enable "
+            "ontology visualisation."
+        )
+        raise NotImplementedError(msg)
+
+    def get_rdf_graph(self):
+        msg = (
+            "get_rdf_graph() is unavailable in headless mode "
+            "(`head_ontology: null`). Configure a `head_ontology` URL to enable "
+            "RDF export and the OWL writer."
+        )
+        raise NotImplementedError(msg)
