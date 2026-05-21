@@ -81,6 +81,16 @@ class OntologyMapping:
             else:
                 v["preferred_id"] = "id"
 
+            # `input_label` is the preferred field name; `label_in_input` is deprecated
+            if v.get("input_label") is None and v.get("label_in_input") is not None:
+                warnings.warn(
+                    f"The 'label_in_input' field in schema config entry '{k}' is "
+                    "deprecated. Please use 'input_label' instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+                v["input_label"] = v.pop("label_in_input")
+
             # k is an entity that is present in the ontology
             if "is_a" not in v:
                 extended_schema[k] = v
@@ -164,14 +174,13 @@ class OntologyMapping:
         """
         Create virtual leaves for multiple preferred id types or sources.
 
-        If we create virtual leaves, input_label/label_in_input always has to be
-        a list.
+        If we create virtual leaves, input_label always has to be a list.
         """
 
         leaves = {}
 
         preferred_id = value["preferred_id"]
-        input_label = value.get("input_label") or value["label_in_input"]
+        input_label = value.get("input_label")
         represented_as = value["represented_as"]
 
         # adjust lengths
@@ -226,7 +235,6 @@ class OntologyMapping:
                     "is_a",
                     "preferred_id",
                     "input_label",
-                    "label_in_input",
                     "represented_as",
                 ]:
                     svalue[k] = v
@@ -239,14 +247,13 @@ class OntologyMapping:
         """
         Create virtual leaves for multiple sources.
 
-        If we create virtual leaves, input_label/label_in_input always has to be
-        a list.
+        If we create virtual leaves, input_label always has to be a list.
         """
 
         leaves = {}
 
         source = value["source"]
-        input_label = value.get("input_label") or value["label_in_input"]
+        input_label = value.get("input_label")
         represented_as = value["represented_as"]
 
         # adjust lengths
@@ -295,7 +302,6 @@ class OntologyMapping:
                     "is_a",
                     "source",
                     "input_label",
-                    "label_in_input",
                     "represented_as",
                 ]:
                     svalue[k] = v
