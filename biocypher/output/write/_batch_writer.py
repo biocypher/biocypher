@@ -882,8 +882,10 @@ class _BatchWriter(_Writer, ABC):
                         d = dict(edge.get_properties())
                         # encode property type
                         for k, v in d.items():
-                            if v is not None:
-                                d[k] = type(v).__name__
+                            type_name = type(v).__name__
+                            if type_name == "list" and len(v) > 0:
+                                type_name = f"{type(v[0]).__name__}[]"
+                            d[k] = type_name
                     # else use first encountered edge to define
                     # properties for checking; could later be by
                     # checking all edges but much more complicated,
