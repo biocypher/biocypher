@@ -139,9 +139,7 @@ class BioCypher:
 
         # Honour an explicit None to opt into headless mode; otherwise fall
         # back to the config value (which may itself be absent or null).
-        self._head_ontology = (
-            head_ontology if head_ontology is not None else self.base_config.get("head_ontology")
-        )
+        self._head_ontology = head_ontology if head_ontology is not None else self.base_config.get("head_ontology")
 
         # Set configuration - optional
         self._output_directory = output_directory or self.base_config.get(

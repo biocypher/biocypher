@@ -11,7 +11,6 @@ shim. Asserts:
 """
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from unittest.mock import patch
 
@@ -23,9 +22,7 @@ from biocypher._mapping import OntologyMapping
 from biocypher._ontology import NullOntology
 
 # Absolute path so tests survive monkeypatch.chdir().
-SCHEMA_CONFIG = str(
-    Path(__file__).resolve().parent.parent / "biocypher" / "_config" / "test_schema_config.yaml"
-)
+SCHEMA_CONFIG = str(Path(__file__).resolve().parent.parent / "biocypher" / "_config" / "test_schema_config.yaml")
 
 
 @pytest.fixture
@@ -132,11 +129,7 @@ def test_bc_headless_tail_without_head_raises(tmp_path, monkeypatch):
     """`tail_ontologies` without `head_ontology` is nonsensical and must fail loudly."""
     cfg = tmp_path / "biocypher_config.yaml"
     cfg.write_text(
-        "biocypher:\n"
-        "  dbms: csv\n"
-        "  offline: true\n"
-        "  strict_mode: false\n"
-        "  head_ontology: null\n"
+        "biocypher:\n" "  dbms: csv\n" "  offline: true\n" "  strict_mode: false\n" "  head_ontology: null\n"
     )
     monkeypatch.chdir(tmp_path)
 
@@ -153,10 +146,7 @@ def test_bc_headless_required_config_no_longer_demands_ontology(tmp_path, monkey
     """`head_ontology` is no longer in REQUIRED_CONFIG; a config without it must work."""
     cfg = tmp_path / "biocypher_config.yaml"
     cfg.write_text(
-        "biocypher:\n"
-        "  dbms: csv\n"
-        "  offline: true\n"
-        "  strict_mode: false\n"
+        "biocypher:\n" "  dbms: csv\n" "  offline: true\n" "  strict_mode: false\n"
         # No head_ontology key at all.
     )
     monkeypatch.chdir(tmp_path)
