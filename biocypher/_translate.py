@@ -363,7 +363,7 @@ class Translator:
         self._ontology_mapping = {}
 
         for key, value in self.ontology.mapping.extended_schema.items():
-            labels = value.get("input_label") or value.get("label_in_input")
+            labels = value.get("input_label")
 
             if isinstance(labels, str):
                 self._ontology_mapping[labels] = key
@@ -381,15 +381,13 @@ class Translator:
     def _get_ontology_mapping(self, label: str) -> str | None:
         """Find the ontology class for the given input type.
 
-        For each given input type ("input_label" or "label_in_input"), find the
-        corresponding ontology class in the leaves dictionary (from the
-        `schema_config.yam`).
+        For each given input type ("input_label"), find the corresponding
+        ontology class in the leaves dictionary (from the `schema_config.yaml`).
 
         Args:
         ----
             label:
-                The input type to find (`input_label` or `label_in_input` in
-                `schema_config.yaml`).
+                The input type to find (`input_label` in `schema_config.yaml`).
 
         """
         # FIXME does not seem like a necessary function.
