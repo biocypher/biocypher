@@ -32,7 +32,8 @@ dependencies = [
     "pandas>=2.0.1",
     "pooch>=1.7.0",
     "tqdm>=4.65.0",
-    "toml>=0.10.2"
+    "toml>=0.10.2",
+    "pyarrow>=24.0.0",
 ]
 
 [project.urls]
