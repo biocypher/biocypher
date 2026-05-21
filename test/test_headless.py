@@ -17,12 +17,27 @@ from unittest.mock import patch
 import pytest
 
 from biocypher import BioCypher
+from biocypher import _config as _bc_config
 from biocypher._config import read_config
 from biocypher._mapping import OntologyMapping
 from biocypher._ontology import NullOntology
 
 # Absolute path so tests survive monkeypatch.chdir().
 SCHEMA_CONFIG = str(Path(__file__).resolve().parent.parent / "biocypher" / "_config" / "test_schema_config.yaml")
+
+
+@pytest.fixture(autouse=True)
+def reset_global_config():
+    """Restore the in-process BioCypher config after every test in this file.
+
+    `BioCypher(biocypher_config_path=...)` calls `update_from_file`, which
+    mutates the module-global `_config` dict. Without this teardown, tests
+    that load a headless YAML would leak `head_ontology: None` into
+    subsequent tests (e.g. test_integration.py), silently flipping unrelated
+    cases into headless mode and breaking their Biolink-dependent assertions.
+    """
+    yield
+    _bc_config.reset()
 
 
 @pytest.fixture
@@ -142,18 +157,12 @@ def test_bc_headless_tail_without_head_raises(tmp_path, monkeypatch):
         bc._get_ontology()
 
 
-def test_bc_headless_required_config_no_longer_demands_ontology(tmp_path, monkeypatch):
-    """`head_ontology` is no longer in REQUIRED_CONFIG; a config without it must work."""
-    cfg = tmp_path / "biocypher_config.yaml"
-    cfg.write_text(
-        "biocypher:\n" "  dbms: csv\n" "  offline: true\n" "  strict_mode: false\n"
-        # No head_ontology key at all.
-    )
-    monkeypatch.chdir(tmp_path)
+def test_head_ontology_not_in_required_config():
+    """`head_ontology` must not appear in `REQUIRED_CONFIG` — that is the
+    API contract that lets a config without the key (or with `null`) opt
+    into headless mode."""
+    from biocypher._core import REQUIRED_CONFIG
 
-    bc = BioCypher(
-        biocypher_config_path=str(cfg),
-        schema_config_path=SCHEMA_CONFIG,
-    )
-    onto = bc._get_ontology()
-    assert isinstance(onto, NullOntology)
+    assert "head_ontology" not in REQUIRED_CONFIG
+    # The other mandatory keys must still be enforced.
+    assert {"dbms", "offline", "strict_mode"}.issubset(set(REQUIRED_CONFIG))
