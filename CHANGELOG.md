@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.14.0](https://github.com/biocypher/biocypher/compare/biocypher-v0.13.6...biocypher-v0.14.0) (2026-05-21)
+
+
+### Features
+
+* **core:** allow head_ontology: null for headless builds ([#523](https://github.com/biocypher/biocypher/issues/523)) ([1bcda5d](https://github.com/biocypher/biocypher/commit/1bcda5dc5ba0ae837bf4448c8a8b7351326fd96e))
+* **mapping:** accept 'namespace' as alias for 'preferred_id'; deprecate 'preferred_id' in schema config ([#519](https://github.com/biocypher/biocypher/issues/519)) ([87806c1](https://github.com/biocypher/biocypher/commit/87806c182cab9eab4a943709d5a6f458d5344cd4))
+
+
+### Bug Fixes
+
+* **batch_writer:** prevent schema mutation in strict-mode edge writes; fix f-string in translate error ([#517](https://github.com/biocypher/biocypher/issues/517)) ([9cd7c64](https://github.com/biocypher/biocypher/commit/9cd7c64b83bc328f1a49d83c7008b9ecf75b9711))
+* **batch_writer:** write boolean properties as lowercase true/false for Neo4j ([#510](https://github.com/biocypher/biocypher/issues/510)) ([95e3021](https://github.com/biocypher/biocypher/commit/95e3021dcade2e2d605e4888501cd5cdd3abbf22))
+* **config:** properly merge all three config levels in read_config() ([#515](https://github.com/biocypher/biocypher/issues/515)) ([da251fd](https://github.com/biocypher/biocypher/commit/da251fdf2c5917ea40fab0391afda1ff666d0cba))
+* **core:** allow pandas and tabular as dbms aliases in offline mode ([#513](https://github.com/biocypher/biocypher/issues/513)) ([7e3ee26](https://github.com/biocypher/biocypher/commit/7e3ee269345ea4b6b7f5d2cbf00463a8bd006332))
+* **create:** skip .replace() for non-string items in list properties ([#518](https://github.com/biocypher/biocypher/issues/518)) ([49b5756](https://github.com/biocypher/biocypher/commit/49b5756f0729c3684f4191603524c9d5f86bc75c))
+* **mapping:** deprecate 'label_in_input' in favour of 'input_label' ([#521](https://github.com/biocypher/biocypher/issues/521)) ([26a1c1f](https://github.com/biocypher/biocypher/commit/26a1c1f3b3de648510067f2a2690aadbe42a3d41))
+
 ## [0.13.6](https://github.com/biocypher/biocypher/compare/biocypher-v0.13.5...biocypher-v0.13.6) (2026-05-09)
 
 
