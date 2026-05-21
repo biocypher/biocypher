@@ -82,13 +82,19 @@ def read_config() -> dict:
     local = _read_yaml("biocypher_config.yaml") or _read_yaml("config/biocypher_config.yaml") or {}
 
     for key in defaults:
-        value = local[key] if key in local else user[key] if key in user else None
-
-        if value is not None:
-            if isinstance(defaults[key], str):  # first level config (like title)
-                defaults[key] = value
+        # Apply user-level settings on top of defaults first
+        if key in user and user[key] is not None:
+            if isinstance(defaults[key], dict):
+                defaults[key].update(user[key])
             else:
-                defaults[key].update(value)
+                defaults[key] = user[key]
+
+        # Apply local settings on top (local takes precedence over user)
+        if key in local and local[key] is not None:
+            if isinstance(defaults[key], dict):
+                defaults[key].update(local[key])
+            else:
+                defaults[key] = local[key]
 
     return defaults
 
