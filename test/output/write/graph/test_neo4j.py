@@ -299,6 +299,38 @@ def test_write_node_data_from_list(bw, _get_nodes):
     assert "ChemicalEntity" in micro_rna
 
 
+def test_write_node_data_boolean_properties(bw):
+    """Boolean node properties must be written as lowercase 'true'/'false' for Neo4j admin import."""
+    nodes = [
+        BioCypherNode(
+            node_id="i1",
+            node_label="post translational interaction",
+            properties={"directed": True, "effect": -1},
+        ),
+        BioCypherNode(
+            node_id="i2",
+            node_label="post translational interaction",
+            properties={"directed": False, "effect": 1},
+        ),
+    ]
+
+    passed = bw._write_node_data(nodes, batch_size=int(1e4))
+
+    post_translational_interaction_csv = os.path.join(
+        bw.outdir,
+        "PostTranslationalInteraction-part000.csv",
+    )
+
+    with open(post_translational_interaction_csv) as f:
+        post_translational_interaction = f.read()
+
+    assert passed
+    assert "i1;true;-1;'i1';'id'" in post_translational_interaction
+    assert "i2;false;1;'i2';'id'" in post_translational_interaction
+    assert "True" not in post_translational_interaction
+    assert "False" not in post_translational_interaction
+
+
 @pytest.mark.parametrize("length", [4], scope="module")
 def test_write_node_data_from_list_not_compliant_names(monkeypatch, caplog, bw, _get_nodes_non_compliant_names):
     nodes = _get_nodes_non_compliant_names
@@ -801,6 +833,40 @@ def test_write_edge_data_from_list_no_props(bw):
     assert "\n" in is_mutated_in
 
 
+def test_write_edge_data_boolean_properties(bw):
+    """Boolean properties must be written as lowercase 'true'/'false' for Neo4j admin import."""
+    edges = [
+        BioCypherEdge(
+            relationship_id="gg1",
+            source_id="g1",
+            target_id="g2",
+            relationship_label="gene to gene association",
+            properties={"directional": True, "curated": False, "score": 0.9},
+        ),
+        BioCypherEdge(
+            relationship_id="gg2",
+            source_id="g3",
+            target_id="g4",
+            relationship_label="gene to gene association",
+            properties={"directional": False, "curated": True, "score": 0.5},
+        ),
+    ]
+
+    passed = bw._write_edge_data(edges, batch_size=int(1e4))
+
+    tmp_path = bw.outdir
+    gene_gene_csv = os.path.join(tmp_path, "GeneToGeneAssociation-part000.csv")
+
+    with open(gene_gene_csv) as f:
+        gene_gene = f.read()
+
+    assert passed
+    assert "true" in gene_gene
+    assert "false" in gene_gene
+    assert "True" not in gene_gene
+    assert "False" not in gene_gene
+
+
 @pytest.mark.parametrize("length", [8], scope="module")
 def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
     edges = _get_edges
@@ -902,7 +968,7 @@ def test_BioCypherRelAsNode_implementation(bw, _get_rel_as_nodes):
     assert "p2;" in is_target_of
     assert "IS_TARGET_OF" in is_target_of
     assert "\n" in is_target_of
-    assert "i1;True;-1;'i1';'id'" in post_translational_interaction
+    assert "i1;true;-1;'i1';'id'" in post_translational_interaction
     assert "Association" in post_translational_interaction
     assert "\n" in post_translational_interaction
 

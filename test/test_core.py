@@ -140,3 +140,16 @@ def test_get_writer_in_online_mode(core):
         with pytest.raises(NotImplementedError) as e:
             core._initialize_writer()
         assert str(e.value) == "Cannot get writer in online mode."
+
+
+def test_pandas_and_tabular_work_in_offline_mode(tmp_path):
+    """pandas and tabular are aliases for csv and should work in offline mode."""
+    for dbms in ["pandas", "tabular"]:
+        bc = BioCypher(
+            dbms=dbms,
+            offline=True,
+            schema_config_path="biocypher/_config/test_schema_config.yaml",
+            output_directory=str(tmp_path),
+        )
+        assert bc._dbms == dbms
+        assert bc._offline
