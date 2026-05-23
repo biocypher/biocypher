@@ -123,6 +123,34 @@ def test_downloader(downloader):
     indirect=True,
 )
 @patch("biocypher._get.pooch.retrieve", side_effect=_mock_retrieve)
+def test_permanent_cache_never_expires(mock_retrieve, downloader):
+    """lifetime=0 means permanent cache: the resource must not be re-downloaded."""
+    resource = FileDownload(
+        "test_permanent",
+        "https://github.com/biocypher/biocypher/raw/main/biocypher/_config/test_config.yaml",
+        lifetime=0,
+    )
+    paths = downloader.download(resource)
+    initial_mtime = os.path.getmtime(paths[0])
+    assert len(paths) == 1
+
+    # Second download must serve from cache even with a backdated timestamp.
+    downloader.cache_dict["test_permanent"]["date_downloaded"] = str(datetime.now() - timedelta(days=3650))
+    paths = downloader.download(resource)
+    assert len(paths) == 1
+    assert os.path.getmtime(paths[0]) == initial_mtime, "Permanent resource was re-downloaded"
+    assert mock_retrieve.call_count == 1
+
+
+@pytest.mark.parametrize(
+    "downloader",
+    [
+        "downloader_without_specified_cache_dir",
+        "downloader_with_specified_cache_dir",
+    ],
+    indirect=True,
+)
+@patch("biocypher._get.pooch.retrieve", side_effect=_mock_retrieve)
 def test_download_file(mock_retrieve, downloader):
     resource = FileDownload(
         "test_resource",
