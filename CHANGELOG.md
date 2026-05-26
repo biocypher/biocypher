@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.14.1](https://github.com/biocypher/biocypher/compare/biocypher-v0.14.0...biocypher-v0.14.1) (2026-05-26)
+
+
+### Bug Fixes
+
+* **batch_writer:** stringify list elements before joining in _write_array_string ([#524](https://github.com/biocypher/biocypher/issues/524)) ([9f2b153](https://github.com/biocypher/biocypher/commit/9f2b1531133e3b7106fac4c1a6bfc7ca61f85c96))
+* **create:** replace elif with if for reserved keyword checks in BioCypherEdge ([#526](https://github.com/biocypher/biocypher/issues/526)) ([06f75c1](https://github.com/biocypher/biocypher/commit/06f75c1e7cc71f15f962e29285e6832a6cba8a71))
+* **get:** treat lifetime=0 as permanent cache (never re-download) ([#525](https://github.com/biocypher/biocypher/issues/525)) ([fc6b092](https://github.com/biocypher/biocypher/commit/fc6b092a4f3438ba8a3da2eec50f5153eb29c165))
+* **parse_label:** guard against IndexError when label has no compliant characters ([#529](https://github.com/biocypher/biocypher/issues/529)) ([a8a4f8e](https://github.com/biocypher/biocypher/commit/a8a4f8ef1d1815c2a023a617bed3a0e1cb0be51e))
+* **translate:** require 'version' and accept 'license' for edges in strict mode ([#527](https://github.com/biocypher/biocypher/issues/527)) ([e902ea3](https://github.com/biocypher/biocypher/commit/e902ea3a484a5ea799b5d3b203d33885e126425a))
+
 ## [0.14.0](https://github.com/biocypher/biocypher/compare/biocypher-v0.13.6...biocypher-v0.14.0) (2026-05-21)
 
 
