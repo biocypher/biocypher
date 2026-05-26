@@ -1232,7 +1232,9 @@ def test_check_label_name():
 
     # Additional test case: label with dot and non-compliant characters
     assert parse_label("In.valid.Label@1") == "In.valid.Label1"
-    # Assert warning log is written
+
+    # Test case: label contains only non-compliant characters (would previously crash with IndexError)
+    assert parse_label("@#^&") == ""
 
 
 def make_labels(bw, order):
