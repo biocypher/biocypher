@@ -551,10 +551,36 @@ def test_strict_mode_error(translator):
 
     assert list(translator.translate_edges([edge_1])) is not None
 
+    # test 'license' instead of 'licence' for edges (mirrors node behaviour)
+    edge_license = (
+        "n1",
+        "n2",
+        "Test",
+        {
+            "prop": "val",
+            "source": "test",
+            "license": "test",
+            "version": "test",
+        },
+    )
+
+    assert list(translator.translate_edges([edge_license])) is not None
+
     edge_2 = ("n1", "n2", "Test", {"prop": "val"})
 
     with pytest.raises(ValueError):
         list(translator.translate_edges([edge_1, edge_2]))
+
+    # version is required for edges in strict mode (was missing before)
+    edge_no_version = (
+        "n1",
+        "n2",
+        "Test",
+        {"prop": "val", "source": "test", "licence": "test"},
+    )
+
+    with pytest.raises(ValueError):
+        list(translator.translate_edges([edge_no_version]))
 
 
 def test_strict_mode_property_filter(translator):
