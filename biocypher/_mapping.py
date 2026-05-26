@@ -3,6 +3,7 @@ BioCypher 'mapping' module. Handles the mapping of user-defined schema to the
 underlying ontology.
 """
 
+import re
 import warnings
 
 from typing import Optional
@@ -309,3 +310,135 @@ class OntologyMapping:
             leaves[skey] = svalue
 
         return leaves
+
+    @staticmethod
+    def _graphql_pascal_case(name: str) -> str:
+        """Convert a BioCypher schema key into a GraphQL type name."""
+        parts = re.split(r"[\s_.:-]+", str(name))
+        return "".join(part[:1].upper() + part[1:] for part in parts if part)
+
+    @classmethod
+    def _graphql_camel_case(cls, name: str) -> str:
+        """Convert a BioCypher schema key into a GraphQL field name."""
+        pascal = cls._graphql_pascal_case(name)
+        return pascal[:1].lower() + pascal[1:] if pascal else ""
+
+    @staticmethod
+    def _graphql_property_type(prop_type) -> str:
+        """Map BioCypher/Python-like property types to GraphQL scalar types."""
+        if isinstance(prop_type, dict):
+            prop_type = prop_type.get("type", "str")
+
+        prop_type = str(prop_type).lower()
+
+        mapping = {
+            "str": "String",
+            "string": "String",
+            "int": "Int",
+            "integer": "Int",
+            "float": "Float",
+            "double": "Float",
+            "bool": "Boolean",
+            "boolean": "Boolean",
+        }
+
+        return mapping.get(prop_type, "String")
+
+    @staticmethod
+    def _graphql_relationship_type(name: str) -> str:
+        """Convert a BioCypher edge name into a Neo4j relationship type."""
+        return re.sub(r"[\s_.:-]+", "_", str(name)).upper()
+
+    @staticmethod
+    def _first(value):
+        """Return the first item if value is a list, otherwise return value."""
+        if isinstance(value, list):
+            return value[0] if value else None
+        return value
+
+    def to_graphql_schema(self) -> str:
+        """
+        Generate a Neo4j GraphQL Library compatible schema from the BioCypher
+        ontology mapping.
+
+        This method supports a minimal first implementation for nodes, edges,
+        scalar properties, @node directives, @relationship directives, and
+        @relationshipProperties interfaces.
+        """
+        nodes = {
+            key: value
+            for key, value in self.extended_schema.items()
+            if value.get("represented_as") == "node"
+        }
+
+        edges = {
+            key: value
+            for key, value in self.extended_schema.items()
+            if value.get("represented_as") == "edge"
+        }
+
+        relationship_fields = {}
+        relationship_property_interfaces = []
+
+        for edge_name, edge_value in edges.items():
+            source = self._first(edge_value.get("source"))
+            target = self._first(edge_value.get("target"))
+
+            if source not in nodes or target not in nodes:
+                continue
+
+            source_type = self._graphql_pascal_case(source)
+            target_type = self._graphql_pascal_case(target)
+            field_name = self._graphql_camel_case(edge_name)
+            rel_type = self._graphql_relationship_type(edge_name)
+            props_type = f"{self._graphql_pascal_case(edge_name)}Props"
+
+            relationship_fields.setdefault(source_type, []).append(
+                f'  {field_name}: [{target_type}!]! '
+                f'@relationship(type: "{rel_type}", direction: OUT, '
+                f'properties: "{props_type}")'
+            )
+
+            properties = edge_value.get("properties", {})
+            if properties:
+                interface_lines = [
+                    f"interface {props_type} @relationshipProperties {{"
+                ]
+
+                for prop_name, prop_type in properties.items():
+                    gql_name = self._graphql_camel_case(prop_name)
+                    gql_type = self._graphql_property_type(prop_type)
+                    interface_lines.append(f"  {gql_name}: {gql_type}")
+
+                interface_lines.append("}")
+                relationship_property_interfaces.append("\n".join(interface_lines))
+
+        schema_blocks = []
+
+        for node_name, node_value in nodes.items():
+            type_name = self._graphql_pascal_case(node_name)
+            label = type_name
+
+            block_lines = [f'type {type_name} @node(labels: ["{label}"]) {{']
+
+            preferred_id = self._first(node_value.get("preferred_id", "id"))
+            if preferred_id == "id":
+                id_field = "id"
+            else:
+                id_field = f"{self._graphql_camel_case(preferred_id)}Id"
+
+            block_lines.append(f"  {id_field}: ID!")
+
+            for prop_name, prop_type in node_value.get("properties", {}).items():
+                gql_name = self._graphql_camel_case(prop_name)
+                gql_type = self._graphql_property_type(prop_type)
+                block_lines.append(f"  {gql_name}: {gql_type}")
+
+            block_lines.extend(relationship_fields.get(type_name, []))
+            block_lines.append("}")
+
+            schema_blocks.append("\n".join(block_lines))
+
+        schema_blocks.extend(relationship_property_interfaces)
+
+        return "\n\n".join(schema_blocks)
