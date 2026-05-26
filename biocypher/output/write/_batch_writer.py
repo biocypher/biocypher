@@ -1169,6 +1169,10 @@ def parse_label(label: str) -> str:
     def first_character_compliant(character: str) -> bool:
         return character.isalpha() or character == "$"
 
+    if not matches:
+        logger.warning("Label contains only non-compliant characters and will be empty.")
+        return ""
+
     if not first_character_compliant(matches[0]):
         for c in matches:
             if first_character_compliant(c):
