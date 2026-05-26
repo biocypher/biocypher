@@ -1054,7 +1054,7 @@ class _BatchWriter(_Writer, ABC):
 
             if ref_props:
                 if self.file_format == "parquet":
-                    entries.append(*(e_props.get(k) for k in prop_dict))
+                    entries.extend(e_props.get(k) for k in prop_dict)
                 else:
                     entries.append(self.delim.join(plist))
 
