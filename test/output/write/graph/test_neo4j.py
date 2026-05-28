@@ -148,10 +148,14 @@ def test_construct_import_call(bw):
         assert "--overwrite-destination=true" in import_script or "--force=true" in import_script
     else:
         # Bash-specific assertions
-        assert "#!/bin/bash" in import_script
-        assert "bin/neo4j-admin import" in import_script
-        assert "--overwrite-destination=true" in import_script or "--force=true" in import_script
-        assert "database import full neo4j" in import_script or "import --database=neo4j" in import_script
+        assert "#!" in import_script
+        assert "version=$(" in import_script
+        assert "if [[ $version -lt 5 ]]" in import_script
+        assert 'echo "Neo4j detected version: $version"' in import_script
+        assert "bin/neo4j-admin import --database=neo4j" in import_script
+        assert "bin/neo4j-admin database import full neo4j" in import_script
+        assert "--force=true" in import_script
+        assert "--overwrite-destination=true" in import_script
 
 
 def test_construct_import_call_bash(bw):
@@ -159,13 +163,32 @@ def test_construct_import_call_bash(bw):
 
     import_script = bw._construct_import_call_bash()
 
-    assert "--overwrite-destination=true" in import_script
-    assert "bin/neo4j-admin import" in import_script
-    assert "--force=true" in import_script
-    assert "--database=neo4j" in import_script
-    assert "neo4j" in import_script
-    assert "bin/neo4j-admin database import full neo4j" in import_script
-    assert "bin/neo4j-admin import --database=neo4j" in import_script
+    if not sys.platform.startswith("win"):
+        if "SHELL" in os.environ:
+            assert "#!" in import_script
+            assert "version=$(" in import_script
+            assert 'echo "Neo4j detected version: $version"' in import_script
+            assert "if [[ $version -lt 5 ]]" in import_script
+            assert "else" in import_script
+            assert "fi" in import_script
+            assert "--overwrite-destination=true" in import_script
+            assert "bin/neo4j-admin import" in import_script
+            assert "--force=true" in import_script
+            assert "--database=neo4j" in import_script
+            assert "bin/neo4j-admin database import full neo4j" in import_script
+            assert "bin/neo4j-admin import --database=neo4j" in import_script
+            assert '--delimiter=";"' in import_script
+            assert '--array-delimiter="|"' in import_script
+        else:
+            assert "#" in import_script
+            assert "bin/neo4j-admin import" in import_script
+            assert "--database=neo4j" in import_script
+            assert '--delimiter=";"' in import_script
+            assert '--array-delimiter="|"' in import_script
+            assert "--force=true" in import_script
+
+            assert "bin/neo4j-admin database import full neo4j" in import_script
+            assert "--overwrite-destination=true" in import_script
 
 
 def test_construct_import_call_powershell(bw):
@@ -274,6 +297,68 @@ def test_write_node_data_from_list(bw, _get_nodes):
     assert "BiologicalEntity" in protein
     assert "m1;'StringProperty1';9606;'m1';'mirbase'" in micro_rna
     assert "ChemicalEntity" in micro_rna
+
+
+def test_write_node_data_boolean_properties(bw):
+    """Boolean node properties must be written as lowercase 'true'/'false' for Neo4j admin import."""
+    nodes = [
+        BioCypherNode(
+            node_id="i1",
+            node_label="post translational interaction",
+            properties={"directed": True, "effect": -1},
+        ),
+        BioCypherNode(
+            node_id="i2",
+            node_label="post translational interaction",
+            properties={"directed": False, "effect": 1},
+        ),
+    ]
+
+    passed = bw._write_node_data(nodes, batch_size=int(1e4))
+
+    post_translational_interaction_csv = os.path.join(
+        bw.outdir,
+        "PostTranslationalInteraction-part000.csv",
+    )
+
+    with open(post_translational_interaction_csv) as f:
+        post_translational_interaction = f.read()
+
+    assert passed
+    assert "i1;true;-1;'i1';'id'" in post_translational_interaction
+    assert "i2;false;1;'i2';'id'" in post_translational_interaction
+    assert "True" not in post_translational_interaction
+    assert "False" not in post_translational_interaction
+
+
+def test_write_node_data_non_string_list_properties(bw):
+    """List properties with non-string elements must not raise TypeError during write."""
+    nodes = [
+        BioCypherNode(
+            node_id="i1",
+            node_label="post translational interaction",
+            properties={"scores": [1, 2, 3], "weights": [0.1, 0.5, 0.9]},
+        ),
+        BioCypherNode(
+            node_id="i2",
+            node_label="post translational interaction",
+            properties={"scores": [4, 5, 6], "weights": [0.2, 0.6, 1.0]},
+        ),
+    ]
+
+    passed = bw._write_node_data(nodes, batch_size=int(1e4))
+
+    csv_path = os.path.join(
+        bw.outdir,
+        "PostTranslationalInteraction-part000.csv",
+    )
+
+    with open(csv_path) as f:
+        content = f.read()
+
+    assert passed
+    assert "1|2|3" in content
+    assert "0.1|0.5|0.9" in content
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
@@ -778,6 +863,40 @@ def test_write_edge_data_from_list_no_props(bw):
     assert "\n" in is_mutated_in
 
 
+def test_write_edge_data_boolean_properties(bw):
+    """Boolean properties must be written as lowercase 'true'/'false' for Neo4j admin import."""
+    edges = [
+        BioCypherEdge(
+            relationship_id="gg1",
+            source_id="g1",
+            target_id="g2",
+            relationship_label="gene to gene association",
+            properties={"directional": True, "curated": False, "score": 0.9},
+        ),
+        BioCypherEdge(
+            relationship_id="gg2",
+            source_id="g3",
+            target_id="g4",
+            relationship_label="gene to gene association",
+            properties={"directional": False, "curated": True, "score": 0.5},
+        ),
+    ]
+
+    passed = bw._write_edge_data(edges, batch_size=int(1e4))
+
+    tmp_path = bw.outdir
+    gene_gene_csv = os.path.join(tmp_path, "GeneToGeneAssociation-part000.csv")
+
+    with open(gene_gene_csv) as f:
+        gene_gene = f.read()
+
+    assert passed
+    assert "true" in gene_gene
+    assert "false" in gene_gene
+    assert "True" not in gene_gene
+    assert "False" not in gene_gene
+
+
 @pytest.mark.parametrize("length", [8], scope="module")
 def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
     edges = _get_edges
@@ -879,7 +998,7 @@ def test_BioCypherRelAsNode_implementation(bw, _get_rel_as_nodes):
     assert "p2;" in is_target_of
     assert "IS_TARGET_OF" in is_target_of
     assert "\n" in is_target_of
-    assert "i1;True;-1;'i1';'id'" in post_translational_interaction
+    assert "i1;true;-1;'i1';'id'" in post_translational_interaction
     assert "Association" in post_translational_interaction
     assert "\n" in post_translational_interaction
 
@@ -1049,6 +1168,32 @@ def test_write_strict(bw_strict):
     assert "BiologicalEntity" in protein
 
 
+def test_write_strict_edge_does_not_mutate_schema(bw_strict):
+    """In strict mode, writing edges must not modify the schema properties dict.
+
+    Previously, `d = cprops` (a reference) was used instead of `d = dict(cprops)`
+    (a copy), so strict-mode keys ("source", "version", "licence") were injected
+    permanently into the extended_schema on the first write of each edge label.
+    """
+    schema = bw_strict.translator.ontology.mapping.extended_schema
+    original_props = dict(schema["gene to gene association"]["properties"])
+
+    edge = BioCypherEdge(
+        source_id="g1",
+        target_id="g2",
+        relationship_label="gene to gene association",
+        properties={"directional": True, "curated": False, "score": 0.9},
+    )
+
+    bw_strict._write_edge_data([edge], batch_size=int(1e4))
+
+    mutated_props = schema["gene to gene association"]["properties"]
+    assert "source" not in mutated_props, "strict-mode key 'source' was injected into schema"
+    assert "version" not in mutated_props, "strict-mode key 'version' was injected into schema"
+    assert "licence" not in mutated_props, "strict-mode key 'licence' was injected into schema"
+    assert mutated_props == original_props, "schema properties were modified by _write_edge_data"
+
+
 @pytest.mark.parametrize("length", [4], scope="module")
 def test_tab_delimiter(bw_tab, _get_nodes):
     passed = bw_tab.write_nodes(_get_nodes)
@@ -1087,7 +1232,9 @@ def test_check_label_name():
 
     # Additional test case: label with dot and non-compliant characters
     assert parse_label("In.valid.Label@1") == "In.valid.Label1"
-    # Assert warning log is written
+
+    # Test case: label contains only non-compliant characters (would previously crash with IndexError)
+    assert parse_label("@#^&") == ""
 
 
 def make_labels(bw, order):

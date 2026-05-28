@@ -5,6 +5,11 @@ on:
     branches:
       - "*"
   workflow_call:
+    inputs:
+      ref:
+        description: "Git ref to checkout for reusable workflow runs"
+        required: false
+        type: string
 
 jobs:
   tests_and_code_quality:
@@ -16,6 +21,8 @@ jobs:
     #----------------------------------------------
     - name: Checkout Repository
       uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.ref || github.ref }}
     - name: Setup Python and uv
       uses: ./.github/actions/setup
     #----------------------------------------------

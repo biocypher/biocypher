@@ -754,6 +754,8 @@ class _BatchWriter(_Writer, ABC):
                     p = n_props.get(k)
                     if p is None:  # TODO make field empty instead of ""?
                         plist.append("")
+                    elif v in ["bool", "boolean"]:
+                        plist.append(str(p).lower())
                     elif v in [
                         "int",
                         "integer",
@@ -761,8 +763,6 @@ class _BatchWriter(_Writer, ABC):
                         "float",
                         "double",
                         "dbl",
-                        "bool",
-                        "boolean",
                     ]:
                         plist.append(str(p))
                     elif isinstance(p, list):
@@ -858,7 +858,7 @@ class _BatchWriter(_Writer, ABC):
                                     )
                                     break
                     if cprops:
-                        d = cprops
+                        d = dict(cprops)
 
                         # add strict mode properties
                         if self.strict_mode:
@@ -991,6 +991,8 @@ class _BatchWriter(_Writer, ABC):
                 p = e_props.get(k)
                 if p is None:  # TODO make field empty instead of ""?
                     plist.append("")
+                elif v in ["bool", "boolean"]:
+                    plist.append(str(p).lower())
                 elif v in [
                     "int",
                     "integer",
@@ -998,8 +1000,6 @@ class _BatchWriter(_Writer, ABC):
                     "float",
                     "double",
                     "dbl",
-                    "bool",
-                    "boolean",
                 ]:
                     plist.append(str(p))
                 elif isinstance(p, list):
@@ -1168,6 +1168,10 @@ def parse_label(label: str) -> str:
 
     def first_character_compliant(character: str) -> bool:
         return character.isalpha() or character == "$"
+
+    if not matches:
+        logger.warning("Label contains only non-compliant characters and will be empty.")
+        return ""
 
     if not first_character_compliant(matches[0]):
         for c in matches:

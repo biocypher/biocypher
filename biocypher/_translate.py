@@ -59,9 +59,14 @@ class Translator:
 
     def translate_entities(self, entities):
         entities = peekable(entities)
-        if isinstance(entities.peek(), BioCypherEdge | BioCypherNode | BioCypherRelAsNode):
+        try:
+            first = entities.peek()
+        except StopIteration:
+            logger.warning("No entities provided; returning empty iterator.")
+            return (x for x in [])
+        if isinstance(first, BioCypherEdge | BioCypherNode | BioCypherRelAsNode):
             translated_entities = entities
-        elif len(entities.peek()) < 4:
+        elif len(first) < 4:
             translated_entities = self.translate_nodes(entities)
         else:
             translated_entities = self.translate_edges(entities)
@@ -115,7 +120,7 @@ class Translator:
                 except AttributeError as err:
                     msg = (
                         f"Error: {err} "
-                        "while getting properties from {_ontology_class}. "
+                        f"while getting properties from {_ontology_class}. "
                         "Maybe you mistyped your properties. "
                         "Please ensure the `properties` section is a dictionary, not a list."
                     )
@@ -227,6 +232,10 @@ class Translator:
         for _id, _src, _tar, _type, _props in edge_tuples:
             # check for strict mode requirements
             if self.strict_mode:
+                # rename 'license' to 'licence' in _props
+                if _props.get("license"):
+                    _props["licence"] = _props.pop("license")
+
                 if "source" not in _props:
                     msg = (
                         f"Edge {_id if _id else (_src, _tar)} does not have a `source` property."
@@ -237,6 +246,13 @@ class Translator:
                 if "licence" not in _props:
                     msg = (
                         f"Edge {_id if _id else (_src, _tar)} does not have a `licence` property."
+                        " This is required in strict mode.",
+                    )
+                    logger.error(msg)
+                    raise ValueError(msg)
+                if "version" not in _props:
+                    msg = (
+                        f"Edge {_id if _id else (_src, _tar)} does not have a `version` property."
                         " This is required in strict mode.",
                     )
                     logger.error(msg)
@@ -358,7 +374,7 @@ class Translator:
         self._ontology_mapping = {}
 
         for key, value in self.ontology.mapping.extended_schema.items():
-            labels = value.get("input_label") or value.get("label_in_input")
+            labels = value.get("input_label")
 
             if isinstance(labels, str):
                 self._ontology_mapping[labels] = key
@@ -376,15 +392,13 @@ class Translator:
     def _get_ontology_mapping(self, label: str) -> str | None:
         """Find the ontology class for the given input type.
 
-        For each given input type ("input_label" or "label_in_input"), find the
-        corresponding ontology class in the leaves dictionary (from the
-        `schema_config.yam`).
+        For each given input type ("input_label"), find the corresponding
+        ontology class in the leaves dictionary (from the `schema_config.yaml`).
 
         Args:
         ----
             label:
-                The input type to find (`input_label` or `label_in_input` in
-                `schema_config.yaml`).
+                The input type to find (`input_label` in `schema_config.yaml`).
 
         """
         # FIXME does not seem like a necessary function.

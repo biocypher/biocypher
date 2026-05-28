@@ -188,6 +188,8 @@ class Downloader:
         """
         cache_record = self._get_cache_record(resource)
         if cache_record:
+            if resource.lifetime == 0:
+                return False
             download_time = datetime.strptime(cache_record.get("date_downloaded"), "%Y-%m-%d %H:%M:%S.%f")
             lifetime = timedelta(days=resource.lifetime)
             expired = download_time + lifetime < datetime.now()
@@ -457,7 +459,10 @@ class Downloader:
     def _trim_filename(self, url: str, max_length: int = 150) -> str:
         """Create a trimmed filename from a URL.
 
-        If the URL exceeds max_length, create a hash of the filename.
+        Preserves query parameters (sanitised) so that requests to the same
+        endpoint with different parameters produce distinct cache files.  When
+        the sanitised name would exceed ``max_length`` the *full* URL is hashed
+        to keep the name short while still guaranteeing uniqueness.
 
         Args:
         ----
@@ -469,18 +474,18 @@ class Downloader:
             str: A valid filename derived from the URL, trimmed if necessary
 
         """
-        # Extract the filename from the URL
+        import hashlib
+
+        # Extract path segment + query string after the last slash
         fname = url[url.rfind("/") + 1 :]
 
-        # Remove query parameters if present
-        if "?" in fname:
-            fname = fname.split("?")[0]
+        # Replace characters that are invalid or problematic in filenames
+        for ch in '?&=:*|<>"\\()[]{}; ':
+            fname = fname.replace(ch, "_")
 
         if len(fname) > max_length:
-            import hashlib
+            # Hash the *full* URL so that different query strings on the same
+            # endpoint always produce distinct, fixed-length filenames.
+            fname = hashlib.md5(url.encode()).hexdigest()
 
-            fname_trimmed = hashlib.md5(fname.encode()).hexdigest()
-        else:
-            fname_trimmed = fname
-
-        return fname_trimmed
+        return fname

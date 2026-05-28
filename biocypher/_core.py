@@ -20,7 +20,7 @@ from ._deduplicate import Deduplicator
 from ._get import Downloader
 from ._logger import logger
 from ._mapping import OntologyMapping
-from ._ontology import Ontology
+from ._ontology import NullOntology, Ontology
 from ._translate import Translator
 from .output.connect._get_connector import get_connector
 from .output.in_memory._get_in_memory_kg import IN_MEMORY_DBMS, get_in_memory_kg
@@ -35,8 +35,11 @@ REQUIRED_CONFIG = [
     "dbms",
     "offline",
     "strict_mode",
-    "head_ontology",
 ]
+# `head_ontology` is intentionally NOT required. Absence (or an explicit
+# `head_ontology: null` in biocypher_config.yaml) enables headless mode: no
+# remote OWL/TTL fetch, no rdflib-backed class hierarchy. Schema validation
+# against schema_config.yaml still runs as usual.
 
 
 class BioCypher:
@@ -118,15 +121,6 @@ class BioCypher:
         else:
             self._offline = offline
 
-        # Check if pandas/tabular is being used in offline mode
-        if self._offline and self._dbms.lower() in ["pandas", "tabular"]:
-            msg = (
-                f"The '{self._dbms}' DBMS is only available in online mode. "
-                f"If you want to write CSV files, use 'csv' as the DBMS. "
-                f"If you want to use pandas, set 'offline: false' in your configuration."
-            )
-            raise ValueError(msg)
-
         if strict_mode is None:
             self._strict_mode = self.base_config["strict_mode"]
         else:
@@ -143,7 +137,9 @@ class BioCypher:
                 f"Running BioCypher with schema configuration from {self._schema_config_path}.",
             )
 
-        self._head_ontology = head_ontology or self.base_config["head_ontology"]
+        # Honour an explicit None to opt into headless mode; otherwise fall
+        # back to the config value (which may itself be absent or null).
+        self._head_ontology = head_ontology if head_ontology is not None else self.base_config.get("head_ontology")
 
         # Set configuration - optional
         self._output_directory = output_directory or self.base_config.get(
@@ -280,14 +276,33 @@ class BioCypher:
 
         return self._ontology_mapping
 
-    def _get_ontology(self) -> Ontology:
-        """Create ontology if not exists and return."""
+    def _get_ontology(self):
+        """Create ontology if not exists and return.
+
+        Returns a :class:`NullOntology` when ``head_ontology`` is unset
+        (headless mode); otherwise the full :class:`Ontology`.
+        """
         if not self._ontology:
-            self._ontology = Ontology(
-                ontology_mapping=self._get_ontology_mapping(),
-                head_ontology=self._head_ontology,
-                tail_ontologies=self._tail_ontologies,
-            )
+            if self._head_ontology is None:
+                if self._tail_ontologies:
+                    msg = (
+                        "`tail_ontologies` requires a `head_ontology` to join onto. "
+                        "Set `head_ontology` or remove `tail_ontologies` from your config."
+                    )
+                    raise ValueError(msg)
+                logger.info(
+                    "Running BioCypher in headless mode: no head ontology loaded. "
+                    "Class hierarchy is defined by schema_config.yaml only."
+                )
+                self._ontology = NullOntology(
+                    ontology_mapping=self._get_ontology_mapping(),
+                )
+            else:
+                self._ontology = Ontology(
+                    ontology_mapping=self._get_ontology_mapping(),
+                    head_ontology=self._head_ontology,
+                    tail_ontologies=self._tail_ontologies,
+                )
 
         return self._ontology
 
@@ -369,12 +384,12 @@ class BioCypher:
         objects. Depending on the configuration the translated nodes are then
         passed to the
 
-        - `_writer`: if `_offline` is set to `False`
+        - `_writer`: if `_offline` is set to `True`
 
         - `_in_memory_kg`: if `_offline` is set to `False` and the `_dbms` is an
             `IN_MEMORY_DBMS`
 
-        - `_driver`: if `_offline` is set to `True` and the `_dbms` is not an
+        - `_driver`: if `_offline` is set to `False` and the `_dbms` is not an
             `IN_MEMORY_DBMS`
 
         """
@@ -404,12 +419,12 @@ class BioCypher:
         objects. Depending on the configuration the translated edges are then
         passed to the
 
-        - `_writer`: if `_offline` is set to `False`
+        - `_writer`: if `_offline` is set to `True`
 
         - `_in_memory_kg`: if `_offline` is set to `False` and the `_dbms` is an
             `IN_MEMORY_DBMS`
 
-        - `_driver`: if `_offline` is set to `True` and the `_dbms` is not an
+        - `_driver`: if `_offline` is set to `False` and the `_dbms` is not an
             `IN_MEMORY_DBMS`
 
         """

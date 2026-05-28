@@ -245,159 +245,69 @@ ssh -L 8080:localhost:8080 biocypher@panda.likescandy.com
 
 ## Release process
 
-The release process makes a snapshot of biocypher (a git commit) available to users with
-a particular version number. After the release the new biocypher version will be available
-in the next places:
+BioCypher uses automated releases with ``release-please`` and GitHub Actions.
 
-- Git repo with a `new tag <https://github.com/biocypher-dev/biocypher/tags>`_
-- Source distribution in a `GitHub release <https://github.com/biocypher-dev/biocypher/releases>`_
-- Pip packages in the `PyPI <https://pypi.org/project/biocypher/>`_
-- Conda/Mamba packages in `conda-forge <https://anaconda.org/conda-forge/biocypher>`_
+After a release, the new version is available in:
 
-The process for releasing a new version of biocypher is detailed next section.
+- Git tags and `GitHub releases <https://github.com/biocypher/biocypher/releases>`_
+- `PyPI <https://pypi.org/project/biocypher/>`_
+- (later, via bot) `conda-forge <https://anaconda.org/conda-forge/biocypher>`_
 
-The instructions contain ``<version>`` which needs to be replaced with the version
-to be released (e.g. ``1.5.2``). Also the branch to be released ``<branch>``, which
-depends on whether the version being released is the release candidate of a new version,
-or any other version. Release candidates are released from ``main``, while other
-versions are released from their branch (e.g. ``1.5.x``).
+### How releases are created
 
+1. Maintainers merge regular PRs to ``main`` using conventional commit types (for example
+   ``feat:``, ``fix:``, ``docs:``).
+2. The ``Release Please`` workflow updates or creates a release PR with the next version and changelog.
+3. A maintainer reviews and merges the release PR.
+4. ``release-please`` creates the version tag and GitHub Release.
+5. The ``Publish`` workflow is triggered by ``release.published``, runs tests, builds from the released tag,
+   and publishes to PyPI using trusted publishing (OIDC).
 
 ### Prerequisites
 
-In order to be able to release a new biocypher version, the next permissions are needed:
+- Maintainer merge rights on `biocypher <https://github.com/biocypher/biocypher/>`_.
+- PyPI trusted publisher configured for this repository/workflow/environment.
+- Access to post-release communication channels.
 
-- Merge rights to the `biocypher <https://github.com/biocypher-dev/biocypher/>`_ and
-  `biocypher-feedstock <https://github.com/conda-forge/biocypher-feedstock/>`_ repositories.
-  For the latter, open a PR adding your GitHub username to the conda-forge recipe.
-- Permissions to push to ``main`` in the biocypher repository, to push the new tags.
-- `Write permissions to PyPI <https://github.com/conda-forge/biocypher-feedstock/pulls>`_.
-- Access to our website / documentation server. Share your public key with the
-  infrastructure committee to be added to the ``authorized_keys`` file of the main
-  server user.
-- Access to the social media accounts, to publish the announcements.
+### Maintainer checklist
 
-### Pre-release
+Before merging the release PR:
 
-1. Agree with the core team on the next topics:
+1. Confirm CI is green on ``main`` and on the release PR.
+2. Review generated release notes/changelog in the release PR.
+3. Confirm the proposed version bump is appropriate.
 
-   - Release date (major/minor releases happen usually every 6 months, and patch releases
-     monthly until x.x.5, just before the next major/minor)
-   - Blockers (issues and PRs that must be part of the release)
-   - Next version after the one being released
+After merging the release PR:
 
-2. Update and clean release notes for the version to be released, including:
-
-   - Set the final date of the release
-   - Remove any unused bullet point
-   - Make sure there are no formatting issues, typos, etc.
-
-3. Make sure the CI is green for the last commit of the branch being released.
-
-4. If not a release candidate, make sure all backporting pull requests to the branch
-   being released are merged.
-
-5. Create a new issue and milestone for the version after the one being released.
-   If the release was a release candidate, we would usually want to create issues and
-   milestones for both the next major/minor, and the next patch release. In the
-   milestone of a patch release, we add the description ``on-merge: backport to <branch>``,
-   so tagged PRs are automatically backported to the release branch by our bot.
-
-6. Change the milestone of all issues and PRs in the milestone being released to the
-   next milestone.
-
-### Release
-
-1. Create an empty commit and a tag in the last commit of the branch to be released::
-```bash
-git checkout <branch>
-git pull --ff-only upstream <branch>
-git clean -xdf
-git commit --allow-empty --author="biocypher Development Team <biocypher-dev@python.org>" -m "RLS: <version>"
-git tag -a v<version> -m "Version <version>"  # NOTE that the tag is v1.5.2 with "v" not 1.5.2
-git push upstream <branch> --follow-tags
-```
-
-The docs for the new version will be built and published automatically with the docs job in the CI,
-which will be triggered when the tag is pushed.
-
-2. Only if the release is a release candidate, we want to create a new branch for it, immediately
-   after creating the tag. For example, if we are releasing biocypher 1.4.0rc0, we would like to
-   create the branch 1.4.x to backport commits to the 1.4 versions. As well as create a tag to
-   mark the start of the development of 1.5.0 (assuming it is the next version)::
-
-```bash
-git checkout -b 1.4.x
-git push upstream 1.4.x
-git checkout main
-git commit --allow-empty -m "Start 1.5.0"
-git tag -a v1.5.0.dev0 -m "DEV: Start 1.5.0"
-git push upstream main --follow-tags
-```
-3. Download the source distribution and wheels from the `wheel staging area <https://anaconda.org/scientific-python-nightly-wheels/biocypher>`_.
-   Be careful to make sure that no wheels are missing (e.g. due to failed builds).
-
-   Running scripts/download_wheels.sh with the version that you want to download wheels/the sdist for should do the trick.
-   This script will make a ``dist`` folder inside your clone of biocypher and put the downloaded wheels and sdist there::
-
-```bash
-scripts/download_wheels.sh <VERSION>
-```
-4. Create a `new GitHub release <https://github.com/biocypher-dev/biocypher/releases/new>`_:
-
-   - Tag: ``<version>``
-   - Title: ``biocypher <version>``
-   - Description: Copy the description of the last release of the same kind (release candidate, major/minor or patch release)
-   - Files: ``biocypher-<version>.tar.gz`` source distribution just generated
-   - Set as a pre-release: Only check for a release candidate
-   - Set as the latest release: Leave checked, unless releasing a patch release for an older version
-     (e.g. releasing 1.4.5 after 1.5 has been released)
-
-5. Upload wheels to PyPI::
-```bash
-twine upload biocypher/dist/biocypher-<version>*.{whl,tar.gz} --skip-existing
-```
-6. The GitHub release will after some hours trigger an
-   `automated conda-forge PR <https://github.com/conda-forge/biocypher-feedstock/pulls>`_.
-   (If you don't want to wait, you can open an issue titled ``@conda-forge-admin, please update version`` to trigger the bot.)
-   Merge it once the CI is green, and it will generate the conda-forge packages.
-
-   In case a manual PR needs to be done, the version, sha256 and build fields are the
-   ones that usually need to be changed. If anything else in the recipe has changed since
-   the last release, those changes should be available in ``ci/meta.yaml``.
+1. Verify that a new GitHub release and tag were created.
+2. Verify the ``Publish`` workflow completed successfully and package artifacts are on PyPI.
+3. Confirm downstream conda-forge update state (automatic PR or manual follow-up if needed).
 
 ### Post-Release
 
-1. Update symlinks to stable documentation by logging in to our web server, and
+1. Update symlinks to stable documentation by logging in to our web server and
    editing ``/var/www/html/biocypher-docs/stable`` to point to ``version/<latest-version>``
    for major and minor releases, or ``version/<minor>`` to ``version/<patch>`` for
-   patch releases. The exact instructions are (replace the example version numbers by
-   the appropriate ones for the version you are releasing):
+   patch releases. Replace the example version numbers as needed:
 
     - Log in to the server and use the correct user.
     - `cd /var/www/html/biocypher-docs/`
     - `ln -sfn version/2.1 stable` (for a major or minor release)
     - `ln -sfn version/2.0.3 version/2.0` (for a patch release)
 
-2. If releasing a major or minor release, open a PR in our source code to update
+2. If releasing a major or minor release, open a PR to update
    ``web/biocypher/versions.json``, to have the desired versions in the documentation
    dropdown menu.
 
 3. Close the milestone and the issue for the released version.
 
-4. Create a new issue for the next release, with the estimated date of release.
-
-5. Open a PR with the placeholder for the release notes of the next version. See
-   for example `the PR for 1.5.3 <https://github.com/biocypher-dev/biocypher/pull/49843/files>`_.
-   Note that the template to use depends on whether it is a major, minor or patch release.
-
-6. Announce the new release in the official channels (use previous announcements
+4. Announce the new release in the official channels (use previous announcements
    for reference):
 
     - The biocypher-dev and pydata mailing lists
     - Twitter, Mastodon, Telegram and LinkedIn
 
-7. Update this release instructions to fix anything incorrect and to update about any
+5. Update this release instructions to fix anything incorrect and to update about any
    change since the last release.
 
 .. _governance documents: https://github.com/biocypher-dev/biocypher/blob/main/web/biocypher/about/governance.md

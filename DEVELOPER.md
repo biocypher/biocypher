@@ -107,7 +107,17 @@ that the version number is incremented according to the following scheme:
 
 - Increment the patch version number if you make backwards-compatible bug fixes.
 
-We use the `bumpversion` tool to update the version number in the
-`pyproject.toml` file. This will create a new git tag automatically. Usually,
-versioning is done by the maintainers, so please do not increment versions in
-pull requests by default.
+Versioning and changelog management are handled by
+[`release-please`](https://github.com/googleapis/release-please). Usually,
+versioning is done by maintainers, so please do not increment versions in pull
+requests by default.
+
+For contributors this means:
+
+- follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+  in commit messages (for example `feat: ...`, `fix: ...`, `docs: ...`);
+- do not manually edit version numbers for normal feature/fix PRs.
+
+On merges to `main`, release-please updates or creates the release PR. When that
+release PR is merged, a tag and GitHub Release are created automatically and our
+publish workflow uploads the package to PyPI from that released tag.

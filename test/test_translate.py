@@ -551,10 +551,36 @@ def test_strict_mode_error(translator):
 
     assert list(translator.translate_edges([edge_1])) is not None
 
+    # test 'license' instead of 'licence' for edges (mirrors node behaviour)
+    edge_license = (
+        "n1",
+        "n2",
+        "Test",
+        {
+            "prop": "val",
+            "source": "test",
+            "license": "test",
+            "version": "test",
+        },
+    )
+
+    assert list(translator.translate_edges([edge_license])) is not None
+
     edge_2 = ("n1", "n2", "Test", {"prop": "val"})
 
     with pytest.raises(ValueError):
         list(translator.translate_edges([edge_1, edge_2]))
+
+    # version is required for edges in strict mode (was missing before)
+    edge_no_version = (
+        "n1",
+        "n2",
+        "Test",
+        {"prop": "val", "source": "test", "licence": "test"},
+    )
+
+    with pytest.raises(ValueError):
+        list(translator.translate_edges([edge_no_version]))
 
 
 def test_strict_mode_property_filter(translator):
@@ -576,3 +602,20 @@ def test_strict_mode_property_filter(translator):
     assert "source" in translated_protein_node[0].get_properties().keys()
     assert "licence" in translated_protein_node[0].get_properties().keys()
     assert "version" in translated_protein_node[0].get_properties().keys()
+
+
+def test_translate_entities_empty_iterable(translator):
+    """translate_entities with an empty iterable should warn and return an empty iterator (issue #493)."""
+    result = list(translator.translate_entities([]))
+    assert result == []
+
+
+def test_translate_entities_empty_generator(translator):
+    """translate_entities with an empty generator should warn and return an empty iterator (issue #493)."""
+
+    def empty_gen():
+        return
+        yield  # make it a generator
+
+    result = list(translator.translate_entities(empty_gen()))
+    assert result == []

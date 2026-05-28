@@ -93,6 +93,8 @@ neo4j:  ### Neo4j configuration ###
   import_call_bin_prefix: bin/  # path to "neo4j-admin"
   import_call_file_prefix: path/to/files/
 
+  # The shell with which to execute the import script file.
+  shell: system  # Either 'system' (the system's shell) or the path to your shell of choice.
 ```
 
 ---
@@ -167,6 +169,20 @@ header and data files for each entity type, the import call conveniently
 aggregates this information into one command, detailing the location of all
 files on disk, so no data need to be copied around.
 
+!!! tip "Schema Info for BioChatter"
+    To enable LLM-powered querying of your knowledge graph via
+    [BioChatter](../../biocypher-project/biochatter-integration.md), you can
+    generate a schema info file that describes the structure of the built KG:
+
+    ```python
+    bc.write_schema_info()                # writes schema_info.yaml to output directory
+    bc.write_schema_info(as_node=True)    # also adds a schema_info node to the KG
+    ```
+
+    When using `as_node=True`, the import call is automatically regenerated to
+    include the schema info node. Call this **after** `write_nodes()` and
+    `write_edges()`.
+
 !!! note "Note"
     The generated import call differs between Neo4j version 4 and 5.
     Starting from major version 5, Neo4j `import` command needs the
@@ -176,6 +192,13 @@ files on disk, so no data need to be copied around.
     import statement for the detected version. Therefore, make sure to run
     the script from the targeted DBMS root location.
 
+!!! note "Note"
+    The import script is run by the system's shell. Some (old) shells may not
+    handle the version testing code. If you get a warning about that, you may
+    ask BioCypher to call another (more modern) shell from the import script
+    with the `shell` option. This should be set to a shebang-compatible
+    command or path, for instance: `shell: /usr/bin/bash` or even
+    `shell: /usr/bin/env zsh`.
 
 Neo4j can manage multiple projects, each with multiple DBMS (database management
 system) instances, each of which can house multiple databases. The screenshot

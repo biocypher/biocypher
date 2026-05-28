@@ -22,7 +22,7 @@ from biocypher.output.write.relational._sqlite import _SQLiteBatchWriter
 
 logger.debug(f"Loading module {__name__}.")
 
-__all__ = ["get_writer", "DBMS_TO_CLASS"]
+__all__ = ["DBMS_TO_CLASS", "get_writer"]
 
 if TYPE_CHECKING:
     from biocypher._deduplicate import Deduplicator
@@ -118,6 +118,7 @@ def get_writer(
             db_name=dbms_config.get("database_name"),
             import_call_bin_prefix=dbms_config.get("import_call_bin_prefix"),
             import_call_file_prefix=dbms_config.get("import_call_file_prefix"),
+            shell=dbms_config.get("shell"),  # neo4j
             wipe=dbms_config.get("wipe"),
             strict_mode=strict_mode,
             labels_order=dbms_config.get("labels_order"),  # batch writer

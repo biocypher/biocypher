@@ -23,6 +23,14 @@ biocypher:
   strict_mode: false
 
   ## Ontology configuration
+  ##
+  ## Default: load the Biolink model so BioCypher can place user schema
+  ## classes inside a published class hierarchy. The fetch is remote and
+  ## can fail or stall — set `head_ontology: null` below to opt into
+  ## headless mode, in which the class hierarchy is defined exclusively
+  ## by your `schema_config.yaml`. Translator behaviour is otherwise
+  ## identical; the only thing dropped is parent-class enrichment.
+  # head_ontology: null  # uncomment to disable Biolink retrieval (headless)
 
   head_ontology:
     url: https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
@@ -109,6 +117,9 @@ neo4j:
 
   # import_call_bin_prefix: bin/
   # import_call_file_prefix: path/to/files/
+
+  # The shell with which to execute the import script file.
+  shell: system  # Either 'system' (the system's shell) or the path to your shell of choice.
 
 postgresql:
   ### PostgreSQL configuration ###

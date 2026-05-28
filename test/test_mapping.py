@@ -1,3 +1,8 @@
+import warnings
+
+
+from biocypher._mapping import OntologyMapping
+
 # TODO migrate as appropriate from test translate
 
 
@@ -19,3 +24,79 @@ def test_preferred_id_optional(ontology_mapping):
     pti = ontology_mapping.extended_schema.get("post translational interaction")
 
     assert pti.get("preferred_id") == "id"
+
+
+def test_namespace_accepted_as_preferred_id():
+    """Schema entries using 'namespace' are normalised to 'preferred_id' internally."""
+    m = OntologyMapping()
+    m.schema = {
+        "protein": {
+            "represented_as": "node",
+            "namespace": "uniprot",
+            "input_label": "protein",
+        }
+    }
+    extended = m._extend_schema(d=m.schema)
+    assert extended["protein"]["preferred_id"] == "uniprot"
+    assert "namespace" not in extended["protein"]
+
+
+def test_preferred_id_in_schema_emits_deprecation_warning():
+    """Schema entries still using 'preferred_id' trigger a DeprecationWarning."""
+    m = OntologyMapping()
+    m.schema = {
+        "protein": {
+            "represented_as": "node",
+            "preferred_id": "uniprot",
+            "input_label": "protein",
+        }
+    }
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        extended = m._extend_schema(d=m.schema)
+
+    dep_warnings = [w for w in caught if issubclass(w.category, DeprecationWarning)]
+    assert len(dep_warnings) == 1
+    assert "preferred_id" in str(dep_warnings[0].message)
+    assert "namespace" in str(dep_warnings[0].message)
+    assert extended["protein"]["preferred_id"] == "uniprot"
+
+
+def test_input_label_accepted_as_label_in_input():
+    """Schema entries using 'input_label' work without any warning."""
+    m = OntologyMapping()
+    m.schema = {
+        "protein": {
+            "represented_as": "node",
+            "input_label": "protein",
+        }
+    }
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        extended = m._extend_schema(d=m.schema)
+
+    dep_warnings = [w for w in caught if issubclass(w.category, DeprecationWarning)]
+    assert len(dep_warnings) == 0
+    assert extended["protein"]["input_label"] == "protein"
+
+
+def test_label_in_input_emits_deprecation_warning():
+    """Schema entries using the old 'label_in_input' field trigger a DeprecationWarning."""
+    m = OntologyMapping()
+    m.schema = {
+        "protein": {
+            "represented_as": "node",
+            "label_in_input": "protein",
+        }
+    }
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        extended = m._extend_schema(d=m.schema)
+
+    dep_warnings = [w for w in caught if issubclass(w.category, DeprecationWarning)]
+    assert len(dep_warnings) == 1
+    assert "label_in_input" in str(dep_warnings[0].message)
+    assert "input_label" in str(dep_warnings[0].message)
+    # field is normalised to 'input_label' after the warning
+    assert extended["protein"].get("input_label") == "protein"
+    assert "label_in_input" not in extended["protein"]

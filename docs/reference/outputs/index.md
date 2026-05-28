@@ -38,7 +38,9 @@ Furthermore, you can specify whether to use the `offline` or `online` mode.
   knowledge graph to files in a designated output folder (standard being
   `biocypher-out/` and the current datetime). Furthermore, you can generate a
   bash script to insert the knowledge graph files into the specified `dbms` by
-  running `bc.write_import_call()`.
+  running `bc.write_import_call()`. You can also generate a schema info file
+  for use with [BioChatter](../../biocypher-project/biochatter-integration.md)
+  by calling `bc.write_schema_info()` after writing nodes and edges.
 
 !!! warning "Warning"
 	The `online` mode is currently only supported for `neo4j`, `tabular`,

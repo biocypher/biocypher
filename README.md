@@ -27,9 +27,8 @@ the docs [here](https://biocypher.org).
            margin-left: auto;
            margin-right: auto;
            width: 70%;"
-    src="docs/assets/img/graphical-abstract-biocypher.png"
-    alt="Graphical Abstract">
-</img>
+    src="https://raw.githubusercontent.com/biocypher/biocypher/main/docs/assets/img/graphical-abstract-biocypher.png"
+    alt="Graphical Abstract" />
 
 ## 📖 Documentation
 
