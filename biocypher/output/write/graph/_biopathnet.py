@@ -11,16 +11,16 @@ from biocypher.output.write._writer import _Writer
 
 class _BioPathNetWriter(_Writer):
     """
-    Write BioCypher's property graph into a set of BioPathNet input files.
+    # Write BioCypher's property graph into a set of BioPathNet input files.
 
-    Writes one skg for learning, validation or test as a list of lines each containing a triple.
-    As BioPathNet is launched with the same entity_names and entity_types file,
-    appends information in the entity_types and entity_names files. This way, these files can
-    contain the information about all the entities from learning, validation and test graphs.
+    # Writes one skg for learning, validation or test as a list of lines each containing a triple.
+    # As BioPathNet is launched with the same entity_names and entity_types file,
+    # appends information in the entity_types and entity_names files. This way, these files can
+    # contain the information about all the entities from learning, validation and test graphs.
 
-    To generate the needed 3 graphs (learning, validation and test) for BioPathNet,
-    the biocypher's BioPathNet writer must be called 3 tymes, with the corresponding
-    3 SKGs.
+    # To generate the needed 3 graphs (learning, validation and test) for BioPathNet,
+    # the biocypher's BioPathNet writer must be called 3 tymes, with the corresponding
+    # 3 SKGs.
 
     """
 
