@@ -77,7 +77,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             str: The string representation of an array for postgres COPY
 
         """
-        string = ",".join(string_list)
+        string = ",".join(str(x) for x in string_list)
         string = f'"{{{string}}}"'
         return string
 

@@ -331,6 +331,36 @@ def test_write_node_data_boolean_properties(bw):
     assert "False" not in post_translational_interaction
 
 
+def test_write_node_data_non_string_list_properties(bw):
+    """List properties with non-string elements must not raise TypeError during write."""
+    nodes = [
+        BioCypherNode(
+            node_id="i1",
+            node_label="post translational interaction",
+            properties={"scores": [1, 2, 3], "weights": [0.1, 0.5, 0.9]},
+        ),
+        BioCypherNode(
+            node_id="i2",
+            node_label="post translational interaction",
+            properties={"scores": [4, 5, 6], "weights": [0.2, 0.6, 1.0]},
+        ),
+    ]
+
+    passed = bw._write_node_data(nodes, batch_size=int(1e4))
+
+    csv_path = os.path.join(
+        bw.outdir,
+        "PostTranslationalInteraction-part000.csv",
+    )
+
+    with open(csv_path) as f:
+        content = f.read()
+
+    assert passed
+    assert "1|2|3" in content
+    assert "0.1|0.5|0.9" in content
+
+
 @pytest.mark.parametrize("length", [4], scope="module")
 def test_write_node_data_from_list_not_compliant_names(monkeypatch, caplog, bw, _get_nodes_non_compliant_names):
     nodes = _get_nodes_non_compliant_names
@@ -1202,7 +1232,9 @@ def test_check_label_name():
 
     # Additional test case: label with dot and non-compliant characters
     assert parse_label("In.valid.Label@1") == "In.valid.Label1"
-    # Assert warning log is written
+
+    # Test case: label contains only non-compliant characters (would previously crash with IndexError)
+    assert parse_label("@#^&") == ""
 
 
 def make_labels(bw, order):

@@ -80,7 +80,7 @@ class _Neo4jBatchWriter(_BatchWriter):
             str: The string representation of an array for the neo4j admin import
 
         """
-        string = self.adelim.join(string_list)
+        string = self.adelim.join(str(x) for x in string_list)
         return self._quote_string(string)
 
     def _write_node_headers(self):

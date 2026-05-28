@@ -188,6 +188,8 @@ class Downloader:
         """
         cache_record = self._get_cache_record(resource)
         if cache_record:
+            if resource.lifetime == 0:
+                return False
             download_time = datetime.strptime(cache_record.get("date_downloaded"), "%Y-%m-%d %H:%M:%S.%f")
             lifetime = timedelta(days=resource.lifetime)
             expired = download_time + lifetime < datetime.now()
