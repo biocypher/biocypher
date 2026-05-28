@@ -4,6 +4,7 @@ import pytest
 import yaml
 
 from biocypher import BioCypher
+from biocypher._deduplicate import DiskBasedDeduplicator
 from biocypher.output.in_memory._get_in_memory_kg import IN_MEMORY_DBMS
 from biocypher.output.write._get_writer import DBMS_TO_CLASS
 
@@ -39,6 +40,22 @@ def test_log_duplicates(core, deduplicator, _get_nodes):
     assert "m1" in core._deduplicator.duplicate_entity_ids
 
 
+def test_big_data_mode_only_in_offline_mode():
+    with pytest.raises(ValueError) as e:
+        BioCypher(dbms="csv", offline=False, big_data=True)
+    assert str(e.value) == "Big data mode is only supported in offline mode."
+
+
+def test_uses_disk_based_deduplicator_when_big_data_true(core):
+    core._deduplicator = None
+    core._offline = True
+    core._big_data = True
+
+    deduplicator = core._get_deduplicator()
+
+    assert isinstance(deduplicator, DiskBasedDeduplicator)
+
+
 @pytest.mark.parametrize("length", [4], scope="function")
 def test_write_schema_info(core, _get_nodes, _get_edges, _get_rel_as_nodes):
     core._offline = False
@@ -65,7 +82,7 @@ def test_write_schema_info(core, _get_nodes, _get_edges, _get_rel_as_nodes):
     path = os.path.join(core._output_directory, "schema_info.yaml")
     assert os.path.exists(path)
 
-    with open(path, "r") as f:
+    with open(path) as f:
         schema_loaded = yaml.safe_load(f)
 
     assert schema_loaded == schema
@@ -76,7 +93,7 @@ def test_show_full_ontology_structure_without_schema():
         head_ontology={
             "url": "test/ontologies/so.owl",
             "root_node": "sequence_variant",
-        }
+        },
     )
     treevis = bc.show_ontology_structure(full=True)
 
@@ -143,7 +160,7 @@ def test_get_writer_in_online_mode(core):
 
 
 def test_pandas_and_tabular_work_in_offline_mode(tmp_path):
-    """pandas and tabular are aliases for csv and should work in offline mode."""
+    """Pandas and tabular are aliases for csv and should work in offline mode."""
     for dbms in ["pandas", "tabular"]:
         bc = BioCypher(
             dbms=dbms,

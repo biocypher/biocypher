@@ -16,7 +16,7 @@ from ._config import (
     update_from_file as _file_update,
 )
 from ._create import BioCypherNode
-from ._deduplicate import Deduplicator
+from ._deduplicate import Deduplicator, DiskBasedDeduplicator
 from ._get import Downloader
 from ._logger import logger
 from ._mapping import OntologyMapping
@@ -89,6 +89,7 @@ class BioCypher:
         tail_ontologies: dict = None,
         output_directory: str = None,
         cache_directory: str = None,
+        big_data: bool = False,
         # legacy params
         db_name: str = None,
     ):
@@ -154,6 +155,12 @@ class BioCypher:
 
         if self._dbms not in SUPPORTED_DBMS:
             msg = f"DBMS {self._dbms} not supported. Please select from {SUPPORTED_DBMS}."
+            raise ValueError(msg)
+
+        self._big_data = big_data or self.base_config.get("big_data", False)
+
+        if self._big_data and not self._offline:
+            msg = "Big data mode is only supported in offline mode."
             raise ValueError(msg)
 
         # Initialize
@@ -260,7 +267,7 @@ class BioCypher:
     def _get_deduplicator(self) -> Deduplicator:
         """Create deduplicator if not exists and return."""
         if not self._deduplicator:
-            self._deduplicator = Deduplicator()
+            self._deduplicator = DiskBasedDeduplicator() if self._big_data else Deduplicator()
 
         return self._deduplicator
 
@@ -292,7 +299,7 @@ class BioCypher:
                     raise ValueError(msg)
                 logger.info(
                     "Running BioCypher in headless mode: no head ontology loaded. "
-                    "Class hierarchy is defined by schema_config.yaml only."
+                    "Class hierarchy is defined by schema_config.yaml only.",
                 )
                 self._ontology = NullOntology(
                     ontology_mapping=self._get_ontology_mapping(),
@@ -619,9 +626,8 @@ class BioCypher:
             logger.info(msg)
             return mt
 
-        else:
-            logger.info("No missing labels in input.")
-            return None
+        logger.info("No missing labels in input.")
+        return None
 
     def log_duplicates(self) -> None:
         """Log duplicate nodes and edges.
@@ -703,12 +709,11 @@ class BioCypher:
         if not self._offline:
             msg = "Cannot write import call in online mode."
             raise NotImplementedError(msg)
-        else:
-            if not self._writer:
-                logger.warning(
-                    "No edges or nodes were added, I'll try to continue, but you may want to double-check your data."
-                )
-                self._initialize_writer()
+        if not self._writer:
+            logger.warning(
+                "No edges or nodes were added, I'll try to continue, but you may want to double-check your data.",
+            )
+            self._initialize_writer()
 
         return self._writer.write_import_call()
 
@@ -745,7 +750,7 @@ class BioCypher:
         schema["is_schema_info"] = True
 
         deduplicator = self._get_deduplicator()
-        for node in deduplicator.entity_types:
+        for node in deduplicator.seen_entity_types:
             if node in schema:
                 schema[node]["present_in_knowledge_graph"] = True
                 schema[node]["is_relationship"] = False
@@ -760,10 +765,10 @@ class BioCypher:
             if not isinstance(v, dict):
                 continue
             if "label_as_edge" in v:
-                if v["label_as_edge"] in deduplicator.seen_relationships:
+                if v["label_as_edge"] in deduplicator.seen_relationship_types:
                     changed_labels[v["label_as_edge"]] = k
 
-        for edge in deduplicator.seen_relationships:
+        for edge in deduplicator.seen_relationship_types:
             if edge in changed_labels:
                 edge = changed_labels[edge]
             if edge in schema:
