@@ -21,15 +21,15 @@ def _hash_id(raw: str) -> bytes:
     return xxhash.xxh3_128(raw).digest()
 
 
-class BloomAcceleratedDiskBasedIndex:
-    """Shared Bloom-accelerated LMDB index.
+class BloomAcceleratedDiskBackedIndex:
+    """Bloom-accelerated LMDB index.
 
-    Stores 16-byte xxh3_128 hashes.  Not used directly — obtain a namespaced
+    Stores 16-byte xxh3_128 hashes. Not used directly — obtain a namespaced
     handle via `namespace` and interact through that.
 
     Three-layer lookup:
 
-    1. **pending_set** – in-process set for the current unflushed batch.
+    1. **pending_set** – Python set for the current unflushed batch.
     2. **Bloom filter** – skips LMDB on definite misses.
     3. **LMDB** – authoritative on-disk store.
     """
@@ -110,15 +110,15 @@ class BloomAcceleratedDiskBasedIndex:
 
 
 class IndexHandle:
-    """Set-like handle into a :class:`BloomAcceleratedDiskBasedIndex` namespace.
+    """Set-like handle into a `BloomAcceleratedDiskBasedIndex` namespace.
 
-    All items are prefixed with *prefix* before hashing, keeping keys from
+    All items are prefixed with `prefix` before hashing, keeping keys from
     different handles disjoint within the shared index.
 
     Supports ``item in handle`` and ``handle.add(item)``.
     """
 
-    def __init__(self, index: BloomAcceleratedDiskBasedIndex, prefix: str) -> None:
+    def __init__(self, index: BloomAcceleratedDiskBackedIndex, prefix: str) -> None:
         self._index = index
         self._prefix = prefix
 

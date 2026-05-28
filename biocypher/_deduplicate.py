@@ -157,9 +157,9 @@ class DiskBasedDeduplicator(Deduplicator):
         (sparse on disk; actual usage grows with written data).
         """
         super().__init__()
-        from ._deduplicate_disk_index import BloomAcceleratedDiskBasedIndex
+        from ._deduplicate_disk_index import BloomAcceleratedDiskBackedIndex
 
-        _index = BloomAcceleratedDiskBasedIndex(
+        _index = BloomAcceleratedDiskBackedIndex(
             bloom_capacity=bloom_capacity,
             bloom_error_rate=bloom_error_rate,
             batch_size=batch_size,

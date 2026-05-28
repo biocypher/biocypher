@@ -2,7 +2,7 @@ import pytest
 
 from biocypher._create import BioCypherEdge, BioCypherNode
 from biocypher._deduplicate import Deduplicator, DiskBasedDeduplicator
-from biocypher._deduplicate_disk_index import BloomAcceleratedDiskBasedIndex, _hash_id
+from biocypher._deduplicate_disk_index import BloomAcceleratedDiskBackedIndex, _hash_id
 
 
 @pytest.mark.parametrize(("length", "use_disk_index"), [(4, False), (4, True)], scope="module")
@@ -123,7 +123,7 @@ _SMALL = {
 
 class TestBloomAcceleratedDiskBasedIndex:
     def test_layer1_pending_set_found_before_flush(self, tmp_path):
-        idx = BloomAcceleratedDiskBasedIndex(lmdb_path=str(tmp_path), **_SMALL)
+        idx = BloomAcceleratedDiskBackedIndex(lmdb_path=str(tmp_path), **_SMALL)
         handle = idx.namespace("entity")
 
         handle.add("node1")
@@ -133,7 +133,7 @@ class TestBloomAcceleratedDiskBasedIndex:
         assert "node1" in handle, "__contains__ must return True via pending_set"
 
     def test_layer1_pending_set_not_in_bloom_before_flush(self, tmp_path):
-        idx = BloomAcceleratedDiskBasedIndex(lmdb_path=str(tmp_path), **_SMALL)
+        idx = BloomAcceleratedDiskBackedIndex(lmdb_path=str(tmp_path), **_SMALL)
         handle = idx.namespace("entity")
 
         handle.add("node1")
@@ -142,7 +142,7 @@ class TestBloomAcceleratedDiskBasedIndex:
         assert key not in idx._bloom, "Bloom must not be updated before flush"
 
     def test_layer2_bloom_updated_after_flush(self, tmp_path):
-        idx = BloomAcceleratedDiskBasedIndex(lmdb_path=str(tmp_path), **_SMALL)
+        idx = BloomAcceleratedDiskBackedIndex(lmdb_path=str(tmp_path), **_SMALL)
         handle = idx.namespace("entity")
 
         handle.add("node1")
@@ -153,7 +153,7 @@ class TestBloomAcceleratedDiskBasedIndex:
         assert len(idx._pending_keys) == 0, "pending_keys must be empty after flush"
 
     def test_layer2_item_found_via_bloom_after_flush(self, tmp_path):
-        idx = BloomAcceleratedDiskBasedIndex(lmdb_path=str(tmp_path), **_SMALL)
+        idx = BloomAcceleratedDiskBackedIndex(lmdb_path=str(tmp_path), **_SMALL)
         handle = idx.namespace("entity")
 
         handle.add("node1")
@@ -162,7 +162,7 @@ class TestBloomAcceleratedDiskBasedIndex:
         assert "node1" in handle
 
     def test_layer3_lmdb_written_after_flush(self, tmp_path):
-        idx = BloomAcceleratedDiskBasedIndex(lmdb_path=str(tmp_path), **_SMALL)
+        idx = BloomAcceleratedDiskBackedIndex(lmdb_path=str(tmp_path), **_SMALL)
         handle = idx.namespace("entity")
 
         handle.add("node1")
@@ -173,7 +173,7 @@ class TestBloomAcceleratedDiskBasedIndex:
             assert txn.get(key) is not None, "key must be committed to LMDB"
 
     def test_layer3_lmdb_resolves_bloom_false_positive(self, tmp_path):
-        idx = BloomAcceleratedDiskBasedIndex(lmdb_path=str(tmp_path), **_SMALL)
+        idx = BloomAcceleratedDiskBackedIndex(lmdb_path=str(tmp_path), **_SMALL)
 
         phantom_key = _hash_id("entity:phantom")
         idx._bloom.add(phantom_key)  # inject into Bloom only, bypassing LMDB
@@ -181,7 +181,7 @@ class TestBloomAcceleratedDiskBasedIndex:
         assert not idx._seen(phantom_key), "LMDB must correct the Bloom false positive"
 
     def test_layer3_lmdb_not_queried_on_bloom_miss(self, tmp_path):
-        idx = BloomAcceleratedDiskBasedIndex(lmdb_path=str(tmp_path), **_SMALL)
+        idx = BloomAcceleratedDiskBackedIndex(lmdb_path=str(tmp_path), **_SMALL)
         handle = idx.namespace("entity")
 
         class _FailIfUsedEnv:
@@ -196,7 +196,7 @@ class TestBloomAcceleratedDiskBasedIndex:
         assert "never_added" not in handle
 
     def test_namespace_isolation(self, tmp_path):
-        idx = BloomAcceleratedDiskBasedIndex(lmdb_path=str(tmp_path), **_SMALL)
+        idx = BloomAcceleratedDiskBackedIndex(lmdb_path=str(tmp_path), **_SMALL)
         h_entity = idx.namespace("entity")
         h_rel = idx.namespace("relationship")
 
@@ -206,7 +206,7 @@ class TestBloomAcceleratedDiskBasedIndex:
         assert "id1" not in h_rel, "relationship namespace must not see entity keys"
 
     def test_auto_flush_at_batch_size(self, tmp_path):
-        idx = BloomAcceleratedDiskBasedIndex(
+        idx = BloomAcceleratedDiskBackedIndex(
             lmdb_path=str(tmp_path),
             bloom_capacity=10_000,
             bloom_error_rate=1e-5,
