@@ -673,7 +673,11 @@ class _BatchWriter(_Writer, ABC):
                     # encode property type
                     for k, v in d.items():
                         if v is not None:
-                            d[k] = type(v).__name__
+                            if isinstance(v, list):
+                                elem_type = type(v[0]).__name__ if v else "str"
+                                d[k] = f"{elem_type}[]"
+                            else:
+                                d[k] = type(v).__name__
                 # else use first encountered node to define properties for
                 # checking; could later be by checking all nodes but much
                 # more complicated, particularly involving batch writing
@@ -958,7 +962,11 @@ class _BatchWriter(_Writer, ABC):
                     # encode property type
                     for k, v in d.items():
                         if v is not None:
-                            d[k] = type(v).__name__
+                            if isinstance(v, list):
+                                elem_type = type(v[0]).__name__ if v else "str"
+                                d[k] = f"{elem_type}[]"
+                            else:
+                                d[k] = type(v).__name__
                 # else use first encountered edge to define
                 # properties for checking; could later be by
                 # checking all edges but much more complicated,
