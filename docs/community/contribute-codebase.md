@@ -58,49 +58,50 @@ lock file: `uv lock` and install the dependencies: `uv sync --all-extras`.
 
 ## Code quality and formal requirements
 
-For ensuring code quality, the following tools are used:
+BioCypher uses [Ruff](https://docs.astral.sh/ruff/) for Python linting,
+import sorting, and code formatting. Ruff settings are defined in
+`pyproject.toml`, and the same checks are run through
+[pre-commit](https://pre-commit.com/) using `.pre-commit-config.yaml`.
 
-- [isort](https://isort.readthedocs.io/en/latest/) for sorting imports
+For day-to-day development, run Ruff through `uv`:
 
-- [black](https://black.readthedocs.io/en/stable/) for automated code formatting
+```shell
+uv run ruff check biocypher test
+uv run ruff check --fix biocypher test
+uv run ruff format biocypher test
+```
 
-- [pre-commit-hooks](https://github.com/pre-commit/pre-commit-hooks) for
-ensuring some general rules
+Before committing, install and run the pre-commit hooks:
 
-- [pep585-upgrade](https://github.com/snok/pep585-upgrade) for automatically
-upgrading type hints to the new native types defined in PEP 585
+```shell
+uv run pre-commit install
+uv run pre-commit run --all-files
+```
 
-- [pygrep-hooks](https://github.com/pre-commit/pygrep-hooks) for ensuring some
-general naming rules
+For a smaller change, you can also run pre-commit only on the files you touched:
 
-- **NEW** [Ruff](https://docs.astral.sh/ruff/) An extremely fast Python linter
-and code formatter, written in Rust
+```shell
+uv run pre-commit run --files path/to/file.py path/to/docs.md
+```
 
-We recommend configuring your IDE to execute Ruff on save/type, which will
-automatically keep your code clean and fix some linting errors as you type. This
-is made possible by the fast execution of Ruff and removes the need to run a
-dedicated pre-commit step. For instance, in VSCode or Cursor, you can add this
-to your `.vscode/settings.json`:
+The CI runs the pre-commit hooks, so running them locally is the best way to
+check that your code conforms to the project's formatting and linting rules.
+
+We recommend configuring your editor to run Ruff on save. In VS Code or Cursor,
+install the Ruff extension and add this to `.vscode/settings.json`:
 
 ```json
 {
-    "editor.formatOnType": true,
-    "editor.formatOnSave": true,
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true
+    },
     "editor.codeActionsOnSave": {
         "source.fixAll.ruff": "explicit",
         "source.organizeImports.ruff": "explicit"
-    },
-    "editor.defaultFormatter": "charliermarsh.ruff"
+    }
 }
 ```
-
-Alternatively, pre-commit hooks can be used to automatically or manually run
-these tools before each commit. They are defined in `.pre-commit-config.yaml`.
-To install the hooks run `uv run pre-commit install`. The hooks are then
-executed before each commit. For running the hook for all project files (not
-only the changed ones) run `uv run pre-commit run --all-files`. Our CI runs
-the pre-commit hooks, so running them locally is a good way to check if your
-code conforms to the formatting rules.
 
 <!--
 The project uses a [Sphinx](https://www.sphinx-doc.org/en/master/) autodoc
