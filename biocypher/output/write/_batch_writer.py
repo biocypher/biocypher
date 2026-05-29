@@ -405,7 +405,7 @@ class _BatchWriter(_Writer, ABC):
 
         Args:
         ----
-            nodes (BioCypherNode): a list or generator of nodes in
+            nodes (BioCypherNode): a literable of nodes in
                 :py:class:`BioCypherNode` format
 
             batch_size (int): The batch size for writing nodes.
@@ -443,7 +443,7 @@ class _BatchWriter(_Writer, ABC):
 
         Args:
         ----
-            edges (BioCypherEdge): a list or generator of edges in
+            edges (BioCypherEdge): a literable of edges in
                 :py:class:`BioCypherEdge` or :py:class:`BioCypherRelAsNode`
                 format
 
@@ -567,7 +567,7 @@ class _BatchWriter(_Writer, ABC):
 
         Args:
         ----
-            nodes (BioCypherNode): a list or generator of nodes in
+            nodes (BioCypherNode): a literable of nodes in
                 :py:class:`BioCypherNode` format
 
             batch_size (int): The number of nodes per type to buffer before
@@ -831,6 +831,30 @@ class _BatchWriter(_Writer, ABC):
         return True
 
     def _write_edge_data(self, edges, batch_size):
+        """Write biocypher edges to CSV.
+
+        Writes biocypher edges to CSV conforming to the headers created
+        with `_write_edge_headers()`, and is actually required to be run
+        before calling `_write_node_headers()` to set the
+        :py:attr:`self.edge_property_dict` for passing the edge
+        properties to the instance. Expects list or generator of edges
+        from the :py:class:`BioCypherEdge` class.
+
+        Args:
+        ----
+            edges (BioCypherEdge): a literable of edges in
+                :py:class:`BioCypherEdge` format
+
+        Returns:
+        -------
+            bool: The return value. True for success, False otherwise.
+
+        Todo:
+        ----
+            - currently works for mixed edges but in practice often is
+              called on one iterable containing one type of edge only
+
+        """
         if not isinstance(edges, Iterable):
             logger.error("Edges must be passed as iterable.")
             return False
