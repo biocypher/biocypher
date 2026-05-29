@@ -969,13 +969,6 @@ def test_write_duplicate_edges(bw, _get_edges):
 
 @pytest.mark.parametrize("length", [4], scope="module")
 def test_write_edges_all_duplicates(bw, _get_edges):
-    """Second call with the same edges is a full no-op after dedup.
-
-    Reproduces a regression in the streaming refactor where
-    ``write_edges`` returns ``False`` (and logs an error) when every
-    incoming edge has already been seen by the deduplicator, even
-    though there is nothing to do and no failure occurred.
-    """
     edges = _get_edges
 
     first = bw.write_edges(edges)
