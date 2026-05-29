@@ -1119,7 +1119,7 @@ class _BatchWriter(_Writer, ABC):
                     self.translator.ontology.mapping.extended_schema.get(
                         schema_label,
                     ).get("use_id")
-                    == False
+                    == False  # noqa: E712 (seems to not work with 'not')
                 ):
                     skip_id = True
 
