@@ -116,7 +116,7 @@ neo4j:
   ## Import call prefixes
 
   # import_call_bin_prefix: bin/
-  # import_call_file_prefix: path/to/files/
+  # import_call_file_prefix: path/to/files/  # optional; defaults to the output directory
 
   # The shell with which to execute the import script file.
   shell: system  # Either 'system' (the system's shell) or the path to your shell of choice.
