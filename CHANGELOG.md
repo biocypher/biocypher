@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.15.0](https://github.com/biocypher/biocypher/compare/biocypher-v0.14.1...biocypher-v0.15.0) (2026-05-29)
+
+
+### Features
+
+* **batch_writer:** stream edge processing in offline mode to eliminate unbounded memory usage ([#539](https://github.com/biocypher/biocypher/issues/539)) ([206145b](https://github.com/biocypher/biocypher/commit/206145b7091a391c9ebaf4dd3d6749973729fe7d))
+
+
+### Bug Fixes
+
+* **core:** _add_edges called non-existent method and wrong driver method ([#538](https://github.com/biocypher/biocypher/issues/538)) ([c58c75b](https://github.com/biocypher/biocypher/commit/c58c75b11a6a04a541e3aba857f6378810b6decd))
+
+
+### Documentation
+
+* clarify Neo4j import file prefix ([#535](https://github.com/biocypher/biocypher/issues/535)) ([b2ec20f](https://github.com/biocypher/biocypher/commit/b2ec20f48f4ef3eb6bf4372c6f5edcba659014d9))
+* clarify Ruff development workflow ([#536](https://github.com/biocypher/biocypher/issues/536)) ([1c91dfc](https://github.com/biocypher/biocypher/commit/1c91dfc424d7df33df15a3ca92afb0401f13453b))
+* **config:** add merge_nodes example to tail_ontologies in biocypher_config.yaml ([#532](https://github.com/biocypher/biocypher/issues/532)) ([f761fdb](https://github.com/biocypher/biocypher/commit/f761fdbf6b98a5049000c1ea63e0fdee619df69d))
+
 ## [0.14.1](https://github.com/biocypher/biocypher/compare/biocypher-v0.14.0...biocypher-v0.14.1) (2026-05-26)
 
 
