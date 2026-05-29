@@ -968,6 +968,17 @@ def test_write_duplicate_edges(bw, _get_edges):
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
+def test_write_edges_all_duplicates(bw, _get_edges):
+    edges = _get_edges
+
+    first = bw.write_edges(edges)
+    second = bw.write_edges(edges)
+
+    assert first
+    assert second, "all-deduplicated write_edges call should succeed, not error"
+
+
+@pytest.mark.parametrize("length", [4], scope="module")
 def test_BioCypherRelAsNode_implementation(bw, _get_rel_as_nodes):
     trips = _get_rel_as_nodes
 
