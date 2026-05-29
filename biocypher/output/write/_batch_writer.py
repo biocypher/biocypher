@@ -405,7 +405,7 @@ class _BatchWriter(_Writer, ABC):
 
         Args:
         ----
-            nodes (BioCypherNode): a literable of nodes in
+            nodes (BioCypherNode): an iterable of nodes in
                 :py:class:`BioCypherNode` format
 
             batch_size (int): The batch size for writing nodes.
@@ -443,7 +443,7 @@ class _BatchWriter(_Writer, ABC):
 
         Args:
         ----
-            edges (BioCypherEdge): a literable of edges in
+            edges (BioCypherEdge): an iterable of edges in
                 :py:class:`BioCypherEdge` or :py:class:`BioCypherRelAsNode`
                 format
 
@@ -456,8 +456,8 @@ class _BatchWriter(_Writer, ABC):
         empty = True
         has_node = False
 
-        nodes_proceed, nodes_flush = self._create_write_node_data_handles(batch_size)
-        edges_proceed, edges_flush = self._crete_write_edge_data_handles(batch_size)
+        consume_nodes, flush_nodes = self._create_write_node_data_handlers(batch_size)
+        consume_edges, flush_edges = self._create_write_edge_data_handlers(batch_size)
         for edge in edges:
             empty = False
             if isinstance(edge, BioCypherRelAsNode):
@@ -466,9 +466,9 @@ class _BatchWriter(_Writer, ABC):
                     continue
 
                 passed = (
-                    nodes_proceed(edge.get_node())
-                    and edges_proceed(edge.get_source_edge())
-                    and edges_proceed(edge.get_target_edge())
+                    consume_nodes(edge.get_node())
+                    and consume_edges(edge.get_source_edge())
+                    and consume_edges(edge.get_target_edge())
                 )
                 if not passed:
                     break
@@ -479,11 +479,11 @@ class _BatchWriter(_Writer, ABC):
                 if self.deduplicator.edge_seen(edge):
                     continue
 
-                passed = edges_proceed(edge)
+                passed = consume_edges(edge)
                 if not passed:
                     break
 
-        passed = passed and nodes_flush() and edges_flush()
+        passed = passed and flush_nodes() and flush_edges()
 
         if empty:
             # is this a problem? if the generator or list is empty, we
@@ -567,7 +567,7 @@ class _BatchWriter(_Writer, ABC):
 
         Args:
         ----
-            nodes (BioCypherNode): a literable of nodes in
+            nodes (BioCypherNode): an iterable of nodes in
                 :py:class:`BioCypherNode` format
 
             batch_size (int): The number of nodes per type to buffer before
@@ -585,16 +585,16 @@ class _BatchWriter(_Writer, ABC):
             logger.error("Nodes must be passed as an iterable.")
             return False
 
-        proceed, flush = self._create_write_node_data_handles(batch_size, force)
+        consume, flush = self._create_write_node_data_handlers(batch_size, force)
         for node in nodes:
-            if not proceed(node):
+            if not consume(node):
                 return False
         return flush()
 
-    def _create_write_node_data_handles(self, batch_size, force: bool = False):
+    def _create_write_node_data_handlers(self, batch_size, force: bool = False):
         """Create node-writing closures for streamed input.
 
-        The returned `proceed` closure consumes one
+        The returned `consume` closure consumes one
         :py:class:`BioCypherNode` at a time and flushes full batches to disk.
         The returned `flush` closure writes remaining buffered nodes and stores
         discovered node properties in :py:attr:`self.node_property_dict`.
@@ -609,7 +609,7 @@ class _BatchWriter(_Writer, ABC):
 
         Returns:
         -------
-            tuple[Callable, Callable]: `(proceed, flush)` where `proceed`
+            tuple[Callable, Callable]: `(consume, flush)` where `consume`
                 processes one node and `flush` writes all remaining buffers.
 
         """
@@ -626,7 +626,7 @@ class _BatchWriter(_Writer, ABC):
         labels = {}  # dict to store the additional labels for each
 
         # primary graph constituent from biolink hierarchy
-        def proceed(node):
+        def consume(node):
             nonlocal empty
             if empty:
                 logger.debug("Writing node CSV from generator.")
@@ -736,7 +736,7 @@ class _BatchWriter(_Writer, ABC):
 
             return True
 
-        return proceed, flush
+        return consume, flush
 
     def _write_single_node_list_to_file(
         self,
@@ -842,7 +842,7 @@ class _BatchWriter(_Writer, ABC):
 
         Args:
         ----
-            edges (BioCypherEdge): a literable of edges in
+            edges (BioCypherEdge): an iterable of edges in
                 :py:class:`BioCypherEdge` format
 
         Returns:
@@ -859,17 +859,18 @@ class _BatchWriter(_Writer, ABC):
             logger.error("Edges must be passed as iterable.")
             return False
 
-        proceed, flush = self._crete_write_edge_data_handles(batch_size)
+        consume, flush = self._create_write_edge_data_handlers(batch_size)
         for edge in edges:
-            if not proceed(edge):
+            if not consume(edge):
                 return False
         return flush()
 
-    # FIXME why does _write_node_data has a `force` arg, and not _write_edge_data?
-    def _crete_write_edge_data_handles(self, batch_size):
+    # No `force` arg: only nodes need to bypass ontology lookup, for the
+    # synthetic `schema_info` node written by `_core.py`.
+    def _create_write_edge_data_handlers(self, batch_size):
         """Create edge-writing closures for streamed input.
 
-        The returned `proceed` closure consumes one
+        The returned `consume` closure consumes one
         :py:class:`BioCypherEdge` at a time and flushes full batches to disk.
         The returned `flush` closure writes remaining buffered edges and stores
         discovered edge properties in :py:attr:`self.edge_property_dict`.
@@ -882,7 +883,7 @@ class _BatchWriter(_Writer, ABC):
 
         Returns:
         -------
-            tuple[Callable, Callable]: `(proceed, flush)` where `proceed`
+            tuple[Callable, Callable]: `(consume, flush)` where `consume`
                 processes one edge and `flush` writes all remaining buffers.
 
         Todo:
@@ -902,7 +903,7 @@ class _BatchWriter(_Writer, ABC):
 
         # for each label to check for consistency and their type
         # for now, relevant for `int`
-        def proceed(edge):
+        def consume(edge):
             nonlocal empty
             if empty:
                 logger.debug("Writing edge CSV from generator.")
@@ -1018,7 +1019,7 @@ class _BatchWriter(_Writer, ABC):
 
             return True
 
-        return proceed, flush
+        return consume, flush
 
     def _write_single_edge_list_to_file(
         self,
