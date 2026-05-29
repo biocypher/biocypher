@@ -1,4 +1,5 @@
 import os
+from unittest.mock import MagicMock, patch
 
 import pytest
 import yaml
@@ -140,6 +141,22 @@ def test_get_writer_in_online_mode(core):
         with pytest.raises(NotImplementedError) as e:
             core._initialize_writer()
         assert str(e.value) == "Cannot get writer in online mode."
+
+
+@pytest.mark.parametrize("length", [4], scope="function")
+def test_online_add_edges_calls_add_biocypher_edges(core, _get_edges):
+    """_add_edges must call add_biocypher_edges (not add_biocypher_nodes) on the driver."""
+    mock_driver = MagicMock()
+    mock_driver.add_biocypher_edges.return_value = True
+
+    core._offline = False
+    core._dbms = "neo4j"
+
+    with patch.object(core, "_get_driver", return_value=mock_driver):
+        core.write_edges(_get_edges)
+
+    mock_driver.add_biocypher_edges.assert_called_once()
+    mock_driver.add_biocypher_nodes.assert_not_called()
 
 
 def test_pandas_and_tabular_work_in_offline_mode(tmp_path):
