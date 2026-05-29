@@ -452,7 +452,7 @@ class _BatchWriter(_Writer, ABC):
             bool: The return value. True for success, False otherwise.
 
         """
-        passed = False
+        passed = True
         empty = True
         has_node = False
 
@@ -486,8 +486,6 @@ class _BatchWriter(_Writer, ABC):
         passed = passed and flush_nodes() and flush_edges()
 
         if empty:
-            # is this a problem? if the generator or list is empty, we
-            # don't write anything.
             logger.debug(
                 "No edges to write, possibly due to no matched Biolink classes.",
             )
