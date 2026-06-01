@@ -1,6 +1,5 @@
 import warnings
 
-
 from biocypher._mapping import OntologyMapping
 
 # TODO migrate as appropriate from test translate
@@ -78,6 +77,97 @@ def test_input_label_accepted_as_label_in_input():
     dep_warnings = [w for w in caught if issubclass(w.category, DeprecationWarning)]
     assert len(dep_warnings) == 0
     assert extended["protein"]["input_label"] == "protein"
+
+
+def test_inherit_properties_merges_parent_exclude_properties():
+    """Children with inherit_properties inherit parent exclude_properties as a list.
+
+    Previously this raised ValueError/AttributeError because the code initialised
+    exclude_properties as a dict and called .update() on it with a string/list value.
+    """
+    m = OntologyMapping()
+    m.schema = {
+        "parent entity": {
+            "represented_as": "node",
+            "namespace": "uniprot",
+            "input_label": "parent",
+            "properties": {"name": "str", "sequence": "str"},
+            "exclude_properties": "sequence",
+        },
+        "child entity": {
+            "is_a": "parent entity",
+            "represented_as": "node",
+            "namespace": "uniprot",
+            "input_label": "child",
+            "inherit_properties": True,
+        },
+    }
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        extended = m._extend_schema(d=m.schema)
+
+    child = extended["child entity"]
+    assert "sequence" in child["exclude_properties"]
+    assert "name" in child["properties"]
+    assert "sequence" in child["properties"]
+
+
+def test_inherit_properties_merges_parent_exclude_properties_list():
+    """Parent exclude_properties defined as a list is correctly merged into child."""
+    m = OntologyMapping()
+    m.schema = {
+        "parent entity": {
+            "represented_as": "node",
+            "namespace": "uniprot",
+            "input_label": "parent",
+            "properties": {"name": "str", "seq": "str", "accession": "str"},
+            "exclude_properties": ["seq", "accession"],
+        },
+        "child entity": {
+            "is_a": "parent entity",
+            "represented_as": "node",
+            "namespace": "uniprot",
+            "input_label": "child",
+            "inherit_properties": True,
+        },
+    }
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        extended = m._extend_schema(d=m.schema)
+
+    child = extended["child entity"]
+    assert "seq" in child["exclude_properties"]
+    assert "accession" in child["exclude_properties"]
+
+
+def test_inherit_properties_child_exclude_not_overwritten():
+    """Child's own exclude_properties are preserved and parent's are appended."""
+    m = OntologyMapping()
+    m.schema = {
+        "parent entity": {
+            "represented_as": "node",
+            "namespace": "uniprot",
+            "input_label": "parent",
+            "properties": {"name": "str", "seq": "str", "local": "str"},
+            "exclude_properties": "seq",
+        },
+        "child entity": {
+            "is_a": "parent entity",
+            "represented_as": "node",
+            "namespace": "uniprot",
+            "input_label": "child",
+            "inherit_properties": True,
+            "exclude_properties": "local",
+        },
+    }
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        extended = m._extend_schema(d=m.schema)
+
+    child = extended["child entity"]
+    excl = child["exclude_properties"]
+    assert "local" in excl
+    assert "seq" in excl
 
 
 def test_label_in_input_emits_deprecation_warning():
