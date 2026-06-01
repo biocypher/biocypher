@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.15.1](https://github.com/biocypher/biocypher/compare/biocypher-v0.15.0...biocypher-v0.15.1) (2026-06-01)
+
+
+### Bug Fixes
+
+* **batch_writer:** infer typed array annotations for list properties not in schema ([#533](https://github.com/biocypher/biocypher/issues/533)) ([2cd4042](https://github.com/biocypher/biocypher/commit/2cd404241c102fecbe62d03d70d07514e4257c43))
+* **mapping:** correctly merge parent exclude_properties in vertical inheritance ([#542](https://github.com/biocypher/biocypher/issues/542)) ([4c78eff](https://github.com/biocypher/biocypher/commit/4c78effe5e758916fe94551296f1cc2796010e2e))
+* **sqlite:** add set -e to import script and skip test when sqlite3 CLI absent ([#541](https://github.com/biocypher/biocypher/issues/541)) ([4c09af3](https://github.com/biocypher/biocypher/commit/4c09af307486e05c0a157828d31ea308b0466446))
+
 ## [0.15.0](https://github.com/biocypher/biocypher/compare/biocypher-v0.14.1...biocypher-v0.15.0) (2026-05-29)
 
 
