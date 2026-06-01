@@ -154,16 +154,25 @@ class OntologyMapping:
                 if "properties" not in v:
                     v["properties"] = {}
                 if "exclude_properties" not in v:
-                    v["exclude_properties"] = {}
+                    v["exclude_properties"] = []
 
                 # update properties of child
                 parent_props = self.schema[parent].get("properties", {})
                 if parent_props:
                     v["properties"].update(parent_props)
 
-                parent_excl_props = self.schema[parent].get("exclude_properties", {})
+                parent_excl_props = self.schema[parent].get("exclude_properties")
                 if parent_excl_props:
-                    v["exclude_properties"].update(parent_excl_props)
+                    if isinstance(parent_excl_props, str):
+                        parent_excl_props = [parent_excl_props]
+                    child_excl = v["exclude_properties"]
+                    if isinstance(child_excl, str):
+                        child_excl = [child_excl]
+                    merged = list(child_excl)
+                    for p in parent_excl_props:
+                        if p not in merged:
+                            merged.append(p)
+                    v["exclude_properties"] = merged
 
                 # update schema (d)
                 d[k] = v
