@@ -106,7 +106,7 @@ neo4j:
   skip_bad_relationships: false
 
   # import_call_bin_prefix: bin/
-  # import_call_file_prefix: path/to/files/
+  # import_call_file_prefix: path/to/files/  # optional; defaults to the output directory
 
 #---- PostgreSQL database management system
 postgresql:

@@ -57,6 +57,10 @@ biocypher:
   # cache_directory: .cache
 
   ## Optional tail ontologies
+  ## merge_nodes (bool, default true): if true, head and tail join nodes are
+  ## merged into a single node; if false, the tail join node is added as a
+  ## child of the head join node (useful when the concept does not already
+  ## exist in the head ontology).
 
   # tail_ontologies:
   #   so:
@@ -64,11 +68,13 @@ biocypher:
   #     head_join_node: sequence variant
   #     tail_join_node: sequence_variant
   #     switch_label_and_id: true
+  #     merge_nodes: true  # (default) merge head and tail join nodes into one
   #   mondo:
   #     url: test/ontologies/mondo.owl
   #     head_join_node: disease
-  #     tail_join_node: disease
+  #     tail_join_node: human disease
   #     switch_label_and_id: true
+  #     merge_nodes: false  # attach tail join node as child of head join node
 
 ### DBMS configuration ###
 
@@ -116,7 +122,7 @@ neo4j:
   ## Import call prefixes
 
   # import_call_bin_prefix: bin/
-  # import_call_file_prefix: path/to/files/
+  # import_call_file_prefix: path/to/files/  # optional; defaults to the output directory
 
   # The shell with which to execute the import script file.
   shell: system  # Either 'system' (the system's shell) or the path to your shell of choice.

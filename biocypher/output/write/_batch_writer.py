@@ -6,11 +6,9 @@ import re
 
 from abc import ABC, abstractmethod
 from collections import OrderedDict, defaultdict
-from types import GeneratorType
+from collections.abc import Iterable
 
 import networkx
-
-from more_itertools import peekable
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._deduplicate import Deduplicator
@@ -355,7 +353,7 @@ class _BatchWriter(_Writer, ABC):
             logger.error(msg)
             raise ValueError(msg)
 
-        elif self.labels_order != "None":
+        if self.labels_order != "None":
             if self.edge_labels_order != self.labels_order or self.node_labels_order != self.labels_order:
                 msg = (
                     f"`labels_order`=`{self.labels_order}` "
@@ -366,12 +364,12 @@ class _BatchWriter(_Writer, ABC):
                 logger.info(msg)
 
             if self.node_labels_order == "None":
-                msg = "`node_labels_order` set to `labels_order`=" f"`{self.labels_order}`."
+                msg = f"`node_labels_order` set to `labels_order`=`{self.labels_order}`."
                 self.node_labels_order = self.labels_order
                 logger.info(msg)
 
             if self.edge_labels_order == "None":
-                msg = "`node_labels_order` set to `labels_order`=" f"`{self.labels_order}`."
+                msg = f"`node_labels_order` set to `labels_order`=`{self.labels_order}`."
                 self.edge_labels_order = self.labels_order
                 logger.info(msg)
 
@@ -383,8 +381,7 @@ class _BatchWriter(_Writer, ABC):
         """Property for output directory path."""
         if self._import_call_file_prefix is None:
             return self.outdir
-        else:
-            return self._import_call_file_prefix
+        return self._import_call_file_prefix
 
     def _process_delimiter(self, delimiter: str) -> str:
         """Process a delimited to escape correctly.
@@ -401,15 +398,14 @@ class _BatchWriter(_Writer, ABC):
         if delimiter == "\\t":
             return "\t", "\\t"
 
-        else:
-            return delimiter, delimiter
+        return delimiter, delimiter
 
     def write_nodes(self, nodes, batch_size: int = int(1e6), force: bool = False):
         """Write nodes and their headers.
 
         Args:
         ----
-            nodes (BioCypherNode): a list or generator of nodes in
+            nodes (BioCypherNode): an iterable of nodes in
                 :py:class:`BioCypherNode` format
 
             batch_size (int): The batch size for writing nodes.
@@ -440,14 +436,14 @@ class _BatchWriter(_Writer, ABC):
 
     def write_edges(
         self,
-        edges: list | GeneratorType,
+        edges: Iterable,
         batch_size: int = int(1e6),
     ) -> bool:
         """Write edges and their headers.
 
         Args:
         ----
-            edges (BioCypherEdge): a list or generator of edges in
+            edges (BioCypherEdge): an iterable of edges in
                 :py:class:`BioCypherEdge` or :py:class:`BioCypherRelAsNode`
                 format
 
@@ -456,39 +452,40 @@ class _BatchWriter(_Writer, ABC):
             bool: The return value. True for success, False otherwise.
 
         """
-        passed = False
-        edges = list(edges)  # force evaluation to handle empty generator
-        if edges:
-            nodes_flat = []
-            edges_flat = []
-            for edge in edges:
-                if isinstance(edge, BioCypherRelAsNode):
-                    # check if relationship has already been written, if so skip
-                    if self.deduplicator.rel_as_node_seen(edge):
-                        continue
+        passed = True
+        empty = True
+        has_node = False
 
-                    nodes_flat.append(edge.get_node())
-                    edges_flat.append(edge.get_source_edge())
-                    edges_flat.append(edge.get_target_edge())
+        consume_nodes, flush_nodes = self._create_write_node_data_handlers(batch_size)
+        consume_edges, flush_edges = self._create_write_edge_data_handlers(batch_size)
+        for edge in edges:
+            empty = False
+            if isinstance(edge, BioCypherRelAsNode):
+                # check if relationship has already been written, if so skip
+                if self.deduplicator.rel_as_node_seen(edge):
+                    continue
 
-                else:
-                    # check if relationship has already been written, if so skip
-                    if self.deduplicator.edge_seen(edge):
-                        continue
-
-                    edges_flat.append(edge)
-
-            if nodes_flat and edges_flat:
-                passed = self.write_nodes(nodes_flat) and self._write_edge_data(
-                    edges_flat,
-                    batch_size,
+                passed = (
+                    consume_nodes(edge.get_node())
+                    and consume_edges(edge.get_source_edge())
+                    and consume_edges(edge.get_target_edge())
                 )
-            else:
-                passed = self._write_edge_data(edges_flat, batch_size)
+                if not passed:
+                    break
 
-        else:
-            # is this a problem? if the generator or list is empty, we
-            # don't write anything.
+                has_node = True
+            else:
+                # check if relationship has already been written, if so skip
+                if self.deduplicator.edge_seen(edge):
+                    continue
+
+                passed = consume_edges(edge)
+                if not passed:
+                    break
+
+        passed = passed and flush_nodes() and flush_edges()
+
+        if empty:
             logger.debug(
                 "No edges to write, possibly due to no matched Biolink classes.",
             )
@@ -496,6 +493,14 @@ class _BatchWriter(_Writer, ABC):
         if not passed:
             logger.error("Error while writing edge data.")
             return False
+
+        if has_node:
+            # pass property data to header writer per node type written
+            passed = self._write_node_headers()
+            if not passed:
+                logger.error("Error while writing node headers.")
+                return False
+
         # pass property data to header writer per edge type written
         passed = self._write_edge_headers()
         if not passed:
@@ -540,7 +545,7 @@ class _BatchWriter(_Writer, ABC):
                 case _:
                     # In case someone touched _label_orders after constructor.
                     if labels_order not in self._labels_orders:
-                        msg = f"Invalid labels_order: {labels_order}. " f"Must be one of {self._labels_orders}"
+                        msg = f"Invalid labels_order: {labels_order}. Must be one of {self._labels_orders}"
                         raise ValueError(msg)
             # concatenate with array delimiters
             all_labels = self._write_array_string(all_labels)
@@ -560,102 +565,155 @@ class _BatchWriter(_Writer, ABC):
 
         Args:
         ----
-            nodes (BioCypherNode): a list or generator of nodes in
+            nodes (BioCypherNode): an iterable of nodes in
                 :py:class:`BioCypherNode` format
+
+            batch_size (int): The number of nodes per type to buffer before
+                flushing a CSV part file.
+
+            force (bool): Whether to bypass ontology lookups for labels while
+                writing node labels.
 
         Returns:
         -------
             bool: The return value. True for success, False otherwise.
 
         """
-        if isinstance(nodes, GeneratorType | peekable):
-            logger.debug("Writing node CSV from generator.")
+        if not isinstance(nodes, Iterable):
+            logger.error("Nodes must be passed as an iterable.")
+            return False
 
-            bins = defaultdict(list)  # dict to store a list for each
-            # label that is passed in
-            bin_l = {}  # dict to store the length of each list for
-            # batching cutoff
-            reference_props = defaultdict(
-                dict,
-            )  # dict to store a dict of properties
-            # for each label to check for consistency and their type
-            # for now, relevant for `int`
-            labels = {}  # dict to store the additional labels for each
-            # primary graph constituent from biolink hierarchy
-            for node in nodes:
-                # check if node has already been written, if so skip
-                if self.deduplicator.node_seen(node):
-                    continue
+        consume, flush = self._create_write_node_data_handlers(batch_size, force)
+        for node in nodes:
+            if not consume(node):
+                return False
+        return flush()
 
-                _id = node.get_id()
-                label = node.get_label()
+    def _create_write_node_data_handlers(self, batch_size, force: bool = False):
+        """Create node-writing closures for streamed input.
 
-                # check for non-id
-                if not _id:
-                    logger.warning(f"Node {label} has no id; skipping.")
-                    continue
+        The returned `consume` closure consumes one
+        :py:class:`BioCypherNode` at a time and flushes full batches to disk.
+        The returned `flush` closure writes remaining buffered nodes and stores
+        discovered node properties in :py:attr:`self.node_property_dict`.
 
-                if label not in bins.keys():
-                    # start new list
-                    bins[label].append(node)
-                    bin_l[label] = 1
+        Args:
+        ----
+            batch_size (int): The number of nodes per type to buffer before
+                writing a part file.
 
-                    # get properties from config if present
-                    if label in self.translator.ontology.mapping.extended_schema:
-                        cprops = self.translator.ontology.mapping.extended_schema.get(label).get(
-                            "properties",
-                        )
-                    else:
-                        cprops = None
-                    if cprops:
-                        d = dict(cprops)
+            force (bool): Whether to bypass ontology lookups for labels while
+                writing node labels.
 
-                        # add id and preferred id to properties; these are
-                        # created in node creation (`_create.BioCypherNode`)
-                        d["id"] = "str"
-                        d["preferred_id"] = "str"
+        Returns:
+        -------
+            tuple[Callable, Callable]: `(consume, flush)` where `consume`
+                processes one node and `flush` writes all remaining buffers.
 
-                        # add strict mode properties
-                        if self.strict_mode:
-                            d["source"] = "str"
-                            d["version"] = "str"
-                            d["licence"] = "str"
+        """
+        empty = True
+        bins = defaultdict(list)  # dict to store a list for each
+        # label that is passed in
+        bin_l = {}  # dict to store the length of each list for
+        # batching cutoff
+        reference_props = defaultdict(
+            dict,
+        )  # dict to store a dict of properties
+        # for each label to check for consistency and their type
+        # for now, relevant for `int`
+        labels = {}  # dict to store the additional labels for each
 
-                    else:
-                        d = dict(node.get_properties())
-                        # encode property type
-                        for k, v in d.items():
-                            if d[k] is not None:
-                                d[k] = type(v).__name__
-                    # else use first encountered node to define properties for
-                    # checking; could later be by checking all nodes but much
-                    # more complicated, particularly involving batch writing
-                    # (would require "do-overs"). for now, we output a warning
-                    # if node properties diverge from reference properties (in
-                    # write_single_node_list_to_file) TODO if it occurs, ask
-                    # user to select desired properties and restart the process
+        # primary graph constituent from biolink hierarchy
+        def consume(node):
+            nonlocal empty
+            if empty:
+                logger.debug("Writing node CSV from generator.")
+                empty = False
 
-                    reference_props[label] = d
-                    labels[label] = self._get_all_labels(label, self.node_labels_order, force)
+            # check if node has already been written, if so skip
+            if self.deduplicator.node_seen(node):
+                return True
+
+            _id = node.get_id()
+            label = node.get_label()
+
+            # check for non-id
+            if not _id:
+                logger.warning(f"Node {label} has no id; skipping.")
+                return True
+
+            if label not in bins:
+                # start new list
+                bins[label].append(node)
+                bin_l[label] = 1
+
+                # get properties from config if present
+                if label in self.translator.ontology.mapping.extended_schema:
+                    cprops = self.translator.ontology.mapping.extended_schema.get(label).get(
+                        "properties",
+                    )
+                else:
+                    cprops = None
+                if cprops:
+                    d = dict(cprops)
+
+                    # add id and preferred id to properties; these are
+                    # created in node creation (`_create.BioCypherNode`)
+                    d["id"] = "str"
+                    d["preferred_id"] = "str"
+
+                    # add strict mode properties
+                    if self.strict_mode:
+                        d["source"] = "str"
+                        d["version"] = "str"
+                        d["licence"] = "str"
 
                 else:
-                    # add to list
-                    bins[label].append(node)
-                    bin_l[label] += 1
-                    if not bin_l[label] < batch_size:
-                        # batch size controlled here
-                        passed = self._write_single_node_list_to_file(
-                            bins[label],
-                            label,
-                            reference_props[label],
-                            labels[label],
-                        )
+                    d = dict(node.get_properties())
+                    # encode property type
+                    for k, v in d.items():
+                        if v is not None:
+                            if isinstance(v, list):
+                                elem_type = type(v[0]).__name__ if v else "str"
+                                d[k] = f"{elem_type}[]"
+                            else:
+                                d[k] = type(v).__name__
+                # else use first encountered node to define properties for
+                # checking; could later be by checking all nodes but much
+                # more complicated, particularly involving batch writing
+                # (would require "do-overs"). for now, we output a warning
+                # if node properties diverge from reference properties (in
+                # write_single_node_list_to_file) TODO if it occurs, ask
+                # user to select desired properties and restart the process
 
-                        if not passed:
-                            return False
+                reference_props[label] = d
+                labels[label] = self._get_all_labels(label, self.node_labels_order, force)
 
-                        bins[label] = []
-                        bin_l[label] = 0
+            else:
+                # add to list
+                bins[label].append(node)
+                bin_l[label] += 1
+                if not bin_l[label] < batch_size:
+                    # batch size controlled here
+                    passed = self._write_single_node_list_to_file(
+                        bins[label],
+                        label,
+                        reference_props[label],
+                        labels[label],
+                    )
+
+                    if not passed:
+                        return False
+
+                    bins[label] = []
+                    bin_l[label] = 0
+
+            return True
+
+        def flush():
+            nonlocal empty
+            if empty:
+                return True
 
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
@@ -675,19 +733,12 @@ class _BatchWriter(_Writer, ABC):
             # properties in the generator pass
 
             # save config or first-node properties to instance attribute
-            for label in reference_props.keys():
+            for label in reference_props:
                 self.node_property_dict[label] = reference_props[label]
 
             return True
-        elif not isinstance(nodes, list):
-            logger.error("Nodes must be passed as list or generator.")
-            return False
-        else:
 
-            def gen(nodes):
-                yield from nodes
-
-            return self._write_node_data(gen(nodes), batch_size=batch_size)
+        return consume, flush
 
     def _write_single_node_list_to_file(
         self,
@@ -781,7 +832,6 @@ class _BatchWriter(_Writer, ABC):
 
         return True
 
-    # FIXME why does _write_node_data has a `force` arg, and not _write_edge_data?
     def _write_edge_data(self, edges, batch_size):
         """Write biocypher edges to CSV.
 
@@ -794,7 +844,7 @@ class _BatchWriter(_Writer, ABC):
 
         Args:
         ----
-            edges (BioCypherEdge): a list or generator of edges in
+            edges (BioCypherEdge): an iterable of edges in
                 :py:class:`BioCypherEdge` format
 
         Returns:
@@ -807,99 +857,151 @@ class _BatchWriter(_Writer, ABC):
               called on one iterable containing one type of edge only
 
         """
-        if isinstance(edges, GeneratorType):
-            logger.debug("Writing edge CSV from generator.")
+        if not isinstance(edges, Iterable):
+            logger.error("Edges must be passed as iterable.")
+            return False
 
-            bins = defaultdict(list)  # dict to store a list for each
-            # label that is passed in
-            bin_l = {}  # dict to store the length of each list for
-            # batching cutoff
-            reference_props = defaultdict(
-                dict,
-            )  # dict to store a dict of properties
-            # for each label to check for consistency and their type
-            # for now, relevant for `int`
-            for edge in edges:
-                if not (edge.get_source_id() and edge.get_target_id()):
-                    logger.error(
-                        f"Edge must have source and target node. Caused by: {edge}",
+        consume, flush = self._create_write_edge_data_handlers(batch_size)
+        for edge in edges:
+            if not consume(edge):
+                return False
+        return flush()
+
+    # No `force` arg: only nodes need to bypass ontology lookup, for the
+    # synthetic `schema_info` node written by `_core.py`.
+    def _create_write_edge_data_handlers(self, batch_size):
+        """Create edge-writing closures for streamed input.
+
+        The returned `consume` closure consumes one
+        :py:class:`BioCypherEdge` at a time and flushes full batches to disk.
+        The returned `flush` closure writes remaining buffered edges and stores
+        discovered edge properties in :py:attr:`self.edge_property_dict`.
+        This must run before `_write_edge_headers()`.
+
+        Args:
+        ----
+            batch_size (int): The number of edges per type to buffer before
+                writing a part file.
+
+        Returns:
+        -------
+            tuple[Callable, Callable]: `(consume, flush)` where `consume`
+                processes one edge and `flush` writes all remaining buffers.
+
+        Todo:
+        ----
+            - currently works for mixed edges but in practice often is
+              called on one iterable containing one type of edge only
+
+        """
+        empty = True
+        bins = defaultdict(list)  # dict to store a list for each
+        # label that is passed in
+        bin_l = {}  # dict to store the length of each list for
+        # batching cutoff
+        reference_props = defaultdict(
+            dict,
+        )  # dict to store a dict of properties
+
+        # for each label to check for consistency and their type
+        # for now, relevant for `int`
+        def consume(edge):
+            nonlocal empty
+            if empty:
+                logger.debug("Writing edge CSV from generator.")
+                empty = False
+
+            if not (edge.get_source_id() and edge.get_target_id()):
+                logger.error(
+                    f"Edge must have source and target node. Caused by: {edge}",
+                )
+                return True
+
+            label = edge.get_label()
+
+            if label not in bins:
+                # start new list
+                bins[label].append(edge)
+                bin_l[label] = 1
+
+                # get properties from config if present
+
+                # check whether label is in ontology_adapter.leaves
+                # (may not be if it is an edge that carries the
+                # "label_as_edge" property)
+                cprops = None
+                if label in self.translator.ontology.mapping.extended_schema:
+                    cprops = self.translator.ontology.mapping.extended_schema.get(label).get(
+                        "properties",
                     )
-                    continue
+                else:
+                    # try via "label_as_edge"
+                    for (
+                        k,
+                        v,
+                    ) in self.translator.ontology.mapping.extended_schema.items():
+                        if isinstance(v, dict):
+                            if v.get("label_as_edge") == label:
+                                cprops = v.get("properties")
+                                logger.warning(
+                                    "`label_as_edge` will be deprecated in a future version,"
+                                    "please use edge types that exists in your ontology's taxonomy.",
+                                )
+                                break
+                if cprops:
+                    d = dict(cprops)
 
-                label = edge.get_label()
-
-                if label not in bins.keys():
-                    # start new list
-                    bins[label].append(edge)
-                    bin_l[label] = 1
-
-                    # get properties from config if present
-
-                    # check whether label is in ontology_adapter.leaves
-                    # (may not be if it is an edge that carries the
-                    # "label_as_edge" property)
-                    cprops = None
-                    if label in self.translator.ontology.mapping.extended_schema:
-                        cprops = self.translator.ontology.mapping.extended_schema.get(label).get(
-                            "properties",
-                        )
-                    else:
-                        # try via "label_as_edge"
-                        for (
-                            k,
-                            v,
-                        ) in self.translator.ontology.mapping.extended_schema.items():
-                            if isinstance(v, dict):
-                                if v.get("label_as_edge") == label:
-                                    cprops = v.get("properties")
-                                    logger.warning(
-                                        "`label_as_edge` will be deprecated in a future version,"
-                                        "please use edge types that exists in your ontology's taxonomy."
-                                    )
-                                    break
-                    if cprops:
-                        d = dict(cprops)
-
-                        # add strict mode properties
-                        if self.strict_mode:
-                            d["source"] = "str"
-                            d["version"] = "str"
-                            d["licence"] = "str"
-
-                    else:
-                        d = dict(edge.get_properties())
-                        # encode property type
-                        for k, v in d.items():
-                            if d[k] is not None:
-                                d[k] = type(v).__name__
-                    # else use first encountered edge to define
-                    # properties for checking; could later be by
-                    # checking all edges but much more complicated,
-                    # particularly involving batch writing (would
-                    # require "do-overs"). for now, we output a warning
-                    # if edge properties diverge from reference
-                    # properties (in write_single_edge_list_to_file)
-                    # TODO
-
-                    reference_props[label] = d
+                    # add strict mode properties
+                    if self.strict_mode:
+                        d["source"] = "str"
+                        d["version"] = "str"
+                        d["licence"] = "str"
 
                 else:
-                    # add to list
-                    bins[label].append(edge)
-                    bin_l[label] += 1
-                    if not bin_l[label] < batch_size:
-                        # batch size controlled here
-                        passed = self._write_single_edge_list_to_file(
-                            bins[label],
-                            label,
-                            reference_props[label],
-                        )
+                    d = dict(edge.get_properties())
+                    # encode property type
+                    for k, v in d.items():
+                        if v is not None:
+                            if isinstance(v, list):
+                                elem_type = type(v[0]).__name__ if v else "str"
+                                d[k] = f"{elem_type}[]"
+                            else:
+                                d[k] = type(v).__name__
+                # else use first encountered edge to define
+                # properties for checking; could later be by
+                # checking all edges but much more complicated,
+                # particularly involving batch writing (would
+                # require "do-overs"). for now, we output a warning
+                # if edge properties diverge from reference
+                # properties (in write_single_edge_list_to_file)
+                # TODO
 
-                        if not passed:
-                            return False
+                reference_props[label] = d
 
-                        bins[label] = []
-                        bin_l[label] = 0
+            else:
+                # add to list
+                bins[label].append(edge)
+                bin_l[label] += 1
+                if not bin_l[label] < batch_size:
+                    # batch size controlled here
+                    passed = self._write_single_edge_list_to_file(
+                        bins[label],
+                        label,
+                        reference_props[label],
+                    )
+
+                    if not passed:
+                        return False
+
+                    bins[label] = []
+                    bin_l[label] = 0
+
+            return True
+
+        def flush():
+            nonlocal empty
+            if empty:
+                return True
 
             # after generator depleted, write remainder of bins
             for label, nl in bins.items():
@@ -918,19 +1020,12 @@ class _BatchWriter(_Writer, ABC):
             # properties in the generator pass
 
             # save first-edge properties to instance attribute
-            for label in reference_props.keys():
+            for label in reference_props:
                 self.edge_property_dict[label] = reference_props[label]
 
             return True
-        elif not isinstance(edges, list):
-            logger.error("Edges must be passed as list or generator.")
-            return False
-        else:
 
-            def gen(edges):
-                yield from edges
-
-            return self._write_edge_data(gen(edges), batch_size=batch_size)
+        return consume, flush
 
     def _write_single_edge_list_to_file(
         self,

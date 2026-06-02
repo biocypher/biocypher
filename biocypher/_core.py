@@ -451,9 +451,7 @@ class BioCypher:
                 self._initialize_in_memory_kg()
             passed = self._in_memory_kg.add_edges(translated_edges)
         else:
-            if not self._driver:
-                self._initialize_driver()
-            passed = self._driver.add_biocypher_nodes(translated_edges)
+            passed = self._get_driver().add_biocypher_edges(translated_edges)
 
         return passed
 

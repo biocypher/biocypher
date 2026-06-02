@@ -359,6 +359,15 @@ def test_write_node_data_non_string_list_properties(bw):
     assert passed
     assert "1|2|3" in content
     assert "0.1|0.5|0.9" in content
+    # Verify that the inferred types in node_property_dict use "int[]" / "float[]"
+    # rather than the bare "list" that type(v).__name__ would previously return.
+    prop_types = bw.node_property_dict.get("post translational interaction", {})
+    assert prop_types.get("scores") == "int[]", (
+        f"Expected 'int[]' but got {prop_types.get('scores')!r}; " "list type inference is broken"
+    )
+    assert prop_types.get("weights") == "float[]", (
+        f"Expected 'float[]' but got {prop_types.get('weights')!r}; " "list type inference is broken"
+    )
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
@@ -897,6 +906,37 @@ def test_write_edge_data_boolean_properties(bw):
     assert "False" not in gene_gene
 
 
+def test_write_edge_data_non_string_list_properties(bw):
+    """List properties on edges must infer typed array annotations, not bare 'list'."""
+    edges = [
+        BioCypherEdge(
+            relationship_id="ph1",
+            source_id="p1",
+            target_id="p2",
+            relationship_label="phosphorylation",
+            properties={"sites": ["S100", "T200"], "scores": [0.8, 0.95]},
+        ),
+        BioCypherEdge(
+            relationship_id="ph2",
+            source_id="p3",
+            target_id="p4",
+            relationship_label="phosphorylation",
+            properties={"sites": ["Y50"], "scores": [0.6]},
+        ),
+    ]
+
+    passed = bw._write_edge_data(edges, batch_size=int(1e4))
+
+    assert passed
+    prop_types = bw.edge_property_dict.get("phosphorylation", {})
+    assert prop_types.get("sites") == "str[]", (
+        f"Expected 'str[]' but got {prop_types.get('sites')!r}; " "list type inference is broken for edges"
+    )
+    assert prop_types.get("scores") == "float[]", (
+        f"Expected 'float[]' but got {prop_types.get('scores')!r}; " "list type inference is broken for edges"
+    )
+
+
 @pytest.mark.parametrize("length", [8], scope="module")
 def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
     edges = _get_edges
@@ -965,6 +1005,17 @@ def test_write_duplicate_edges(bw, _get_edges):
     is_mutated_in = sum(1 for _ in open(is_mutated_in_csv))
 
     assert passed and perturbed_in_disease == 4 and is_mutated_in == 4
+
+
+@pytest.mark.parametrize("length", [4], scope="module")
+def test_write_edges_all_duplicates(bw, _get_edges):
+    edges = _get_edges
+
+    first = bw.write_edges(edges)
+    second = bw.write_edges(edges)
+
+    assert first
+    assert second, "all-deduplicated write_edges call should succeed, not error"
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
