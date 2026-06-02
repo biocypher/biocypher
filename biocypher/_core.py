@@ -633,12 +633,9 @@ class BioCypher:
         Get the set of duplicate nodes and edges encountered and print them to
         the logger.
         """
-        dn = self._deduplicator.get_duplicate_nodes()
+        ntypes, nids = self._deduplicator.get_duplicate_nodes()
 
-        if dn:
-            ntypes = dn[0]
-            nids = dn[1]
-
+        if len(nids) > 0:
             msg = "Duplicate node types encountered (IDs in log): \n"
             for typ in ntypes:
                 msg += f"    {typ}\n"
@@ -654,12 +651,9 @@ class BioCypher:
         else:
             logger.info("No duplicate nodes in input.")
 
-        de = self._deduplicator.get_duplicate_edges()
+        etypes, eids = self._deduplicator.get_duplicate_edges()
 
-        if de:
-            etypes = de[0]
-            eids = de[1]
-
+        if len(eids) > 0:
             msg = "Duplicate edge types encountered (IDs in log): \n"
             for typ in etypes:
                 msg += f"    {typ}\n"
