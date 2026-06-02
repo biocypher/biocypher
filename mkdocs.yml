@@ -60,6 +60,8 @@ nav:
               - Data harmonization and merging (Advanced): learn/tutorials/tutorial002_handling_ontologies.md
           - LLM-assisted UI track:
               - Agent API (Beginner): learn/tutorials/agent_api_guide.md
+          - OntoWeaver track:
+              - OntoWeaver Tutorial (Beginner): learn/tutorials/tutorial_ontoweaver/tutorial_ontoweaver.md
 
       - HowTo / FAQ:
           - Overview: learn/guides/index.md
