@@ -232,6 +232,10 @@ class Translator:
         for _id, _src, _tar, _type, _props in edge_tuples:
             # check for strict mode requirements
             if self.strict_mode:
+                # rename 'license' to 'licence' in _props
+                if _props.get("license"):
+                    _props["licence"] = _props.pop("license")
+
                 if "source" not in _props:
                     msg = (
                         f"Edge {_id if _id else (_src, _tar)} does not have a `source` property."
@@ -242,6 +246,13 @@ class Translator:
                 if "licence" not in _props:
                     msg = (
                         f"Edge {_id if _id else (_src, _tar)} does not have a `licence` property."
+                        " This is required in strict mode.",
+                    )
+                    logger.error(msg)
+                    raise ValueError(msg)
+                if "version" not in _props:
+                    msg = (
+                        f"Edge {_id if _id else (_src, _tar)} does not have a `version` property."
                         " This is required in strict mode.",
                     )
                     logger.error(msg)

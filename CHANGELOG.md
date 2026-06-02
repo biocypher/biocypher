@@ -1,5 +1,44 @@
 # Changelog
 
+## [0.15.1](https://github.com/biocypher/biocypher/compare/biocypher-v0.15.0...biocypher-v0.15.1) (2026-06-01)
+
+
+### Bug Fixes
+
+* **batch_writer:** infer typed array annotations for list properties not in schema ([#533](https://github.com/biocypher/biocypher/issues/533)) ([2cd4042](https://github.com/biocypher/biocypher/commit/2cd404241c102fecbe62d03d70d07514e4257c43))
+* **mapping:** correctly merge parent exclude_properties in vertical inheritance ([#542](https://github.com/biocypher/biocypher/issues/542)) ([4c78eff](https://github.com/biocypher/biocypher/commit/4c78effe5e758916fe94551296f1cc2796010e2e))
+* **sqlite:** add set -e to import script and skip test when sqlite3 CLI absent ([#541](https://github.com/biocypher/biocypher/issues/541)) ([4c09af3](https://github.com/biocypher/biocypher/commit/4c09af307486e05c0a157828d31ea308b0466446))
+
+## [0.15.0](https://github.com/biocypher/biocypher/compare/biocypher-v0.14.1...biocypher-v0.15.0) (2026-05-29)
+
+
+### Features
+
+* **batch_writer:** stream edge processing in offline mode to eliminate unbounded memory usage ([#539](https://github.com/biocypher/biocypher/issues/539)) ([206145b](https://github.com/biocypher/biocypher/commit/206145b7091a391c9ebaf4dd3d6749973729fe7d))
+
+
+### Bug Fixes
+
+* **core:** _add_edges called non-existent method and wrong driver method ([#538](https://github.com/biocypher/biocypher/issues/538)) ([c58c75b](https://github.com/biocypher/biocypher/commit/c58c75b11a6a04a541e3aba857f6378810b6decd))
+
+
+### Documentation
+
+* clarify Neo4j import file prefix ([#535](https://github.com/biocypher/biocypher/issues/535)) ([b2ec20f](https://github.com/biocypher/biocypher/commit/b2ec20f48f4ef3eb6bf4372c6f5edcba659014d9))
+* clarify Ruff development workflow ([#536](https://github.com/biocypher/biocypher/issues/536)) ([1c91dfc](https://github.com/biocypher/biocypher/commit/1c91dfc424d7df33df15a3ca92afb0401f13453b))
+* **config:** add merge_nodes example to tail_ontologies in biocypher_config.yaml ([#532](https://github.com/biocypher/biocypher/issues/532)) ([f761fdb](https://github.com/biocypher/biocypher/commit/f761fdbf6b98a5049000c1ea63e0fdee619df69d))
+
+## [0.14.1](https://github.com/biocypher/biocypher/compare/biocypher-v0.14.0...biocypher-v0.14.1) (2026-05-26)
+
+
+### Bug Fixes
+
+* **batch_writer:** stringify list elements before joining in _write_array_string ([#524](https://github.com/biocypher/biocypher/issues/524)) ([9f2b153](https://github.com/biocypher/biocypher/commit/9f2b1531133e3b7106fac4c1a6bfc7ca61f85c96))
+* **create:** replace elif with if for reserved keyword checks in BioCypherEdge ([#526](https://github.com/biocypher/biocypher/issues/526)) ([06f75c1](https://github.com/biocypher/biocypher/commit/06f75c1e7cc71f15f962e29285e6832a6cba8a71))
+* **get:** treat lifetime=0 as permanent cache (never re-download) ([#525](https://github.com/biocypher/biocypher/issues/525)) ([fc6b092](https://github.com/biocypher/biocypher/commit/fc6b092a4f3438ba8a3da2eec50f5153eb29c165))
+* **parse_label:** guard against IndexError when label has no compliant characters ([#529](https://github.com/biocypher/biocypher/issues/529)) ([a8a4f8e](https://github.com/biocypher/biocypher/commit/a8a4f8ef1d1815c2a023a617bed3a0e1cb0be51e))
+* **translate:** require 'version' and accept 'license' for edges in strict mode ([#527](https://github.com/biocypher/biocypher/issues/527)) ([e902ea3](https://github.com/biocypher/biocypher/commit/e902ea3a484a5ea799b5d3b203d33885e126425a))
+
 ## [0.14.0](https://github.com/biocypher/biocypher/compare/biocypher-v0.13.6...biocypher-v0.14.0) (2026-05-21)
 
 
