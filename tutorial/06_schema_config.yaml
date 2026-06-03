@@ -1,6 +1,6 @@
 protein:
     represented_as: node
-    preferred_id: [uniprot, entrez]
+    namespace: [uniprot, entrez]
     input_label: [uniprot_protein, entrez_protein]
     properties:
         sequence: str
@@ -12,13 +12,13 @@ protein isoform:
     is_a: protein
     inherit_properties: true
     represented_as: node
-    preferred_id: uniprot
+    namespace: uniprot
     input_label: uniprot_isoform
 
 protein protein interaction:
     is_a: pairwise molecular interaction
     represented_as: node
-    preferred_id: intact
+    namespace: intact
     input_label: interacts_with
     properties:
         method: str
