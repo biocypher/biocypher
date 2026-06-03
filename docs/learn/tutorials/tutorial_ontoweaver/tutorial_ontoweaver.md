@@ -23,17 +23,26 @@ By the end of this tutorial, you will be able to:
 
 The workflow in this tutorial is:
 
-```text
-CSV/TSV data
-    ↓
-YAML mapping
-    ↓
-OntoWeaver
-    ↓
-BioCypher offline files
-    ↓
-Neo4j
+```mermaid
+flowchart TD
+    A["CSV/TSV data"] --> B["YAML mapping"]
+    B --> C["OntoWeaver"]
+    C --> D["BioCypher offline files"]
+    D --> E["Neo4j"]
+
+    A:::data
+    B:::config
+    C:::tool
+    D:::output
+    E:::database
+
+    classDef data fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#0D47A1;
+    classDef config fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#E65100;
+    classDef tool fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1B5E20;
+    classDef output fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px,color:#4A148C;
+    classDef database fill:#ECEFF1,stroke:#37474F,stroke-width:2px,color:#263238;
 ```
+
 
 ## Pre-requisites
 
@@ -56,44 +65,45 @@ In this section, you will set up your working environment.
 
 1. Create a folder that will become your repository for our OntoWeaver adapter with the correct folder structure:
 
-```bash
-mkdir tutorial-ontoweaver
-cd tutorial-ontoweaver
-mkdir -p config data/in
-```
-Here, the folder `config` will contain all the configuration (schema) files, while the folder `data/in` will contain the tabular data that will be converted into a semantic knowledge graph. 
+    ```bash
+    mkdir tutorial-ontoweaver
+    cd tutorial-ontoweaver
+    mkdir -p config data/in
+    ```
+    Here, the folder `config` will contain all the configuration (schema) files, while the folder `data/in` will contain the tabular data that will be converted into a semantic knowledge graph. 
 
 2. Install the dependencies using your preferred package manager (e.g. uv, Poetry or pip):
 
-You should always first create a dedicated Python environment for your project, and then install the dependencies into the environment. Environments can be managed by [conda](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html), [uv](https://docs.astral.sh/uv/pip/environments/) ,[poetry](https://python-poetry.org/docs/managing-environments/) or [venv](https://docs.python.org/3/library/venv.html), for example.
+    You should always first create a dedicated Python environment for your project, and then install the dependencies into the environment. Environments can be managed by [conda](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html), [uv](https://docs.astral.sh/uv/pip/environments/), [poetry](https://python-poetry.org/docs/managing-environments/) or [venv](https://docs.python.org/3/library/venv.html), for example.
 
-After you have created your environment, activate the environment and install the required packages using your preferred package manager.
+    After you have created your environment, activate the environment and install the required packages using your preferred package manager.
 
-**Using uv: (recommended)**
-```bash
-uv add ontoweaver
-uv sync
-```
+    **Using uv: (recommended)**
+    ```bash
+    uv init
+    uv add ontoweaver
+    uv sync
+    ```
 
-**Using pip:**
-```bash
-pip install ontoweaver
-```
+    **Using pip:**
+    ```bash
+    pip install ontoweaver
+    ```
 
-You also need to install Jupyter into your environment, i.e. `pip install jupyter`, if later you want to explore the sample data in a Jupyter notebook.
+    You also need to install Jupyter into your environment, i.e. `pip install jupyter`, if later you want to explore the sample data in a Jupyter notebook.
 
 3. Test the OntoWeaver installation:
 
-You can test if OntoWeaver is installed correctly by calling the CLI with:
+    You can test if OntoWeaver is installed correctly by calling the CLI with:
 
-```bash
-uv run ontoweave --help
-```
-if you are using uv, or 
-```bash
-ontoweave --help
-```
-for a pip installation.
+    ```bash
+    uv run ontoweave --help
+    ```
+    if you are using uv, or 
+    ```bash
+    ontoweave --help
+    ```
+    for a pip installation.
 
 ### Setup Neo4j
 > **Note:**
@@ -491,7 +501,7 @@ The `activation:` top-level key in the YAML snippet identifies our edge entity.
 | Key                  | Value                         | Description                                                                                           |
 | -------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `is_a`               | `protein protein interaction` | Defines the type of entity; in this case, it is a child of the base edge we defined previously.       |
-| `inherit_properties` | `true`                        | Indicates whether all propertuniproties defined in the base edge should be inherited.                        |
+| `inherit_properties` | `true`                        | Indicates whether all propertuniproties defined in the base edge should be inherited.                 |
 | `represented_as`     | `edge`                        | Specifies that BioCypher will treat this entity (`activation`) as an edge.                            |
 | `input_label`        | `binding`                     | Specifies the expected edge label; edges without this label are ignored unless defined in the schema. |
 
@@ -524,6 +534,19 @@ Figure 10 illustrates the Biolink Model and some of its components organized in 
         represented_as: node
         preferred_id: uniprot
         input_label: protein
+
+    #====   INHERITED NODES
+    protein_source:
+        is_a: protein
+        represented_as: node
+        preferred_id: uniprot
+        input_label: protein_source
+
+    protein_target:
+        is_a: protein
+        represented_as: node
+        preferred_id: uniprot
+        input_label: protein_target
 
     #-------------------------------------------------------------------
     #------------------      RELATIONSHIPS (EDGES)     -----------------
@@ -561,7 +584,7 @@ Figure 10 illustrates the Biolink Model and some of its components organized in 
         input_label: inhibition
 
     phosphorylation:
-        is_a: protein protein interactionuniprot
+        is_a: protein protein interaction
         inherit_properties: true
         represented_as: edge
         input_label: phosphorylation
@@ -571,7 +594,6 @@ Figure 10 illustrates the Biolink Model and some of its components organized in 
         inherit_properties: true
         represented_as: edge
         input_label: ubiquitination
-
     ```
 
 #### Configure BioCypher behavior
@@ -708,7 +730,7 @@ The section `transformers` then links the other nodes to it using the described 
 
 Consult the full [mapping reference](https://ontoweaver.readthedocs.io/en/latest/sections/mapping_api.html) for more information.
 
-## Mapping structure explanation
+#### Mapping structure explanation
 
 ```yaml
 row: # The meaning of an entry in the input table.
@@ -742,63 +764,124 @@ metadata: # Optional properties added to every node and edge.
 
     ```yaml
     row: # The meaning of an entry in the input table.
-       map:
-          column: source
-          to_subject: protein
+        map:
+            column: source
+            to_subject: protein_source
+            final_type: protein
 
     transformers: # How to map cells to nodes and edges.
         - map: # Map a column to a node.
             column: target
-            to_object: protein
-            via_relation: protein_protein_interaction
+            match_type_from_column: type
+            match:
+                - (?i)^activation$:
+                        to_object: protein_target
+                        final_type: protein
+                        via_relation: activation
+                - (?i)^binding$:
+                        to_object: protein_target
+                        final_type: protein
+                        via_relation: binding
+                - (?i)^inhibition$:
+                        to_object: protein_target
+                        final_type: protein
+                        via_relation: inhibition
+                - (?i)^phosphorylation$:
+                        to_object: protein_target
+                        final_type: protein
+                        via_relation: phosphorylation
+                - (?i)^ubiquitination$:
+                        to_object: protein_target
+                        final_type: protein
+                        via_relation: ubiquitination
+                - ^.*$:
+                        to_object: protein_target
+                        final_type: protein
+                        via_relation: protein_protein_interaction
         - map: # Map a column to an edge.
             column: is_directed
             to_property: is_directed
-            for_object: protein_protein_interaction
+            for_object:
+                - protein_protein_interaction
+                - activation
+                - binding
+                - inhibition
+                - phosphorylation
+                - ubiquitination
         - map:
             column: is_stimulation
             to_property: is_stimulation
-            for_object: protein_protein_interaction
+            for_object:
+                - protein_protein_interaction
+                - activation
+                - binding
+                - inhibition
+                - phosphorylation
+                - ubiquitination
         - map:
             column: is_inhibition
             to_property: is_inhibition
-            for_object: protein_protein_interaction
+            for_object:
+                - protein_protein_interaction
+                - activation
+                - binding
+                - inhibition
+                - phosphorylation
+                - ubiquitination
         - map:
             column: consensus_direction
             to_property: consensus_direction
-            for_object: protein_protein_interaction
+            for_object:
+                - protein_protein_interaction
+                - activation
+                - binding
+                - inhibition
+                - phosphorylation
+                - ubiquitination
         - map:
             column: consensus_stimulation
             to_property: consensus_stimulation
-            for_object: protein_protein_interaction
+            for_object:
+                - protein_protein_interaction
+                - activation
+                - binding
+                - inhibition
+                - phosphorylation
+                - ubiquitination
         - map:
             column: consensus_inhibition
             to_property: consensus_inhibition
-            for_object: protein_protein_interaction
+            for_object:
+                - protein_protein_interaction
+                - activation
+                - binding
+                - inhibition
+                - phosphorylation
+                - ubiquitination
         - map:
             column: source_genesymbol
             to_property: genesymbol
-            for_subject: protein
+            for_subject: protein_source
         - map:
             column: ncbi_tax_id_source
             to_property: ncbi_tax_id
-            for_subject: protein
+            for_subject: protein_source
         - map:
             column: entity_type_source
             to_property: entity_type
-            for_subject: protein
+            for_subject: protein_source
         - map:
             column: target_genesymbol
             to_property: genesymbol
-            for_object: protein
+            for_object: protein_target
         - map:
             column: ncbi_tax_id_target
             to_property: ncbi_tax_id
-            for_object: protein
+            for_object: protein_target
         - map:
             column: entity_type_target
             to_property: entity_type
-            for_object: protein
+            for_object: protein_target
 
     metadata: # Optional properties added to every node and edge.
         - source: "Synthetic protein interaction dataset"
@@ -987,7 +1070,7 @@ d. If everything has been successfully, you should see in terminal something sim
 a. Connect to your instance by running Neo4j desktop again. Select your instance and click on "Connect" - the little arrow on the button allows you to expand a menu. Select the option *Query*.
 
 <figure markdown="span">
-![Image title](./assets/neo4j_explore_graph.png){ width="1000" }
+![Image title](../tutorial_basics_neo4j_offline/assets/neo4j_explore_graph.png){ width="1000" }
 <figcaption>Figure 13. Query and Explore options to run on a Neo4j instance.</figcaption>
 </figure>
 
@@ -1075,9 +1158,9 @@ If you found this tutorial helpful or have suggestions for improvement, please *
 
 ---
 
-| Last Update | Developed by                                            | Affiliation                                                                                                                                                                  |
-| :---------: | :------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026.06.03  | Inga Ulusoy (GH @iulusoy) <br> Yasamin Fazeli (GH @yasfazl) | [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) <br> [Saezlab](https://saezlab.org/) - [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) |
+| Last Update | Developed by                                                | Affiliation                                                                                                                                 |
+| :---------: | :---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026.06.03  | Inga Ulusoy (GH @iulusoy) <br> Yasamin Fazeli (GH @yasfazl) | [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) <br>  [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) |
 
 
 ## Summary
