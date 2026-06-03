@@ -328,7 +328,7 @@ To achieve this, we can divide the process into three sections:
      - Process data
      - Stream processed data
 
-3. [Knowledge Graph script](#step-3-create-a-knowledge-graph-script)
+3. [Create the knowledge graph by running OntoWeaver](#step-3-create-the-knowledge-graph-by-running-ontoweaver)
 
 
 ### Step 1. Configuration
@@ -523,7 +523,7 @@ Figure 10 illustrates the Biolink Model and some of its components organized in 
     protein:
         represented_as: node
         preferred_id: uniprot
-        input_label: uniprot_protein
+        input_label: protein
 
     #-------------------------------------------------------------------
     #------------------      RELATIONSHIPS (EDGES)     -----------------
@@ -741,11 +741,76 @@ metadata: # Optional properties added to every node and edge.
     **File: `protein_interactions_mapping.yaml`**
 
     ```yaml
-    mapping file:
+    row: # The meaning of an entry in the input table.
+       map:
+          column: source
+          to_subject: protein
+
+    transformers: # How to map cells to nodes and edges.
+        - map: # Map a column to a node.
+            column: target
+            to_object: protein
+            via_relation: protein_protein_interaction
+        - map: # Map a column to an edge.
+            column: is_directed
+            to_property: is_directed
+            for_object: protein_protein_interaction
+        - map:
+            column: is_stimulation
+            to_property: is_stimulation
+            for_object: protein_protein_interaction
+        - map:
+            column: is_inhibition
+            to_property: is_inhibition
+            for_object: protein_protein_interaction
+        - map:
+            column: consensus_direction
+            to_property: consensus_direction
+            for_object: protein_protein_interaction
+        - map:
+            column: consensus_stimulation
+            to_property: consensus_stimulation
+            for_object: protein_protein_interaction
+        - map:
+            column: consensus_inhibition
+            to_property: consensus_inhibition
+            for_object: protein_protein_interaction
+        - map:
+            column: source_genesymbol
+            to_property: genesymbol
+            for_subject: protein
+        - map:
+            column: ncbi_tax_id_source
+            to_property: ncbi_tax_id
+            for_subject: protein
+        - map:
+            column: entity_type_source
+            to_property: entity_type
+            for_subject: protein
+        - map:
+            column: target_genesymbol
+            to_property: genesymbol
+            for_object: protein
+        - map:
+            column: ncbi_tax_id_target
+            to_property: ncbi_tax_id
+            for_object: protein
+        - map:
+            column: entity_type_target
+            to_property: entity_type
+            for_object: protein
+
+    metadata: # Optional properties added to every node and edge.
+        - source: "Synthetic protein interaction dataset"
+        - version: "tutorial-example"
     ```
 
 
-## Run OntoWeaver
+## Step 3. Create the knowledge graph by running OntoWeaver
+
+**Rationale:** OntoWeaver will use the mapping and the ontology that are provided to create the required input for BioCypher, and run BioCypher.
+
+Run Ontoweaver with the following command:
 
 ```bash
 ontoweave \
@@ -753,21 +818,49 @@ ontoweave \
   --biocypher-schema config/schema_config.yaml \
   data/in/synthetic_protein_interactions.tsv:config/protein_interactions_mapping.yaml
 ```
-
-Output files will be generated in:
-
-```text
-biocypher-out/<timestamp>/
+This triggers the command-line interface to OntoWeaver and passes the necessary configuration files. You should see an output like
+```
+INFO -- This is BioCypher v0.15.0.
+INFO -- Logging into `biocypher-log/biocypher-20260603-091220.log`.
+WARNING:ontoweaver:Skip output validation for columns: `target`. This could result in some empty or `nan` nodes. To enable output validation set `validate_output` to `True`.
+WARNING -- Neo4j supports only edge_labels_order: 'Leaves', I'll set it for you, but you should fix your configuration file in the `neo4j` section.
+WARNING:biocypher:Neo4j supports only edge_labels_order: 'Leaves', I'll set it for you, but you should fix your configuration file in the `neo4j` section.
+/home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603091221/neo4j-admin-import-call.sh
 ```
 
----
+## Section 4. Interacting with your graph using Neo4j
 
-## Import into Neo4j
+### Load the graph using an import script
 
-Stop Neo4j:
+When you create the knowledge graph with OntoWeaver and it completes successfully, it generates several CSV files and an import script to load the graph data into Neo4j.
+
+a. Look for a folder whose name starts with `biocypher-out`. Each time you run the script, a new folder is created inside `biocypher-out` with a timestamp. Inside this folder, you should see the following:
+
+🟨 CSV files associated to **nodes**.
+
+🟦 CSV files associated to **edges**.
+
+🟥 admin import script
+
+```
+/biocypher-out
+└── 20250818153026
+    ├── 🟦 ProteinProteinInteraction-header.csv
+    ├── 🟦 ProteinProteinInteraction-part000.csv
+    ├── 🟥 neo4j-admin-import-call.sh
+    ├── 🟨 Protein-header.csv
+    ├── 🟨 Protein-part000.csv
+```
+
+b. Stop the neo4j instance. You can do this on the GUI or in terminal. In terminal, you must locate the `neo4j` executable in the Neo4j instance path. 
 
 ```bash
-/path/to/neo4j/bin/neo4j stop
+<path of your Neo4j instance>/bin/neo4j stop
+```
+
+c. Run the  `neo4j-admin-import-call.sh` script in your `biocypher-output/`. **If needed, install and activate Java 21 before running** (TODO verify this is required on Windows)**:
+```bash
+bash ./biocypher-out/20260603085652/neo4j-admin-import-call.sh
 ```
 
 !!! warning "Neo4j Java version"
@@ -780,53 +873,212 @@ Stop Neo4j:
     java -version
     ```
 
-    If needed, install and activate Java 21 before running
-    `neo4j-admin-import-call.sh`.
+d. If everything has been successfully, you should see in terminal something similar to this:
 
-Run the import script:
+??? info "Terminal output:"
 
-```bash
-bash biocypher-out/<timestamp>/neo4j-admin-import-call.sh
+    ```
+    Neo4j detected version: 2026
+    Starting to import, the following output will be saved in the directory: /home/inga/neo4j_data/Application/Data/dbmss/dbms-00aec91a-7031-49e0-b119-efb693863648/logs/neo4j-admin-import-2026-06-03.08.47.52
+      Logging information: import.log
+      Detailed progress reporting (JSON formatted): progress.json.log
+      Import data errors / violations (JSON formatted): report.json.log
+
+    NOTE this directory will be cleared on the completion of a successful import.
+
+    Neo4j version: 2026.04.0
+    Importing the contents of these files into /home/inga/neo4j_data/Application/Data/dbmss/dbms-00aec91a-7031-49e0-b119-efb693863648/data/databases/neo4j:
+    Nodes:
+      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Protein-header.csv
+      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Protein-part000.csv
+
+    Relationships:
+      null:
+      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/ProteinProteinInteraction-header.csv
+      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/ProteinProteinInteraction-part000.csv
+
+
+    Available resources:
+      Total machine memory: 30.33GiB
+      Free machine memory: 15.70GiB
+      Max heap memory : 910.5MiB
+      Max worker threads: 16
+      Configured max memory: 13.42GiB
+      High parallel IO: true
+
+    Import starting
+      Page cache size: 1.992GiB
+      Number of worker threads: 16
+      Estimated number of nodes: 15
+      Estimated number of relationships: 21
+
+    Importing nodes
+    .......... .......... .......... .......... ..........   5% ∆87ms [87ms] 
+    .......... .......... .......... .......... ..........  10% ∆0ms [88ms] 
+    .......... .......... .......... .......... ..........  15% ∆0ms [88ms] 
+    .......... .......... .......... .......... ..........  20% ∆0ms [88ms] 
+    .......... .......... .......... .......... ..........  25% ∆0ms [88ms] 
+    .......... .......... .......... .......... ..........  30% ∆0ms [88ms] 
+    .......... .......... .......... .......... ..........  35% ∆0ms [88ms] 
+    .......... .......... .......... .......... ..........  40% ∆0ms [89ms] 
+    .......... .......... .......... .......... ..........  45% ∆0ms [89ms] 
+    .......... .......... .......... .......... ..........  50% ∆0ms [89ms] 
+    .......... .......... .......... .......... ..........  55% ∆0ms [89ms] 
+    .......... .......... .......... .......... ..........  60% ∆0ms [89ms] 
+    .......... .......... .......... .......... ..........  65% ∆0ms [89ms] 
+    .......... .......... .......... .......... ..........  70% ∆0ms [89ms] 
+    .......... .......... .......... .......... ..........  75% ∆0ms [89ms] 
+    .......... .......... .......... .......... ..........  80% ∆0ms [89ms] 
+    .......... .......... .......... .......... ..........  85% ∆0ms [89ms] 
+    .......... .......... .......... .......... ..........  90% ∆0ms [89ms] 
+    .......... .......... .......... .......... ..........  95% ∆0ms [89ms] 
+    .......... .......... .......... .......... .......... 100% ∆0ms [89ms] 
+    Prepare ID mapper
+    .......... .......... .......... .......... ..........   5% ∆51ms [51ms] 
+    .......... .......... .......... .......... ..........  10% ∆0ms [51ms] 
+    .......... .......... .......... .......... ..........  15% ∆0ms [52ms] 
+    .......... .......... .......... .......... ..........  20% ∆0ms [52ms] 
+    .......... .......... .......... .......... ..........  25% ∆0ms [52ms] 
+    .......... .......... .......... .......... ..........  30% ∆0ms [52ms] 
+    .......... .......... .......... .......... ..........  35% ∆6ms [59ms] 
+    .......... .......... .......... .......... ..........  40% ∆0ms [59ms] 
+    .......... .......... .......... .......... ..........  45% ∆0ms [59ms] 
+    .......... .......... .......... .......... ..........  50% ∆0ms [59ms] 
+    .......... .......... .......... .......... ..........  55% ∆0ms [60ms] 
+    .......... .......... .......... .......... ..........  60% ∆0ms [60ms] 
+    .......... .......... .......... .......... ..........  65% ∆0ms [60ms] 
+    .......... .......... .......... .......... ..........  70% ∆0ms [60ms] 
+    .......... .......... .......... .......... ..........  75% ∆0ms [60ms] 
+    .......... .......... .......... .......... ..........  80% ∆0ms [60ms] 
+    .......... .......... .......... .......... ..........  85% ∆0ms [60ms] 
+    .......... .......... .......... .......... ..........  90% ∆0ms [60ms] 
+    .......... .......... .......... .......... ..........  95% ∆0ms [60ms] 
+    .......... .......... .......... .......... .......... 100% ∆0ms [60ms] 
+    Imported Stats[processed=15, created=15, updated=0, deleted=0] nodes in 199ms
+      using configuration:Configuration[numberOfWorkers=16, temporaryPath=/home/inga/neo4j_data/Application/Data/dbmss/dbms-00aec91a-7031-49e0-b119-efb693863648/data/databases/neo4j/temp, applyBatchSize=64, sorterSizeSwitchFactor=0.35]
+    Importing relationships
+    .......... .......... .......... .......... ..........   5% ∆38ms [38ms] 
+    .......... .......... .......... .......... ..........  10% ∆0ms [38ms] 
+    .......... .......... .......... .......... ..........  15% ∆0ms [38ms] 
+    .......... .......... .......... .......... ..........  20% ∆0ms [38ms] 
+    .......... .......... .......... .......... ..........  25% ∆0ms [38ms] 
+    .......... .......... .......... .......... ..........  30% ∆0ms [38ms] 
+    .......... .......... .......... .......... ..........  35% ∆0ms [38ms] 
+    .......... .......... .......... .......... ..........  40% ∆0ms [38ms] 
+    .......... .......... .......... .......... ..........  45% ∆0ms [38ms] 
+    .......... .......... .......... .......... ..........  50% ∆0ms [39ms] 
+    .......... .......... .......... .......... ..........  55% ∆0ms [39ms] 
+    .......... .......... .......... .......... ..........  60% ∆0ms [39ms] 
+    .......... .......... .......... .......... ..........  65% ∆0ms [39ms] 
+    .......... .......... .......... .......... ..........  70% ∆0ms [39ms] 
+    .......... .......... .......... .......... ..........  75% ∆0ms [39ms] 
+    .......... .......... .......... .......... ..........  80% ∆0ms [39ms] 
+    .......... .......... .......... .......... ..........  85% ∆0ms [39ms] 
+    .......... .......... .......... .......... ..........  90% ∆0ms [39ms] 
+    .......... .......... .......... .......... ..........  95% ∆0ms [39ms] 
+    .......... .......... .......... .......... .......... 100% ∆0ms [39ms] 
+    Imported Stats[processed=21, created=21, updated=0, deleted=0] relationships in 105ms
+    Flushing stores
+    Flush completed in 48ms
+    IMPORT DONE in 1s 344ms.
+    ```
+
+### Visualize the graph
+a. Connect to your instance by running Neo4j desktop again. Select your instance and click on "Connect" - the little arrow on the button allows you to expand a menu. Select the option *Query*.
+
+<figure markdown="span">
+![Image title](./assets/neo4j_explore_graph.png){ width="1000" }
+<figcaption>Figure 13. Query and Explore options to run on a Neo4j instance.</figcaption>
+</figure>
+
+b. Now, click on the asterisk under the Relationships category. You now should see your graph! Compare to the sketch you did previosly in this tutorial
+
+<figure markdown="span">
+![Image title](../tutorial_basics_neo4j_offline/assets/neo4j_final_graph.png){ width="1000" }
+<figcaption>Figure 14. Neo4j graph based on our data.</figcaption>
+</figure>
+
+
+### Execute cypher queries
+
+Try the following queries:
+
+1. Find relationships between two nodes
+```cypher
+MATCH (a)-[r]->(b)
+RETURN a, r, b;
 ```
+Result:
 
-Start Neo4j:
+<figure markdown="span">
+![Image title](../tutorial_basics_neo4j_offline/assets/neo4j_query_1.png){ width="500" }
+</figure>
 
-```bash
-/path/to/neo4j/bin/neo4j start
-
-transformers: # How to map cells to nodes and edges.
-    - map: # Map a column to a node.
-        column: target
-        to_object: protein
-        via_relation: protein protein interaction
-
-    - map: # Map a column to a property.
-        column: type
-        to_property: interaction_type
-        for_object: protein protein interaction
-
-metadata: # Optional properties added to every node and edge.
-    - source: "Synthetic protein interaction dataset"
-    - version: "tutorial-example"
-```
-
----
-
-## Query the graph
+2. Find all the nodes
 
 ```cypher
 MATCH (n)
-RETURN n
-LIMIT 25;
+RETURN n;
 ```
+Result:
+
+<figure markdown="span">
+![Image title](../tutorial_basics_neo4j_offline/assets/neo4j_query_2.png){ width="500" }
+</figure>
+
+3. Find all nodes of a specific type(e.g. `Protein` in the following query)
 
 ```cypher
-MATCH (a)-[r]->(b)
-RETURN a, r, b
-LIMIT 25;
+MATCH (n:Protein)
+RETURN n;
 ```
+Result:
+
+<figure markdown="span">
+![Image title](../tutorial_basics_neo4j_offline/assets/neo4j_query_3.png){ width="500" }
+</figure>
+
+4. Find all relationships of a specific type(e.g. `Binding` in the following query)
+
+```cypher
+MATCH (a)-[r:Binding]->(b)
+RETURN a, r, b;
+```
+Result:
+
+<figure markdown="span">
+![Image title](../tutorial_basics_neo4j_offline/assets/neo4j_query_4.png){ width="500" }
+</figure>
+
+5. Count relationships of a given type(e.g. `Binding` in the following query)
+
+```cypher
+MATCH (a)-[r:Binding]->(b)
+RETURN COUNT(r) AS totalBindings;
+```
+Result:
+
+<figure markdown="span">
+![Image title](../tutorial_basics_neo4j_offline/assets/neo4j_query_5.png){ width="250" }
+</figure>
 
 ---
+
+## Next Steps
+- Explore more advanced queries and graph analytics in Neo4j.
+- Try integrating additional datasets or expanding your graph model. For guidance, see the [Basics](https://biocypher.org/BioCypher/learn/tutorials/tutorial001_basics/) tutorial.
+- Review the [BioCypher documentation](https://biocypher.org/) for deeper insights.
+
+## Feedback & Contributions
+
+If you found this tutorial helpful or have suggestions for improvement, please **open an issue** or **submit a pull request** in the [BioCypher repository](https://github.com/biocypher/biocypher/issues/new/choose). Specific feedback on examples, clarity of instructions, or missing details is especially appreciated.
+
+---
+
+| Last Update | Developed by                                            | Affiliation                                                                                                                                                                  |
+| :---------: | :------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026.06.03  | Inga Ulusoy (GH @iulusoy) <br> Yasamin Fazeli (GH @yasfazl) | [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) <br> [Saezlab](https://saezlab.org/) - [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) |
+
 
 ## Summary
 

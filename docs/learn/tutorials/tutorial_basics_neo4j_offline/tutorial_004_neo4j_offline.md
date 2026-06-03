@@ -1604,4 +1604,4 @@ If you found this tutorial helpful or have suggestions for improvement, please *
 
 | Last Update | Developed by                                            | Affiliation                                                                                                                                                                  |
 | :---------: | :------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2025.20.18  | Shuangshuang Li <br> Edwin Carreño (GH @ecarrenolozano) | [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) <br> [Saezlab](https://saezlab.org/) - [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) |
+| 2025.20.18  | Shuangshuang Li <br> Edwin Carreño (GH @ecarrenolozano) <br> Inga Ulusoy (GH @iulusoy) | [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) <br> [Saezlab](https://saezlab.org/) - [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) |
