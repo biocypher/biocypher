@@ -171,7 +171,9 @@ class Translator:
             raise AttributeError(msg)
 
         # strict mode: add required properties (only if there is a whitelist)
+        # copy to avoid permanently mutating the shared schema dict
         if self.strict_mode and filter_props:
+            filter_props = dict(filter_props)
             filter_props.update(
                 {"source": "str", "licence": "str", "version": "str"},
             )
