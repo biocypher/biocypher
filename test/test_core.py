@@ -170,3 +170,36 @@ def test_pandas_and_tabular_work_in_offline_mode(tmp_path):
         )
         assert bc._dbms == dbms
         assert bc._offline
+
+
+def test_translate_term_via_core(core):
+    """BioCypher.translate_term must lazily initialise the translator and return the mapped label."""
+    assert core._translator is None
+    result = core.translate_term("hgnc")
+    assert result == "Gene"
+    assert core._translator is not None
+
+
+def test_reverse_translate_term_via_core(core):
+    """BioCypher.reverse_translate_term must lazily initialise the translator and reverse-map the label."""
+    assert core._translator is None
+    result = core.reverse_translate_term("Gene")
+    assert result is not None
+    assert "hgnc" in result
+
+
+def test_translate_query_via_core(core):
+    """BioCypher.translate_query must lazily initialise the translator and translate Cypher labels."""
+    assert core._translator is None
+    query = "MATCH (n:hgnc) RETURN n"
+    result = core.translate_query(query)
+    assert "Gene" in result
+    assert "hgnc" not in result
+
+
+def test_reverse_translate_query_via_core(core):
+    """BioCypher.reverse_translate_query must lazily initialise the translator."""
+    assert core._translator is None
+    query = "MATCH (n:Protein)-[r:POST_TRANSLATIONAL_INTERACTION]->(m:Protein) RETURN n"
+    result = core.reverse_translate_query(query)
+    assert isinstance(result, str)
