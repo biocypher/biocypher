@@ -498,8 +498,24 @@ def test_write_node_data_from_gen(bw, _get_nodes):
     if bw.file_format == "parquet":
         protein_rows = get_parquet_content_as_rows(protein_file)
         micro_rna_rows = get_parquet_content_as_rows(micro_rna_file)
-        assert any(r[0] == "p1" and r[1] == "StringProperty1" and r[2] == 4.0 for r in protein_rows)
-        assert any(r[0] == "m1" and r[1] == "StringProperty1" for r in micro_rna_rows)
+        assert protein_rows[0][:-1] == (
+            "p1",
+            "StringProperty1",
+            4.0,
+            9606,
+            ["gene1", "gene2"],
+            "p1",
+            "uniprot",
+        )
+        assert "BiologicalEntity" in protein_rows[0][-1]
+        assert micro_rna_rows[0][:-1] == (
+            "m1",
+            "StringProperty1",
+            9606,
+            "m1",
+            "mirbase",
+        )
+        assert "ChemicalEntity" in micro_rna_rows[0][-1]
     else:
         with open(protein_file) as f:
             protein = f.read()
@@ -556,8 +572,18 @@ def test_write_node_data_from_gen_no_props(bw):
     if bw.file_format == "parquet":
         protein_rows = get_parquet_content_as_rows(protein_file)
         micro_rna_rows = get_parquet_content_as_rows(micro_rna_file)
-        assert any(r[0] == "p1" and r[1] == "StringProperty1" for r in protein_rows)
-        assert any(r[0] == "m1" for r in micro_rna_rows)
+        assert protein_rows[0][:-1] == (
+            "p1",
+            "StringProperty1",
+            4.0,
+            9606,
+            ["gene1", "gene2"],
+            "p1",
+            "id",
+        )
+        assert "BiologicalEntity" in protein_rows[0][-1]
+        assert micro_rna_rows[0][:-1] == ("m1", "m1", "id")
+        assert "ChemicalEntity" in micro_rna_rows[0][-1]
     else:
         with open(protein_file) as f:
             protein = f.read()
