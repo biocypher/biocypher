@@ -286,7 +286,6 @@ dependencies = [
     { name = "networkx", version = "3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pandas" },
     { name = "pooch" },
-    { name = "pyarrow" },
     { name = "pyyaml" },
     { name = "rdflib" },
     { name = "toml" },
@@ -295,6 +294,9 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+bigdata = [
+    { name = "pyarrow" },
+]
 neo4j = [
     { name = "neo4j" },
 ]
@@ -332,7 +334,7 @@ requires-dist = [
     { name = "networkx", specifier = ">=3.0" },
     { name = "pandas", specifier = ">=2.0.1" },
     { name = "pooch", specifier = ">=1.7.0" },
-    { name = "pyarrow", specifier = ">=24.0.0" },
+    { name = "pyarrow", marker = "extra == 'bigdata'", specifier = ">=24.0.0" },
     { name = "pyyaml", specifier = ">=5.0" },
     { name = "rdflib", specifier = ">=6.2.0" },
     { name = "scirpy", marker = "extra == 'scirpy'", specifier = ">=0.22.0" },
@@ -340,7 +342,7 @@ requires-dist = [
     { name = "tqdm", specifier = ">=4.65.0" },
     { name = "treelib", specifier = "==1.6.4" },
 ]
-provides-extras = ["neo4j", "scirpy"]
+provides-extras = ["neo4j", "scirpy", "bigdata"]
 
 [package.metadata.requires-dev]
 dev = [
