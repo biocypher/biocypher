@@ -14,8 +14,6 @@ protein:
     score: float
     taxon: int
     genes: str[]
-    sequence: int[]
-    embedding: float[]
 
 microRNA:
   represented_as: node

@@ -16,8 +16,6 @@ def _get_nodes(length: int) -> list:
                 "name": "StringProperty1",
                 "taxon": 9606,
                 "genes": ["gene1", "gene2"],
-                "sequence": [1, 2, 3],
-                "embedding": [0.1, 0.2, 0.3],
             },
         )
         nodes.append(bnp)
@@ -28,8 +26,6 @@ def _get_nodes(length: int) -> list:
             properties={
                 "name": "StringProperty1",
                 "taxon": 9606,
-                "sequence": [1, 2, 3],
-                "embedding": [0.1, 0.2, 0.3],
             },
         )
         nodes.append(bnm)
@@ -71,8 +67,6 @@ def _get_edges(length):
             properties={
                 "residue": "T253",
                 "level": 4,
-                "studies": [1, 2, 3],
-                "embedding": [0.1, 0.2, 0.3],
             },
             # we suppose the verb-form relationship label is created by
             # translation functionality in translate.py
@@ -86,8 +80,6 @@ def _get_edges(length):
             properties={
                 "site": "3-UTR",
                 "confidence": 1,
-                "studies": [1, 2, 3],
-                "embedding": [0.1, 0.2, 0.3],
             },
             # we suppose the verb-form relationship label is created by
             # translation functionality in translate.py
@@ -154,7 +146,7 @@ def _get_rel_as_nodes(length):
 
 
 # TCR alpha chain test nodes
-@pytest.fixture
+@pytest.fixture()
 def tra_nodes():
     """Return a list of TCR alpha chain nodes for testing."""
     return [
@@ -197,7 +189,7 @@ def tra_nodes():
 
 
 # TCR beta chain test nodes
-@pytest.fixture
+@pytest.fixture()
 def trb_nodes():
     """Return a list of TCR beta chain nodes for testing."""
     return [
@@ -240,7 +232,7 @@ def trb_nodes():
 
 
 # Epitope test nodes
-@pytest.fixture
+@pytest.fixture()
 def epitope_nodes():
     """Return a list of epitope nodes for testing."""
     return [
@@ -278,7 +270,7 @@ def epitope_nodes():
 
 
 # TCR pairing edges
-@pytest.fixture
+@pytest.fixture()
 def tcr_pair_edges():
     """Return a list of TCR alpha-beta pairing edges for testing."""
     return [
@@ -304,7 +296,7 @@ def tcr_pair_edges():
 
 
 # TCR-epitope association edges
-@pytest.fixture
+@pytest.fixture()
 def tcr_epitope_edges():
     """Return a list of TCR-to-epitope binding edges for testing."""
     return [
