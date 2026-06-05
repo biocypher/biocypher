@@ -117,10 +117,17 @@ def test_neo4j_write_node_data_headers_import_call(bw, _get_nodes):
         call = f.read()
 
     if bw.file_format == "parquet":
-        assert protein_header == ":ID;name;score:double;taxon:long;genes;id;preferred_id;:LABEL"
+        assert (
+            protein_header
+            == ":ID;name;score:double;taxon:long;genes;sequence:long;embedding:double;id;preferred_id;:LABEL"
+        )
+        assert micro_rna_header == ":ID;name;taxon:long;sequence:long;embedding:double;id;preferred_id;:LABEL"
     else:
-        assert protein_header == ":ID;name;score:double;taxon:long;genes:string[];id;preferred_id;:LABEL"
-    assert micro_rna_header == ":ID;name;taxon:long;id;preferred_id;:LABEL"
+        assert (
+            protein_header
+            == ":ID;name;score:double;taxon:long;genes:string[];sequence:long[];embedding:double[];id;preferred_id;:LABEL"
+        )
+        assert micro_rna_header == ":ID;name;taxon:long;sequence:long[];embedding:double[];id;preferred_id;:LABEL"
     assert "neo4j-admin" in call
     assert "import" in call
     assert '--delimiter=";"' in call
@@ -279,6 +286,8 @@ def test_property_types(bw):
                 "name": "StringProperty1",
                 "taxon": 9606,
                 "genes": ["gene1", "gene2"],
+                "sequence": [1, 2, 3],
+                "embedding": [0.1, 0.2, 0.3],
             },
         )
         nodes.append(biocypher_node_protein)
@@ -295,19 +304,33 @@ def test_property_types(bw):
 
     assert passed
 
+    with open(header_csv) as f:
+        header = f.read()
+
     if bw.file_format == "parquet":
         rows = get_parquet_content_as_rows(data_csv)
-        assert rows[0][:-1] == ("p1", "StringProperty1", 4.0, 9606, ["gene1", "gene2"], "p1", "id")
+        assert header == ":ID;name;score:double;taxon:long;genes;sequence:long;embedding:double;id;preferred_id;:LABEL"
+        assert rows[0][:-1] == (
+            "p1",
+            "StringProperty1",
+            4.0,
+            9606,
+            ["gene1", "gene2"],
+            [1, 2, 3],
+            [0.1, 0.2, 0.3],
+            "p1",
+            "id",
+        )
         assert "BiologicalEntity" in rows[0][-1]
     else:
         with open(data_csv) as f:
             data = f.read()
 
-        with open(header_csv) as f:
-            header = f.read()
-
-        assert header == ":ID;name;score:double;taxon:long;genes:string[];id;preferred_id;:LABEL"
-        assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'id'" in data
+        assert (
+            header
+            == ":ID;name;score:double;taxon:long;genes:string[];sequence:long[];embedding:double[];id;preferred_id;:LABEL"
+        )
+        assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'1|2|3';'0.1|0.2|0.3';'p1';'id'" in data
         assert "BiologicalEntity" in data
 
 
@@ -339,11 +362,13 @@ def test_write_node_data_from_list(bw, _get_nodes):
             4.0,
             9606,
             ["gene1", "gene2"],
+            [1, 2, 3],
+            [0.1, 0.2, 0.3],
             "p1",
             "uniprot",
         )
         assert "BiologicalEntity" in protein_rows[0][-1]
-        assert micro_rna_rows[0][:-1] == ("m1", "StringProperty1", 9606, "m1", "mirbase")
+        assert micro_rna_rows[0][:-1] == ("m1", "StringProperty1", 9606, [1, 2, 3], [0.1, 0.2, 0.3], "m1", "mirbase")
         assert "ChemicalEntity" in micro_rna_rows[0][-1]
     else:
         with open(protein_file) as f:
@@ -352,9 +377,9 @@ def test_write_node_data_from_list(bw, _get_nodes):
         with open(micro_rna_file) as f:
             micro_rna = f.read()
 
-        assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'uniprot'" in protein
+        assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'1|2|3';'0.1|0.2|0.3';'p1';'uniprot'" in protein
         assert "BiologicalEntity" in protein
-        assert "m1;'StringProperty1';9606;'m1';'mirbase'" in micro_rna
+        assert "m1;'StringProperty1';9606;'1|2|3';'0.1|0.2|0.3';'m1';'mirbase'" in micro_rna
         assert "ChemicalEntity" in micro_rna
 
 
@@ -498,8 +523,28 @@ def test_write_node_data_from_gen(bw, _get_nodes):
     if bw.file_format == "parquet":
         protein_rows = get_parquet_content_as_rows(protein_file)
         micro_rna_rows = get_parquet_content_as_rows(micro_rna_file)
-        assert any(r[0] == "p1" and r[1] == "StringProperty1" and r[2] == 4.0 for r in protein_rows)
-        assert any(r[0] == "m1" and r[1] == "StringProperty1" for r in micro_rna_rows)
+        assert protein_rows[0][:-1] == (
+            "p1",
+            "StringProperty1",
+            4.0,
+            9606,
+            ["gene1", "gene2"],
+            [1, 2, 3],
+            [0.1, 0.2, 0.3],
+            "p1",
+            "uniprot",
+        )
+        assert "BiologicalEntity" in protein_rows[0][-1]
+        assert micro_rna_rows[0][:-1] == (
+            "m1",
+            "StringProperty1",
+            9606,
+            [1, 2, 3],
+            [0.1, 0.2, 0.3],
+            "m1",
+            "mirbase",
+        )
+        assert "ChemicalEntity" in micro_rna_rows[0][-1]
     else:
         with open(protein_file) as f:
             protein = f.read()
@@ -507,9 +552,9 @@ def test_write_node_data_from_gen(bw, _get_nodes):
         with open(micro_rna_file) as f:
             micro_rna = f.read()
 
-        assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'uniprot'" in protein
+        assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'1|2|3';'0.1|0.2|0.3';'p1';'uniprot'" in protein
         assert "BiologicalEntity" in protein
-        assert "m1;'StringProperty1';9606;'m1';'mirbase'" in micro_rna
+        assert "m1;'StringProperty1';9606;'1|2|3';'0.1|0.2|0.3';'m1';'mirbase'" in micro_rna
         assert "ChemicalEntity" in micro_rna
 
 
@@ -525,6 +570,8 @@ def test_write_node_data_from_gen_no_props(bw):
                 "name": "StringProperty1",
                 "taxon": 9606,
                 "genes": ["gene1", "gene2"],
+                "sequence": [1, 2, 3],
+                "embedding": [0.1, 0.2, 0.3],
             },
         )
         nodes.append(biocypher_node_protein)
@@ -556,8 +603,20 @@ def test_write_node_data_from_gen_no_props(bw):
     if bw.file_format == "parquet":
         protein_rows = get_parquet_content_as_rows(protein_file)
         micro_rna_rows = get_parquet_content_as_rows(micro_rna_file)
-        assert any(r[0] == "p1" and r[1] == "StringProperty1" for r in protein_rows)
-        assert any(r[0] == "m1" for r in micro_rna_rows)
+        assert protein_rows[0][:-1] == (
+            "p1",
+            "StringProperty1",
+            4.0,
+            9606,
+            ["gene1", "gene2"],
+            [1, 2, 3],
+            [0.1, 0.2, 0.3],
+            "p1",
+            "id",
+        )
+        assert "BiologicalEntity" in protein_rows[0][-1]
+        assert micro_rna_rows[0][:-1] == ("m1", "m1", "id")
+        assert "ChemicalEntity" in micro_rna_rows[0][-1]
     else:
         with open(protein_file) as f:
             protein = f.read()
@@ -565,7 +624,7 @@ def test_write_node_data_from_gen_no_props(bw):
         with open(micro_rna_file) as f:
             micro_rna = f.read()
 
-        assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'p1';'id'" in protein
+        assert "p1;'StringProperty1';4.0;9606;'gene1|gene2';'1|2|3';'0.1|0.2|0.3';'p1';'id'" in protein
         assert "BiologicalEntity" in protein
         assert "m1;'m1';'id'" in micro_rna
         assert "ChemicalEntity" in micro_rna
@@ -676,6 +735,8 @@ def test_write_none_type_property_and_order_invariance(bw):
             "score": 1,
             "name": None,
             "genes": None,
+            "sequence": [1, 2, 3],
+            "embedding": [0.1, 0.2, 0.3],
         },
     )
     biocypher_node_protein_2 = BioCypherNode(
@@ -686,6 +747,8 @@ def test_write_none_type_property_and_order_invariance(bw):
             "genes": ["gene1", "gene2"],
             "score": 2,
             "taxon": 9606,
+            "sequence": [1, 2, 3],
+            "embedding": [0.1, 0.2, 0.3],
         },
     )
     biocypher_node_micro_rna = BioCypherNode(
@@ -694,6 +757,8 @@ def test_write_none_type_property_and_order_invariance(bw):
         properties={
             "name": None,
             "taxon": 9606,
+            "sequence": [1, 2, 3],
+            "embedding": [0.1, 0.2, 0.3],
         },
     )
     nodes.append(biocypher_node_protein_1)
@@ -720,13 +785,13 @@ def test_write_none_type_property_and_order_invariance(bw):
     if bw.file_format == "parquet":
         rows = get_parquet_content_as_rows(protein_0_csv)
         assert len(rows) == 2
-        assert rows[0][:-1] == ("p1", None, 1, 9606, None, "p1", "id")
+        assert rows[0][:-1] == ("p1", None, 1, 9606, None, [1, 2, 3], [0.1, 0.2, 0.3], "p1", "id")
         assert "BiologicalEntity" in rows[0][-1]
     else:
         with open(protein_0_csv) as f:
             protein = f.read()
 
-        assert "p1;;1;9606;;'p1';'id'" in protein
+        assert "p1;;1;9606;;'1|2|3';'0.1|0.2|0.3';'p1';'id'" in protein
         assert "BiologicalEntity" in protein
 
 
@@ -761,8 +826,8 @@ def test_accidental_exact_batch_size(bw, _get_nodes):
         assert len(micro_rna_0_rows) == 1e4
         assert not isfile(os.path.join(tmp_path, "Protein-part001.parquet"))
         assert not isfile(os.path.join(tmp_path, "MicroRNA-part001.parquet"))
-        assert protein == ":ID;name;score:double;taxon:long;genes;id;preferred_id;:LABEL"
-        assert micro_rna == ":ID;name;taxon:long;id;preferred_id;:LABEL"
+        assert protein == ":ID;name;score:double;taxon:long;genes;sequence:long;embedding:double;id;preferred_id;:LABEL"
+        assert micro_rna == ":ID;name;taxon:long;sequence:long;embedding:double;id;preferred_id;:LABEL"
     else:
         protein_0_csv = os.path.join(tmp_path, "Protein-part000.csv")
         micro_rna_0_csv = os.path.join(tmp_path, "MicroRNA-part000.csv")
@@ -786,8 +851,9 @@ def test_accidental_exact_batch_size(bw, _get_nodes):
             and micro_rna_lines == 1e4
             and not isfile(protein_1_csv)
             and not isfile(micro_rna_1_csv)
-            and protein == ":ID;name;score:double;taxon:long;genes:string[];id;preferred_id;:LABEL"
-            and micro_rna == ":ID;name;taxon:long;id;preferred_id;:LABEL"
+            and protein
+            == ":ID;name;score:double;taxon:long;genes:string[];sequence:long[];embedding:double[];id;preferred_id;:LABEL"
+            and micro_rna == ":ID;name;taxon:long;sequence:long[];embedding:double[];id;preferred_id;:LABEL"
         )
 
 
@@ -816,10 +882,10 @@ def test_write_edge_data_from_gen(bw, _get_edges):
     if bw.file_format == "parquet":
         pid_rows = get_parquet_content_as_rows(pid_file)
         imi_rows = get_parquet_content_as_rows(imi_file)
-        assert ("p0", "prel0", "T253", 4, "p1", "PERTURBED_IN_DISEASE") in pid_rows
-        assert ("p1", "prel1", "T253", 4, "p2", "PERTURBED_IN_DISEASE") in pid_rows
-        assert ("m0", "mrel0", "3-UTR", 1, "p1", "Is_Mutated_In") in imi_rows
-        assert ("m1", "mrel1", "3-UTR", 1, "p2", "Is_Mutated_In") in imi_rows
+        assert ("p0", "prel0", "T253", 4, [1, 2, 3], [0.1, 0.2, 0.3], "p1", "PERTURBED_IN_DISEASE") in pid_rows
+        assert ("p1", "prel1", "T253", 4, [1, 2, 3], [0.1, 0.2, 0.3], "p2", "PERTURBED_IN_DISEASE") in pid_rows
+        assert ("m0", "mrel0", "3-UTR", 1, [1, 2, 3], [0.1, 0.2, 0.3], "p1", "Is_Mutated_In") in imi_rows
+        assert ("m1", "mrel1", "3-UTR", 1, [1, 2, 3], [0.1, 0.2, 0.3], "p2", "Is_Mutated_In") in imi_rows
     else:
         with open(pid_file) as f:
             perturbed_in_disease = f.read()
@@ -830,12 +896,16 @@ def test_write_edge_data_from_gen(bw, _get_edges):
         assert "prel0;" in perturbed_in_disease
         assert "'T253';" in perturbed_in_disease
         assert "4;" in perturbed_in_disease
+        assert "1|2|3" in perturbed_in_disease
+        assert "0.1|0.2|0.3" in perturbed_in_disease
         assert "p1;" in perturbed_in_disease
         assert "PERTURBED_IN_DISEASE" in perturbed_in_disease
         assert "p1;" in perturbed_in_disease
         assert "prel1;" in perturbed_in_disease
         assert "'T253';" in perturbed_in_disease
         assert "4;" in perturbed_in_disease
+        assert "1|2|3" in perturbed_in_disease
+        assert "0.1|0.2|0.3" in perturbed_in_disease
         assert "p2;" in perturbed_in_disease
         assert "PERTURBED_IN_DISEASE" in perturbed_in_disease
         assert "\n" in perturbed_in_disease
@@ -843,12 +913,16 @@ def test_write_edge_data_from_gen(bw, _get_edges):
         assert "mrel0;" in is_mutated_in
         assert "'3-UTR';" in is_mutated_in
         assert "1;" in is_mutated_in
+        assert "1|2|3" in is_mutated_in
+        assert "0.1|0.2|0.3" in is_mutated_in
         assert "p1;" in is_mutated_in
         assert "Is_Mutated_In" in is_mutated_in
         assert "m1;" in is_mutated_in
         assert "mrel1;" in is_mutated_in
         assert "'3-UTR';" in is_mutated_in
         assert "1;" in is_mutated_in
+        assert "1|2|3" in is_mutated_in
+        assert "0.1|0.2|0.3" in is_mutated_in
         assert "p2;" in is_mutated_in
         assert "Is_Mutated_In" in is_mutated_in
         assert "\n" in is_mutated_in
@@ -924,9 +998,9 @@ def test_write_edge_data_from_list(bw, _get_edges):
     if bw.file_format == "parquet":
         pid_rows = get_parquet_content_as_rows(pid_file)
         imi_rows = get_parquet_content_as_rows(imi_file)
-        assert ("p0", "prel0", "T253", 4, "p1", "PERTURBED_IN_DISEASE") in pid_rows
-        assert ("m0", "mrel0", "3-UTR", 1, "p1", "Is_Mutated_In") in imi_rows
-        assert ("m1", "mrel1", "3-UTR", 1, "p2", "Is_Mutated_In") in imi_rows
+        assert ("p0", "prel0", "T253", 4, [1, 2, 3], [0.1, 0.2, 0.3], "p1", "PERTURBED_IN_DISEASE") in pid_rows
+        assert ("m0", "mrel0", "3-UTR", 1, [1, 2, 3], [0.1, 0.2, 0.3], "p1", "Is_Mutated_In") in imi_rows
+        assert ("m1", "mrel1", "3-UTR", 1, [1, 2, 3], [0.1, 0.2, 0.3], "p2", "Is_Mutated_In") in imi_rows
     else:
         with open(pid_file) as f:
             perturbed_in_disease = f.read()
@@ -937,6 +1011,8 @@ def test_write_edge_data_from_list(bw, _get_edges):
         assert "prel0;" in perturbed_in_disease
         assert "'T253';" in perturbed_in_disease
         assert "4;" in perturbed_in_disease
+        assert "1|2|3" in perturbed_in_disease
+        assert "0.1|0.2|0.3" in perturbed_in_disease
         assert "p1;" in perturbed_in_disease
         assert "PERTURBED_IN_DISEASE" in perturbed_in_disease
         assert "\n" in perturbed_in_disease
@@ -945,6 +1021,8 @@ def test_write_edge_data_from_list(bw, _get_edges):
         assert "mrel0;" in is_mutated_in
         assert "'3-UTR';" in is_mutated_in
         assert "1;" in is_mutated_in
+        assert "1|2|3" in is_mutated_in
+        assert "0.1|0.2|0.3" in is_mutated_in
         assert "p1;" in is_mutated_in
         assert "Is_Mutated_In" in is_mutated_in
         assert "m1;" in is_mutated_in
@@ -1140,7 +1218,10 @@ def test_write_edge_data_non_string_list_properties(bw):
             source_id="p1",
             target_id="p2",
             relationship_label="phosphorylation",
-            properties={"sites": ["S100", "T200"], "scores": [0.8, 0.95]},
+            properties={
+                "sites": ["S100", "T200"],
+                "scores": [0.8, 0.95],
+            },
         ),
         BioCypherEdge(
             relationship_id="ph2",
@@ -1220,8 +1301,12 @@ def test_write_edge_data_headers_import_call(bw, _get_nodes, _get_edges):
     with open(call_csv) as f:
         call = f.read()
 
-    assert perturbed_in_disease == ":START_ID;id;residue;level:long;:END_ID;:TYPE"
-    assert is_mutated_in == ":START_ID;id;site;confidence:long;:END_ID;:TYPE"
+    if bw.file_format == "parquet":
+        assert perturbed_in_disease == ":START_ID;id;residue;level:long;studies:long;embedding:double;:END_ID;:TYPE"
+        assert is_mutated_in == ":START_ID;id;site;confidence:long;studies:long;embedding:double;:END_ID;:TYPE"
+    else:
+        assert perturbed_in_disease == ":START_ID;id;residue;level:long;studies:long[];embedding:double[];:END_ID;:TYPE"
+        assert is_mutated_in == ":START_ID;id;site;confidence:long;studies:long[];embedding:double[];:END_ID;:TYPE"
 
     assert "neo4j-admin" in call
     assert "import" in call
@@ -1416,6 +1501,8 @@ def test_duplicate_id(bw):
                 "score": 4.32,
                 "taxon": 9606,
                 "genes": ["gene1", "gene2"],
+                "sequence": [1, 2, 3],
+                "embedding": [0.1, 0.2, 0.3],
             },
         )
         nodes.append(biocypher_node_protein)
@@ -1480,6 +1567,8 @@ def test_write_strict(bw_strict):
             "score": 4.32,
             "taxon": 9606,
             "genes": ["gene1", "gene2"],
+            "sequence": [1, 2, 3],
+            "embedding": [0.1, 0.2, 0.3],
             "source": "source1",
             "version": "version1",
             "licence": "licence1",
@@ -1506,6 +1595,8 @@ def test_write_strict(bw_strict):
             4.32,
             9606,
             ["gene1", "gene2"],
+            [1, 2, 3],
+            [0.1, 0.2, 0.3],
             "p1",
             "id",
             "source1",
@@ -1517,7 +1608,10 @@ def test_write_strict(bw_strict):
         with open(csv) as f:
             protein = f.read()
 
-        assert "p1;'StringProperty1';4.32;9606;'gene1|gene2';'p1';'id';'source1';'version1';'licence1'" in protein
+        assert (
+            "p1;'StringProperty1';4.32;9606;'gene1|gene2';'1|2|3';'0.1|0.2|0.3';'p1';'id';'source1';'version1';'licence1'"
+            in protein
+        )
         assert "BiologicalEntity" in protein
 
 
