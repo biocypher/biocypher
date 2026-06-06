@@ -1241,7 +1241,8 @@ def parse_label(label: str) -> str:
     """Check if the label is compliant with Neo4j naming conventions.
 
     Check against https://neo4j.com/docs/cypher-manual/current/syntax/naming/,
-    and if not compliant, remove non-compliant characters.
+    and if not compliant, remove non-compliant characters. Dots are replaced
+    with underscores to avoid the need for backtick escaping in Cypher queries.
 
     Args:
     ----
@@ -1250,9 +1251,11 @@ def parse_label(label: str) -> str:
         str: The compliant label
 
     """
-    # Check if the name contains only alphanumeric characters, underscore, or dollar sign
-    # and dot (for class hierarchy of BioCypher)
-    allowed_chars = r"a-zA-Z0-9_$ ."
+    # Replace dots with underscores to avoid backtick-escaping requirements in Neo4j
+    label = label.replace(".", "_")
+
+    # Check if the name contains only alphanumeric characters, underscore, dollar sign, or space
+    allowed_chars = r"a-zA-Z0-9_$ "
     matches = re.findall(f"[{allowed_chars}]", label)
     non_matches = re.findall(f"[^{allowed_chars}]", label)
     if non_matches:
