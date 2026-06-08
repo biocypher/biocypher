@@ -52,8 +52,13 @@ class _Neo4jBatchWriter(_BatchWriter):
 
         if self.file_format == "parquet":
             # Detect if pyarrow is installed for parquet support.
-            import pyarrow as pa  # noqa: F401, PLC0415
-            import pyarrow.parquet as pq  # noqa: F401, PLC0415
+            try:
+                import pyarrow as pa  # noqa: F401, PLC0415
+                import pyarrow.parquet as pq  # noqa: F401, PLC0415
+            except ImportError as exc:
+                msg = "PyArrow module not detected. Install it with 'uv add biocypher[bigdata]' or 'uv add pyarrow'."
+                logger.error(msg, exc_info=exc)
+                raise
 
         # Forces edges to have a single label.
         if self.edge_labels_order != "Leaves":
