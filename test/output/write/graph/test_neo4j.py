@@ -1476,3 +1476,53 @@ def test_edge_labels_order_fallback_log_message(caplog, translator, deduplicator
     assert not any(
         "`node_labels_order` set to `labels_order`=`Descending`" in msg for msg in messages
     ), f"node_labels_order appeared in edge fallback log: {messages}"
+
+
+def test_quote_escaped_in_node_string_property(bw):
+    """String properties containing the quote character must be escaped by doubling it."""
+    nodes = [
+        BioCypherNode(
+            node_id="n1",
+            node_label="protein",
+            properties={
+                "score": 1.0,
+                "name": "O'Brien",
+                "taxon": 9606,
+                "genes": ["gene1"],
+            },
+        ),
+    ]
+
+    passed = bw._write_node_data(nodes, batch_size=int(1e4))
+
+    csv_path = os.path.join(bw.outdir, "Protein-part000.csv")
+    with open(csv_path) as f:
+        content = f.read()
+
+    assert passed
+    assert "'O''Brien'" in content, f"Escaped quote not found in: {content!r}"
+    assert "'O'Brien'" not in content.replace("'O''Brien'", ""), (
+        "Unescaped quote found in output — _quote_string not called for node properties"
+    )
+
+
+def test_quote_escaped_in_edge_string_property(bw):
+    """String properties containing the quote character must be escaped in edge output."""
+    edges = [
+        BioCypherEdge(
+            relationship_id="e1",
+            source_id="p1",
+            target_id="p2",
+            relationship_label="PERTURBED_IN_DISEASE",
+            properties={"residue": "T'253"},
+        ),
+    ]
+
+    passed = bw._write_edge_data(edges, batch_size=int(1e4))
+
+    csv_path = os.path.join(bw.outdir, "PERTURBED_IN_DISEASE-part000.csv")
+    with open(csv_path) as f:
+        content = f.read()
+
+    assert passed
+    assert "'T''253'" in content, f"Escaped quote not found in: {content!r}"
