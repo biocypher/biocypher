@@ -50,6 +50,11 @@ class _Neo4jBatchWriter(_BatchWriter):
             logger.error(msg, exc_info=exc)
             raise exc
 
+        if self.file_format == "parquet":
+            # Detect if pyarrow is installed for parquet support.
+            import pyarrow as pa  # noqa: F401, PLC0415
+            import pyarrow.parquet as pq  # noqa: F401, PLC0415
+
         # Forces edges to have a single label.
         if self.edge_labels_order != "Leaves":
             msg = (

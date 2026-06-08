@@ -9,8 +9,6 @@ from collections import OrderedDict, defaultdict
 from collections.abc import Iterable
 
 import networkx
-import pyarrow as pa
-import pyarrow.parquet as pq
 
 from biocypher._create import BioCypherEdge, BioCypherNode, BioCypherRelAsNode
 from biocypher._deduplicate import Deduplicator
@@ -1215,6 +1213,9 @@ class _BatchWriter(_Writer, ABC):
         file_path = os.path.join(self.outdir, part)
 
         if self.file_format == "parquet":
+            import pyarrow as pa  # noqa: PLC0415
+            import pyarrow.parquet as pq  # noqa: PLC0415
+
             columns = [[] for _ in range(len(rows[0]))]
             for row in rows:
                 for i, val in enumerate(row):
