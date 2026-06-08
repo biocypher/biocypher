@@ -32,7 +32,7 @@ dependencies = [
     "pandas>=2.0.1",
     "pooch>=1.7.0",
     "tqdm>=4.65.0",
-    "toml>=0.10.2"
+    "toml>=0.10.2",
 ]
 
 [project.urls]
@@ -45,6 +45,7 @@ Issues = "https://github.com/biocypher/biocypher/issues"
 [project.optional-dependencies]
 neo4j = ["neo4j>=5.0"]
 scirpy = ["scirpy>=0.22.0"]
+bigdata = ["pyarrow>=24.0.0"]
 
 [dependency-groups]
 dev = [

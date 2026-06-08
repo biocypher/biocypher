@@ -10,8 +10,14 @@ from biocypher.output.connect._neo4j_driver import _Neo4jDriver
 from biocypher.output.write.graph._neo4j import _Neo4jBatchWriter
 
 
+@pytest.fixture(params=["csv", "parquet"])
+def file_format(request):
+    """Parameterize tests for both CSV and parquet formats."""
+    return request.param
+
+
 @pytest.fixture(scope="function")
-def bw(translator, deduplicator, tmp_path_session):
+def bw(translator, deduplicator, tmp_path_session, file_format):
     bw = _Neo4jBatchWriter(
         translator=translator,
         deduplicator=deduplicator,
@@ -19,6 +25,7 @@ def bw(translator, deduplicator, tmp_path_session):
         delimiter=";",
         array_delimiter="|",
         quote="'",
+        file_format=file_format,
     )
 
     yield bw
@@ -29,7 +36,27 @@ def bw(translator, deduplicator, tmp_path_session):
 
 
 @pytest.fixture(scope="function")
-def bw_tab(translator, deduplicator, tmp_path_session):
+def bw_csv(translator, deduplicator, tmp_path_session):
+    """Fixture for CSV-only tests."""
+    bw = _Neo4jBatchWriter(
+        translator=translator,
+        deduplicator=deduplicator,
+        output_directory=tmp_path_session,
+        delimiter=";",
+        array_delimiter="|",
+        quote="'",
+        file_format="csv",
+    )
+
+    yield bw
+
+    # teardown
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
+
+
+@pytest.fixture(scope="function")
+def bw_tab(translator, deduplicator, tmp_path_session, file_format):
     bw_tab = _Neo4jBatchWriter(
         translator=translator,
         deduplicator=deduplicator,
@@ -37,6 +64,7 @@ def bw_tab(translator, deduplicator, tmp_path_session):
         delimiter="\\t",
         array_delimiter="|",
         quote="'",
+        file_format=file_format,
     )
 
     yield bw_tab
@@ -47,7 +75,8 @@ def bw_tab(translator, deduplicator, tmp_path_session):
 
 
 @pytest.fixture(scope="function")
-def bw_strict(translator, deduplicator, tmp_path_session):
+def bw_strict(translator, deduplicator, tmp_path_session, file_format):
+    """Strict mode writer, parameterized for both formats."""
     bw = _Neo4jBatchWriter(
         translator=translator,
         deduplicator=deduplicator,
@@ -56,6 +85,7 @@ def bw_strict(translator, deduplicator, tmp_path_session):
         array_delimiter="|",
         quote="'",
         strict_mode=True,
+        file_format=file_format,
     )
 
     yield bw

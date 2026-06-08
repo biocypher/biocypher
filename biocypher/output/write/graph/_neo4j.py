@@ -41,6 +41,25 @@ class _Neo4jBatchWriter(_BatchWriter):
         # Should read the configuration and setup import_call_bin_prefix.
         super().__init__(*args, **kwargs)
 
+        if not self.file_format:
+            self.file_format = "csv"
+
+        if self.file_format not in ["csv", "parquet"]:
+            msg = f"Unrecognised file format {self.file_format}. Supported formats are 'csv' and 'parquet'."
+            exc = ValueError(msg)
+            logger.error(msg, exc_info=exc)
+            raise exc
+
+        if self.file_format == "parquet":
+            # Detect if pyarrow is installed for parquet support.
+            try:
+                import pyarrow as pa  # noqa: F401, PLC0415
+                import pyarrow.parquet as pq  # noqa: F401, PLC0415
+            except ImportError as exc:
+                msg = "PyArrow module not detected. Install it with 'uv add biocypher[bigdata]' or 'uv add pyarrow'."
+                logger.error(msg, exc_info=exc)
+                raise
+
         # Forces edges to have a single label.
         if self.edge_labels_order != "Leaves":
             msg = (
@@ -68,7 +87,7 @@ class _Neo4jBatchWriter(_BatchWriter):
         return f"{self.quote}{value.replace(self.quote, self.quote * 2)}{self.quote}"
 
     def _write_array_string(self, string_list):
-        """Abstract method to output.write the string representation of an array into a .csv file
+        """Abstract method to output.write the string representation of an array into a .csv or .parquet file
         as required by the neo4j admin-import.
 
         Args:
@@ -81,7 +100,15 @@ class _Neo4jBatchWriter(_BatchWriter):
 
         """
         string = self.adelim.join(str(x) for x in string_list)
-        return self._quote_string(string)
+
+        if self.file_format == "csv":
+            return self._quote_string(string)
+
+        if self.file_format == "parquet":
+            return string
+
+        msg = f"Unreachable code: {self.file_format}"
+        raise RuntimeError(msg)
 
     def _write_node_headers(self):
         """Writes single CSV file for a graph entity that is represented
@@ -121,7 +148,12 @@ class _Neo4jBatchWriter(_BatchWriter):
 
             # concatenate key:value in props
             props_list = []
-            for k, v in props.items():
+            for k, v_raw in props.items():
+                # Brackets need to be removed if the column is not a string
+                # of concatenated values but a native parquet array type.
+                # Possibly a Neo4j bug.
+                v = v_raw.removesuffix("[]") if self.file_format == "parquet" else v_raw
+
                 if v in ["int", "long", "integer"]:
                     props_list.append(f"{k}:long")
                 elif v in ["int[]", "long[]", "integer[]"]:
@@ -198,7 +230,12 @@ class _Neo4jBatchWriter(_BatchWriter):
 
             # concatenate key:value in props
             props_list = []
-            for k, v in props.items():
+            for k, v_raw in props.items():
+                # Brackets need to be removed if the column is not a string
+                # of concatenated values but a native parquet array type.
+                # Possibly a Neo4j bug.
+                v = v_raw.removesuffix("[]") if self.file_format == "parquet" else v_raw
+
                 if v in ["int", "long", "integer"]:
                     props_list.append(f"{k}:long")
                 elif v in ["int[]", "long[]", "integer[]"]:
