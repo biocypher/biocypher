@@ -105,7 +105,7 @@ class Translator:
                     if prop not in _props:
                         msg = (
                             f"Property `{prop}` missing from node {_id}. "
-                            "Strict mode is enabled, so this is not allowed.",
+                            "Strict mode is enabled, so this is not allowed."
                         )
                         logger.error(msg)
                         raise ValueError(msg)
@@ -241,21 +241,21 @@ class Translator:
                 if "source" not in _props:
                     msg = (
                         f"Edge {_id if _id else (_src, _tar)} does not have a `source` property."
-                        " This is required in strict mode.",
+                        " This is required in strict mode."
                     )
                     logger.error(msg)
                     raise ValueError(msg)
                 if "licence" not in _props:
                     msg = (
                         f"Edge {_id if _id else (_src, _tar)} does not have a `licence` property."
-                        " This is required in strict mode.",
+                        " This is required in strict mode."
                     )
                     logger.error(msg)
                     raise ValueError(msg)
                 if "version" not in _props:
                     msg = (
                         f"Edge {_id if _id else (_src, _tar)} does not have a `version` property."
-                        " This is required in strict mode.",
+                        " This is required in strict mode."
                     )
                     logger.error(msg)
                     raise ValueError(msg)
@@ -439,7 +439,7 @@ class Translator:
                         "Reverse translation of multiple inputs not "
                         "implemented yet. Many-to-one mappings are "
                         "not reversible. "
-                        f"({key} -> {self.reverse_mappings[key]})",
+                        f"({key} -> {self.reverse_mappings[key]})"
                     )
                     logger.error(msg)
                     raise NotImplementedError(msg)
