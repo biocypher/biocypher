@@ -96,6 +96,7 @@ def test_in_memory_kg_only_in_online_mode(core):
         with pytest.raises(ValueError) as e:
             core.get_kg()
         assert "Getting the in-memory KG is only available in online mode for " in str(e.value)
+        assert isinstance(e.value.args[0], str), "error message must be a str, not a tuple"
 
 
 def test_no_in_memory_kg_for_dbms(core):

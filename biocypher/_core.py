@@ -165,8 +165,6 @@ class BioCypher:
         self._writer = None
         self._driver = None
         self._in_memory_kg = None
-
-        self._in_memory_kg = None
         self._nodes = None
         self._edges = None
 
@@ -450,7 +448,7 @@ class BioCypher:
 
     def _is_online_and_in_memory(self) -> bool:
         """Return True if in online mode and in-memory dbms is used."""
-        return (not self._offline) & (self._dbms in IN_MEMORY_DBMS)
+        return (not self._offline) and (self._dbms in IN_MEMORY_DBMS)
 
     def write_nodes(
         self,
@@ -555,14 +553,11 @@ class BioCypher:
         dataframes or a NetworkX DiGraph.
         """
         if not self._is_online_and_in_memory():
-            msg = (f"Getting the in-memory KG is only available in online mode for {IN_MEMORY_DBMS}.",)
+            msg = f"Getting the in-memory KG is only available in online mode for {IN_MEMORY_DBMS}."
             raise ValueError(msg)
         if not self._in_memory_kg:
             msg = "No in-memory KG instance found. Please call `add()` first."
             raise ValueError(msg)
-
-        if not self._in_memory_kg:
-            self._initialize_in_memory_kg()
         return self._in_memory_kg.get_kg()
 
     # DOWNLOAD AND CACHE MANAGEMENT METHODS ###
