@@ -191,9 +191,9 @@ class BioCypher:
 
         """
         if isinstance(nodes, list):
-            self._nodes = list(itertools.chain(self._nodes, nodes))
+            self._nodes = list(itertools.chain(self._nodes or [], nodes))
         else:
-            self._nodes = itertools.chain(self._nodes, nodes)
+            self._nodes = itertools.chain(self._nodes or iter([]), nodes)
 
     def add_edges(self, edges) -> None:
         """Add new edges to the internal representation.
@@ -207,9 +207,9 @@ class BioCypher:
 
         """
         if isinstance(edges, list):
-            self._edges = list(itertools.chain(self._edges, edges))
+            self._edges = list(itertools.chain(self._edges or [], edges))
         else:
-            self._edges = itertools.chain(self._edges, edges)
+            self._edges = itertools.chain(self._edges or iter([]), edges)
 
     def to_df(self):
         """Create DataFrame using internal representation.
@@ -246,8 +246,7 @@ class BioCypher:
         if not self._translator:
             self._get_translator()
 
-        # These attributes might not exist when using in-memory KG directly
-        if hasattr(self, "_nodes") and hasattr(self, "_edges"):
+        if self._nodes is not None and self._edges is not None:
             tnodes = self._translator.translate_entities(self._nodes)
             tedges = self._translator.translate_entities(self._edges)
             self._in_memory_kg.add_nodes(tnodes)

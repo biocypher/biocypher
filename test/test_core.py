@@ -204,3 +204,29 @@ def test_reverse_translate_query_via_core(core):
     query = "MATCH (n:Protein)-[r:POST_TRANSLATIONAL_INTERACTION]->(m:Protein) RETURN n"
     result = core.reverse_translate_query(query)
     assert isinstance(result, str)
+
+
+@pytest.mark.parametrize("length", [4], scope="function")
+def test_add_nodes_first_call_does_not_crash(core, _get_nodes):
+    """add_nodes must not crash when self._nodes is still None (first call)."""
+    # self._nodes starts as None; passing a list used to raise
+    # TypeError: 'NoneType' object is not iterable via itertools.chain
+    core.add_nodes(_get_nodes)
+    assert core._nodes == _get_nodes
+
+
+@pytest.mark.parametrize("length", [4], scope="function")
+def test_add_nodes_accumulates_across_calls(core, _get_nodes):
+    """Successive add_nodes calls must append, not crash on the second call."""
+    first_half = _get_nodes[:4]
+    second_half = _get_nodes[4:]
+    core.add_nodes(first_half)
+    core.add_nodes(second_half)
+    assert len(core._nodes) == len(first_half) + len(second_half)
+
+
+@pytest.mark.parametrize("length", [4], scope="function")
+def test_add_edges_first_call_does_not_crash(core, _get_edges):
+    """add_edges must not crash when self._edges is still None (first call)."""
+    core.add_edges(_get_edges)
+    assert core._edges == _get_edges
