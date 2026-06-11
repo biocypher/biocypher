@@ -370,6 +370,271 @@ def test_write_node_data_non_string_list_properties(bw):
     )
 
 
+def test_write_node_data_varying_properties_splits_groups(bw):
+    """Patients of one label with different property sets are split into
+    separate header/part groups, so each part file conforms to its own header
+    instead of raising a mismatch error (schemaless / optional-property input).
+
+    The first property signature keeps the legacy (label-named) files; further
+    signatures get a distinct, file-name-safe suffix. Both groups are referenced
+    in the import call for the same label.
+    """
+    patients = [
+        # signature A: {name} -- Alice and Bob have no diagnosis recorded
+        BioCypherNode("p1", "patient", properties={"name": "Alice"}),
+        BioCypherNode("p2", "patient", properties={"name": "Bob"}),
+        # signature B: {name, diagnosis} -- Carol does
+        BioCypherNode("p3", "patient", properties={"name": "Carol", "diagnosis": "diabetes"}),
+    ]
+
+    assert bw._write_node_data(patients, batch_size=int(1e4), force=True)
+    assert bw._write_node_headers()
+    call = bw.get_import_call()
+
+    # group 0 keeps the legacy names; group 1 gets a suffixed name
+    g0_header = os.path.join(bw.outdir, "Patient-header.csv")
+    g0_part = os.path.join(bw.outdir, "Patient-part000.csv")
+    g1_header = os.path.join(bw.outdir, "PatientGroup1-header.csv")
+    g1_part = os.path.join(bw.outdir, "PatientGroup1-part000.csv")
+
+    for p in (g0_header, g0_part, g1_header, g1_part):
+        assert os.path.isfile(p), f"missing expected output file {p}"
+
+    g0_header_txt = open(g0_header).read()
+    g1_header_txt = open(g1_header).read()
+
+    # only the second signature carries 'diagnosis'
+    assert "diagnosis" not in g0_header_txt
+    assert "diagnosis" in g1_header_txt
+
+    # each part file has the same number of columns as its header
+    def n_cols(path):
+        return len(open(path).readline().rstrip("\n").split(";"))
+
+    assert n_cols(g0_part) == n_cols(g0_header)
+    assert n_cols(g1_part) == n_cols(g1_header)
+
+    # patients are routed to the group matching their property set
+    assert "Carol" in open(g1_part).read()
+    g0_part_txt = open(g0_part).read()
+    assert "Alice" in g0_part_txt
+    assert "Bob" in g0_part_txt
+
+    # the import call references both groups for the same label
+    assert "Patient-header.csv" in call
+    assert "PatientGroup1-header.csv" in call
+
+
+def test_write_node_data_homogeneous_properties_single_group(bw):
+    """Homogeneous input (the common case) must still produce exactly one group
+    with the legacy file names — no behavioural change without divergence."""
+    patients = [
+        BioCypherNode("p1", "patient", properties={"name": "Alice"}),
+        BioCypherNode("p2", "patient", properties={"name": "Bob"}),
+    ]
+
+    assert bw._write_node_data(patients, batch_size=int(1e4), force=True)
+    assert bw._write_node_headers()
+
+    assert os.path.isfile(os.path.join(bw.outdir, "Patient-header.csv"))
+    # no suffixed group files were created
+    suffixed = [f for f in os.listdir(bw.outdir) if f.startswith("PatientGroup")]
+    assert suffixed == []
+
+
+def _headers(outdir):
+    return sorted(f for f in os.listdir(outdir) if f.endswith("-header.csv"))
+
+
+def _parts(outdir, prefix):
+    return sorted(f for f in os.listdir(outdir) if f.startswith(f"{prefix}-part"))
+
+
+def test_write_node_data_reappearing_signature_single_call(bw):
+    """Within one write call: schema 1, schema 2, then schema 1 again.
+
+    The reappearing first signature must be routed back to its existing group,
+    not opened as a third one. Two groups total; both schema-1 patients share
+    the legacy group's single part file.
+    """
+    patients = [
+        BioCypherNode("p1", "patient", properties={"name": "Alice"}),  # schema 1
+        BioCypherNode("p2", "patient", properties={"name": "Bob", "diagnosis": "diabetes"}),  # schema 2
+        BioCypherNode("p3", "patient", properties={"name": "Carol"}),  # schema 1 again
+    ]
+
+    assert bw._write_node_data(patients, batch_size=int(1e4), force=True)
+    assert bw._write_node_headers()
+
+    # exactly two groups, not three
+    assert _headers(bw.outdir) == ["Patient-header.csv", "PatientGroup1-header.csv"]
+    assert _parts(bw.outdir, "Patient") == ["Patient-part000.csv"]
+    assert _parts(bw.outdir, "PatientGroup1") == ["PatientGroup1-part000.csv"]
+
+    g0 = open(os.path.join(bw.outdir, "Patient-part000.csv")).read()
+    # Alice and Carol (both schema 1) share the legacy group; Bob does not
+    assert "Alice" in g0 and "Carol" in g0
+    assert "Bob" not in g0
+    assert "Bob" in open(os.path.join(bw.outdir, "PatientGroup1-part000.csv")).read()
+
+
+def test_write_node_data_reappearing_signature_across_calls(bw):
+    """Across separate write calls: schema 1, schema 2, then schema 1 again.
+
+    The signature -> group mapping persists on the writer, so the third call
+    reuses the first group and appends a new part file (part001) rather than
+    overwriting part000 or creating a new group. The import-call glob
+    (``Patient-part.*``) therefore picks up both parts.
+    """
+    assert bw._write_node_data(
+        [BioCypherNode("p1", "patient", properties={"name": "Alice"})],
+        batch_size=int(1e4),
+        force=True,
+    )
+    assert bw._write_node_data(
+        [BioCypherNode("p2", "patient", properties={"name": "Bob", "diagnosis": "diabetes"})],
+        batch_size=int(1e4),
+        force=True,
+    )
+    assert bw._write_node_data(
+        [BioCypherNode("p3", "patient", properties={"name": "Carol"})],
+        batch_size=int(1e4),
+        force=True,
+    )
+    assert bw._write_node_headers()
+
+    assert _headers(bw.outdir) == ["Patient-header.csv", "PatientGroup1-header.csv"]
+    # schema-1 group gained a second part file for the reappearing signature
+    assert _parts(bw.outdir, "Patient") == ["Patient-part000.csv", "Patient-part001.csv"]
+    assert _parts(bw.outdir, "PatientGroup1") == ["PatientGroup1-part000.csv"]
+
+    assert "Alice" in open(os.path.join(bw.outdir, "Patient-part000.csv")).read()
+    assert "Carol" in open(os.path.join(bw.outdir, "Patient-part001.csv")).read()
+
+
+def test_write_node_data_property_order_invariant_grouping(bw):
+    """Two patients with the same properties in different insertion order must
+    share a single group (the signature is order-invariant)."""
+    patients = [
+        BioCypherNode("p1", "patient", properties={"name": "Alice", "diagnosis": "flu"}),
+        BioCypherNode("p2", "patient", properties={"diagnosis": "cold", "name": "Bob"}),
+    ]
+
+    assert bw._write_node_data(patients, batch_size=int(1e4), force=True)
+    assert bw._write_node_headers()
+
+    assert _headers(bw.outdir) == ["Patient-header.csv"]
+
+
+def test_write_node_data_property_type_differences_split_groups(bw):
+    """Patients with the same property *names* but different value *types* are
+    split into separate groups, because their CSV headers differ (e.g.
+    ``age:long`` vs an untyped string ``age``)."""
+    patients = [
+        BioCypherNode("p1", "patient", properties={"age": 42}),  # int -> age:long
+        BioCypherNode("p2", "patient", properties={"age": "forty"}),  # str -> age
+    ]
+
+    assert bw._write_node_data(patients, batch_size=int(1e4), force=True)
+    assert bw._write_node_headers()
+
+    assert _headers(bw.outdir) == ["Patient-header.csv", "PatientGroup1-header.csv"]
+    g0 = open(os.path.join(bw.outdir, "Patient-header.csv")).read()
+    g1 = open(os.path.join(bw.outdir, "PatientGroup1-header.csv")).read()
+    assert "age:long" in g0
+    assert "age:long" not in g1
+
+
+def test_write_node_data_multiple_signatures_get_incrementing_groups(bw):
+    """Three distinct signatures produce the legacy group plus two suffixed
+    groups with incrementing indices."""
+    patients = [
+        BioCypherNode("p1", "patient", properties={"name": "Alice"}),
+        BioCypherNode("p2", "patient", properties={"name": "Bob", "diagnosis": "diabetes"}),
+        BioCypherNode("p3", "patient", properties={"name": "Carol", "age": 30}),
+    ]
+
+    assert bw._write_node_data(patients, batch_size=int(1e4), force=True)
+    assert bw._write_node_headers()
+
+    assert _headers(bw.outdir) == [
+        "Patient-header.csv",
+        "PatientGroup1-header.csv",
+        "PatientGroup2-header.csv",
+    ]
+
+
+def test_write_node_data_grouping_independent_across_labels(bw):
+    """Signature grouping is per label; divergence in one label does not affect
+    another, and the suffixed file names do not collide."""
+    nodes = [
+        BioCypherNode("p1", "patient", properties={"name": "Alice"}),
+        BioCypherNode("p2", "patient", properties={"name": "Bob", "diagnosis": "diabetes"}),
+        BioCypherNode("s1", "sample", properties={"tissue": "liver"}),
+        BioCypherNode("s2", "sample", properties={"tissue": "blood", "quality": 0.9}),
+    ]
+
+    assert bw._write_node_data(nodes, batch_size=int(1e4), force=True)
+    assert bw._write_node_headers()
+
+    assert _headers(bw.outdir) == [
+        "Patient-header.csv",
+        "PatientGroup1-header.csv",
+        "Sample-header.csv",
+        "SampleGroup1-header.csv",
+    ]
+
+
+def test_write_node_data_group_uses_real_label_not_group_key(bw):
+    """The internal group key must never leak into the data: every node keeps
+    the real ``:LABEL`` (``Patient``) regardless of which group it was written
+    to. Otherwise the suffixed group's nodes would get the wrong graph label.
+    """
+    patients = [
+        BioCypherNode("p1", "patient", properties={"name": "Alice"}),
+        BioCypherNode("p2", "patient", properties={"name": "Bob", "diagnosis": "diabetes"}),
+    ]
+
+    assert bw._write_node_data(patients, batch_size=int(1e4), force=True)
+
+    for part in ("Patient-part000.csv", "PatientGroup1-part000.csv"):
+        content = open(os.path.join(bw.outdir, part)).read()
+        assert "PatientGroup1" not in content  # group key never appears in data
+        for line in content.splitlines():
+            if line.strip():
+                # last column is the Neo4j :LABEL value
+                assert line.split(";")[-1] == "Patient"
+
+
+def test_write_node_data_small_batch_size_flushes_per_group(bw):
+    """Batch size is an IO guard applied per group: three same-signature
+    patients with batch_size=2 flush a full part at the threshold and the
+    remainder at the end, yielding two part files in one group."""
+    patients = [BioCypherNode(f"p{i}", "patient", properties={"name": f"n{i}"}) for i in range(3)]
+
+    assert bw._write_node_data(patients, batch_size=2, force=True)
+    assert bw._write_node_headers()
+
+    assert _headers(bw.outdir) == ["Patient-header.csv"]
+    assert _parts(bw.outdir, "Patient") == ["Patient-part000.csv", "Patient-part001.csv"]
+
+
+def test_write_node_data_none_valued_properties_group_consistently(bw):
+    """Edge case: a property that is consistently ``None`` does not raise (the
+    signature sort never compares ``None`` against a type string, since keys are
+    unique) and yields a single group with the property present as a column."""
+    patients = [
+        BioCypherNode("p1", "patient", properties={"name": "Alice", "diagnosis": None}),
+        BioCypherNode("p2", "patient", properties={"name": "Bob", "diagnosis": None}),
+    ]
+
+    assert bw._write_node_data(patients, batch_size=int(1e4), force=True)
+    assert bw._write_node_headers()
+
+    assert _headers(bw.outdir) == ["Patient-header.csv"]
+    assert "diagnosis" in open(os.path.join(bw.outdir, "Patient-header.csv")).read()
+
+
 @pytest.mark.parametrize("length", [4], scope="module")
 def test_write_node_data_from_list_not_compliant_names(monkeypatch, caplog, bw, _get_nodes_non_compliant_names):
     nodes = _get_nodes_non_compliant_names

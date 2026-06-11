@@ -310,6 +310,14 @@ class _BatchWriter(_Writer, ABC):
 
         self.parts = {}  # dict to store the paths of part files for each label
 
+        # map of node label -> {property signature: group key}. Nodes of a
+        # label that present different property sets (e.g. schemaless input
+        # with optional properties) are split into separate output groups so
+        # that each part file conforms to its own header. The first signature
+        # encountered keeps the plain label as its group key (i.e. legacy file
+        # names and import call); further signatures get a suffixed key.
+        self._node_property_groups = defaultdict(dict)
+
         self._labels_orders = ["Alphabetical", "Ascending", "Descending", "Leaves", "None"]
         self.labels_order = labels_order
         self.node_labels_order = node_labels_order
@@ -554,6 +562,93 @@ class _BatchWriter(_Writer, ABC):
 
         return all_labels
 
+    def _get_node_property_types(self, node, label: str) -> dict:
+        """Determine the property names and types of a single node.
+
+        Properties are taken from the schema configuration if the label is
+        configured, otherwise they are inferred from the node itself
+        (schemaless input). The returned dict maps property name to a type
+        string and is used both to build the CSV header and to assign the node
+        to a property-signature group.
+
+        Args:
+        ----
+            node: the BioCypherNode to inspect
+
+            label (str): the primary (ontology) label of the node
+
+        Returns:
+        -------
+            dict: property name -> type string
+
+        """
+        # get properties from config if present
+        if label in self.translator.ontology.mapping.extended_schema:
+            cprops = self.translator.ontology.mapping.extended_schema.get(label).get(
+                "properties",
+            )
+        else:
+            cprops = None
+
+        if cprops:
+            d = dict(cprops)
+
+            # add id and preferred id to properties; these are
+            # created in node creation (`_create.BioCypherNode`)
+            d["id"] = "str"
+            d["preferred_id"] = "str"
+
+            # add strict mode properties
+            if self.strict_mode:
+                d["source"] = "str"
+                d["version"] = "str"
+                d["licence"] = "str"
+
+        else:
+            d = dict(node.get_properties())
+            # encode property type
+            for k, v in d.items():
+                if v is not None:
+                    if isinstance(v, list):
+                        elem_type = type(v[0]).__name__ if v else "str"
+                        d[k] = f"{elem_type}[]"
+                    else:
+                        d[k] = type(v).__name__
+
+        return d
+
+    def _get_node_group_key(self, label: str, prop_dict: dict) -> str:
+        """Assign a node to an output group based on its property signature.
+
+        Nodes that share the same set of properties and types are written to
+        the same group (header + part files + import call entry). The first
+        signature seen for a label keeps the plain label as its key, so the
+        common case (schema-configured or homogeneous data) is unchanged and
+        produces the same single header as before. Additional signatures get a
+        distinct, file-name-safe suffix.
+
+        Args:
+        ----
+            label (str): the primary (ontology) label of the node
+
+            prop_dict (dict): property name -> type string for the node
+
+        Returns:
+        -------
+            str: the group key to use for buffering, file naming and headers
+
+        """
+        # order-invariant, type-aware signature
+        signature = tuple(sorted(prop_dict.items()))
+        groups = self._node_property_groups[label]
+
+        if signature not in groups:
+            # first signature keeps the legacy label (and thus legacy file
+            # names); subsequent signatures are suffixed
+            groups[signature] = label if not groups else f"{label} group{len(groups)}"
+
+        return groups[signature]
+
     def _write_node_data(self, nodes, batch_size, force: bool = False):
         """Write biocypher nodes to CSV.
 
@@ -642,71 +737,41 @@ class _BatchWriter(_Writer, ABC):
                 logger.warning(f"Node {label} has no id; skipping.")
                 return True
 
-            if label not in bins:
-                # start new list
-                bins[label].append(node)
-                bin_l[label] = 1
+            # determine the node's property types and route it to the output
+            # group for its property signature. Schema-configured or otherwise
+            # homogeneous data yields a single group per label (identical to
+            # the previous behaviour); schemaless data with varying property
+            # sets is split into one group per distinct set, so each part file
+            # conforms to its own header instead of raising a mismatch error.
+            d = self._get_node_property_types(node, label)
+            gkey = self._get_node_group_key(label, d)
 
-                # get properties from config if present
-                if label in self.translator.ontology.mapping.extended_schema:
-                    cprops = self.translator.ontology.mapping.extended_schema.get(label).get(
-                        "properties",
-                    )
-                else:
-                    cprops = None
-                if cprops:
-                    d = dict(cprops)
+            if gkey not in bins:
+                # start new list for this group
+                bins[gkey].append(node)
+                bin_l[gkey] = 1
 
-                    # add id and preferred id to properties; these are
-                    # created in node creation (`_create.BioCypherNode`)
-                    d["id"] = "str"
-                    d["preferred_id"] = "str"
-
-                    # add strict mode properties
-                    if self.strict_mode:
-                        d["source"] = "str"
-                        d["version"] = "str"
-                        d["licence"] = "str"
-
-                else:
-                    d = dict(node.get_properties())
-                    # encode property type
-                    for k, v in d.items():
-                        if v is not None:
-                            if isinstance(v, list):
-                                elem_type = type(v[0]).__name__ if v else "str"
-                                d[k] = f"{elem_type}[]"
-                            else:
-                                d[k] = type(v).__name__
-                # else use first encountered node to define properties for
-                # checking; could later be by checking all nodes but much
-                # more complicated, particularly involving batch writing
-                # (would require "do-overs"). for now, we output a warning
-                # if node properties diverge from reference properties (in
-                # write_single_node_list_to_file) TODO if it occurs, ask
-                # user to select desired properties and restart the process
-
-                reference_props[label] = d
-                labels[label] = self._get_all_labels(label, self.node_labels_order, force)
+                reference_props[gkey] = d
+                labels[gkey] = self._get_all_labels(label, self.node_labels_order, force)
 
             else:
                 # add to list
-                bins[label].append(node)
-                bin_l[label] += 1
-                if not bin_l[label] < batch_size:
+                bins[gkey].append(node)
+                bin_l[gkey] += 1
+                if not bin_l[gkey] < batch_size:
                     # batch size controlled here
                     passed = self._write_single_node_list_to_file(
-                        bins[label],
-                        label,
-                        reference_props[label],
-                        labels[label],
+                        bins[gkey],
+                        gkey,
+                        reference_props[gkey],
+                        labels[gkey],
                     )
 
                     if not passed:
                         return False
 
-                    bins[label] = []
-                    bin_l[label] = 0
+                    bins[gkey] = []
+                    bin_l[gkey] = 0
 
             return True
 
@@ -715,26 +780,23 @@ class _BatchWriter(_Writer, ABC):
             if empty:
                 return True
 
-            # after generator depleted, write remainder of bins
-            for label, nl in bins.items():
+            # after generator depleted, write remainder of bins (keyed by
+            # property-signature group, see consume())
+            for gkey, nl in bins.items():
                 passed = self._write_single_node_list_to_file(
                     nl,
-                    label,
-                    reference_props[label],
-                    labels[label],
+                    gkey,
+                    reference_props[gkey],
+                    labels[gkey],
                 )
 
                 if not passed:
                     return False
 
-            # use complete bin list to write header files
-            # TODO if a node type has varying properties
-            # (ie missingness), we'd need to collect all possible
-            # properties in the generator pass
-
-            # save config or first-node properties to instance attribute
-            for label in reference_props:
-                self.node_property_dict[label] = reference_props[label]
+            # one header per group; groups with varying property sets were
+            # already separated in consume(), so each header matches its parts
+            for gkey in reference_props:
+                self.node_property_dict[gkey] = reference_props[gkey]
 
             return True
 
