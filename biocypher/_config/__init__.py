@@ -124,7 +124,12 @@ def config(*args, **kwargs) -> Optional[Any]:
         return result[0] if len(result) == 1 else result
 
     for key, value in kwargs.items():
-        globals()["_config"][key].update(value)
+        if value is None:
+            globals()["_config"][key] = None
+        elif key in globals()["_config"] and isinstance(globals()["_config"][key], dict) and isinstance(value, dict):
+            globals()["_config"][key].update(value)
+        else:
+            globals()["_config"][key] = value
 
 
 def reset():
