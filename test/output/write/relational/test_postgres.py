@@ -1,7 +1,18 @@
+import logging
 import os
 import subprocess
 
 import pytest
+
+from biocypher.output.write.relational._postgresql import _PostgreSQLBatchWriter
+
+
+def test_get_data_type_unknown_logs_actual_type_name(caplog):
+    writer = _PostgreSQLBatchWriter.__new__(_PostgreSQLBatchWriter)
+    with caplog.at_level(logging.INFO):
+        result = writer._get_data_type("some_unknown_type")
+    assert result == "VARCHAR"
+    assert "some_unknown_type" in caplog.text
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
