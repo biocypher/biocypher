@@ -1412,3 +1412,23 @@ def test_powershell_template_structure():
         "{args_neo4j_v5}",
     }
     assert expected_placeholders.issubset(set(placeholders))
+
+
+def test_edge_labels_order_fallback_log_message(caplog, translator, deduplicator, tmp_path):
+    """When edge_labels_order='None' the fallback log must name 'edge_labels_order', not 'node_labels_order'."""
+    with caplog.at_level(logging.INFO):
+        _Neo4jBatchWriter(
+            translator=translator,
+            deduplicator=deduplicator,
+            output_directory=str(tmp_path),
+            delimiter=";",
+            labels_order="Descending",
+            edge_labels_order="None",
+        )
+    messages = [r.message for r in caplog.records]
+    assert any(
+        "`edge_labels_order` set to `labels_order`=`Descending`" in msg for msg in messages
+    ), f"Expected edge_labels_order fallback log, got: {messages}"
+    assert not any(
+        "`node_labels_order` set to `labels_order`=`Descending`" in msg for msg in messages
+    ), f"node_labels_order appeared in edge fallback log: {messages}"
