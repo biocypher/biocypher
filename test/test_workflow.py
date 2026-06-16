@@ -722,6 +722,22 @@ class TestUtilityOperations:
         assert len(self.workflow) == 0
         assert not self.workflow.has_edge("edge1")
 
+    def test_clear_resets_deduplication_tracking(self):
+        """Test that clear() resets _seen_nodes/_seen_edges so nodes can be re-added."""
+        workflow = create_workflow("test", deduplication=True)
+        workflow.add_node("node1", "protein")
+        workflow.add_node("node2", "protein")
+        workflow.add_edge("edge1", "interaction", "node1", "node2")
+
+        workflow.clear()
+
+        # After clear, the same IDs must be addable again
+        result = workflow.add_node("node1", "protein")
+        assert result is True
+        workflow.add_node("node2", "protein")
+        result = workflow.add_edge("edge1", "interaction", "node1", "node2")
+        assert result is True
+
     def test_copy(self):
         """Test copying the workflow."""
         self.workflow.add_node("node1", "protein", name="TP53")
@@ -936,6 +952,48 @@ class TestValidationModes:
         # Different edge should succeed
         result3 = workflow.add_edge("edge2", "interaction", "node1", "node2")
         assert result3 is True
+
+    def test_remove_node_clears_deduplication_tracking(self):
+        """Test that remove_node() removes the ID from _seen_nodes so it can be re-added."""
+        workflow = create_workflow("test", deduplication=True)
+        workflow.add_node("node1", "protein")
+
+        # Removing the node should allow re-adding it
+        workflow.remove_node("node1")
+        result = workflow.add_node("node1", "protein")
+        assert result is True
+        assert workflow.has_node("node1")
+
+    def test_remove_edge_clears_deduplication_tracking(self):
+        """Test that remove_edge() removes the key from _seen_edges so it can be re-added."""
+        workflow = create_workflow("test", deduplication=True)
+        workflow.add_node("node1", "protein")
+        workflow.add_node("node2", "protein")
+        workflow.add_edge("edge1", "interaction", "node1", "node2")
+
+        # Removing the edge should allow re-adding it
+        workflow.remove_edge("edge1")
+        result = workflow.add_edge("edge1", "interaction", "node1", "node2")
+        assert result is True
+        assert workflow.has_edge("edge1")
+
+    def test_from_json_populates_deduplication_tracking(self):
+        """Test that from_json() populates _seen_nodes/_seen_edges for deduplication."""
+        workflow = create_workflow("test", deduplication=True)
+        workflow.add_node("node1", "protein")
+        workflow.add_node("node2", "protein")
+        workflow.add_edge("edge1", "interaction", "node1", "node2")
+        json_str = workflow.to_json()
+
+        # Load into a new workflow with deduplication
+        workflow2 = create_workflow("test2", deduplication=True)
+        workflow2.from_json(json_str)
+
+        # Loaded node/edge IDs should be treated as already seen
+        result_node = workflow2.add_node("node1", "protein")
+        assert result_node is False  # Duplicate
+        result_edge = workflow2.add_edge("edge1", "interaction", "node1", "node2")
+        assert result_edge is False  # Duplicate
 
     def test_schema_validation_valid_data(self):
         """Test schema validation with valid data."""
