@@ -2,6 +2,7 @@ import os
 
 import pytest
 
+from biocypher._create import BioCypherNode
 from biocypher._logger import logger
 
 
@@ -36,6 +37,39 @@ def test_biopathnet_writer_nodes(bw_biopathnet, _get_nodes):
 #        lines = f.readlines()
 #        len_lines = len(lines)
 #    assert len(nodes) == len_lines
+
+
+def test_biopathnet_writer_nodes_synonym_type(bw_biopathnet, tmp_path_session):
+    """Regression test for issue #489.
+
+    Nodes whose type is a schema synonym (e.g. 'complex' -> 'macromolecular
+    complex') must be written without raising a NetworkXError because the
+    full Ontology graph (with synonyms relabeled) is used for ancestor lookup
+    rather than the raw head-ontology graph.
+    """
+    synonym_nodes = [
+        BioCypherNode(
+            node_id="cpx1",
+            node_label="complex",
+            preferred_id="complexportal",
+            properties={},
+        ),
+        BioCypherNode(
+            node_id="cpx2",
+            node_label="complex",
+            preferred_id="complexportal",
+            properties={},
+        ),
+    ]
+
+    passed = bw_biopathnet.write_nodes(iter(synonym_nodes), batch_size=1e6)
+    assert passed
+
+    entity_types_file = os.path.join(tmp_path_session, "entity_types.txt")
+    assert os.path.exists(entity_types_file)
+    content = open(entity_types_file).read()
+    assert "cpx1" in content
+    assert "complex" in content
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
