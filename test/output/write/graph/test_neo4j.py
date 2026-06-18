@@ -209,6 +209,25 @@ def test_construct_import_call_powershell(bw):
     assert "import --database=neo4j" in import_script
 
 
+def test_import_call_additional_options(translator, deduplicator, tmp_path_session):
+    bw_extra = _Neo4jBatchWriter(
+        translator=translator,
+        deduplicator=deduplicator,
+        output_directory=tmp_path_session,
+        delimiter=";",
+        array_delimiter="|",
+        quote="'",
+        import_call_additional_options='--report-file="/import.report" --bad-tolerance=-1',
+    )
+
+    call = bw_extra._get_import_call("import", "--database=", "--force=")
+
+    assert '--report-file="/import.report" --bad-tolerance=-1' in call
+
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
+
+
 def test_write_hybrid_ontology_nodes(bw):
     nodes = []
     for i in range(4):

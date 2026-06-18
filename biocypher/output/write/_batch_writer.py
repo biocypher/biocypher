@@ -144,6 +144,7 @@ class _BatchWriter(_Writer, ABC):
         strict_mode: bool = False,
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
+        import_call_additional_options: str | None = None,
         db_user: str = None,
         db_password: str = None,
         db_host: str = None,
@@ -224,6 +225,10 @@ class _BatchWriter(_Writer, ABC):
             skip_duplicate_nodes:
                 Whether to skip duplicate nodes. (Specific to Neo4j.)
 
+            import_call_additional_options:
+                Optional string of extra flags to append verbatim to the
+                generated neo4j-admin import command. (Specific to Neo4j.)
+
             db_user:
                 The database user.
 
@@ -288,6 +293,7 @@ class _BatchWriter(_Writer, ABC):
         self.quote = quote
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
+        self.import_call_additional_options = import_call_additional_options
 
         if import_call_bin_prefix is None:
             self.import_call_bin_prefix = self._get_default_import_call_bin_prefix()
