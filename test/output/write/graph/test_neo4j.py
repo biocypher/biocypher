@@ -241,6 +241,31 @@ def test_write_hybrid_ontology_nodes(bw):
     assert "BiologicalEntity" in part
 
 
+def test_property_quote_escaping(bw):
+    """Regression: scalar string properties must escape embedded quote chars (#405)."""
+    nodes = [
+        BioCypherNode(
+            node_id="p1",
+            node_label="protein",
+            properties={
+                "score": 4.0,
+                "name": "Pandora's box",
+                "taxon": 9606,
+                "genes": ["gene1", "gene2"],
+            },
+        ),
+    ]
+
+    passed = bw.write_nodes(nodes)
+    assert passed
+
+    data_csv = os.path.join(bw.outdir, "Protein-part000.csv")
+    with open(data_csv) as f:
+        data = f.read()
+
+    assert "p1;'Pandora''s box'" in data
+
+
 def test_property_types(bw):
     nodes = []
     for i in range(4):
