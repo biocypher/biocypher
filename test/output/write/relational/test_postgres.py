@@ -45,6 +45,35 @@ def test_get_writer_passes_db_host_to_postgresql_writer(translator, deduplicator
     assert writer.db_host == custom_host
 
 
+def _make_writer(db_password):
+    """Minimal _PostgreSQLBatchWriter with enough state to run _construct_import_call."""
+    writer = _PostgreSQLBatchWriter.__new__(_PostgreSQLBatchWriter)
+    writer.db_password = db_password
+    writer.db_name = "testdb"
+    writer.db_host = "localhost"
+    writer.db_port = "5432"
+    writer.db_user = "testuser"
+    writer.import_call_bin_prefix = ""
+    writer.import_call_nodes = {"/tmp/node-create_table.sql"}
+    writer.import_call_edges = set()
+    writer._copy_from_csv_commands = {r"\copy protein FROM '/tmp/Protein-part000.csv' DELIMITER E',' CSV;"}
+    return writer
+
+
+def test_import_call_no_pgpassword_when_password_is_none():
+    """PGPASSWORD must not appear when db_password is None (fixes set-literal bug)."""
+    writer = _make_writer(db_password=None)
+    import_call = writer._construct_import_call()
+    assert "PGPASSWORD" not in import_call
+
+
+def test_import_call_includes_pgpassword_when_password_is_set():
+    """PGPASSWORD=<value> must be prepended to psql calls when db_password is set."""
+    writer = _make_writer(db_password="s3cr3t")
+    import_call = writer._construct_import_call()
+    assert "PGPASSWORD=s3cr3t" in import_call
+
+
 @pytest.mark.parametrize("length", [4], scope="module")
 def test_write_node_data_from_gen_comma_postgresql(bw_comma_postgresql, _get_nodes):
     nodes = _get_nodes
