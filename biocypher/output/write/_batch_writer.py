@@ -344,7 +344,7 @@ class _BatchWriter(_Writer, ABC):
         if self.labels_order == "None" and (self.node_labels_order == "None" or self.edge_labels_order == "None"):
             msg = (
                 "You have to set either `labels_order` or "
-                "both `node_labels_order` and `edge_labels_order`."
+                "both `node_labels_order` and `edge_labels_order`. "
                 "Current setting:\n"
                 f"- labels_order = `{self.labels_order}`\n"
                 f"- node_labels_order = `{self.node_labels_order}`\n"
