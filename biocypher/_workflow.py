@@ -205,7 +205,10 @@ class BioCypherWorkflow:
         Returns:
             bool: True if node was removed, False if not found
         """
-        return self.graph.remove_node(node_id)
+        result = self.graph.remove_node(node_id)
+        if result:
+            self._seen_nodes.discard(node_id)
+        return result
 
     # ==================== EDGE OPERATIONS ====================
 
@@ -311,6 +314,10 @@ class BioCypherWorkflow:
         Returns:
             bool: True if edge was removed, False if not found
         """
+        if self.deduplication:
+            edge = self.graph.get_edge(edge_id)
+            if edge is not None:
+                self._seen_edges.discard((edge_id, edge.type))
         return self.graph.remove_edge(edge_id)
 
     # ==================== HYPEREDGE OPERATIONS ====================
@@ -619,6 +626,9 @@ class BioCypherWorkflow:
         data = json.loads(json_data)
         self.graph = Graph.from_dict(data)
         self.name = self.graph.name
+        if self.deduplication:
+            self._seen_nodes = {node.id for node in self.graph.get_nodes()}
+            self._seen_edges = {(edge.id, edge.type) for edge in self.graph.get_edges()}
 
     def save(self, filepath: str) -> None:
         """Save the graph to a file.
@@ -646,6 +656,8 @@ class BioCypherWorkflow:
     def clear(self) -> None:
         """Clear all nodes and edges from the graph."""
         self.graph = Graph(name=self.name, directed=self.graph.directed)
+        self._seen_nodes.clear()
+        self._seen_edges.clear()
         logger.info("Graph cleared")
 
     def copy(self) -> "BioCypherWorkflow":
