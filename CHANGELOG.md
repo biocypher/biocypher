@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.2](https://github.com/biocypher/biocypher/compare/biocypher-v0.15.1...biocypher-v0.15.2) (2026-06-22)
+
+
+### Bug Fixes
+
+* **neo4j:** CSV escaping quote character ([#572](https://github.com/biocypher/biocypher/issues/572)) ([c4ef798](https://github.com/biocypher/biocypher/commit/c4ef798d8de9cb06960bbd8aae1ce10f24024213))
+
 ## [0.15.1](https://github.com/biocypher/biocypher/compare/biocypher-v0.15.0...biocypher-v0.15.1) (2026-06-01)
 
 
