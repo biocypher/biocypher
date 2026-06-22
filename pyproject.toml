@@ -43,7 +43,7 @@ Issues = "https://github.com/biocypher/biocypher/issues"
 "Bug Tracker" = "https://github.com/biocypher/biocypher/issues"
 
 [project.optional-dependencies]
-neo4j = ["neo4j>=4.0"]
+neo4j = ["neo4j>=5.0"]
 scirpy = ["scirpy>=0.22.0"]
 
 [dependency-groups]
