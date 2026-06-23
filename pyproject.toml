@@ -45,6 +45,7 @@ Issues = "https://github.com/biocypher/biocypher/issues"
 [project.optional-dependencies]
 neo4j = ["neo4j>=5.0"]
 scirpy = ["scirpy>=0.22.0"]
+bigdata = ["xxhash>=3.0", "lmdb>=1.4", "rbloom>=1.4"]
 
 [dependency-groups]
 dev = [
