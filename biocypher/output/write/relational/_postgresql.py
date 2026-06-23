@@ -291,7 +291,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             str: a bash command for postgresql import
 
         """
-        import_call = ""
+        import_call = "#!/bin/bash\nset -e\n\n"
 
         # create tables
         # At this point, csv files of nodes and edges do not require differentiation

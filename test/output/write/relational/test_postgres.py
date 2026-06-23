@@ -64,6 +64,22 @@ def test_write_node_data_from_gen_tab_postgresql(bw_tab_postgresql, _get_nodes):
     assert "ChemicalEntity" in micro_rna
 
 
+@pytest.mark.parametrize("length", [4], scope="module")
+def test_construct_import_call_postgresql(bw_tab_postgresql, _get_nodes):
+    nodes = _get_nodes
+
+    def node_gen(nodes):
+        yield from nodes
+
+    bw_tab_postgresql.write_nodes(node_gen(nodes))
+    import_call = bw_tab_postgresql._construct_import_call()
+
+    assert import_call.startswith("#!/bin/bash\nset -e\n")
+    assert "psql -f" in import_call
+    assert "protein-create_table.sql" in import_call
+    assert "microrna-create_table.sql" in import_call
+
+
 @pytest.mark.requires_postgresql()
 @pytest.mark.parametrize("length", [4], scope="module")
 def test_database_import_node_data_from_gen_comma_postgresql(bw_comma_postgresql, _get_nodes, create_database_postgres):
@@ -105,7 +121,7 @@ def test_database_import_node_data_from_gen_comma_postgresql(bw_comma_postgresql
     script = os.path.join(tmp_path, import_script)
     with open(script) as f:
         commands = f.readlines()
-        assert len(commands) == 16
+        assert len(commands) == 19
 
     for command in commands:
         result = subprocess.run(command, shell=True, check=False)
@@ -175,7 +191,7 @@ def test_database_import_node_data_from_gen_tab_postgresql(bw_tab_postgresql, _g
     script = os.path.join(tmp_path, import_script)
     with open(script) as f:
         commands = f.readlines()
-        assert len(commands) == 16
+        assert len(commands) == 19
 
     for command in commands:
         result = subprocess.run(command, shell=True, check=False)
