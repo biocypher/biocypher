@@ -183,6 +183,22 @@ sqlite:
   # import_call_bin_prefix: '' # path to "sqlite3"
   # import_call_file_prefix: '/path/to/files'
 
+arangodb:
+  ### ArangoDB configuration ###
+  database_name: biocypher # DB name
+
+  # ArangoDB import batch writer settings
+
+  delimiter: ","
+  array_delimiter: "|"
+  quote_character: '"'
+  # import_call_bin_prefix: '' # path to "arangoimp"
+  # import_call_file_prefix: '/path/to/files'
+
+  labels_order: "Ascending" # Default: From more specific to more generic.
+  node_labels_order: "None" # Default: use labels_order.
+  edge_labels_order: "None"
+
 csv:
   ### CSV/Pandas configuration ###
   delimiter: ","
