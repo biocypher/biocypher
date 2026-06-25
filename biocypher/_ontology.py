@@ -781,7 +781,7 @@ class Ontology:
         """
         if not full and not self.mapping.extended_schema:
             msg = (
-                "You are attempting to visualise a subset of the loaded"
+                "You are attempting to visualise a subset of the loaded "
                 "ontology, but have not provided a schema configuration. "
                 "To display a partial ontology graph, please provide a schema "
                 "configuration file; to visualise the full graph, please use "

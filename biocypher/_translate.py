@@ -164,7 +164,7 @@ class Translator:
 
         if not isinstance(filter_props, dict):
             msg = (
-                f"Properties for type {bl_type} should be a dictonary. Verify your schema (did you declared "
+                f"Properties for type {bl_type} should be a dictionary. Verify your schema (did you declare "
                 "properties as a list?)"
             )
             logger.error(msg)
