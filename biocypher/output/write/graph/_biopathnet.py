@@ -69,7 +69,11 @@ class _BioPathNetWriter(_Writer):
         dict_entity_types = {}
         str_nodes_props_graph = []
 
-        graph_hierarchy = copy.copy(self.translator.ontology._head_ontology.get_nx_graph()).reverse()
+        # Use the full Ontology graph (with synonym relabeling applied) so that
+        # user-defined synonym labels (e.g. "complex" -> "macromolecular complex")
+        # are found in the hierarchy.  The raw _head_ontology graph only contains
+        # canonical labels and would crash on any synonym type.
+        graph_hierarchy = copy.copy(self.translator.ontology._nx_graph).reverse()
         logger.debug(f"type(graph_hierarchy) = {type(graph_hierarchy)}")
         logger.debug(f"graph_hierarchy = {graph_hierarchy.nodes()}")
         ancestors_set = set()
@@ -90,6 +94,13 @@ class _BioPathNetWriter(_Writer):
 
             # Add all ancestors of the entity type in the set, in order to reconstruct
             # the useful part of the ontology for passing it to BioPathNet
+            if semantic_type not in graph_hierarchy:
+                logger.warning(
+                    f"Semantic type '{semantic_type}' not found in ontology graph. "
+                    "Skipping ancestor lookup for this node type."
+                )
+                ancestors_set.add(semantic_type)
+                continue
             ancestors = nx.ancestors(graph_hierarchy, semantic_type) | {semantic_type}
             logger.debug(f"Adding the type : {semantic_type}")
             logger.debug(f"Ancestors : {ancestors}")
