@@ -626,6 +626,27 @@ def test_strict_mode_does_not_mutate_schema(translator):
     assert "version" not in props
 
 
+def test_strict_mode_error_messages_are_strings(translator):
+    """Strict-mode ValueError messages must be plain strings, not tuples (trailing-comma bug)."""
+    translator.strict_mode = True
+
+    node_missing_prop = ("n1", "Test", {"source": "s", "licence": "l"})
+    with pytest.raises(ValueError, match="version.*missing|missing.*version"):
+        list(translator.translate_nodes([node_missing_prop]))
+
+    edge_missing_source = ("n1", "n2", "Test", {"licence": "l", "version": "v"})
+    with pytest.raises(ValueError, match="source"):
+        list(translator.translate_edges([edge_missing_source]))
+
+    edge_missing_licence = ("n1", "n2", "Test", {"source": "s", "version": "v"})
+    with pytest.raises(ValueError, match="licence"):
+        list(translator.translate_edges([edge_missing_licence]))
+
+    edge_missing_version = ("n1", "n2", "Test", {"source": "s", "licence": "l"})
+    with pytest.raises(ValueError, match="version"):
+        list(translator.translate_edges([edge_missing_version]))
+
+
 def test_translate_entities_empty_iterable(translator):
     """translate_entities with an empty iterable should warn and return an empty iterator (issue #493)."""
     result = list(translator.translate_entities([]))
