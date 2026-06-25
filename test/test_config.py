@@ -2,7 +2,7 @@ import pytest
 
 import biocypher._config as cfg_module
 
-from biocypher._config import _read_yaml, _USER_CONFIG_FILE
+from biocypher._config import _read_yaml, _USER_CONFIG_FILE, config, reset
 
 
 def test_read_yaml():
@@ -44,3 +44,46 @@ def test_read_config_merges_user_and_local(monkeypatch):
     assert result["neo4j"]["uri"] == "neo4j://myserver:7687"  # from user
     assert result["neo4j"]["database_name"] == "my_project_db"  # from local
     assert result["neo4j"]["password"] == "neo4j"  # from defaults
+
+
+def test_config_setter_merges_dict_for_known_key():
+    """config(key=dict) merges into the existing dict for a known key."""
+    try:
+        config(neo4j={"database_name": "customdb"})
+        result = config("neo4j")
+        assert result["database_name"] == "customdb"
+        assert "uri" in result  # other defaults preserved
+    finally:
+        reset()
+
+
+def test_config_setter_creates_new_key():
+    """config(key=value) must not raise KeyError for a key absent from defaults."""
+    try:
+        config(arangodb={"database_name": "mydb"})
+        result = config("arangodb")
+        assert result == {"database_name": "mydb"}
+    finally:
+        reset()
+
+
+def test_config_setter_accepts_none_value():
+    """config(key=None) sets the value to None without raising AttributeError."""
+    try:
+        config(neo4j=None)
+        assert config("neo4j") is None
+    finally:
+        reset()
+
+
+def test_update_from_file_with_unknown_key(tmp_path):
+    """update_from_file must not crash when the YAML contains a key not in the defaults."""
+    from biocypher._config import update_from_file
+
+    cfg_file = tmp_path / "biocypher_config.yaml"
+    cfg_file.write_text("arangodb:\n  database_name: mydb\n")
+    try:
+        update_from_file(str(cfg_file))
+        assert config("arangodb") == {"database_name": "mydb"}
+    finally:
+        reset()
