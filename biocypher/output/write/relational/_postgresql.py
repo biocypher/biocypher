@@ -54,7 +54,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         try:
             return self.DATA_TYPE_LOOKUP[string]
         except KeyError:
-            logger.info('Could not determine data type {string}. Using default "VARCHAR"')
+            logger.info(f'Could not determine data type {string}. Using default "VARCHAR"')
             return "VARCHAR"
 
     def _quote_string(self, value: str) -> str:
