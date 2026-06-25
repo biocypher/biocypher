@@ -806,8 +806,8 @@ class BioCypher:
             str: The BioCypher equivalent of the term.
 
         """
-        # instantiate adapter if not exists
-        self.start_ontology()
+        if not self._translator:
+            self._get_translator()
 
         return self._translator.translate_term(term)
 
@@ -832,8 +832,8 @@ class BioCypher:
             str: The original term.
 
         """
-        # instantiate adapter if not exists
-        self.start_ontology()
+        if not self._translator:
+            self._get_translator()
 
         return self._translator.reverse_translate_term(term)
 
@@ -849,8 +849,8 @@ class BioCypher:
             str: The BioCypher equivalent of the query.
 
         """
-        # instantiate adapter if not exists
-        self.start_ontology()
+        if not self._translator:
+            self._get_translator()
 
         return self._translator.translate(query)
 
@@ -866,7 +866,7 @@ class BioCypher:
             str: The original query.
 
         """
-        # instantiate adapter if not exists
-        self.start_ontology()
+        if not self._translator:
+            self._get_translator()
 
         return self._translator.reverse_translate(query)
