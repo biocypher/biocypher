@@ -183,6 +183,10 @@ sqlite:
   # import_call_bin_prefix: '' # path to "sqlite3"
   # import_call_file_prefix: '/path/to/files'
 
+  labels_order: "Ascending" # Default: From more specific to more generic.
+  node_labels_order: "None" # Default: use labels_order.
+  edge_labels_order: "None"
+
 arangodb:
   ### ArangoDB configuration ###
   database_name: biocypher # DB name

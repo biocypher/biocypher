@@ -60,8 +60,8 @@ def test_config_setter_merges_dict_for_known_key():
 def test_config_setter_creates_new_key():
     """config(key=value) must not raise KeyError for a key absent from defaults."""
     try:
-        config(arangodb={"database_name": "mydb"})
-        result = config("arangodb")
+        config(custom_unknown_dbms={"database_name": "mydb"})
+        result = config("custom_unknown_dbms")
         assert result == {"database_name": "mydb"}
     finally:
         reset()
@@ -81,10 +81,10 @@ def test_update_from_file_with_unknown_key(tmp_path):
     from biocypher._config import update_from_file
 
     cfg_file = tmp_path / "biocypher_config.yaml"
-    cfg_file.write_text("arangodb:\n  database_name: mydb\n")
+    cfg_file.write_text("custom_unknown_dbms:\n  database_name: mydb\n")
     try:
         update_from_file(str(cfg_file))
-        assert config("arangodb") == {"database_name": "mydb"}
+        assert config("custom_unknown_dbms") == {"database_name": "mydb"}
     finally:
         reset()
 
@@ -105,3 +105,26 @@ def test_arangodb_config_present_in_defaults():
     assert arango_cfg is not None, "arangodb section missing from defaults config"
     assert "labels_order" in arango_cfg, "labels_order must be set so get_writer doesn't pass None"
     assert "delimiter" in arango_cfg, "delimiter must be set for ArangoDB CSV output"
+
+
+def test_sqlite_config_has_labels_order():
+    """SQLite section must have labels_order keys so get_writer("sqlite") doesn't crash.
+
+    Previously, the `sqlite` section in biocypher_config.yaml was missing
+    `labels_order`, `node_labels_order`, and `edge_labels_order`. Because
+    get_writer passes these keys from config to _BatchWriter.__init__, the
+    missing keys caused None to be forwarded, overriding the parameter defaults.
+    _check_labels_order() then raised a ValueError on first use, making the
+    SQLite writer completely unusable via BioCypher(dbms="sqlite").
+    """
+    from biocypher._config import reset
+
+    reset()  # ensure we're reading from the real defaults file
+
+    sqlite_cfg = _config("sqlite")
+
+    assert sqlite_cfg is not None, "sqlite section missing from defaults config"
+    assert "labels_order" in sqlite_cfg, "labels_order must be set so get_writer doesn't pass None"
+    assert "node_labels_order" in sqlite_cfg, "node_labels_order must be set so get_writer doesn't pass None"
+    assert "edge_labels_order" in sqlite_cfg, "edge_labels_order must be set so get_writer doesn't pass None"
+    assert "delimiter" in sqlite_cfg, "delimiter must be set for SQLite CSV output"
