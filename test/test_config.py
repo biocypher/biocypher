@@ -2,7 +2,7 @@ import pytest
 
 import biocypher._config as cfg_module
 
-from biocypher._config import _read_yaml, _USER_CONFIG_FILE, config, reset
+from biocypher._config import _read_yaml, _USER_CONFIG_FILE, config, config as _config, reset
 
 
 def test_read_yaml():
@@ -87,3 +87,21 @@ def test_update_from_file_with_unknown_key(tmp_path):
         assert config("arangodb") == {"database_name": "mydb"}
     finally:
         reset()
+
+
+def test_arangodb_config_present_in_defaults():
+    """ArangoDB section must exist in defaults so get_writer("arangodb") doesn't crash.
+
+    Previously, the `arangodb` key was absent from biocypher_config.yaml, so
+    _config("arangodb") returned None, get_writer passed labels_order=None to the
+    writer, and _check_labels_order() raised a ValueError on first use.
+    """
+    from biocypher._config import reset
+
+    reset()  # ensure we're reading from the real defaults file
+
+    arango_cfg = _config("arangodb")
+
+    assert arango_cfg is not None, "arangodb section missing from defaults config"
+    assert "labels_order" in arango_cfg, "labels_order must be set so get_writer doesn't pass None"
+    assert "delimiter" in arango_cfg, "delimiter must be set for ArangoDB CSV output"
