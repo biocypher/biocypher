@@ -410,7 +410,7 @@ def test_write_node_data_from_list_not_compliant_names(monkeypatch, caplog, bw, 
 
     expected_file_names = [
         "PatientPerson-part000.csv",
-        "$He524lloWor.Ld-part000.csv",
+        "$He524lloWor_ld-part000.csv",
     ]
     for file_name in os.listdir(tmp_path):
         assert file_name in expected_file_names
@@ -1303,11 +1303,11 @@ def test_check_label_name():
     # Test case 4: label starts with a non-alphanumeric character
     assert parse_label("@Invalid_Label") == "Invalid_Label"
 
-    # Additional test case: label with dot (for class hierarchy of BioCypher)
-    assert parse_label("valid.label") == "valid.label"
+    # Dots are replaced with underscores to avoid backtick-escaping in Cypher queries
+    assert parse_label("valid.label") == "valid_label"
 
-    # Additional test case: label with dot and non-compliant characters
-    assert parse_label("In.valid.Label@1") == "In.valid.Label1"
+    # Dots replaced before other characters are stripped
+    assert parse_label("In.valid.Label@1") == "In_valid_Label1"
 
     # Test case: label contains only non-compliant characters (would previously crash with IndexError)
     assert parse_label("@#^&") == ""
