@@ -250,9 +250,7 @@ class OntologyAdapter:
         """
         for node in list(nx_graph.nodes):
             if not self.has_label(node, self._rdf_graph):
-                logger.debug(
-                    f"Node '{node}' has no rdfs:label in the ontology and will be removed."
-                )
+                logger.debug(f"Node '{node}' has no rdfs:label in the ontology and will be removed.")
                 nx_graph.remove_node(node)
                 continue
 
