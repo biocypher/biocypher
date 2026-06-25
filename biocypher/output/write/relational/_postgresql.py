@@ -300,7 +300,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
             *self.import_call_edges,
         ]:
             import_call += f'echo "Setup {import_file_path}..."\n'
-            if {self.db_password}:
+            if self.db_password:
                 # set password variable inline
                 import_call += f"PGPASSWORD={self.db_password} "
             import_call += f"{self.import_call_bin_prefix}psql -f {import_file_path}"
@@ -315,7 +315,7 @@ class _PostgreSQLBatchWriter(_BatchWriter):
         for command in self._copy_from_csv_commands:
             table_part = command.split(" ")[3]
             import_call += f'echo "Importing {table_part}..."\n'
-            if {self.db_password}:
+            if self.db_password:
                 # set password variable inline
                 import_call += f"PGPASSWORD={self.db_password} "
             import_call += f'{self.import_call_bin_prefix}psql -c "{command}"'
