@@ -6,7 +6,7 @@ Title: BioCypher graph schema configuration file
 
 protein:
   represented_as: node
-  preferred_id: uniprot
+  namespace: uniprot
   input_label: protein
   db_collection_name: proteins
   properties:
@@ -17,40 +17,40 @@ protein:
 
 microRNA:
   represented_as: node
-  preferred_id: mirbase.mature
+  namespace: mirbase.mature
   input_label: mirna
 
 complex:
   synonym_for: macromolecular complex
   represented_as: node
-  preferred_id: complexportal
+  namespace: complexportal
   input_label: complex
 
 pathway:
   represented_as: node
-  preferred_id: [reactome, wikipathways]
+  namespace: [reactome, wikipathways]
   input_label: [reactome, wikipathways]
 
 gene:
   represented_as: node
-  preferred_id: hgnc
+  namespace: hgnc
   input_label: [hgnc, ensg]
   exclude_properties: accession
 
 disease:
   represented_as: node
-  preferred_id: doid
+  namespace: doid
   input_label: Disease
 
 side effect:
   is_a: phenotypic feature
   represented_as: node
-  preferred_id: sider.effect
+  namespace: sider.effect
   input_label: sider
 
 sequence variant:
   represented_as: node
-  preferred_id: [clinically relevant, known, somatic]
+  namespace: [clinically relevant, known, somatic]
   input_label: [Clinically_relevant_variant, Known_variant, Somatic_mutation]
   properties:
     source: str
@@ -61,7 +61,7 @@ sequence variant:
 snRNA sequence:
   is_a: nucleic acid entity
   represented_as: node
-  preferred_id: [intact, rnacentral]
+  namespace: [intact, rnacentral]
   input_label: [intact_snrna, rnacentral_snrna]
   properties:
     ac: str
@@ -73,7 +73,7 @@ snRNA sequence:
 DNA sequence:
   is_a: nucleic acid entity
   represented_as: node
-  preferred_id: ensembl
+  namespace: ensembl
   input_label: dna
   properties:
     ac: str
@@ -86,7 +86,7 @@ dsDNA sequence:
   is_a: [DNA sequence, nucleic acid entity]
   inherit_properties: True
   represented_as: node
-  preferred_id: [intact, uniparc]
+  namespace: [intact, uniparc]
   input_label: [intact_dsdna, uniprot_archive_dsdna]
 
 # ---
