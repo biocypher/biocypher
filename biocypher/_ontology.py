@@ -249,12 +249,12 @@ class OntologyAdapter:
 
         """
         for node in list(nx_graph.nodes):
-            nx_id, nx_label = self._get_nx_id_and_label(node, switch_label_and_id)
-            if nx_id == "none":
-                # remove node if it has no id
+            if not self.has_label(node, self._rdf_graph):
+                logger.debug(f"Node '{node}' has no rdfs:label in the ontology and will be removed.")
                 nx_graph.remove_node(node)
                 continue
 
+            _, nx_label = self._get_nx_id_and_label(node, switch_label_and_id)
             nx_graph.nodes[node]["label"] = nx_label
         return nx_graph
 
@@ -333,8 +333,9 @@ class OntologyAdapter:
 
         """
         node_id_str = self._remove_prefix(str(node))
-        node_label_str = str(self._rdf_graph.value(node, rdflib.RDFS.label))
-        if rename_nodes:
+        rdf_label = self._rdf_graph.value(node, rdflib.RDFS.label)
+        node_label_str = str(rdf_label) if rdf_label is not None else ""
+        if rename_nodes and node_label_str:
             node_label_str = node_label_str.replace("_", " ")
             node_label_str = to_lower_sentence_case(node_label_str)
         nx_id = node_label_str if switch_id_and_label else node_id_str
@@ -781,11 +782,11 @@ class Ontology:
         """
         if not full and not self.mapping.extended_schema:
             msg = (
-                "You are attempting to visualise a subset of the loaded"
+                "You are attempting to visualise a subset of the loaded "
                 "ontology, but have not provided a schema configuration. "
                 "To display a partial ontology graph, please provide a schema "
                 "configuration file; to visualise the full graph, please use "
-                "the parameter `full = True`.",
+                "the parameter `full = True`."
             )
             logger.error(msg)
             raise ValueError(msg)

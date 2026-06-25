@@ -144,6 +144,7 @@ class _BatchWriter(_Writer, ABC):
         strict_mode: bool = False,
         skip_bad_relationships: bool = False,
         skip_duplicate_nodes: bool = False,
+        import_call_additional_options: str | None = None,
         db_user: str = None,
         db_password: str = None,
         db_host: str = None,
@@ -224,6 +225,10 @@ class _BatchWriter(_Writer, ABC):
             skip_duplicate_nodes:
                 Whether to skip duplicate nodes. (Specific to Neo4j.)
 
+            import_call_additional_options:
+                Optional string of extra flags to append verbatim to the
+                generated neo4j-admin import command. (Specific to Neo4j.)
+
             db_user:
                 The database user.
 
@@ -288,6 +293,7 @@ class _BatchWriter(_Writer, ABC):
         self.quote = quote
         self.skip_bad_relationships = skip_bad_relationships
         self.skip_duplicate_nodes = skip_duplicate_nodes
+        self.import_call_additional_options = import_call_additional_options
 
         if import_call_bin_prefix is None:
             self.import_call_bin_prefix = self._get_default_import_call_bin_prefix()
@@ -325,7 +331,7 @@ class _BatchWriter(_Writer, ABC):
             if getattr(self, order) is None:
                 msg = (
                     f"A batch writer `{order}` parameter must be set, "
-                    f"it must be one of: {', '.join(self._labels_orders)}.",
+                    f"it must be one of: {', '.join(self._labels_orders)}."
                 )
                 logger.error(msg)
                 raise ValueError(msg)
@@ -333,7 +339,7 @@ class _BatchWriter(_Writer, ABC):
             if getattr(self, order) not in self._labels_orders:
                 msg = (
                     f"A batch writer `{order}` parameter cannot be `{getattr(self, order)}`, "
-                    f"it must be one of: {', '.join(self._labels_orders)}.",
+                    f"it must be one of: {', '.join(self._labels_orders)}."
                 )
                 logger.error(msg)
                 raise ValueError(msg)
@@ -344,7 +350,7 @@ class _BatchWriter(_Writer, ABC):
         if self.labels_order == "None" and (self.node_labels_order == "None" or self.edge_labels_order == "None"):
             msg = (
                 "You have to set either `labels_order` or "
-                "both `node_labels_order` and `edge_labels_order`."
+                "both `node_labels_order` and `edge_labels_order`. "
                 "Current setting:\n"
                 f"- labels_order = `{self.labels_order}`\n"
                 f"- node_labels_order = `{self.node_labels_order}`\n"
@@ -369,7 +375,7 @@ class _BatchWriter(_Writer, ABC):
                 logger.info(msg)
 
             if self.edge_labels_order == "None":
-                msg = f"`node_labels_order` set to `labels_order`=`{self.labels_order}`."
+                msg = f"`edge_labels_order` set to `labels_order`=`{self.labels_order}`."
                 self.edge_labels_order = self.labels_order
                 logger.info(msg)
 
@@ -1241,7 +1247,8 @@ def parse_label(label: str) -> str:
     """Check if the label is compliant with Neo4j naming conventions.
 
     Check against https://neo4j.com/docs/cypher-manual/current/syntax/naming/,
-    and if not compliant, remove non-compliant characters.
+    and if not compliant, remove non-compliant characters. Dots are replaced
+    with underscores to avoid the need for backtick escaping in Cypher queries.
 
     Args:
     ----
@@ -1250,9 +1257,11 @@ def parse_label(label: str) -> str:
         str: The compliant label
 
     """
-    # Check if the name contains only alphanumeric characters, underscore, or dollar sign
-    # and dot (for class hierarchy of BioCypher)
-    allowed_chars = r"a-zA-Z0-9_$ ."
+    # Replace dots with underscores to avoid backtick-escaping requirements in Neo4j
+    label = label.replace(".", "_")
+
+    # Check if the name contains only alphanumeric characters, underscore, dollar sign, or space
+    allowed_chars = r"a-zA-Z0-9_$ "
     matches = re.findall(f"[{allowed_chars}]", label)
     non_matches = re.findall(f"[^{allowed_chars}]", label)
     if non_matches:

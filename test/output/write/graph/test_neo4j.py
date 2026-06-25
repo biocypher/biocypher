@@ -209,6 +209,25 @@ def test_construct_import_call_powershell(bw):
     assert "import --database=neo4j" in import_script
 
 
+def test_import_call_additional_options(translator, deduplicator, tmp_path_session):
+    bw_extra = _Neo4jBatchWriter(
+        translator=translator,
+        deduplicator=deduplicator,
+        output_directory=tmp_path_session,
+        delimiter=";",
+        array_delimiter="|",
+        quote="'",
+        import_call_additional_options='--report-file="/import.report" --bad-tolerance=-1',
+    )
+
+    call = bw_extra._get_import_call("import", "--database=", "--force=")
+
+    assert '--report-file="/import.report" --bad-tolerance=-1' in call
+
+    for f in os.listdir(tmp_path_session):
+        os.remove(os.path.join(tmp_path_session, f))
+
+
 def test_write_hybrid_ontology_nodes(bw):
     nodes = []
     for i in range(4):
@@ -387,12 +406,12 @@ def test_write_node_data_non_string_list_properties(bw):
     # Verify that the inferred types in node_property_dict use "int[]" / "float[]"
     # rather than the bare "list" that type(v).__name__ would previously return.
     prop_types = bw.node_property_dict.get("post translational interaction", {})
-    assert prop_types.get("scores") == "int[]", (
-        f"Expected 'int[]' but got {prop_types.get('scores')!r}; " "list type inference is broken"
-    )
-    assert prop_types.get("weights") == "float[]", (
-        f"Expected 'float[]' but got {prop_types.get('weights')!r}; " "list type inference is broken"
-    )
+    assert (
+        prop_types.get("scores") == "int[]"
+    ), f"Expected 'int[]' but got {prop_types.get('scores')!r}; list type inference is broken"
+    assert (
+        prop_types.get("weights") == "float[]"
+    ), f"Expected 'float[]' but got {prop_types.get('weights')!r}; list type inference is broken"
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
@@ -410,7 +429,7 @@ def test_write_node_data_from_list_not_compliant_names(monkeypatch, caplog, bw, 
 
     expected_file_names = [
         "PatientPerson-part000.csv",
-        "$He524lloWor.Ld-part000.csv",
+        "$He524lloWor_ld-part000.csv",
     ]
     for file_name in os.listdir(tmp_path):
         assert file_name in expected_file_names
@@ -954,12 +973,12 @@ def test_write_edge_data_non_string_list_properties(bw):
 
     assert passed
     prop_types = bw.edge_property_dict.get("phosphorylation", {})
-    assert prop_types.get("sites") == "str[]", (
-        f"Expected 'str[]' but got {prop_types.get('sites')!r}; " "list type inference is broken for edges"
-    )
-    assert prop_types.get("scores") == "float[]", (
-        f"Expected 'float[]' but got {prop_types.get('scores')!r}; " "list type inference is broken for edges"
-    )
+    assert (
+        prop_types.get("sites") == "str[]"
+    ), f"Expected 'str[]' but got {prop_types.get('sites')!r}; list type inference is broken for edges"
+    assert (
+        prop_types.get("scores") == "float[]"
+    ), f"Expected 'float[]' but got {prop_types.get('scores')!r}; list type inference is broken for edges"
 
 
 @pytest.mark.parametrize("length", [8], scope="module")
@@ -1303,11 +1322,11 @@ def test_check_label_name():
     # Test case 4: label starts with a non-alphanumeric character
     assert parse_label("@Invalid_Label") == "Invalid_Label"
 
-    # Additional test case: label with dot (for class hierarchy of BioCypher)
-    assert parse_label("valid.label") == "valid.label"
+    # Dots are replaced with underscores to avoid backtick-escaping in Cypher queries
+    assert parse_label("valid.label") == "valid_label"
 
-    # Additional test case: label with dot and non-compliant characters
-    assert parse_label("In.valid.Label@1") == "In.valid.Label1"
+    # Dots replaced before other characters are stripped
+    assert parse_label("In.valid.Label@1") == "In_valid_Label1"
 
     # Test case: label contains only non-compliant characters (would previously crash with IndexError)
     assert parse_label("@#^&") == ""
@@ -1437,3 +1456,94 @@ def test_powershell_template_structure():
         "{args_neo4j_v5}",
     }
     assert expected_placeholders.issubset(set(placeholders))
+
+
+def test_edge_labels_order_fallback_log_message(caplog, translator, deduplicator, tmp_path):
+    """When edge_labels_order='None' the fallback log must name 'edge_labels_order', not 'node_labels_order'."""
+    with caplog.at_level(logging.INFO):
+        _Neo4jBatchWriter(
+            translator=translator,
+            deduplicator=deduplicator,
+            output_directory=str(tmp_path),
+            delimiter=";",
+            labels_order="Descending",
+            edge_labels_order="None",
+        )
+    messages = [r.message for r in caplog.records]
+    assert any(
+        "`edge_labels_order` set to `labels_order`=`Descending`" in msg for msg in messages
+    ), f"Expected edge_labels_order fallback log, got: {messages}"
+    assert not any(
+        "`node_labels_order` set to `labels_order`=`Descending`" in msg for msg in messages
+    ), f"node_labels_order appeared in edge fallback log: {messages}"
+
+
+def test_quote_escaped_in_node_string_property(bw):
+    """String properties containing the quote character must be escaped by doubling it."""
+    nodes = [
+        BioCypherNode(
+            node_id="n1",
+            node_label="protein",
+            properties={
+                "score": 1.0,
+                "name": "O'Brien",
+                "taxon": 9606,
+                "genes": ["gene1"],
+            },
+        ),
+    ]
+
+    passed = bw._write_node_data(nodes, batch_size=int(1e4))
+
+    csv_path = os.path.join(bw.outdir, "Protein-part000.csv")
+    with open(csv_path) as f:
+        content = f.read()
+
+    assert passed
+    assert "'O''Brien'" in content, f"Escaped quote not found in: {content!r}"
+    assert "'O'Brien'" not in content.replace(
+        "'O''Brien'", ""
+    ), "Unescaped quote found in output — _quote_string not called for node properties"
+
+
+def test_quote_escaped_in_edge_string_property(bw):
+    """String properties containing the quote character must be escaped in edge output."""
+    edges = [
+        BioCypherEdge(
+            relationship_id="e1",
+            source_id="p1",
+            target_id="p2",
+            relationship_label="PERTURBED_IN_DISEASE",
+            properties={"residue": "T'253"},
+        ),
+    ]
+
+    passed = bw._write_edge_data(edges, batch_size=int(1e4))
+
+    csv_path = os.path.join(bw.outdir, "PERTURBED_IN_DISEASE-part000.csv")
+    with open(csv_path) as f:
+        content = f.read()
+
+    assert passed
+    assert "'T''253'" in content, f"Escaped quote not found in: {content!r}"
+
+
+def test_check_labels_order_none_raises_string_error(bw):
+    """_check_labels_order must raise ValueError with a plain-string message when
+    a labels_order attribute is None, not a one-element tuple."""
+    bw.node_labels_order = None
+    with pytest.raises(ValueError) as exc_info:
+        bw._check_labels_order()
+    assert isinstance(exc_info.value.args[0], str), "error message must be str, not tuple"
+    assert "node_labels_order" in exc_info.value.args[0]
+
+
+def test_check_labels_order_invalid_raises_string_error(bw):
+    """_check_labels_order must raise ValueError with a plain-string message when
+    a labels_order attribute has an invalid value, not a one-element tuple."""
+    bw.node_labels_order = "Ascending"  # restore from previous test if needed
+    bw.edge_labels_order = "BadOrder"
+    with pytest.raises(ValueError) as exc_info:
+        bw._check_labels_order()
+    assert isinstance(exc_info.value.args[0], str), "error message must be str, not tuple"
+    assert "edge_labels_order" in exc_info.value.args[0]

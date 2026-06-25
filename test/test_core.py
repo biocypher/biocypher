@@ -96,6 +96,7 @@ def test_in_memory_kg_only_in_online_mode(core):
         with pytest.raises(ValueError) as e:
             core.get_kg()
         assert "Getting the in-memory KG is only available in online mode for " in str(e.value)
+        assert isinstance(e.value.args[0], str), "error message must be a str, not a tuple"
 
 
 def test_no_in_memory_kg_for_dbms(core):
@@ -170,3 +171,62 @@ def test_pandas_and_tabular_work_in_offline_mode(tmp_path):
         )
         assert bc._dbms == dbms
         assert bc._offline
+
+
+def test_translate_term_via_core(core):
+    """BioCypher.translate_term must lazily initialise the translator and return the mapped label."""
+    assert core._translator is None
+    result = core.translate_term("hgnc")
+    assert result == "Gene"
+    assert core._translator is not None
+
+
+def test_reverse_translate_term_via_core(core):
+    """BioCypher.reverse_translate_term must lazily initialise the translator and reverse-map the label."""
+    assert core._translator is None
+    result = core.reverse_translate_term("Gene")
+    assert result is not None
+    assert "hgnc" in result
+
+
+def test_translate_query_via_core(core):
+    """BioCypher.translate_query must lazily initialise the translator and translate Cypher labels."""
+    assert core._translator is None
+    query = "MATCH (n:hgnc) RETURN n"
+    result = core.translate_query(query)
+    assert "Gene" in result
+    assert "hgnc" not in result
+
+
+def test_reverse_translate_query_via_core(core):
+    """BioCypher.reverse_translate_query must lazily initialise the translator."""
+    assert core._translator is None
+    query = "MATCH (n:Protein)-[r:POST_TRANSLATIONAL_INTERACTION]->(m:Protein) RETURN n"
+    result = core.reverse_translate_query(query)
+    assert isinstance(result, str)
+
+
+@pytest.mark.parametrize("length", [4], scope="function")
+def test_add_nodes_first_call_does_not_crash(core, _get_nodes):
+    """add_nodes must not crash when self._nodes is still None (first call)."""
+    # self._nodes starts as None; passing a list used to raise
+    # TypeError: 'NoneType' object is not iterable via itertools.chain
+    core.add_nodes(_get_nodes)
+    assert core._nodes == _get_nodes
+
+
+@pytest.mark.parametrize("length", [4], scope="function")
+def test_add_nodes_accumulates_across_calls(core, _get_nodes):
+    """Successive add_nodes calls must append, not crash on the second call."""
+    first_half = _get_nodes[:4]
+    second_half = _get_nodes[4:]
+    core.add_nodes(first_half)
+    core.add_nodes(second_half)
+    assert len(core._nodes) == len(first_half) + len(second_half)
+
+
+@pytest.mark.parametrize("length", [4], scope="function")
+def test_add_edges_first_call_does_not_crash(core, _get_edges):
+    """add_edges must not crash when self._edges is still None (first call)."""
+    core.add_edges(_get_edges)
+    assert core._edges == _get_edges

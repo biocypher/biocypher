@@ -1,6 +1,6 @@
 protein:
     represented_as: node
-    preferred_id: [uniprot, entrez]
+    namespace: [uniprot, entrez]
     input_label: [uniprot_protein, entrez_protein]
     properties:
         sequence: str

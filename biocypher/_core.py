@@ -165,8 +165,6 @@ class BioCypher:
         self._writer = None
         self._driver = None
         self._in_memory_kg = None
-
-        self._in_memory_kg = None
         self._nodes = None
         self._edges = None
 
@@ -193,9 +191,9 @@ class BioCypher:
 
         """
         if isinstance(nodes, list):
-            self._nodes = list(itertools.chain(self._nodes, nodes))
+            self._nodes = list(itertools.chain(self._nodes or [], nodes))
         else:
-            self._nodes = itertools.chain(self._nodes, nodes)
+            self._nodes = itertools.chain(self._nodes or iter([]), nodes)
 
     def add_edges(self, edges) -> None:
         """Add new edges to the internal representation.
@@ -209,9 +207,9 @@ class BioCypher:
 
         """
         if isinstance(edges, list):
-            self._edges = list(itertools.chain(self._edges, edges))
+            self._edges = list(itertools.chain(self._edges or [], edges))
         else:
-            self._edges = itertools.chain(self._edges, edges)
+            self._edges = itertools.chain(self._edges or iter([]), edges)
 
     def to_df(self):
         """Create DataFrame using internal representation.
@@ -248,8 +246,7 @@ class BioCypher:
         if not self._translator:
             self._get_translator()
 
-        # These attributes might not exist when using in-memory KG directly
-        if hasattr(self, "_nodes") and hasattr(self, "_edges"):
+        if self._nodes is not None and self._edges is not None:
             tnodes = self._translator.translate_entities(self._nodes)
             tedges = self._translator.translate_entities(self._edges)
             self._in_memory_kg.add_nodes(tnodes)
@@ -450,7 +447,7 @@ class BioCypher:
 
     def _is_online_and_in_memory(self) -> bool:
         """Return True if in online mode and in-memory dbms is used."""
-        return (not self._offline) & (self._dbms in IN_MEMORY_DBMS)
+        return (not self._offline) and (self._dbms in IN_MEMORY_DBMS)
 
     def write_nodes(
         self,
@@ -555,14 +552,11 @@ class BioCypher:
         dataframes or a NetworkX DiGraph.
         """
         if not self._is_online_and_in_memory():
-            msg = (f"Getting the in-memory KG is only available in online mode for {IN_MEMORY_DBMS}.",)
+            msg = f"Getting the in-memory KG is only available in online mode for {IN_MEMORY_DBMS}."
             raise ValueError(msg)
         if not self._in_memory_kg:
             msg = "No in-memory KG instance found. Please call `add()` first."
             raise ValueError(msg)
-
-        if not self._in_memory_kg:
-            self._initialize_in_memory_kg()
         return self._in_memory_kg.get_kg()
 
     # DOWNLOAD AND CACHE MANAGEMENT METHODS ###
@@ -806,8 +800,8 @@ class BioCypher:
             str: The BioCypher equivalent of the term.
 
         """
-        # instantiate adapter if not exists
-        self.start_ontology()
+        if not self._translator:
+            self._get_translator()
 
         return self._translator.translate_term(term)
 
@@ -832,8 +826,8 @@ class BioCypher:
             str: The original term.
 
         """
-        # instantiate adapter if not exists
-        self.start_ontology()
+        if not self._translator:
+            self._get_translator()
 
         return self._translator.reverse_translate_term(term)
 
@@ -849,8 +843,8 @@ class BioCypher:
             str: The BioCypher equivalent of the query.
 
         """
-        # instantiate adapter if not exists
-        self.start_ontology()
+        if not self._translator:
+            self._get_translator()
 
         return self._translator.translate(query)
 
@@ -866,7 +860,7 @@ class BioCypher:
             str: The original query.
 
         """
-        # instantiate adapter if not exists
-        self.start_ontology()
+        if not self._translator:
+            self._get_translator()
 
         return self._translator.reverse_translate(query)

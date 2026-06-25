@@ -92,6 +92,21 @@ def test_show_ontology(hybrid_ontology):
     assert treevis is not None
 
 
+def test_show_ontology_without_schema_raises_string_error():
+    """show_ontology_structure(full=False) without a schema must raise ValueError
+    with a plain-string message, not a one-element tuple."""
+    from biocypher._mapping import OntologyMapping
+
+    ontology = Ontology(
+        head_ontology={"url": "test/ontologies/ontology1.ttl", "root_node": "Thing"},
+        ontology_mapping=OntologyMapping(),
+    )
+    with pytest.raises(ValueError) as exc_info:
+        ontology.show_ontology_structure(full=False)
+    assert isinstance(exc_info.value.args[0], str), "error message must be str, not tuple"
+    assert "schema configuration" in exc_info.value.args[0]
+
+
 def test_show_full_ontology(hybrid_ontology):
     treevis = hybrid_ontology.show_ontology_structure(full=True)
     assert treevis is not None
@@ -180,6 +195,28 @@ def test_missing_label_on_node():
     for edge in expected_edges:
         assert edge in result.edges
     assert len(result.edges) == len(expected_edges)
+
+
+def test_missing_label_on_parent_node(caplog):
+    # A parent node without an rdfs:label should be removed from the graph,
+    # its descendants disconnected, and a debug message logged identifying it.
+    with caplog.at_level(logging.DEBUG, logger="biocypher._ontology"):
+        ontology_adapter = OntologyAdapter(
+            ontology_file="test/ontologies/missing_label_parent.ttl",
+            root_label="Test_Missing_Parent_Label_Root",
+        )
+    result = ontology_adapter.get_nx_graph()
+    # Expected hierarchy after removing the unlabeled parent:
+    #  test missing parent label root
+    #  ├── test missing parent label level1   (valid parent)
+    # (└── test missing parent label level2)  <- disconnected, excluded
+    expected_edges = [("test missing parent label level1", "test missing parent label root")]
+    for edge in expected_edges:
+        assert edge in result.edges
+    assert len(result.edges) == len(expected_edges)
+    # The removal should be visible in the debug log
+    removed_msgs = [r.message for r in caplog.records if "no rdfs:label" in r.message]
+    assert removed_msgs, "Expected a debug log entry for the unlabeled parent node"
 
 
 def test_switch_id_and_label():

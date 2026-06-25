@@ -81,6 +81,9 @@ def read_config() -> dict:
     # TODO account for .yml?
     local = _read_yaml("biocypher_config.yaml") or _read_yaml("config/biocypher_config.yaml") or {}
 
+    _warn_unknown_keys(local, defaults, "biocypher_config.yaml")
+    _warn_unknown_keys(user, defaults, "user config")
+
     for key in defaults:
         # Apply user-level settings on top of defaults first.
         # An explicit `null` in user config clears the default (e.g.
@@ -108,6 +111,20 @@ def read_config() -> dict:
     return defaults
 
 
+def _warn_unknown_keys(config_dict: dict, valid_keys: dict, source: str) -> None:
+    """Warn about keys in config_dict that are not recognised in valid_keys."""
+    for key in config_dict:
+        if key not in valid_keys:
+            valid = sorted(k for k in valid_keys if k != "Title")
+            warnings.warn(
+                f"Unknown configuration key '{key}' found in {source}. "
+                f"This may be a misspelling. Valid top-level keys are: "
+                f"{', '.join(valid)}.",
+                category=UserWarning,
+                stacklevel=4,
+            )
+
+
 def config(*args, **kwargs) -> Optional[Any]:
     """
     Set or get module config parameters.
@@ -124,7 +141,12 @@ def config(*args, **kwargs) -> Optional[Any]:
         return result[0] if len(result) == 1 else result
 
     for key, value in kwargs.items():
-        globals()["_config"][key].update(value)
+        if value is None:
+            globals()["_config"][key] = None
+        elif key in globals()["_config"] and isinstance(globals()["_config"][key], dict) and isinstance(value, dict):
+            globals()["_config"][key].update(value)
+        else:
+            globals()["_config"][key] = value
 
 
 def reset():

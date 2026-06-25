@@ -283,8 +283,18 @@ class Downloader:
             paths.append(api_path)
         return paths
 
+    # Archive suffixes that pooch keeps in the cache dir after extraction.
+    # We skip these so that get_cached_version returns the same extracted
+    # file paths that the initial download returned, not the archives.
+    _ARCHIVE_SUFFIXES = (".zip", ".tar.gz", ".tgz", ".tar", ".gz", ".bz2")
+
     def get_cached_version(self, resource: Resource) -> list[str]:
         """Get the cached version of a resource.
+
+        Walks the resource's cache directory recursively and returns paths to
+        all non-archive files.  This mirrors what the initial download returns:
+        for plain files the file itself, and for archives the extracted
+        contents rather than the archive or an unzip sub-directory.
 
         Args:
         ----
@@ -298,8 +308,10 @@ class Downloader:
         cached_location = os.path.join(self.cache_dir, resource.name)
         logger.info(f"Use cached version from {cached_location}.")
         paths = []
-        for file in os.listdir(cached_location):
-            paths.append(os.path.join(cached_location, file))
+        for dirpath, _, filenames in os.walk(cached_location):
+            for filename in filenames:
+                if not any(filename.endswith(suffix) for suffix in self._ARCHIVE_SUFFIXES):
+                    paths.append(os.path.join(dirpath, filename))
         return paths
 
     def _retrieve(

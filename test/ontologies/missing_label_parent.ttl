@@ -1,0 +1,20 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+owl:ID_root a owl:Class ;
+     rdfs:label "Test_Missing_Parent_Label_Root" ;
+     rdfs:comment "The root class." .
+
+owl:ID_level1 a owl:Class ;
+     rdfs:label "Test_Missing_Parent_Label_Level1" ;
+     rdfs:subClassOf owl:ID_root ;
+     rdfs:comment "Level1 - has a label and valid parent." .
+
+owl:ID_level2 a owl:Class ;
+     rdfs:label "Test_Missing_Parent_Label_Level2" ;
+     rdfs:subClassOf owl:ID_parent_no_label ;
+     rdfs:comment "Level2 - its parent has no label." .
+
+owl:ID_parent_no_label a owl:Class ;
+     rdfs:comment "No label on this parent node." ;
+     rdfs:subClassOf owl:ID_root .

@@ -604,6 +604,49 @@ def test_strict_mode_property_filter(translator):
     assert "version" in translated_protein_node[0].get_properties().keys()
 
 
+def test_strict_mode_does_not_mutate_schema(translator):
+    """Strict-mode calls must not permanently inject keys into the shared schema dict.
+
+    _filter_props previously called dict.update() on the dict reference returned
+    directly by extended_schema[bl_type]['properties'], permanently adding
+    source/licence/version to the schema entry.  All subsequent non-strict calls
+    for the same type would then output those keys with value None.
+
+    This test must run after test_strict_mode_property_filter so that the
+    mutation, if still present, has already occurred.
+    """
+    translator.strict_mode = False
+
+    protein_plain = ("p_plain", "protein", {"taxon": 9606})
+    nodes = list(translator.translate_nodes([protein_plain]))
+    props = nodes[0].get_properties()
+
+    assert "source" not in props
+    assert "licence" not in props
+    assert "version" not in props
+
+
+def test_strict_mode_error_messages_are_strings(translator):
+    """Strict-mode ValueError messages must be plain strings, not tuples (trailing-comma bug)."""
+    translator.strict_mode = True
+
+    node_missing_prop = ("n1", "Test", {"source": "s", "licence": "l"})
+    with pytest.raises(ValueError, match="version.*missing|missing.*version"):
+        list(translator.translate_nodes([node_missing_prop]))
+
+    edge_missing_source = ("n1", "n2", "Test", {"licence": "l", "version": "v"})
+    with pytest.raises(ValueError, match="source"):
+        list(translator.translate_edges([edge_missing_source]))
+
+    edge_missing_licence = ("n1", "n2", "Test", {"source": "s", "version": "v"})
+    with pytest.raises(ValueError, match="licence"):
+        list(translator.translate_edges([edge_missing_licence]))
+
+    edge_missing_version = ("n1", "n2", "Test", {"source": "s", "licence": "l"})
+    with pytest.raises(ValueError, match="version"):
+        list(translator.translate_edges([edge_missing_version]))
+
+
 def test_translate_entities_empty_iterable(translator):
     """translate_entities with an empty iterable should warn and return an empty iterator (issue #493)."""
     result = list(translator.translate_entities([]))

@@ -1060,3 +1060,55 @@ class TestValidationModes:
         workflow.add_node("node1", "protein")
         with pytest.raises(ValueError):
             workflow.add_node("node1", "protein")  # Should fail due to deduplication
+
+
+class TestDeduplicationTrackingSync:
+    """Regression tests for _seen_nodes/_seen_edges staying in sync with the graph."""
+
+    def test_remove_node_allows_readd(self):
+        """After remove_node, the same ID must be re-addable when deduplication=True."""
+        workflow = create_workflow("test", deduplication=True)
+        workflow.add_node("p1", "protein")
+        workflow.remove_node("p1")
+        result = workflow.add_node("p1", "protein")
+        assert result is True
+
+    def test_remove_edge_allows_readd(self):
+        """After remove_edge, the same ID must be re-addable when deduplication=True."""
+        workflow = create_workflow("test", deduplication=True)
+        workflow.add_node("n1", "protein")
+        workflow.add_node("n2", "protein")
+        workflow.add_edge("e1", "interaction", "n1", "n2")
+        workflow.remove_edge("e1")
+        result = workflow.add_edge("e1", "interaction", "n1", "n2")
+        assert result is True
+
+    def test_clear_allows_readd(self):
+        """After clear(), previously-seen IDs must be re-addable when deduplication=True."""
+        workflow = create_workflow("test", deduplication=True)
+        workflow.add_node("n1", "protein")
+        workflow.add_node("n2", "protein")
+        workflow.add_edge("e1", "interaction", "n1", "n2")
+        workflow.clear()
+        result_node = workflow.add_node("n1", "protein")
+        assert result_node is True
+        workflow.add_node("n2", "protein")
+        result_edge = workflow.add_edge("e1", "interaction", "n1", "n2")
+        assert result_edge is True
+
+    def test_from_json_populates_seen_sets(self):
+        """from_json() must populate _seen_nodes/_seen_edges so loaded entities are tracked."""
+        workflow = create_workflow("test", deduplication=True)
+        workflow.add_node("n1", "protein")
+        workflow.add_node("n2", "protein")
+        workflow.add_edge("e1", "interaction", "n1", "n2")
+
+        json_str = workflow.to_json()
+
+        # Load into a fresh deduplication-enabled workflow
+        new_workflow = create_workflow("test2", deduplication=True)
+        new_workflow.from_json(json_str)
+
+        # Loaded entities should be tracked — re-adding must return False
+        assert new_workflow.add_node("n1", "protein") is False
+        assert new_workflow.add_edge("e1", "interaction", "n1", "n2") is False
