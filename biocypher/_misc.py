@@ -102,7 +102,7 @@ def _get_inheritance_tree(inheritance_graph: dict | nx.Graph) -> dict | None:
                 "following hierarchy tree (the child node is only added once). "
                 "If you wish to browse all relationships of the parsed "
                 "ontologies, write a graphml file to disk using "
-                "`to_disk = <directory>` and view this file.",
+                "`to_disk = <directory>` and view this file."
             )
             logger.warning(msg)
         # unlist values

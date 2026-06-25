@@ -86,6 +86,24 @@ def test_tree_vis_multiple_inheritance(caplog):
     assert tree_vis.to_json(with_data=True) == expected_tree_vis.to_json(with_data=True)
 
 
+def test_multiple_inheritance_warning_message_is_string(caplog):
+    """Warning message must be a plain string, not a one-element tuple repr."""
+    inheritance_tree_data = {
+        "root": [],
+        "level1A": ["root"],
+        "level1B": ["root"],
+        "level2A": ["level1A", "level1B"],
+    }
+    inheritance_tree = nx.DiGraph(inheritance_tree_data)
+    with caplog.at_level(logging.WARNING):
+        create_tree_visualisation(inheritance_tree)
+
+    warning_records = [r for r in caplog.records if "multiple inheritance" in r.message.lower()]
+    assert warning_records, "Expected a multiple-inheritance warning"
+    assert isinstance(warning_records[0].msg, str), "msg should be str, not a tuple"
+    assert not warning_records[0].message.startswith("("), "message should not be tuple repr"
+
+
 if __name__ == "__main__":
     # to look at it
     print(create_tree_visualisation(nx.DiGraph(_get_inheritance_tree)).show())

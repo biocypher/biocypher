@@ -786,7 +786,7 @@ class Ontology:
                 "ontology, but have not provided a schema configuration. "
                 "To display a partial ontology graph, please provide a schema "
                 "configuration file; to visualise the full graph, please use "
-                "the parameter `full = True`.",
+                "the parameter `full = True`."
             )
             logger.error(msg)
             raise ValueError(msg)

@@ -1526,3 +1526,24 @@ def test_quote_escaped_in_edge_string_property(bw):
 
     assert passed
     assert "'T''253'" in content, f"Escaped quote not found in: {content!r}"
+
+
+def test_check_labels_order_none_raises_string_error(bw):
+    """_check_labels_order must raise ValueError with a plain-string message when
+    a labels_order attribute is None, not a one-element tuple."""
+    bw.node_labels_order = None
+    with pytest.raises(ValueError) as exc_info:
+        bw._check_labels_order()
+    assert isinstance(exc_info.value.args[0], str), "error message must be str, not tuple"
+    assert "node_labels_order" in exc_info.value.args[0]
+
+
+def test_check_labels_order_invalid_raises_string_error(bw):
+    """_check_labels_order must raise ValueError with a plain-string message when
+    a labels_order attribute has an invalid value, not a one-element tuple."""
+    bw.node_labels_order = "Ascending"  # restore from previous test if needed
+    bw.edge_labels_order = "BadOrder"
+    with pytest.raises(ValueError) as exc_info:
+        bw._check_labels_order()
+    assert isinstance(exc_info.value.args[0], str), "error message must be str, not tuple"
+    assert "edge_labels_order" in exc_info.value.args[0]

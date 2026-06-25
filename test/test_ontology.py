@@ -92,6 +92,21 @@ def test_show_ontology(hybrid_ontology):
     assert treevis is not None
 
 
+def test_show_ontology_without_schema_raises_string_error():
+    """show_ontology_structure(full=False) without a schema must raise ValueError
+    with a plain-string message, not a one-element tuple."""
+    from biocypher._mapping import OntologyMapping
+
+    ontology = Ontology(
+        head_ontology={"url": "test/ontologies/ontology1.ttl", "root_node": "Thing"},
+        ontology_mapping=OntologyMapping(),
+    )
+    with pytest.raises(ValueError) as exc_info:
+        ontology.show_ontology_structure(full=False)
+    assert isinstance(exc_info.value.args[0], str), "error message must be str, not tuple"
+    assert "schema configuration" in exc_info.value.args[0]
+
+
 def test_show_full_ontology(hybrid_ontology):
     treevis = hybrid_ontology.show_ontology_structure(full=True)
     assert treevis is not None
