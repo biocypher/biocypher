@@ -119,6 +119,8 @@ neo4j:
   skip_duplicate_nodes: false
   skip_bad_relationships: false
 
+  # import_call_additional_options: '--report-file="/import.report" --bad-tolerance=-1'
+
   ## Import call prefixes
 
   # import_call_bin_prefix: bin/
