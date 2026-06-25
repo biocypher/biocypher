@@ -407,10 +407,10 @@ def test_write_node_data_non_string_list_properties(bw):
     # rather than the bare "list" that type(v).__name__ would previously return.
     prop_types = bw.node_property_dict.get("post translational interaction", {})
     assert prop_types.get("scores") == "int[]", (
-        f"Expected 'int[]' but got {prop_types.get('scores')!r}; " "list type inference is broken"
+        f"Expected 'int[]' but got {prop_types.get('scores')!r}; list type inference is broken"
     )
     assert prop_types.get("weights") == "float[]", (
-        f"Expected 'float[]' but got {prop_types.get('weights')!r}; " "list type inference is broken"
+        f"Expected 'float[]' but got {prop_types.get('weights')!r}; list type inference is broken"
     )
 
 
@@ -974,10 +974,10 @@ def test_write_edge_data_non_string_list_properties(bw):
     assert passed
     prop_types = bw.edge_property_dict.get("phosphorylation", {})
     assert prop_types.get("sites") == "str[]", (
-        f"Expected 'str[]' but got {prop_types.get('sites')!r}; " "list type inference is broken for edges"
+        f"Expected 'str[]' but got {prop_types.get('sites')!r}; list type inference is broken for edges"
     )
     assert prop_types.get("scores") == "float[]", (
-        f"Expected 'float[]' but got {prop_types.get('scores')!r}; " "list type inference is broken for edges"
+        f"Expected 'float[]' but got {prop_types.get('scores')!r}; list type inference is broken for edges"
     )
 
 
@@ -1470,12 +1470,12 @@ def test_edge_labels_order_fallback_log_message(caplog, translator, deduplicator
             edge_labels_order="None",
         )
     messages = [r.message for r in caplog.records]
-    assert any(
-        "`edge_labels_order` set to `labels_order`=`Descending`" in msg for msg in messages
-    ), f"Expected edge_labels_order fallback log, got: {messages}"
-    assert not any(
-        "`node_labels_order` set to `labels_order`=`Descending`" in msg for msg in messages
-    ), f"node_labels_order appeared in edge fallback log: {messages}"
+    assert any("`edge_labels_order` set to `labels_order`=`Descending`" in msg for msg in messages), (
+        f"Expected edge_labels_order fallback log, got: {messages}"
+    )
+    assert not any("`node_labels_order` set to `labels_order`=`Descending`" in msg for msg in messages), (
+        f"node_labels_order appeared in edge fallback log: {messages}"
+    )
 
 
 def test_quote_escaped_in_node_string_property(bw):
