@@ -299,6 +299,9 @@ def test_download_zip_and_expiration(mock_retrieve):
     paths = downloader.download(resource)
     # should not download again
     assert "tmp" in paths[0]
+    # cached paths must be actual files, not directories or archive containers
+    assert all(os.path.isfile(p) for p in paths), "get_cached_version must return file paths, not directories"
+    assert len(paths) == 2
 
     # minus 8 days from date_downloaded
     downloader.cache_dict["test_resource"]["date_downloaded"] = str(datetime.now() - timedelta(days=8))
