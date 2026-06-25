@@ -369,7 +369,7 @@ class _BatchWriter(_Writer, ABC):
                 logger.info(msg)
 
             if self.edge_labels_order == "None":
-                msg = f"`node_labels_order` set to `labels_order`=`{self.labels_order}`."
+                msg = f"`edge_labels_order` set to `labels_order`=`{self.labels_order}`."
                 self.edge_labels_order = self.labels_order
                 logger.info(msg)
 
