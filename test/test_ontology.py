@@ -182,6 +182,28 @@ def test_missing_label_on_node():
     assert len(result.edges) == len(expected_edges)
 
 
+def test_missing_label_on_parent_node(caplog):
+    # A parent node without an rdfs:label should be removed from the graph,
+    # its descendants disconnected, and a debug message logged identifying it.
+    with caplog.at_level(logging.DEBUG, logger="biocypher._ontology"):
+        ontology_adapter = OntologyAdapter(
+            ontology_file="test/ontologies/missing_label_parent.ttl",
+            root_label="Test_Missing_Parent_Label_Root",
+        )
+    result = ontology_adapter.get_nx_graph()
+    # Expected hierarchy after removing the unlabeled parent:
+    #  test missing parent label root
+    #  ├── test missing parent label level1   (valid parent)
+    # (└── test missing parent label level2)  <- disconnected, excluded
+    expected_edges = [("test missing parent label level1", "test missing parent label root")]
+    for edge in expected_edges:
+        assert edge in result.edges
+    assert len(result.edges) == len(expected_edges)
+    # The removal should be visible in the debug log
+    removed_msgs = [r.message for r in caplog.records if "no rdfs:label" in r.message]
+    assert removed_msgs, "Expected a debug log entry for the unlabeled parent node"
+
+
 def test_switch_id_and_label():
     ontology_adapter_reversed = OntologyAdapter(
         ontology_file="test/ontologies/reverse_labels.ttl",
