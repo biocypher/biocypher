@@ -2,7 +2,7 @@ import pytest
 
 import biocypher._config as cfg_module
 
-from biocypher._config import _read_yaml, _USER_CONFIG_FILE, config, config as _config, reset
+from biocypher._config import _read_yaml, _USER_CONFIG_FILE, _warn_unknown_keys, config, config as _config, reset
 
 
 def test_read_yaml():
@@ -128,3 +128,22 @@ def test_sqlite_config_has_labels_order():
     assert "node_labels_order" in sqlite_cfg, "node_labels_order must be set so get_writer doesn't pass None"
     assert "edge_labels_order" in sqlite_cfg, "edge_labels_order must be set so get_writer doesn't pass None"
     assert "delimiter" in sqlite_cfg, "delimiter must be set for SQLite CSV output"
+
+
+def test_warn_unknown_keys_emits_warning():
+    valid = {"biocypher": {}, "neo4j": {}}
+    config_with_typo = {"biocypher": {}, "postgreql": {}}
+
+    with pytest.warns(UserWarning, match="postgreql"):
+        _warn_unknown_keys(config_with_typo, valid, "test config")
+
+
+def test_warn_unknown_keys_no_warning_for_valid_keys():
+    import warnings
+
+    valid = {"biocypher": {}, "neo4j": {}, "postgresql": {}}
+    config_valid = {"biocypher": {}, "neo4j": {}}
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", UserWarning)
+        _warn_unknown_keys(config_valid, valid, "test config")  # must not raise

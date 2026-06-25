@@ -211,6 +211,10 @@ networkx:
   ### NetworkX configuration ###
   some_config: some_value # placeholder for technical reasons TODO
 
+airr:
+  ### AIRR configuration ###
+  some_config: some_value # placeholder for technical reasons TODO
+
 biopathnet:
   file_format: txt
   entity_types_file_stem: entity_types
