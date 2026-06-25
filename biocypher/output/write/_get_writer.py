@@ -129,6 +129,7 @@ def get_writer(
             import_call_additional_options=dbms_config.get("import_call_additional_options"),  # neo4j
             db_user=dbms_config.get("user"),  # psql
             db_password=dbms_config.get("password"),  # psql
+            db_host=dbms_config.get("host"),  # psql
             db_port=dbms_config.get("port"),  # psql
             file_format=dbms_config.get("file_format"),  # rdf, owl
             rdf_namespaces=dbms_config.get("rdf_namespaces"),  # rdf, owl

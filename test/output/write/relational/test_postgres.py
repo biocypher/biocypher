@@ -1,9 +1,11 @@
 import logging
 import os
 import subprocess
+from unittest.mock import patch
 
 import pytest
 
+from biocypher.output.write._get_writer import get_writer
 from biocypher.output.write.relational._postgresql import _PostgreSQLBatchWriter
 
 
@@ -13,6 +15,34 @@ def test_get_data_type_unknown_logs_actual_type_name(caplog):
         result = writer._get_data_type("some_unknown_type")
     assert result == "VARCHAR"
     assert "some_unknown_type" in caplog.text
+
+
+def test_get_writer_passes_db_host_to_postgresql_writer(translator, deduplicator, tmp_path):
+    """get_writer must forward the 'host' config key to the writer as db_host."""
+    custom_host = "my-custom-pg-host.example.com"
+    mock_config = {
+        "user": "testuser",
+        "password": "testpass",
+        "host": custom_host,
+        "port": "5432",
+        "database_name": "testdb",
+        "delimiter": "\t",
+        "quote_character": '"',
+        "labels_order": "Ascending",
+        "node_labels_order": "None",
+        "edge_labels_order": "None",
+    }
+
+    with patch("biocypher.output.write._get_writer._config", return_value=mock_config):
+        writer = get_writer(
+            dbms="postgresql",
+            translator=translator,
+            deduplicator=deduplicator,
+            output_directory=str(tmp_path),
+            strict_mode=False,
+        )
+
+    assert writer.db_host == custom_host
 
 
 @pytest.mark.parametrize("length", [4], scope="module")
