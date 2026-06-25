@@ -1,0 +1,41 @@
+Title: BioCypher graph schema configuration file for edge synonym_for tests
+
+# ---
+# "Named Things"
+# ---
+
+protein:
+  represented_as: node
+  preferred_id: uniprot
+  input_label: protein
+  properties:
+    name: str
+    score: float
+
+gene:
+  represented_as: node
+  preferred_id: hgnc
+  input_label: hgnc
+
+disease:
+  represented_as: node
+  preferred_id: doid
+  input_label: Disease
+
+# ---
+# Associations using synonym_for (preferred over label_as_edge)
+# ---
+
+# Instead of:
+#   gene to disease association:
+#     represented_as: edge
+#     label_as_edge: PERTURBED_IN_DISEASE
+# Use synonym_for to keep the edge type grounded in the ontology hierarchy:
+
+PERTURBED_IN_DISEASE:
+  synonym_for: gene to disease association
+  represented_as: edge
+  input_label: [protein_disease, gene_disease]
+  exclude_properties: accession
+  properties:
+    score: float

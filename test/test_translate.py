@@ -1,6 +1,9 @@
+from unittest.mock import MagicMock
+
 import pytest
 
 from biocypher._create import BioCypherEdge, BioCypherNode
+from biocypher._translate import Translator
 
 
 def test_translate_nodes(translator):
@@ -619,3 +622,43 @@ def test_translate_entities_empty_generator(translator):
 
     result = list(translator.translate_entities(empty_gen()))
     assert result == []
+
+
+def test_label_as_edge_deprecation_warning():
+    """label_as_edge should emit a DeprecationWarning on Translator init.
+
+    Users should switch to synonym_for on the desired edge label key.
+    """
+    mock_ontology = MagicMock()
+    mock_ontology.mapping.extended_schema = {
+        "gene to disease association": {
+            "represented_as": "edge",
+            "label_as_edge": "PERTURBED_IN_DISEASE",
+            "input_label": "gene_disease",
+            "preferred_id": "id",
+        }
+    }
+
+    with pytest.warns(DeprecationWarning, match="label_as_edge"):
+        Translator(mock_ontology)
+
+
+def test_edge_synonym_for_translation(edge_synonym_ontology):
+    """synonym_for on an edge entry translates to the schema key as edge label.
+
+    When a schema uses `PERTURBED_IN_DISEASE: synonym_for: gene to disease
+    association`, edges with input_label gene_disease or protein_disease should
+    be translated to BioCypherEdges with label PERTURBED_IN_DISEASE, just as
+    label_as_edge would have produced — but keeping the type grounded in the
+    ontology hierarchy.
+    """
+    translator = Translator(edge_synonym_ontology)
+
+    edges = [
+        ("e1", "CHAT", "AD", "gene_disease", {"score": 0.9}),
+        ("e2", "CHRNA4", "AD", "protein_disease", {"score": 0.7}),
+    ]
+    translated = list(translator.translate_edges(edges))
+
+    assert all(isinstance(e, BioCypherEdge) for e in translated)
+    assert all(e.get_label() == "PERTURBED_IN_DISEASE" for e in translated)

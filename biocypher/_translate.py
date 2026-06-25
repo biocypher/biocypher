@@ -4,6 +4,8 @@ Responsible for translating between the raw input data and the
 BioCypherNode and BioCypherEdge objects.
 """
 
+import warnings
+
 from collections.abc import Generator, Iterable
 from typing import Any
 
@@ -384,6 +386,15 @@ class Translator:
                     self._ontology_mapping[label] = key
 
             if value.get("label_as_edge"):
+                warnings.warn(
+                    f"Schema entry '{key}' uses `label_as_edge`, which is deprecated. "
+                    "Use `synonym_for` on the desired edge label instead (e.g., "
+                    f"rename '{key}' to '{value['label_as_edge']}' and add "
+                    f"`synonym_for: {key}`). This keeps the edge type grounded in "
+                    "the ontology hierarchy.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
                 self._add_translation_mappings(labels, value["label_as_edge"])
 
             else:

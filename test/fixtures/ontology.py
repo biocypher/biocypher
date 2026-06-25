@@ -71,6 +71,22 @@ def simple_ontology(simple_ontology_mapping):
 
 
 @pytest.fixture(scope="module")
+def edge_synonym_ontology_mapping():
+    return OntologyMapping(config_file="biocypher/_config/test_schema_config_edge_synonym.yaml")
+
+
+@pytest.fixture(scope="module")
+def edge_synonym_ontology(edge_synonym_ontology_mapping):
+    return Ontology(
+        head_ontology={
+            "url": "https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl",
+            "root_node": "entity",
+        },
+        ontology_mapping=edge_synonym_ontology_mapping,
+    )
+
+
+@pytest.fixture(scope="module")
 def biolink_adapter():
     return OntologyAdapter(
         "https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl",
