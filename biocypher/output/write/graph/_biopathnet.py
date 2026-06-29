@@ -2,6 +2,7 @@
 
 import copy
 import os
+import re
 
 import networkx as nx
 
@@ -69,7 +70,8 @@ class _BioPathNetWriter(_Writer):
         dict_entity_types = {}
         str_nodes_props_graph = []
 
-        graph_hierarchy = copy.copy(self.translator.ontology._head_ontology.get_nx_graph()).reverse()
+        # Get the taxonomy tree from BioCypher.
+        graph_hierarchy = copy.copy(self.translator.ontology._nx_graph).reverse()
         logger.debug(f"type(graph_hierarchy) = {type(graph_hierarchy)}")
         logger.debug(f"graph_hierarchy = {graph_hierarchy.nodes()}")
         ancestors_set = set()
@@ -77,7 +79,7 @@ class _BioPathNetWriter(_Writer):
         for entity in nodes:
             semantic_type = entity.get_type()
             entity_id = entity.get_id()
-            # store the sematic types of each node of the graph to be
+            # store the semantic types of each node of the graph to be
             # written in the `entity_types.txt` file of BioPathNet
             if entity_id not in dict_entity_types.keys():
                 dict_entity_types[entity_id] = semantic_type
@@ -85,8 +87,9 @@ class _BioPathNetWriter(_Writer):
             properties = entity.get_properties()
             for key, value in properties.items():
                 # only write value if it exists.
-                if value:
-                    str_nodes_props_graph.append("\t".join([entity_id, key, str(value).replace(" ", "")]))
+                val = re.sub(r"\s*", "", str(value))
+                if val:
+                    str_nodes_props_graph.append("\t".join([entity_id, key, val]))
 
             # Add all ancestors of the entity type in the set, in order to reconstruct
             # the useful part of the ontology for passing it to BioPathNet
@@ -213,7 +216,7 @@ class _BioPathNetWriter(_Writer):
             with open(file2_name, "a+", encoding="utf-8") as f2:
                 with open(file3_name, "a+", encoding="utf-8") as f3:
                     for str_prop in list_str_node_props:
-                        entity, prop, value = str_prop.strip().split()
+                        entity, prop, value = str_prop.strip().split("\t")
                         prefixed_value = "_".join([prop, value])
                         f.write("\t".join([entity, prop, prefixed_value]) + "\n")
                         f2.write("\t".join([prefixed_value, "property_value"]) + "\n")
