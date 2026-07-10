@@ -44,7 +44,7 @@ class Deduplicator:
         if entity.get_id() in self.seen_entity_ids:
             self.duplicate_entity_ids.add(entity.get_id())
             if entity.get_label() not in self.duplicate_entity_types:
-                logger.warning(f"Duplicate node type {entity.get_label()} found. ")
+                logger.warning(f"Duplicate node(s) found, of type: `{entity.get_label()}`")
                 self.duplicate_entity_types.add(entity.get_label())
             return True
 
@@ -73,7 +73,7 @@ class Deduplicator:
         if _id in self.seen_relationships[relationship.get_type()]:
             self.duplicate_relationship_ids.add(_id)
             if relationship.get_type() not in self.duplicate_relationship_types:
-                logger.warning(f"Duplicate edge type {relationship.get_type()} found. ")
+                logger.warning(f"Duplicate edge(s) found, of type: `{relationship.get_type()}`")
                 self.duplicate_relationship_types.add(relationship.get_type())
             return True
 

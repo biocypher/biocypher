@@ -16,3 +16,15 @@ def bw_biopathnet(translator, deduplicator, tmp_path_session):
     )
 
     yield bw_biopathnet
+
+
+@pytest.fixture(scope="function")
+def bw_biopathnet_disrupts(translator, deduplicator, tmp_path_session):
+    bw_biopathnet = _BioPathNetWriter(
+        translator=translator,
+        deduplicator=deduplicator,
+        output_directory=tmp_path_session,
+        targeted_relation="(drug, disrupts, protein)",
+    )
+
+    yield bw_biopathnet
