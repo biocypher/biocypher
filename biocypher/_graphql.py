@@ -75,11 +75,16 @@ class GraphQLSchemaGenerator:
                     
                     if edge_config.get("properties"):
                         graphql_lines.append(
-                            f'  {self._pascal_case(edge_name).lower()}: [{target_pascal}!]! @relationship(type: "{rel_type}", direction: OUT, properties: "{props_interface}")'
+                            f'  {self._pascal_case(edge_name).lower()}: '
+                            f'[{target_pascal}!]! '
+                            f'@relationship(type: "{rel_type}", direction: OUT, '
+                            f'properties: "{props_interface}")'
                         )
                     else:
                         graphql_lines.append(
-                            f'  {self._pascal_case(edge_name).lower()}: [{target_pascal}!]! @relationship(type: "{rel_type}", direction: OUT)'
+                            f'  {self._pascal_case(edge_name).lower()}: '
+                            f'[{target_pascal}!]! '
+                            f'@relationship(type: "{rel_type}", direction: OUT)'
                         )
 
             graphql_lines.append("}\n")
