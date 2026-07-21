@@ -120,7 +120,11 @@ Data input from the source database is exactly as in the case of interacting
 with a running database, with the data representation being converted to a
 series of CSV files in a designated output folder (standard being
 `biocypher-out/` and the current datetime).  BioCypher creates separate header
-and data files for all node and edge types to be represented in the graph.
+and data files for all node and edge types to be represented in the graph. A
+single type whose nodes carry varying property sets (for labels not fixed by the
+schema configuration) may be split into more than one header/part group, each
+named after the type with a numeric suffix (e.g. `ProteinGroup1`); see
+[Varying property sets](../../learn/tutorials/tutorial001_basics.md#varying-property-sets).
 Additionally, it creates a file called `neo4j-admin-import-call.sh`
 containing the console command for creating a new database, which only has to be
 executed from the directory of the currently running Neo4j database.

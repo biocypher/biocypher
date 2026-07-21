@@ -368,11 +368,15 @@ Thus, it is often desirable to filter out properties that are not needed to
 save time, disk space, and memory.
 
 !!! note "Note"
-	Maintaining consistent properties per entity type is particularly important
-	when using the admin import feature of Neo4j, which requires consistency
-	between the header and data files. Properties that are introduced into only
-	some of the rows will lead to column misalignment and import failure. In
-	"online mode", this is not an issue.
+	Maintaining consistent properties per entity type is important for a clean,
+	single-file-per-type import. When you designate properties in the schema
+	configuration, BioCypher enforces them: every node of that type gets the same
+	columns (missing values are filled with `None`), producing one header and one
+	set of part files. For labels that are **not** configured in the schema,
+	properties are inferred per node; if different nodes carry different property
+	sets, BioCypher routes each distinct set to its own header/part group (see
+	[Varying property sets](#varying-property-sets)) rather than misaligning one
+	shared header. In "online mode", this is not a concern.
 
 We will take a look at how to handle property selection in BioCypher in a
 way that is flexible and easy to maintain.
@@ -477,6 +481,37 @@ parent class) or replaced by the parent class properties (if they are present).
 	We now create three separate data files, all of which are children of the
 	`protein` class; two implicit children (`uniprot.protein` and `entrez.protein`)
 	and one explicit child (`protein isoform`).
+
+### Varying property sets
+
+Designating properties in the schema is the recommended way to keep an entity
+type consistent. When a label is **not** configured in the schema, BioCypher
+cannot enforce a fixed column set, so it infers the properties (names and types)
+from each node. If all nodes of that label carry the same properties, the result
+is a single header and part file, exactly as before.
+
+If different nodes of the same label carry different property sets, BioCypher no
+longer misaligns a single shared header. Instead it groups nodes by their
+property signature and writes one header/part group per signature. The first
+signature encountered keeps the plain label file names (e.g.
+`Protein-header.csv`, `Protein-part000.csv`); each further signature gets a
+suffixed group (`ProteinGroup1-header.csv`, `ProteinGroup1-part000.csv`, and so
+on). All groups for the label are referenced in the import call, so the import
+still succeeds and each part file matches its own header. Property order does not
+matter (the signature is order-invariant), but a difference in property *types*
+(e.g. an integer `age` in one node and a string `age` in another) does open a
+separate group, because the resulting CSV headers differ.
+
+This also holds across batches. Because a schema change is applied by
+re-instantiating BioCypher (the schema is bound at construction), a second batch
+runs with a fresh writer. When that writer's output directory already contains
+headers from an earlier batch, it reconciles against them: a batch whose property
+set matches an existing header appends to that group, while a batch with a
+changed property set opens a new group instead of overwriting the earlier
+header. Cross-batch reconciliation compares property *names* only, so a batch
+that keeps the same columns but changes a property's type will reuse the existing
+group and overwrite its header; if you need that distinction preserved, write the
+batches to separate output directories.
 
 ## Section 4: Handling relationships
 
