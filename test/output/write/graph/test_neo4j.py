@@ -635,6 +635,54 @@ def test_write_node_data_none_valued_properties_group_consistently(bw):
     assert "diagnosis" in open(os.path.join(bw.outdir, "Patient-header.csv")).read()
 
 
+def test_write_node_data_schema_change_between_writer_instances(bw, translator, deduplicator, tmp_path_session):
+    """A schema change applied between batches builds a fresh writer instance
+    (schema is bound at construction), whose in-memory group state is empty.
+
+    The second writer must not overwrite the first batch's header when its
+    property set differs: it reconciles against the header already on disk and
+    routes the changed signature to a new group instead. This keeps the first
+    batch's header and part files mutually consistent.
+    """
+    # batch 1: {name}
+    assert bw._write_node_data(
+        [BioCypherNode("p1", "patient", properties={"name": "Alice"})],
+        batch_size=int(1e4),
+        force=True,
+    )
+    assert bw._write_node_headers()
+    g0_header = os.path.join(bw.outdir, "Patient-header.csv")
+    n_cols_batch_1 = len(open(g0_header).readline().rstrip("\n").split(";"))
+
+    # batch 2: fresh writer, same output dir, {name, diagnosis}
+    writer_2 = _Neo4jBatchWriter(
+        translator=translator,
+        deduplicator=deduplicator,
+        output_directory=tmp_path_session,
+        delimiter=";",
+        array_delimiter="|",
+        quote="'",
+    )
+    assert writer_2._write_node_data(
+        [BioCypherNode("p2", "patient", properties={"name": "Bob", "diagnosis": "diabetes"})],
+        batch_size=int(1e4),
+        force=True,
+    )
+    assert writer_2._write_node_headers()
+
+    # batch 2's changed signature opened a new group instead of reusing Patient
+    assert os.path.isfile(os.path.join(bw.outdir, "PatientGroup1-header.csv"))
+    assert "diagnosis" in open(os.path.join(bw.outdir, "PatientGroup1-header.csv")).read()
+
+    # batch 1's header was left untouched and still matches its part file
+    n_cols_header_now = len(open(g0_header).readline().rstrip("\n").split(";"))
+    part_0 = os.path.join(bw.outdir, "Patient-part000.csv")
+    n_cols_part_0 = len(open(part_0).readline().rstrip("\n").split(";"))
+    assert n_cols_header_now == n_cols_batch_1
+    assert n_cols_part_0 == n_cols_header_now
+    assert "diagnosis" not in open(g0_header).read()
+
+
 @pytest.mark.parametrize("length", [4], scope="module")
 def test_write_node_data_from_list_not_compliant_names(monkeypatch, caplog, bw, _get_nodes_non_compliant_names):
     nodes = _get_nodes_non_compliant_names

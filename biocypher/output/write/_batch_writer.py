@@ -617,6 +617,40 @@ class _BatchWriter(_Writer, ABC):
 
         return d
 
+    def _existing_header_property_names(self, group_key: str) -> set | None:
+        """Read the property names of a group's header file already on disk.
+
+        Used to reconcile against output written by a previous writer instance
+        pointing at the same directory (e.g. a schema change applied by
+        re-instantiating BioCypher for the next batch, which produces a fresh
+        writer with empty in-memory group state). Returns the set of property
+        column names, or ``None`` if no header file exists for the group.
+
+        Args:
+        ----
+            group_key (str): the group key whose header file to inspect
+
+        Returns:
+        -------
+            set | None: property column names, or None if no header exists
+
+        """
+        pascal = self.translator.name_sentence_to_pascal(parse_label(group_key))
+        header_path = os.path.join(self.outdir, f"{pascal}-header.csv")
+
+        if not os.path.exists(header_path):
+            return None
+
+        with open(header_path, encoding="utf-8") as f:
+            first_line = f.readline().strip()
+
+        # tokens look like ":ID", "name", "score:double", ":LABEL"; the
+        # property name is the part before the (optional) ":type" suffix, and
+        # the ":ID"/":LABEL" sentinels have an empty name and are dropped
+        names = {token.split(":")[0] for token in first_line.split(self.delim)}
+        names.discard("")
+        return names
+
     def _get_node_group_key(self, label: str, prop_dict: dict) -> str:
         """Assign a node to an output group based on its property signature.
 
@@ -626,6 +660,14 @@ class _BatchWriter(_Writer, ABC):
         common case (schema-configured or homogeneous data) is unchanged and
         produces the same single header as before. Additional signatures get a
         distinct, file-name-safe suffix.
+
+        Candidate group keys are also checked against header files already on
+        disk: if the plain label (or a suffixed key) is already occupied by a
+        different property set written by a previous writer instance, the next
+        free key is used instead. This prevents a schema change applied between
+        batches -- which builds a new writer with empty in-memory state -- from
+        overwriting a prior batch's header and leaving it inconsistent with its
+        part files.
 
         Args:
         ----
@@ -642,12 +684,26 @@ class _BatchWriter(_Writer, ABC):
         signature = tuple(sorted(prop_dict.items()))
         groups = self._node_property_groups[label]
 
-        if signature not in groups:
-            # first signature keeps the legacy label (and thus legacy file
-            # names); subsequent signatures are suffixed
-            groups[signature] = label if not groups else f"{label} group{len(groups)}"
+        if signature in groups:
+            return groups[signature]
 
-        return groups[signature]
+        # find the first candidate key that is neither claimed in-memory for a
+        # different signature nor occupied on disk by a different property set.
+        # Cross-instance reconciliation is by property-name set only (types are
+        # not fully recoverable from a header file); a same-columns/different-
+        # types change reuses the group and overwrites its header.
+        prop_names = set(prop_dict.keys())
+        index = 0
+        while True:
+            candidate = label if index == 0 else f"{label} group{index}"
+            if candidate not in groups.values():
+                existing = self._existing_header_property_names(candidate)
+                if existing is None or existing == prop_names:
+                    break
+            index += 1
+
+        groups[signature] = candidate
+        return candidate
 
     def _write_node_data(self, nodes, batch_size, force: bool = False):
         """Write biocypher nodes to CSV.
