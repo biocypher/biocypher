@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/biocypher/biocypher/compare/biocypher-v0.15.2...biocypher-v0.16.0) (2026-07-28)
+
+
+### Features
+
+* **write:** split nodes with varying property sets into separate header groups ([#555](https://github.com/biocypher/biocypher/issues/555)) ([45cfd70](https://github.com/biocypher/biocypher/commit/45cfd70126e4c5800ab6c7d6e8931b98724830f8))
+
 ## [0.15.2](https://github.com/biocypher/biocypher/compare/biocypher-v0.15.1...biocypher-v0.15.2) (2026-06-22)
 
 
