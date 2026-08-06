@@ -64,8 +64,20 @@ class _Neo4jBatchWriter(_BatchWriter):
         return "bin/"
 
     def _quote_string(self, value: str) -> str:
-        """Quote a string. Quote character is escaped by doubling it."""
+        """Quote a value string. Quote character is escaped by doubling it."""
         return f"{self.quote}{value.replace(self.quote, self.quote * 2)}{self.quote}"
+
+    def _escape_string(self, value: str) -> str:
+        """Escape function for property names."""
+        # FIXME: Neo4j's docs says property names can be escaped with backticks:
+        #        https://neo4j.com/docs/cypher-manual/current/syntax/naming/
+        #        However, this does not takes precedence over the colon, which
+        #        is used to indicate the property type.
+        # Thus, escaping a string with backquotes hoping that
+        # it capture the colon won't work: return f"`{value}`"
+        # Similarly, double-quoting or \: don't work either.
+        # And we are left only with replacing colon with a placeholder:
+        return value.replace(":", "_COLON_")
 
     def _write_array_string(self, string_list):
         """Abstract method to output.write the string representation of an array into a .csv file
@@ -121,7 +133,8 @@ class _Neo4jBatchWriter(_BatchWriter):
 
             # concatenate key:value in props
             props_list = []
-            for k, v in props.items():
+            for key, v in props.items():
+                k = self._escape_string(key)
                 if v in ["int", "long", "integer"]:
                     props_list.append(f"{k}:long")
                 elif v in ["int[]", "long[]", "integer[]"]:
@@ -198,7 +211,8 @@ class _Neo4jBatchWriter(_BatchWriter):
 
             # concatenate key:value in props
             props_list = []
-            for k, v in props.items():
+            for key, v in props.items():
+                k = self._escape_string(key)
                 if v in ["int", "long", "integer"]:
                     props_list.append(f"{k}:long")
                 elif v in ["int[]", "long[]", "integer[]"]:
