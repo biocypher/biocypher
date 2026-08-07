@@ -26,7 +26,7 @@ class GraphQLSchemaGenerator:
         """Convert space-separated name to SCREAMING_SNAKE_CASE."""
         return name.replace(" ", "_").replace("-", "_").upper()
 
-    def generate(self) -> str: # noqa: C901, PLR0912
+    def generate(self) -> str:  # noqa: C901, PLR0912
         """Generate the GraphQL schema as a string."""
         graphql_lines = []
         nodes = {}
@@ -74,15 +74,15 @@ class GraphQLSchemaGenerator:
 
                     if edge_config.get("properties"):
                         graphql_lines.append(
-                            f'  {self._pascal_case(edge_name).lower()}: '
-                            f'[{target_pascal}!]! '
+                            f"  {self._pascal_case(edge_name).lower()}: "
+                            f"[{target_pascal}!]! "
                             f'@relationship(type: "{rel_type}", direction: OUT, '
                             f'properties: "{props_interface}")',
                         )
                     else:
                         graphql_lines.append(
-                            f'  {self._pascal_case(edge_name).lower()}: '
-                            f'[{target_pascal}!]! '
+                            f"  {self._pascal_case(edge_name).lower()}: "
+                            f"[{target_pascal}!]! "
                             f'@relationship(type: "{rel_type}", direction: OUT)',
                         )
 
