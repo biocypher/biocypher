@@ -97,9 +97,9 @@ neo4j:
   user: neo4j
   password: neo4j
 
-  delimiter: ";"
-  array_delimiter: "|"
-  quote_character: "'"
+  delimiter: ","
+  array_delimiter: ";"
+  quote_character: '"'
   file_format: parquet # `parquet` (default, needs a Neo4j version that supports import with Parquet) or `csv`
 
   multi_db: true
@@ -187,9 +187,9 @@ For usage guidance and resource requirements, see
 | `uri` | Connection URI for Neo4j | string | `"neo4j://localhost:7687"` |
 | `user` | Username for Neo4j authentication | string | `"neo4j"` |
 | `password` | Password for Neo4j authentication | string | `"neo4j"` |
-| `delimiter` | Field delimiter for CSV import files | string | `";"` |
-| `array_delimiter` | Delimiter for array values | string | `"\|"` |
-| `quote_character` | Character used for quoting string values | string | `"'"` |
+| `delimiter` | Field delimiter for CSV import files; matches `neo4j-admin` | string | `","` |
+| `array_delimiter` | Delimiter for array values; matches `neo4j-admin` | string | `";"` |
+| `quote_character` | Character used for quoting string values; matches `neo4j-admin` | string | `'"'` |
 | `file_format` | File format for offline node and edge data; `"parquet"` needs a Neo4j version that supports import with Parquet | string | `"parquet"` (`"csv"` is also supported) |
 | `multi_db` | Whether to use multi-database support | boolean | `true` |
 | `skip_duplicate_nodes` | Whether to skip duplicate nodes during import | boolean | `false` |

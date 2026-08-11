@@ -74,9 +74,11 @@ neo4j:  ### Neo4j configuration ###
   password: neo4j
 
   # Neo4j admin import batch writer settings
-  delimiter: ';'
-  array_delimiter: '|'
-  quote_character: "'"
+  # Defaults match neo4j-admin's own; see
+  # https://github.com/biocypher/biocypher/issues/583
+  delimiter: ','
+  array_delimiter: ';'
+  quote_character: '"'
   # File format for offline node and edge data. The default is `parquet`.
   # Set to `csv` to use the legacy CSV output.
   file_format: parquet

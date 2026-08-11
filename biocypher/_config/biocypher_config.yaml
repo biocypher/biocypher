@@ -96,9 +96,15 @@ neo4j:
 
   ## Neo4j admin import batch writer settings
 
-  delimiter: ";"
-  array_delimiter: "|"
-  quote_character: "'"
+  # These match neo4j-admin's own defaults. Keep them in step with Neo4j
+  # rather than picking characters that look less likely to occur in the data:
+  # BioCypher's previous ";" field delimiter collided with the
+  # --vector-delimiter default that Neo4j added in 2026.06, which makes the
+  # generated import call fail outright.
+  # See https://github.com/biocypher/biocypher/issues/583
+  delimiter: ","
+  array_delimiter: ";"
+  quote_character: '"'
 
   # File format of the node and edge data files. Headers are always CSV.
   # `parquet` requires PyArrow (installed with `biocypher[neo4j]`) and a target
