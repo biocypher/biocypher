@@ -111,9 +111,9 @@ def get_writer(
         return writer(
             translator=translator,
             deduplicator=deduplicator,
-            delimiter=dbms_config.get("delimiter"),
-            array_delimiter=dbms_config.get("array_delimiter"),
-            quote=dbms_config.get("quote_character"),
+            delimiter=dbms_config.get("csv_column_delimiter") or dbms_config.get("delimiter"),
+            array_delimiter=dbms_config.get("csv_array_delimiter") or dbms_config.get("array_delimiter"),
+            quote=dbms_config.get("csv_string_quote_character") or dbms_config.get("quote_character"),
             output_directory=output_directory,
             db_name=dbms_config.get("database_name"),
             import_call_bin_prefix=dbms_config.get("import_call_bin_prefix"),

@@ -102,14 +102,14 @@ neo4j:
   # --vector-delimiter default that Neo4j added in 2026.06, which makes the
   # generated import call fail outright.
   # See https://github.com/biocypher/biocypher/issues/583
-  delimiter: ","
-  array_delimiter: ";"
-  quote_character: '"'
+  csv_column_delimiter: ","
+  csv_array_delimiter: ";"
+  csv_string_quote_character: '"'
 
   # File format of the node and edge data files. Headers are always CSV.
   # `parquet` requires PyArrow (installed with `biocypher[neo4j]`) and a target
-  # Neo4j version that supports import with Parquet; the delimiter, array
-  # delimiter and quote character above apply to the `csv` data files only.
+  # Neo4j version that supports import with Parquet; the CSV options above
+  # apply to the `csv` data files only.
   file_format: parquet # or `csv`
 
   # How to write the labels in the export files.
