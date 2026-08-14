@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.17.0](https://github.com/biocypher/biocypher/compare/biocypher-v0.16.0...biocypher-v0.17.0) (2026-08-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* **neo4j:** the Neo4j CSV output (`file_format: csv`) now uses `,` / `;` / `"` instead of `;` / `|` / `'`. Anything downstream that parses BioCypher CSV output needs updating, or set the old values explicitly in the `neo4j` section of your BioCypher config.
+* **neo4j:** make CSV the default output format again, Parquet opt-in
+
+### Features
+
+* **deduplicate:** disk backed deduplicator for large scale datasets ([0bafca1](https://github.com/biocypher/biocypher/commit/0bafca1f67323a723af00ba66d8bcf782fc90519))
+* **neo4j:** make CSV the default output format again, Parquet opt-in ([2e3647b](https://github.com/biocypher/biocypher/commit/2e3647bf78d8941eb4c1f33082592f85d0fc5e0f))
+* **neo4j:** parquet format output for batch import ([f89922a](https://github.com/biocypher/biocypher/commit/f89922a21c83b1ef6af4b5fea9d170ce8f88f271))
+
+
+### Bug Fixes
+
+* **arango:** keep CSV as the ArangoDB writer's default output format ([7d25819](https://github.com/biocypher/biocypher/commit/7d2581948514d1d9b4f463dca09d6d8016a47b4a))
+* **neo4j:** match neo4j-admin's own delimiter defaults ([#584](https://github.com/biocypher/biocypher/issues/584)) ([a270434](https://github.com/biocypher/biocypher/commit/a2704349b362ac6f4e7ef562a1064ef06d0d416b))
+* **neo4j:** name the required Neo4j version in the Parquet warning ([db94e01](https://github.com/biocypher/biocypher/commit/db94e01bf3a16b28f57487494b388a03dad2e03b))
+* **write:** report Parquet type conflicts as a BioCypher error ([11724de](https://github.com/biocypher/biocypher/commit/11724de6df8808363371190e05c8651ef05b70ac))
+
+
+### Performance Improvements
+
+* **write:** skip CSV row building in the Parquet edge path ([d02e7e2](https://github.com/biocypher/biocypher/commit/d02e7e2d65108a2998d4c06f42b8d600d1b5be57))
+
+
+### Documentation
+
+* **neo4j:** state the Neo4j version required for Parquet import ([881fb2e](https://github.com/biocypher/biocypher/commit/881fb2e37b648aabf867af05f3126c7092ced105))
+* **neo4j:** state the Parquet version floor for both Neo4j versioning lines ([2cadbd8](https://github.com/biocypher/biocypher/commit/2cadbd8c0045cd4d5d4ecad2ba94f7cc3690c973))
+
+
+### Build System
+
+* lower the pyarrow floor to 12.0.0 ([09037a1](https://github.com/biocypher/biocypher/commit/09037a14970beebe2d55428ee1caac19966d7b50))
+
+
+### Miscellaneous
+
+* release 0.17.0 ([f206193](https://github.com/biocypher/biocypher/commit/f20619393432a2f6080fad24571204915bea0d54))
+
 ## [0.16.0](https://github.com/biocypher/biocypher/compare/biocypher-v0.15.2...biocypher-v0.16.0) (2026-07-28)
 
 
