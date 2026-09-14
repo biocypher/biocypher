@@ -16,6 +16,49 @@ repos:
         - --select=E,F,I  # Only error, flake8, and isort rules
         - --fix
     -   id: ruff-format
+-   repo: https://github.com/jsh9/pydoclint
+    rev: 0.9.1
+    hooks:
+    -   id: pydoclint
+        args:
+        - --style=google
+        # Docstrings drift out of sync with their function signatures without
+        # anyone noticing (see issue #354). This check catches that, but the
+        # codebase isn't fully compliant yet, so for now it only runs on the
+        # modules below that already pass `pydoclint --style=google <file>`
+        # cleanly. Move a file's regex line up from the comment block below
+        # once you've brought its docstrings into compliance.
+        files: |
+          (?x)^(
+            biocypher/__init__\.py|
+            biocypher/_config/__init__\.py|
+            biocypher/_deduplicate_disk_index\.py|
+            biocypher/_metadata\.py|
+            biocypher/output/__init__\.py|
+            biocypher/output/connect/__init__\.py|
+            biocypher/output/connect/_get_connector\.py|
+            biocypher/output/in_memory/__init__\.py|
+            biocypher/output/in_memory/_get_in_memory_kg\.py|
+            biocypher/output/in_memory/_networkx\.py|
+            biocypher/output/in_memory/_pandas\.py|
+            biocypher/output/write/__init__\.py|
+            biocypher/output/write/graph/__init__\.py|
+            biocypher/output/write/graph/_airr\.py|
+            biocypher/output/write/graph/_arangodb\.py|
+            biocypher/output/write/relational/__init__\.py|
+            biocypher/output/write/relational/_sqlite\.py
+          )$
+        # Not yet compliant (tracked by issue #354), skipped until fixed:
+        #   _core.py, _create.py, _deduplicate.py, _get.py, _graph.py,
+        #   _logger.py, _mapping.py, _misc.py, _ontology.py, _translate.py,
+        #   _workflow.py, output/connect/_neo4j_driver.py,
+        #   output/connect/_neo4j_driver_wrapper.py, output/in_memory/_airr.py,
+        #   output/in_memory/_in_memory_kg.py, output/write/_batch_writer.py,
+        #   output/write/_get_writer.py, output/write/_writer.py,
+        #   output/write/graph/_biopathnet.py, output/write/graph/_neo4j.py,
+        #   output/write/graph/_networkx.py, output/write/graph/_owl.py,
+        #   output/write/graph/_rdf.py, output/write/relational/_csv.py,
+        #   output/write/relational/_postgresql.py
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
