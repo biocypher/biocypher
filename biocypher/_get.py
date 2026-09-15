@@ -52,6 +52,81 @@ class Resource(ABC):
         self.url_s = url_s
         self.lifetime = lifetime
 
+    @staticmethod
+    def from_config(path: str) -> list[Resource]:
+        """Load a list of Resource objects from a YAML configuration file.
+
+        Lets a CLI-driven workflow declare its ``FileDownload``/``APIRequest``
+        resources in a config file instead of Python code. The file holds a
+        list of resource definitions, either at the top level or under a
+        ``resources`` key:
+
+        ```yaml
+        resources:
+          - name: uniprot_api
+            type: api
+            url_s: https://rest.uniprot.org/uniprotkb/P12345.json
+            lifetime: 7
+          - name: my_download
+            type: file
+            url_s:
+              - https://example.com/a.csv
+              - https://example.com/b.csv
+            lifetime: 0
+            is_dir: false
+        ```
+
+        ``type`` selects the resource class (``file`` for :class:`FileDownload`,
+        the default, or ``api`` for :class:`APIRequest`); every other key is
+        passed through as a constructor keyword argument, so ``is_dir`` is
+        only valid on a ``file`` entry.
+
+        Args:
+        ----
+            path (str): Path to the YAML config file.
+
+        Returns:
+        -------
+            list[Resource]: The resources declared in the config file, as
+                ``FileDownload``/``APIRequest`` instances ready to pass to
+                :meth:`Downloader.download`.
+
+        """
+        from ._config import _read_yaml
+
+        config = _read_yaml(path)
+        if config is None:
+            raise FileNotFoundError(f"Resource config file not found: {path}")
+
+        entries = config.get("resources", config) if isinstance(config, dict) else config
+        if not isinstance(entries, list):
+            raise ValueError(
+                f"Resource config file {path} must contain a list of resource "
+                "definitions, either at the top level or under a 'resources' key."
+            )
+
+        resource_types: dict[str, type[Resource]] = {"file": FileDownload, "api": APIRequest}
+
+        resources = []
+        for entry in entries:
+            entry = dict(entry)
+            try:
+                name = entry.pop("name")
+                url_s = entry.pop("url_s")
+            except KeyError as e:
+                raise ValueError(f"Resource definition in {path} is missing required key {e}.") from e
+
+            resource_type = entry.pop("type", "file")
+            resource_cls = resource_types.get(resource_type)
+            if resource_cls is None:
+                raise ValueError(
+                    f"Unknown resource type '{resource_type}' for resource '{name}' in "
+                    f"{path}. Expected one of {sorted(resource_types)}."
+                )
+            resources.append(resource_cls(name=name, url_s=url_s, **entry))
+
+        return resources
+
 
 class FileDownload(Resource):
     def __init__(

@@ -537,6 +537,85 @@ def test_api_request_long_query_string(mock_get):
     assert len(filename) <= 150, f"Filename too long: {len(filename)} chars"
 
 
+def test_resource_from_config_top_level_list(tmp_path):
+    """A config file may hold the resource list at the top level."""
+    cfg = tmp_path / "resources.yaml"
+    cfg.write_text(
+        "- name: my_file\n"
+        "  type: file\n"
+        "  url_s: https://example.com/a.csv\n"
+        "  lifetime: 7\n"
+        "- name: my_api\n"
+        "  type: api\n"
+        "  url_s: https://example.com/api\n"
+    )
+    resources = Resource.from_config(str(cfg))
+
+    assert len(resources) == 2
+    assert isinstance(resources[0], FileDownload)
+    assert resources[0].name == "my_file"
+    assert resources[0].url_s == "https://example.com/a.csv"
+    assert resources[0].lifetime == 7
+    assert isinstance(resources[1], APIRequest)
+    assert resources[1].name == "my_api"
+    # lifetime not given: constructor default applies
+    assert resources[1].lifetime == 0
+
+
+def test_resource_from_config_under_resources_key(tmp_path):
+    """A config file may nest the resource list under a `resources` key."""
+    cfg = tmp_path / "resources.yaml"
+    cfg.write_text(
+        "resources:\n  - name: my_dir\n    type: file\n    url_s: https://example.com/data/\n    is_dir: true\n"
+    )
+    resources = Resource.from_config(str(cfg))
+
+    assert len(resources) == 1
+    assert isinstance(resources[0], FileDownload)
+    assert resources[0].is_dir is True
+
+
+def test_resource_from_config_multiple_urls(tmp_path):
+    """`url_s` may be a list of URLs, same as constructing Resource directly."""
+    cfg = tmp_path / "resources.yaml"
+    cfg.write_text(
+        "resources:\n"
+        "  - name: my_file\n"
+        "    url_s:\n"
+        "      - https://example.com/a.csv\n"
+        "      - https://example.com/b.csv\n"
+    )
+    resources = Resource.from_config(str(cfg))
+
+    assert resources[0].url_s == ["https://example.com/a.csv", "https://example.com/b.csv"]
+
+
+def test_resource_from_config_missing_file():
+    with pytest.raises(FileNotFoundError):
+        Resource.from_config("does/not/exist.yaml")
+
+
+def test_resource_from_config_missing_required_key(tmp_path):
+    cfg = tmp_path / "resources.yaml"
+    cfg.write_text("resources:\n  - name: my_file\n")  # missing url_s
+    with pytest.raises(ValueError, match="url_s"):
+        Resource.from_config(str(cfg))
+
+
+def test_resource_from_config_unknown_type(tmp_path):
+    cfg = tmp_path / "resources.yaml"
+    cfg.write_text("resources:\n  - name: my_file\n    type: ftp\n    url_s: https://example.com\n")
+    with pytest.raises(ValueError, match="Unknown resource type 'ftp'"):
+        Resource.from_config(str(cfg))
+
+
+def test_resource_from_config_not_a_list(tmp_path):
+    cfg = tmp_path / "resources.yaml"
+    cfg.write_text("name: my_file\nurl_s: https://example.com\n")
+    with pytest.raises(ValueError, match="must contain a list"):
+        Resource.from_config(str(cfg))
+
+
 @patch("requests.get")
 def test_api_request_multiple_urls_distinct_cache_files(mock_get):
     """Multiple URLs to the same endpoint with different query params must not share a cache file.
