@@ -165,6 +165,7 @@ csv:
 | `offline` | Whether to run in offline mode (no running DBMS or in-memory object) | boolean | `true` |
 | `big_data` | Use disk-backed deduplication for large offline builds. Requires the `bigdata` extra and cannot be used in online mode. | boolean | `false` |
 | `strict_mode` | Whether to enforce strict schema validation | boolean | `false` |
+| `head_ontology` | URL/file path config for the main ontology, or `null` to run headless (see below) | dict or null | Biolink model URL |
 | `head_ontology.url` | URL or file path to the main ontology file | string | Biolink model URL |
 | `head_ontology.root_node` | The root node of the ontology to use | string | `"entity"` |
 | `head_ontology.switch_label_and_id` | Whether to switch label and ID in the ontology | boolean | `true` |
@@ -177,6 +178,46 @@ csv:
 
 For usage guidance and resource requirements, see
 [Large-scale offline builds](../learn/guides/large-scale-builds.md).
+
+#### Headless mode (no ontology)
+
+Setting `head_ontology: null` explicitly (or omitting `head_ontology` from
+your config entirely) opts out of the ontology backbone and runs BioCypher
+in **headless mode**:
+
+```yaml title="biocypher_config.yaml"
+biocypher:
+  dbms: csv
+  offline: true
+  strict_mode: false
+  head_ontology: null
+```
+
+In this mode, BioCypher no longer fetches or parses an OWL/TTL ontology file
+(no network call, no `rdflib` graph), and node/edge types have no class
+hierarchy of their own — each type only resolves to its own label instead of
+inheriting ancestor labels. Schema validation against `schema_config.yaml`
+and the CSV/writer pipeline otherwise work exactly as usual.
+
+!!! warning "What headless mode cannot do"
+    A couple of surfaces genuinely need an ontology graph and raise
+    `NotImplementedError` with a message pointing back at this setting if
+    called in headless mode:
+
+    - `BioCypher.show_ontology_structure()`
+    - the OWL output writer (`dbms: owl`), which builds its graph from the
+      head ontology
+
+    The `biopathnet` output format reads the ontology's internal graph
+    directly and isn't headless-aware, so it will error rather than produce
+    a partial result. Basic writers (CSV, pandas, SQLite, PostgreSQL) and the
+    Neo4j connector are unaffected, since they only need the schema types
+    declared in `schema_config.yaml`, which headless mode still resolves
+    normally.
+
+    `tail_ontologies` also requires a `head_ontology` to join onto; configuring
+    `tail_ontologies` together with `head_ontology: null` raises a `ValueError`
+    at startup instead of silently ignoring the tail ontologies.
 
 ### Neo4j Configuration
 
