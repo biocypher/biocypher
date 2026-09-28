@@ -6,6 +6,12 @@ tags:
 
 # Hands-on Building Graphs with OntoWeaver, BioCypher and Neo4j
 
+**Level:** Beginner (OntoWeaver track)  
+**Who is this for?** Users who want to create a BioCypher knowledge graph from tabular data without writing a Python adapter.  
+**What you will do:** Describe a synthetic protein interaction table with an OntoWeaver YAML mapping, run OntoWeaver to build the graph with BioCypher, and import and query it in Neo4j.  
+**Estimated time:** 45–60 minutes.  
+
+
 ## Overview
 
 This tutorial will help you get started with OntoWeaver as a replacement for an adapter in BioCypher, thus creating knowledge graphs automatically. You will learn how to use OntoWeaver to create a simple knowledge graph with a synthetic dataset that contains information about proteins and its interactions.
@@ -692,7 +698,7 @@ The default configuration that comes with BioCypher and more configuration param
         array_delimiter: '|'
         skip_duplicate_nodes: true
         skip_bad_relationships: true
-        import_call_bin_prefix: /home/egcarren/.config/neo4j-desktop/Application/Data/dbmss/dbms-08155706-b96e-4e74-a965-7d6d27b78db8/bin/
+        import_call_bin_prefix: <path-to-neo4j-dbms>/bin/
     ```
 
 ### Step 2. Create the mapping
@@ -910,11 +916,11 @@ ontoweave \
 This triggers the command-line interface to OntoWeaver and passes the necessary configuration files. You should see an output like
 ```
 INFO -- This is BioCypher v0.15.0.
-INFO -- Logging into `biocypher-log/biocypher-20260603-091220.log`.
+INFO -- Logging into `biocypher-log/biocypher-<timestamp>.log`.
 WARNING:ontoweaver:Skip output validation for columns: `target`. This could result in some empty or `nan` nodes. To enable output validation set `validate_output` to `True`.
 WARNING -- Neo4j supports only edge_labels_order: 'Leaves', I'll set it for you, but you should fix your configuration file in the `neo4j` section.
 WARNING:biocypher:Neo4j supports only edge_labels_order: 'Leaves', I'll set it for you, but you should fix your configuration file in the `neo4j` section.
-/home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603091221/neo4j-admin-import-call.sh
+<path-to-project>/biocypher-out/<timestamp>/neo4j-admin-import-call.sh
 ```
 
 ## Section 4. Interacting with your graph using Neo4j
@@ -939,7 +945,7 @@ edge types that occurs in the dataset, not a single combined file:
 
 ```
 /biocypher-out
-└── 20250818153026
+└── <timestamp>
     ├── 🟦 Activation-header.csv
     ├── 🟦 Activation-part000.csv
     ├── 🟦 Binding-header.csv
@@ -965,7 +971,7 @@ b. Stop the neo4j instance. You can do this on the GUI or in terminal. In termin
 
 c. Run the  `neo4j-admin-import-call.sh` script in your `biocypher-out/`. **If needed, install and activate Java 21 before running**:
 ```bash
-bash ./biocypher-out/20260603085652/neo4j-admin-import-call.sh
+bash ./biocypher-out/<timestamp>/neo4j-admin-import-call.sh
 ```
 
 !!! warning "Neo4j Java version"
@@ -984,7 +990,7 @@ d. If everything has been successfully, you should see in terminal something sim
 
     ```
     Neo4j detected version: 2026
-    Starting to import, the following output will be saved in the directory: /home/inga/neo4j_data/Application/Data/dbmss/dbms-00aec91a-7031-49e0-b119-efb693863648/logs/neo4j-admin-import-2026-06-03.08.47.52
+    Starting to import, the following output will be saved in the directory: <path-to-neo4j-dbms>/logs/neo4j-admin-import-<timestamp>
       Logging information: import.log
       Detailed progress reporting (JSON formatted): progress.json.log
       Import data errors / violations (JSON formatted): report.json.log
@@ -992,25 +998,25 @@ d. If everything has been successfully, you should see in terminal something sim
     NOTE this directory will be cleared on the completion of a successful import.
 
     Neo4j version: 2026.04.0
-    Importing the contents of these files into /home/inga/neo4j_data/Application/Data/dbmss/dbms-00aec91a-7031-49e0-b119-efb693863648/data/databases/neo4j:
+    Importing the contents of these files into <path-to-neo4j-dbms>/data/databases/neo4j:
     Nodes:
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Protein-header.csv
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Protein-part000.csv
+      <path-to-project>/biocypher-out/<timestamp>/Protein-header.csv
+      <path-to-project>/biocypher-out/<timestamp>/Protein-part000.csv
 
     Relationships:
       null:
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Activation-header.csv
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Activation-part000.csv
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Binding-header.csv
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Binding-part000.csv
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Inhibition-header.csv
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Inhibition-part000.csv
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Phosphorylation-header.csv
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Phosphorylation-part000.csv
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/ProteinProteinInteraction-header.csv
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/ProteinProteinInteraction-part000.csv
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Ubiquitination-header.csv
-      /home/inga/projects/biocypher/adapters/ontoweaver-adapter/biocypher-out/20260603084611/Ubiquitination-part000.csv
+      <path-to-project>/biocypher-out/<timestamp>/Activation-header.csv
+      <path-to-project>/biocypher-out/<timestamp>/Activation-part000.csv
+      <path-to-project>/biocypher-out/<timestamp>/Binding-header.csv
+      <path-to-project>/biocypher-out/<timestamp>/Binding-part000.csv
+      <path-to-project>/biocypher-out/<timestamp>/Inhibition-header.csv
+      <path-to-project>/biocypher-out/<timestamp>/Inhibition-part000.csv
+      <path-to-project>/biocypher-out/<timestamp>/Phosphorylation-header.csv
+      <path-to-project>/biocypher-out/<timestamp>/Phosphorylation-part000.csv
+      <path-to-project>/biocypher-out/<timestamp>/ProteinProteinInteraction-header.csv
+      <path-to-project>/biocypher-out/<timestamp>/ProteinProteinInteraction-part000.csv
+      <path-to-project>/biocypher-out/<timestamp>/Ubiquitination-header.csv
+      <path-to-project>/biocypher-out/<timestamp>/Ubiquitination-part000.csv
 
 
     Available resources:
@@ -1070,7 +1076,7 @@ d. If everything has been successfully, you should see in terminal something sim
     .......... .......... .......... .......... ..........  95% ∆0ms [60ms] 
     .......... .......... .......... .......... .......... 100% ∆0ms [60ms] 
     Imported Stats[processed=15, created=15, updated=0, deleted=0] nodes in 199ms
-      using configuration:Configuration[numberOfWorkers=16, temporaryPath=/home/inga/neo4j_data/Application/Data/dbmss/dbms-00aec91a-7031-49e0-b119-efb693863648/data/databases/neo4j/temp, applyBatchSize=64, sorterSizeSwitchFactor=0.35]
+      using configuration:Configuration[numberOfWorkers=16, temporaryPath=<path-to-neo4j-dbms>/data/databases/neo4j/temp, applyBatchSize=64, sorterSizeSwitchFactor=0.35]
     Importing relationships
     .......... .......... .......... .......... ..........   5% ∆38ms [38ms] 
     .......... .......... .......... .......... ..........  10% ∆0ms [38ms] 

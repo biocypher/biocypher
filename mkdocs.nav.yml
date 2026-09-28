@@ -15,14 +15,14 @@ nav:
           - Quickstart: learn/quickstart.md
           - LLM Integration: llms.md
 
-
     - Learn:
+          - Overview: learn/index.md
           - Tutorials:
                 - Overview: learn/tutorials/index.md
                 - Catalog by Level: learn/tutorials/catalog.md
                 - Python UI track:
                       - Hands-on Protein Graphs with BioCypher and Neo4j (Beginner): learn/tutorials/tutorial_basics_neo4j_offline/tutorial_004_neo4j_offline.md
-                      - Handling complex graph operations (Advanced): learn/tutorials/tutorial002_handling_ontologies.md
+                      - Handling Ontologies (Intermediate): learn/tutorials/tutorial002_handling_ontologies.md
                       - Data harmonization and merging (Advanced, planned): learn/tutorials/tutorial_data_harmonization.md
                 - LLM-assisted UI track:
                       - Agent-supported hands-on Protein Graphs with BioCypher and Neo4j (Beginner): learn/tutorials/tutorial_basic_with_agents/tutorial_basic_with_agents.md
@@ -32,12 +32,16 @@ nav:
 
           - HowTo / FAQ:
                 - Overview: learn/guides/index.md
+                - Connect the MCP to your IDE: learn/guides/mcp.md
                 - Standalone Docker Image: learn/guides/htg001_standalone_docker_biocypher.md
+                - Large-scale Offline Builds: learn/guides/large-scale-builds.md
 
           - Explanations:
                 - Overview: learn/explanation/index.md
-                - About Adapters: learn/explanation/adapters.md
-                - About Ontologies: learn/explanation/ontologies.md
+                - Knowledge Graphs: learn/explanation/basics-knowledge-graphs.md
+                - Ontologies: learn/explanation/ontologies.md
+                - Knowledge Graphs in BioCypher: learn/explanation/knowledge-graph-biocypher.md
+                - Adapters: learn/explanation/adapters.md
                 - Schema Configuration Philosophy: learn/explanation/schema-config-philosophy.md
                 - Graph Class Guide: learn/explanation/graph_class_guide.md
                 - Architecture Migration Guide: learn/explanation/architecture-migration.md

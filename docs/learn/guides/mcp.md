@@ -2,7 +2,7 @@
 
 !!! note
     This page is a starting point and will be expanded. For the full picture on
-    LLM integration, see the [LLM Integration Guide](../llms.md).
+    LLM integration, see the [LLM Integration Guide](../../llms.md).
 
 BioCypher provides a dedicated [Model Context Protocol](https://modelcontextprotocol.io/)
 (MCP) server that AI coding assistants (GitHub Copilot, Claude, Cursor, etc.) can
@@ -46,5 +46,5 @@ The agent should respond with a list of available tools (e.g.
 
 ## Next steps
 
-- [Agent-supported hands-on tutorial](../learn/tutorials/tutorial_basic_with_agents/tutorial_basic_with_agents.md) — build a full knowledge graph with the MCP.
-- [LLM Integration Guide](../llms.md) — background and additional LLM-specific documentation.
+- [Agent-supported hands-on tutorial](../tutorials/tutorial_basic_with_agents/tutorial_basic_with_agents.md) — build a full knowledge graph with the MCP.
+- [LLM Integration Guide](../../llms.md) — background and additional LLM-specific documentation.

@@ -5,6 +5,12 @@ tags:
 ---
 # 🧑‍💻 Agent-supported hands-on Building Graphs with BioCypher (offline mode) and Neo4j
 
+**Level:** Beginner (LLM-assisted UI track)  
+**Who is this for?** New BioCypher users who prefer to work with an AI coding agent in their IDE instead of writing all code by hand.  
+**What you will do:** Connect the BioCypher MCP to your IDE, explore and model a synthetic protein interaction dataset, instruct an agent to create, test and document an adapter and a graph script, build the graph in offline mode, and import and query it in Neo4j.  
+**Estimated time:** 60–90 minutes.  
+
+
 ## Overview
 
 This tutorial will help you get started with BioCypher in offline mode. You will learn how to use the BioCypher MCP and instruct an agent to create a simple knowledge graph with a synthetic dataset that contains information about proteins and its interactions.
@@ -35,7 +41,7 @@ By the end of this tutorial, you will be able to:
 
 ### Setup AI agent and the BioCypher MCP
 
-As a first step, you need to install VSCode or another IDE of your choice that allows the use of an MCP. You then need to connect your IDE to a model provider like GitHub Copilot, OpenAI, Claude, or by using a local model. For example, if you are using VSCode, you can install the extension for  [GitHub Copilot](https://code.visualstudio.com/docs/copilot/overview), and add the [BioCypher MCP to the IDE](../../../howto/mcp.md).
+As a first step, you need to install VSCode or another IDE of your choice that allows the use of an MCP. You then need to connect your IDE to a model provider like GitHub Copilot, OpenAI, Claude, or by using a local model. For example, if you are using VSCode, you can install the extension for  [GitHub Copilot](https://code.visualstudio.com/docs/copilot/overview), and add the [BioCypher MCP to the IDE](../../guides/mcp.md).
 
 To make sure that the agent and MCP are configured correctly, you can ask in the chat
 
@@ -155,28 +161,28 @@ In this section, we will create a Neo4j instance to use later in the tutorial. I
 1. Execute Neo4j Desktop, if this the first time you should see a window like this one.
 
     <figure markdown="span">
-    ![Neo4j Desktop start screen](./assets/neo4j_desktop_homepage.png){ width="800" }
+    ![Neo4j Desktop start screen](../tutorial_basics_neo4j_offline/assets/neo4j_desktop_homepage.png){ width="800" }
     <figcaption>Figure 1. Neo4j Desktop start screen.</figcaption>
     </figure>
 
 2. Create a new instance in Neo4j. For this tutorial, name it `neo4j-tutorial-instance` and choose a password you can remember.
 
     <figure markdown="span">
-    ![Create Instance window in Neo4j Desktop](./assets/neo4j_instance_creation.png){ width="800" }
+    ![Create Instance window in Neo4j Desktop](../tutorial_basics_neo4j_offline/assets/neo4j_instance_creation.png){ width="800" }
     <figcaption>Figure 2. Create Instance window. This may vary depending on your Neo4j version.</figcaption>
     </figure>
 
 3. Access details in the option *Overview*.
 
     <figure markdown="span">
-    ![Overview option for a Neo4j instance](./assets/neo4j_overview_option.png){ width="800" }
+    ![Overview option for a Neo4j instance](../tutorial_basics_neo4j_offline/assets/neo4j_overview_option.png){ width="800" }
     <figcaption>Figure 3. *Overview* option to check details related to your Neo4j instance.</figcaption>
     </figure>
 
 4. Save the path to your Neo4j instance, we are going to use this path later in this tutorial.
 
     <figure markdown="span">
-    ![Neo4j instance with its path location highlighted](./assets/neo4j_folder_details.png){ width="800" }
+    ![Neo4j instance with its path location highlighted](../tutorial_basics_neo4j_offline/assets/neo4j_folder_details.png){ width="800" }
     <figcaption>Figure 4. Neo4j instance with its path location highlighted.</figcaption>
     </figure>
 
@@ -256,7 +262,7 @@ For this tutorial we are going to use a [synthetic dataset](https://zenodo.org/r
 By looking at the `tsv` file, we can see that there are two columns called `source` and `target`, which represent proteins. This means that each row represents an interaction between a source protein and a target protein. For now, our graph could look like this.
 
 <figure markdown="span">
-![Simple graph model for representing interactions between proteins](./assets/model_graph_1.png){ width="400" }
+![Simple graph model for representing interactions between proteins](../tutorial_basics_neo4j_offline/assets/model_graph_1.png){ width="400" }
 <figcaption>Figure 5. Simple graph model for representing interactions between proteins.</figcaption>
 </figure>
 
@@ -275,7 +281,7 @@ Can we improve the graph? Absolutely! Understanding the data is essential for bu
     - `entity_type_target`
 
 <figure markdown="span">
-![Simple protein interaction graph with properties in nodes](./assets/model_graph_2.png){ width="400" }
+![Simple protein interaction graph with properties in nodes](../tutorial_basics_neo4j_offline/assets/model_graph_2.png){ width="400" }
 <figcaption>Figure 6. Simple protein interaction graph with properties in nodes.</figcaption>
 </figure>
 
@@ -298,14 +304,14 @@ It is these protein-protein interactions that form the **edges** in the graph. H
 We are ready to model our second version of our graph. It is like follows:
 
 <figure markdown="span">
-![Protein interaction graph showing node and edge properties](./assets/model_graph_3.png){ width="400" }
+![Protein interaction graph showing node and edge properties](../tutorial_basics_neo4j_offline/assets/model_graph_3.png){ width="400" }
 <figcaption>Figure 7. Protein interaction graph showing node and edge properties.</figcaption>
 </figure>
 
 Finally, we can model a more detailed graph using our dataset. Rather than representing all interactions in a generic way, we can use the `type` field to show the specific type of interaction occurring between each pair of proteins.
 
 <figure markdown="span">
-![Graph model for representing different interactions between proteins](./assets/model_graph_4.png){ width="550" }
+![Graph model for representing different interactions between proteins](../tutorial_basics_neo4j_offline/assets/model_graph_4.png){ width="550" }
 <figcaption>Figure 8. Graph model for representing different interactions between proteins.</figcaption>
 </figure>
 
@@ -380,7 +386,7 @@ To achieve this, we can divide the process into five sections using the BioCyphe
 ### Step 1. get_adapter_creation_workflow for an overview and understanding of the process
 
 <figure markdown="span">
-![Configuration step in the BioCypher pipeline](./assets/biocypher_section_conf.png){ width="1000" }
+![Configuration step in the BioCypher pipeline](../tutorial_basics_neo4j_offline/assets/biocypher_section_conf.png){ width="1000" }
 <figcaption>Figure 9. Configuration step in the BioCypher pipeline.</figcaption>
 </figure>
 
@@ -520,7 +526,7 @@ In BioCypher, ontologies are integrated through the schema configuration file. T
 Figure 10 illustrates the Biolink Model and some of its components organized in a hierarchy. Notice that entities such as *protein* (nodes) and *pairwise molecular interaction* (edges) appear both in the schema configuration and in the ontology. This alignment ensures that BioCypher graphs are not only structured consistently but also grounded in standardized biomedical concepts. For a deeper exploration of ontologies in BioCypher, see our [ontology tutorial](https://biocypher.org/BioCypher/learn/tutorials/tutorial002_handling_ontologies/).
 
 <figure markdown="span">
-![The Biolink Model as an ontology backbone, showing protein as an entity and pairwise molecular interaction as an association](./assets/biolink_ontology.png){ width="1000" }
+![The Biolink Model as an ontology backbone, showing protein as an entity and pairwise molecular interaction as an association](../tutorial_basics_neo4j_offline/assets/biolink_ontology.png){ width="1000" }
 <figcaption>Figure 10. The Biolink Model as an ontology backbone. On the right, <b>protein</b> is represented as an entity; on the left, <b>pairwise molecular interaction</b> is defined as an association. Together, these demonstrate how the schema anchors graph components to standardized biomedical concepts.</figcaption>
 </figure>
 
@@ -675,13 +681,13 @@ The default configuration that comes with BioCypher and more configuration param
         file_format: csv
         skip_duplicate_nodes: true
         skip_bad_relationships: true
-        import_call_bin_prefix: /home/egcarren/.config/neo4j-desktop/Application/Data/dbmss/dbms-08155706-b96e-4e74-a965-7d6d27b78db8/bin/
+        import_call_bin_prefix: <path-to-neo4j-dbms>/bin/
     ```
 
 ### Step 2. Create an adapter
 
 <figure markdown="span">
-![Adapter creation step in the BioCypher pipeline](./assets/biocypher_section_adapter.png){ width="1000" }
+![Adapter creation step in the BioCypher pipeline](../tutorial_basics_neo4j_offline/assets/biocypher_section_adapter.png){ width="1000" }
 <figcaption>Figure 11. Adapter creation in the BioCypher pipeline.</figcaption>
 </figure>
 
@@ -1053,7 +1059,7 @@ Now you can move on to importing your data into BioCypher to create a knowledge 
 ### Step 5. Create a knowledge graph script
 
 <figure markdown="span">
-![BioCypher pipeline overview](./assets/biocypher_section_script.png){ width="1000" }
+![BioCypher pipeline overview](../tutorial_basics_neo4j_offline/assets/biocypher_section_script.png){ width="1000" }
 <figcaption>Figure 12. BioCypher pipeline</figcaption>
 </figure>
 
@@ -1258,7 +1264,7 @@ a. Look for a folder whose name starts with `biocypher-out`. Each time you run t
 
 ```
 /biocypher-out
-└── 20250818153026
+└── <timestamp>
     ├── 🟦 Activation-header.csv
     ├── 🟦 Activation-part000.csv
     ├── 🟦 Binding-header.csv
@@ -1281,7 +1287,7 @@ b. Stop the neo4j instance. You can do this on the GUI or in terminal. In termin
 
 c. Run the  `neo4j-admin-import-call.sh` script in your `biocypher-output/`:
 ```bash
-bash ./biocypher-out/20250818153026/neo4j-admin-import-call.sh
+bash ./biocypher-out/<timestamp>/neo4j-admin-import-call.sh
 ```
 
 d. If everything has been successfully, you should see in terminal something similar to this:
@@ -1289,25 +1295,25 @@ d. If everything has been successfully, you should see in terminal something sim
 ??? info "Terminal output:"
 
     ```
-    Starting to import, output will be saved to: /home/egcarren/.config/neo4j-desktop/Application/Data/dbmss/dbms-08155706-b96e-4e74-a965-7d6d27b78db8/logs/neo4j-admin-import-2025-08-18.15.54.59.log
+    Starting to import, output will be saved to: <path-to-neo4j-dbms>/logs/neo4j-admin-import-<timestamp>.log
     Neo4j version: 2025.07.1
-    Importing the contents of these files into /home/egcarren/.config/neo4j-desktop/Application/Data/dbmss/dbms-08155706-b96e-4e74-a965-7d6d27b78db8/data/databases/neo4j:
+    Importing the contents of these files into <path-to-neo4j-dbms>/data/databases/neo4j:
     Nodes:
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Protein-header.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Protein-part000.csv
+    <path-to-project>/biocypher-out/<timestamp>/Protein-header.csv
+    <path-to-project>/biocypher-out/<timestamp>/Protein-part000.csv
 
     Relationships:
     null:
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Phosphorylation-header.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Phosphorylation-part000.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Ubiquitination-header.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Ubiquitination-part000.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Inhibition-header.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Inhibition-part000.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Activation-header.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Activation-part000.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Binding-header.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Binding-part000.csv
+    <path-to-project>/biocypher-out/<timestamp>/Phosphorylation-header.csv
+    <path-to-project>/biocypher-out/<timestamp>/Phosphorylation-part000.csv
+    <path-to-project>/biocypher-out/<timestamp>/Ubiquitination-header.csv
+    <path-to-project>/biocypher-out/<timestamp>/Ubiquitination-part000.csv
+    <path-to-project>/biocypher-out/<timestamp>/Inhibition-header.csv
+    <path-to-project>/biocypher-out/<timestamp>/Inhibition-part000.csv
+    <path-to-project>/biocypher-out/<timestamp>/Activation-header.csv
+    <path-to-project>/biocypher-out/<timestamp>/Activation-part000.csv
+    <path-to-project>/biocypher-out/<timestamp>/Binding-header.csv
+    <path-to-project>/biocypher-out/<timestamp>/Binding-part000.csv
 
 
     Available resources:
@@ -1367,7 +1373,7 @@ d. If everything has been successfully, you should see in terminal something sim
     .......... .......... .......... .......... ..........  95% ∆1ms [85ms]
     .......... .......... .......... .......... .......... 100% ∆0ms [85ms]
     Imported 15 nodes in 458ms
-    using configuration:Configuration[numberOfWorkers=12, temporaryPath=/home/egcarren/.config/neo4j-desktop/Application/Data/dbmss/dbms-08155706-b96e-4e74-a965-7d6d27b78db8/data/databases/neo4j/temp, applyBatchSize=64, sorterSizeSwitchFactor=0.3]
+    using configuration:Configuration[numberOfWorkers=12, temporaryPath=<path-to-neo4j-dbms>/data/databases/neo4j/temp, applyBatchSize=64, sorterSizeSwitchFactor=0.3]
     Importing relationships
     .......... .......... .......... .......... ..........   5% ∆35ms [35ms]
     .......... .......... .......... .......... ..........  10% ∆0ms [35ms]
@@ -1399,14 +1405,14 @@ d. If everything has been successfully, you should see in terminal something sim
 a. Connect to your instance by running Neo4j desktop again. Select your instance and click on "Connect" - the little arrow on the button allows you to expand a menu. Select the option *Query*.
 
 <figure markdown="span">
-![Query and Explore options in a Neo4j instance](./assets/neo4j_explore_graph.png){ width="1000" }
+![Query and Explore options in a Neo4j instance](../tutorial_basics_neo4j_offline/assets/neo4j_explore_graph.png){ width="1000" }
 <figcaption>Figure 13. Query and Explore options to run on a Neo4j instance.</figcaption>
 </figure>
 
 b. Now, click on the asterisk under the Relationships category. You now should see your graph! Compare to the sketch you did previosly in this tutorial
 
 <figure markdown="span">
-![Neo4j graph built from the tutorial data](./assets/neo4j_final_graph.png){ width="1000" }
+![Neo4j graph built from the tutorial data](../tutorial_basics_neo4j_offline/assets/neo4j_final_graph.png){ width="1000" }
 <figcaption>Figure 14. Neo4j graph based on our data.</figcaption>
 </figure>
 
@@ -1423,7 +1429,7 @@ RETURN a, r, b;
 Result:
 
 <figure markdown="span">
-![Neo4j browser result for a query finding relationships between two nodes](./assets/neo4j_query_1.png){ width="500" }
+![Neo4j browser result for a query finding relationships between two nodes](../tutorial_basics_neo4j_offline/assets/neo4j_query_1.png){ width="500" }
 </figure>
 
 2. Find all the nodes
@@ -1435,7 +1441,7 @@ RETURN n;
 Result:
 
 <figure markdown="span">
-![Neo4j browser result for a query finding all nodes](./assets/neo4j_query_2.png){ width="500" }
+![Neo4j browser result for a query finding all nodes](../tutorial_basics_neo4j_offline/assets/neo4j_query_2.png){ width="500" }
 </figure>
 
 3. Find all nodes of a specific type(e.g. `Protein` in the following query)
@@ -1447,7 +1453,7 @@ RETURN n;
 Result:
 
 <figure markdown="span">
-![Neo4j browser result for a query finding all Protein nodes](./assets/neo4j_query_3.png){ width="500" }
+![Neo4j browser result for a query finding all Protein nodes](../tutorial_basics_neo4j_offline/assets/neo4j_query_3.png){ width="500" }
 </figure>
 
 4. Find all relationships of a specific type(e.g. `Binding` in the following query)
@@ -1459,7 +1465,7 @@ RETURN a, r, b;
 Result:
 
 <figure markdown="span">
-![Neo4j browser result for a query finding all Binding relationships](./assets/neo4j_query_4.png){ width="500" }
+![Neo4j browser result for a query finding all Binding relationships](../tutorial_basics_neo4j_offline/assets/neo4j_query_4.png){ width="500" }
 </figure>
 
 5. Count relationships of a given type(e.g. `Binding` in the following query)
@@ -1471,7 +1477,7 @@ RETURN COUNT(r) AS totalBindings;
 Result:
 
 <figure markdown="span">
-![Neo4j browser result for a query counting Binding relationships](./assets/neo4j_query_5.png){ width="250" }
+![Neo4j browser result for a query counting Binding relationships](../tutorial_basics_neo4j_offline/assets/neo4j_query_5.png){ width="250" }
 </figure>
 
 ---

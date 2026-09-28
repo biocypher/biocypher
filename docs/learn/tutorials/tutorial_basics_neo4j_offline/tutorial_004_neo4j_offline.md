@@ -7,6 +7,12 @@ tags:
 
 # 🧑‍💻 Hands-on Building Graphs with BioCypher (offline mode) and Neo4j
 
+**Level:** Beginner (Python UI track)  
+**Who is this for?** New BioCypher users who want to build their first knowledge graph with the Python interface and explore it in Neo4j.  
+**What you will do:** Set up a BioCypher project, model a synthetic protein interaction dataset as a graph, write an adapter and schema configuration, build the graph in offline mode, and import and query it in Neo4j.  
+**Estimated time:** 60–90 minutes.  
+
+
 ## Overview
 
 This tutorial will help you get started with BioCypher in offline mode. You will learn how to create a simple knowledge graph with a synthetic dataset that contains information about proteins and its interactions.
@@ -645,7 +651,7 @@ The default configuration that comes with BioCypher and more configuration param
         file_format: csv
         skip_duplicate_nodes: true
         skip_bad_relationships: true
-        import_call_bin_prefix: /home/egcarren/.config/neo4j-desktop/Application/Data/dbmss/dbms-08155706-b96e-4e74-a965-7d6d27b78db8/bin/
+        import_call_bin_prefix: <path-to-neo4j-dbms>/bin/
     ```
 
 ### Step 2. Create an adapter
@@ -1396,7 +1402,7 @@ a. Look for a folder whose name starts with `biocypher-out`. Each time you run t
 
 ```
 /biocypher-out
-└── 20250818153026
+└── <timestamp>
     ├── 🟦 Activation-header.csv
     ├── 🟦 Activation-part000.csv
     ├── 🟦 Binding-header.csv
@@ -1419,7 +1425,7 @@ b. Stop the neo4j instance. You can do this on the GUI or in terminal. In termin
 
 c. Run the  `neo4j-admin-import-call.sh` script in your `biocypher-output/`:
 ```bash
-bash ./biocypher-out/20250818153026/neo4j-admin-import-call.sh
+bash ./biocypher-out/<timestamp>/neo4j-admin-import-call.sh
 ```
 
 d. If everything has been successfully, you should see in terminal something similar to this:
@@ -1427,25 +1433,25 @@ d. If everything has been successfully, you should see in terminal something sim
 ??? info "Terminal output:"
 
     ```
-    Starting to import, output will be saved to: /home/egcarren/.config/neo4j-desktop/Application/Data/dbmss/dbms-08155706-b96e-4e74-a965-7d6d27b78db8/logs/neo4j-admin-import-2025-08-18.15.54.59.log
+    Starting to import, output will be saved to: <path-to-neo4j-dbms>/logs/neo4j-admin-import-<timestamp>.log
     Neo4j version: 2025.07.1
-    Importing the contents of these files into /home/egcarren/.config/neo4j-desktop/Application/Data/dbmss/dbms-08155706-b96e-4e74-a965-7d6d27b78db8/data/databases/neo4j:
+    Importing the contents of these files into <path-to-neo4j-dbms>/data/databases/neo4j:
     Nodes:
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Protein-header.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Protein-part000.csv
+    <path-to-project>/biocypher-out/<timestamp>/Protein-header.csv
+    <path-to-project>/biocypher-out/<timestamp>/Protein-part000.csv
 
     Relationships:
     null:
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Phosphorylation-header.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Phosphorylation-part000.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Ubiquitination-header.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Ubiquitination-part000.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Inhibition-header.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Inhibition-part000.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Activation-header.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Activation-part000.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Binding-header.csv
-    /home/egcarren/Downloads/sandbox_edwin/tutorial-basics-biocypher/biocypher-out/20250818153026/Binding-part000.csv
+    <path-to-project>/biocypher-out/<timestamp>/Phosphorylation-header.csv
+    <path-to-project>/biocypher-out/<timestamp>/Phosphorylation-part000.csv
+    <path-to-project>/biocypher-out/<timestamp>/Ubiquitination-header.csv
+    <path-to-project>/biocypher-out/<timestamp>/Ubiquitination-part000.csv
+    <path-to-project>/biocypher-out/<timestamp>/Inhibition-header.csv
+    <path-to-project>/biocypher-out/<timestamp>/Inhibition-part000.csv
+    <path-to-project>/biocypher-out/<timestamp>/Activation-header.csv
+    <path-to-project>/biocypher-out/<timestamp>/Activation-part000.csv
+    <path-to-project>/biocypher-out/<timestamp>/Binding-header.csv
+    <path-to-project>/biocypher-out/<timestamp>/Binding-part000.csv
 
 
     Available resources:
@@ -1505,7 +1511,7 @@ d. If everything has been successfully, you should see in terminal something sim
     .......... .......... .......... .......... ..........  95% ∆1ms [85ms]
     .......... .......... .......... .......... .......... 100% ∆0ms [85ms]
     Imported 15 nodes in 458ms
-    using configuration:Configuration[numberOfWorkers=12, temporaryPath=/home/egcarren/.config/neo4j-desktop/Application/Data/dbmss/dbms-08155706-b96e-4e74-a965-7d6d27b78db8/data/databases/neo4j/temp, applyBatchSize=64, sorterSizeSwitchFactor=0.3]
+    using configuration:Configuration[numberOfWorkers=12, temporaryPath=<path-to-neo4j-dbms>/data/databases/neo4j/temp, applyBatchSize=64, sorterSizeSwitchFactor=0.3]
     Importing relationships
     .......... .......... .......... .......... ..........   5% ∆35ms [35ms]
     .......... .......... .......... .......... ..........  10% ∆0ms [35ms]

@@ -15,6 +15,11 @@
   color: #374151;
 }
 
+.difficulty-badge--intermediate {
+  background: #fef3c7;
+  color: #78350f;
+}
+
 .difficulty-badge--advanced {
   background: #dbeafe;
   color: #1e3a8a;

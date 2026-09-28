@@ -52,7 +52,7 @@
 
 -   :material-set-merge:{ .lg .middle } __Data merging__
 
-    :material-tag-outline: <span class="difficulty-badge difficulty-badge--advanced">Advanced</span>
+    :material-tag-outline: <span class="difficulty-badge difficulty-badge--intermediate">Intermediate</span>
 
     ---
 
@@ -60,7 +60,7 @@
 
 -   :simple-instructure:{ .lg .middle } __Data transformation__
 
-    :material-tag-outline: <span class="difficulty-badge difficulty-badge--advanced">Advanced</span>
+    :material-tag-outline: <span class="difficulty-badge difficulty-badge--intermediate">Intermediate</span>
 
     ---
 
@@ -90,7 +90,7 @@
 
 -   :white_circle:{ .lg .middle } __BioCypher Use Case 3__
 
-    :material-tag-outline: <span class="difficulty-badge difficulty-badge--advanced">Advanced</span>
+    :material-tag-outline: <span class="difficulty-badge difficulty-badge--intermediate">Intermediate</span>
 
     ---
 
@@ -98,7 +98,7 @@
 
 -   :yellow_circle:{ .lg .middle } __BioCypher Use Case 4__
 
-    :material-tag-outline: <span class="difficulty-badge difficulty-badge--advanced">Advanced</span>
+    :material-tag-outline: <span class="difficulty-badge difficulty-badge--intermediate">Intermediate</span>
 
     ---
 
