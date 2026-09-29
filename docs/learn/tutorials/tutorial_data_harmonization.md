@@ -11,12 +11,11 @@ tags:
     **data harmonization and merging** — reconciling multiple datasets that
     describe the same entities under different vocabularies/formats into a
     single BioCypher knowledge graph — as distinct from
-    [Handling Ontologies](tutorial002_handling_ontologies.md), which this page
-    currently duplicates a nav entry for.
+    [Handling Ontologies](tutorial002_handling_ontologies.md), which covers
+    ontology-backed schemas, inheritance and synonyms.
 
-    Tracked in [issue TBD](https://github.com/biocypher/biocypher/issues) —
-    please do not expand this page without linking it to that issue, and do
-    not treat the presence of this file as a sign the tutorial is written.
+    Progress is tracked in
+    [issue #597](https://github.com/biocypher/biocypher/issues/597).
 
 **Level:** Advanced (Hands-on track)  
 **Who is this for?** Users who have completed the Basics and Ontologies tutorials and need to combine data from multiple heterogeneous sources into one graph.  
