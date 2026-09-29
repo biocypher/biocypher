@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0](https://github.com/biocypher/biocypher/compare/biocypher-v0.17.0...biocypher-v0.18.0) (2026-09-29)
+
+
+### Features
+
+* add an script to build dynamically the catalog of tutorial when mkdocs start ([2b970fa](https://github.com/biocypher/biocypher/commit/2b970fa091aae43b73ef297decc8efade073b39e))
+
 ## [0.17.0](https://github.com/biocypher/biocypher/compare/biocypher-v0.16.0...biocypher-v0.17.0) (2026-08-14)
 
 
