@@ -109,7 +109,7 @@ In this section, you will set up your working environment and folder structure f
 2. Check the current project structure. Below, we list the most important folders and files for this tutorial.
 
     ```
-    /tutorial-basics-biocypher
+    /tutorial-basics
         ├── config
         │   ├── biocypher_config.yaml
         │   └── schema_config.yaml
@@ -635,7 +635,7 @@ The first block is the BioCypher Core Settings, which starts with `biocypher:`
 | `offline`            | `true`                      | Whether to run in offline mode (no running DBMS or in-memory object) |
 | `debug`              | `false`                     | Whether to enable debug logging                                      |
 | `schema_config_path` | `config/schema_config.yaml` | Path to the schema configuration file                                |
-| `cache_directory`    | `.cache`                    | Path to the schema configuration file                                |
+| `cache_directory`    | `.cache`                    | Directory where downloaded resources are cached                      |
 
 
 The second block is the Database Management System Settings, which starts with the name of the DBMS, in this case it's `neo4j:`
@@ -643,7 +643,7 @@ The second block is the Database Management System Settings, which starts with t
 | key                      | value             | description                                          |
 | ------------------------ | ----------------- | ---------------------------------------------------- |
 | `csv_column_delimiter`   | `'\t'`            | Field delimiter for TSV import files                 |
-| `csv_array_delimiter`    | `';'`             | Delimiter for array values                           |
+| `csv_array_delimiter`    | `'|'`             | Delimiter for array values                           |
 | `file_format`            | `csv`             | Output file format; BioCypher 0.17+ defaults to `parquet`, so set this explicitly for CSV output |
 | `skip_duplicate_nodes`   | `true`            | Whether to skip duplicate nodes during import        |
 | `skip_bad_relationships` | `true`            | Whether to skip relationships with missing endpoints |
@@ -837,9 +837,9 @@ By using the AI agent, we have created functions that read the data as a DataFra
 > Integrate the aforementioned snippets in a single file called `tutorial_basics_adapter.py`.
 
 ??? success "Answer:"
-    See the example below for a completed <code>adapter_synthetic_proteins.py</code>.
+    See the example below for a completed <code>tutorial_basics_adapter.py</code>.
 
-    **File: `/template_package/adapters/adapter_synthetic_proteins.py`**
+    **File: `src/tutorial_basics/adapters/tutorial_basics_adapter.py`**
 
     ```python
     """
@@ -1285,7 +1285,7 @@ b. Stop the neo4j instance. You can do this on the GUI or in terminal. In termin
 <path of your Neo4j instance>/bin/neo4j stop
 ```
 
-c. Run the  `neo4j-admin-import-call.sh` script in your `biocypher-output/`:
+c. Run the  `neo4j-admin-import-call.sh` script in your `biocypher-out/`:
 ```bash
 bash ./biocypher-out/<timestamp>/neo4j-admin-import-call.sh
 ```
