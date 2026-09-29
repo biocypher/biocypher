@@ -648,7 +648,7 @@ The first block is the BioCypher Core Settings, which starts with `biocypher:`
 | `offline`            | `true`                      | Whether to run in offline mode (no running DBMS or in-memory object) |
 | `debug`              | `false`                     | Whether to enable debug logging                                      |
 | `schema_config_path` | `config/schema_config.yaml` | Path to the schema configuration file                                |
-| `cache_directory`    | `.cache`                    | Path to the schema configuration file                                |
+| `cache_directory`    | `.cache`                    | Directory where downloaded resources are cached                      |
 | `head_ontology`      | `url`, `root_node`          | Specification of the ontology to use, here: Biolink                  |
 
 
@@ -657,7 +657,7 @@ The second block is the Database Management System Settings, which starts with t
 | key                      | value             | description                                          |
 | ------------------------ | ----------------- | ---------------------------------------------------- |
 | `delimiter`              | `'\t'`            | Field delimiter for TSV import files                 |
-| `array_delimiter`        | `';'`             | Delimiter for array values                           |
+| `array_delimiter`        | `'|'`             | Delimiter for array values                           |
 | `skip_duplicate_nodes`   | `true`            | Whether to skip duplicate nodes during import        |
 | `skip_bad_relationships` | `true`            | Whether to skip relationships with missing endpoints |
 | `import_call_bin_prefix` | i.e., `/usr/bin/` | Prefix for the import command binary (optional)      |
@@ -915,7 +915,7 @@ ontoweave \
 ```
 This triggers the command-line interface to OntoWeaver and passes the necessary configuration files. You should see an output like
 ```
-INFO -- This is BioCypher v0.15.0.
+INFO -- This is BioCypher v0.16.0.
 INFO -- Logging into `biocypher-log/biocypher-<timestamp>.log`.
 WARNING:ontoweaver:Skip output validation for columns: `target`. This could result in some empty or `nan` nodes. To enable output validation set `validate_output` to `True`.
 WARNING -- Neo4j supports only edge_labels_order: 'Leaves', I'll set it for you, but you should fix your configuration file in the `neo4j` section.
