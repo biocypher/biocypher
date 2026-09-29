@@ -1202,11 +1202,11 @@ python create_knowledge_graph.py
 ??? info "Terminal output:"
     ```markdown
     INFO -- This is BioCypher v0.17.0.
-    INFO -- Logging into `biocypher-log/biocypher-<TIMESTAMP>.log`.
+    INFO -- Logging into `biocypher-log/biocypher-<timestamp>.log`.
     INFO -- Running BioCypher with schema configuration from config/schema_config.yaml.
     INFO -- Loading ontologies...
     INFO -- Instantiating OntologyAdapter class for https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl.
-    INFO -- Creating output directory `biocypher-out/<TIMESTAMP>`.
+    INFO -- Creating output directory `biocypher-out/<timestamp>`.
     INFO -- `labels_order`=`Ascending` superseded by either `node_labels_order`=`None` or `edge_labels_order`=`None`.
     INFO -- `node_labels_order` set to `labels_order`=`Ascending`.
     INFO -- `edge_labels_order` set to `labels_order`=`Ascending`.
@@ -1219,7 +1219,7 @@ python create_knowledge_graph.py
     INFO -- Writing 3 entries to Phosphorylation-part000.csv
     INFO -- Writing 7 entries to Ubiquitination-part000.csv
     INFO -- Writing 2 entries to Inhibition-part000.csv
-    INFO -- Writing neo4j import call to `biocypher-out/<TIMESTAMP>/neo4j-admin-import-call.sh`.
+    INFO -- Writing neo4j import call to `biocypher-out/<timestamp>/neo4j-admin-import-call.sh`.
     INFO -- Showing ontology structure based on https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
     INFO --
     entity
@@ -1246,7 +1246,7 @@ python create_knowledge_graph.py
     INFO -- No missing labels in input.
     ```
 
-Note that BioCypher creates logging information and output files in a subdirectory relative to where it is executed, `biocypher-log/biocyper-<TIMESTAMP>.log` and `biocypher-out/<TIMESTAMP>`. This allows you to look up details from the biocypher run and compare with the generated output.
+Note that BioCypher creates logging information and output files in a subdirectory relative to where it is executed, `biocypher-log/biocyper-<timestamp>.log` and `biocypher-out/<timestamp>`. This allows you to look up details from the biocypher run and compare with the generated output.
 
 ## Section 4. Interacting with your graph using Neo4j
 
