@@ -4,8 +4,6 @@
 
 site_name: BioCypher
 site_url: https://biocypher.org # URL where the webpage will be hosted, by default it it localhost
-exclude_docs: |
-  hooks/
 
 #=======    Theme Settings   =====
 theme:
@@ -160,7 +158,7 @@ plugins:
   - mike
   - tags
 hooks:
-  - docs/hooks/docs_hooks.py
+  - mkdocs_hooks/docs_hooks.py
 
 repo_url: https://github.com/biocypher/biocypher
 repo_name: biocypher/biocypher

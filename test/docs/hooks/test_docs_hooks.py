@@ -9,7 +9,7 @@ from typing import Callable
 import pytest
 
 EMPTY_SECTION_COUNT = 3
-HOOK_PATH = Path("docs/hooks/docs_hooks.py")
+HOOK_PATH = Path("mkdocs_hooks/docs_hooks.py")
 
 
 def load_docs_hooks_module():
