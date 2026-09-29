@@ -130,7 +130,14 @@ have any questions, please feel free to ask them in the issue tracker or on
 Zulip.
 
 **Before submitting a pull request, please make sure that all tests pass and
-that the documentation builds correctly.**
+that the documentation builds correctly.** If you touched anything under
+`docs/` or `mkdocs.yml`, build the docs locally in strict mode, which fails on
+broken links, pages missing from the nav, and other structural issues that a
+plain build only warns about (and that CI now enforces as well):
+
+```shell
+uv run mkdocs build --strict
+```
 
 ## Versioning
 

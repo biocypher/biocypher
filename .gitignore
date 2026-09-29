@@ -16,8 +16,8 @@ dist/
 *.coverage
 *.pickle
 out/*
-biocypher-log/*
-biocypher-out/*
+biocypher-log/
+biocypher-out/
 *.log
 dist/*
 *.pye

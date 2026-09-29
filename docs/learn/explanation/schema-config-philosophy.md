@@ -1,5 +1,7 @@
 # Schema Configuration: Philosophy and Concepts
 
+<!-- TODO refactor -->
+
 The schema configuration file (`schema_config.yaml`) is the **central contract** in BioCypher that bridges two fundamental concerns: **grounding** your knowledge graph in well-defined ontological concepts, and defining the **pragmatic context** of what your specific project needs. Understanding this dual role is essential to effectively using BioCypher.
 
 ## The Bridge: Grounding and Pragmatic Context

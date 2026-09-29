@@ -1,5 +1,5 @@
 # BioCypher Architecture Migration Guide
-
+<!-- TODO refactor -->
 This document provides a comprehensive overview of the new BioCypher architecture, the differences between legacy and new implementations, and the roadmap for future integration.
 
 ## Overview

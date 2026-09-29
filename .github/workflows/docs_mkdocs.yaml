@@ -46,7 +46,7 @@ jobs:
             mkdocs-material-
 
       - name: Build documentation
-        run: uv run mkdocs build
+        run: uv run mkdocs build --strict
 
       - name: Deploy documentation with mike
         run: |

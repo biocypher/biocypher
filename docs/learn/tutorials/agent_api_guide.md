@@ -1,4 +1,22 @@
+---
+tags:
+  - tutorial
+  - beginner
+---
+
 # BioCypher Agent API Guide
+
+**Level:** Beginner (Agent API track)  
+**Who is this for?** Users who want to create and explore small to medium-sized knowledge graphs in memory, especially in LLM or notebook workflows, without setting up databases or YAML configs.  
+**What you will do:** Use the Agent API to create a graph, add nodes and edges, query and analyse it, and persist it to and from JSON.  
+**Estimated time:** 20–30 minutes.  
+
+After working through this guide you will be able to:
+
+- Initialize a `BioCypherWorkflow` with `create_workflow`.
+- Add nodes, edges, and hyperedges with direct property assignment.
+- Run simple graph analysis (paths, neighbours, statistics).
+- Export and import graphs via JSON, NetworkX, and Pandas.
 
 ## Overview
 
@@ -471,17 +489,17 @@ new_kg.load("knowledge.json")
 
 ## Key Differences
 
-| Aspect | Original BioCypher | New Agent API |
-|--------|-------------------|---------------|
-| **Initialization** | Complex with many parameters | `create_workflow()` |
-| **Data Addition** | Tuple-based with dictionaries | Direct `**kwargs` |
-| **Backends** | Multiple (NetworkX, Pandas, Neo4j, CSV) | Single unified Graph |
-| **Schema** | Required YAML configuration | Optional |
-| **Dependencies** | NetworkX, Pandas, PyYAML, etc. | Pure Python (basic) |
-| **Serialization** | Format-specific writers | Built-in JSON |
-| **Query Interface** | Backend-specific APIs | Unified interface |
-| **Hypergraphs** | Not supported | Built-in support |
-| **Learning Curve** | Steep | Minimal |
+| Aspect              | Original BioCypher                      | New Agent API        |
+| ------------------- | --------------------------------------- | -------------------- |
+| **Initialization**  | Complex with many parameters            | `create_workflow()`  |
+| **Data Addition**   | Tuple-based with dictionaries           | Direct `**kwargs`    |
+| **Backends**        | Multiple (NetworkX, Pandas, Neo4j, CSV) | Single unified Graph |
+| **Schema**          | Required YAML configuration             | Optional             |
+| **Dependencies**    | NetworkX, Pandas, PyYAML, etc.          | Pure Python (basic)  |
+| **Serialization**   | Format-specific writers                 | Built-in JSON        |
+| **Query Interface** | Backend-specific APIs                   | Unified interface    |
+| **Hypergraphs**     | Not supported                           | Built-in support     |
+| **Learning Curve**  | Steep                                   | Minimal              |
 
 ## Use Cases
 

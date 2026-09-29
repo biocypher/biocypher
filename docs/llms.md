@@ -44,11 +44,11 @@ BioCypher follows specific patterns and conventions that may not be immediately 
 
 ## Available Guides (deprecated, use the MCP instead)
 
-For AI assistants, the following `.txt` files are available in the root of this documentation:
+For AI assistants, the following `.txt` files are available under `/agents/` in this documentation:
 
-- **[llms.txt](llms.txt)** - Comprehensive functionality index and quick reference
-- **[llms-adapters.txt](llms-adapters.txt)** - Adapter creation guide with patterns and examples
-- **[llms-example-adapter.txt](llms-example-adapter.txt)** - Complete working GEO adapter example
+- **[llms.txt](agents/llms.txt)** - Comprehensive functionality index and quick reference
+- **[llms-adapters.txt](agents/llms-adapters.txt)** - Adapter creation guide with patterns and examples
+- **[llms-example-adapter.txt](agents/llms-example-adapter.txt)** - Complete working GEO adapter example
 
 ## How to Use These Guides
 

@@ -2,25 +2,23 @@
 tags:
   - tutorial
   - beginner
-
 ---
+# 🧑‍💻 Agent-supported hands-on Building Graphs with BioCypher (offline mode) and Neo4j
 
-# 🧑‍💻 Hands-on Building Graphs with BioCypher (offline mode) and Neo4j
-
-**Level:** Beginner (Python UI track)  
-**Who is this for?** New BioCypher users who want to build their first knowledge graph with the Python interface and explore it in Neo4j.  
-**What you will do:** Set up a BioCypher project, model a synthetic protein interaction dataset as a graph, write an adapter and schema configuration, build the graph in offline mode, and import and query it in Neo4j.  
+**Level:** Beginner (LLM-assisted UI track)  
+**Who is this for?** New BioCypher users who prefer to work with an AI coding agent in their IDE instead of writing all code by hand.  
+**What you will do:** Connect the BioCypher MCP to your IDE, explore and model a synthetic protein interaction dataset, instruct an agent to create, test and document an adapter and a graph script, build the graph in offline mode, and import and query it in Neo4j.  
 **Estimated time:** 60–90 minutes.  
 
 
 ## Overview
 
-This tutorial will help you get started with BioCypher in offline mode. You will learn how to create a simple knowledge graph with a synthetic dataset that contains information about proteins and its interactions.
+This tutorial will help you get started with BioCypher in offline mode. You will learn how to use the BioCypher MCP and instruct an agent to create a simple knowledge graph with a synthetic dataset that contains information about proteins and its interactions.
 
 By the end of this tutorial, you will be able to:
 
-- Set up BioCypher for a basic project.
-- Explore a synthetic dataset and how to obtain a graph model from it.
+- Set up the BioCypher MCP.
+- Explore a synthetic dataset and learn how to instruct an agent in BioCypher to process it and build a graph structure. 
 - Build a small knowledge graph from the data.
 - View and query the graph using Neo4j.
 
@@ -31,6 +29,7 @@ By the end of this tutorial, you will be able to:
 
 | Tool               | Version/Requirement | Installation Link                                                  | Notes                                  |
 | ------------------ | ------------------- | ------------------------------------------------------------------ | -------------------------------------- |
+| VSCode or other IDE | Any                 | [VSCode IDE](https://code.visualstudio.com/)                          | For interacting with the AI agent   |
 | Git                | Any                 | [Git Docs](https://git-scm.com/downloads)                          | For version control                    |
 | Neo4j              | >=1.6               | [Neo4j Desktop](https://neo4j.com/download/)                       | For querying graphs                    |
 | uv                 | >=0.7.x             | [uv Docs](https://docs.astral.sh/uv/getting-started/installation/) | For dependency management              |
@@ -40,86 +39,150 @@ By the end of this tutorial, you will be able to:
 
 ## Setup
 
-### Setup Python project
+### Setup AI agent and the BioCypher MCP
 
-In this section, you will set up your working environment using the BioCypher Project Template. This template provides a ready-to-use folder structure and example files, so you can focus on building your application.
+As a first step, you need to install VSCode or another IDE of your choice that allows the use of an MCP. You then need to connect your IDE to a model provider like GitHub Copilot, OpenAI, Claude, or by using a local model. For example, if you are using VSCode, you can install the extension for  [GitHub Copilot](https://code.visualstudio.com/docs/copilot/overview), and add the [BioCypher MCP to the IDE](../../guides/mcp.md).
+
+To make sure that the agent and MCP are configured correctly, you can ask in the chat
+
+!!! chat-user "You"
+    you> Show biocypher-mcp tools
+
+and the agent should respond with a list of available tools, such as
+
+!!! chat-agent "Agent"
+    copilot> Here are the available BioCypher MCP tools:
+
+    1. Project Creation
+        - check_project_exists
+        - get_cookiecutter_instructions
+
+    2. Adapter Creation (5-phase workflow)
+    ...
+
+### Setting up the working environment and starter repository using an AI agent
+
+In this section, you will set up your working environment and folder structure for the [BioCypher adapter](../../explanation/adapters.md).
 
 **Steps:**
 
-1. Go to the [BioCypher Project Template](https://github.com/biocypher/project-template) and click on "Use this template". Name your repository as `tutorial-basics-biocypher`. Then clone your repository to obtain a local copy:
-    ```bash
-    git clone <your-repository-url>
-    ```
+1. Instruct the AI agent to use the `get_cookiecutter_instructions` tool:
+
+    !!! chat-user "You"
+        you> /get_cookiecutter_instructions 
+
+    This will result in a response from the agent containing instructions on how to set up the project using cookiecutter:
+
+    !!! chat-agent "Agent"
+        copilot> 
+        [tool-start] biocypher-mcp-get_cookiecutter_instructions (mcp_server=biocypher-mcp, mcp_tool=get_cookiecutter_instructions)
+
+        [tool.execution_complete] (unknown)
+        Here’s how to create a BioCypher project using cookiecutter:
+
+        1. Install cookiecutter (if not already installed):
+
+        ...
+
+        Would you like to proceed? If so, please provide your desired project name and a short description.
+
+    You will then need to provide a project name and project description as instructed.
+
+    !!! chat-user "You"
+        you> Project name: tutorial-basics; project description: Hands-on basic graph creation with BioCypher using a small synthetic dataset.
+
+    !!! chat-agent "Agent"
+        copilot> ...
+
+        [tool.execution_complete] (unknown)
+        The BioCypher project "tutorial-basics" was created successfully using the cookiecutter template. Next steps:
+
+        1. cd tutorial-basics
+        2. pip install -e .  (or uv sync)
+        3. Configure your data source in create_knowledge_graph.py
+        4. Update config/schema_config.yaml if needed
+        5. Run: python create_knowledge_graph.py
+
+        Let me know if you want to proceed with setup, dependency installation, or further customization!
+
 
 2. Check the current project structure. Below, we list the most important folders and files for this tutorial.
 
     ```
-    /tutorial-basics-biocypher
+    /tutorial-basics
         ├── config
         │   ├── biocypher_config.yaml
-        │   ├── biocypher_docker_config.yaml
         │   └── schema_config.yaml
         ├── create_knowledge_graph.py
         ├── pyproject.toml
-        ├── template_package
-        │   └── adapters
-        │       └── example_adapter.py
+        ├── src
+        │   └── tutorial_basics
+        │       └── adapters
+        │           ├── __init__.py
+        │           └── tutorial_basics_adapter.py
+        └── tests
+           └── test_tutorial_basics_adapter.py
         ...
     ```
 
 
-3. Install the dependencies using your preferred package manager (e.g. uv, Poetry or pip):
+3. Install the dependencies using your preferred package manager (e.g. uv or pip):
 
-You should always first create a dedicated Python environment for your project, and then install the dependencies into the environment. Environments can be managed by [conda](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html), [uv](https://docs.astral.sh/uv/pip/environments/) ,[poetry](https://python-poetry.org/docs/managing-environments/) or [venv](https://docs.python.org/3/library/venv.html), for example.
+    You should always first create a dedicated Python environment for your project, and then install the dependencies into the environment. Environments can be managed by [conda](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html), [uv](https://docs.astral.sh/uv/pip/environments/) ,[poetry](https://python-poetry.org/docs/managing-environments/) or [venv](https://docs.python.org/3/library/venv.html), for example.
+    ```bash
+    conda create --name bc-basic python=3.13
+    conda activate bc-basic
+    ```
 
-After you have created your environment, activate the environment and install the required packages using your preferred package manager.
+    After you have created your environment, activate the environment, for example, in the terminal
+    ```bash
+    conda activate biocypher-tutorial
+    ```
+    Now you are ready to install the required packages using your preferred package manager as described in the agent chat response. Go to the terminal and type
 
-**Using uv: (recommended)**
-```bash
-uv sync
-```
+    ```bash
+    cd tutorial-basics
+    ```
+    to change into the `tutorial-basics` directory. Then install the project dependencies **either using pip:**
+    ```bash
+    pip install -e .
+    ```
+    **or using uv:**
+    ```bash
+    uv sync
+    ```
 
-**Using Poetry:**
-```bash
-poetry install --no-root
-```
-
-**Using pip:**
-```bash
-pip install .
-```
-
-You also need to install Jupyter into your environment, i.e. `pip install jupyter`, if later you want to explore the sample data in a Jupyter notebook.
+    You also need to install Jupyter into your environment, i.e. `pip install jupyter`, if later you want to explore the sample data in a Jupyter notebook.
 
 ### Setup Neo4j
 
-In this section, we will create a Neo4j instance to use later in the tutorial. It is important to set this up now.
+In this section, we will create a Neo4j instance to use later in the tutorial. It is important to set this up now. For more information about Neo4j, please take a look at our [Explanations](../../explanation/index.md).
 
 1. Execute Neo4j Desktop, if this the first time you should see a window like this one.
 
     <figure markdown="span">
-    ![Image title](./assets/neo4j_desktop_homepage.png){ width="800" }
+    ![Neo4j Desktop start screen](../tutorial_basics_neo4j_offline/assets/neo4j_desktop_homepage.png){ width="800" }
     <figcaption>Figure 1. Neo4j Desktop start screen.</figcaption>
     </figure>
 
 2. Create a new instance in Neo4j. For this tutorial, name it `neo4j-tutorial-instance` and choose a password you can remember.
 
     <figure markdown="span">
-    ![Image title](./assets/neo4j_instance_creation.png){ width="800" }
+    ![Create Instance window in Neo4j Desktop](../tutorial_basics_neo4j_offline/assets/neo4j_instance_creation.png){ width="800" }
     <figcaption>Figure 2. Create Instance window. This may vary depending on your Neo4j version.</figcaption>
     </figure>
 
 3. Access details in the option *Overview*.
 
     <figure markdown="span">
-    ![Image title](./assets/neo4j_overview_option.png){ width="800" }
+    ![Overview option for a Neo4j instance](../tutorial_basics_neo4j_offline/assets/neo4j_overview_option.png){ width="800" }
     <figcaption>Figure 3. *Overview* option to check details related to your Neo4j instance.</figcaption>
     </figure>
 
 4. Save the path to your Neo4j instance, we are going to use this path later in this tutorial.
 
     <figure markdown="span">
-    ![Image title](./assets/neo4j_folder_details.png){ width="800" }
+    ![Neo4j instance with its path location highlighted](../tutorial_basics_neo4j_offline/assets/neo4j_folder_details.png){ width="800" }
     <figcaption>Figure 4. Neo4j instance with its path location highlighted.</figcaption>
     </figure>
 
@@ -131,12 +194,11 @@ For this tutorial we are going to use a [synthetic dataset](https://zenodo.org/r
 - First, download the dataset:
 
     ```bash
-    mkdir -p ./data/in/
-    curl -o ./data/in/synthetic_protein_interactions.tsv \
+    curl -o ./data/synthetic_protein_interactions.tsv \
     https://zenodo.org/records/16902349/files/synthetic_protein_interactions.tsv
     ```
 
-- Create a folder called `notebooks` under `tutorial-basics-biocypher`
+- Create a folder called `notebooks` under `tutorial-basics`
     ```bash
     mkdir -p ./notebooks/
     ```
@@ -148,7 +210,7 @@ For this tutorial we are going to use a [synthetic dataset](https://zenodo.org/r
         import pandas as pd
 
         # Load the dataset
-        df = pd.read_table('../data/in/synthetic_protein_interactions.tsv', sep='\t')
+        df = pd.read_table('../data/synthetic_protein_interactions.tsv', sep='\t')
 
         # Show the first few rows
         print("\n---- First 10 rows in the dataset")
@@ -200,7 +262,7 @@ For this tutorial we are going to use a [synthetic dataset](https://zenodo.org/r
 By looking at the `tsv` file, we can see that there are two columns called `source` and `target`, which represent proteins. This means that each row represents an interaction between a source protein and a target protein. For now, our graph could look like this.
 
 <figure markdown="span">
-![Image title](./assets/model_graph_1.png){ width="400" }
+![Simple graph model for representing interactions between proteins](../tutorial_basics_neo4j_offline/assets/model_graph_1.png){ width="400" }
 <figcaption>Figure 5. Simple graph model for representing interactions between proteins.</figcaption>
 </figure>
 
@@ -219,7 +281,7 @@ Can we improve the graph? Absolutely! Understanding the data is essential for bu
     - `entity_type_target`
 
 <figure markdown="span">
-![Image title](./assets/model_graph_2.png){ width="400" }
+![Simple protein interaction graph with properties in nodes](../tutorial_basics_neo4j_offline/assets/model_graph_2.png){ width="400" }
 <figcaption>Figure 6. Simple protein interaction graph with properties in nodes.</figcaption>
 </figure>
 
@@ -242,14 +304,14 @@ It is these protein-protein interactions that form the **edges** in the graph. H
 We are ready to model our second version of our graph. It is like follows:
 
 <figure markdown="span">
-![Image title](./assets/model_graph_3.png){ width="400" }
+![Protein interaction graph showing node and edge properties](../tutorial_basics_neo4j_offline/assets/model_graph_3.png){ width="400" }
 <figcaption>Figure 7. Protein interaction graph showing node and edge properties.</figcaption>
 </figure>
 
 Finally, we can model a more detailed graph using our dataset. Rather than representing all interactions in a generic way, we can use the `type` field to show the specific type of interaction occurring between each pair of proteins.
 
 <figure markdown="span">
-![Image title](./assets/model_graph_4.png){ width="550" }
+![Graph model for representing different interactions between proteins](../tutorial_basics_neo4j_offline/assets/model_graph_4.png){ width="550" }
 <figcaption>Figure 8. Graph model for representing different interactions between proteins.</figcaption>
 </figure>
 
@@ -313,72 +375,110 @@ We aim to create a knowledge graph using the data we found in the `tsv` file. Le
 
 - We must export the knowledge graph to Neo4j.
 
-To achieve this, we can divide the process into three sections:
+To achieve this, we can divide the process into five sections using the BioCypher MCP:
 
-1. [Configuration](#step-1-configuration).
-    - [Schema configuration](#create-a-schema-for-your-graph)
-    - [BioCypher configuration](#configure-biocypher-behavior)
+1. Use `get_adapter_creation_workflow` for an overview.
+2. Use `get_phase_guidance` for step-by-step help in each phase.
+3. Use `get_implementation_patterns` for code examples.
+4. Use `get_schema_configuration_guidance` for schema setup.
+5. Use `get_resource_management_guidance` for data handling.
 
-2. [Adapter creation](#step-2-create-an-adapter).
-     - Read/connect to input data
-     - Process data
-     - Stream processed data
-
-3. [Knowledge Graph script](#step-3-create-a-knowledge-graph-script)
-
-
-### Step 1. Configuration
+### Step 1. get_adapter_creation_workflow for an overview and understanding of the process
 
 <figure markdown="span">
-![Image title](./assets/biocypher_section_conf.png){ width="1000" }
+![Configuration step in the BioCypher pipeline](../tutorial_basics_neo4j_offline/assets/biocypher_section_conf.png){ width="1000" }
 <figcaption>Figure 9. Configuration step in the BioCypher pipeline.</figcaption>
 </figure>
+
+!!! chat-user "You"
+    you> /get_adapter_creation_workflow
+
+!!! chat-agent "Agent"
+    copilot> The BioCypher adapter creation workflow has 5 phases:
+    1. Data Analysis and Understanding: Analyze your input data’s structure and schema needs.
+    2. Implementation Strategy Design: Choose the adapter architecture and extraction strategy.
+    3. Implementation: Write the adapter code and map fields.
+    4. Quality Assurance: Test and validate your adapter.
+    5. Documentation and Maintenance: Document usage and plan for future updates.
+
 
 #### Create a schema for your graph
 
 **Rationale:** the schema file allows us to define the skeleton for our knowledge graph. Nodes, edges, properties are defined here.
 
-The following is an example of how our schema file should look like, all of this is based on how we defined the graph structure (nodes, edges and their properties).
+First we need to understand the specific requirements of the data that we would like to represent as graph. In the previous section, we have already learned what our data looks like at the moment and how it will be represented after processing with BioCypher. Now we can interact with the AI agent to understand the aspects about the data that are important for BioCypher.
 
-??? example "**File: `config/schema_config.yaml`**"
 
-    ```yaml
-    #-------------------------------------------------------------------
-    #-------------------------      NODES      -------------------------
-    #-------------------------------------------------------------------
-    #=========    PARENT NODES
-    protein:
-        represented_as: node
-        preferred_id: uniprot
-        input_label: uniprot_protein
+!!! chat-user "You"
+    you> Start with phase 1: Data Analysis and Understanding: Analyze your input data’s structure and schema needs.
 
-    #-------------------------------------------------------------------
-    #------------------      RELATIONSHIPS (EDGES)     -----------------
-    #-------------------------------------------------------------------
-    #=========    PARENT EDGES
-    protein protein interaction:
-        is_a: pairwise molecular interaction
-        represented_as: edge
-        input_label: protein_protein_interaction
-        properties:
-            is_directed: bool
-            is_stimulation: bool
-            is_inhibition: bool
-            consensus_direction: bool
-            consensus_stimulation: bool
-            consensus_inhibition: bool
+!!! chat-agent "Agent"
+    copilot> Phase 1: Data Analysis and Understanding involves:
 
-    #=========    INHERITED EDGES
-    binding:
-        is_a: protein protein interaction
-        inherit_properties: true
-        represented_as: edge
-        input_label: binding
+    1. Resource Structure Analysis: Identify your data source type (file, API, database, etc.) and analyze its structure.
+    2. Metadata Pattern Recognition: Extract metadata fields, identify shared/unique patterns, and map relationships.
+    3. Schema Assessment: Check if an existing schema covers all concepts or create/extend one as needed.
 
-    # ...rest of schema_config.yaml omitted for brevity...
-    ```
+    Expected outputs: data source type, structure analysis report, and schema requirements assessment.
 
-##### Nodes
+    Please provide a sample or description of your input data so I can guide you through the analysis.
+
+We now need to tell the agent where to find the data:
+
+!!! chat-user "You"
+    you> The data lives in the data folder in file synthetic_protein_interactions.tsv.
+
+The agent will give you information on the file, please check that this is what you expected. You can ask for a summary for a more in-depth comparison. You should then ask the agent for a detailed schema proposal:
+
+!!! chat-user "You"
+    you> detailed schema proposal
+
+!!! chat-agent "Agent"
+    copilot> Here’s a detailed schema proposal for your protein interaction data:
+
+    **Node: Protein**  
+        - id: UniProt accession (source/target)  
+        - gene_symbol: source_genesymbol / target_genesymbol  
+        - ncbi_tax_id: ncbi_tax_id_source / ncbi_tax_id_target  
+        - entity_type: entity_type_source / entity_type_target
+
+    **Edge: ProteinInteraction**  
+        - source: Protein.id  
+        - target: Protein.id  
+        - type: interaction type (e.g., binding, activation)  
+        - is_directed: boolean  
+        - is_stimulation: boolean  
+        - is_inhibition: boolean  
+        - consensus_direction, consensus_stimulation, consensus_inhibition: booleans  
+
+    Let me know if you want this as a YAML/JSON schema or further customized!
+
+You can ask the agent to create a `yaml` schema for you. In the end it should look like this.
+
+```yaml
+protein:
+    represented_as: node
+    preferred_id: uniprot
+    input_label: uniprot_protein
+
+protein protein interaction:
+    is_a: pairwise molecular interaction
+    represented_as: edge
+    input_label: protein_protein_interaction
+    properties:
+        is_directed: bool
+        is_stimulation: bool
+        is_inhibition: bool
+        consensus_direction: bool
+        consensus_stimulation: bool
+        consensus_inhibition: bool
+
+activation:
+    is_a: protein protein interaction
+    inherit_properties: true
+    represented_as: edge
+    input_label: activation
+```
 
 The `protein` top-level key in the YAML snippet identifies our entity and connects it to the ontological backbone.
 
@@ -396,78 +496,7 @@ For more information about which other keywords you can use to configure your no
 As shown in [Figure 7](#graph-modeling), each edge has the same set of properties (`is_directed`, `consensus_direction`, etc.). At this stage, we have two options for defining the edges:
 
 - Option 1: Create each edge and explicitly define the same set of property fields for every edge.
-
-??? example "**File: `config/schema_config.yaml`**"
-
-    ```yaml
-    #-------------------------------------------------------------------
-    #------------------      RELATIONSHIPS (EDGES)     -----------------
-    #-------------------------------------------------------------------
-    activation:
-        is_a: pairwise molecular interaction
-        represented_as: edge
-        input_label: protein_protein_interaction
-        properties:
-            is_directed: bool
-            is_stimulation: bool
-            is_inhibition: bool
-            consensus_direction: bool
-            consensus_stimulation: bool
-            consensus_inhibition: bool
-
-    binding:
-        is_a: pairwise molecular interaction
-        represented_as: edge
-        input_label: protein_protein_interaction
-        properties:
-            is_directed: bool
-            is_stimulation: bool
-            is_inhibition: bool
-            consensus_direction: bool
-            consensus_stimulation: bool
-            consensus_inhibition: bool
-
-    # ...rest of schema_config.yaml omitted for brevity...
-    ```
-
 - Option 2 (**recommended**): Create a base edge with the properties, and then create edges that inherit the behavior of this base edge. This approach reduces lines of code and avoids repetition. For example, if you have more than 20 edges, Option 1 would likely not be practical.
-
-??? example "**File: `config/schema_config.yaml`**"
-
-    ```yaml
-    #-------------------------------------------------------------------
-    #------------------      RELATIONSHIPS (EDGES)     -----------------
-    #-------------------------------------------------------------------
-    #====   BASE EDGE or PARENT EDGE
-    protein protein interaction:
-        is_a: pairwise molecular interaction
-        represented_as: edge
-        input_label: protein_protein_interaction
-        properties:
-            is_directed: bool
-            is_stimulation: bool
-            is_inhibition: bool
-            consensus_direction: bool
-            consensus_stimulation: bool
-            consensus_inhibition: bool
-
-    #====   INHERITED EDGES
-    activation:
-        is_a: protein protein interaction
-        inherit_properties: true
-        represented_as: edge
-        input_label: activation
-
-    binding:
-        is_a: protein protein interaction
-        inherit_properties: true
-        represented_as: edge
-        input_label: binding
-
-    # ...rest of schema_config.yaml omitted for brevity...
-    ```
-
-Let's explain the keys and values for the second case (Option 2), because we are going to use the second option approach.
 
 **Base Edge**
 The `protein protein interaction` top-level key in the YAML snippet identifies our edge entity.
@@ -488,7 +517,7 @@ The `activation:` top-level key in the YAML snippet identifies our edge entity.
 | `is_a`               | `protein protein interaction` | Defines the type of entity; in this case, it is a child of the base edge we defined previously.       |
 | `inherit_properties` | `true`                        | Indicates whether all properties defined in the base edge should be inherited.                        |
 | `represented_as`     | `edge`                        | Specifies that BioCypher will treat this entity (`activation`) as an edge.                            |
-| `input_label`        | `binding`                     | Specifies the expected edge label; edges without this label are ignored unless defined in the schema. |
+| `input_label`        | `activation`                  | Specifies the expected edge label; edges without this label are ignored unless defined in the schema. |
 
 #### A comment about the connection between BioCypher and Ontologies
 
@@ -497,7 +526,7 @@ In BioCypher, ontologies are integrated through the schema configuration file. T
 Figure 10 illustrates the Biolink Model and some of its components organized in a hierarchy. Notice that entities such as *protein* (nodes) and *pairwise molecular interaction* (edges) appear both in the schema configuration and in the ontology. This alignment ensures that BioCypher graphs are not only structured consistently but also grounded in standardized biomedical concepts. For a deeper exploration of ontologies in BioCypher, see our [ontology tutorial](https://biocypher.org/BioCypher/learn/tutorials/tutorial002_handling_ontologies/).
 
 <figure markdown="span">
-![Image title](./assets/biolink_ontology.png){ width="1000" }
+![The Biolink Model as an ontology backbone, showing protein as an entity and pairwise molecular interaction as an association](../tutorial_basics_neo4j_offline/assets/biolink_ontology.png){ width="1000" }
 <figcaption>Figure 10. The Biolink Model as an ontology backbone. On the right, <b>protein</b> is represented as an entity; on the left, <b>pairwise molecular interaction</b> is defined as an association. Together, these demonstrate how the schema anchors graph components to standardized biomedical concepts.</figcaption>
 </figure>
 
@@ -570,6 +599,7 @@ Figure 10 illustrates the Biolink Model and some of its components organized in 
     ```
 
 #### Configure BioCypher behavior
+
 
 **Rationale:** The purpose of writing a `biocypher_config.yaml` is to define how BioCypher should operate for your project—specifying settings for data import, graph creation, and database interaction—all in one place for clarity and easy customization.
 
@@ -657,69 +687,61 @@ The default configuration that comes with BioCypher and more configuration param
 ### Step 2. Create an adapter
 
 <figure markdown="span">
-![Image title](./assets/biocypher_section_adapter.png){ width="1000" }
+![Adapter creation step in the BioCypher pipeline](../tutorial_basics_neo4j_offline/assets/biocypher_section_adapter.png){ width="1000" }
 <figcaption>Figure 11. Adapter creation in the BioCypher pipeline.</figcaption>
 </figure>
 
 **Rationale:** An adapter allows you to efficiently transform, integrate, combine data from different sources ensuring compatibility with BioCypher's schema and streamlining the import process.
 
-a. Create a file called `adapter_synthetic_proteins.py` under the folder `/template_package/adapters/`, in this file we are going to create our adapter.
 
-b. Define Enums for the different types of nodes in our graph and their properties. An Enum is simply a list of allowed values for a category — for example, all possible node types in the graph. Using Enums helps ensure that only valid types are used, makes the code easier to read, and avoids typos. For now, just focus on analyzing the snippet and compare its values with the node elements expected in the schema file(`schema_config.yaml`).
+!!! chat-user "You"
+    you> let's move to phase 2. Implementation Strategy Design: Decide on adapter architecture and extraction strategy.
 
-??? example "**File: `/template_package/adapters/adapter_synthetic_proteins.py`**"
+!!! chat-agent "Agent"
+    copilot> For your TSV protein interaction data and schema, the recommended approach is:
 
-    ```python
-    class AdapterNodeType(Enum):
-        """
-        Define types of nodes the adapter can provide.
-        """
+    **Adapter Architecture:**  
+    - Use a Simple Adapter (single resource, flat structure).
 
-        PROTEIN = auto()
+    **Extraction Strategy:**  
+    - Extract protein nodes and interaction edges directly from the TSV.
+    - Map columns to schema fields (e.g., uniprot, gene_symbol, interaction type).
+    - Add error handling for missing/invalid fields.
+    - Validate that all required columns are present.
 
-    class AdapterProteinField(Enum):
-        """
-        Define possible fields the adapter can provide for proteins.
-        """
+    Would you like a code template or a step-by-step extraction plan?
 
-        ID = "id"
-        PREFERRED_ID = "preferred_id"
-        GENE_SYMBOL = "genesymbol"
-        NCBI_TAX_ID = "ncbi_tax_id"
-    ```
-c. Similarly, define Enums for the different types of edges in our graph and their properties. For now, analyze the following snippet and compare the listed types with the edge elements expected in our schema file (`schema_config.yaml`).
+!!! chat-user "You"
+    you> look at the code in src/tutorial_basics/adapters and evaluate what is needed for a simple adapter. 
 
-??? example "**File: `/template_package/adapters/adapter_synthetic_proteins.py`**"
+!!! chat-agent "Agent"
+    copilot> The current TutorialBasicsAdapter is a stub with hardcoded (dummy) nodes and edges. To become a functional simple adapter for your TSV protein interaction data, you need to:
 
-    ```python
-    class AdapterEdgeType(Enum):
-        """
-        Enum for the types of the protein adapter.
-        """
+    1. Update get_nodes to parse proteins from the TSV (using columns like source, target, source_genesymbol, etc.).
+    2. Update get_edges to yield interaction edges from each TSV row, mapping columns to schema fields.
+    3. Ensure the adapter reads the TSV (not CSV) and handles all relevant columns.
+    4. Optionally, improve error handling and validation for TSV format.
 
-        PROTEIN_PROTEIN_INTERACTION = "protein_protein_interaction"
-        BINDING = "binding"
-        ACTIVATION = "activation"
-        PHOSPHORYLATION = "phosphorylation"
-        UBIQUITINATION = "ubiquitination"
-        INHIBITION = "inhibition"
+    Would you like a code template or a step-by-step guide for these changes?
 
-    class AdapterProteinProteinEdgeField(Enum):
-        """
-        Define possible fields the adapter can provide for protein-protein edges.
-        """
+!!! chat-user "You"
+    you> update get_nodes and get_edges to be consistent with the schema and tsv file        
 
-        INTERACTION_TYPE = "interaction_type"
-        INTERACTION_SOURCE = "interaction_source"
-        IS_DIRECTED = "is_directed"
-        IS_STIMULATION = "is_stimulation"
-        IS_INHIBITION = "is_inhibition"
-        CONSENSUS_DIRECTION = "consensus_direction"
-        CONSENSUS_STIMULATION = "consensus_stimulation"
-        CONSENSUS_INHIBITION = "consensus_inhibition"
-    ```
+!!! chat-agent "Agent"
+    copilot> I have the TSV columns and the schema structure. I’ll update get_nodes to yield unique protein nodes (with uniprot, gene_symbol, ncbi_tax_id, entity_type) and get_edges to yield edges (binding, activation, etc.) with all required properties.
 
-Now you are ready to write functions that load the data into a dataframe and extract nodes and edges. Before doing this you need to understand that BioCypher expect a certain format. Let's discuss this:
+    I’ll now implement these changes in tutorial_basics_adapter.py.
+
+!!! chat-user "You"
+    you> check that the config schema yaml and the adapter file match
+
+!!! chat-agent "Agent"
+    copilot> The adapter and schema config match:
+
+    - Nodes: The adapter yields nodes with label `"uniprot_protein"` and properties matching the `proteins` section in the YAML.
+    - Edges: The adapter yields edges with labels (`binding`, `activation`, `inhibition`, `phosphorylation`, `ubiquitination`) that match the `input_label` fields in the YAML, and the properties align.
+
+    Conclusion: The adapter and schema config are consistent and compatible. No changes needed.
 
 BioCypher expects each node or edge being a tuple (datastructure) as explained in the next section.
 
@@ -766,442 +788,331 @@ BioCypher expects each edge being a **5-element tuple**, with elements in the fo
 ("TP53CREB1", "TP53", "ubiquitination", "is_directed", True)
 ```
 
-Finally, write the functions that read the data as a DataFrame and override the functions to extract nodes and edges in the formats expected by BioCypher. This is illustrated in the next snippet.
+By using the AI agent, we have created functions that read the data as a DataFrame and override the functions to extract nodes and edges in the formats expected by BioCypher. This is illustrated in the below snippet.
 
-??? example "**File: `/template_package/adapters/adapter_synthetic_proteins.py`**"
+??? example "**File: `src/tutorial_basics/adapters/tutorial_basics_adapter.py`**"
 
     ```python
-    def _read_tsv(self) -> pd.DataFrame:
+    def get_nodes(self):
         """
-        Reads and validates the TSV file.
-        Returns:
-            pd.DataFrame: DataFrame containing the TSV data.
-        Raises:
-            FileNotFoundError: If the file does not exist.
-            ValueError: If required columns are missing.
+        Extract unique protein nodes from the TSV data source.
+        Yields:
+            Tuples of (uniprot, 'uniprot_protein', properties_dict) for each protein
         """
-        if not Path(self.tsv_path).exists():
-            logger.error(f"TSV file not found: {self.tsv_path}")
-            raise FileNotFoundError(f"TSV file not found: {self.tsv_path}")
-        df = pd.read_table(self.tsv_path, sep="\t", header=0)
-        required_columns = [
-            'source', 'target', 'source_genesymbol', 'target_genesymbol',
-            'ncbi_tax_id_source', 'ncbi_tax_id_target', 'type',
-            'is_directed', 'is_stimulation', 'is_inhibition', 'consensus_direction',
-            'consensus_stimulation', 'consensus_inhibition'
-        ]
-        missing = [col for col in required_columns if col not in df.columns]
-        if missing:
-            logger.error(f"Missing columns in TSV: {missing}")
-            raise ValueError(f"TSV must contain columns: {missing}")
-        return df
-
-    def get_nodes(self) -> 'Generator[tuple[str, str, dict], None, None]':
-        """
-        Yields node tuples for node types specified in the adapter constructor.
-
-        Returns:
-            Generator[tuple[str, str, dict], None, None]:
-                Each tuple is (id, label, properties).
-        """
-        logger.info("Reading nodes.")
-        df = self._read_tsv()
-
-        # Generator for nodes in the `source` column
-        for row in df.itertuples(index=False):
-            id = row.source
-            input_label = "uniprot_protein"
-
-            properties = {
-                'genesymbol': row.source_genesymbol,
-                'ncbi_tax_id': row.ncbi_tax_id_source,
-                'entity_type': row.entity_type_source,
-            }
-
-            yield(
-                id,
-                input_label,
-                properties
-            )
-
-        # Generator for nodes in the `target` column
-        for row in df.itertuples(index=False):
-            id = row.target
-            input_label = "uniprot_protein"
-
-            properties = {
-                'genesymbol': row.target_genesymbol,
-                'ncbi_tax_id': row.ncbi_tax_id_target,
-                'entity_type': row.entity_type_target,
-            }
-
-            yield(
-                id,
-                input_label,
-                properties
-            )
-
-    def get_edges(self) -> 'Generator[tuple[str, str, str, str, dict], None, None]':
-        """
-        Yields edge tuples for edge types specified in the adapter constructor.
-
-        Returns:
-            Generator[tuple[str, str, str, str, dict], None, None]:
-                Each tuple is (id, source, target, type, properties).
-        """
-        logger.info("Generating edges.")
-        df = self._read_tsv()
-
-        for row in df.itertuples(index=False):
-            # Concatenate source and target, i.e., "SOD1EGFR"
-            id = f"{row.source}{row.target}"
-
-            source = row.source
-
-            target = row.target
-
-            type = row.type
-
-            properties = {
-                'is_directed': row.is_directed,
-                'is_stimulation': row.is_stimulation,
-                'is_inhibition': row.is_inhibition,
-                'consensus_direction': row.consensus_direction,
-                'consensus_stimulation': row.consensus_stimulation,
-                'consensus_inhibition': row.consensus_inhibition
-            }
-
-            yield (
-                id,
-                source,
-                target,
-                type,
-                properties
-            )
-
+        logger.info("Extracting protein nodes from TSV data source")
+        df = pd.read_csv(self.data_source, sep='\t')
+        proteins = {}
+        for idx, row in df.iterrows():
+            for prefix in ["source", "target"]:
+                uniprot = row[f"{prefix}"]
+                gene_symbol = row[f"{prefix}_genesymbol"]
+                ncbi_tax_id = str(row[f"ncbi_tax_id_{prefix}"])
+                entity_type = row[f"entity_type_{prefix}"]
+                if uniprot not in proteins:
+                    proteins[uniprot] = {
+                        "uniprot": uniprot,
+                        "gene_symbol": gene_symbol,
+                        "ncbi_tax_id": ncbi_tax_id,
+                        "entity_type": entity_type
+                    }
+        for prot in proteins.values():
+            yield (prot["uniprot"], "uniprot_protein", prot)
+        logger.info(f"Extracted {len(proteins)} protein nodes")
     ```
 
+!!! chat-user "You"
+    you> check with 3. Implementation: Develop the adapter using the chosen strategy. that the implementation of the adapter seems correct
+
+!!! chat-agent "Agent"
+    copilot> Based on the "Implementation" phase guidance and your code:
+
+    - The adapter implements the required methods: initialization, node extraction (`get_nodes`), edge extraction (`get_edges`), metadata, and validation.
+    - Field mapping is direct and matches the schema.
+    - Extraction logic is clear and fits a simple adapter pattern.
+    - No complex conditional or fallback logic is needed for this flat CSV structure.
+
+    Conclusion: The adapter implementation is correct for the chosen simple extraction strategy and meets BioCypher requirements.
 
 > 📝 **Exercise:**
-> Integrate the aforementioned snippets in a single file call `adapter_synthetic_proteins.py`.
+> Integrate the aforementioned snippets in a single file called `tutorial_basics_adapter.py`.
 
 ??? success "Answer:"
-    See the example below for a completed <code>adapter_synthetic_proteins.py</code>.
+    See the example below for a completed <code>tutorial_basics_adapter.py</code>.
 
-    **File: `/template_package/adapters/adapter_synthetic_proteins.py`**
+    **File: `src/tutorial_basics/adapters/tutorial_basics_adapter.py`**
 
     ```python
-    import os
-    from enum import Enum, auto
-    from itertools import chain
-    from typing import Optional, Generator
+    """
+    TutorialBasicsAdapter Adapter
+
+    This adapter handles CSV data source for BioCypher.
+    """
+
+    import logging
     from pathlib import Path
-
-
     import pandas as pd
-    from biocypher import BioCypher
-    from biocypher._logger import logger
+
+    logger = logging.getLogger(__name__)
 
 
-    TSV_FILE_PATH_SYNTHETIC_PROTEINS = Path("./cache/synthetic_protein_interactions.tsv")
-
-    class AdapterNodeType(Enum):
+    class TutorialBasicsAdapter:
         """
-        Define types of nodes the adapter can provide.
-        """
+        Adapter for CSV data source.
 
-        PROTEIN = auto()
-
-    class AdapterProteinField(Enum):
-        """
-        Define possible fields the adapter can provide for proteins.
+        This adapter implements the BioCypher adapter interface for CSV data.
         """
 
-        ID = "id"
-        PREFERRED_ID = "preferred_id"
-        GENE_SYMBOL = "genesymbol"
-        NCBI_TAX_ID = "ncbi_tax_id"
-
-    class AdapterEdgeType(Enum):
-        """
-        Enum for the types of the protein adapter.
-        """
-
-        PROTEIN_PROTEIN_INTERACTION = "protein_protein_interaction"
-        BINDING = "binding"
-        ACTIVATION = "activation"
-        PHOSPHORYLATION = "phosphorylation"
-        UBIQUITINATION = "ubiquitination"
-        INHIBITION = "inhibition"
-
-    class AdapterProteinProteinEdgeField(Enum):
-        """
-        Define possible fields the adapter can provide for protein-protein edges.
-        """
-
-        INTERACTION_TYPE = "interaction_type"
-        INTERACTION_SOURCE = "interaction_source"
-        IS_DIRECTED = "is_directed"
-        IS_STIMULATION = "is_stimulation"
-        IS_INHIBITION = "is_inhibition"
-        CONSENSUS_DIRECTION = "consensus_direction"
-        CONSENSUS_STIMULATION = "consensus_stimulation"
-        CONSENSUS_INHIBITION = "consensus_inhibition"
-
-    class Adapter:
-        def __init__(
-            self,
-            tsv_path: str = TSV_FILE_PATH_SYNTHETIC_PROTEINS,
-            node_types: Optional[list] = None,
-            node_fields: Optional[list] = None,
-            edge_types: Optional[list] = None,
-            edge_fields: Optional[list] = None,
-        ):
-            self.tsv_path = tsv_path
-            self._set_types_and_fields(node_types, node_fields, edge_types, edge_fields)
-
-        def _read_tsv(self) -> pd.DataFrame:
+        def __init__(self, data_source: str | Path, **kwargs):
             """
-            Reads and validates the TSV file.
-            Returns:
-                pd.DataFrame: DataFrame containing the TSV data.
-            Raises:
-                FileNotFoundError: If the file does not exist.
-                ValueError: If required columns are missing.
-            """
-            if not Path(self.tsv_path).exists():
-                logger.error(f"TSV file not found: {self.tsv_path}")
-                raise FileNotFoundError(f"TSV file not found: {self.tsv_path}")
-            df = pd.read_table(self.tsv_path, sep="\t", header=0)
-            required_columns = [
-                'source', 'target', 'source_genesymbol', 'target_genesymbol',
-                'ncbi_tax_id_source', 'ncbi_tax_id_target', 'type',
-                'is_directed', 'is_stimulation', 'is_inhibition', 'consensus_direction',
-                'consensus_stimulation', 'consensus_inhibition'
-            ]
-            missing = [col for col in required_columns if col not in df.columns]
-            if missing:
-                logger.error(f"Missing columns in TSV: {missing}")
-                raise ValueError(f"TSV must contain columns: {missing}")
-            return df
-
-        def get_nodes(self) -> 'Generator[tuple[str, str, dict], None, None]':
-            """
-            Yields node tuples for node types specified in the adapter constructor.
-
-            Returns:
-                Generator[tuple[str, str, dict], None, None]:
-                    Each tuple is (id, label, properties).
-            """
-            logger.info("Reading nodes.")
-            df = self._read_tsv()
-
-            # Generator for nodes in the `source` column
-            for row in df.itertuples(index=False):
-                id = row.source
-                input_label = "uniprot_protein"
-
-                properties = {
-                    'genesymbol': row.source_genesymbol,
-                    'ncbi_tax_id': row.ncbi_tax_id_source,
-                    'entity_type': row.entity_type_source,
-                }
-
-                yield(
-                    id,
-                    input_label,
-                    properties
-                )
-
-            # Generator for nodes in the `target` column
-            for row in df.itertuples(index=False):
-                id = row.target
-                input_label = "uniprot_protein"
-
-                properties = {
-                    'genesymbol': row.target_genesymbol,
-                    'ncbi_tax_id': row.ncbi_tax_id_target,
-                    'entity_type': row.entity_type_target,
-                }
-
-                yield(
-                    id,
-                    input_label,
-                    properties
-                )
-
-        def get_edges(self) -> 'Generator[tuple[str, str, str, str, dict], None, None]':
-            """
-            Yields edge tuples for edge types specified in the adapter constructor.
-
-            Returns:
-                Generator[tuple[str, str, str, str, dict], None, None]:
-                    Each tuple is (id, source, target, type, properties).
-            """
-            logger.info("Generating edges.")
-            df = self._read_tsv()
-
-            for row in df.itertuples(index=False):
-                # Concatenate source and target, i.e., "SOD1EGFR"
-                id = f"{row.source}{row.target}"
-
-                source = row.source
-
-                target = row.target
-
-                type = row.type
-
-                properties = {
-                    'is_directed': row.is_directed,
-                    'is_stimulation': row.is_stimulation,
-                    'is_inhibition': row.is_inhibition,
-                    'consensus_direction': row.consensus_direction,
-                    'consensus_stimulation': row.consensus_stimulation,
-                    'consensus_inhibition': row.consensus_inhibition
-                }
-
-                yield (
-                    id,
-                    source,
-                    target,
-                    type,
-                    properties
-                )
-
-        def get_node_count(self) -> int:
-            """
-            Returns the number of nodes generated by the adapter.
-
-            Returns:
-                int: Number of nodes generated.
-            """
-            return sum(1 for _ in self.get_nodes())
-
-        def _set_types_and_fields(self, node_types, node_fields, edge_types, edge_fields) -> None:
-            """
-            Sets the node and edge types and fields for the adapter.
+            Initialize the adapter.
 
             Args:
-                node_types (Optional[list]): List of node types.
-                node_fields (Optional[list]): List of node fields.
-                edge_types (Optional[list]): List of edge types.
-                edge_fields (Optional[list]): List of edge fields.
+                data_source: Path to the CSV data source
+                **kwargs: Additional configuration parameters
             """
-            if node_types:
-                self.node_types = node_types
-            else:
-                self.node_types = [type for type in AdapterNodeType]
+            self.data_source = data_source
+            self.config = kwargs
+            logger.info(f"Initialized TutorialBasicsAdapter with data source: {data_source}")
 
-            if node_fields:
-                self.node_fields = node_fields
-            else:
-                self.node_fields = [
-                    field
-                    for field in chain(
-                        AdapterProteinField,
-                    )
-                ]
+        def get_nodes(self):
+            """
+            Extract unique protein nodes from the TSV data source.
+            Yields:
+                Tuples of (uniprot, 'uniprot_protein', properties_dict) for each protein
+            """
+            logger.info("Extracting protein nodes from TSV data source")
+            df = pd.read_csv(self.data_source, sep='\t')
+            proteins = {}
+            for idx, row in df.iterrows():
+                for prefix in ["source", "target"]:
+                    uniprot = row[f"{prefix}"]
+                    gene_symbol = row[f"{prefix}_genesymbol"]
+                    ncbi_tax_id = str(row[f"ncbi_tax_id_{prefix}"])
+                    entity_type = row[f"entity_type_{prefix}"]
+                    if uniprot not in proteins:
+                        proteins[uniprot] = {
+                            "uniprot": uniprot,
+                            "gene_symbol": gene_symbol,
+                            "ncbi_tax_id": ncbi_tax_id,
+                            "entity_type": entity_type
+                        }
+            for prot in proteins.values():
+                yield (prot["uniprot"], "uniprot_protein", prot)
+            logger.info(f"Extracted {len(proteins)} protein nodes")
 
-            if edge_types:
-                self.edge_types = edge_types
-            else:
-                self.edge_types = [type for type in AdapterEdgeType]
+        def get_edges(self):
+            """
+            Extract interaction edges from the TSV data source.
+            Yields:
+                Tuples of (None, source_uniprot, target_uniprot, edge_label, properties_dict) for each edge
+            """
+            logger.info("Extracting edges from TSV data source")
+            import pandas as pd
+            df = pd.read_csv(self.data_source, sep='\t')
+            for idx, row in df.iterrows():
+                edge_label = row["type"]
+                properties = {
+                    "source_uniprot": row["source"],
+                    "target_uniprot": row["target"],
+                    "is_directed": bool(row["is_directed"]),
+                    "is_stimulation": bool(row["is_stimulation"]),
+                    "is_inhibition": bool(row["is_inhibition"]),
+                    "consensus_direction": bool(row["consensus_direction"]),
+                    "consensus_stimulation": bool(row["consensus_stimulation"]),
+                    "consensus_inhibition": bool(row["consensus_inhibition"])
+                }
+                yield (
+                    None,
+                    row["source"],
+                    row["target"],
+                    edge_label,
+                    properties
+                )
+            logger.info(f"Extracted {len(df)} edges")
 
-            if edge_fields:
-                self.edge_fields = edge_fields
-            else:
-                self.edge_fields = [field for field in chain()]
+        def get_metadata(self) -> dict[str, any]:
+            """
+            Get metadata about the data source.
+
+            Returns:
+                Dictionary containing metadata
+            """
+            return {
+                'name': 'TutorialBasicsAdapter',
+                'data_source': str(self.data_source),
+                'data_type': 'csv',
+                'version': '0.1.0',
+                'adapter_class': 'TutorialBasicsAdapter'
+            }
+
+        def validate_data_source(self) -> bool:
+            """
+            Validate that the CSV data source is accessible and properly formatted.
+
+            Returns:
+                True if data source is valid, False otherwise
+            """
+            try:
+                data_path = Path(self.data_source)
+                if not data_path.exists() or not data_path.is_file():
+                    return False
+
+                # Try to read the CSV to validate format
+                df = pd.read_csv(data_path, nrows=1)  # Read just first row
+                return len(df.columns) > 0
+
+            except Exception as e:
+                logger.error(f"Data source validation failed: {e}")
+                return False
+
     ```
 
-### Step 3. Create a knowledge graph script
+### Step 3. Test and validate the adapter
+
+**Rationale:** Validate the adapter using testing strategies - this way, the AI agent can support you in determining if any changes to the schema or adapter source code need to be made, and your adapter becomes more robust.
+
+!!! chat-user "You"
+    you> move to step 4. Quality Assurance: Test and validate the adapter.
+
+!!! chat-agent "Agent"
+    copilot> Step 4: Quality Assurance involves two main tasks:
+
+    1. Adaptive Testing Strategy:  
+        - Create a test suite based on your adapter’s data characteristics.  
+        - Implement schema compliance tests and add data-specific tests (e.g., for relationships, temporal, or hierarchical data).  
+
+    2. Validation Framework:  
+        - Build an adaptive validation framework with rules tailored to your data.  
+        - Apply these validations to your adapter’s output.
+
+    Would you like help scaffolding test files, implementing example tests, or setting up a validation framework for your adapter? If so, please specify your adapter’s data characteristics.
+
+!!! chat-user "You"
+    you> the adapter file is located in src/tutorial_basics/adapters and the tests are in tests. update the tests to match the adapter file
+
+!!! chat-agent "Agent"
+    copilot> Your adapter now expects a TSV (tab-separated) file with specific columns (e.g., source, target, source_genesymbol, ncbi_tax_id_source, entity_type_source, etc.), but your tests use simple CSVs with unrelated columns (id, name, type). This mismatch means the tests won’t properly validate the adapter.
+
+    I will update the tests to:  
+    - Generate a temporary TSV file with the correct columns and data.  
+    - Ensure `get_nodes` and `get_edges` tests match the adapter’s expected input/output.
+
+    Proceeding to update the test file accordingly.
+
+!!! chat-user "You"
+    you> Review the tests and make sure you have covered all necessary items for biocypher.
+
+!!! chat-agent "Agent"
+    copilot> Your tests cover:  
+    - Adapter initialization (with/without config)  
+    - Metadata retrieval  
+    - Node extraction from a TSV with the correct schema  
+    - Edge extraction from a TSV with the correct schema  
+    - Data source validation (existing and non-existent files)  
+
+    Recommendations for full BioCypher adapter QA:  
+    1. **Schema Compliance:** Covered (tests expect correct columns).  
+    2. **Edge/Node Property Validation:** Covered (asserts on all expected properties).  
+    3. **Error Handling:** Test for missing/invalid columns or malformed files.  
+    4. **Edge Cases:** Test empty files, duplicate nodes/edges, and unexpected types.  
+    5. **Data Types:** Test with non-string IDs, missing values, or mixed types.  
+    6. **Logging/Warnings:** Optionally, test that errors are logged.
+
+    Would you like to add tests for error handling, edge cases, or data type robustness?
+
+You should review the tests that have been generated and make sure that error handling and edge cases are covered by the tests. This ensures that when you run BioCypher on the data, errors are spotted and you are notified of any missing or incomplete data.
+
+Run the tests yourself to verify that they are passing:
+
+```bash
+pip install pytest
+python -m pytest
+```
+If the tests are not passing, prompt the AI agent to fix the errors and retry.
+
+### Step 4. Create documentation for your adapter
+**Rationale:** By documenting what your adapter does and how, you and others will be able to understand the rationale behind it, and it will be usable by others and extendable in the future.
+
+!!! chat-user "You"
+    you> Move on to phase 5. Documentation and Maintenance: Document usage and plan for future updates.
+
+!!! chat-agent "Agent"
+    copilot> Phase 5 guidance expects:
+
+    - **Adaptive Documentation:** Overview, data structure, extraction strategy, usage examples, and troubleshooting guide.
+    - **Maintenance Planning:** Plan for future updates and document decision rationale.
+
+    Your `tutorial-basics/README.md` already covers overview, usage, config, testing, and development. To fully meet phase 5, you should:  
+    - Add a section on the adapter’s extraction strategy and data structure.  
+    - Add a troubleshooting section (e.g., common errors, empty files).  
+    - Briefly describe how to update/extend the adapter and document key design decisions.
+
+    Would you like me to draft these additions for your README?
+
+The AI agent can help you to draft a comprehensive documentation, as well as docstrings in your Python code.
+
+!!! chat-user "You"
+    you> Also add docstrings in the adapter Python file and test files.
+
+Now you can move on to importing your data into BioCypher to create a knowledge graph.
+
+### Step 5. Create a knowledge graph script
 
 <figure markdown="span">
-![Image title](./assets/biocypher_section_script.png){ width="1000" }
+![BioCypher pipeline overview](../tutorial_basics_neo4j_offline/assets/biocypher_section_script.png){ width="1000" }
 <figcaption>Figure 12. BioCypher pipeline</figcaption>
 </figure>
 
 **Rationale:** Integrating all steps—downloading the dataset, loading the data, extracting nodes and edges, and exporting graph assets—into a single script streamlines the entire process. This approach makes it easier to build and manage the knowledge graph pipeline efficiently and reproducibly.
+
+!!! chat-user "You"
+    you> look at the knowledge graph script in tutorial-basics/create_knowledge_graph.py. Does it check out with the current adapter, data source location and data schema / biocypher config?
+
+!!! chat-agent "Agent"
+    copilot> Here’s the compatibility check:
+
+    - **Adapter:** Expects a TSV/CSV with columns: `source`, `source_genesymbol`, `ncbi_tax_id_source`, `entity_type_source`, `target`, `target_genesymbol`, `ncbi_tax_id_target`, `entity_type_target`, `type`, and various boolean flags.  
+    - **Script:** The data source path is set to `"data/your_data.csv"` (placeholder). No actual file found in `tutorial-basics/data/`.  
+    - **Schema:** `schema_config.yaml` expects node properties (`uniprot`, `gene_symbol`, etc.) and edge properties (`source_uniprot`, `target_uniprot`, etc.), matching the adapter’s output.  
+    - **Config:** `biocypher_config.yaml` points to the correct schema and is set up for Neo4j.  
+
+    **Action needed:**  
+    - Update `data_source` in the script to the actual data file path (ensure the file exists).  
+    - Ensure your data file columns match the adapter and schema expectations.
+
+    Otherwise, the script, adapter, and configs are compatible.
+
+!!! chat-user "You"
+    you> the data source should be set to data/synthetic_protein_interactions.tsv
+
+!!! chat-agent "Agent"
+    copilot> The data source path in `create_knowledge_graph.py` is now set to `data/synthetic_protein_interactions.tsv`. This matches your adapter and schema expectations. No further action is needed unless the file or columns are missing.
+
+Take a look at the script to understand what it does:
 
 1. Create a BioCypher object
 
     ??? example "**File: `create_knowledge_graph.py`**"
 
         ```python
-        from biocypher import BioCypher, FileDownload
-
-        # Create an instance of BioCypher
-        bc = BioCypher()
+        # Initialize BioCypher
+        bc = BioCypher(
+            biocypher_config_path="config/biocypher_config.yaml",
+            schema_config_path="config/schema_config.yaml"
+        )
         ```
 
-2.  Use BioCypher to automatically download the file with cache capabilities.
+2.  Use BioCypher to load the file.
 
     ??? example "**File: `create_knowledge_graph.py`**"
 
         ```python
-        # Download the file with cache capabilities
-        url_dataset = (
-            "https://zenodo.org/records/16902349/files/synthetic_protein_interactions.tsv"
-        )
-
-        resource = FileDownload(
-            name="protein-protein-interaction-dataset",  # Name of the resource
-            url_s=url_dataset,  # URL to the resource(s)
-            lifetime=7,  # seven days cache lifetime
-        )
-        paths = bc.download(resource)  # Downloads to '.cache' by default
-
-        print(f"Path to the resouce: {paths}")
+        # TODO: Configure your CSV data source path here
+        data_source = "data/synthetic_protein_interactions.tsv"  # Updated to match actual data file
         ```
 
 
-3. Instantiate your adapter from the classes you created previously in your adapter file.
-
-    ??? example  "**File: `create_knowledge_graph.py`**"
-        ```python
-
-        from template_package.adapters.adapter_synthetic_proteins import (
-            AdapterNodeType,
-            AdapterProteinField,
-            AdapterEdgeType,
-            Adapter,
-        )
-
-        # Choose the node type you want appear in the Knowledge Graph
-        node_types = [
-            AdapterNodeType.PROTEIN
-        ]
-
-        # Choose protein adapter fields to include in the knowledge graph.
-        node_fields = [
-            AdapterProteinField.ID,
-            AdapterProteinField.PREFERRED_ID,
-            AdapterProteinField.GENE_SYMBOL,
-            AdapterProteinField.NCBI_TAX_ID
-        ]
-
-        # Choose the node type you want appear in the Knowledge Graph
-        edge_types = [
-            AdapterEdgeType.PROTEIN_PROTEIN_INTERACTION,
-            AdapterEdgeType.BINDING,
-            AdapterEdgeType.ACTIVATION,
-            AdapterEdgeType.PHOSPHORYLATION,
-            AdapterEdgeType.UBIQUITINATION,
-            AdapterEdgeType.INHIBITION
-        ]
-
-        # (there is not code here!) Choose interaction adapter fields to include in the knowledge graph.
-        # By default, in case of not specifying this, BioCypher will bring all the fields defined in the adapter
-
-        # Create an adapter instance
-        adapter = Adapter(
-            tsv_path = paths[0],
-            node_types=node_types,
-            node_fields=node_fields,
-            edge_types=edge_types,
-        )
-        ```
-
-4. Write data from your adapter to BioCypher
+3. Write data from your adapter to BioCypher
 
     ??? example "**File: `create_knowledge_graph.py`**"
         ```python
@@ -1210,7 +1121,7 @@ Finally, write the functions that read the data as a DataFrame and override the 
         bc.write_edges(adapter.get_edges())
         ```
 
-5. Export your graph to Neo4j (generation of TSV files and import script)
+4. Export your graph to Neo4j (generation of the import script)
 
     ??? example "**File: `create_knowledge_graph.py`**"
         ```python
@@ -1218,15 +1129,7 @@ Finally, write the functions that read the data as a DataFrame and override the 
         bc.write_import_call()
         ```
 
-6. (Optional) Generate schema info for [BioChatter](../../../biocypher-project/biochatter-integration.md) integration
-
-    ??? example "**File: `create_knowledge_graph.py`**"
-        ```python
-        # Generate schema info for LLM-powered querying via BioChatter
-        bc.write_schema_info()
-        ```
-
-7. Print summary
+5. Print summary
 
     ??? example "**File: `create_knowledge_graph.py`**"
         ```python
@@ -1243,85 +1146,55 @@ Finally, write the functions that read the data as a DataFrame and override the 
     **File: `create_knowledge_graph.py`**
 
     ```python
-    from biocypher import BioCypher, FileDownload
-    from template_package.adapters.adapter_synthetic_proteins import (
-        AdapterNodeType,
-        AdapterProteinField,
-        AdapterEdgeType,
-        Adapter,
-    )
+    #!/usr/bin/env python3
+    """
+    tutorial-basics - Hands-on basic graph creation with BioCypher using a small synthetic dataset.
 
-    # Create an instance of BioCypher
-    bc = BioCypher()
+    This script creates a knowledge graph using BioCypher and the TutorialBasicsAdapter.
+    """
 
-    # Download the file with cache capabilities
-    url_dataset = (
-        "https://zenodo.org/records/16902349/files/synthetic_protein_interactions.tsv"
-    )
-
-    resource = FileDownload(
-        name="protein-protein-interaction-dataset",  # Name of the resource
-        url_s=url_dataset,  # URL to the resource(s)
-        lifetime=7,  # seven days cache lifetime
-    )
-    paths = bc.download(resource)  # Downloads to '.cache' by default
-
-    print(f"Path to the resouce: {paths}")
+    from biocypher import BioCypher
+    from tutorial_basics.adapters.tutorial_basics_adapter import TutorialBasicsAdapter
 
 
-    # Choose the node type you want appear in the Knowledge Graph
-    node_types = [AdapterNodeType.PROTEIN]
+    def main():
+        """Main function to create the knowledge graph."""
+        # Initialize BioCypher
+        bc = BioCypher(
+            biocypher_config_path="config/biocypher_config.yaml",
+            schema_config_path="config/schema_config.yaml"
+        )
 
-    # Choose protein adapter fields to include in the knowledge graph.
-    node_fields = [
-        AdapterProteinField.ID,
-        AdapterProteinField.PREFERRED_ID,
-        AdapterProteinField.GENE_SYMBOL,
-        AdapterProteinField.NCBI_TAX_ID,
-    ]
+        # Initialize the adapter
+        # TODO: Configure your CSV data source path here
+        data_source = "data/synthetic_protein_interactions.tsv"  # Updated to match actual data file
 
-    # Choose the node type you want appear in the Knowledge Graph
-    edge_types = [
-        AdapterEdgeType.PROTEIN_PROTEIN_INTERACTION,
-        AdapterEdgeType.BINDING,
-        AdapterEdgeType.ACTIVATION,
-        AdapterEdgeType.PHOSPHORYLATION,
-        AdapterEdgeType.UBIQUITINATION,
-        AdapterEdgeType.INHIBITION,
-    ]
+        adapter = TutorialBasicsAdapter(
+            data_source=data_source,
+            # Add any additional configuration parameters here
+        )
 
-    # (there is not code here!) Choose interaction adapter fields to include in the knowledge graph.
-    # By default, in case of not specifying this, BioCypher will bring all the fields defined in the adapter
+        # Create the knowledge graph
+        bc.write_nodes(adapter.get_nodes())
+        bc.write_edges(adapter.get_edges())
 
-    # Create an adapter instance
-    adapter = Adapter(
-        tsv_path=paths[0],
-        node_types=node_types,
-        node_fields=node_fields,
-        edge_types=edge_types,
-    )
+        # Generate assets for Neo4j exportation
+        bc.write_import_call()
 
-    # Create a knowledge graph from the adapter
-    bc.write_nodes(adapter.get_nodes())
-    bc.write_edges(adapter.get_edges())
+        # Create final summary
+        bc.summary()
 
-    # Generate assets for Neo4j exportation
-    bc.write_import_call()
 
-    # (Optional) Generate schema info for BioChatter
-    bc.write_schema_info()
-
-    # Print a summary when
-    bc.summary()
-
+    if __name__ == "__main__":
+        main()
     ```
 
 
 #### Run the script
 
-You can execute the entire pipeline that loads, processes, and builds the graph by running the following command from the root folder of your project. The example below uses `uv`.
+You can execute the entire pipeline that loads, processes, and builds the graph by running the following command from the root folder of your project.
 ```bash
-uv run python create_knowledge_graph.py
+python create_knowledge_graph.py
 ```
 
 > 🏆 **Note:** Once you complete the process, your terminal output should look similar to the following:
@@ -1331,23 +1204,14 @@ uv run python create_knowledge_graph.py
     INFO -- This is BioCypher v0.17.0.
     INFO -- Logging into `biocypher-log/biocypher-<timestamp>.log`.
     INFO -- Running BioCypher with schema configuration from config/schema_config.yaml.
-    INFO -- Creating cache directory .cache.
-    INFO -- Creating cache file .cache/cache.json.
-    INFO -- Loading cache file .cache/cache.json.
-    INFO -- Asking for download of resource protein-protein-interaction-dataset.
-    Downloading data from 'https://zenodo.org/records/16902349/files/synthetic_protein_interactions.tsv' to file '.cache/protein-protein-interaction-dataset/synthetic_protein_interactions.tsv'.
-    Path to the resouce: ['.cache/protein-protein-interaction-dataset/synthetic_protein_interactions.tsv']
     INFO -- Loading ontologies...
     INFO -- Instantiating OntologyAdapter class for https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl.
-    INFO -- Reading nodes.
     INFO -- Creating output directory `biocypher-out/<timestamp>`.
     INFO -- `labels_order`=`Ascending` superseded by either `node_labels_order`=`None` or `edge_labels_order`=`None`.
     INFO -- `node_labels_order` set to `labels_order`=`Ascending`.
     INFO -- `edge_labels_order` set to `labels_order`=`Ascending`.
     WARNING -- Neo4j supports only edge_labels_order: 'Leaves', I'll set it for you, but you should fix your configuration file in the `neo4j` section.
-    WARNING -- Duplicate node type protein found.
     INFO -- Writing 15 entries to Protein-part000.csv
-    INFO -- Generating edges.
     WARNING -- Duplicate edge type ubiquitination found.
     WARNING -- Duplicate edge type phosphorylation found.
     INFO -- Writing 3 entries to Binding-part000.csv
@@ -1374,12 +1238,10 @@ uv run python create_knowledge_graph.py
             └── polypeptide
                 └── protein
 
-    INFO -- Duplicate node types encountered (IDs in log):
-        protein
-
+    INFO -- No duplicate nodes in input.
     INFO -- Duplicate edge types encountered (IDs in log):
-        phosphorylation
         ubiquitination
+        phosphorylation
 
     INFO -- No missing labels in input.
     ```
@@ -1543,14 +1405,14 @@ d. If everything has been successfully, you should see in terminal something sim
 a. Connect to your instance by running Neo4j desktop again. Select your instance and click on "Connect" - the little arrow on the button allows you to expand a menu. Select the option *Query*.
 
 <figure markdown="span">
-![Image title](./assets/neo4j_explore_graph.png){ width="1000" }
+![Query and Explore options in a Neo4j instance](../tutorial_basics_neo4j_offline/assets/neo4j_explore_graph.png){ width="1000" }
 <figcaption>Figure 13. Query and Explore options to run on a Neo4j instance.</figcaption>
 </figure>
 
 b. Now, click on the asterisk under the Relationships category. You now should see your graph! Compare to the sketch you did previosly in this tutorial
 
 <figure markdown="span">
-![Image title](./assets/neo4j_final_graph.png){ width="1000" }
+![Neo4j graph built from the tutorial data](../tutorial_basics_neo4j_offline/assets/neo4j_final_graph.png){ width="1000" }
 <figcaption>Figure 14. Neo4j graph based on our data.</figcaption>
 </figure>
 
@@ -1567,7 +1429,7 @@ RETURN a, r, b;
 Result:
 
 <figure markdown="span">
-![Image title](./assets/neo4j_query_1.png){ width="500" }
+![Neo4j browser result for a query finding relationships between two nodes](../tutorial_basics_neo4j_offline/assets/neo4j_query_1.png){ width="500" }
 </figure>
 
 2. Find all the nodes
@@ -1579,7 +1441,7 @@ RETURN n;
 Result:
 
 <figure markdown="span">
-![Image title](./assets/neo4j_query_2.png){ width="500" }
+![Neo4j browser result for a query finding all nodes](../tutorial_basics_neo4j_offline/assets/neo4j_query_2.png){ width="500" }
 </figure>
 
 3. Find all nodes of a specific type(e.g. `Protein` in the following query)
@@ -1591,7 +1453,7 @@ RETURN n;
 Result:
 
 <figure markdown="span">
-![Image title](./assets/neo4j_query_3.png){ width="500" }
+![Neo4j browser result for a query finding all Protein nodes](../tutorial_basics_neo4j_offline/assets/neo4j_query_3.png){ width="500" }
 </figure>
 
 4. Find all relationships of a specific type(e.g. `Binding` in the following query)
@@ -1603,7 +1465,7 @@ RETURN a, r, b;
 Result:
 
 <figure markdown="span">
-![Image title](./assets/neo4j_query_4.png){ width="500" }
+![Neo4j browser result for a query finding all Binding relationships](../tutorial_basics_neo4j_offline/assets/neo4j_query_4.png){ width="500" }
 </figure>
 
 5. Count relationships of a given type(e.g. `Binding` in the following query)
@@ -1615,7 +1477,7 @@ RETURN COUNT(r) AS totalBindings;
 Result:
 
 <figure markdown="span">
-![Image title](./assets/neo4j_query_5.png){ width="250" }
+![Neo4j browser result for a query counting Binding relationships](../tutorial_basics_neo4j_offline/assets/neo4j_query_5.png){ width="250" }
 </figure>
 
 ---
@@ -1631,7 +1493,6 @@ If you found this tutorial helpful or have suggestions for improvement, please *
 
 ---
 
-| Last Update | Developed by                                                                                                                 | Affiliation                                                                                                                                                                                                                                                                                                                  |
-| :---------: | :--------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026.03.20  | Shuangshuang Li <br> Annalena Frey (GH @AnnalenaFrey) <br> Edwin Carreño (GH @ecarrenolozano) <br> Inga Ulusoy (GH @iulusoy) | [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) <br> [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) <br> [Saezlab](https://saezlab.org/) - [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) <br> [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en) |
- 
+| Last Update | Developed by                     | Affiliation                                                                 |
+| :---------: | :-------------------------------- | :--------------------------------------------------------------------------- |
+| 2026.09.17  | Inga Ulusoy (GH @iulusoy)         | [Scientific Software Center](https://www.ssc.uni-heidelberg.de/en)          |

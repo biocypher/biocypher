@@ -121,7 +121,7 @@ class BioCypherWorkflow:
 
     # ==================== NODE OPERATIONS ====================
 
-    def add_node(self, node_id: str, node_type: str, **properties) -> bool:
+    def add_node(self, node_id: str, node_type: str, **properties: Any) -> bool:
         """Add a node to the knowledge graph.
 
         Args:
@@ -212,7 +212,7 @@ class BioCypherWorkflow:
 
     # ==================== EDGE OPERATIONS ====================
 
-    def add_edge(self, edge_id: str, edge_type: str, source: str, target: str, **properties) -> bool:
+    def add_edge(self, edge_id: str, edge_type: str, source: str, target: str, **properties: Any) -> bool:
         """Add an edge to the knowledge graph.
 
         Args:
@@ -322,7 +322,7 @@ class BioCypherWorkflow:
 
     # ==================== HYPEREDGE OPERATIONS ====================
 
-    def add_hyperedge(self, hyperedge_id: str, hyperedge_type: str, nodes: set[str], **properties) -> bool:
+    def add_hyperedge(self, hyperedge_id: str, hyperedge_type: str, nodes: set[str], **properties: Any) -> bool:
         """Add a hyperedge connecting multiple nodes.
 
         Args:
@@ -702,7 +702,7 @@ class BioCypherWorkflow:
 
     # ==================== COMPATIBILITY WRAPPER METHODS ====================
 
-    def to_networkx(self):
+    def to_networkx(self) -> Any:
         """Convert to NetworkX graph for compatibility with existing tools.
 
         Returns:
@@ -734,7 +734,7 @@ class BioCypherWorkflow:
 
         return g
 
-    def to_pandas(self):
+    def to_pandas(self) -> Any:
         """Convert to Pandas DataFrames for compatibility with existing tools.
 
         Returns:

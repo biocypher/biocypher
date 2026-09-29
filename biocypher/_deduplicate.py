@@ -31,7 +31,7 @@ class Deduplicator:
         """Adds a node to the instance and checks if it has been seen before.
 
         Args:
-            node: BioCypherNode to be added.
+            entity: BioCypherNode to be added.
 
         Returns:
             True if the node has been seen before, False otherwise.
@@ -55,7 +55,7 @@ class Deduplicator:
         """Adds an edge to the instance and checks if it has been seen before.
 
         Args:
-            edge: BioCypherEdge to be added.
+            relationship: BioCypherEdge to be added.
 
         Returns:
             True if the edge has been seen before, False otherwise.
@@ -106,7 +106,7 @@ class Deduplicator:
         self.seen_relationship_fingerprints.add(relationship_fingerprint)
         return False
 
-    def get_duplicate_nodes(self):
+    def get_duplicate_nodes(self) -> tuple[set, set]:
         """Function to return duplicate node types and IDs.
 
         Returns:
@@ -118,7 +118,7 @@ class Deduplicator:
             self.duplicate_entity_ids,
         )
 
-    def get_duplicate_edges(self):
+    def get_duplicate_edges(self) -> tuple[set, set]:
         """Function to return duplicate edge types and IDs.
 
         Returns:
