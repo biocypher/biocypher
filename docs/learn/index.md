@@ -48,7 +48,7 @@
 
     ---
 
-    [Use BioCypher through the agentic interface](tutorials/agent_api_guide.md){ .text-center }
+    [Use BioCypher through the agentic interface](tutorials/tutorial_basic_with_agents/tutorial_basic_with_agents.md){ .text-center }
 
 -   :material-set-merge:{ .lg .middle } __Data merging__
 
