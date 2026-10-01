@@ -5,6 +5,8 @@ import pytest
 
 from rdflib import CSVW, RDF, RDFS, Graph, Literal, Namespace
 
+from biocypher._create import BioCypherEdge, BioCypherNode
+
 
 @pytest.mark.parametrize("length", [4], scope="function")
 def test_rdf_write_data(bw_rdf, length, _get_nodes, _get_edges):
@@ -206,3 +208,68 @@ def test_rdf_ttl_format(bw_rdf, length, _get_nodes, _get_edges):
 
     # Basic verification that the graph contains expected data
     assert len(set(graph.subjects(RDF.type))) > 0
+
+
+# Property names deliberately chosen to stay in the biocypher namespace:
+# `property_to_uri` re-maps well-known names such as `name` and `count` onto
+# CSVW/ODRL, which would confuse what these tests are asserting.
+FALSY_PROPERTIES = {
+    "fraction_disordered": 0.0,
+    "taxon": 0,
+    "reviewed": False,
+    "free_text": "",
+    "score": 0.42,  # truthy control
+}
+
+
+def _load_written_graph(outdir: str) -> Graph:
+    graph = Graph()
+    for file in glob.glob(os.path.join(outdir, "*.ttl")):
+        graph += Graph().parse(file, format="ttl")
+    return graph
+
+
+def test_rdf_write_nodes_keeps_falsy_property_values(bw_rdf_ttl):
+    """0, 0.0, False and "" are values, not absence, and must reach the graph.
+
+    Guarding the property write with `if value:` drops them silently, which
+    biases every aggregate computed over the resulting graph.
+    """
+    node = BioCypherNode(
+        node_id="p1",
+        node_label="protein",
+        properties=dict(FALSY_PROPERTIES),
+    )
+
+    assert bw_rdf_ttl.write_nodes([node])
+
+    graph = _load_written_graph(bw_rdf_ttl.outdir)
+    biocypher_namespace = Namespace("https://biocypher.org/biocypher#")
+    for name, value in FALSY_PROPERTIES.items():
+        assert (
+            biocypher_namespace["p1"],
+            biocypher_namespace[name],
+            Literal(value),
+        ) in graph
+
+
+def test_rdf_write_edges_keeps_falsy_property_values(bw_rdf_ttl):
+    """Same guarantee on the edge path, which has its own copy of the guard."""
+    edge = BioCypherEdge(
+        relationship_id="prel1",
+        source_id="p1",
+        target_id="p2",
+        relationship_label="PERTURBED_IN_DISEASE",
+        properties=dict(FALSY_PROPERTIES),
+    )
+
+    assert bw_rdf_ttl.write_edges([edge])
+
+    graph = _load_written_graph(bw_rdf_ttl.outdir)
+    biocypher_namespace = Namespace("https://biocypher.org/biocypher#")
+    for name, value in FALSY_PROPERTIES.items():
+        assert (
+            biocypher_namespace["prel1"],
+            biocypher_namespace[name],
+            Literal(value),
+        ) in graph

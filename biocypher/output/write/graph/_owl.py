@@ -351,8 +351,9 @@ class _OWLWriter(_RDFWriter):
 
             # Add properties.
             for key, value in properties.items():
-                # only write value if it exists.
-                if value:
+                # only write value if it exists. `is not None` rather than a
+                # truthiness check: 0, 0.0, False and "" are values, not absence.
+                if value is not None:
                     self.add_property_to_graph(self.graph, rdf_subject, value, key)
 
         self._has_nodes = True
@@ -494,8 +495,9 @@ class _OWLWriter(_RDFWriter):
 
                 # Add properties to the edge modelled as an instance.
                 for key, value in rdf_properties.items():
-                    # only write value if it exists.
-                    if value:
+                    # only write value if it exists. `is not None` rather than a
+                    # truthiness check: 0, 0.0, False and "" are values, not absence.
+                    if value is not None:
                         self.add_property_to_graph(self.graph, rdf_id, value, key)
 
             else:

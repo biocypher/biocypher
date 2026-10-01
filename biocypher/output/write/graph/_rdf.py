@@ -253,8 +253,9 @@ class _RDFWriter(_BatchWriter):
 
             # add properties to the transformed edge --> node
             for key, value in rdf_properties.items():
-                # only write value if it exists.
-                if value:
+                # only write value if it exists. `is not None` rather than a
+                # truthiness check: 0, 0.0, False and "" are values, not absence.
+                if value is not None:
                     self.add_property_to_graph(graph, rdf_predicate, value, key)
 
         graph.serialize(destination=file_name, format=self.file_format)
@@ -404,8 +405,9 @@ class _RDFWriter(_BatchWriter):
                 ),
             )
             for key, value in properties.items():
-                # only write value if it exists.
-                if value:
+                # only write value if it exists. `is not None` rather than a
+                # truthiness check: 0, 0.0, False and "" are values, not absence.
+                if value is not None:
                     self.add_property_to_graph(graph, rdf_subject, value, key)
 
         graph.serialize(destination=file_name, format=self.file_format)
