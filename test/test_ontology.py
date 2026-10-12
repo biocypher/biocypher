@@ -87,6 +87,21 @@ def test_ontology_functions(hybrid_ontology):
     assert "macromolecular complex" not in hybrid_ontology._nx_graph.nodes
 
 
+def test_edge_synonym_for_in_ontology(edge_synonym_ontology):
+    """synonym_for renames edge types in the ontology graph, just like nodes.
+
+    When a schema entry uses `synonym_for: gene to disease association` on an
+    edge, the biolink class should be renamed to the schema key in the NX
+    graph so that ancestry lookups remain functional.
+    """
+    assert "PERTURBED_IN_DISEASE" in edge_synonym_ontology._nx_graph.nodes
+    assert "gene to disease association" not in edge_synonym_ontology._nx_graph.nodes
+    # Confirm the renamed node still has ancestors (graph is connected)
+    ancestors = list(edge_synonym_ontology.get_ancestors("PERTURBED_IN_DISEASE"))
+    assert "PERTURBED_IN_DISEASE" in ancestors
+    assert "association" in ancestors
+
+
 def test_show_ontology(hybrid_ontology):
     treevis = hybrid_ontology.show_ontology_structure()
     assert treevis is not None
