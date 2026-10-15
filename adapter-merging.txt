@@ -1,0 +1,123 @@
+\subsection{Case study 3: OmniPath Protein–Pathway Extension}
+\label{sup-sec:omnipath-pathways}
+%To compare the ease of extensibility for the two adapters, we now add in another data source\cite{edwin_carreno_2026_20742395}.
+
+    This case study evaluates the extensibility of the two adapter approaches by incorporating an additional dataset containing protein-pathway associations~\cite{Carreno2026_synthetic_proteinpathway}.
+
+\subsubsection{Knowledgraph Graph model}
+
+    The knowledge graph model from Case Study~1 is extended with the node type \textit{pathway} and the relationship \textit{participates in}, which links proteins to the biological pathways in which they are involved. Figure~\ref{fig:case2-kg-model} illustrates the extended model.
+
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[
+            width=0.6\linewidth
+        ]{figures/case2_kg-model.pdf}
+        \caption{Knowledge graph model for Case Study 2. This extension includes a new node type \textit{pathway} and a relationship \textit{participates in}.}
+        \label{fig:case2-kg-model}
+    \end{figure}
+
+\subsubsection{Dataset}
+
+    The additional dataset contains protein-pathway associations and deliberately introduced inconsistencies used to evaluate both adapter implementations, as summarized in Table~\ref{tab:case2-dataset-inconsistencies}.
+
+    \begin{table}[ht]
+        \centering
+        \caption{Data inconsistencies in \texttt{synthetic\_reactome\_protein\_pathway.tsv}}
+        \label{tab:case2-dataset-inconsistencies}
+        \begin{tabular}{p{0.25\linewidth} p{0.50\linewidth} p{0.17\linewidth}}
+            \hline
+            \textbf{Category} & \textbf{Finding} & \textbf{Rows} \\
+            \hline
+            Schema conformance &
+            Malformed record: 10 fields instead of 11, causing column shift. &
+            18
+            \\
+
+            Completeness &
+            Missing value in \texttt{is\_synthetic} caused by the malformed record. &
+            18
+            \\
+
+            Domain validity &
+            Values violate expected domains, e.g. non-numeric \texttt{ncbi\_tax\_id}, invalid \texttt{pathway\_id}, invalid controlled values. &
+            18
+            \\
+
+            Format standardization &
+            Inconsistent gene-symbol casing: \texttt{EGFR}/\texttt{egFr}, \texttt{MYC}/\texttt{myc}. &
+            2--5
+            \\
+
+            Entity consistency &
+            Same \texttt{uniprot\_id} maps to conflicting gene symbols, e.g. \texttt{P04637}: \texttt{SOD1}/\texttt{TP53}. &
+            7--9
+            \\
+
+            Referential consistency &
+            Same \texttt{uniprot\_id} appears with conflicting taxon IDs, e.g. \texttt{P00533}: \texttt{9606}/\texttt{10090}. &
+            2--3
+            \\
+
+            \hline
+        \end{tabular}
+    \end{table}
+
+\subsubsection{Adapter implementations}
+    Two additional adapters were developed to build the extended knowledge graph.
+
+    \begin{itemize}
+        \item \textit{Python code adapter extended (C):} The Python implementation uses separate adapter modules for each source dataset. Each module transforms its corresponding records into the node and edge tuples required by BioCypher. The tuples generated from the protein-protein interactions and protein-pathway datasets are then passed to BioCypher to construct the combined knowledge graph. The implementation is available in the \href{https://github.com/iulusoy/python-ui-adapter-extended}{Python adapter extended repository}.
+
+        \item \textit{OntoWeaver low-code adapter extended (D):}
+        The OntoWeaver implementation defines a separate declarative mapping for each source dataset. OntoWeaver applies its built-in reconciliation mechanisms while combining entities and relationships from the two sources before passing the resulting representation to BioCypher. Data-quality issues that cannot be handled by the built-in mechanisms, such as structurally malformed records, require custom transformation logic that extends the Ontoweaver's capabilities. The implementation is available at \href{https://github.com/ecarrenolozano/ontoweaver-adapter-extended}{Ontoweaver adapter extended repository}.
+    \end{itemize}
+
+\subsubsection{Implementation comparison}
+
+    Table~\ref{tab:comparison-case2} compares the two extended adapters. The plain Python adapter requires additional code for data transformation and reconciliation, by default BioCypher does not reconciliate data. One example of this behavior can be found when two identic entities have different properties: BioCypher will save the first set of properties encountered instead of reconciliate them. On the other hand, OntoWeaver uses an additional mapping file and built-in reconciliation mechanisms. However, malformed records and source-specific inconsistencies may still require custom transformers.
+
+    \begin{table*}[t]
+        \centering
+        \begin{tabular}{l|l|l}
+        & Python code adapter (C) & OntoWeaver low-code adapter (D) \\ \hline\hline
+        Repository structure &
+        \texttt{config}, \texttt{data}, \texttt{src} &
+        \texttt{config}, \texttt{data}
+        \\
+
+        Number of configuration files &
+        2 &
+        3
+        \\
+
+        Number of source files &
+        2 &
+        1
+        \\
+
+        Source Python LOC &
+        $\approx 440$ &
+        100
+        \\
+
+        Number of test files &
+        2 &
+        3
+        \\
+
+        Test Python LOC &
+        $\approx 300$ &
+        $\approx 248$
+        \\
+
+        Dependency handling &
+        \texttt{pyproject.toml} &
+        \texttt{requirements.txt}
+        \\
+        \hline
+
+        \end{tabular}
+        \caption{Comparison of the extended knowledge graph in case study 2 using Python code or OntoWeaver as low-code solution.}
+        \label{tab:comparison-case2}
+    \end{table*}
