@@ -25,4 +25,4 @@ Only tutorials tagged with both `tutorial` and a difficulty level are included h
 
 | Tutorial | Focus | Link |
 | --- | --- | --- |
-| No tutorials yet | - | - |
+| Hands-on Data Harmonization and Merging with BioCypher, OntoWeaver and Neo4j | Extend the protein interaction graph with a protein–pathway dataset, identify data-quality issues across the two sources, harmonize and merge them either with a Python adapter or with an OntoWeaver mapping, and import and query the combined graph in Neo4j. | [Open tutorial](tutorial_data_harmonization/tutorial_data_harmonization.md) |

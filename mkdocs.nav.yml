@@ -23,7 +23,7 @@ nav:
                 - Python UI track:
                       - Hands-on Protein Graphs with BioCypher and Neo4j (Beginner): learn/tutorials/tutorial_basics_neo4j_offline/tutorial_004_neo4j_offline.md
                       - Handling Ontologies (Intermediate): learn/tutorials/tutorial002_handling_ontologies.md
-                      - Data harmonization and merging (Advanced, planned): learn/tutorials/tutorial_data_harmonization.md
+                      - Data harmonization and merging (Advanced): learn/tutorials/tutorial_data_harmonization/tutorial_data_harmonization.md
                 - LLM-assisted UI track:
                       - Agent-supported hands-on Protein Graphs with BioCypher and Neo4j (Beginner): learn/tutorials/tutorial_basic_with_agents/tutorial_basic_with_agents.md
                       - Agent API (Beginner): learn/tutorials/agent_api_guide.md
