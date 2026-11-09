@@ -38,9 +38,28 @@ bc.write_import_call()  # offline mode only: writes the import script for the ta
 
 ## Starting a new project
 
-Use the cookiecutter template (https://github.com/biocypher/biocypher-cookiecutter-template). It generates `create_knowledge_graph.py`, `config/biocypher_config.yaml`, `config/schema_config.yaml` and `src/<package_name>/adapters/<adapter_name>.py`. The generated adapter yields dummy data and ignores its `data_source` argument until `get_nodes()` and `get_edges()` are rewritten; in a generated project, that file is the reference for the adapter structure.
+Use the cookiecutter template (https://github.com/biocypher/biocypher-cookiecutter-template). It generates `create_knowledge_graph.py`, `config/biocypher_config.yaml`, `config/schema_config.yaml`, `src/<package_name>/adapters/<adapter_name>.py` and `tests/test_<adapter_name>.py`. The generated adapter yields dummy data and ignores its `data_source` argument until `get_nodes()` and `get_edges()` are rewritten; in a generated project, that file is the reference for the adapter structure.
 
-The BioCypher MCP server (https://mcp.biocypher.org/mcp) provides step-by-step workflow guidance, the scripted cookiecutter command, and `validate_schema_config`.
+Run the template without prompts, so the command does not wait for input:
+
+```bash
+uvx cookiecutter gh:biocypher/biocypher-cookiecutter-template --no-input \
+    project_name=my-pipeline adapter_name=my_resource_adapter
+```
+
+- `package_name` is derived from `project_name` (`-` and spaces become `_`). Other keys: `project_description`, `data_source_type` (a label only; it does not change the generated code), `include_docker` and `include_tests` (`y`/`n`), `author_name`, `author_email`, `python_version`, `biocypher_version`.
+- The project is created in a new directory named `project_name` in the current directory; do not run the template over an existing project.
+- Prerequisites: the generated `pyproject.toml` requires Python >= 3.13 by default (`python_version`). With `biocypher_version=latest` (the default), the template asks PyPI for the newest BioCypher at generation time, so it needs network access, and the result depends on the day it runs.
+
+After generating the project:
+
+1. Point `data_source` in `create_knowledge_graph.py` to the real data (the default `data/your_data` does not exist).
+2. Replace the example classes in `config/schema_config.yaml` (`protein`, `gene`, `protein_encoded_by_gene`) with the types of your data.
+3. Rewrite `get_nodes()` and `get_edges()` to read `self.data_source`, and remove the dummy-data warning in the adapter's `__init__`.
+4. Replace the tests in `tests/`, which test the dummy data, with tests of your adapter's tuples (see the Adapters file, "Testing an adapter").
+5. `.gitignore` excludes `data/`, `output/` and `logs/`; input data placed in `data/` is not committed.
+
+The BioCypher MCP server (https://mcp.biocypher.org/mcp) provides step-by-step workflow guidance, the scripted cookiecutter command pinned to a tested template version, and `validate_schema_config`.
 
 ## Alternative: in-memory Agent API
 
