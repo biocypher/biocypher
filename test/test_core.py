@@ -177,6 +177,29 @@ def test_online_add_edges_calls_add_biocypher_edges(core, _get_edges):
     mock_driver.add_biocypher_nodes.assert_not_called()
 
 
+@pytest.mark.parametrize("length", [4], scope="function")
+def test_online_writes_reuse_one_driver(core, _get_nodes, _get_edges):
+    """write_nodes and write_edges must share one connector.
+
+    A new Neo4j connector wipes the database when `wipe: true`, so creating one
+    per call erased the nodes when the edges were written.
+    """
+    mock_driver = MagicMock()
+    mock_driver.add_biocypher_nodes.return_value = True
+    mock_driver.add_biocypher_edges.return_value = True
+
+    core._offline = False
+    core._dbms = "neo4j"
+
+    with patch("biocypher._core.get_connector", return_value=mock_driver) as mock_get_connector:
+        core.write_nodes(_get_nodes)
+        core.write_edges(_get_edges)
+
+    mock_get_connector.assert_called_once()
+    mock_driver.add_biocypher_nodes.assert_called_once()
+    mock_driver.add_biocypher_edges.assert_called_once()
+
+
 def test_pandas_and_tabular_work_in_offline_mode(tmp_path):
     """Pandas and tabular are aliases for csv and should work in offline mode."""
     for dbms in ["pandas", "tabular"]:

@@ -353,10 +353,13 @@ class BioCypher:
         Set as instance variable `self._driver`.
         """
         if not self._offline:
-            self._driver = get_connector(
-                dbms=self._dbms,
-                translator=self._get_translator(),
-            )
+            # Reuse the connector: a new Neo4j connector wipes the database
+            # when `wipe` is set, which would erase what was written before.
+            if self._driver is None:
+                self._driver = get_connector(
+                    dbms=self._dbms,
+                    translator=self._get_translator(),
+                )
         else:
             msg = "Cannot get driver in offline mode."
             raise NotImplementedError(msg)
