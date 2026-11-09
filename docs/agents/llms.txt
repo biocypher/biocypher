@@ -1,154 +1,55 @@
-# BioCypher Functionality Index for LLMs
+# BioCypher
 
-## Available LLM Documentation Files
+> BioCypher is a Python framework that turns heterogeneous biomedical data into ontology-grounded knowledge graphs. User code ("adapters") yields node and edge tuples; a YAML schema configuration maps them to ontology classes; BioCypher translates, deduplicates and writes them to a graph database, files, or an in-memory object.
 
-For specific guidance, refer to these files in the documentation root, https://biocypher.org/BioCypher/:
+Checked against BioCypher 0.17.0. These files are written for AI coding assistants: plain Markdown, one topic per file, no site markup. Each file is self-contained; read only the ones the task needs.
 
-- **llms-adapters.txt** - Complete guide for creating BioCypher adapters
-- **llms-example-adapter.txt** - Full working example of a GEO adapter
-- **llms.md** - Human-readable overview (this page)
+## Topic files
 
-## Core Components
+- [Adapters](https://biocypher.org/BioCypher/agents/llms-adapters.txt): the adapter interface, node and edge tuple formats, how BioCypher consumes them, and how to test an adapter.
+- [Schema configuration](https://biocypher.org/BioCypher/agents/llms-schema-config.txt): `schema_config.yaml` fields, valid values, inheritance, and the rules that silently drop data when violated.
+- [BioCypher configuration](https://biocypher.org/BioCypher/agents/llms-biocypher-config.txt): `biocypher_config.yaml`, how it is loaded and merged, output backends (`dbms`), offline/online mode, headless mode.
+- [Pitfalls](https://biocypher.org/BioCypher/agents/llms-pitfalls.txt): known bugs and surprising behaviour in the current release, with workarounds.
+- [Example adapter](https://biocypher.org/BioCypher/agents/llms-example-adapter.txt): a complete, runnable project (data, schema, config, adapter, build script) and its verified output.
 
-### BioCypher Class
-- Main entry point for knowledge graph creation
-- Handles schema validation, data processing, and output generation
-- Methods: `add_node()`, `add_edge()`, `write()`, `get_graph()`
+## Core facts
 
-### Adapters
-- Transform external data into BioCypher canonical format
-- Interface: `get_nodes()` and `get_edges()` methods returning iterables
-- Node format: (node_id, node_label, attributes_dict)
-- Edge format: (edge_id, source_id, target_id, edge_label, attributes_dict)
+- Node tuple: `(node_id, input_label, properties)` — 3 elements.
+- Edge tuple: `(edge_id, source_id, target_id, input_label, properties)` — 5 elements; `edge_id` may be `None`. The label is the 4th element, not the 2nd.
+- The label in each tuple must equal an `input_label` in `schema_config.yaml`. Tuples with unknown labels are dropped (logged as an error, the run continues).
+- Only properties declared in the schema are kept; declared properties missing from a tuple are written as empty (`None`).
+- Duplicate node IDs: the first occurrence wins, later ones are dropped without comparing properties. Edges without an `edge_id` are deduplicated by type, source and target, so parallel edges of one type need distinct `edge_id`s.
+- There is no `bc.write()` method. Use `bc.write_nodes(...)` and `bc.write_edges(...)` (offline files or online database) or `bc.add(...)` plus `bc.get_kg()` (in-memory).
 
-### Schema Configuration
-- YAML-based schema definition
-- Defines node types, edge types, and their properties
-- Uses `input_label` to map adapter outputs to schema concepts
-- Supports inheritance and property overrides
+## Minimal pipeline
 
-## Data Processing
+```python
+from biocypher import BioCypher
 
-### Node Creation
-- 3-tuple format: (node_id, node_label, attributes_dict)
-- node_id: unique identifier (preferably CURIE format)
-- node_label: must match schema input_label
-- attributes_dict: property key-value pairs
+bc = BioCypher(
+    biocypher_config_path="config/biocypher_config.yaml",
+    schema_config_path="config/schema_config.yaml",
+)
+adapter = MyAdapter(...)
+bc.write_nodes(adapter.get_nodes())
+bc.write_edges(adapter.get_edges())
+bc.write_import_call()  # offline mode only: writes the import script for the target DBMS
+```
 
-### Edge Creation
-- 5-tuple format: (edge_id, source_id, target_id, edge_label, attributes_dict)
-- edge_id: optional unique identifier
-- source_id/target_id: must reference existing node IDs
-- edge_label: must match schema input_label
-- attributes_dict: edge property key-value pairs
+## Starting a new project
 
-### Data Validation
-- Schema compliance checking
-- Node/edge label validation
-- Property type validation
-- Provenance field validation (strict mode)
+Use the cookiecutter template (https://github.com/biocypher/biocypher-cookiecutter-template). It generates `create_knowledge_graph.py`, `config/biocypher_config.yaml`, `config/schema_config.yaml` and `src/<package_name>/adapters/<adapter_name>.py`. The generated adapter yields dummy data and ignores its `data_source` argument until `get_nodes()` and `get_edges()` are rewritten; in a generated project, that file is the reference for the adapter structure.
 
-## Output Formats
+The BioCypher MCP server (https://mcp.biocypher.org/mcp) provides step-by-step workflow guidance, the scripted cookiecutter command, and `validate_schema_config`.
 
-### Graph Databases
-- Neo4j: Cypher queries and batch operations
-- ArangoDB: AQL queries and document operations
-- PostgreSQL: SQL operations with graph extensions
+## Alternative: in-memory Agent API
 
-### File Formats
-- RDF: Turtle, N-Triples, RDF/XML
-- OWL: Ontology Web Language
-- NetworkX: Python graph library format
-- Tabular: CSV, TSV with node/edge tables
+For small graphs built interactively without YAML files, `biocypher.create_workflow()` returns a `BioCypherWorkflow` with `add_node()`, `add_edge()`, queries and JSON/NetworkX/pandas export. It is a separate API from the `BioCypher` class above. Guide: https://biocypher.org/BioCypher/learn/tutorials/agent_api_guide/
 
-### In-Memory
-- NetworkX graph objects
-- Pandas DataFrames
-- Python dictionaries and lists
+## Human-oriented documentation
 
-## Utility Functions
-
-### Download and Cache
-- `download_and_cache_file()`: Download files with caching
-- `download_and_cache_ftp()`: FTP file downloads
-- `download_and_cache_http()`: HTTP file downloads
-
-### Ontology Handling
-- `load_ontology()`: Load OWL/TTL ontology files
-- `get_ontology_mapping()`: Extract entity mappings
-- `get_ontology_hierarchy()`: Extract class hierarchies
-
-### Graph Operations
-- `get_subgraph()`: Extract subgraphs by criteria
-- `merge_graphs()`: Combine multiple graphs
-- `deduplicate_nodes()`: Remove duplicate nodes
-- `deduplicate_edges()`: Remove duplicate edges
-
-## Configuration
-
-### BioCypher Configuration
-- `biocypher_config.yaml`: Main configuration file
-- Database connection settings
-- Output format specifications
-- Logging and validation options
-
-### Schema Configuration
-- `schema_config.yaml`: Schema definition file
-- Node and edge type definitions
-- Property specifications
-- Inheritance relationships
-
-## Common Patterns
-
-### Adapter Patterns
-- Simple adapter pattern: Direct data transformation
-- Resource-based pattern: Using BioCypher's Resource classes
-- Generator-based pattern: Memory-efficient streaming
-- Schema-driven pattern: Validation against schema configuration
-
-### Error Handling
-- Graceful handling of missing data
-- Schema validation errors
-- Network/IO error recovery
-- Data type conversion errors
-
-### Performance Optimization
-- Generator-based data processing
-- Batch operations for large datasets
-- Memory-efficient graph operations
-- Caching for repeated operations
-
-## Integration Points
-
-### External Libraries
-- GEOparse: NCBI GEO data access
-- Pandas: Data manipulation
-- NetworkX: Graph operations
-- RDFlib: RDF processing
-- OWLready2: OWL ontology handling
-
-### Database Drivers
-- Neo4j: py2neo driver
-- PostgreSQL: psycopg2 driver
-- ArangoDB: python-arango driver
-- SQLite: sqlite3 (built-in)
-
-## Validation Rules
-
-### Schema Compliance
-- All node labels must exist in schema
-- All edge labels must exist in schema
-- Required properties must be present
-- Property types must match schema definition
-
-### Data Quality
-- Node IDs must be unique
-- Edge source/target must reference valid nodes
-- CURIE format preferred for node IDs
-- Provenance fields required in strict mode
-
-### Performance Constraints
-- Memory usage for large datasets
-- Network timeouts for external data
-- File size limits for downloads
-- Processing time for complex operations
+- Schema configuration reference: https://biocypher.org/BioCypher/reference/schema-config/
+- BioCypher configuration reference: https://biocypher.org/BioCypher/reference/biocypher-config/
+- Output backends: https://biocypher.org/BioCypher/reference/outputs/
+- Download and cache API: https://biocypher.org/BioCypher/reference/source/download-cache/
+- Ontologies tutorial: https://biocypher.org/BioCypher/learn/tutorials/tutorial002_handling_ontologies/

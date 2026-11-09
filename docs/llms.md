@@ -14,7 +14,7 @@ The easiest way to integrate specific BioCypher instructions into your AI-assist
     This functionality is currently experimental and does not cover all BioCypher
     functionality yet. Use with caution.
 
-This section provides specialized documentation for AI coding assistants (Copilot, Cursor, Claude, etc.) to help them understand BioCypher's architecture and create high-quality code that follows our conventions. For instance, for Cursor or VSCode, add it like this:
+The MCP server gives AI coding assistants (Copilot, Cursor, Claude, etc.) step-by-step guidance for building a BioCypher pipeline and points them to the [LLM guides](#llm-guides) below. For Cursor or VSCode, add it like this (see also [Connect the MCP to your IDE](learn/guides/mcp.md)):
 
 ```json
 {
@@ -33,49 +33,41 @@ You can then ask for guidance in building your knowledge representation. For ins
 Using the CSVs in the `data` directory, how do I build a BioCypher knowledge graph?
 ```
 
-## Further LLM-Specific Documentation and Information
+## LLM guides
 
-BioCypher follows specific patterns and conventions that may not be immediately obvious to AI assistants. These guides provide:
+BioCypher follows patterns and conventions that AI assistants do not reliably know, and models often suggest functions that do not exist. The LLM guides state the conventions, the silent failure modes and the known bugs of the current release in plain Markdown, one topic per file, checked against the BioCypher code. The MCP server points models to them, and you can also give them to your assistant directly.
 
-- **Clear architectural patterns** for common tasks
-- **Concrete examples** with expected input/output formats
-- **Validation rules** to ensure code quality
-- **Best practices** specific to BioCypher's domain
+| Guide | Contents |
+| --- | --- |
+| [llms.txt](agents/llms.txt) | Index, core facts and a minimal pipeline. Start here. |
+| [llms-adapters.txt](agents/llms-adapters.txt) | Node and edge tuple formats, how BioCypher filters and deduplicates them, downloading and caching, testing an adapter |
+| [llms-schema-config.txt](agents/llms-schema-config.txt) | `schema_config.yaml` fields, class naming, list-valued fields, relationships as nodes, strict mode |
+| [llms-biocypher-config.txt](agents/llms-biocypher-config.txt) | `biocypher_config.yaml` loading and merging, output backends, offline and online mode, headless mode |
+| [llms-pitfalls.txt](agents/llms-pitfalls.txt) | Known bugs with workarounds, silent data loss, configuration surprises, APIs that do not exist |
+| [llms-example-adapter.txt](agents/llms-example-adapter.txt) | A complete runnable project with its verified output |
 
-## Available Guides (deprecated, use the MCP instead)
+The guides are served as plain text at `https://biocypher.org/BioCypher/agents/<file>`; `llms.txt` follows the [llms.txt](https://llmstxt.org/) format. Their sources are in [`docs/agents/`](https://github.com/biocypher/biocypher/tree/main/docs/agents) in the BioCypher repository.
 
-For AI assistants, the following `.txt` files are available under `/agents/` in this documentation:
+## Using the guides without the MCP
 
-- **[llms.txt](agents/llms.txt)** - Comprehensive functionality index and quick reference
-- **[llms-adapters.txt](agents/llms-adapters.txt)** - Adapter creation guide with patterns and examples
-- **[llms-example-adapter.txt](agents/llms-example-adapter.txt)** - Complete working GEO adapter example
+1. Give your assistant the URL of `llms.txt`, or of the guide that fits your task.
+2. Tell it which schema configuration you use, or let it read your `config/schema_config.yaml`.
+3. Ask it to check its code against the guides, in particular the pitfalls.
 
-## How to Use These Guides
-
-When working with an AI assistant on BioCypher code:
-
-1. **Reference the specific guide** for your task (e.g., adapter creation)
-2. **Provide the guide content** in your prompt for context
-3. **Specify the schema configuration** you're working with
-4. **Request validation** against the patterns described
-
-## Example Prompt
+Example prompt:
 
 ```
-I'm creating a BioCypher adapter for NCBI GEO data. Please follow the adapter creation guide at llms-adapters.txt.
-
-My schema configuration defines these node types:
-- geo_sample (input_label: "geo_sample")
-- geo_series (input_label: "geo_series")
-
-And these edge types:
-- HAS_SAMPLE (input_label: "HAS_SAMPLE")
-
-Please create an adapter that follows the 3-tuple (node_id, node_label, attributes_dict) and 5-tuple (edge_id, source_id, target_id, edge_label, attributes_dict) patterns described in the guide.
+I'm writing a BioCypher adapter for the CSV files in data/. Follow
+https://biocypher.org/BioCypher/agents/llms-adapters.txt and check the result
+against https://biocypher.org/BioCypher/agents/llms-pitfalls.txt.
+The schema is in config/schema_config.yaml. Yield 3-tuples
+(node_id, input_label, properties) for nodes and 5-tuples
+(edge_id, source_id, target_id, input_label, properties) for edges, and write
+tests for the tuples the adapter yields.
 ```
 
 ## Related Resources
 
 - [BioCypher + LLMs](biocypher-project/biochatter-integration.md) - Integration with BioChatter
-- [Adapter Tutorial](learn/tutorials/tutorial003_adapters.md) - Human-focused adapter tutorial
+- [Adapters](learn/explanation/adapters.md) - Human-focused explanation of adapters
 - [Schema Configuration](reference/schema-config.md) - Schema configuration reference

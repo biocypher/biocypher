@@ -1,0 +1,95 @@
+# BioCypher schema configuration (schema_config.yaml)
+
+Checked against BioCypher 0.17.0. Part of the BioCypher LLM guides; index: https://biocypher.org/BioCypher/agents/llms.txt
+
+The schema configuration is the contract between adapters and BioCypher. Each top-level key is a class (node or edge type). Adapters refer to classes only through `input_label`; BioCypher writes them under the class name. Validate a schema with the BioCypher MCP tool `validate_schema_config` (pass the YAML content, not a path, when the MCP server is remote).
+
+## Example
+
+```yaml
+protein:                          # class name; must exist in the head ontology unless is_a is given
+  represented_as: node
+  namespace: uniprot              # ID namespace, written as `preferred_id`; default "id"
+  input_label: uniprot_protein    # 2nd element of node tuples
+  properties:                     # a mapping, never a list
+    gene_symbol: str
+    name: str
+    organism: int
+    is_reviewed: bool
+    synonyms: str[]
+
+protein isoform:
+  is_a: protein                   # child of another schema class or of an ontology class
+  inherit_properties: true        # copy parent's properties
+  represented_as: node
+  namespace: uniprot
+  input_label: uniprot_isoform
+
+protein protein interaction:
+  is_a: pairwise molecular interaction
+  represented_as: edge
+  input_label: protein_interacts_with_protein   # 4th element of edge tuples
+  source: protein
+  target: protein
+  properties:
+    method: str
+    score: float
+```
+
+## Fields
+
+- `represented_as` (required): `node` or `edge`. A key without `represented_as` is not treated as a class and is ignored. An edge class can be `node` too (the relationship is reified as a node; see below).
+- `input_label` (required for data to arrive): string, or list of strings. Every tuple whose label equals one of them becomes this class. Each input label must be unique across the whole schema; if two classes share one, the later class silently takes it. `label_in_input` is the deprecated name.
+- `properties`: mapping of property name to type. Types: `str`/`string`, `int`/`integer`/`long`, `float`/`double`/`dbl`, `bool`/`boolean`, arrays as `str[]`, `int[]` etc. If omitted, all tuple properties pass through unfiltered. If given, undeclared tuple properties are dropped and missing ones are set to `None`. Writing `properties` as a YAML list raises an `AttributeError` at runtime.
+- `is_a`: parent class (string, or list for multiple inheritance). Needed whenever the class name is not in the head ontology. The parent must exist in the ontology or in the schema. A class that is its own parent is removed with an error.
+- `inherit_properties`: `true` copies the parent's `properties` and `exclude_properties` into the child.
+- `exclude_properties`: property name or list of names to drop.
+- `namespace`: identifier namespace (`uniprot`, `hgnc`, ...). Stored in the `preferred_id` field of each node. `preferred_id` is the deprecated name and triggers a `DeprecationWarning`. If neither is given, the value is `"id"`.
+- `source`, `target` (edges): the node classes at either end. Informational for single values (BioCypher does not check edge endpoints against them). A list in `source` creates one virtual child class per entry (see "Lists").
+- `synonym_for`: name of an ontology class this class replaces; the ontology node is relabelled to this class name.
+- `label_as_edge` (edges): overrides the output relationship label, e.g. `INTERACTS_WITH`. BioCypher logs that it will be deprecated; prefer a class name that gives the wanted label.
+- Custom keys are allowed and ignored by BioCypher.
+
+## Class names and output labels
+
+- Use lower sentence case with spaces, matching the ontology label: `small molecule`, `pairwise molecular interaction`. With the default Biolink head ontology, a class without `is_a` must be a Biolink class, otherwise BioCypher raises `ValueError: Class ... not found in ontology, but also has no inheritance definition`.
+- In headless mode (`head_ontology: null` in `biocypher_config.yaml`) no ontology is loaded; the class hierarchy is only what the schema declares, and any class name works.
+- Output labels are the class name in PascalCase: `protein protein interaction` becomes `ProteinProteinInteraction`. With an ontology, nodes also get their ancestor classes as additional labels.
+
+## Lists: one class, several input labels
+
+`namespace` (or `preferred_id`) as a list creates one virtual child class per entry, named `<namespace>.<class>`:
+
+```yaml
+protein:
+  represented_as: node
+  namespace: [uniprot, entrez]
+  input_label: [uniprot_protein, entrez_protein]
+```
+
+`input_label` must then be a list of the same length. Lists are paired with `zip`, so if lengths differ, the extra entries are dropped silently. The same applies to a list in `source` (edges) paired with `input_label`. For a class that just accepts several labels without virtual children, keep `namespace` a string and make only `input_label` a list.
+
+## Relationships represented as nodes
+
+With `represented_as: node` on a relationship class, each edge tuple becomes a node plus two edges linking it to source and target. The edge labels come from tuple property values, so declare them under `properties` and set them in each tuple:
+
+- `directed: true` in the tuple properties gives edges `IS_SOURCE_OF` and `IS_TARGET_OF`;
+- otherwise `src_role` and `tar_role` in the tuple properties give the two labels;
+- otherwise both edges are labelled `IS_PART_OF`.
+
+If `edge_id` is `None`, the node ID is built from source ID, target ID and the property values.
+
+## Strict mode
+
+With `strict_mode: true` in `biocypher_config.yaml`, every node and edge must carry `source`, `licence` and `version` properties (`license` is accepted and renamed). BioCypher adds these three to each class's declared properties automatically, so they do not need to be listed in the schema.
+
+## Checklist before running
+
+- Every class has `represented_as` and `input_label`.
+- `properties` is a mapping, not a list.
+- Every class name is in the ontology or has `is_a` (or the run is headless).
+- No input label is used twice.
+- List-valued `namespace`/`source` and `input_label` have equal lengths.
+- Every label the adapter yields appears as an `input_label`.
+
+Human-oriented reference: https://biocypher.org/BioCypher/reference/schema-config/

@@ -1,0 +1,66 @@
+# BioCypher pitfalls and known issues
+
+Checked against BioCypher 0.17.0. Part of the BioCypher LLM guides; index: https://biocypher.org/BioCypher/agents/llms.txt
+
+Each entry: symptom, cause, workaround. Entries marked "bug" are expected to be fixed in a later release; check the installed version (`python -c "import biocypher; print(biocypher.__version__)"`) and drop the workaround once fixed.
+
+## Bugs in 0.17.0
+
+### Online Neo4j with `wipe: true` loses node data (bug)
+
+- Symptom: after `bc.write_nodes(...)` and `bc.write_edges(...)` in online mode (`offline: false`, `dbms: neo4j`), all edges exist but the nodes have no labels and no properties. No error is reported.
+- Cause: each write call creates a new database connector, and each new connector wipes the database when `wipe: true` (the default). The edge write wipes the nodes, then `MERGE` recreates bare endpoint nodes.
+- Workaround: set `wipe: false` in the `neo4j` section and clear the database yourself before the run if needed (`MATCH (n) DETACH DELETE n`). Or use offline mode and the import script.
+
+### `bc.summary()` crashes in online Neo4j mode (bug)
+
+- Symptom: `AttributeError: 'NoneType' object has no attribute 'get_duplicate_nodes'` after the data was written; the script exits with code 1.
+- Cause: `summary()` calls `log_duplicates()`, which needs a deduplicator that the online Neo4j path never creates.
+- Workaround: call `bc.summary()` or `bc.log_duplicates()` only in offline mode. `bc.log_missing_input_labels()` is safe.
+
+### `bc.summary()` raises in headless mode
+
+- Symptom: `NotImplementedError: show_ontology_structure() is unavailable in headless mode`.
+- Cause: `summary()` first draws the ontology tree, which needs a head ontology.
+- Workaround: with `head_ontology: null`, call `bc.log_duplicates()` and `bc.log_missing_input_labels()` instead of `bc.summary()`.
+
+### Parquet warning on every offline Neo4j run (harmless)
+
+- Symptom: `The default output format for Neo4j offline mode has been changed to Parquet...` is logged even when the config sets `file_format: parquet` explicitly.
+- Cause: the warning fires whenever the format is Parquet.
+- Workaround: none needed; the config is fine. Setting `file_format: csv` silences it but changes the output format.
+
+## Silent data loss
+
+These are by design, but they hide adapter errors, so check for them explicitly.
+
+- Unknown labels: tuples whose label is not an `input_label` in the schema are dropped. The log shows `ERROR -- No ontology type defined for ...`, but the run succeeds. Check `bc.log_missing_input_labels()`.
+- Undeclared properties are dropped; declared but missing properties become empty.
+- Duplicates: the first node per ID wins, the rest are dropped even if their properties differ. Edges without `edge_id` are deduplicated by type, source and target, so parallel edges of one type between the same two nodes collapse into one. Normalize IDs (case, prefix, whitespace) before yielding, and give parallel edges distinct IDs.
+- No type casting: values are written as yielded. An `int` under a `bool` property is written as `1`; the database import may reject or misinterpret it.
+- Dangling edges: BioCypher does not check that edge endpoints were yielded as nodes. `neo4j-admin` fails on them unless `skip_bad_relationships: true`; online `MERGE` creates empty nodes.
+- Duplicate `input_label` across classes: the class defined later in the file takes the label; the earlier class gets no data.
+- List lengths: list-valued `namespace`/`preferred_id` or `source` are paired with `input_label` using `zip`; extra entries are dropped.
+- Graph counts look right even when the adapter is wrong. Test the adapter's tuples directly (see https://biocypher.org/BioCypher/agents/llms-adapters.txt, "Testing an adapter").
+
+## Configuration surprises
+
+- The default `head_ontology` (Biolink) is downloaded over the network on first use. Offline, behind a firewall or in CI this can stall or fail. Use `head_ontology: null` (headless) when no ontology hierarchy is needed, or point `url` to a local file.
+- Setting keys in your `biocypher:` section does not remove other defaults. Headless mode needs an explicit `head_ontology: null`.
+- Config files are found relative to the current working directory (`biocypher_config.yaml` or `config/biocypher_config.yaml`), and relative paths inside them also resolve there. Run scripts from the project root, or pass absolute paths.
+- Class names: with an ontology, a class without `is_a` must exist in the ontology. Underscores, capital letters or typos raise `ValueError: Class ... not found in ontology, but also has no inheritance definition`.
+- `properties` written as a YAML list raises `AttributeError: Properties for type ... should be a dictionary`.
+- Neo4j offline: `edge_labels_order` other than `Leaves` is reset to `Leaves` with a warning.
+- Neo4j Community Edition: set `multi_db: false`.
+- `preferred_id` and `label_in_input` are deprecated in the schema; use `namespace` and `input_label`. `label_as_edge` logs a future-deprecation warning.
+
+## APIs that do not exist
+
+Older guides and model memory mention these; they are not part of BioCypher:
+
+- `bc.write()`, `bc.get_graph()` on the `BioCypher` class (use `write_nodes`/`write_edges`, or `add` + `get_kg`; `get_graph()` exists only on `BioCypherWorkflow`).
+- `FileDownload(...).get()` (use `bc.download(resource)`).
+- `download_and_cache_file()`, `download_and_cache_ftp()`, `download_and_cache_http()`, `load_ontology()`, `merge_graphs()`, `deduplicate_nodes()`.
+- `from biocypher._get import FileDownload` works but is private; use `from biocypher import FileDownload, APIRequest`.
+- A `BaseAdapter` or `AdaptiveAdapter` base class. Adapters are plain classes.
+- The `py2neo` driver. Online Neo4j uses the official `neo4j` Python driver.
