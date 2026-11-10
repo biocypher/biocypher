@@ -1,293 +1,221 @@
-# Example Adapter Implementation
+# BioCypher example project
 
-This document provides a complete, working example of a BioCypher adapter that demonstrates the patterns and best practices described in llms-adapters.txt.
+Checked against BioCypher 0.17.0. Part of the BioCypher LLM guides; index: https://biocypher.org/BioCypher/agents/llms.txt
 
-## Complete GEO Adapter Example
+A complete, runnable project: two CSV files become protein nodes and protein-protein interaction edges, written as Neo4j import files. It uses headless mode, so it needs no network access, and CSV output, so it needs no `pyarrow`. The output at the end was produced by running exactly these files.
+
+In a project generated with the cookiecutter template, keep the template's layout (`src/<package_name>/adapters/<adapter_name>.py`, `create_knowledge_graph.py`) and apply the same patterns there.
+
+## Layout
+
+```text
+example/
+├── create_knowledge_graph.py
+├── adapters/
+│   ├── __init__.py          # empty
+│   └── protein_adapter.py
+├── config/
+│   ├── biocypher_config.yaml
+│   └── schema_config.yaml
+└── data/
+    ├── proteins.csv
+    └── interactions.csv
+```
+
+## data/proteins.csv
+
+```text
+uniprot_id,gene_symbol,name,organism,is_reviewed
+P04637,TP53,Cellular tumor antigen p53,9606,true
+P38398,BRCA1,Breast cancer type 1 susceptibility protein,9606,true
+Q00987,MDM2,E3 ubiquitin-protein ligase Mdm2,9606,false
+Q00987,MDM2,E3 ubiquitin-protein ligase Mdm2,9606,false
+```
+
+## data/interactions.csv
+
+```text
+source,target,method,score
+P04637,Q00987,two hybrid,0.99
+P04637,P38398,affinity chromatography,0.87
+P04637,X99999,two hybrid,0.10
+```
+
+The data contains a repeated protein row and an interaction with an unknown protein, to show how the adapter handles them.
+
+## config/schema_config.yaml
+
+```yaml
+protein:
+  represented_as: node
+  namespace: uniprot
+  input_label: uniprot_protein
+  properties:
+    gene_symbol: str
+    name: str
+    organism: int
+    is_reviewed: bool
+
+protein protein interaction:
+  is_a: pairwise molecular interaction
+  represented_as: edge
+  input_label: protein_interacts_with_protein
+  source: protein
+  target: protein
+  properties:
+    method: str
+    score: float
+```
+
+## config/biocypher_config.yaml
+
+```yaml
+biocypher:
+  dbms: neo4j
+  offline: true
+  strict_mode: false
+  schema_config_path: config/schema_config.yaml
+  head_ontology: null      # headless: no Biolink download
+  output_directory: biocypher-out
+  cache_directory: .cache
+
+neo4j:
+  file_format: csv         # parquet (the default) needs pyarrow
+  edge_labels_order: Leaves
+```
+
+## adapters/protein_adapter.py
 
 ```python
-#!/usr/bin/env python3
-"""
-Example GEO Adapter for BioCypher
+"""Adapter for a protein table and a protein-protein interaction table."""
 
-This adapter demonstrates the complete pattern for creating a BioCypher adapter
-that transforms NCBI GEO data into BioCypher's canonical format.
-"""
+import csv
+import logging
+from collections.abc import Iterator
+from pathlib import Path
+from typing import Any
 
-import GEOparse
-from typing import Iterator, Tuple, Dict, Any
-from biocypher._get import FileDownload
+logger = logging.getLogger(__name__)
+
+NodeTuple = tuple[str, str, dict[str, Any]]
+EdgeTuple = tuple[str | None, str, str, str, dict[str, Any]]
 
 
-class GEOAdapter:
-    """
-    BioCypher adapter for NCBI GEO data.
+def _to_bool(value: str) -> bool:
+    return value.strip().lower() in {"true", "1", "yes"}
 
-    Transforms GEO series and sample metadata into BioCypher nodes and edges
-    following the schema configuration contract.
-    """
 
-    def __init__(self, gse_id: str, schema_config: Dict[str, Any] = None):
-        """
-        Initialize the GEO adapter.
+class ProteinAdapter:
+    """Yield BioCypher node and edge tuples from two CSV files."""
 
-        Args:
-            gse_id: GEO Series ID (e.g., "GSE12345")
-            schema_config: Schema configuration for validation
-        """
-        self.gse_id = gse_id
-        self.schema_config = schema_config
-        self.series = None
-        self._load_data()
+    def __init__(self, data_dir: str | Path):
+        self.data_dir = Path(data_dir)
+        self._node_ids: set[str] = set()
 
-    def _load_data(self):
-        """Load GEO data using GEOparse."""
-        try:
-            self.series = GEOparse.get_GEO(self.gse_id)
-            print(f"Loaded GEO series: {self.series.name}")
-        except Exception as e:
-            raise RuntimeError(f"Failed to load GEO series {self.gse_id}: {e}")
-
-    def _validate_schema_compliance(self):
-        """Validate that adapter outputs match schema requirements."""
-        if not self.schema_config:
-            return
-
-        schema_nodes = {node['input_label'] for node in self.schema_config.get('nodes', [])}
-        schema_edges = {edge['input_label'] for edge in self.schema_config.get('edges', [])}
-
-        # Validate node labels
-        for node_id, node_label, _ in self.get_nodes():
-            if node_label not in schema_nodes:
-                raise ValueError(f"Node label '{node_label}' not in schema")
-
-        # Validate edge labels
-        for _, _, _, edge_label, _ in self.get_edges():
-            if edge_label not in schema_edges:
-                raise ValueError(f"Edge label '{edge_label}' not in schema")
-
-    def _safe_extract(self, metadata: Dict[str, Any], key: str, default: Any = None) -> Any:
-        """
-        Safely extract metadata with fallback.
-
-        Args:
-            metadata: Metadata dictionary
-            key: Key to extract
-            default: Default value if key not found
-
-        Returns:
-            Extracted value or default
-        """
-        try:
-            return metadata.get(key, default)
-        except (AttributeError, KeyError):
-            return default
-
-    def get_nodes(self) -> Iterator[Tuple[str, str, Dict[str, Any]]]:
-        """
-        Generate nodes from GEO data.
-
-        Yields:
-            Tuple of (node_id, node_label, attributes_dict)
-        """
-        # Series node
-        yield (
-            f"GEO:{self.series.name}",    # node_id
-            "geo_series",                 # node_label (matches schema input_label)
-            {
-                "title": self._safe_extract(self.series.metadata, "title"),
-                "summary": self._safe_extract(self.series.metadata, "summary"),
-                "submission_date": self._safe_extract(self.series.metadata, "submission_date"),
-                "last_update_date": self._safe_extract(self.series.metadata, "last_update_date"),
-                "source": "GEO",
-                "version": self._safe_extract(self.series.metadata, "submission_date"),
-            },
-        )
-
-        # Sample nodes
-        for sample_name, sample in self.series.gsms.items():
-            yield (
-                f"GEO:{sample_name}",     # node_id
-                "geo_sample",             # node_label (matches schema input_label)
-                {
-                    "disease": self._safe_extract(sample.metadata, "disease_state"),
-                    "organism": self._safe_extract(sample.metadata, "organism_ch1"),
-                    "tissue": self._safe_extract(sample.metadata, "tissue_ch1"),
-                    "cell_type": self._safe_extract(sample.metadata, "cell_type_ch1"),
-                    "treatment": self._safe_extract(sample.metadata, "treatment_protocol_ch1"),
-                    "source": "GEO",
-                    "version": self._safe_extract(self.series.metadata, "submission_date"),
-                },
-            )
-
-        # Platform nodes (if available)
-        for platform_name, platform in self.series.gpls.items():
-            yield (
-                f"GEO:{platform_name}",   # node_id
-                "geo_platform",           # node_label (matches schema input_label)
-                {
-                    "title": self._safe_extract(platform.metadata, "title"),
-                    "technology": self._safe_extract(platform.metadata, "technology"),
-                    "source": "GEO",
-                    "version": self._safe_extract(self.series.metadata, "submission_date"),
-                },
-            )
-
-    def get_edges(self) -> Iterator[Tuple[str, str, str, str, Dict[str, Any]]]:
-        """
-        Generate edges from GEO data.
-
-        Yields:
-            Tuple of (edge_id, source_id, target_id, edge_label, attributes_dict)
-        """
-        # Series to Sample relationships
-        for sample_name in self.series.gsms.keys():
-            yield (
-                f"series_sample_{self.series.name}_{sample_name}",  # edge_id
-                f"GEO:{self.series.name}",                          # source_id (series)
-                f"GEO:{sample_name}",                               # target_id (sample)
-                "HAS_SAMPLE",                                       # edge_label (matches schema input_label)
-                {
-                    "source": "GEO",
-                    "version": self._safe_extract(self.series.metadata, "submission_date"),
-                },
-            )
-
-        # Sample to Platform relationships
-        for sample_name, sample in self.series.gsms.items():
-            platform_name = self._safe_extract(sample.metadata, "platform_id")
-            if platform_name and platform_name in self.series.gpls:
+    def get_nodes(self) -> Iterator[NodeTuple]:
+        with open(self.data_dir / "proteins.csv", newline="") as f:
+            for row in csv.DictReader(f):
+                node_id = f"uniprot:{row['uniprot_id'].strip()}"
+                if node_id in self._node_ids:  # skip exact repeats ourselves
+                    continue
+                self._node_ids.add(node_id)
                 yield (
-                    f"sample_platform_{sample_name}_{platform_name}",  # edge_id
-                    f"GEO:{sample_name}",                               # source_id (sample)
-                    f"GEO:{platform_name}",                             # target_id (platform)
-                    "USES_PLATFORM",                                    # edge_label (matches schema input_label)
+                    node_id,
+                    "uniprot_protein",  # == input_label in schema_config.yaml
                     {
-                        "source": "GEO",
-                        "version": self._safe_extract(self.series.metadata, "submission_date"),
+                        "gene_symbol": row["gene_symbol"].strip().upper(),
+                        "name": row["name"].strip(),
+                        "organism": int(row["organism"]),  # schema says int
+                        "is_reviewed": _to_bool(row["is_reviewed"]),  # schema says bool
                     },
                 )
 
-    def validate(self) -> bool:
-        """
-        Validate the adapter output against schema.
-
-        Returns:
-            True if validation passes, raises exception otherwise
-        """
-        self._validate_schema_compliance()
-        return True
-
-
-# Usage Example
-def main():
-    """Example usage of the GEO adapter."""
-
-    # Example schema configuration
-    schema_config = {
-        "nodes": [
-            {
-                "input_label": "geo_series",
-                "properties": ["title", "summary", "source", "version"]
-            },
-            {
-                "input_label": "geo_sample",
-                "properties": ["disease", "organism", "source", "version"]
-            },
-            {
-                "input_label": "geo_platform",
-                "properties": ["title", "technology", "source", "version"]
-            }
-        ],
-        "edges": [
-            {
-                "input_label": "HAS_SAMPLE",
-                "source": "geo_series",
-                "target": "geo_sample",
-                "properties": ["source", "version"]
-            },
-            {
-                "input_label": "USES_PLATFORM",
-                "source": "geo_sample",
-                "target": "geo_platform",
-                "properties": ["source", "version"]
-            }
-        ]
-    }
-
-    # Create adapter
-    adapter = GEOAdapter("GSE12345", schema_config)
-
-    # Validate
-    adapter.validate()
-
-    # Generate nodes and edges
-    nodes = list(adapter.get_nodes())
-    edges = list(adapter.get_edges())
-
-    print(f"Generated {len(nodes)} nodes and {len(edges)} edges")
-
-    # Example node output
-    print("\nExample node:")
-    print(nodes[0])
-
-    # Example edge output
-    print("\nExample edge:")
-    print(edges[0])
-
-
-if __name__ == "__main__":
-    main()
+    def get_edges(self) -> Iterator[EdgeTuple]:
+        # Call after get_nodes() has been consumed, so self._node_ids is filled.
+        with open(self.data_dir / "interactions.csv", newline="") as f:
+            for row in csv.DictReader(f):
+                source_id = f"uniprot:{row['source'].strip()}"
+                target_id = f"uniprot:{row['target'].strip()}"
+                if source_id not in self._node_ids or target_id not in self._node_ids:
+                    logger.warning("Skipping edge with unknown endpoint: %s -> %s", source_id, target_id)
+                    continue
+                yield (
+                    None,  # edge_id: None lets BioCypher handle it
+                    source_id,
+                    target_id,
+                    "protein_interacts_with_protein",  # == input_label
+                    {"method": row["method"].strip(), "score": float(row["score"])},
+                )
 ```
 
-## Key Features Demonstrated
+Points to note:
 
-### 1. Schema Compliance
-- Validates node and edge labels against schema configuration
-- Ensures all required properties are present
-- Raises clear error messages for violations
+- IDs are CURIEs built the same way for nodes and edge endpoints.
+- Every value is converted to the schema type; `"false"` is parsed explicitly, because `bool("false")` is `True`.
+- The adapter removes repeated rows and dangling edges itself and logs them, instead of relying on BioCypher's silent deduplication.
+- Tuples are yielded from generators. Edges are 5-tuples with the label in 4th position.
 
-### 2. Error Handling
-- Safe metadata extraction with fallbacks
-- Graceful handling of missing or malformed data
-- Comprehensive exception handling
-
-### 3. Data Transformation
-- Converts GEO metadata to BioCypher canonical format
-- Handles multiple entity types (series, samples, platforms)
-- Creates meaningful relationships between entities
-
-### 4. Provenance Tracking
-- Includes source and version information
-- Maintains data lineage
-- Supports strict mode requirements
-
-### 5. Memory Efficiency
-- Uses generators for streaming data
-- Processes large datasets without loading everything into memory
-- Supports incremental processing
-
-## Integration with BioCypher
+## create_knowledge_graph.py
 
 ```python
 from biocypher import BioCypher
 
-# Initialize BioCypher
-bc = BioCypher()
+from adapters.protein_adapter import ProteinAdapter
 
-# Create adapter
-adapter = GEOAdapter("GSE12345")
+bc = BioCypher(
+    biocypher_config_path="config/biocypher_config.yaml",
+    schema_config_path="config/schema_config.yaml",
+)
+adapter = ProteinAdapter(data_dir="data")
 
-# Add nodes and edges to BioCypher
-bc.add_nodes(adapter.get_nodes())
-bc.add_edges(adapter.get_edges())
-
-# Write to database
-bc.write()
+bc.write_nodes(adapter.get_nodes())  # consume nodes first
+bc.write_edges(adapter.get_edges())
+bc.write_import_call()  # offline Neo4j: writes neo4j-admin-import-call.sh
+bc.log_missing_input_labels()
+bc.log_duplicates()  # bc.summary() would fail in headless mode
 ```
 
-This example demonstrates all the patterns and best practices described in llms-adapters.txt and can serve as a template for creating new adapters.
+Run it from the `example/` directory: `python create_knowledge_graph.py` (with `biocypher` installed).
 
-## Related Files
+## Output
 
-- **llms-adapters.txt** - Adapter creation guide
-- **llms.txt** - Functionality index and reference
+Log (excerpt):
+
+```text
+INFO -- Writing 3 entries to Protein-part000.csv
+Skipping edge with unknown endpoint: uniprot:P04637 -> uniprot:X99999
+INFO -- Writing 2 entries to ProteinProteinInteraction-part000.csv
+INFO -- No missing labels in input.
+INFO -- No duplicate nodes in input.
+INFO -- No duplicate edges in input.
+```
+
+`biocypher-out/Protein-header.csv` and `Protein-part000.csv`:
+
+```text
+:ID,gene_symbol,name,organism:long,is_reviewed:boolean,id,preferred_id,:LABEL
+uniprot:P04637,"TP53","Cellular tumor antigen p53",9606,true,"uniprot:P04637","uniprot","Protein"
+uniprot:P38398,"BRCA1","Breast cancer type 1 susceptibility protein",9606,true,"uniprot:P38398","uniprot","Protein"
+uniprot:Q00987,"MDM2","E3 ubiquitin-protein ligase Mdm2",9606,false,"uniprot:Q00987","uniprot","Protein"
+```
+
+`biocypher-out/ProteinProteinInteraction-header.csv` and `ProteinProteinInteraction-part000.csv`:
+
+```text
+:START_ID,id,method,score:double,:END_ID,:TYPE
+uniprot:P04637,,"two hybrid",0.99,uniprot:Q00987,"ProteinProteinInteraction"
+uniprot:P04637,,"affinity chromatography",0.87,uniprot:P38398,"ProteinProteinInteraction"
+```
+
+Plus `neo4j-admin-import-call.sh`, which imports these files with `neo4j-admin database import full` (Neo4j 5+) or `neo4j-admin import` (older versions).
+
+## Variant: in-memory graph
+
+Change the config to `dbms: networkx` (or `pandas`) and `offline: false`, then:
+
+```python
+bc.add(adapter.get_nodes())
+bc.add(adapter.get_edges())
+kg = bc.get_kg()  # networkx.DiGraph with 3 nodes and 2 edges
+                  # (pandas: dict of DataFrames keyed by class name)
+```

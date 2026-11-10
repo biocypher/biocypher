@@ -1,0 +1,98 @@
+# BioCypher configuration (biocypher_config.yaml)
+
+Checked against BioCypher 0.17.0. Part of the BioCypher LLM guides; index: https://biocypher.org/BioCypher/agents/llms.txt
+
+`biocypher_config.yaml` selects the output backend, offline/online mode, the ontology and file locations. The schema itself lives in `schema_config.yaml` (see https://biocypher.org/BioCypher/agents/llms-schema-config.txt).
+
+## How configuration is loaded
+
+1. Built-in defaults (shipped with the package).
+2. User-level file `conf.yaml` in the platform's user config directory, if present.
+3. `biocypher_config.yaml` in the current working directory, or else `config/biocypher_config.yaml`.
+4. The file given as `BioCypher(biocypher_config_path=...)`.
+5. Constructor arguments (`dbms`, `offline`, `strict_mode`, `schema_config_path`, `head_ontology`, `output_directory`, `cache_directory`, ...).
+
+Later sources win. Merging is per top-level section: a key you set inside `biocypher:` or `neo4j:` replaces that key only, all other keys of the section keep their defaults. So the default Biolink `head_ontology` stays active unless you set `head_ontology: null` explicitly. Unknown top-level keys trigger a `UserWarning` about a likely misspelling.
+
+Steps 2 and 3 happen at import time, relative to the current working directory. Relative paths in the config (`schema_config_path`, `output_directory`, `cache_directory`) also resolve against the working directory, so run the build script from the project root.
+
+## Example
+
+```yaml
+biocypher:
+  dbms: neo4j                     # required
+  offline: true                   # required
+  strict_mode: false              # required
+  schema_config_path: config/schema_config.yaml
+  head_ontology:                  # or `head_ontology: null` for headless mode
+    url: https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
+    root_node: entity
+    switch_label_and_id: true
+  output_directory: biocypher-out # default: biocypher-out/<timestamp>
+  cache_directory: .cache         # for bc.download(); default: a temporary directory
+  log_to_disk: true
+  debug: true
+  log_directory: biocypher-log
+
+neo4j:
+  database_name: neo4j
+  wipe: true
+  uri: neo4j://localhost:7687
+  user: neo4j
+  password: neo4j
+  file_format: parquet            # or csv
+  edge_labels_order: Leaves       # the only value Neo4j supports
+  multi_db: true                  # false for Neo4j Community Edition
+```
+
+## `biocypher` section
+
+- `dbms` (required): output backend, see the table below.
+- `offline` (required): `true` writes files plus an import script (`bc.write_import_call()`); `false` writes to a running database (Neo4j only) or builds an in-memory object.
+- `strict_mode` (required): `true` requires `source`, `licence`, `version` on every node and edge.
+- `schema_config_path`: path to `schema_config.yaml`. Without it BioCypher logs "Running BioCypher without schema configuration." and drops all tuples.
+- `head_ontology`: `url` (OWL/TTL file or URL) and `root_node`; optional `switch_label_and_id` (default `true`, uses class labels instead of IDs as names). Default is Biolink 3.2.1, fetched over the network on first use. `head_ontology: null` enables headless mode: no download, no hierarchy beyond what the schema declares, `tail_ontologies` not allowed, and ontology visualisation unavailable.
+- `tail_ontologies`: additional ontologies joined into the head ontology; each has `url`, `head_join_node`, `tail_join_node`, optional `switch_label_and_id` and `merge_nodes` (default `true`).
+- `output_directory`, `cache_directory`, `log_directory`, `log_to_disk`, `debug`.
+- `big_data`: disk-backed deduplication for very large offline builds; needs the `bigdata` extra (`pip install "biocypher[bigdata]"`); not allowed with `offline: false`.
+
+## Backends (`dbms`)
+
+| dbms | offline: true | offline: false |
+| --- | --- | --- |
+| `neo4j` | node/edge files + `neo4j-admin` import script | writes to a running Neo4j via the `neo4j` driver |
+| `postgresql` | files + `psql` import script | not supported |
+| `sqlite` | files + `sqlite3` import script | not supported |
+| `arangodb` | files + `arangoimport` import script | not supported |
+| `rdf` | RDF file (`file_format`: turtle, xml, json-ld, ntriples, n3, trig, trix, nquads) | not supported |
+| `owl` | OWL file | not supported |
+| `csv` / `pandas` / `tabular` | CSV files | in memory: dict of pandas DataFrames from `bc.get_kg()` |
+| `networkx` | pickled NetworkX graph | in memory: `networkx.DiGraph` from `bc.get_kg()` |
+| `biopathnet` | BioPathNet input files | not supported |
+| `airr` | placeholder writer (writes nothing) | in memory, for AIRR immune-receptor data (needs the `scirpy` extra) |
+
+Online Neo4j and Parquet output need the `neo4j` extra: `pip install "biocypher[neo4j]"` (installs `neo4j` and `pyarrow`).
+
+## Backend sections
+
+Each backend has its own top-level section with the same name (`neo4j`, `postgresql`, `sqlite`, `arangodb`, `rdf`, `owl`, `csv`, ...). Common keys:
+
+- `database_name`; connection keys (`uri`, `user`, `password`, `host`, `port`) for online use.
+- `import_call_bin_prefix`: path prefix of the import binary (for example `bin/` for `neo4j-admin`).
+- `import_call_file_prefix`: path prefix for the data files inside the import script, if the database sees them under a different path (e.g. in Docker).
+- `labels_order`, `node_labels_order`, `edge_labels_order`: `Ascending` (default), `Descending`, `Alphabetical` or `Leaves`.
+
+Neo4j-specific:
+
+- `wipe` (default `true`): offline, adds `--force`/`--overwrite-destination` to the import call; online, deletes the database content (see the pitfalls file before using it online).
+- `file_format`: `parquet` (default; needs pyarrow and a Neo4j version that imports Parquet) or `csv`. Header files are always CSV.
+- `csv_column_delimiter` (`,`), `csv_array_delimiter` (`;`), `csv_string_quote_character` (`"`): keep the defaults; they match `neo4j-admin`.
+- `multi_db`: set `false` for Neo4j Community Edition.
+- `skip_duplicate_nodes`, `skip_bad_relationships`: pass the matching `neo4j-admin` import flags.
+- `import_call_additional_options`: extra flags appended to the import call.
+
+## Output of an offline Neo4j build
+
+The output directory contains `<Label>-header.csv` plus `<Label>-part000.csv` (or `.parquet`) per class, and `neo4j-admin-import-call.sh`. Run the script from the Neo4j home directory (or set `import_call_bin_prefix`) with the database stopped.
+
+Human-oriented reference: https://biocypher.org/BioCypher/reference/biocypher-config/ and https://biocypher.org/BioCypher/reference/outputs/

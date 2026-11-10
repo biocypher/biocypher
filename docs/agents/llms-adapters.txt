@@ -1,161 +1,115 @@
-# BioCypher Adapter Creation (LLM Guide)
+# BioCypher adapters
 
-> This guide instructs AI coding assistants (Copilot, Cursor, Claude, etc.) how to create BioCypher adapters.
-> Adapters transform arbitrary input data (e.g. NCBI GEO metadata) into BioCypher's canonical format, using the schema configuration YAML as the contract.
-> Output must be a collection of node tuples (3 elements) and edge tuples (5 elements), aligned with the schema.
-> BioCypher provides base classes and utilities to help with common adapter patterns.
+Checked against BioCypher 0.17.0. Part of the BioCypher LLM guides; index: https://biocypher.org/BioCypher/agents/llms.txt
 
-Adapters follow the **idiomatic BioCypher interface**: they expose one or more iterables that yield nodes and edges. The key steps for an LLM to generate an adapter are:
+An adapter is user code that reads one data source and yields node and edge tuples. BioCypher has no adapter base class: any object whose methods return iterables of tuples works. By convention an adapter exposes `get_nodes()` and `get_edges()`, each returning a generator.
 
-## 1. Schema Analysis
+## Node tuple
 
-- Load and parse the `schema_config.yaml`.
-- Identify all node and edge types, their `input_label`s, and required properties.
-- **Rule**: all adapter outputs must match the schema's input labels and property names.
+`(node_id, input_label, properties)`
 
-## 2. Data Retrieval
+- `node_id` (str): unique across the whole graph, not only within one type. Prefer CURIEs (`uniprot:P04637`, `hgnc:11998`) and normalize them (strip whitespace, consistent case and prefix) before yielding.
+- `input_label` (str): must equal an `input_label` of a node class in `schema_config.yaml`.
+- `properties` (dict): keys must match the class's `properties` in the schema. Convert values to the declared type yourself (see "Types" below).
 
-- Use BioCypher's `Resource` and `FileDownload` classes for data retrieval and caching.
-- Implement retrieval directly (for GEO: `GEOparse.get_GEO("GSE12345")`).
-- Consider using external libraries like `GEOparse`, `pandas`, or `requests` for data access.
+## Edge tuple
 
-## 3. Metadata Parsing
+`(edge_id, source_id, target_id, input_label, properties)`
 
-- Inspect metadata objects (e.g. GSE, GSM, GPL in GEOparse).
-- For each concept in the schema, extract relevant fields.
-- Normalize divergent field names (e.g. `"disease_state"` → `"disease"`) to schema properties.
+- `edge_id` (str or None): `None` is fine for edges represented as edges, unless there can be several edges of the same type between the same two nodes (see deduplication below). For edges represented as nodes (`represented_as: node` in the schema), BioCypher builds an ID from source, target and property values when `edge_id` is `None`.
+- `source_id`, `target_id` (str): node IDs exactly as yielded in node tuples. BioCypher does not check that these nodes exist; dangling edges reach the output and fail or get skipped at database import.
+- `input_label` (str): the 4th element. Must equal an `input_label` of an edge class in the schema.
+- `properties` (dict): as for nodes.
 
-## 4. Node Creation (3-tuple)
+4-tuples `(source_id, target_id, input_label, properties)` are still accepted but deprecated. Always yield 5-tuples.
 
-Each node is `(node_id, node_label, attributes_dict)`
-- `node_id`: unique string, ideally CURIE-like (e.g. `GEO:GSM12345`).
-- `node_label`: must equal the schema's `input_label`.
-- `attributes_dict`: keys = schema properties; include provenance fields if strict mode (`source`, `version`, `licence`).
+## How BioCypher consumes tuples
 
-## 5. Edge Creation (5-tuple)
+BioCypher decides per call whether it got nodes or edges by looking at the length of the first element: fewer than 4 elements means nodes, otherwise edges. Do not mix nodes and edges in one iterable.
 
-Each edge is `(edge_id, source_id, target_id, edge_label, attributes_dict)`
-- `edge_id`: optional unique string.
-- `source_id` / `target_id`: must reference valid node IDs created above.
-- `edge_label`: must equal the schema's `input_label` for this relation.
-- `attributes_dict`: properties defined in the schema (or empty if none).
+For every tuple, BioCypher:
 
-## 6. Multiple Metadata Formats
+1. Looks up the label in the schema. Unknown label: the tuple is dropped and an error is logged (`No ontology type defined for ...`); the run continues. `bc.log_missing_input_labels()` lists all dropped labels.
+2. Filters properties: keys not declared in the schema are dropped silently; declared keys missing from the tuple are added with value `None`. If the class declares no properties, all properties pass through unfiltered.
+3. In strict mode (`strict_mode: true`), raises `ValueError` if `source`, `licence` or `version` is missing from the properties (`license` is renamed to `licence`).
+4. Deduplicates, keeping the first occurrence and dropping later ones even when their properties differ:
+   - nodes by node ID, across all types;
+   - edges by edge type plus edge ID, or, when `edge_id` is `None`, by edge type plus source and target. Two edges of the same type between the same pair of nodes (for example from two experiments) therefore collapse into one unless each gets its own `edge_id`.
+   `bc.log_duplicates()` reports the duplicate types and IDs.
 
-- If series differ in structure, handle conditionally or create specialized subclasses.
-- Ensure **all schema concepts are extracted** regardless of metadata divergence.
+Values are not cast to the schema type. A Python `int` under a `bool` property is written as `1`, not `true`.
 
-## 7. Validation
+## Calling the adapter
 
-- Confirm every adapter output type exists in schema.
-- Avoid extra types.
-- If strict mode: check provenance fields present.
-
-## Example Pattern (Pseudo-Python)
+Offline mode (files plus an import script) or online Neo4j:
 
 ```python
-import GEOparse
-from biocypher._get import FileDownload
-
-class GEOAdapter:
-    def __init__(self, gse_id: str):
-        self.gse_id = gse_id
-        self.series = GEOparse.get_GEO(gse_id)
-
-    def get_nodes(self):
-        # Series node
-        yield (
-            f"GEO:{self.series.name}",    # node_id
-            "geo_series",                 # node_label (matches schema input_label)
-            {
-                "title": self.series.metadata.get("title"),
-                "summary": self.series.metadata.get("summary"),
-                "source": "GEO",
-                "version": self.series.metadata.get("submission_date"),
-            },
-        )
-
-        # Sample nodes
-        for sample in self.series.gsms.values():
-            yield (
-                f"GEO:{sample.name}",      # node_id
-                "geo_sample",             # node_label (matches schema input_label)
-                {
-                    "disease": sample.metadata.get("disease_state"),
-                    "organism": sample.metadata.get("organism_ch1"),
-                    "source": "GEO",
-                    "version": self.series.metadata.get("submission_date"),
-                },
-            )
-
-    def get_edges(self):
-        for gsm in self.series.gsms.values():
-            yield (
-                None,                     # edge_id
-                f"GEO:{self.series.name}",# source_id (series)
-                f"GEO:{gsm.name}",        # target_id (sample)
-                "HAS_SAMPLE",             # edge_label (matches schema input_label)
-                {},
-            )
+bc.write_nodes(adapter.get_nodes())
+bc.write_edges(adapter.get_edges())
+bc.write_import_call()  # offline only
 ```
 
-## Common Patterns
-
-### Resource Management
+In-memory backends (`dbms: networkx`, `pandas`, `csv`, `tabular` with `offline: false`):
 
 ```python
-from biocypher._get import FileDownload
-
-class MyAdapter:
-    def __init__(self, data_url: str):
-        # Use BioCypher's resource management for downloads
-        self.resource = FileDownload(
-            name="my_data",
-            url_s=data_url,
-            lifetime=30  # days
-        )
-        self.data_file = self.resource.get()
+bc.add(adapter.get_nodes())
+bc.add(adapter.get_edges())
+kg = bc.get_kg()  # networkx.DiGraph, or dict of pandas DataFrames keyed by schema class
 ```
 
-### Schema Validation
+Write all nodes before edges. Generators are consumed once: call `adapter.get_nodes()` again for a second pass, do not reuse the same generator object.
+
+## Writing an adapter
+
+1. Read the schema first. List every class with its `input_label`, `represented_as`, `source`/`target` (edges) and `properties` with types.
+2. Inspect the real data: column names, ID formats, value types, missing values, duplicates, case differences.
+3. For each schema class, decide which rows produce it and how the ID is built. The same entity must get the same ID everywhere it appears, including as an edge endpoint.
+4. Convert every value to the declared type (`int(...)`, `float(...)`, parse booleans from strings explicitly, split array values into lists).
+5. Yield tuples from generators; do not build large lists in memory.
+6. Decide what to do with rows that have missing IDs or endpoints that are not nodes, and log them.
+
+## Types
+
+Schema property types and the Python values to yield:
+
+- `str` / `string`: `str`
+- `int` / `integer` / `long`: `int`
+- `float` / `double` / `dbl`: `float`
+- `bool` / `boolean`: `bool` (parse `"true"`, `"yes"`, `"1"` yourself; `bool("false")` is `True`)
+- `str[]`, `int[]`, ...: `list` of the element type
+
+## Downloading and caching source files
+
+Use BioCypher's resource classes instead of hand-written download code:
 
 ```python
-def validate_schema_compliance(self, schema_config):
-    """Ensure adapter outputs match schema requirements."""
-    schema_nodes = {node['input_label'] for node in schema_config['nodes']}
-    schema_edges = {edge['input_label'] for edge in schema_config['edges']}
+from biocypher import APIRequest, FileDownload
 
-    # Validate node labels
-    for node_id, node_label, _ in self.get_nodes():
-        if node_label not in schema_nodes:
-            raise ValueError(f"Node label '{node_label}' not in schema")
-
-    # Validate edge labels
-    for _, _, _, edge_label, _ in self.get_edges():
-        if edge_label not in schema_edges:
-            raise ValueError(f"Edge label '{edge_label}' not in schema")
+resource = FileDownload(
+    name="uniprot_human",            # cache subdirectory name
+    url_s="https://example.org/file.tsv.gz",  # str or list of str
+    lifetime=30,                     # days; 0 = never expires
+    is_dir=False,                    # True: download all files listed in a directory URL
+)
+paths = bc.download(resource)        # list of local file paths; uses cache_directory from config
 ```
 
-### Error Handling
+`APIRequest(name, url_s, lifetime)` works the same way for API endpoints. `FileDownload` has no `get()` method; downloading goes through `bc.download(...)` or `biocypher._get.Downloader(cache_dir).download(...)`. Both return a list of paths.
 
-```python
-def safe_extract(self, metadata, key, default=None):
-    """Safely extract metadata with fallback."""
-    try:
-        return metadata.get(key, default)
-    except (AttributeError, KeyError):
-        return default
-```
+## Testing an adapter
 
-## Key Principles
+Counting nodes and edges in the built graph is not enough: deduplication and property filtering hide adapter errors. Test the tuples the adapter yields:
 
-1. **Schema as Contract**: The schema configuration is the single source of truth
-2. **Consistent Naming**: Use schema `input_label`s exactly as defined
-3. **Provenance Tracking**: Include source, version, and license when available
-4. **Error Resilience**: Handle missing or malformed data gracefully
-5. **Performance**: Use generators for memory efficiency with large datasets
+- every label is an `input_label` in the schema;
+- node IDs are unique, or duplicates have identical properties;
+- every edge endpoint is a yielded node ID;
+- every property key is declared in the schema, and every value has the declared Python type;
+- IDs and symbols are normalized (no `TP53` and `tp53` for the same entity).
 
-## Related Files
+Then run the pipeline once and check the log for `No ontology type defined`, duplicate warnings and strict-mode errors.
 
-- **llms-example-adapter.txt** - Complete working example
-- **llms.txt** - Functionality index and reference
+## Related files
+
+- Schema rules: https://biocypher.org/BioCypher/agents/llms-schema-config.txt
+- Runnable example: https://biocypher.org/BioCypher/agents/llms-example-adapter.txt
+- Known problems: https://biocypher.org/BioCypher/agents/llms-pitfalls.txt
