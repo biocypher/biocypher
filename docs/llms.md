@@ -14,7 +14,7 @@ The easiest way to integrate specific BioCypher instructions into your AI-assist
     This functionality is currently experimental and does not cover all BioCypher
     functionality yet. Use with caution.
 
-The MCP server gives AI coding assistants (Copilot, Cursor, Claude, etc.) step-by-step guidance for building a BioCypher pipeline and points them to the [LLM guides](#llm-guides) below. For Cursor or VSCode, add it like this (see also [Connect the MCP to your IDE](learn/guides/mcp.md)):
+The MCP server gives AI coding assistants (Copilot, Cursor, Claude, etc.) step-by-step guidance for building a BioCypher pipeline and serves the [LLM guides](#llm-guides) below through its `get_biocypher_docs` tool. For Cursor or VSCode, add it like this (see also [Connect the MCP to your IDE](learn/guides/mcp.md)):
 
 ```json
 {
@@ -35,7 +35,7 @@ Using the CSVs in the `data` directory, how do I build a BioCypher knowledge gra
 
 ## LLM guides
 
-BioCypher follows patterns and conventions that AI assistants do not reliably know, and models often suggest functions that do not exist. The LLM guides state the conventions, the silent failure modes and the known bugs of the current release in plain Markdown, one topic per file, checked against the BioCypher code. The MCP server points models to them, and you can also give them to your assistant directly.
+BioCypher follows patterns and conventions that AI assistants do not reliably know, and models often suggest functions that do not exist. The LLM guides state the conventions, the silent failure modes and the known bugs of the current release in plain Markdown, one topic per file, checked against the BioCypher code. The MCP server serves them to models, and you can also give them to your assistant directly.
 
 | Guide | Contents |
 | --- | --- |
@@ -47,6 +47,15 @@ BioCypher follows patterns and conventions that AI assistants do not reliably kn
 | [llms-example-adapter.txt](agents/llms-example-adapter.txt) | A complete runnable project with its verified output |
 
 The guides are served as plain text at `https://biocypher.org/BioCypher/agents/<file>`; `llms.txt` follows the [llms.txt](https://llmstxt.org/) format. Their sources are in [`docs/agents/`](https://github.com/biocypher/biocypher/tree/main/docs/agents) in the BioCypher repository.
+
+## How the guides get into the MCP
+
+The MCP server does not fetch the guides at runtime. It ships a copy of them, taken from this repository at a pinned commit, so it works without network access and gives the same content on every run. Because of the pin, the MCP can lag behind the guides published here.
+
+- The MCP serves `llms.txt`, `llms-adapters.txt`, `llms-schema-config.txt`, `llms-biocypher-config.txt` and `llms-pitfalls.txt` as the topics `index`, `adapters`, `schema_config`, `biocypher_config` and `pitfalls`. It rewrites links between these guides into `get_biocypher_docs` calls.
+- It does not serve `llms-example-adapter.txt`. With the MCP, the project generated from the cookiecutter template is the working example.
+- After changing a guide in `docs/agents/`, update the pin in [biocypher-mcp](https://github.com/biocypher/biocypher-mcp): set `BIOCYPHER_DOCS_REF` in `src/biocypher_mcp/biocypher_docs.py` to the new commit, run `scripts/sync_biocypher_docs.py`, and commit the updated snapshot. The change reaches users of https://mcp.biocypher.org/mcp once the server is redeployed.
+- Keep the file names stable, and when you add or rename a guide, update the topic list in `biocypher_docs.py` as well.
 
 ## Using the guides without the MCP
 

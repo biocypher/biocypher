@@ -59,7 +59,7 @@ After generating the project:
 4. Replace the tests in `tests/`, which test the dummy data, with tests of your adapter's tuples (see the Adapters file, "Testing an adapter").
 5. `.gitignore` excludes `data/`, `output/` and `logs/`; input data placed in `data/` is not committed.
 
-The BioCypher MCP server (https://mcp.biocypher.org/mcp) provides step-by-step workflow guidance, the scripted cookiecutter command pinned to a tested template version, and `validate_schema_config`.
+The BioCypher MCP server (https://mcp.biocypher.org/mcp) provides step-by-step workflow guidance, the scripted cookiecutter command pinned to a tested template version, `validate_schema_config`, and these guides through `get_biocypher_docs` (a copy pinned to a BioCypher commit, without the example adapter).
 
 ## Alternative: in-memory Agent API
 
