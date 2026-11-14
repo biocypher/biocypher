@@ -36,8 +36,8 @@ REQUIRED_CONFIG = [
     "offline",
     "strict_mode",
 ]
-# `head_ontology` is intentionally NOT required. Absence (or an explicit
-# `head_ontology: null` in biocypher_config.yaml) enables headless mode: no
+# `head_ontology` is intentionally NOT required. An explicit
+# `head_ontology: null` in biocypher_config.yaml enables headless mode: no
 # remote OWL/TTL fetch, no rdflib-backed class hierarchy. Schema validation
 # against schema_config.yaml still runs as usual.
 
