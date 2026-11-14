@@ -181,9 +181,8 @@ For usage guidance and resource requirements, see
 
 #### Headless mode (no ontology)
 
-Setting `head_ontology: null` explicitly (or omitting `head_ontology` from
-your config entirely) opts out of the ontology backbone and runs BioCypher
-in **headless mode**:
+Setting `head_ontology: null` explicitly opts out of the ontology backbone and runs BioCypher in **headless mode** (omitting `head_ontology` is not enough, as BioCypher then falls back to the default Biolink ontology):
+
 
 ```yaml title="biocypher_config.yaml"
 biocypher:
