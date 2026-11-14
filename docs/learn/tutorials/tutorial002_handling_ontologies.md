@@ -61,18 +61,17 @@ bc.show_ontology_structure()
 
 This will build the ontology scaffold and print a tree visualisation of its
 hierarchy to the console using the treelib library. You can see this in action
-in tutorial [part 6](tutorial001_basics.md#section-4-handling-relationships) (`tutorial/06_relationships.py`). The
+in tutorial [part 6](tutorial001_basics.md#section-4-handling-relationships) (`tutorial/06__relationships.py`). The
 output will look something like this:
 
 ```text
-Showing ontology structure, based on Biolink 3.0.3:
+Showing ontology structure based on https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
 entity
 ├── association
 │   └── gene to gene association
 │       └── pairwise gene to gene interaction
 │           └── pairwise molecular interaction
 │               └── protein protein interaction
-├── mixin
 └── named thing
     └── biological entity
         └── polypeptide
@@ -130,8 +129,8 @@ their relationships.
 
 If you need to get a visualisation of the ontology with multiple inheritance,
 you can call `show_ontology_structure()` with the parameter
-`to_disk=/some/path/where_to_store_the_file`. This creates a `GraphML` file and
-stores it at the specified location.
+`to_disk=/some/directory`. This creates a `GraphML` file named
+`ontology_structure.graphml` in the specified directory.
 
 ## Using ontologies: plain Biolink
 
@@ -292,7 +291,9 @@ specific datasets depending on the desired granularity.
 	The code for this tutorial can be found at `tutorial/07__synonyms.py`. Schema
 	files are at `tutorial/07_schema_config.yaml`, configuration in
 	`tutorial/07_biocypher_config.yaml`. Data generation happens in
-	`tutorial/data_generator.py`.
+	`tutorial/data_generator.py`. The script writes Neo4j output, which is
+	Parquet by default, so it needs the Neo4j extra:
+	`pip install biocypher[neo4j]` or `uv add "biocypher[neo4j]"`.
 
 In some cases, an ontology may contain a biological concept, but the name of the
 concept does for some reason not agree with the users desired knowledge graph
@@ -332,7 +333,7 @@ accounted for in the schema configuration. We also observe in the tree that the
 being synonyms indicated as an equals sign):
 
 ```text
-Showing ontology structure based on https://raw.githubusercontent.com/biolink/biolink-model/v3.2.1/biolink-model.owl.ttl
+Showing ontology structure based on https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
 entity
 ├── association
 │   └── gene to gene association
@@ -403,7 +404,7 @@ biocypher:  # biocypher settings
   tail_ontologies:
 
     so:
-      url: data/so.owl
+      url: test/ontologies/so.owl
       head_join_node: sequence variant
       tail_join_node: sequence_variant
 
